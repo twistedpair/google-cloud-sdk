@@ -548,7 +548,6 @@ class InternalRange(_messages.Message):
       specified explicitly.
     labels: User-defined labels.
     migration: Optional. Must be present if usage is set to FOR_MIGRATION.
-      This field is for internal use.
     name: Immutable. The name of an internal range. Format:
       projects/{project}/locations/{location}/internalRanges/{internal_range}
       See: https://google.aip.dev/122#fields-representing-resource-names
@@ -645,7 +644,7 @@ class InternalRange(_messages.Message):
       FOR_MIGRATION: Ranges created FOR_MIGRATION can be used to lock a CIDR
         range between a source and target subnet. If usage is set to
         FOR_MIGRATION the peering value has to be set to FOR_SELF or default
-        to FOR_SELF when unset. This value is for internal use.
+        to FOR_SELF when unset.
     """
     USAGE_UNSPECIFIED = 0
     FOR_VPC = 1
@@ -846,7 +845,7 @@ class Migration(_messages.Message):
       /projects/{project}/regions/{region}/subnetworks/{subnet}
     target: Immutable. Resource path of the target resource. The target
       project can be different, as in the cases when migrating to peer
-      networks. The resource For example:
+      networks. For example:
       /projects/{project}/regions/{region}/subnetworks/{subnet}
   """
 

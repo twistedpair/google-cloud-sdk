@@ -3232,9 +3232,15 @@ class GoogleCloudDocumentaiV1ProcessOptionsLayoutConfig(_messages.Message):
 
   Fields:
     chunkingConfig: Optional. Config for chunking in layout parser processor.
+    returnBoundingBoxes: Optional. Whether to include bounding boxes in layout
+      parser processor response.
+    returnImages: Optional. Whether to include images in layout parser
+      processor response.
   """
 
   chunkingConfig = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptionsLayoutConfigChunkingConfig', 1)
+  returnBoundingBoxes = _messages.BooleanField(2)
+  returnImages = _messages.BooleanField(3)
 
 
 class GoogleCloudDocumentaiV1ProcessOptionsLayoutConfigChunkingConfig(_messages.Message):

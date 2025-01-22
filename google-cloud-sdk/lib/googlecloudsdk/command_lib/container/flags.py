@@ -5211,6 +5211,13 @@ cpuManagerPolicy                    | either 'static' or 'none'
 cpuCFSQuota                         | true or false (enabled by default)
 cpuCFSQuotaPeriod                   | interval (e.g., '100ms')
 podPidsLimit                        | integer (The value must be greater than or equal to 1024 and less than 4194304.)
+containerLogMaxSize                 | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi.)
+containerLogMaxFiles                | integer (The value must be between [2, 10].)
+imageGcLowThresholdPercent          | integer (The value must be between [10, 85], and lower than imageGcHighThresholdPercent.)
+imageGcHighThresholdPercent         | integer (The value must be between [10, 85], and greater than imageGcLowThresholdPercent.)
+imageMinimumGcAge                   | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
+imageMaximumGcAge                   | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
+allowedUnsafeSysctls                | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
 
 List of supported sysctls in 'linuxConfig'.
 

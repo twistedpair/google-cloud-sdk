@@ -1067,15 +1067,16 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       a DNS subdomain. Name must be 63 characters or less, begin and end with
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
-    TagsValue: Optional. Input only. Tag keys/values directly bound to this
-      resource. Tag key must be specified in the format / where the tag
-      namespace is the ID of the organization or name of the project that the
-      tag key is defined in. The short name of a tag key or value can have a
-      maximum length of 256 characters. The permitted character set for the
-      short name includes UTF-8 encoded Unicode characters except single
-      quotes ('), double quotes ("), backslashes (\), and forward slashes (/).
-      See [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-
-      overview) for more details on Google Cloud Platform tags.
+    TagsValue: Optional. Input only. Tag keys and values directly bound to
+      this resource. The tag key must be specified in the format `/,` where
+      the tag namespace is the ID of the organization or name of the project
+      that the tag key is defined in. The short name of a tag key or value can
+      have a maximum length of 256 characters. The permitted character set for
+      the short name includes UTF-8 encoded Unicode characters except single
+      quotation marks (`'`), double quotation marks (`"`), backslashes (`\`),
+      and forward slashes (`/`). See [Tags](https://cloud.google.com/resource-
+      manager/docs/tags/tags-overview) for more details on Google Cloud
+      Platform tags.
 
   Fields:
     annotations: Optional. Annotations on the cluster. This field has the same
@@ -1119,15 +1120,16 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     securityPostureConfig: Optional. Security Posture configuration for this
       cluster.
     state: Output only. The current state of the cluster.
-    tags: Optional. Input only. Tag keys/values directly bound to this
-      resource. Tag key must be specified in the format / where the tag
+    tags: Optional. Input only. Tag keys and values directly bound to this
+      resource. The tag key must be specified in the format `/,` where the tag
       namespace is the ID of the organization or name of the project that the
       tag key is defined in. The short name of a tag key or value can have a
       maximum length of 256 characters. The permitted character set for the
       short name includes UTF-8 encoded Unicode characters except single
-      quotes ('), double quotes ("), backslashes (\), and forward slashes (/).
-      See [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-
-      overview) for more details on Google Cloud Platform tags.
+      quotation marks (`'`), double quotation marks (`"`), backslashes (`\`),
+      and forward slashes (`/`). See [Tags](https://cloud.google.com/resource-
+      manager/docs/tags/tags-overview) for more details on Google Cloud
+      Platform tags.
     uid: Output only. A globally unique identifier for the cluster.
     updateTime: Output only. The time at which this cluster was last updated.
     workloadIdentityConfig: Output only. Workload Identity settings.
@@ -1192,15 +1194,16 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Tag keys/values directly bound to this resource.
-    Tag key must be specified in the format / where the tag namespace is the
-    ID of the organization or name of the project that the tag key is defined
-    in. The short name of a tag key or value can have a maximum length of 256
-    characters. The permitted character set for the short name includes UTF-8
-    encoded Unicode characters except single quotes ('), double quotes ("),
-    backslashes (\), and forward slashes (/). See
-    [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview)
-    for more details on Google Cloud Platform tags.
+    r"""Optional. Input only. Tag keys and values directly bound to this
+    resource. The tag key must be specified in the format `/,` where the tag
+    namespace is the ID of the organization or name of the project that the
+    tag key is defined in. The short name of a tag key or value can have a
+    maximum length of 256 characters. The permitted character set for the
+    short name includes UTF-8 encoded Unicode characters except single
+    quotation marks (`'`), double quotation marks (`"`), backslashes (`\`),
+    and forward slashes (`/`). See [Tags](https://cloud.google.com/resource-
+    manager/docs/tags/tags-overview) for more details on Google Cloud Platform
+    tags.
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -3591,11 +3594,10 @@ class GoogleCloudGkemulticloudV1OperationMetadata(_messages.Message):
     endTime: Output only. The time at which this operation was completed.
     errorDetail: Output only. Human-readable status of any error that occurred
       during the operation.
-    requestedCancellation: Output only. Identifies whether it has been
-      requested cancellation for the operation. Operations that have
-      successfully been cancelled have google.longrunning.Operation.error
-      value with a google.rpc.Status.code of 1, corresponding to
-      `Code.CANCELLED`.
+    requestedCancellation: Output only. Identifies whether cancellation has
+      been requested for the operation. Operations that have successfully been
+      cancelled have google.longrunning.Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
     statusDetail: Output only. Human-readable status of the operation, if any.
     target: Output only. The name of the resource associated to this
       operation.

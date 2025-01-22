@@ -46,6 +46,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_apiproducts_attributes = self.OrganizationsApiproductsAttributesService(self)
     self.organizations_apiproducts_rateplans = self.OrganizationsApiproductsRateplansService(self)
     self.organizations_apiproducts = self.OrganizationsApiproductsService(self)
+    self.organizations_apis_debugsessions = self.OrganizationsApisDebugsessionsService(self)
     self.organizations_apis_deployments = self.OrganizationsApisDeploymentsService(self)
     self.organizations_apis_keyvaluemaps_entries = self.OrganizationsApisKeyvaluemapsEntriesService(self)
     self.organizations_apis_keyvaluemaps = self.OrganizationsApisKeyvaluemapsService(self)
@@ -119,6 +120,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_reports = self.OrganizationsReportsService(self)
     self.organizations_securityAssessmentResults = self.OrganizationsSecurityAssessmentResultsService(self)
     self.organizations_securityFeedback = self.OrganizationsSecurityFeedbackService(self)
+    self.organizations_securityMonitoringConditions = self.OrganizationsSecurityMonitoringConditionsService(self)
     self.organizations_securityProfiles_environments = self.OrganizationsSecurityProfilesEnvironmentsService(self)
     self.organizations_securityProfiles = self.OrganizationsSecurityProfilesService(self)
     self.organizations_securityProfilesV2 = self.OrganizationsSecurityProfilesV2Service(self)
@@ -822,6 +824,43 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1ApiProduct',
         response_type_name='GoogleCloudApigeeV1ApiProduct',
+        supports_download=False,
+    )
+
+  class OrganizationsApisDebugsessionsService(base_api.BaseApiService):
+    """Service class for the organizations_apis_debugsessions resource."""
+
+    _NAME = 'organizations_apis_debugsessions'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsApisDebugsessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists debug sessions that are currently active in the given API Proxy.
+
+      Args:
+        request: (ApigeeOrganizationsApisDebugsessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListApiDebugSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/debugsessions',
+        http_method='GET',
+        method_id='apigee.organizations.apis.debugsessions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/debugsessions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApisDebugsessionsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListApiDebugSessionsResponse',
         supports_download=False,
     )
 
@@ -8491,6 +8530,151 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsSecurityFeedbackListRequest',
         response_type_name='GoogleCloudApigeeV1ListSecurityFeedbackResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsSecurityMonitoringConditionsService(base_api.BaseApiService):
+    """Service class for the organizations_securityMonitoringConditions resource."""
+
+    _NAME = 'organizations_securityMonitoringConditions'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSecurityMonitoringConditionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a security monitoring condition.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityMonitoringCondition) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityMonitoringConditions',
+        http_method='POST',
+        method_id='apigee.organizations.securityMonitoringConditions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/securityMonitoringConditions',
+        request_field='googleCloudApigeeV1SecurityMonitoringCondition',
+        request_type_name='ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityMonitoringCondition',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a security monitoring condition.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityMonitoringConditionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityMonitoringConditions/{securityMonitoringConditionsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.securityMonitoringConditions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityMonitoringConditionsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a security monitoring condition.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityMonitoringConditionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityMonitoringCondition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityMonitoringConditions/{securityMonitoringConditionsId}',
+        http_method='GET',
+        method_id='apigee.organizations.securityMonitoringConditions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityMonitoringConditionsGetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityMonitoringCondition',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List security monitoring conditions.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityMonitoringConditionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityMonitoringConditionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityMonitoringConditions',
+        http_method='GET',
+        method_id='apigee.organizations.securityMonitoringConditions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityMonitoringConditions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityMonitoringConditionsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityMonitoringConditionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a security monitoring condition.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityMonitoringConditionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityMonitoringCondition) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityMonitoringConditions/{securityMonitoringConditionsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.securityMonitoringConditions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecurityMonitoringCondition',
+        request_type_name='ApigeeOrganizationsSecurityMonitoringConditionsPatchRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityMonitoringCondition',
         supports_download=False,
     )
 

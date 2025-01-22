@@ -840,6 +840,12 @@ class ConnectionProfilesClient(object):
     connection_profile_obj = self.messages.SqlServerConnectionProfile(
         ssl=ssl_config
     )
+    if args.IsKnownAndSpecified('host'):
+      connection_profile_obj.host = args.host
+      connection_profile_obj.port = args.port
+    elif args.IsKnownAndSpecified('gcs_bucket'):
+      connection_profile_obj.backups = self._GetSqlServerBackups(args)
+
     if args.IsKnownAndSpecified('username'):
       connection_profile_obj.username = args.username
       connection_profile_obj.password = args.password
@@ -847,11 +853,8 @@ class ConnectionProfilesClient(object):
         connection_profile_obj.cloudSqlId = args.GetValue(
             self._InstanceArgName()
         )
-      else:
-        connection_profile_obj.host = args.host
-        connection_profile_obj.port = args.port
-    else:
-      connection_profile_obj.backups = self._GetSqlServerBackups(args)
+      if args.IsKnownAndSpecified('cloudsql_project_id'):
+        connection_profile_obj.cloudSqlProjectId = args.cloudsql_project_id
 
     if args.IsKnownAndSpecified('database'):
       connection_profile_obj.database = args.database

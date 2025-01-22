@@ -112,6 +112,13 @@ NC_CPU_CFS_QUOTA = 'cpuCFSQuota'
 NC_CPU_CFS_QUOTA_PERIOD = 'cpuCFSQuotaPeriod'
 NC_POD_PIDS_LIMIT = 'podPidsLimit'
 NC_KUBELET_READONLY_PORT = 'insecureKubeletReadonlyPortEnabled'
+NC_ALLOWED_UNSAFE_SYSCTLS = 'allowedUnsafeSysctls'
+NC_CONTAINER_LOG_MAX_SIZE = 'containerLogMaxSize'
+NC_CONTAINER_LOG_MAX_FILES = 'containerLogMaxFiles'
+NC_IMAGE_GC_HIGH_THRESHOLD_PERCENT = 'imageGcHighThresholdPercent'
+NC_IMAGE_GC_LOW_THRESHOLD_PERCENT = 'imageGcLowThresholdPercent'
+NC_IMAGE_MINIMUM_GC_AGE = 'imageMinimumGcAge'
+NC_IMAGE_MAXIMUM_GC_AGE = 'imageMaximumGcAge'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 NC_CGROUP_MODE = 'cgroupMode'
@@ -779,6 +786,13 @@ def LoadSystemConfigFromYAML(
         NC_CPU_CFS_QUOTA_PERIOD: str,
         NC_POD_PIDS_LIMIT: int,
         NC_KUBELET_READONLY_PORT: bool,
+        NC_ALLOWED_UNSAFE_SYSCTLS: list,
+        NC_CONTAINER_LOG_MAX_SIZE: str,
+        NC_CONTAINER_LOG_MAX_FILES: int,
+        NC_IMAGE_GC_HIGH_THRESHOLD_PERCENT: int,
+        NC_IMAGE_GC_LOW_THRESHOLD_PERCENT: int,
+        NC_IMAGE_MINIMUM_GC_AGE: str,
+        NC_IMAGE_MAXIMUM_GC_AGE: str,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields
@@ -799,6 +813,27 @@ def LoadSystemConfigFromYAML(
     node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
         kubelet_config_opts.get(NC_KUBELET_READONLY_PORT)
     )
+    node_config.kubeletConfig.containerLogMaxSize = kubelet_config_opts.get(
+        NC_CONTAINER_LOG_MAX_SIZE
+    )
+    node_config.kubeletConfig.containerLogMaxFiles = kubelet_config_opts.get(
+        NC_CONTAINER_LOG_MAX_FILES
+    )
+    node_config.kubeletConfig.imageGcLowThresholdPercent = (
+        kubelet_config_opts.get(NC_IMAGE_GC_LOW_THRESHOLD_PERCENT)
+    )
+    node_config.kubeletConfig.imageGcHighThresholdPercent = (
+        kubelet_config_opts.get(NC_IMAGE_GC_HIGH_THRESHOLD_PERCENT)
+    )
+    node_config.kubeletConfig.imageMinimumGcAge = kubelet_config_opts.get(
+        NC_IMAGE_MINIMUM_GC_AGE
+    )
+    node_config.kubeletConfig.imageMaximumGcAge = kubelet_config_opts.get(
+        NC_IMAGE_MAXIMUM_GC_AGE
+    )
+    sysctls = kubelet_config_opts.get(NC_ALLOWED_UNSAFE_SYSCTLS)
+    if sysctls:
+      node_config.kubeletConfig.allowedUnsafeSysctls = sysctls
 
   ro_in_cfg = (
       node_config is not None

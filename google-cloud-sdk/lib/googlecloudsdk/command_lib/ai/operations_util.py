@@ -21,8 +21,16 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import log
 
 
-def WaitForOpMaybe(operations_client, op, op_ref, asynchronous=False,
-                   log_method=None, message=None, kind=None):
+def WaitForOpMaybe(
+    operations_client,
+    op,
+    op_ref,
+    asynchronous=False,
+    log_method=None,
+    message=None,
+    kind=None,
+    max_wait_ms=1800000,
+):
   """Waits for an operation if asynchronous flag is off.
 
   Args:
@@ -36,6 +44,7 @@ def WaitForOpMaybe(operations_client, op, op_ref, asynchronous=False,
     message: str, the message to display while waiting for the operation.
     kind: str, the resource kind (instance, cluster, project, etc.), which will
       be passed to logging function.
+    max_wait_ms: int, number of ms to wait before raising WaitException.
 
   Returns:
     The result of the operation if asynchronous is true, or the Operation
@@ -51,4 +60,5 @@ def WaitForOpMaybe(operations_client, op, op_ref, asynchronous=False,
       logging_function[log_method](op.name, kind=kind)
     return op
   return operations_client.WaitForOperation(
-      op, op_ref, message=message).response
+      op, op_ref, message=message, max_wait_ms=max_wait_ms
+  ).response

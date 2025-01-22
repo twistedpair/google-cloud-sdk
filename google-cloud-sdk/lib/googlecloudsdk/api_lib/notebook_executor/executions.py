@@ -89,6 +89,20 @@ def ValidateIsWorkbenchExecution(args, messages, service):
     )
 
 
+def FilterWorkbenchExecution(execution):
+  """List filter for Workbench executions.
+
+  Args:
+    execution: The execution item returned from List API to check.
+
+  Returns:
+    True if the execution is a Workbench execution.
+  """
+  if execution.kernelName is None:
+    return False
+  return True
+
+
 def GetDataformRepositorySourceFromArgs(args, messages):
   """Get the dataform repository source from the args.
 
@@ -353,8 +367,6 @@ def CreateExecutionListRequest(args, messages):
   Returns:
     Instance of the NotebookExecutionJobsListRequest message.
   """
-  return (
-      messages.AiplatformProjectsLocationsNotebookExecutionJobsListRequest(
-          parent=GetParentForExecutionOrSchedule(args),
-      )
+  return messages.AiplatformProjectsLocationsNotebookExecutionJobsListRequest(
+      parent=GetParentForExecutionOrSchedule(args),
   )

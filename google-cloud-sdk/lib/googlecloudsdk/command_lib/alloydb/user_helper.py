@@ -54,6 +54,9 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, cluster_ref, args):
   # set superuser role if provided
   if args.superuser:
     user_resource.databaseRoles.append('alloydbsuperuser')
+  # set keep extra roles if provided
+  if args.keep_extra_roles:
+    user_resource.keepExtraRoles = args.keep_extra_roles
 
   return alloydb_messages.AlloydbProjectsLocationsClustersUsersCreateRequest(
       user=user_resource,

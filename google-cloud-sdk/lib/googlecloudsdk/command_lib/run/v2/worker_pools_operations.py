@@ -22,8 +22,12 @@ from __future__ import unicode_literals
 
 from google.api_core import exceptions
 from googlecloudsdk.api_lib.run import metric_names
+from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.run import stages
+from googlecloudsdk.command_lib.run.sourcedeploys import deployer
 from googlecloudsdk.command_lib.run.v2 import config_changes as config_changes_mod
 from googlecloudsdk.core import metrics
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as worker_pool_objects
 
 
@@ -88,7 +92,20 @@ class WorkerPoolsOperations(object):
     with metrics.RecordDuration(metric_names.LIST_WORKER_POOLS):
       return worker_pools.list_worker_pools(list_request)
 
-  def ReleaseWorkerPool(self, worker_pool_ref, worker_pool, config_changes):
+  def ReleaseWorkerPool(
+      self,
+      worker_pool_ref,
+      config_changes,
+      release_track=base.ReleaseTrack.ALPHA,
+      tracker=None,
+      prefetch=False,
+      build_image=None,
+      build_pack=None,
+      build_source=None,
+      build_from_source_container_name=None,
+      repo_to_create=None,
+      already_activated_services=False,
+  ):
     """Stubbed method for worker pool deploy surface.
 
     Update the WorkerPool if it exists, otherwise create it (Upsert).
@@ -96,12 +113,74 @@ class WorkerPoolsOperations(object):
     Args:
       worker_pool_ref: WorkerPool reference containing project, location,
         workerpool IDs.
-      worker_pool: Resource, the WorkerPool to release. None for create flow.
       config_changes: list, objects that implement Adjust().
+      release_track: ReleaseTrack, the release track of a command calling this.
+      tracker: StagedProgressTracker, used to track progress.
+      prefetch: the worker pool, pre-fetched for ReleaseWorkerPool. `False`
+        indicates the caller did not perform a prefetch; `None` indicates a
+        nonexistent worker pool.
+      build_image: The build image reference to the build.
+      build_pack: The build pack reference to the build.
+      build_source: The build source reference to the build.
+      build_from_source_container_name: The name of the container to be deployed
+        from source.
+      repo_to_create: Optional
+        googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
+        repository to be created.
+      already_activated_services: bool. If true, skip activation prompts for
+        services
 
     Returns:
       A WorkerPool object.
     """
+    if tracker is None:
+      tracker = progress_tracker.NoOpStagedProgressTracker(
+          stages.WorkerPoolStages(
+              include_build=build_source is not None,
+              include_create_repo=repo_to_create is not None,
+          ),
+          interruptable=True,
+          aborted_message='aborted',
+      )
+
+    # Deploying from a source.
+    if build_source is not None:
+      (
+          image_digest,
+          _,  # build_base_image
+          _,  # build_id
+          _,  # uploaded_source
+          _,  # build_name
+      ) = deployer.CreateImage(
+          tracker,
+          build_image,
+          build_source,
+          build_pack,
+          repo_to_create,
+          release_track,
+          already_activated_services,
+          worker_pool_ref.locationsId,  # region
+          worker_pool_ref,
+      )
+      if image_digest is None:
+        return
+      config_changes.append(
+          config_changes_mod.AddDigestToImageChange(
+              container_name=build_from_source_container_name,
+              non_ingress_type=True,
+              image_digest=image_digest,
+          )
+      )
+
+    if prefetch is None:
+      worker_pool = None
+    elif build_source:
+      # if we're building from source, we want to force a new fetch
+      # because building takes a while which leaves a long time for
+      # potential write conflicts.
+      worker_pool = self.GetWorkerPool(worker_pool_ref)
+    else:
+      worker_pool = prefetch or self.GetWorkerPool(worker_pool_ref)
     # TODO(b/376904673): Add progress tracker.
     metric_name = metric_names.UPDATE_WORKER_POOL
     if worker_pool is None:
@@ -117,7 +196,6 @@ class WorkerPoolsOperations(object):
         worker_pool=worker_pool,
         allow_missing=True,
     )
-    # TODO(b/366576967): Support wait operation in sync mode.
     with metrics.RecordDuration(metric_name):
       return worker_pools.update_worker_pool(upsert_request)
 
@@ -141,5 +219,4 @@ class WorkerPoolsOperations(object):
         worker_pool=worker_pool,
     )
     with metrics.RecordDuration(metric_names.UPDATE_WORKER_POOL):
-      # TODO(b/366576967): Support wait operation in sync mode.
       return worker_pools.update_worker_pool(update_request)

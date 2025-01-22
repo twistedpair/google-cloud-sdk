@@ -64,7 +64,9 @@ class OperationsClient(object):
         self.messages.AiplatformProjectsLocationsOperationsGetRequest(
             name=operation_ref.RelativeName()))
 
-  def WaitForOperation(self, operation, operation_ref, message=None):
+  def WaitForOperation(
+      self, operation, operation_ref, message=None, max_wait_ms=1800000
+  ):
     """Wait until the operation is complete or times out.
 
     Args:
@@ -72,6 +74,7 @@ class OperationsClient(object):
       operation_ref: The operation reference to the operation resource. It's the
         result by calling resources.REGISTRY.Parse
       message: str, the message to print while waiting.
+      max_wait_ms: int, number of ms to wait before raising WaitException.
 
     Returns:
       The operation resource when it has completed
@@ -86,4 +89,6 @@ class OperationsClient(object):
 
     if message is None:
       message = 'Waiting for operation [{}]'.format(operation_ref.Name())
-    return waiter.WaitFor(poller, operation_ref, message)
+    return waiter.WaitFor(
+        poller, operation_ref, message, max_wait_ms=max_wait_ms
+    )

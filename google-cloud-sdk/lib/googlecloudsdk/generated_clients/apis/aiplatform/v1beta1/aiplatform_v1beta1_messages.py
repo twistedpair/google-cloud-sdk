@@ -30241,8 +30241,8 @@ class GoogleCloudAiplatformV1beta1RagFileParsingConfigLlmParser(_messages.Messag
       https://cloud.google.com/vertex-ai/generative-ai/docs/quotas and your
       document size to set an appropriate value here. If unspecified, a
       default value of 5000 QPM would be used.
-    modelName: The name of a LLM model used for parsing. Format:
-      `gemini-1.5-pro-002`
+    modelName: The name of a LLM model used for parsing. Format: * `projects/{
+      project_id}/locations/{location}/publishers/{publisher}/models/{model}`
   """
 
   customParsingPrompt = _messages.StringField(1)
@@ -36748,7 +36748,7 @@ class GoogleCloudAiplatformV1beta1ServerlessRayJobSpec(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ServerlessRayJobSpecResourceSpec(_messages.Message):
-  r"""Represents the resource spec of a worker node.
+  r"""Represents the resource spec of a worker node pool.
 
   Fields:
     disk: Optional. The disk spec for the node. By default, we use pd-standard
@@ -38160,16 +38160,21 @@ class GoogleCloudAiplatformV1beta1SupervisedTuningDataStats(_messages.Message):
   r"""Tuning data statistics for Supervised Tuning.
 
   Fields:
+    droppedExampleReasons: Output only. For each index in
+      `truncated_example_indices`, the user-facing reason why the example was
+      dropped. Must not include example itself.
     totalBillableCharacterCount: Output only. Number of billable characters in
       the tuning dataset.
     totalBillableTokenCount: Output only. Number of billable tokens in the
       tuning dataset.
-    totalTruncatedExampleCount: The number of examples in the dataset that
-      have been truncated by any amount.
+    totalTruncatedExampleCount: Output only. The number of examples in the
+      dataset that have been dropped. An example can be dropped for reasons
+      including: too many tokens, contains an invalid image, contains too many
+      images, etc.
     totalTuningCharacterCount: Output only. Number of tuning characters in the
       tuning dataset.
-    truncatedExampleIndices: A partial sample of the indices (starting from 1)
-      of the truncated examples.
+    truncatedExampleIndices: Output only. A partial sample of the indices
+      (starting from 1) of the dropped examples.
     tuningDatasetExampleCount: Output only. Number of examples in the tuning
       dataset.
     tuningStepCount: Output only. Number of tuning steps for this Tuning Job.
@@ -38183,17 +38188,18 @@ class GoogleCloudAiplatformV1beta1SupervisedTuningDataStats(_messages.Message):
       user output tokens.
   """
 
-  totalBillableCharacterCount = _messages.IntegerField(1)
-  totalBillableTokenCount = _messages.IntegerField(2)
-  totalTruncatedExampleCount = _messages.IntegerField(3)
-  totalTuningCharacterCount = _messages.IntegerField(4)
-  truncatedExampleIndices = _messages.IntegerField(5, repeated=True)
-  tuningDatasetExampleCount = _messages.IntegerField(6)
-  tuningStepCount = _messages.IntegerField(7)
-  userDatasetExamples = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 8, repeated=True)
-  userInputTokenDistribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution', 9)
-  userMessagePerExampleDistribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution', 10)
-  userOutputTokenDistribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution', 11)
+  droppedExampleReasons = _messages.StringField(1, repeated=True)
+  totalBillableCharacterCount = _messages.IntegerField(2)
+  totalBillableTokenCount = _messages.IntegerField(3)
+  totalTruncatedExampleCount = _messages.IntegerField(4)
+  totalTuningCharacterCount = _messages.IntegerField(5)
+  truncatedExampleIndices = _messages.IntegerField(6, repeated=True)
+  tuningDatasetExampleCount = _messages.IntegerField(7)
+  tuningStepCount = _messages.IntegerField(8)
+  userDatasetExamples = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 9, repeated=True)
+  userInputTokenDistribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution', 10)
+  userMessagePerExampleDistribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution', 11)
+  userOutputTokenDistribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution', 12)
 
 
 class GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistribution(_messages.Message):

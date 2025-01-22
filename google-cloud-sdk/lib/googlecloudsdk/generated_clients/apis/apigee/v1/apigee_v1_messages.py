@@ -368,6 +368,24 @@ class ApigeeOrganizationsApisCreateRequest(_messages.Message):
   validate = _messages.BooleanField(6)
 
 
+class ApigeeOrganizationsApisDebugsessionsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisDebugsessionsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of debug sessions to return. The page
+      size defaults to 25.
+    pageToken: Optional. Page token, returned from a previous
+      ListApiDebugSessions call, that you can use to retrieve the next page.
+    parent: Required. The name of the API Proxy for which to list debug
+      sessions. Must be of the form:
+      `organizations/{organization}/apis/{api}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsApisDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsApisDeleteRequest object.
 
@@ -4581,6 +4599,87 @@ class ApigeeOrganizationsSecurityFeedbackListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityMonitoringCondition: A
+      GoogleCloudApigeeV1SecurityMonitoringCondition resource to be passed as
+      the request body.
+    parent: Required. The parent resource name. Format: `organizations/{org}`
+  """
+
+  googleCloudApigeeV1SecurityMonitoringCondition = _messages.MessageField('GoogleCloudApigeeV1SecurityMonitoringCondition', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSecurityMonitoringConditionsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityMonitoringConditionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the security monitoring condition to delete.
+      Format: `organizations/{org}/securityMonitoringConditions/{security_moni
+      toring_condition}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityMonitoringConditionsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityMonitoringConditionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the security monitoring condition to get.
+      Format: `organizations/{org}/securityMonitoringConditions/{security_moni
+      toring_condition}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityMonitoringConditionsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityMonitoringConditionsListRequest object.
+
+  Fields:
+    filter: Optional. Filter for the monitoring conditions. For example:
+      `profile=profile1 AND scope=env1`
+    orderBy: Optional. Order for the monitoring conditions. For example:
+      `create_time desc`
+    pageSize: Optional. The maximum number of monitoring conditions to return.
+    pageToken: Optional. A page token, received from a previous
+      `ListSecurityMonitoringConditions` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. For a specific organization, list all the security
+      monitoring conditions. Format: `organizations/{org}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ApigeeOrganizationsSecurityMonitoringConditionsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityMonitoringConditionsPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityMonitoringCondition: A
+      GoogleCloudApigeeV1SecurityMonitoringCondition resource to be passed as
+      the request body.
+    name: Identifier. Name of the security monitoring condition resource.
+      Format: organizations/{org}/securityMonitoringConditions/{security_monit
+      oring_condition}
+    updateMask: Optional. The list of fields to update. Valid fields to update
+      are `profile`, `scope`, `include_all_resources`, `include`, and
+      `exclude`.
+  """
+
+  googleCloudApigeeV1SecurityMonitoringCondition = _messages.MessageField('GoogleCloudApigeeV1SecurityMonitoringCondition', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ApigeeOrganizationsSecurityProfilesCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesCreateRequest object.
 
@@ -6671,11 +6770,12 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest(_messages.
 
 
 class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll(_messages.Message):
-  r"""Message for include_all option."""
+  r"""Message for include_all_resources option."""
 
 
 class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArray(_messages.Message):
-  r"""An array of resource messages.
+  r"""Message for the array of resources. For Apigee, the proxies are
+  resources.
 
   Fields:
     resources: Required. The array of resources. For Apigee, the proxies are
@@ -9125,6 +9225,21 @@ class GoogleCloudApigeeV1ListApiCategoriesResponse(_messages.Message):
   status = _messages.StringField(5)
 
 
+class GoogleCloudApigeeV1ListApiDebugSessionsResponse(_messages.Message):
+  r"""Response for ListApiDebugSessions.
+
+  Fields:
+    nextPageToken: Page token that you can include in a
+      ListApiDebugSessionsRequest to retrieve the next page. If omitted, no
+      subsequent pages exist.
+    sessions: Session info that includes debug session ID and the first
+      transaction creation timestamp.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sessions = _messages.MessageField('GoogleCloudApigeeV1Session', 2, repeated=True)
+
+
 class GoogleCloudApigeeV1ListApiDocsResponse(_messages.Message):
   r"""A GoogleCloudApigeeV1ListApiDocsResponse object.
 
@@ -9545,6 +9660,20 @@ class GoogleCloudApigeeV1ListSecurityIncidentsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   securityIncidents = _messages.MessageField('GoogleCloudApigeeV1SecurityIncident', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityMonitoringConditionsResponse(_messages.Message):
+  r"""Response for ListSecurityMonitoringConditions.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    securityMonitoringConditions: List of security monitoring conditions in
+      the organization.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityMonitoringConditions = _messages.MessageField('GoogleCloudApigeeV1SecurityMonitoringCondition', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse(_messages.Message):
@@ -12265,6 +12394,34 @@ class GoogleCloudApigeeV1SecurityIncidentEnvironment(_messages.Message):
   moderateRiskIncidentsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   severeRiskIncidentsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   totalIncidents = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApigeeV1SecurityMonitoringCondition(_messages.Message):
+  r"""Security monitoring condition for risk assessment version 2.
+
+  Fields:
+    createTime: Output only. The time of the security monitoring condition
+      creation.
+    include: Include only these resources.
+    includeAllResources: Include all resources under the scope.
+    name: Identifier. Name of the security monitoring condition resource.
+      Format: organizations/{org}/securityMonitoringConditions/{security_monit
+      oring_condition}
+    profile: Required. ID of security profile of the security monitoring
+      condition.
+    scope: Required. Scope of the security monitoring condition. For Apigee,
+      the environment is the scope of the resources.
+    updateTime: Output only. The time of the security monitoring condition
+      update.
+  """
+
+  createTime = _messages.StringField(1)
+  include = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArray', 2)
+  includeAllResources = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll', 3)
+  name = _messages.StringField(4)
+  profile = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudApigeeV1SecurityProfile(_messages.Message):

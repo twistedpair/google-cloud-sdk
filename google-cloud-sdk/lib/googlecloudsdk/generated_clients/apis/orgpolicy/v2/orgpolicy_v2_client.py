@@ -371,7 +371,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a custom constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the custom constraint does not exist.
+      r"""Gets a custom or managed constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the custom or managed constraint does not exist.
 
       Args:
         request: (OrgpolicyOrganizationsCustomConstraintsGetRequest) input message

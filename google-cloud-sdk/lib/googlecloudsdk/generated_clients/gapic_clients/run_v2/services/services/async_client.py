@@ -80,6 +80,8 @@ class ServicesAsyncClient:
     parse_secret_version_path = staticmethod(ServicesClient.parse_secret_version_path)
     service_path = staticmethod(ServicesClient.service_path)
     parse_service_path = staticmethod(ServicesClient.parse_service_path)
+    worker_pool_path = staticmethod(ServicesClient.worker_pool_path)
+    parse_worker_pool_path = staticmethod(ServicesClient.parse_worker_pool_path)
     common_billing_account_path = staticmethod(ServicesClient.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(ServicesClient.parse_common_billing_account_path)
     common_folder_path = staticmethod(ServicesClient.common_folder_path)

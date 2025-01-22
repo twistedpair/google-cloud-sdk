@@ -868,6 +868,35 @@ class CloudRunRenderMetadata(_messages.Message):
   service = _messages.StringField(1)
 
 
+class CloudServiceMesh(_messages.Message):
+  r"""Information about the Cloud Service Mesh configuration.
+
+  Fields:
+    deployment: Required. Name of the Kubernetes Deployment whose traffic is
+      managed by the specified Service.
+    grpcRoute: Required. Name of the GrpcRoute resource that defines how gRPC
+      traffic routed by a Mesh or Gateway resource is routed. Format is
+      `projects/{project}/locations/global/httpRoutes/{grpc_route}`
+    httpRoute: Required. Name of the HttpRoute resource that defines how HTTP
+      traffic should be routed by a Mesh or Gateway resource. Format is
+      `projects/{project}/locations/global/httpRoutes/{http_route}`.
+    podSelectorLabel: Optional. The label to use when selecting Pods for the
+      Deployment and Service resources. This label must already be present in
+      both resources.
+    routeUpdateWaitTime: Optional. The time to wait for route updates to
+      propagate. The maximum configurable time is 3 hours, in seconds format.
+      If unspecified, there is no wait time.
+    service: Required. Name of the Kubernetes Service.
+  """
+
+  deployment = _messages.StringField(1)
+  grpcRoute = _messages.StringField(2)
+  httpRoute = _messages.StringField(3)
+  podSelectorLabel = _messages.StringField(4)
+  routeUpdateWaitTime = _messages.StringField(5)
+  service = _messages.StringField(6)
+
+
 class ClouddeployProjectsLocationsCustomTargetTypesCreateRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsCustomTargetTypesCreateRequest object.
 
@@ -3574,9 +3603,9 @@ class JobRun(_messages.Message):
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
     jobId: Output only. ID of the `Rollout` job this `JobRun` corresponds to.
-    name: Identifier. Name of the `JobRun`. Format is `projects/{project}/loca
-      tions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{releases
-      }/rollouts/{rollouts}/jobRuns/{uuid}`.
+    name: Output only. Name of the `JobRun`. Format is `projects/{project}/loc
+      ations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release
+      s}/rollouts/{rollouts}/jobRuns/{uuid}`.
     phaseId: Output only. ID of the `Rollout` phase this `JobRun` belongs in.
     postdeployJobRun: Output only. Information specific to a postdeploy
       `JobRun`.
@@ -3685,13 +3714,15 @@ class KubernetesConfig(_messages.Message):
   r"""KubernetesConfig contains the Kubernetes runtime configuration.
 
   Fields:
+    cloudServiceMesh: Optional. Cloud Service Mesh configuration.
     gatewayServiceMesh: Optional. Kubernetes Gateway API service mesh
       configuration.
     serviceNetworking: Optional. Kubernetes Service networking configuration.
   """
 
-  gatewayServiceMesh = _messages.MessageField('GatewayServiceMesh', 1)
-  serviceNetworking = _messages.MessageField('ServiceNetworking', 2)
+  cloudServiceMesh = _messages.MessageField('CloudServiceMesh', 1)
+  gatewayServiceMesh = _messages.MessageField('GatewayServiceMesh', 2)
+  serviceNetworking = _messages.MessageField('ServiceNetworking', 3)
 
 
 class ListAutomationRunsResponse(_messages.Message):
@@ -4166,6 +4197,8 @@ class PhaseArtifact(_messages.Message):
   r"""Contains the paths to the artifacts, relative to the URI, for a phase.
 
   Fields:
+    backendServicePath: Output only. File path of the rendered backend service
+      configuration relative to the URI.
     jobManifestsPath: Output only. File path of the directory of rendered job
       manifests relative to the URI. This is only set if it is applicable.
     manifestPath: Output only. File path of the rendered manifest relative to
@@ -4174,9 +4207,10 @@ class PhaseArtifact(_messages.Message):
       configuration relative to the URI.
   """
 
-  jobManifestsPath = _messages.StringField(1)
-  manifestPath = _messages.StringField(2)
-  skaffoldConfigPath = _messages.StringField(3)
+  backendServicePath = _messages.StringField(1)
+  jobManifestsPath = _messages.StringField(2)
+  manifestPath = _messages.StringField(3)
+  skaffoldConfigPath = _messages.StringField(4)
 
 
 class PhaseConfig(_messages.Message):

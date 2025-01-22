@@ -9,6 +9,16 @@ project:
       Name of the Cloud project to use.
     property: core/project
 
+organization:
+  name: organization
+  collection: dataplex.organizations
+  attributes:
+  - &organization
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: |
+      Name of the Cloud organization to use.
+
 location:
   name: location
   collection: dataplex.projects.locations
@@ -286,6 +296,20 @@ governance_rule:
     attribute_name: governance_rule
     help: |
       Identifier of the Dataplex Governance Rule resource.
+
+encryption_config:
+  name: encryption config
+  collection: dataplex.organizations.locations.encryptionConfigs
+  request_id_field: encryptionConfigId
+  disable_auto_completers: false
+  attributes:
+  - *organization
+  - *location
+  - &encryption_config
+    parameter_name: encryptionConfigsId
+    attribute_name: encryption_config
+    help: |
+      Identifier of the Dataplex Encryption Config resource.
 
 glossary:
   name: glossary

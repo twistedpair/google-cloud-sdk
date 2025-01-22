@@ -1845,6 +1845,9 @@ class GrpcRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    etag: Optional. Output only. Etag of the resource. If this is provided, it
+      must match the server's etag. If the provided etag does not match the
+      server's etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this GrpcRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -1912,14 +1915,15 @@ class GrpcRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateways = _messages.StringField(3, repeated=True)
-  hostnames = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  meshes = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  etag = _messages.StringField(3)
+  gateways = _messages.StringField(4, repeated=True)
+  hostnames = _messages.StringField(5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  meshes = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class GrpcRouteDestination(_messages.Message):
@@ -2303,6 +2307,9 @@ class HttpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    etag: Optional. Output only. Etag of the resource. If this is provided, it
+      must match the server's etag. If the provided etag does not match the
+      server's etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -2368,14 +2375,15 @@ class HttpRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateways = _messages.StringField(3, repeated=True)
-  hostnames = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  meshes = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  rules = _messages.MessageField('HttpRouteRouteRule', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  etag = _messages.StringField(3)
+  gateways = _messages.StringField(4, repeated=True)
+  hostnames = _messages.StringField(5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  meshes = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  rules = _messages.MessageField('HttpRouteRouteRule', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -4147,6 +4155,8 @@ class MulticastDomainActivation(_messages.Message):
     name: Identifier. The resource name of the multicast domain activation.
       Use the following format:
       `projects/*/locations/*/multicastDomainActivations/*`.
+    trafficSpec: Optional. The traffic specification for the multicast domain
+      activation.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast domain activation
       resources. If a domain activation is deleted and another with the same
@@ -4187,8 +4197,9 @@ class MulticastDomainActivation(_messages.Message):
   multicastConsumerAssociations = _messages.StringField(5, repeated=True)
   multicastDomain = _messages.StringField(6)
   name = _messages.StringField(7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  trafficSpec = _messages.MessageField('TrafficSpec', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastDomainGroup(_messages.Message):
@@ -5400,11 +5411,15 @@ class NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest(_messages.Message)
   r"""A NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the GrpcRoute to delete. Must be in the format
       `projects/*/locations/global/grpcRoutes/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsGrpcRoutesGetRequest(_messages.Message):
@@ -5473,11 +5488,15 @@ class NetworkservicesProjectsLocationsHttpRoutesDeleteRequest(_messages.Message)
   r"""A NetworkservicesProjectsLocationsHttpRoutesDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the HttpRoute to delete. Must be in the format
       `projects/*/locations/global/httpRoutes/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsHttpRoutesGetRequest(_messages.Message):
@@ -7315,11 +7334,15 @@ class NetworkservicesProjectsLocationsTcpRoutesDeleteRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the TcpRoute to delete. Must be in the format
       `projects/*/locations/global/tcpRoutes/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsTcpRoutesGetRequest(_messages.Message):
@@ -7388,11 +7411,15 @@ class NetworkservicesProjectsLocationsTlsRoutesDeleteRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTlsRoutesDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the TlsRoute to delete. Must be in the format
       `projects/*/locations/global/tlsRoutes/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsTlsRoutesGetRequest(_messages.Message):
@@ -8464,6 +8491,9 @@ class TcpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    etag: Optional. Output only. Etag of the resource. If this is provided, it
+      must match the server's etag. If the provided etag does not match the
+      server's etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -8509,13 +8539,14 @@ class TcpRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateways = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  meshes = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('TcpRouteRouteRule', 7, repeated=True)
-  selfLink = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  etag = _messages.StringField(3)
+  gateways = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('TcpRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class TcpRouteRouteAction(_messages.Message):
@@ -8676,6 +8707,9 @@ class TlsRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    etag: Optional. Output only. Etag of the resource. If this is provided, it
+      must match the server's etag. If the provided etag does not match the
+      server's etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -8721,13 +8755,14 @@ class TlsRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateways = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  meshes = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('TlsRouteRouteRule', 7, repeated=True)
-  selfLink = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  etag = _messages.StringField(3)
+  gateways = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('TlsRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class TlsRouteRouteAction(_messages.Message):
@@ -8808,6 +8843,33 @@ class TrafficPortSelector(_messages.Message):
   """
 
   ports = _messages.StringField(1, repeated=True)
+
+
+class TrafficSpec(_messages.Message):
+  r"""Specifies the traffic volume and multicast group scale parameters that
+  are used to set up multicast infrastructure for a multicast domain in a
+  zone.
+
+  Fields:
+    aggrEgressPps: Optional. Aggregated egress Packet-Per-Second for all
+      multicast groups in the domain in this zone.
+    aggrIngressPps: Optional. Aggregated ingress Packet-Per-Second for all
+      multicast groups in the domain in this zone. Default to
+      (aggregated_egress_pps / max_per_group_subscribers) * 2.
+    avgPacketSize: Optional. Average packet size (Default to 512 bytes).
+    maxPerGroupIngressPps: Optional. Maximum ingress Packet-Per-Second for a
+      single multicast group in this zone. Default to aggregated_ingress_pps /
+      2.
+    maxPerGroupSubscribers: Optional. Maximum number of subscribers for a
+      single multicast group in this zone. Default to max(50,
+      aggregated_egress_pps / aggregated_ingress_pps).
+  """
+
+  aggrEgressPps = _messages.IntegerField(1)
+  aggrIngressPps = _messages.IntegerField(2)
+  avgPacketSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxPerGroupIngressPps = _messages.IntegerField(4)
+  maxPerGroupSubscribers = _messages.IntegerField(5)
 
 
 class UllMulticastDomain(_messages.Message):

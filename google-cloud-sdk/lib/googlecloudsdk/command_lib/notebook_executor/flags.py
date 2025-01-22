@@ -345,9 +345,16 @@ def AddDescribeExecutionFlags(parser, for_workbench=False):
   _AddExecutionResourceArg(parser, 'to describe', for_workbench)
 
 
-def AddListExecutionsFlags(parser):
-  """Construct groups and arguments specific to listing executions."""
-  _AddRegionResourceArg(parser, 'for which to list all executions')
+def AddListExecutionsFlags(parser, for_workbench=False):
+  """Construct groups and arguments specific to listing executions.
+
+  Args:
+    parser: argparse parser for the command.
+    for_workbench: bool, whether the flag is added for a workbench execution.
+  """
+  _AddRegionResourceArg(
+      parser, 'for which to list all executions', for_workbench
+  )
   parser.display_info.AddUriFunc(executions_util.GetExecutionUri)
 
 

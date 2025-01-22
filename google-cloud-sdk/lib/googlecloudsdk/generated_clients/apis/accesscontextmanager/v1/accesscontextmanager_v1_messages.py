@@ -1384,9 +1384,16 @@ class EgressSource(_messages.Message):
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
+    resource: A Google Cloud resource that you want to allow to egress the
+      perimeter. These resources can access data outside the perimeter. This
+      field only supports projects. The project format is
+      `projects/{project_number}`. The resource can be in any Google Cloud
+      organization, not just the organization where the perimeter is defined.
+      You can't use `*` in this field to allow all Google Cloud resources.
   """
 
   accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class EgressTo(_messages.Message):
@@ -1499,7 +1506,8 @@ class GcpUserAccessBinding(_messages.Message):
     scopedAccessSettings: Optional. A list of scoped access settings that set
       this binding's restrictions on a subset of applications. This field
       cannot be set if restricted_client_applications is set.
-    sessionSettings: Optional. GCSL policy for the group key.
+    sessionSettings: Optional. The Google Cloud session length (GCSL) policy
+      for the group key.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
@@ -1512,7 +1520,7 @@ class GcpUserAccessBinding(_messages.Message):
 
 
 class GcpUserAccessBindingOperationMetadata(_messages.Message):
-  r"""Metadata of GCP Access Binding Long Running Operations."""
+  r"""Metadata of Google Cloud Access Binding Long Running Operations."""
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2218,23 +2226,23 @@ class SessionSettings(_messages.Message):
   session expires, and other related settings.
 
   Enums:
-    SessionReauthMethodValueValuesEnum: Optional. Session method when users
-      GCP session is up.
+    SessionReauthMethodValueValuesEnum: Optional. Session method when user's
+      Google Cloud session is up.
 
   Fields:
     maxInactivity: Optional. How long a user is allowed to take between
-      actions before a new access token must be issued. Presently only set for
-      Cloud Apps.
+      actions before a new access token must be issued. Only set for Google
+      Cloud apps.
     sessionLength: Optional. The session length. Setting this field to zero is
-      equal to disabling. Session. Also can set infinite session by flipping
+      equal to disabling session. Also can set infinite session by flipping
       the enabled bit to false below. If use_oidc_max_age is true, for OIDC
       apps, the session length will be the minimum of this field and OIDC
       max_age param.
-    sessionLengthEnabled: Optional. Big red button to turn off GCSL. When
-      false, all fields set above will be disregarded and the session length
-      is basically infinite.
-    sessionReauthMethod: Optional. Session method when users GCP session is
-      up.
+    sessionLengthEnabled: Optional. This field enables or disables Google
+      Cloud session length. When false, all fields set above will be
+      disregarded and the session length is basically infinite.
+    sessionReauthMethod: Optional. Session method when user's Google Cloud
+      session is up.
     useOidcMaxAge: Optional. Only useful for OIDC apps. When false, the OIDC
       max_age param, if passed in the authentication request will be ignored.
       When true, the re-auth period will be the minimum of the session_length
@@ -2242,17 +2250,17 @@ class SessionSettings(_messages.Message):
   """
 
   class SessionReauthMethodValueValuesEnum(_messages.Enum):
-    r"""Optional. Session method when users GCP session is up.
+    r"""Optional. Session method when user's Google Cloud session is up.
 
     Values:
-      SESSION_REAUTH_METHOD_UNSPECIFIED: If method undefined in API, we will
-        use LOGIN by default.
-      LOGIN: The user will prompted to perform regular login. Users who are
-        enrolled for two-step verification and haven't chosen to "Remember
-        this computer" will be prompted for their second factor.
-      SECURITY_KEY: The user will be prompted to autheticate using their
-        security key. If no security key has been configured, then we will
-        fallback to LOGIN.
+      SESSION_REAUTH_METHOD_UNSPECIFIED: If method is undefined in the API,
+        LOGIN will be used by default.
+      LOGIN: The user will be prompted to perform regular login. Users who are
+        enrolled for two-step verification and haven't chosen "Remember this
+        computer" will be prompted for their second factor.
+      SECURITY_KEY: The user will be prompted to authenticate using their
+        security key. If no security key has been configured, then
+        authentication will fallback to LOGIN.
       PASSWORD: The user will be prompted for their password.
     """
     SESSION_REAUTH_METHOD_UNSPECIFIED = 0

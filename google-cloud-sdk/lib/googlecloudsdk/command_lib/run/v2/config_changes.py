@@ -274,8 +274,29 @@ class ImageChange(ContainerConfigChanger):
     super().__init__(**kwargs)
     object.__setattr__(self, 'image', image)
 
-  def AdjustContainer(self, container):
+  def AdjustContainer(self, container: k8s_min.Container):
     container.image = self.image
+
+
+@dataclasses.dataclass(frozen=True)
+class AddDigestToImageChange(ContainerConfigChanger):
+  """Add image digest that comes from source build.
+
+  Attributes:
+    image_digest: The image digest to set in the adjusted container.
+  """
+
+  image_digest: str | None = None
+
+  def _IsDigest(self, url):
+    """Return true if the given image url is by-digest."""
+    return '@sha256:' in url
+
+  def AdjustContainer(self, container: k8s_min.Container):
+    if self._IsDigest(container.image):
+      return
+    if self.image_digest:
+      container.image = container.image + '@' + self.image_digest
 
 
 @dataclasses.dataclass(frozen=True)
@@ -299,7 +320,7 @@ class ResourceLimitsChange(ContainerConfigChanger):
     object.__setattr__(self, 'cpu', cpu)
     object.__setattr__(self, 'gpu', gpu)
 
-  def AdjustContainer(self, container):
+  def AdjustContainer(self, container: k8s_min.Container):
     """Mutates the given config's resource limits to match what's desired."""
     if self.memory is not None:
       container.resources.limits['memory'] = self.memory
@@ -388,7 +409,7 @@ class ContainerCommandChange(ContainerConfigChanger):
     super().__init__(**kwargs)
     object.__setattr__(self, 'command', command)
 
-  def AdjustContainer(self, container):
+  def AdjustContainer(self, container: k8s_min.Container):
     container.command = self.command
 
 
@@ -406,7 +427,7 @@ class ContainerArgsChange(ContainerConfigChanger):
     super().__init__(**kwargs)
     object.__setattr__(self, 'args', args)
 
-  def AdjustContainer(self, container):
+  def AdjustContainer(self, container: k8s_min.Container):
     container.args = self.args
 
 

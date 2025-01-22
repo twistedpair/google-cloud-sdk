@@ -718,6 +718,57 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy for a service instance.
+
+  Fields:
+    maintenanceWindow: Optional. The maintenance window for the service
+      instance.
+  """
+
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 1)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""Maintenance window for a service instance.
+
+  Enums:
+    DayOfWeekValueValuesEnum: Optional. The day of the week when maintenance
+      is scheduled.
+
+  Fields:
+    dayOfWeek: Optional. The day of the week when maintenance is scheduled.
+    duration: Required. Duration of the time window, set by service producer.
+    startTime: Optional. Time within the window to start the operations.
+  """
+
+  class DayOfWeekValueValuesEnum(_messages.Enum):
+    r"""Optional. The day of the week when maintenance is scheduled.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -911,11 +962,8 @@ class ServiceInstance(_messages.Message):
     annotations: Optional. The annotations to associate with this service
       instance. Annotations may be used to store client information, but are
       not used by the server.
-    auxiliaryServicesConfig: Optional. Maintenance policy for this service
-      instance. TODO this might end up being a separate API instead of
-      inlined. Not in scope for private GA MaintenancePolicy
-      maintenance_policy = 19; Configuration of auxiliary services used by
-      this instance.
+    auxiliaryServicesConfig: Optional. Configuration of auxiliary services
+      used by this instance.
     createTime: Output only. The timestamp when the resource was created.
     displayName: Optional. User-provided human-readable name to be used in
       user interfaces.
@@ -926,6 +974,7 @@ class ServiceInstance(_messages.Message):
     gdceCluster: Optional. A GDCE cluster.
     labels: Optional. The labels to associate with this service instance.
       Labels may be used for filtering and billing tracking.
+    maintenancePolicy: Optional. Maintenance policy for this service instance.
     name: Identifier. The name of the service instance.
     reconciling: Output only. Whether the service instance is currently
       reconciling. True if the current state of the resource does not match
@@ -1066,15 +1115,16 @@ class ServiceInstance(_messages.Message):
   effectiveServiceAccount = _messages.StringField(5)
   gdceCluster = _messages.MessageField('GdceCluster', 6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 10)
-  serviceAccount = _messages.StringField(11)
-  sparkServiceInstanceConfig = _messages.MessageField('SparkServiceInstanceConfig', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateMessage = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 11)
+  serviceAccount = _messages.StringField(12)
+  sparkServiceInstanceConfig = _messages.MessageField('SparkServiceInstanceConfig', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateMessage = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class SparkApplication(_messages.Message):
@@ -1619,6 +1669,30 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -1228,6 +1228,15 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
     return None
 
 
+def _TrimCharacter(value: str, char: str) -> str:
+  """Trims characters from the start and end of a string."""
+  if value.startswith(char):
+    value = value[1:]
+  if value.endswith(char):
+    value = value[:-1]
+  return value
+
+
 class ArgDict(ArgList):
   """Interpret an argument value as a dict.
 
@@ -1245,7 +1254,8 @@ class ArgDict(ArgList):
                allow_key_only=False,
                required_keys=None,
                operators=None,
-               includes_json=False):
+               includes_json=False,
+               cleanup_input=False):
     """Initialize an ArgDict.
 
     Args:
@@ -1264,6 +1274,7 @@ class ArgDict(ArgList):
         operators, each with its own value_type converter. Use value_type==None
         for no conversion. The default value is {'=': value_type}
       includes_json: bool, whether string parsed includes json
+      cleanup_input: bool, whether to clean up the input string
 
     Returns:
       (str)->{str:str}, A function to parse the dict in the argument.
@@ -1282,6 +1293,7 @@ class ArgDict(ArgList):
     self.spec = spec
     self.allow_key_only = allow_key_only
     self.required_keys = required_keys or []
+    self.cleanup_input = cleanup_input
     if not operators:
       operators = {'=': value_type}
     for op in operators.keys():
@@ -1308,6 +1320,13 @@ class ArgDict(ArgList):
                   self.spec.keys()))),
               user_input=key))
 
+  def _CleanupInput(self, value):
+    if not value or not self.cleanup_input or not isinstance(value, str):
+      return value
+
+    removed_space = value.strip()
+    return _TrimCharacter(removed_space, '"')
+
   def _ValidateKeyValue(self, key, value, op='='):
     """Converts and validates <key,value> and returns (key,value)."""
     if (not op or value is None) and not self.allow_key_only:
@@ -1331,6 +1350,11 @@ class ArgDict(ArgList):
       value = self._ApplySpec(key, value)
     return key, value
 
+  def _CleanupAndValidateKeyValue(self, key, value, op='='):
+    """Converts and validates <key,value> and returns (key,value)."""
+    k, v = self._CleanupInput(key), self._CleanupInput(value)
+    return self._ValidateKeyValue(k, v, op=op)
+
   def _CheckRequiredKeys(self, arg_dict):
     for required_key in self.required_keys:
       if required_key not in arg_dict:
@@ -1344,7 +1368,7 @@ class ArgDict(ArgList):
       raw_dict = arg_value
       arg_dict = collections.OrderedDict()
       for key, value in six.iteritems(raw_dict):
-        key, value = self._ValidateKeyValue(key, value)
+        key, value = self._CleanupAndValidateKeyValue(key, value)
         arg_dict[key] = value
     elif not isinstance(arg_value, six.string_types):
       raise ArgumentTypeError('Invalid type [{}] for flag value [{}]'.format(
@@ -1358,7 +1382,7 @@ class ArgDict(ArgList):
         if not match:
           raise ArgumentTypeError('Invalid flag value [{0}]'.format(arg))
         key, op, value = match.group(1), match.group(2), match.group(3)
-        key, value = self._ValidateKeyValue(key, value, op=op)
+        key, value = self._CleanupAndValidateKeyValue(key, value, op=op)
         arg_dict[key] = value
 
     self._CheckRequiredKeys(arg_dict)
@@ -1508,14 +1532,14 @@ class ArgObject(ArgDict):
   a caller can retrieve {"foo": {"bar": 1}} by specifying any
   of the following on the command line.
 
-    (1) --inputs='foo={"bar": 1}'
+    (1) --inputs='foo={bar=1}'
     (2) --inputs='{"foo": {"bar": 1}}'
     (3) --inputs=path_to_json.(json|yaml)
   """
 
-  def _DisableShorthand(self, arg_type):
-    if isinstance(arg_type, ArgObject) and arg_type.enable_shorthand:
-      arg_type.enable_shorthand = False
+  def _UpdateAsNested(self, arg_type):
+    if isinstance(arg_type, ArgObject):
+      arg_type.root_level = False
 
   def _JSONValueType(self, value_type):
     # bool("false") will always return True even if the user wants to specify
@@ -1529,13 +1553,13 @@ class ArgObject(ArgDict):
   def __init__(self, key_type=None, value_type=None, spec=None,
                required_keys=None, help_text=None, repeated=False,
                hidden=None, enable_shorthand=True, enable_file_upload=True,
-               disable_key_description=False):
-    # Disable arg_dict syntax for nested values
+               disable_key_description=False, root_level=True):
+    # label nested values as not root level
     if value_type:
-      self._DisableShorthand(value_type)
+      self._UpdateAsNested(value_type)
     elif spec:
       for value in spec.values():
-        self._DisableShorthand(value)
+        self._UpdateAsNested(value)
 
     spec_type = (
         spec and
@@ -1543,7 +1567,8 @@ class ArgObject(ArgDict):
 
     super(ArgObject, self).__init__(
         key_type=key_type, value_type=self._JSONValueType(value_type),
-        spec=spec_type, required_keys=required_keys, includes_json=True)
+        spec=spec_type, required_keys=required_keys, includes_json=True,
+        cleanup_input=True)
     self.help_text = help_text
     self.repeated = repeated
     self._keyed_values = key_type is not None or spec is not None
@@ -1551,6 +1576,7 @@ class ArgObject(ArgDict):
     self.enable_shorthand = enable_shorthand
     self.enable_file_upload = enable_file_upload
     self._disable_key_description = disable_key_description
+    self.root_level = root_level
 
     if self.required_keys and not self._keyed_values:
       raise InvalidTypeError(
@@ -1652,6 +1678,17 @@ class ArgObject(ArgDict):
 
     return result
 
+  def _ParseArgDict(self, arg_value):
+    if arg_value.startswith('[') and self.repeated:
+      values = _TokenizeQuotedList(arg_value.strip('[]'), includes_json=True)
+      return [self._ParseArgDict(val.strip()) for val in values]
+
+    if arg_value.startswith('{'):
+      arg_dict_str = arg_value.strip('{}')
+    else:
+      arg_dict_str = arg_value
+    return super(ArgObject, self).__call__(arg_dict_str)
+
   def __call__(self, arg_value):
     if not isinstance(arg_value, str):
       raise ValueError(
@@ -1662,7 +1699,7 @@ class ArgObject(ArgDict):
     arg_dict_pattern = '({})'.format('|'.join(ops))
     if re.search(arg_dict_pattern, arg_value) and self.parse_as_arg_dict:
       # parse as arg_dict
-      value = super(ArgObject, self).__call__(arg_value)
+      value = self._ParseArgDict(arg_value)
     else:
       # parse as json
       json_dict = self._LoadJsonOrFile(arg_value)
@@ -1717,12 +1754,12 @@ class ArgObject(ArgDict):
       return None
 
     shorthand_enabled = shorthand and self.enable_shorthand
-    is_json_obj = not shorthand_enabled and self._keyed_values
-    is_array = not shorthand_enabled and self.repeated
+    is_json_obj = self._keyed_values
+    is_array = self.repeated
 
     # Default to formatting single values as shorthand in example.
     # See method descriptor above.
-    format_as_shorthand = not (is_json_obj or is_array)
+    format_as_shorthand = not (is_json_obj or is_array) or shorthand_enabled
 
     if self.spec is not None:
       comma = ',' if format_as_shorthand else ', '
@@ -1736,9 +1773,10 @@ class ArgObject(ArgDict):
       usage = usage_text.GetNestedKeyValueExample(
           self.key_type, self.value_type or str, format_as_shorthand)
 
-    if is_json_obj:
+    include_brackets = not shorthand or not self.root_level
+    if is_json_obj and include_brackets:
       usage = '{' + usage + '}'
-    if is_array:
+    if is_array and include_brackets:
       usage = '[' + usage + ']'
 
     return usage

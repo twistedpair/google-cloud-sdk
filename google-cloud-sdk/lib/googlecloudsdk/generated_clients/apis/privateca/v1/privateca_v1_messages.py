@@ -494,6 +494,10 @@ class CertificateAuthority(_messages.Message):
     type: Required. Immutable. The Type of this CertificateAuthority.
     updateTime: Output only. The time at which this CertificateAuthority was
       last updated.
+    userDefinedAccessUrls: Optional. User-defined URLs for accessing content
+      published by this CertificateAuthority, including the CA certificate and
+      the PEM-encoded CRLs. The service does not publish content to these
+      URLs. It is up to the user to mirror content to these URLs.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -596,6 +600,7 @@ class CertificateAuthority(_messages.Message):
   tier = _messages.EnumField('TierValueValuesEnum', 17)
   type = _messages.EnumField('TypeValueValuesEnum', 18)
   updateTime = _messages.StringField(19)
+  userDefinedAccessUrls = _messages.MessageField('UserDefinedAccessUrls', 20)
 
 
 class CertificateConfig(_messages.Message):
@@ -3259,6 +3264,23 @@ class UndeleteCertificateAuthorityRequest(_messages.Message):
   """
 
   requestId = _messages.StringField(1)
+
+
+class UserDefinedAccessUrls(_messages.Message):
+  r"""User-defined URLs for accessing content published by this
+  CertificateAuthority.
+
+  Fields:
+    aiaIssuingCertificateUrls: Optional. A list of URLs where the issuer CA
+      certificate may be downloaded, which appears in the "Authority
+      Information Access" extension in the certificate.
+    crlAccessUrls: Optional. A list of URLs where to obtain CRL information,
+      i.e. the DistributionPoint.fullName described by
+      https://tools.ietf.org/html/rfc5280#section-4.2.1.13
+  """
+
+  aiaIssuingCertificateUrls = _messages.StringField(1, repeated=True)
+  crlAccessUrls = _messages.StringField(2, repeated=True)
 
 
 class X509Extension(_messages.Message):

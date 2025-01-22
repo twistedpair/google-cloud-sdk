@@ -281,24 +281,29 @@ def _ValidateCmekDeployment(
     return
 
   if not sources.IsGcsObject(source):
-    # TODO: b/380348558 - Link to the relevant CMEK guide, once published.
     raise exceptions.ArgumentError(
         f'Invalid source location: {source}.'
         ' Deployments encrypted with a customer-managed encryption key (CMEK)'
         ' expect the source to be passed in a pre-configured Cloud Storage'
-        ' bucket.'
+        ' bucket. See'
+        ' https://cloud.google.com/run/docs/securing/using-cmek#source-deploy'
+        ' for more details.'
     )
   if not image_repository:
     raise exceptions.ArgumentError(
         'Deployments encrypted with a customer-managed encryption key (CMEK)'
         ' require a pre-configured Artifact Registry repository to be passed'
-        ' via the `--image` flag.'
+        ' via the `--image` flag. See'
+        ' https://cloud.google.com/run/docs/securing/using-cmek#source-deploy'
+        ' for more details.'
     )
   if _IsDefaultImageRepository(image_repository):
     raise exceptions.ArgumentError(
         'The default Artifact Registry repository can not be used when'
         ' deploying with a customer-managed encryption key (CMEK). Please'
-        ' provide a pre-configured repository using the `--image` flag.'
+        ' provide a pre-configured repository using the `--image` flag. See'
+        ' https://cloud.google.com/run/docs/securing/using-cmek#source-deploy'
+        ' for more details.'
     )
 
 

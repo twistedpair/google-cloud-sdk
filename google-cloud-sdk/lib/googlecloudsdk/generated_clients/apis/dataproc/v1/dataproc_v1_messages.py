@@ -962,7 +962,7 @@ class BatchOperationMetadata(_messages.Message):
 
 
 class BigqueryMetastoreConfig(_messages.Message):
-  r"""BigQuery Metastore(Pangea) configuration for the workload.
+  r"""BigQuery Metastore configuration for the workload.
 
   Fields:
     location: Optional. Location where the BigQuery Metastore tables will be
@@ -4693,6 +4693,10 @@ class EnvironmentConfig(_messages.Message):
   peripheralsConfig = _messages.MessageField('PeripheralsConfig', 2)
 
 
+class EphemeralMetastoreConfig(_messages.Message):
+  r"""Default Metastore configuration for the workload."""
+
+
 class ExecutionConfig(_messages.Message):
   r"""Execution configuration for a workload.
 
@@ -5778,10 +5782,6 @@ class IdentityConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   userServiceAccountMapping = _messages.MessageField('UserServiceAccountMappingValue', 1)
-
-
-class InMemoryMetastoreConfig(_messages.Message):
-  r"""Default Metastore configuration for the workload."""
 
 
 class InjectCredentialsRequest(_messages.Message):
@@ -7628,8 +7628,8 @@ class PeripheralsConfig(_messages.Message):
       for the workload.
     dataprocMetastoreConfig: Optional. The Dataproc Metastore configuration
       for the workload.
-    inMemoryMetastoreConfig: Optional. The InMemory Metastore configuration
-      for the workload.
+    ephemeralMetastoreConfig: Optional. An Ephemeral Metastore configuration
+      for the workload. For Spark it will be in-memory Hive Metastore.
     metastoreService: Optional. Resource name of an existing Dataproc
       Metastore service.Example:
       projects/[project_id]/locations/[region]/services/[service_id]
@@ -7639,7 +7639,7 @@ class PeripheralsConfig(_messages.Message):
 
   bigqueryMetastoreConfig = _messages.MessageField('BigqueryMetastoreConfig', 1)
   dataprocMetastoreConfig = _messages.MessageField('DataprocMetastoreConfig', 2)
-  inMemoryMetastoreConfig = _messages.MessageField('InMemoryMetastoreConfig', 3)
+  ephemeralMetastoreConfig = _messages.MessageField('EphemeralMetastoreConfig', 3)
   metastoreService = _messages.StringField(4)
   sparkHistoryServerConfig = _messages.MessageField('SparkHistoryServerConfig', 5)
 
@@ -9059,7 +9059,7 @@ class Session(_messages.Message):
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a session.
-    name: Required. The resource name of the session.
+    name: Identifier. The resource name of the session.
     runtimeConfig: Optional. Runtime configuration for the session execution.
     runtimeInfo: Output only. Runtime information about session execution.
     sessionTemplate: Optional. The session template used by the session.Only

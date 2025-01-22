@@ -83,6 +83,7 @@ def GetContainer(
           k8s_util.GetStartupProbe(container, labels, is_primary),
       ),
       ('Liveness Probe', k8s_util.GetLivenessProbe(container)),
+      ('Readiness Probe', k8s_util.GetReadinessProbe(container)),
       ('Container Dependencies', ', '.join(dependencies)),
   ])
 

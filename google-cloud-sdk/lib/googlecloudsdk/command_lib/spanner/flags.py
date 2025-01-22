@@ -383,7 +383,6 @@ def AsymmetricAutoscalingOptionFlag():
       required=False,
       action='append',
       help=help_text,
-      hidden=True,
   )
 
 
@@ -393,7 +392,6 @@ def ClearAsymmetricAutoscalingOptionsFlag():
       type=arg_parsers.ArgList(min_length=1),
       metavar='LOCATION',
       required=False,
-      hidden=True,
       help=(
           'Specify a comma separated list of locations from which to remove'
           ' asymmetric autoscaling options'
@@ -416,17 +414,21 @@ def SsdCache(
 
 
 def GetEditionHelpText(update=False):
+  """Returns the help text for the edition flag."""
   if update:
     return (
-        'Cloud Spanner edition. You can upgrade your Standard edition'
-        ' instance to the `ENTERPRISE` edition or `ENTERPRISE_PLUS`'
-        ' edition. You can also upgrade your Enterprise edition instance to'
-        " the `ENTERPRISE_PLUS` edition. Self-service downgrade isn't"
-        ' available. To downgrade the edition of your instance, file a'
-        ' support ticket. For more information, see the [Spanner editions '
-        'overview](https://cloud.google.com/spanner/docs/editions-overview)'
+        'Spanner edition. You can upgrade your Standard edition instance to the'
+        ' `ENTERPRISE` edition or `ENTERPRISE_PLUS` edition. You can also'
+        ' upgrade your Enterprise edition instance to the `ENTERPRISE_PLUS`'
+        ' edition. You can downgrade your `ENTERPRISE_PLUS` edition instance to'
+        ' the `ENTERPRISE` or `STANDARD` edition. You can also downgrade your'
+        ' `ENTERPRISE` edition instance to the `STANDARD` edition. You must'
+        ' stop using the higher-tier edition features in order to downgrade.'
+        ' Otherwise, downgrade fails. For more information, see [Spanner'
+        ' editions'
+        ' overview](https://cloud.google.com/spanner/docs/editions-overview).'
     )
-  return 'Cloud Spanner edition.'
+  return 'Spanner edition.'
 
 
 def Edition(
@@ -549,7 +551,7 @@ def AddCapacityArgsForInstance(
     if asymmetric_options_group:
       asymmetric_options_group_parser = (
           autoscaling_config_group_parser.add_argument_group(
-              mutex=True, hidden=True
+              mutex=True
           )
       )
       AsymmetricAutoscalingOptionFlag().AddToParser(

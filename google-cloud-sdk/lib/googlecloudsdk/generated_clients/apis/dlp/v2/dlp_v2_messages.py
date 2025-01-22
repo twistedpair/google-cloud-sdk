@@ -5824,13 +5824,13 @@ class GooglePrivacyDlpV2DiscoveryCloudStorageConditions(_messages.Message):
     Values:
       CLOUD_STORAGE_BUCKET_ATTRIBUTE_UNSPECIFIED: Unused.
       ALL_SUPPORTED_BUCKETS: Scan buckets regardless of the attribute.
-      AUTOCLASS_DISABLED: Buckets with autoclass disabled
-        (https://cloud.google.com/storage/docs/autoclass). Only one of
-        AUTOCLASS_DISABLED or AUTOCLASS_ENABLED should be set.
-      AUTOCLASS_ENABLED: Buckets with autoclass enabled
-        (https://cloud.google.com/storage/docs/autoclass). Only one of
-        AUTOCLASS_DISABLED or AUTOCLASS_ENABLED should be set. Scanning
-        Autoclass-enabled buckets can affect object storage classes.
+      AUTOCLASS_DISABLED: Buckets with
+        [Autoclass](https://cloud.google.com/storage/docs/autoclass) disabled.
+        Only one of AUTOCLASS_DISABLED or AUTOCLASS_ENABLED should be set.
+      AUTOCLASS_ENABLED: Buckets with
+        [Autoclass](https://cloud.google.com/storage/docs/autoclass) enabled.
+        Only one of AUTOCLASS_DISABLED or AUTOCLASS_ENABLED should be set.
+        Scanning Autoclass-enabled buckets can affect object storage classes.
     """
     CLOUD_STORAGE_BUCKET_ATTRIBUTE_UNSPECIFIED = 0
     ALL_SUPPORTED_BUCKETS = 1
@@ -6542,11 +6542,12 @@ class GooglePrivacyDlpV2Export(_messages.Message):
       new dataset and table for you if none are are provided. The dataset will
       be named `sensitive_data_protection_discovery` and table will be named
       `discovery_profiles`. This table will be placed in the same project as
-      the container project running the scan. The configuration will be
-      updated with the fields set after the first profile is generated and the
-      dataset and table are created. * See [Analyze data profiles stored in
+      the container project running the scan. After the first profile is
+      generated and the dataset and table are created, the discovery scan
+      configuration will be updated with the dataset and table names. * See
+      [Analyze data profiles stored in
       BigQuery](https://cloud.google.com/sensitive-data-
-      protection/docs/analyze-data-profiles) * See [Sample queries for your
+      protection/docs/analyze-data-profiles). * See [Sample queries for your
       BigQuery table](https://cloud.google.com/sensitive-data-
       protection/docs/analyze-data-profiles#sample_sql_queries). * Data is
       inserted using [streaming
@@ -6557,9 +6558,10 @@ class GooglePrivacyDlpV2Export(_messages.Message):
       may not be instantly visible to queries by the time your topic receives
       the Pub/Sub notification. * The best practice is to use the same table
       for an entire organization so that you can take advantage of the
-      provided Looker reports. If you use VPC Service Controls to define
-      security perimeters, then you must use a separate table for each
-      boundary.
+      [provided Looker reports](https://cloud.google.com/sensitive-data-
+      protection/docs/analyze-data-profiles#use_a_premade_report). If you use
+      VPC Service Controls to define security perimeters, then you must use a
+      separate table for each boundary.
   """
 
   profileTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 1)
@@ -7637,7 +7639,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     description: Description of the infotype. Translated when language is
       provided in the request.
     displayName: Human readable form of the infoType name.
-    example: A sample true positive for this infoType.
+    example: A sample that is a true positive for this infoType.
     name: Internal name of the infoType.
     sensitivityScore: The default sensitivity of the infoType.
     supportedBy: Which parts of the API supports this InfoType.

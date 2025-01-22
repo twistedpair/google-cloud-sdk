@@ -46,3 +46,13 @@ class Client(sp_api.Client):
             securityProfileId=sp_id,
         )
     )
+
+  def ListUrlFilteringProfiles(self, parent, limit=None, page_size=None):
+    """Calls the ListSecurityProfiles API, filtering by type."""
+    profiles = self.ListSecurityProfiles(parent, limit, page_size)
+    return [
+        profile
+        for profile in profiles
+        if profile.type
+        == self._ParseSecurityProfileType(URL_FILTERING_PROFILE_TYPE)
+    ]

@@ -142,6 +142,16 @@ class InterconnectAttachmentGroup(object):
         ),
     )
 
+  def _MakeGetOperationalStatusRequestTuple(self):
+    return (
+        self._client.interconnectAttachmentGroups,
+        'GetOperationalStatus',
+        self._messages.ComputeInterconnectAttachmentGroupsGetOperationalStatusRequest(
+            project=self.ref.project,
+            interconnectAttachmentGroup=self.ref.Name(),
+        ),
+    )
+
   def Create(
       self,
       description=None,
@@ -186,6 +196,13 @@ class InterconnectAttachmentGroup(object):
 
   def Describe(self, only_generate_request=False):
     requests = [self._MakeDescribeRequestTuple()]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def GetOperationalStatus(self, only_generate_request=False):
+    requests = [self._MakeGetOperationalStatusRequestTuple()]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]

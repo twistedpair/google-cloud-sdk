@@ -198,7 +198,7 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Messa
     labels: Optional. User-defined labels.
     name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
       {project}/locations/{location}/customHardwareInstances/{custom_hardware_
-      instance}`.
+      instance_id}`. // This is populated by the service.
     region: Required. The region associated with the CustomHardwareInstance.
       Example: us-central1
     updateTime: Output only. Time when the CustomHardwareInstance was updated.
@@ -261,7 +261,7 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
     linkType: Required. The link type of CustomHardwareLinkAttachment.
     name: Identifier. The name of a CustomHardwareLinkAttachment. Format: `pro
       jects/{project}/locations/{location}/customHardwareLinkAttachments/{cust
-      om_hardware_link_attachment}`.
+      om_hardware_link_attachment_id}`. This is populated by the service.
     network: The name of the VPC network for this
       CustomHardwareLinkAttachment. Format:
       `projects/{project}/global/networks/{network}`
@@ -355,8 +355,8 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
       restricted to letters, numbers and with the first character being a
       letter, the last a letter or a number. Format: `projects/{project}/locat
       ions/{location}/customHardwareLinkConnectPairs/{custom_hardware_link_con
-      nect_pair}` where custom_hardware_link_connect_pair must match the regex
-      `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
+      nect_pair_id}` where custom_hardware_link_connect_pair must match the
+      regex `^[a-zA-Z0-9-]*[a-zA-Z0-9]$` // This is populated by the service.
     updateTime: Output only. Time when the CustomHardwareLinkConnectPair was
       updated.
     zone: Required. The zone associated with the
@@ -527,6 +527,133 @@ class GoogleCloudNetworkconnectivityV1betaGateway(_messages.Message):
   capacity = _messages.EnumField('CapacityValueValuesEnum', 1)
   ipRangeReservations = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaIpRangeReservation', 2, repeated=True)
   landingNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLandingNetwork', 3)
+
+
+class GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute(_messages.Message):
+  r"""A gateway advertised route is a route that a gateway spoke advertises
+  somewhere.
+
+  Enums:
+    RecipientValueValuesEnum: Optional. The recipient of this advertised
+      route.
+    StateValueValuesEnum: Output only. The current lifecycle state of this
+      gateway advertised route.
+
+  Messages:
+    LabelsValue: Optional labels in key-value pair format. For more
+      information about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
+
+  Fields:
+    createTime: Output only. The time the gateway advertised route was
+      created.
+    description: An optional description of the gateway advertised route.
+    ipRange: Immutable. This route's advertised IP address range. Must be a
+      valid CIDR-formatted prefix. If an IP address is provided without a
+      subnet mask, it is interpreted as, for IPv4, a `/32` singular IP address
+      range, and, for IPv6, `/128`.
+    labels: Optional labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
+    name: Identifier. The name of the gateway advertised route. Route names
+      must be unique and use the following form: `projects/{project_number}/lo
+      cations/{region}/spokes/{spoke}/gatewayAdvertisedRoutes/{gateway_adverti
+      sed_route_id}`
+    priority: Optional. The priority of this advertised route. You can choose
+      a value from `0` to `65335`. If you don't provide a value, Google Cloud
+      assigns a priority of `100` to the ranges.
+    recipient: Optional. The recipient of this advertised route.
+    state: Output only. The current lifecycle state of this gateway advertised
+      route.
+    uniqueId: Output only. The Google-generated UUID for the gateway
+      advertised route. This value is unique across all gateway advertised
+      route resources. If a gateway advertised route is deleted and another
+      with the same name is created, the new route is assigned a different
+      `unique_id`.
+    updateTime: Output only. The time the gateway advertised route was last
+      updated.
+  """
+
+  class RecipientValueValuesEnum(_messages.Enum):
+    r"""Optional. The recipient of this advertised route.
+
+    Values:
+      RECIPIENT_UNSPECIFIED: No recipient specified. By default routes are
+        advertised to the hub.
+      ADVERTISE_TO_HUB: Advertises a route toward the hub. Other spokes
+        reachable from this spoke will receive the route.
+    """
+    RECIPIENT_UNSPECIFIED = 0
+    ADVERTISE_TO_HUB = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current lifecycle state of this gateway advertised
+    route.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress.
+      ACTIVE: The resource is active
+      DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
+      INACTIVE: The resource is inactive.
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional labels in key-value pair format. For more information about
+    labels, see [Requirements for labels](https://cloud.google.com/resource-
+    manager/docs/creating-managing-labels#requirements).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  ipRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  recipient = _messages.EnumField('RecipientValueValuesEnum', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
@@ -959,6 +1086,10 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
     producerVpcSpokes: Output only. The list of Producer VPC spokes that this
       VPC spoke is a service consumer VPC spoke for. These producer VPCs are
       connected through VPC peering to this spoke's backing VPC network.
+      Because they are directly connected throuh VPC peering, NCC export
+      filters do not apply between the service consumer VPC spoke and any of
+      its producer VPC spokes. This VPC spoke cannot be deleted as long as any
+      of these producer VPC spokes are connected to the NCC Hub.
     uri: Required. The URI of the VPC network resource.
   """
 
@@ -1037,6 +1168,22 @@ class GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkConnectPairsResp
   """
 
   customHardwareLinkConnectPairs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaListGatewayAdvertisedRoutesResponse(_messages.Message):
+  r"""Response for HubService.ListGatewayAdvertisedRoutes method.
+
+  Fields:
+    gatewayAdvertisedRoutes: The requested gateway advertised routes.
+    nextPageToken: The token for the next page of the response. To see more
+      results, use this value as the page_token for your next request. If this
+      value is empty, there are no more results.
+    unreachable: Hubs that could not be reached.
+  """
+
+  gatewayAdvertisedRoutes = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -2903,7 +3050,7 @@ class NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest(_m
       be passed as the request body.
     name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
       {project}/locations/{location}/customHardwareInstances/{custom_hardware_
-      instance}`.
+      instance_id}`. // This is populated by the service.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3091,7 +3238,7 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsPatchRequ
       resource to be passed as the request body.
     name: Identifier. The name of a CustomHardwareLinkAttachment. Format: `pro
       jects/{project}/locations/{location}/customHardwareLinkAttachments/{cust
-      om_hardware_link_attachment}`.
+      om_hardware_link_attachment_id}`. This is populated by the service.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3293,8 +3440,8 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatchReq
       restricted to letters, numbers and with the first character being a
       letter, the last a letter or a number. Format: `projects/{project}/locat
       ions/{location}/customHardwareLinkConnectPairs/{custom_hardware_link_con
-      nect_pair}` where custom_hardware_link_connect_pair must match the regex
-      `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
+      nect_pair_id}` where custom_hardware_link_connect_pair must match the
+      regex `^[a-zA-Z0-9-]*[a-zA-Z0-9]$` // This is populated by the service.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4239,6 +4386,134 @@ class NetworkconnectivityProjectsLocationsSpokesDeleteRequest(_messages.Message)
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesCreat
+  eRequest object.
+
+  Fields:
+    gatewayAdvertisedRouteId: Required. Unique id for the route to create.
+    googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute: A
+      GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute resource to
+      be passed as the request body.
+    parent: Required. The parent resource.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  gatewayAdvertisedRouteId = _messages.StringField(1)
+  googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute', 2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesDelet
+  eRequest object.
+
+  Fields:
+    name: Required. The name of the gateway advertised route to delete.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesGetRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the gateway advertised route to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesListRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesListRequest
+  object.
+
+  Fields:
+    filter: An expression that filters the list of results.
+    orderBy: Sort the results by a certain order.
+    pageSize: Optional. The maximum number of results per page that should be
+      returned.
+    pageToken: Optional. A page token, received from a previous
+      `ListGatewayAdvertisedRoutes` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListGatewayAdvertisedRoutes` must match the call that provided the page
+      token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesPatch
+  Request object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute: A
+      GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute resource to
+      be passed as the request body.
+    name: Identifier. The name of the gateway advertised route. Route names
+      must be unique and use the following form: `projects/{project_number}/lo
+      cations/{region}/spokes/{spoke}/gatewayAdvertisedRoutes/{gateway_adverti
+      sed_route_id}`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. In the case of an update to an existing group, field
+      mask is used to specify the fields to be overwritten. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field is overwritten if it is in the mask. If the user does
+      not provide a mask, then all fields are overwritten.
+  """
+
+  googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsSpokesGetIamPolicyRequest(_messages.Message):

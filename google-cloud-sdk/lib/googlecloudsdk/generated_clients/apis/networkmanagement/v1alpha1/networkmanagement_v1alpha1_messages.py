@@ -160,6 +160,25 @@ class AbortInfo(_messages.Message):
   resourceUri = _messages.StringField(4)
 
 
+class AlloyDbInstanceInfo(_messages.Message):
+  r"""For display only. Metadata associated with an AlloyDB Instance.
+
+  Fields:
+    networkUri: For peering-based instances, the URI of the network the
+      AlloyDB Cluster this Instance belongs to.
+    privateIpv4Ip: For peering-based instances, a private internal IPv4
+      address.
+    publicIpv4Ip: Public IPv4 IP address of the AlloyDB Instance, if enabled.
+    uri: URI of the AlloyDB Instance in format: "projects/PROJECT_ID/locations
+      /REGION_NAME/clusters/CLUSTER_NAME/instances/INSTANCE_NAME"
+  """
+
+  networkUri = _messages.StringField(1)
+  privateIpv4Ip = _messages.StringField(2)
+  publicIpv4Ip = _messages.StringField(3)
+  uri = _messages.StringField(4)
+
+
 class AppEngineVersionEndpoint(_messages.Message):
   r"""Wrapper for the App Engine service version attributes.
 
@@ -943,6 +962,7 @@ class DeliverInfo(_messages.Message):
         for return traces.
       REDIS_INSTANCE: Target is a Redis Instance.
       REDIS_CLUSTER: Target is a Redis Cluster.
+      ALLOY_DB_INSTANCE: Target is an AlloyDB Instance.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -962,6 +982,7 @@ class DeliverInfo(_messages.Message):
     GOOGLE_MANAGED_SERVICE = 15
     REDIS_INSTANCE = 16
     REDIS_CLUSTER = 17
+    ALLOY_DB_INSTANCE = 18
 
   ipAddress = _messages.StringField(1)
   pscGoogleApiTarget = _messages.StringField(2)
@@ -1075,6 +1096,8 @@ class DropInfo(_messages.Message):
         is not in running state.
       REDIS_CLUSTER_NOT_RUNNING: Packet sent from or to a Redis Cluster that
         is not in running state.
+      ALLOY_DB_INSTANCE_NOT_READY: Packet sent from or to a AlloyDB Instance
+        that is not in ready state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
         traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
@@ -1250,60 +1273,61 @@ class DropInfo(_messages.Message):
     CLOUD_SQL_INSTANCE_NOT_RUNNING = 27
     REDIS_INSTANCE_NOT_RUNNING = 28
     REDIS_CLUSTER_NOT_RUNNING = 29
-    TRAFFIC_TYPE_BLOCKED = 30
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 31
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 32
-    DROPPED_INSIDE_GKE_SERVICE = 33
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 34
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 35
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 36
-    GKE_PSC_ENDPOINT_MISSING = 37
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 38
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 39
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 40
-    GKE_CONTROL_PLANE_NO_ROUTE = 41
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 42
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 43
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 44
-    CLOUD_SQL_CONNECTOR_REQUIRED = 45
-    CLOUD_FUNCTION_NOT_ACTIVE = 46
-    VPC_CONNECTOR_NOT_SET = 47
-    VPC_CONNECTOR_NOT_RUNNING = 48
-    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 49
-    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 50
-    FORWARDING_RULE_REGION_MISMATCH = 51
-    PSC_CONNECTION_NOT_ACCEPTED = 52
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 53
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 54
-    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 55
-    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 56
-    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 57
-    PSC_TRANSITIVITY_NOT_PROPAGATED = 58
-    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 59
-    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 60
-    CLOUD_RUN_REVISION_NOT_READY = 61
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 62
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 63
-    CLOUD_NAT_NO_ADDRESSES = 64
-    ROUTING_LOOP = 65
-    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 66
-    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 67
-    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 68
-    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 69
-    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 70
-    REDIS_INSTANCE_UNSUPPORTED_PORT = 71
-    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 72
-    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 73
-    REDIS_INSTANCE_NO_EXTERNAL_IP = 74
-    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 75
-    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 76
-    REDIS_CLUSTER_UNSUPPORTED_PORT = 77
-    REDIS_CLUSTER_NO_EXTERNAL_IP = 78
-    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 79
-    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 80
-    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 81
-    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 82
-    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 83
+    ALLOY_DB_INSTANCE_NOT_READY = 30
+    TRAFFIC_TYPE_BLOCKED = 31
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 32
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 33
+    DROPPED_INSIDE_GKE_SERVICE = 34
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 35
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 36
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 37
+    GKE_PSC_ENDPOINT_MISSING = 38
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 39
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 40
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 41
+    GKE_CONTROL_PLANE_NO_ROUTE = 42
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 43
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 44
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 45
+    CLOUD_SQL_CONNECTOR_REQUIRED = 46
+    CLOUD_FUNCTION_NOT_ACTIVE = 47
+    VPC_CONNECTOR_NOT_SET = 48
+    VPC_CONNECTOR_NOT_RUNNING = 49
+    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 50
+    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 51
+    FORWARDING_RULE_REGION_MISMATCH = 52
+    PSC_CONNECTION_NOT_ACCEPTED = 53
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 54
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 55
+    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 56
+    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 57
+    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 58
+    PSC_TRANSITIVITY_NOT_PROPAGATED = 59
+    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 60
+    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 61
+    CLOUD_RUN_REVISION_NOT_READY = 62
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 63
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 64
+    CLOUD_NAT_NO_ADDRESSES = 65
+    ROUTING_LOOP = 66
+    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 67
+    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 68
+    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 69
+    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 70
+    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 71
+    REDIS_INSTANCE_UNSUPPORTED_PORT = 72
+    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 73
+    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 74
+    REDIS_INSTANCE_NO_EXTERNAL_IP = 75
+    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 76
+    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 77
+    REDIS_CLUSTER_UNSUPPORTED_PORT = 78
+    REDIS_CLUSTER_NO_EXTERNAL_IP = 79
+    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 80
+    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 81
+    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 82
+    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 83
+    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 84
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -3528,6 +3552,7 @@ class Step(_messages.Message):
 
   Fields:
     abort: Display information of the final state "abort" and reason.
+    alloyDbInstance: Display information of an AlloyDB instance.
     appEngineVersion: Display information of an App Engine service version.
     causesDrop: This is a step that leads to the final state Drop.
     cloudFunction: Display information of a Cloud Function.
@@ -3598,6 +3623,9 @@ class Step(_messages.Message):
       START_FROM_REDIS_CLUSTER: Initial state: packet originating from a Redis
         Cluster. A RedisClusterInfo is populated with starting Cluster
         information.
+      START_FROM_ALLOY_DB_INSTANCE: Initial state: packet originating from a
+        AlloyDB instance. An AlloyDbInstanceInfo is populated with starting
+        instance information.
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
         Cloud Function. A CloudFunctionInfo is populated with starting
         function information.
@@ -3658,63 +3686,65 @@ class Step(_messages.Message):
     START_FROM_CLOUD_SQL_INSTANCE = 6
     START_FROM_REDIS_INSTANCE = 7
     START_FROM_REDIS_CLUSTER = 8
-    START_FROM_CLOUD_FUNCTION = 9
-    START_FROM_APP_ENGINE_VERSION = 10
-    START_FROM_CLOUD_RUN_REVISION = 11
-    START_FROM_STORAGE_BUCKET = 12
-    START_FROM_PSC_PUBLISHED_SERVICE = 13
-    START_FROM_SERVERLESS_NEG = 14
-    APPLY_INGRESS_FIREWALL_RULE = 15
-    APPLY_EGRESS_FIREWALL_RULE = 16
-    APPLY_ROUTE = 17
-    APPLY_FORWARDING_RULE = 18
-    ANALYZE_LOAD_BALANCER_BACKEND = 19
-    SPOOFING_APPROVED = 20
-    ARRIVE_AT_INSTANCE = 21
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 22
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 23
-    ARRIVE_AT_VPN_GATEWAY = 24
-    ARRIVE_AT_VPN_TUNNEL = 25
-    ARRIVE_AT_VPC_CONNECTOR = 26
-    NAT = 27
-    PROXY_CONNECTION = 28
-    DELIVER = 29
-    DROP = 30
-    FORWARD = 31
-    ABORT = 32
-    VIEWER_PERMISSION_MISSING = 33
+    START_FROM_ALLOY_DB_INSTANCE = 9
+    START_FROM_CLOUD_FUNCTION = 10
+    START_FROM_APP_ENGINE_VERSION = 11
+    START_FROM_CLOUD_RUN_REVISION = 12
+    START_FROM_STORAGE_BUCKET = 13
+    START_FROM_PSC_PUBLISHED_SERVICE = 14
+    START_FROM_SERVERLESS_NEG = 15
+    APPLY_INGRESS_FIREWALL_RULE = 16
+    APPLY_EGRESS_FIREWALL_RULE = 17
+    APPLY_ROUTE = 18
+    APPLY_FORWARDING_RULE = 19
+    ANALYZE_LOAD_BALANCER_BACKEND = 20
+    SPOOFING_APPROVED = 21
+    ARRIVE_AT_INSTANCE = 22
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 23
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 24
+    ARRIVE_AT_VPN_GATEWAY = 25
+    ARRIVE_AT_VPN_TUNNEL = 26
+    ARRIVE_AT_VPC_CONNECTOR = 27
+    NAT = 28
+    PROXY_CONNECTION = 29
+    DELIVER = 30
+    DROP = 31
+    FORWARD = 32
+    ABORT = 33
+    VIEWER_PERMISSION_MISSING = 34
 
   abort = _messages.MessageField('AbortInfo', 1)
-  appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
-  causesDrop = _messages.BooleanField(3)
-  cloudFunction = _messages.MessageField('CloudFunctionInfo', 4)
-  cloudRunRevision = _messages.MessageField('CloudRunRevisionInfo', 5)
-  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 6)
-  deliver = _messages.MessageField('DeliverInfo', 7)
-  description = _messages.StringField(8)
-  drop = _messages.MessageField('DropInfo', 9)
-  endpoint = _messages.MessageField('EndpointInfo', 10)
-  firewall = _messages.MessageField('FirewallInfo', 11)
-  forward = _messages.MessageField('ForwardInfo', 12)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 13)
-  gkeMaster = _messages.MessageField('GKEMasterInfo', 14)
-  googleService = _messages.MessageField('GoogleServiceInfo', 15)
-  instance = _messages.MessageField('InstanceInfo', 16)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 17)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 18)
-  nat = _messages.MessageField('NatInfo', 19)
-  network = _messages.MessageField('NetworkInfo', 20)
-  projectId = _messages.StringField(21)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 22)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 23)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 24)
-  route = _messages.MessageField('RouteInfo', 25)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 28)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 29)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 30)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 31)
+  alloyDbInstance = _messages.MessageField('AlloyDbInstanceInfo', 2)
+  appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 3)
+  causesDrop = _messages.BooleanField(4)
+  cloudFunction = _messages.MessageField('CloudFunctionInfo', 5)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionInfo', 6)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 7)
+  deliver = _messages.MessageField('DeliverInfo', 8)
+  description = _messages.StringField(9)
+  drop = _messages.MessageField('DropInfo', 10)
+  endpoint = _messages.MessageField('EndpointInfo', 11)
+  firewall = _messages.MessageField('FirewallInfo', 12)
+  forward = _messages.MessageField('ForwardInfo', 13)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 14)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 15)
+  googleService = _messages.MessageField('GoogleServiceInfo', 16)
+  instance = _messages.MessageField('InstanceInfo', 17)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 18)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 19)
+  nat = _messages.MessageField('NatInfo', 20)
+  network = _messages.MessageField('NetworkInfo', 21)
+  projectId = _messages.StringField(22)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 23)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 24)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 25)
+  route = _messages.MessageField('RouteInfo', 26)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 29)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 30)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 31)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 32)
 
 
 class StorageBucketInfo(_messages.Message):

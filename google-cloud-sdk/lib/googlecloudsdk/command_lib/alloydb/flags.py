@@ -591,6 +591,22 @@ def AddUserType(parser):
   )
 
 
+def AddKeepExtraRoles(parser):
+  """Adds a --keep-extra-roles flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--keep-extra-roles',
+      type=arg_parsers.ArgBoolean(),
+      default=False,
+      help=(
+          'If the user already exists and has extra roles, keep them.'
+      ),
+  )
+
+
 def AddCreateSuperuser(parser):
   """Adds a --superuser flag to parser.
 
@@ -2005,3 +2021,99 @@ def AddExportOptions(parser):
           ' existence before dropping it in clean_target_objects mode.'
       ),
   )
+
+
+def AddSourceURI(parser, required=True):
+  """Adds a --gcs-uri flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --gcs-uri is required.
+  """
+  source_uri_group = parser.add_group(
+      mutex=True,
+      required=required,
+      help='URI of the source file for import.',
+  )
+  source_uri_group.add_argument(
+      '--gcs-uri',
+      type=str,
+      help=(
+          'Path to the Google Cloud Storage file from which'
+          ' import has to be done.'
+      ),
+  )
+
+
+def AddImportUser(parser):
+  """Adds --user flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--user',
+      required=False,
+      type=str,
+      help='Database user for the import.',
+  )
+
+
+def AddImportOptions(parser):
+  """Adds different import options flags to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  import_options_group = parser.add_group(
+      mutex=True, required=True, help='Import options for the cluster.'
+  )
+  csv_import_options_group = import_options_group.add_group(
+      help='CSV import options for the cluster.'
+  )
+  csv_import_options_group.add_argument(
+      '--csv',
+      required=True,
+      action='store_true',
+      help='Specify source file type.',
+  )
+  csv_import_options_group.add_argument(
+      '--table',
+      required=True,
+      type=str,
+      help='Table name to which the data has to be imported.',
+  )
+  csv_import_options_group.add_argument(
+      '--columns',
+      required=False,
+      type=str,
+      help='Comma-separated list of column names to be used for import.',
+  )
+  csv_import_options_group.add_argument(
+      '--field-delimiter',
+      required=False,
+      type=str,
+      help='Field delimiter in the source file.',
+  )
+  csv_import_options_group.add_argument(
+      '--escape-character',
+      required=False,
+      type=str,
+      help='Escape character in the source file.',
+  )
+  csv_import_options_group.add_argument(
+      '--quote-character',
+      required=False,
+      type=str,
+      help='Quote character in the source file.',
+  )
+  sql_import_options_group = import_options_group.add_group(
+      help='SQL import options for the cluster.'
+  )
+  sql_import_options_group.add_argument(
+      '--sql',
+      required=True,
+      action='store_true',
+      help='Specify source file type.',
+  )
+

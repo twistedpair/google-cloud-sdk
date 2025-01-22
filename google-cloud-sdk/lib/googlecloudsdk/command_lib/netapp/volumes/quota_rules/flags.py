@@ -76,14 +76,14 @@ def AddQuotaRuleTargetArg(parser):
   )
 
 
-def AddQuotaRuleDiskLimitMib(parser):
+def AddQuotaRuleDiskLimitMib(parser, required=False):
   help_text = 'The disk limit in MiB for the quota rule.'
 
   parser.add_argument(
       '--disk-limit-mib',
       type=int,
       help=help_text,
-      required=True,
+      required=required,
   )
 
 ## Helper function to combine QuotaRules args / flags for gcloud commands ##
@@ -97,7 +97,19 @@ def AddQuotaRuleCreateArgs(parser):
   AddQuotaRuleVolumeArg(parser, required=True)
   AddQuotaRuleTypeArg(parser)
   AddQuotaRuleTargetArg(parser)
-  AddQuotaRuleDiskLimitMib(parser)
+  AddQuotaRuleDiskLimitMib(parser, required=True)
   flags.AddResourceDescriptionArg(parser, 'Quota rule')
   flags.AddResourceAsyncFlag(parser)
   labels_util.AddCreateLabelsFlags(parser)
+
+
+def AddQuotaRuleUpdateArgs(parser):
+  """Add args for updating a Quota rule."""
+  concept_parsers.ConceptParser([
+      flags.GetQuotaRulePresentationSpec('The Quota rule to update.')
+  ]).AddToParser(parser)
+  AddQuotaRuleVolumeArg(parser, required=True)
+  AddQuotaRuleDiskLimitMib(parser, required=False)
+  flags.AddResourceDescriptionArg(parser, 'Quota rule')
+  flags.AddResourceAsyncFlag(parser)
+  labels_util.AddUpdateLabelsFlags(parser)

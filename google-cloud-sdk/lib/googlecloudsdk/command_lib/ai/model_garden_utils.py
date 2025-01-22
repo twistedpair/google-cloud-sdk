@@ -528,6 +528,7 @@ def DeployPublisherModel(
       deploy_op,
       ParseOperation(deploy_op.name),
       asynchronous=args.asynchronous,
+      max_wait_ms=3600000,  # 60 minutes
   )
 
 

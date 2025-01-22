@@ -412,6 +412,9 @@ class Service(proto.Message):
             Service is serving traffic.
         satisfies_pzs (bool):
             Output only. Reserved for future use.
+        build_config (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BuildConfig):
+            Optional. Configuration for building a Cloud
+            Run function.
         reconciling (bool):
             Output only. Returns true if the Service is currently being
             acted upon by the system to bring it into the desired state.
@@ -588,6 +591,11 @@ class Service(proto.Message):
     satisfies_pzs: bool = proto.Field(
         proto.BOOL,
         number=38,
+    )
+    build_config: vendor_settings.BuildConfig = proto.Field(
+        proto.MESSAGE,
+        number=41,
+        message=vendor_settings.BuildConfig,
     )
     reconciling: bool = proto.Field(
         proto.BOOL,

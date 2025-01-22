@@ -151,6 +151,58 @@ class QuotaRulesClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
+  def ParseUpdatedQuotaRuleConfig(
+      self,
+      quota_rule_config,
+      disk_limit_mib=None,
+      description=None,
+      labels=None,
+  ):
+    """Parses updates into a quota rule config.
+
+    Args:
+      quota_rule_config: The quota rule config to update.
+      disk_limit_mib: int, a new disk limit, if any.
+      description: str, a new description, if any.
+      labels: LabelsValue message, the new labels value, if any.
+
+    Returns:
+      The quota rule message.
+    """
+    if disk_limit_mib is not None:
+      quota_rule_config.diskLimitMib = disk_limit_mib
+    if description is not None:
+      quota_rule_config.description = description
+    if labels is not None:
+      quota_rule_config.labels = labels
+    return quota_rule_config
+
+  def UpdateQuotaRule(self, quota_rule_ref, quota_rule, update_mask, async_):
+    """Updates a Cloud NetApp Volume Quota Rule.
+
+    Args:
+      quota_rule_ref: the reference to the Quota Rule.
+      quota_rule: Quota rule config, the updated quota rule.
+      update_mask: str, a comma-separated list of updated fields.
+      async_: bool, if False, wait for the operation to complete.
+
+    Returns:
+      an Operation or Volume message.
+    """
+    request = (
+        self.messages.NetappProjectsLocationsVolumesQuotaRulesPatchRequest(
+            name=quota_rule_ref.RelativeName(),
+            updateMask=update_mask,
+            quotaRule=quota_rule,
+        )
+    )
+    update_op = self.client.projects_locations_volumes_quotaRules.Patch(request)
+    if async_:
+      return update_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        update_op.name, collection=constants.OPERATIONS_COLLECTION)
+    return self.WaitForOperation(operation_ref)
+
 
 class QuotaRulesAdapter(object):
   """Adapter for the Cloud NetApp Files API Quota Rule resource."""

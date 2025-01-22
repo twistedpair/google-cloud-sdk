@@ -2475,6 +2475,8 @@ class MirroringEndpointGroup(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    associations: Output only. List of Mirroring Endpoint Group Associations
+      that are associated to this endpoint group.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     mirroringDeploymentGroup: Required. Immutable. The Mirroring Deployment
@@ -2536,13 +2538,14 @@ class MirroringEndpointGroup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  mirroringDeploymentGroup = _messages.StringField(3)
-  name = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  associations = _messages.MessageField('MirroringEndpointGroupAssociationDetails', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  mirroringDeploymentGroup = _messages.StringField(4)
+  name = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MirroringEndpointGroupAssociation(_messages.Message):
@@ -2632,6 +2635,54 @@ class MirroringEndpointGroupAssociation(_messages.Message):
   reconciling = _messages.BooleanField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   updateTime = _messages.StringField(9)
+
+
+class MirroringEndpointGroupAssociationDetails(_messages.Message):
+  r"""This is a subset of the MirroringEndpointGroupAssociation message,
+  containing fields to be used by the consumer.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the association.
+
+  Fields:
+    name: Output only. The resource name of the
+      MirroringEndpointGroupAssociation. Format: projects/{project}/locations/
+      {location}/mirroringEndpointGroupAssociations/{mirroringEndpointGroupAss
+      ociation}
+    network: Output only. The VPC network associated. Format:
+      projects/{project}/global/networks/{name}.
+    state: Output only. Current state of the association.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the association.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+      CLOSED: Mirroring is disabled due to an operation on another resource.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        association. The association is not expected to be usable. This state
+        can result in undefined behavior. See the `locations_details` field
+        for more details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class MirroringEndpointGroupAssociationLocationDetails(_messages.Message):

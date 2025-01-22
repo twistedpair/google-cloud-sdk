@@ -400,6 +400,10 @@ class Cluster(_messages.Message):
       mutable Redis Configs
 
   Fields:
+    asyncClusterEndpointsDeletionEnabled: Optional. If true, cluster endpoints
+      that are created and registered by customers can be deleted
+      asynchronously. That is, such a cluster endpoint can be de-registered
+      before the forwarding rules in the cluster endpoint are deleted.
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
     automatedBackupConfig: Optional. The automated backup config for the
@@ -558,40 +562,41 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
-  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 2)
-  backupCollection = _messages.StringField(3)
-  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 4, repeated=True)
-  createTime = _messages.StringField(5)
-  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 6)
-  deletionProtectionEnabled = _messages.BooleanField(7)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 8, repeated=True)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
-  gcsSource = _messages.MessageField('GcsBackupSource', 10)
-  kmsKey = _messages.StringField(11)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 12)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 13)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 14)
-  name = _messages.StringField(15)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 16)
-  ondemandMaintenance = _messages.BooleanField(17)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 18)
-  preciseSizeGb = _messages.FloatField(19)
-  pscConfigs = _messages.MessageField('PscConfig', 20, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 21, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 22, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 23)
-  replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(25)
-  satisfiesPzs = _messages.BooleanField(26)
-  shardCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  simulateMaintenanceEvent = _messages.BooleanField(28)
-  sizeGb = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  stateInfo = _messages.MessageField('StateInfo', 31)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
-  uid = _messages.StringField(33)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 34)
+  asyncClusterEndpointsDeletionEnabled = _messages.BooleanField(1)
+  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
+  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 3)
+  backupCollection = _messages.StringField(4)
+  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 5, repeated=True)
+  createTime = _messages.StringField(6)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 7)
+  deletionProtectionEnabled = _messages.BooleanField(8)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 9, repeated=True)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
+  gcsSource = _messages.MessageField('GcsBackupSource', 11)
+  kmsKey = _messages.StringField(12)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 13)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 14)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 15)
+  name = _messages.StringField(16)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 17)
+  ondemandMaintenance = _messages.BooleanField(18)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 19)
+  preciseSizeGb = _messages.FloatField(20)
+  pscConfigs = _messages.MessageField('PscConfig', 21, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 22, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 23, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 24)
+  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(26)
+  satisfiesPzs = _messages.BooleanField(27)
+  shardCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(29)
+  sizeGb = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  stateInfo = _messages.MessageField('StateInfo', 32)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 33)
+  uid = _messages.StringField(34)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 35)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -3083,6 +3088,9 @@ class ObservabilityMetricData(_messages.Message):
         fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
         cases).
       STORAGE_USED_BYTES: Sotrage used by a resource.
+      NODE_COUNT: Node count for a resource. It represents the number of nodes
+        units in a bigtable/spanner instance.
+      MEMORY_USED_BYTES: Memory used by a resource (in bytes).
     """
     METRIC_TYPE_UNSPECIFIED = 0
     CPU_UTILIZATION = 1
@@ -3090,6 +3098,8 @@ class ObservabilityMetricData(_messages.Message):
     NETWORK_CONNECTIONS = 3
     STORAGE_UTILIZATION = 4
     STORAGE_USED_BYTES = 5
+    NODE_COUNT = 6
+    MEMORY_USED_BYTES = 7
 
   aggregationType = _messages.EnumField('AggregationTypeValueValuesEnum', 1)
   metricType = _messages.EnumField('MetricTypeValueValuesEnum', 2)
@@ -3937,7 +3947,8 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
     requestId: Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
-      only include these fields from Cluster: * `size_gb` * `replica_count`
+      only include these fields from Cluster: * `size_gb` * `replica_count` *
+      `cluster_endpoints`
   """
 
   cluster = _messages.MessageField('Cluster', 1)

@@ -54,6 +54,7 @@ class AcceleratorConfig(_messages.Message):
       V5LITE_POD: TPU v5lite pod.
       V5P: TPU v5.
       V6E: TPU v6e.
+      TPU7X: TPU7x.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
@@ -62,6 +63,7 @@ class AcceleratorConfig(_messages.Message):
     V5LITE_POD = 4
     V5P = 5
     V6E = 6
+    TPU7X = 7
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -1323,7 +1325,7 @@ class Reservation(_messages.Message):
   Fields:
     name: The reservation name with the format:
       projects/{projectID}/locations/{location}/reservations/{reservationID}
-    standard: A Standard attribute.
+    standard: A standard reservation.
     state: Output only. The state of the Reservation.
   """
 
@@ -1518,22 +1520,23 @@ class SrcSliceTraffic(_messages.Message):
 
 
 class Standard(_messages.Message):
-  r"""A Standard object.
+  r"""Details of a standard reservation.
 
   Enums:
-    CapacityUnitsValueValuesEnum:
+    CapacityUnitsValueValuesEnum: Capacity units this reservation is measured
+      in.
 
   Fields:
-    capacityUnits: A CapacityUnitsValueValuesEnum attribute.
+    capacityUnits: Capacity units this reservation is measured in.
     interval: The start and end time of the reservation.
     resourceType: The resource type of the reservation.
     size: The size of the reservation, in the units specified in the
       'capacity_units' field.
-    usage: A Usage attribute.
+    usage: The current usage of the reservation.
   """
 
   class CapacityUnitsValueValuesEnum(_messages.Enum):
-    r"""CapacityUnitsValueValuesEnum enum type.
+    r"""Capacity units this reservation is measured in.
 
     Values:
       CAPACITY_UNITS_UNSPECIFIED: The capacity units is not known/set.
@@ -2080,7 +2083,8 @@ class TpuProjectsLocationsReservationsListRequest(_messages.Message):
   r"""A TpuProjectsLocationsReservationsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return.
+    pageSize: The maximum number of items to return. Defaults to 0 if not
+      specified, which means no limit.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: Required. The parent for reservations.
@@ -2194,7 +2198,7 @@ class UpcomingMaintenance(_messages.Message):
 
 
 class Usage(_messages.Message):
-  r"""A Usage object.
+  r"""Usage details of a reservation.
 
   Fields:
     total: The real-time value of usage within the reservation, with the unit

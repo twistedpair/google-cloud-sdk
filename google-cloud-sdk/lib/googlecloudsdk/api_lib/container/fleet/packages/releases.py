@@ -86,22 +86,24 @@ class ReleasesClient(object):
       API requests.
     """
     additional_properties = []
-    for variant_entry in variants:
-      variant = self.messages.Variant(
-          labels=None, resources=variants[variant_entry]
-      )
-      if len(variants) == 1:
-        additional_properties.append(
-            self.messages.Release.VariantsValue.AdditionalProperty(
-                key='default', value=variant
-            )
+    if variants:
+      # Only used in case of inline variants.
+      for variant_entry in variants:
+        variant = self.messages.Variant(
+            labels=None, resources=variants[variant_entry]
         )
-      else:
-        additional_properties.append(
-            self.messages.Release.VariantsValue.AdditionalProperty(
-                key=variant_entry, value=variant
-            )
-        )
+        if len(variants) == 1:
+          additional_properties.append(
+              self.messages.Release.VariantsValue.AdditionalProperty(
+                  key='default', value=variant
+              )
+          )
+        else:
+          additional_properties.append(
+              self.messages.Release.VariantsValue.AdditionalProperty(
+                  key=variant_entry, value=variant
+              )
+          )
     return self.messages.Release.VariantsValue(
         additionalProperties=additional_properties
     )
@@ -219,7 +221,6 @@ class ReleasesClient(object):
         self._service.Create(create_request),
         f'Creating Release {fully_qualified_path}',
     )
-    full_variant_names = {}
     for variant, variant_resources in variants.items():
       variants_client = variants_apis.VariantsClient()
       variants_client.Create(
@@ -230,14 +231,6 @@ class ReleasesClient(object):
           location=location,
           variant_resources=variant_resources,
       )
-      full_name = variants_apis.GetFullyQualifiedPath(
-          project,
-          location,
-          resource_bundle,
-          version.replace('.', '-'),
-          variant,
-      )
-      full_variant_names[full_name] = ['...']
     return self.Update(
         release=version,
         project=project,
@@ -245,7 +238,6 @@ class ReleasesClient(object):
         resource_bundle=resource_bundle,
         labels=labels,
         lifecycle=lifecycle,
-        variants=full_variant_names,
     )
 
   def Delete(self, project, location, resource_bundle, release, force=False):

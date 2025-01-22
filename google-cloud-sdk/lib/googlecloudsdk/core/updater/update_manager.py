@@ -1090,6 +1090,12 @@ version [{1}].  To clear your fixed version setting, run:
 
     # Clear deprecated directories for new state
     install_state.ClearDeprecatedDirs()
+    # Older versions of gcloud (< 483.0.0) would save a backup of the previous
+    # install when updating. Since this is no longer the case, explicitly clean
+    # up this directory in case it was left over when updating from an older
+    # such version (otherwise the obsolete backup would stick around
+    # indefinitely).
+    install_state.ClearBackup()
 
     with update_check.UpdateCheckData() as last_update_check:
       # Need to create a new diff because we just updated the SDK and we need

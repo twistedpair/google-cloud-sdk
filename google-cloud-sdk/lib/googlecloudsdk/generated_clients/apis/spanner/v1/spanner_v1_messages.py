@@ -1270,10 +1270,9 @@ class DatabaseMoveConfig(_messages.Message):
       GOOGLE_MANAGED encryption and a target encryption config is not
       specified, it defaults to GOOGLE_MANAGED. If a database currently uses
       Google-managed encryption and a target encryption config is specified,
-      it is migrated to CMEK encryption. If a database currently uses CMEK
-      encryption, a target encryption config must be specified. You cannot
-      move a CMEK database to a Google-managed encryption database by
-      MoveInstance.
+      the request is rejected. If a database currently uses CMEK encryption, a
+      target encryption config must be specified. You cannot move a CMEK
+      database to a Google-managed encryption database by MoveInstance.
   """
 
   databaseId = _messages.StringField(1)

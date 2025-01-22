@@ -3711,10 +3711,12 @@ class VmCapabilities(_messages.Message):
         use NVMe PD or local SSD.
       OS_CAPABILITY_GVNIC_NETWORK_INTERFACE: gVNIC virtual NIC driver
         supported.
+      OS_CAPABILITY_IDPF_NETWORK_INTERFACE: IDPF virtual NIC driver supported.
     """
     OS_CAPABILITY_UNSPECIFIED = 0
     OS_CAPABILITY_NVME_STORAGE_ACCESS = 1
     OS_CAPABILITY_GVNIC_NETWORK_INTERFACE = 2
+    OS_CAPABILITY_IDPF_NETWORK_INTERFACE = 3
 
   lastOsCapabilitiesUpdateTime = _messages.StringField(1)
   osCapabilities = _messages.EnumField('OsCapabilitiesValueListEntryValuesEnum', 2, repeated=True)

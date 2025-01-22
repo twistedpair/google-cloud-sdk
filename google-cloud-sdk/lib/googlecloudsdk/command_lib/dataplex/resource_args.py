@@ -25,6 +25,9 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 
+GENERATE_ID = '@%!#DATAPLEX_GENERATE_UUID@%!#'
+
+
 def GetProjectSpec():
   """Gets Project spec."""
   return concepts.ResourceSpec(
@@ -241,6 +244,28 @@ def GetGlossaryTermResourceSpec():
   )
 
 
+def GetMetadataJobResourceSpec():
+  """Gets Metadata Job resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.metadataJobs',
+      resource_name='metadata job',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      metadataJobsId=MetadataJobAttributeConfig(),
+  )
+
+
+def GetEncryptionConfigResourceSpec():
+  """Gets EncryptionConfig resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.organizations.locations.encryptionConfigs',
+      resource_name='encryption config',
+      organizationsId=OrganizationAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      encryptionConfigsId=EncryptionConfigAttributeConfig(),
+  )
+
+
 def EntryTypeProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='entry-type-project',
@@ -364,6 +389,34 @@ def GlossaryCategoryAttributeConfig():
 def GlossaryTermAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='glossary_term', help_text='The name of {resource} to use.'
+  )
+
+
+def MetadataJobAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='metadata_job',
+      # Adding invalid job_id to keep job resource in the right format,
+      # this invalid value will be removed if no job_id is specified from
+      # the input and the underlaying client would generate a valid one.
+      fallthroughs=[
+          deps.ValueFallthrough(
+              GENERATE_ID,
+              hint='job ID is optional and will be generated if not specified',
+          )
+      ],
+      help_text='The name of {resource} to use.',
+  )
+
+
+def EncryptionConfigAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='encryption_config', help_text='The name of {resource} to use.'
+  )
+
+
+def OrganizationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='organization', help_text='The name of {resource} to use.'
   )
 
 
@@ -610,6 +663,18 @@ def AddGlossaryTermResourceArg(parser, verb, positional=True):
   ).AddToParser(parser)
 
 
+def AddEncryptionConfigResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex EncryptionConfig."""
+  name = 'encryption_config' if positional else '--encryption_config'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetEncryptionConfigResourceSpec(),
+      'Arguments and flags that define the Dataplex EncryptionConfig you'
+      ' want {}'.format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
 def AddParentEntryResourceArg(parser):
   """Adds a resource argument for a Dataplex Entry parent."""
   entry_data = yaml_data.ResourceYAMLData.FromPath('dataplex.entry')
@@ -629,4 +694,16 @@ def AddParentEntryResourceArg(parser):
           'location': '',
           'entry_group': '',
       },
+  ).AddToParser(parser)
+
+
+def AddMetadataJobResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex MetadataJob."""
+  name = 'metadata_job' if positional else '--metadata_job'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetMetadataJobResourceSpec(),
+      'Arguments and flags that define the Dataplex metdata job you want {}'
+      .format(verb),
+      required=True,
   ).AddToParser(parser)

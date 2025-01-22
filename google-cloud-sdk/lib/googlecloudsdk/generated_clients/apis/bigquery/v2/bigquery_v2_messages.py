@@ -5545,7 +5545,9 @@ class MaterializedViewDefinition(_messages.Message):
   Fields:
     allowNonIncrementalDefinition: Optional. This option declares the
       intention to construct a materialized view that isn't refreshed
-      incrementally.
+      incrementally. Non-incremental materialized views support an expanded
+      range of SQL queries. The `allow_non_incremental_definition` option
+      can't be changed after the materialized view is created.
     enableRefresh: Optional. Enable automatic refresh of the materialized view
       when the base table is updated. The default value is "true".
     lastRefreshTime: Output only. The time when this materialized view was
@@ -6549,8 +6551,13 @@ class QueryResponse(_messages.Message):
 
   Fields:
     cacheHit: Whether the query result was fetched from the query cache.
+    creationTime: Output only. Creation time of this query, in milliseconds
+      since the epoch. This field will be present on all queries.
     dmlStats: Output only. Detailed statistics for DML statements INSERT,
       UPDATE, DELETE, MERGE or TRUNCATE.
+    endTime: Output only. End time of this query, in milliseconds since the
+      epoch. This field will be present whenever a query job is in the DONE
+      state.
     errors: Output only. The first errors or warnings encountered during the
       running of the job. The final message includes the number of errors that
       caused the process to stop. Errors here do not necessarily mean that the
@@ -6573,6 +6580,9 @@ class QueryResponse(_messages.Message):
       `JOB_CREATION_OPTIONAL` and the query completes without creating a job,
       this field will be empty.
     kind: The resource type.
+    location: Output only. The geographic location of the query. For more
+      information about BigQuery locations, see:
+      https://cloud.google.com/bigquery/docs/locations
     numDmlAffectedRows: Output only. The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
     pageToken: A token used for paging results. A non-empty token indicates
@@ -6590,29 +6600,44 @@ class QueryResponse(_messages.Message):
       successfully.
     sessionInfo: Output only. Information of the session if this job is part
       of one.
+    startTime: Output only. Start time of this query, in milliseconds since
+      the epoch. This field will be present when the query job transitions
+      from the PENDING state to either RUNNING or DONE.
+    totalBytesBilled: Output only. If the project is configured to use on-
+      demand pricing, then this field contains the total bytes billed for the
+      job. If the project is configured to use flat-rate pricing, then you are
+      not billed for bytes and this field is informational only.
     totalBytesProcessed: The total number of bytes processed for this query.
       If this query was a dry run, this is the number of bytes that would be
       processed if the query were run.
     totalRows: The total number of rows in the complete query result set,
       which can be more than the number of rows in this single page of
       results.
+    totalSlotMs: Output only. Number of slot ms the user is actually billed
+      for.
   """
 
   cacheHit = _messages.BooleanField(1)
-  dmlStats = _messages.MessageField('DmlStatistics', 2)
-  errors = _messages.MessageField('ErrorProto', 3, repeated=True)
-  jobComplete = _messages.BooleanField(4)
-  jobCreationReason = _messages.MessageField('JobCreationReason', 5)
-  jobReference = _messages.MessageField('JobReference', 6)
-  kind = _messages.StringField(7, default='bigquery#queryResponse')
-  numDmlAffectedRows = _messages.IntegerField(8)
-  pageToken = _messages.StringField(9)
-  queryId = _messages.StringField(10)
-  rows = _messages.MessageField('TableRow', 11, repeated=True)
-  schema = _messages.MessageField('TableSchema', 12)
-  sessionInfo = _messages.MessageField('SessionInfo', 13)
-  totalBytesProcessed = _messages.IntegerField(14)
-  totalRows = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
+  creationTime = _messages.IntegerField(2)
+  dmlStats = _messages.MessageField('DmlStatistics', 3)
+  endTime = _messages.IntegerField(4)
+  errors = _messages.MessageField('ErrorProto', 5, repeated=True)
+  jobComplete = _messages.BooleanField(6)
+  jobCreationReason = _messages.MessageField('JobCreationReason', 7)
+  jobReference = _messages.MessageField('JobReference', 8)
+  kind = _messages.StringField(9, default='bigquery#queryResponse')
+  location = _messages.StringField(10)
+  numDmlAffectedRows = _messages.IntegerField(11)
+  pageToken = _messages.StringField(12)
+  queryId = _messages.StringField(13)
+  rows = _messages.MessageField('TableRow', 14, repeated=True)
+  schema = _messages.MessageField('TableSchema', 15)
+  sessionInfo = _messages.MessageField('SessionInfo', 16)
+  startTime = _messages.IntegerField(17)
+  totalBytesBilled = _messages.IntegerField(18)
+  totalBytesProcessed = _messages.IntegerField(19)
+  totalRows = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
+  totalSlotMs = _messages.IntegerField(21)
 
 
 class QueryTimelineSample(_messages.Message):

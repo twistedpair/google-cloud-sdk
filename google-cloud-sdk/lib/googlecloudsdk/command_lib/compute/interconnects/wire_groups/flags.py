@@ -42,7 +42,7 @@ _WIRE_GROUP_TYPE = {
 
 @base.UniverseCompatible
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-class WireGroupsCompleter(compute_completers.ListCommandCompleter):
+class WireGroupsCompleter(compute_completers.GlobalListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(WireGroupsCompleter, self).__init__(
@@ -62,6 +62,15 @@ def WireGroupArgument(required=True, plural=False):
   )
 
 
+def AddCrossSiteNetwork(parser):
+  """Adds cross-site-network flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--cross-site-network',
+      help='The cross site network for the wire group.',
+      required=True,
+  )
+
+
 def AddDescription(parser):
   """Adds description flag to the argparse.ArgumentParser."""
   parser.add_argument(
@@ -70,30 +79,21 @@ def AddDescription(parser):
   )
 
 
-def AddCrossSiteNetwork(parser):
-  """Adds cross-site-network flag to the argparse.ArgumentParser."""
-  parser.add_argument(
-      '--cross-site-network',
-      required=True,
-      help='A cross site network for the wire group.',
-  )
-
-
-def AddType(parser):
+def AddType(parser, required=True):
   """Adds type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--type',
-      required=True,
+      required=required,
       choices=_WIRE_GROUP_TYPE,
       help='The type for the wire group.',
   )
 
 
-def AddBandwidthUnmetered(parser):
+def AddBandwidthUnmetered(parser, required=True):
   """Adds bandwidth-unmetered flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--bandwidth-unmetered',
-      required=True,
+      required=required,
       type=int,
       help='The amount of unmetered bandwidth to assign to the wire group.',
   )
@@ -112,7 +112,7 @@ def AddFaultResponse(parser):
   """Adds fault-response flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--fault-response',
-      choices={'NONE': 'None', 'DISABLED_PORT': 'Disabled port'},
+      choices={'NONE': 'None', 'DISABLE_PORT': 'Disable port'},
       help='The fault response for the wire group.',
   )
 
@@ -149,5 +149,4 @@ def AddValidateOnly(parser):
       '--validate-only',
       help='Only validates the configuration, but does not create it.',
   )
-
 

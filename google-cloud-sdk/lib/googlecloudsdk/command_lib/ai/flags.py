@@ -225,7 +225,8 @@ def GetHiddenGdceZoneArg():
       hidden=True,
       help="""\
       The name of the GDCE zone. If set, the endpoint is in GDCE.
-      """)
+      """,
+  )
 
 
 def GetGdceZoneArg():
@@ -235,7 +236,8 @@ def GetGdceZoneArg():
       default=None,
       help="""\
       The name of the GDCE zone. If set, the endpoint is in GDCE.
-      """)
+      """,
+  )
 
 
 def AddPrivateServiceConnectConfig(parser):
@@ -1363,19 +1365,22 @@ def GetIndexDatapointIdsArg(noun, required=False):
 
 
 def GetIndexUpdateMethod(required=False):
-  return base.Argument(
+  return base.ChoiceArgument(
       '--index-update-method',
       required=required,
-      type=str,
-      help="""\
-The update method to use with this index. Choose `stream_update` or
-`batch_update`. If not set, batch update will be used by default.
-
-`batch_update`: can update index with `gcloud ai indexes update` using
-datapoints files on Cloud Storage.
-
-`stream update`: can update datapoints with `upsert-datapoints` and
-`delete-datapoints` and will be applied nearly real-time.
+      choices={
+          'stream-update': (
+              'can update datapoints with `upsert-datapoints` and'
+              '`delete-datapoints` and will be applied nearly real-time.'
+          ),
+          'batch-update': (
+              'can update index with `gcloud ai indexes update` using'
+              'datapoints files on Cloud Storage.'
+          ),
+      },
+      help_str="""\
+The update method to use with this index. Choose `stream-update` or
+`batch-update` (case insensitive). If not set, batch update will be used by default.
 """,
   )
 

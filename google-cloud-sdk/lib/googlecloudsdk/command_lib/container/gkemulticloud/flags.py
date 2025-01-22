@@ -1046,24 +1046,52 @@ def GetAzureApplicationID(args):
   return getattr(args, 'azure_application_id', None)
 
 
-def AddMonitoringConfig(parser, for_create=False):
-  """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
-  enable_help_text = """
+def AddMonitoringConfig(
+    parser, for_create=False, cloud_monitoring_option=False
+):
+  """Adds monitoring config flags to parser."""
+  prometheus_enable_help_text = """
   Enables managed collection for Managed Service for Prometheus in the cluster.
 
   See https://cloud.google.com/stackdriver/docs/managed-prometheus/setup-managed#enable-mgdcoll-gke
   for more info.
 
-  Enabled by default for cluster versions 1.27 or greater,
+  Managed Prometheus is enabled by default for cluster versions 1.27 or greater,
   use --no-enable-managed-prometheus to disable.
+  """
+  cloud_monitoring_enable_help_text = """
+  Enables managed collection for Cloud Monitoring in the cluster.
+
+  Cloud Monitoring is enabled by default for all clusters. Beginning with
+  cluster version 1.31, use --disable-cloud-monitoring to disable.
+  """
+  cloud_monitoring_disable_help_text = """
+  Disables managed collection for Cloud Monitoring in the cluster.
+
+  Cloud Monitoring is enabled by default for all clusters. Beginning with
+  cluster version 1.31, use --disable-cloud-monitoring to disable.
   """
   if for_create:
     parser.add_argument(
         '--enable-managed-prometheus',
         action='store_true',
         default=None,
-        help=enable_help_text,
+        help=prometheus_enable_help_text,
     )
+    if cloud_monitoring_option:
+      group = parser.add_group('Cloud Monitoring Config', mutex=True)
+      group.add_argument(
+          '--disable-cloud-monitoring',
+          action='store_true',
+          default=None,
+          help=cloud_monitoring_disable_help_text,
+      )
+      group.add_argument(
+          '--enable-cloud-monitoring',
+          action='store_true',
+          default=None,
+          help=cloud_monitoring_enable_help_text,
+      )
   else:
     group = parser.add_group('Monitoring Config', mutex=True)
     group.add_argument(
@@ -1078,31 +1106,68 @@ def AddMonitoringConfig(parser, for_create=False):
         default=None,
         help='Enable managed collection for Managed Service for Prometheus.',
     )
+    if cloud_monitoring_option:
+      group = parser.add_group('Cloud Monitoring Config', mutex=True)
+      group.add_argument(
+          '--disable-cloud-monitoring',
+          action='store_true',
+          default=None,
+          help=(
+              'Disable managed collection for Cloud Monitoring.'
+          ),
+      )
+      group.add_argument(
+          '--enable-cloud-monitoring',
+          action='store_true',
+          default=None,
+          help='Enable managed collection for Cloud Monitoring.',
+      )
 
 
 def GetMonitoringConfig(args):
-  """Parses and validates the value of the managed prometheus config flags.
+  """Parses and validates the value of the managed prometheus and cloud monitoring config flags.
 
   Args:
     args: Arguments parsed from the command.
 
   Returns:
     The monitoring config object as GoogleCloudGkemulticloudV1MonitoringConfig.
-    None if enable_managed_prometheus is None.
+    None if both enable_managed_prometheus and enable_cloud_monitoring are None.
   """
   enabled_prometheus = getattr(args, 'enable_managed_prometheus', None)
   disabled_prometheus = getattr(args, 'disable_managed_prometheus', None)
 
   messages = api_util.GetMessagesModule()
-  config = messages.GoogleCloudGkemulticloudV1ManagedPrometheusConfig()
+  prometheus_config = (
+      messages.GoogleCloudGkemulticloudV1ManagedPrometheusConfig()
+  )
   if enabled_prometheus:
-    config.enabled = True
+    prometheus_config.enabled = True
   elif disabled_prometheus:
-    config.enabled = False
+    prometheus_config.enabled = False
   else:
+    prometheus_config = None
+
+  enabled_cloud_monitoring = getattr(args, 'enable_cloud_monitoring', None)
+  disabled_cloud_monitoring = getattr(args, 'disable_cloud_monitoring', None)
+
+  messages = api_util.GetMessagesModule()
+  cloud_monitoring_config = (
+      messages.GoogleCloudGkemulticloudV1CloudMonitoringConfig()
+  )
+  if enabled_cloud_monitoring:
+    cloud_monitoring_config.enabled = True
+  elif disabled_cloud_monitoring:
+    cloud_monitoring_config.enabled = False
+  else:
+    cloud_monitoring_config = None
+
+  if prometheus_config is None and cloud_monitoring_config is None:
     return None
+
   return messages.GoogleCloudGkemulticloudV1MonitoringConfig(
-      managedPrometheusConfig=config
+      managedPrometheusConfig=prometheus_config,
+      cloudMonitoringConfig=cloud_monitoring_config,
   )
 
 

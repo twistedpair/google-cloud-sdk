@@ -56,6 +56,7 @@ from .types.job import ListJobsRequest
 from .types.job import ListJobsResponse
 from .types.job import RunJobRequest
 from .types.job import UpdateJobRequest
+from .types.k8s_min import BuildInfo
 from .types.k8s_min import CloudSqlInstance
 from .types.k8s_min import Container
 from .types.k8s_min import ContainerPort
@@ -99,6 +100,7 @@ from .types.traffic_target import TrafficTarget
 from .types.traffic_target import TrafficTargetStatus
 from .types.traffic_target import TrafficTargetAllocationType
 from .types.vendor_settings import BinaryAuthorization
+from .types.vendor_settings import BuildConfig
 from .types.vendor_settings import NodeSelector
 from .types.vendor_settings import RevisionScaling
 from .types.vendor_settings import ServiceMesh
@@ -126,6 +128,8 @@ __all__ = (
     'TasksAsyncClient',
     'WorkerPoolsAsyncClient',
 'BinaryAuthorization',
+'BuildConfig',
+'BuildInfo',
 'BuildsClient',
 'CancelExecutionRequest',
 'CloudSqlInstance',

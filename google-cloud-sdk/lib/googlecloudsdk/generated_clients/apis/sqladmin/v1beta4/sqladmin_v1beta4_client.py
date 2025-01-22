@@ -1481,7 +1481,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.projects.instances.getLatestRecoveryTime',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=[],
+        query_params=['sourceInstanceDeletionTime'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/getLatestRecoveryTime',
         request_field='',
         request_type_name='SqlProjectsInstancesGetLatestRecoveryTimeRequest',

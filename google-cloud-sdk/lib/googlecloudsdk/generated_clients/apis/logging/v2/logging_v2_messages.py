@@ -750,7 +750,8 @@ class CopyLogEntriesRequest(_messages.Message):
   r"""The parameters to CopyLogEntries.
 
   Fields:
-    destination: Required. Destination to which to copy log entries.
+    destination: Required. Destination to which to copy log entries. For
+      example: "storage.googleapis.com/GCS_BUCKET"
     filter: Optional. A filter specifying which log entries to copy. The
       filter must be no more than 20k characters. An empty filter matches all
       log entries.

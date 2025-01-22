@@ -63,6 +63,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ROLLOUTKINDS = (
+      'projects.locations.rolloutKinds',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/rolloutKinds/'
+              '{rolloutKindsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ROLLOUTTYPES = (
       'projects.locations.rolloutTypes',
       '{+name}',
@@ -92,6 +103,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/saasTypes/'
               '{saasTypesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SAASES = (
+      'projects.locations.saases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/saases/'
+              '{saasesId}',
       },
       ['name'],
       True

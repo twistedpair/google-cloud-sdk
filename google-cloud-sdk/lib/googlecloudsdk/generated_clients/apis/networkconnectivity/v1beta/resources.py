@@ -163,6 +163,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SPOKES_GATEWAYADVERTISEDROUTES = (
+      'projects.locations.spokes.gatewayAdvertisedRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/spokes/'
+              '{spokesId}/gatewayAdvertisedRoutes/{gatewayAdvertisedRoutesId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

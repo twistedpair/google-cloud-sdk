@@ -435,7 +435,7 @@ class Instance(_messages.Message):
       is hosting the Looker Instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
-    customDomain: A CustomDomain attribute.
+    customDomain: Custom domain configuration for the instance.
     denyMaintenancePeriod: Maintenance denial period for this instance.
     egressPublicIp: Output only. Public Egress IP (IPv4).
     encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has

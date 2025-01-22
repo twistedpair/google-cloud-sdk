@@ -4895,6 +4895,10 @@ class GoogleCloudDialogflowCxV3DataStoreConnection(_messages.Message):
 
   Enums:
     DataStoreTypeValueValuesEnum: The type of the connected data store.
+    DocumentProcessingModeValueValuesEnum: The document processing mode for
+      the data store connection. Should only be set for PUBLIC_WEB and
+      UNSTRUCTURED data stores. If not set it is considered as DOCUMENTS, as
+      this is the legacy mode.
 
   Fields:
     dataStore: The full name of the referenced data store. Formats: `projects/
@@ -4902,6 +4906,10 @@ class GoogleCloudDialogflowCxV3DataStoreConnection(_messages.Message):
       _store}`
       `projects/{project}/locations/{location}/dataStores/{data_store}`
     dataStoreType: The type of the connected data store.
+    documentProcessingMode: The document processing mode for the data store
+      connection. Should only be set for PUBLIC_WEB and UNSTRUCTURED data
+      stores. If not set it is considered as DOCUMENTS, as this is the legacy
+      mode.
   """
 
   class DataStoreTypeValueValuesEnum(_messages.Enum):
@@ -4921,8 +4929,25 @@ class GoogleCloudDialogflowCxV3DataStoreConnection(_messages.Message):
     UNSTRUCTURED = 2
     STRUCTURED = 3
 
+  class DocumentProcessingModeValueValuesEnum(_messages.Enum):
+    r"""The document processing mode for the data store connection. Should
+    only be set for PUBLIC_WEB and UNSTRUCTURED data stores. If not set it is
+    considered as DOCUMENTS, as this is the legacy mode.
+
+    Values:
+      DOCUMENT_PROCESSING_MODE_UNSPECIFIED: Not specified. This should be set
+        for STRUCTURED type data stores. Due to legacy reasons this is
+        considered as DOCUMENTS for STRUCTURED and PUBLIC_WEB data stores.
+      DOCUMENTS: Documents are processed as documents.
+      CHUNKS: Documents are converted to chunks.
+    """
+    DOCUMENT_PROCESSING_MODE_UNSPECIFIED = 0
+    DOCUMENTS = 1
+    CHUNKS = 2
+
   dataStore = _messages.StringField(1)
   dataStoreType = _messages.EnumField('DataStoreTypeValueValuesEnum', 2)
+  documentProcessingMode = _messages.EnumField('DocumentProcessingModeValueValuesEnum', 3)
 
 
 class GoogleCloudDialogflowCxV3DeployFlowMetadata(_messages.Message):
@@ -7592,6 +7617,10 @@ class GoogleCloudDialogflowCxV3beta1DataStoreConnection(_messages.Message):
 
   Enums:
     DataStoreTypeValueValuesEnum: The type of the connected data store.
+    DocumentProcessingModeValueValuesEnum: The document processing mode for
+      the data store connection. Should only be set for PUBLIC_WEB and
+      UNSTRUCTURED data stores. If not set it is considered as DOCUMENTS, as
+      this is the legacy mode.
 
   Fields:
     dataStore: The full name of the referenced data store. Formats: `projects/
@@ -7599,6 +7628,10 @@ class GoogleCloudDialogflowCxV3beta1DataStoreConnection(_messages.Message):
       _store}`
       `projects/{project}/locations/{location}/dataStores/{data_store}`
     dataStoreType: The type of the connected data store.
+    documentProcessingMode: The document processing mode for the data store
+      connection. Should only be set for PUBLIC_WEB and UNSTRUCTURED data
+      stores. If not set it is considered as DOCUMENTS, as this is the legacy
+      mode.
   """
 
   class DataStoreTypeValueValuesEnum(_messages.Enum):
@@ -7618,8 +7651,25 @@ class GoogleCloudDialogflowCxV3beta1DataStoreConnection(_messages.Message):
     UNSTRUCTURED = 2
     STRUCTURED = 3
 
+  class DocumentProcessingModeValueValuesEnum(_messages.Enum):
+    r"""The document processing mode for the data store connection. Should
+    only be set for PUBLIC_WEB and UNSTRUCTURED data stores. If not set it is
+    considered as DOCUMENTS, as this is the legacy mode.
+
+    Values:
+      DOCUMENT_PROCESSING_MODE_UNSPECIFIED: Not specified. This should be set
+        for STRUCTURED type data stores. Due to legacy reasons this is
+        considered as DOCUMENTS for STRUCTURED and PUBLIC_WEB data stores.
+      DOCUMENTS: Documents are processed as documents.
+      CHUNKS: Documents are converted to chunks.
+    """
+    DOCUMENT_PROCESSING_MODE_UNSPECIFIED = 0
+    DOCUMENTS = 1
+    CHUNKS = 2
+
   dataStore = _messages.StringField(1)
   dataStoreType = _messages.EnumField('DataStoreTypeValueValuesEnum', 2)
+  documentProcessingMode = _messages.EnumField('DocumentProcessingModeValueValuesEnum', 3)
 
 
 class GoogleCloudDialogflowCxV3beta1DeployFlowMetadata(_messages.Message):

@@ -29,37 +29,40 @@ def AddCloudSqlProjectIdFlag(parser):
       help=(
           'The project id of the Cloud SQL instance. Only needed if the Cloud'
           ' SQL instance is in a different project than the connection profile.'
+          ' This is only supported for source connection profiles for SQL'
+          ' Server.'
       ),
   )
 
 
 def AddCpDetailsFlag(parser):
   """Adds the source and destination parameters to the given parser."""
-
-  cp_params_group = parser.add_group(required=True, mutex=True)
+  cp_params_group = parser.add_group(required=False, mutex=True)
   AddHomogeneousSourceDetailsFlag(cp_params_group)
   AddDestinationOrHeterogeneousSourceDetailsFlag(cp_params_group)
 
 
-def AddDestinationOrHeterogeneousSourceDetailsFlag(parser):
-  """Adds the destination connection profile parameters to the given parser."""
+def AddCloudSqlInstanceFlags(parser):
+  """Adds flags for Cloud SQL instances to the given parser."""
   cp_params_group = parser.add_group()
+  cp_flags.AddCloudSQLInstanceFlag(cp_params_group, required=False)
+  AddCloudSqlProjectIdFlag(cp_params_group)
   cp_flags.AddUsernameFlag(
       cp_params_group,
-      required=True,
       help_text="""\
           Username that Database Migration Service uses to connect to the
           database for metrics and observability. We highly recommend that you
           use the sqlserver user for this. Database Migration Service encrypts
           the value when storing it.
       """,
+      required=True,
   )
   cp_flags.AddPasswordFlagGroup(cp_params_group, required=True)
-  dest_or_hetero_cp_params_group = cp_params_group.add_group(
-      required=True, mutex=True
-  )
-  cp_flags.AddCloudSQLInstanceFlag(dest_or_hetero_cp_params_group)
-  hetero_cp_params_group = dest_or_hetero_cp_params_group.add_group(hidden=True)
+
+
+def AddDestinationOrHeterogeneousSourceDetailsFlag(parser):
+  """Adds the destination connection profile parameters to the given parser."""
+  hetero_cp_params_group = parser.add_group(hidden=True)
   cp_flags.AddHostFlag(hetero_cp_params_group, required=True)
   cp_flags.AddPortFlag(hetero_cp_params_group, required=True)
 

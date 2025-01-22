@@ -5,6 +5,90 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 507.0.0 (2025-01-22)
+
+### Breaking Changes
+
+*   **(Cloud Run)** Removed `gcloud run integrations` command group.
+
+
+### Anthos Multi-Cloud
+
+*   Added `--disable-cloud-monitoring` flag to
+`gcloud container attached clusters register` and
+`gcloud container attached clusters update` for disabling cloud monitoring.
+*   Added `--enable-cloud-monitoring` flag to
+`gcloud container attached clusters register` and
+`gcloud container attached clusters update` for enabling cloud monitoring.
+
+### BigQuery
+
+* Updated certain authentication error messages to mention running `gcloud auth login --enable-gdrive-access` instead of `gcloud auth login` when Drive access is required.
+* Added support for loading the Cloud CLI `api_endpoint_overrides/bigquery` config value into `api` if the flag was not set.
+* Added support for loading the Cloud CLI `core/api_key` config value into `bigquery_discovery_api_key` if the flag was not set.
+* Added retrieval of the user's active Cloud CLI account name when authenticating using Cloud CLI credentials.
+* Fixed the bug where users authenticating with Google Auth using a service account were unable to query external tables on Google Drive.
+* Updated `--enable_gdrive` flag description to mention its interaction with `--use_google_auth`.
+* Handled crash when the server returns out of bounds timestamps.
+* Bundled a reservation discovery doc to be loaded locally instead of always making a server request to retrieve one.
+
+### Cloud Bigtable
+
+* Rebuilt cbt cli with golang.org/x/net version 0.33.0  which fixed CVE-2024-45338.
+
+### Cloud Bigtable Emulator
+
+* Rebuilding cbt emulator with golang.org/x/net version 0.33.0 which fixed CVE-2024-45338.
+
+### Cloud NetApp
+
+* Added `gcloud netapp storage-pools validate-directory-service`.
+
+### Cloud Spanner
+
+* Update `edition` flag help text for `gcloud spanner instances update` saying downgrade is supported.
+
+### Cloud Workstations
+
+* Promoted `--source-workstation` flag of `gcloud workstations create` to GA.
+
+### Compute Engine
+
+* Promoted Tls Early Data UNRESTRICTED enum value to GA in `gcloud compute target-https-proxies import` and `gcloud compute target-https-proxies export`.
+
+### Database Migration
+
+* Added `--cloudsql-project-id` flag to `gcloud database-migration connection-profiles create sqlserver` command.
+
+### Developer Connect
+
+* Hid the Bitbucket Data Center and Bitbucket Cloud connection types.
+
+### Kubernetes Engine
+
+* Added kubelet config options `allowedUnsafeSysctls` to
+`gcloud container clusters create`, `gcloud container node-pools create`, and
+`gcloud container node-pools update` command which allows unsafe sysctls to be
+set on Pods.
+* Added kubelet config options `containerLogMaxSize` and `containerLogMaxFiles`
+to `gcloud container clusters create`, `gcloud container node-pools create`, and
+`gcloud container node-pools update` command which controls maximum size of
+container logs before rotation and maximum number of log files for a container.
+* Added kubelet config options `imageGcLowThresholdPercent` and
+`imageGcHighThresholdPercent`  to `gcloud container clusters create`,
+`gcloud container node-pools create`, and `gcloud container node-pools update`
+command which controls disk usage percentage triggering image garbage
+collection.
+* Added kubelet config options `imageMinimumGcAge` and `imageMaximumGcAge` to
+`gcloud container clusters create`, `gcloud container node-pools create`, and
+`gcloud container node-pools update` command which controls the minimum and
+maximum age an image can be unused before it is garbage collected.
+* Added `--max-run-duration` flag to `gcloud container node-pools create` and `gcloud container node-pools update` to limit the runtime of nodes in a node pool.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 506.0.0 (2025-01-14)
 
 ### Artifact Registry

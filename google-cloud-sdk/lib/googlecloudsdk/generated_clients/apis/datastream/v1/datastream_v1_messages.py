@@ -193,6 +193,8 @@ class ConnectionProfile(_messages.Message):
     oracleProfile: Oracle ConnectionProfile configuration.
     postgresqlProfile: PostgreSQL Connection Profile configuration.
     privateConnectivity: Private connectivity.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     sqlServerProfile: SQLServer Connection Profile configuration.
     staticServiceIpConnectivity: Static Service IP connectivity.
     updateTime: Output only. The update time of the resource.
@@ -233,9 +235,11 @@ class ConnectionProfile(_messages.Message):
   oracleProfile = _messages.MessageField('OracleProfile', 9)
   postgresqlProfile = _messages.MessageField('PostgresqlProfile', 10)
   privateConnectivity = _messages.MessageField('PrivateConnectivity', 11)
-  sqlServerProfile = _messages.MessageField('SqlServerProfile', 12)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 13)
-  updateTime = _messages.StringField(14)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  sqlServerProfile = _messages.MessageField('SqlServerProfile', 14)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 15)
+  updateTime = _messages.StringField(16)
 
 
 class DatasetTemplate(_messages.Message):
@@ -1450,15 +1454,16 @@ class MysqlSslConfig(_messages.Message):
       the source database server's certificate.
     caCertificateSet: Output only. Indicates whether the ca_certificate field
       is set.
-    clientCertificate: Input only. PEM-encoded certificate that will be used
-      by the replica to authenticate against the source database server. If
-      this field is used then the 'client_key' and the 'ca_certificate' fields
-      are mandatory.
+    clientCertificate: Optional. Input only. PEM-encoded certificate that will
+      be used by the replica to authenticate against the source database
+      server. If this field is used then the 'client_key' and the
+      'ca_certificate' fields are mandatory.
     clientCertificateSet: Output only. Indicates whether the
       client_certificate field is set.
-    clientKey: Input only. PEM-encoded private key associated with the Client
-      Certificate. If this field is used then the 'client_certificate' and the
-      'ca_certificate' fields are mandatory.
+    clientKey: Optional. Input only. PEM-encoded private key associated with
+      the Client Certificate. If this field is used then the
+      'client_certificate' and the 'ca_certificate' fields are mandatory.
+      Mutually exclusive with the `secret_manager_stored_client_key` field.
     clientKeySet: Output only. Indicates whether the client_key field is set.
   """
 
@@ -2019,6 +2024,8 @@ class PrivateConnection(_messages.Message):
       friendly format.
     labels: Labels.
     name: Output only. Identifier. The resource's name.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The state of the Private Connection.
     updateTime: Output only. The update time of the resource.
     vpcPeeringConfig: VPC Peering Config.
@@ -2074,9 +2081,11 @@ class PrivateConnection(_messages.Message):
   error = _messages.MessageField('Error', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 8)
+  satisfiesPzi = _messages.BooleanField(6)
+  satisfiesPzs = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 10)
 
 
 class PrivateConnectivity(_messages.Message):
@@ -2578,6 +2587,8 @@ class Stream(_messages.Message):
     lastRecoveryTime: Output only. If the stream was recovered, the time of
       the last recovery. Note: This field is currently experimental.
     name: Output only. Identifier. The stream's name.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     sourceConfig: Required. Source connection profile configuration.
     state: The state of the stream.
     updateTime: Output only. The last update time of the stream.
@@ -2645,9 +2656,11 @@ class Stream(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   lastRecoveryTime = _messages.StringField(9)
   name = _messages.StringField(10)
-  sourceConfig = _messages.MessageField('SourceConfig', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  satisfiesPzi = _messages.BooleanField(11)
+  satisfiesPzs = _messages.BooleanField(12)
+  sourceConfig = _messages.MessageField('SourceConfig', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class StreamLargeObjects(_messages.Message):

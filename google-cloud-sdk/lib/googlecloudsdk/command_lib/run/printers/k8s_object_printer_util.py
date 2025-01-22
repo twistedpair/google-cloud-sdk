@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 
 import json
 import textwrap
-from typing import Mapping
+from typing import Mapping, Union
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
@@ -166,7 +166,7 @@ def GetStartupProbe(
     container: container_resource.Container,
     labels: Mapping[str, str],
     is_primary: bool,
-) -> str:
+) -> Union[str, cp.Lines]:
   probe_type = ''
   if is_primary:
     probe_type = labels.get('run.googleapis.com/startupProbeType', '')
@@ -176,8 +176,16 @@ def GetStartupProbe(
   )
 
 
-def GetLivenessProbe(container: container_resource.Container) -> str:
+def GetLivenessProbe(
+    container: container_resource.Container,
+) -> Union[str, cp.Lines]:
   return _GetProbe(container.livenessProbe)
+
+
+def GetReadinessProbe(
+    container: container_resource.Container,
+) -> Union[str, cp.Lines]:
+  return _GetProbe(container.readinessProbe)
 
 
 def _GetProbe(probe, probe_type=''):
@@ -212,6 +220,10 @@ def _GetProbe(probe, probe_type=''):
           (
               'Timeout',
               '{timeout}s'.format(timeout=probe.timeoutSeconds),
+          ),
+          (
+              'Success threshold',
+              '{successes}'.format(successes=probe.successThreshold or ''),
           ),
           (
               'Failure threshold',

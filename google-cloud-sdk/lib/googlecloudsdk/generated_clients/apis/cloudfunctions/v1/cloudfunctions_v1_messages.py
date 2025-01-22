@@ -229,7 +229,8 @@ class CloudFunction(_messages.Message):
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
     buildDockerfile: Local path to the dockerfile for customizing the base
-      image for the builder, located within the source folder.
+      image for the builder, located within the source folder. Deprecated:
+      this was significantly revised before reaching public.
     buildEnvironmentVariables: Build environment variables that shall be
       available during build time.
     buildId: Output only. The Cloud Build ID of the latest successful
@@ -323,7 +324,8 @@ class CloudFunction(_messages.Message):
     onDeployUpdatePolicy: A OnDeployUpdatePolicy attribute.
     pinnedRuntimeVersionPolicy: A PinnedRuntimeVersionPolicy attribute.
     runDockerfile: Local path to the dockerfile for customizing the base image
-      for the worker, located within the source folder.
+      for the worker, located within the source folder. Deprecated: this was
+      significantly revised before reaching public.
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](

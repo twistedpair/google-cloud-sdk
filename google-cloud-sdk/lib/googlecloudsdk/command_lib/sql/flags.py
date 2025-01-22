@@ -522,6 +522,22 @@ def AddDatabaseFlags(parser, update=False, hidden=False):
   )
 
 
+def AddTags(parser):
+  """Adds the `--tags` flag."""
+  help_ = (
+      'Comma-separated list of tags to set on the instance. Use an equals sign'
+      'to separate tag name and value.(e.g., `--tags tag1:value1,tag2=value2`)'
+  )
+  parser.add_argument(
+      '--tags',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='TAG=VALUE',
+      required=False,
+      help=help_,
+      hidden=True,
+  )
+
+
 def AddDatabaseVersion(
     parser, restrict_choices=True, hidden=False, support_default_version=True
 ):

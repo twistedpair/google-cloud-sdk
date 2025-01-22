@@ -107,8 +107,8 @@ class SubmitBuildRequest(proto.Message):
                 build will clean up the temporary image on a best-effort
                 basis.
             base_image (str):
-                Optional. The base image used to opt into
-                automatic base image updates.
+                Optional. The base image to use for the
+                build.
             environment_variables (MutableMapping[str, str]):
                 Optional. User-provided build-time
                 environment variables.

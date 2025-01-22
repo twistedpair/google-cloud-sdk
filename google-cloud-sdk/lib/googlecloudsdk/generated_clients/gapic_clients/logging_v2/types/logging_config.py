@@ -3320,8 +3320,8 @@ class CopyLogEntriesRequest(proto.Message):
             20k characters. An empty filter matches all log
             entries.
         destination (str):
-            Required. Destination to which to copy log
-            entries.
+            Required. Destination to which to copy log entries. For
+            example: "storage.googleapis.com/[GCS_BUCKET]".
     """
 
     name: str = proto.Field(

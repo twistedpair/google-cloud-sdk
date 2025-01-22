@@ -87,10 +87,7 @@ def GetCapacityArg(gateway_message):
       message_enum=gateway_message.CapacityValueValuesEnum,
       custom_mappings={
           'CAPACITY_1_GBPS': ('1g', 'Gateway will have capacity of 1 Gbps'),
-          'CAPACITY_5_GBPS': ('5g', 'Gateway will have capacity of 5 Gbps'),
           'CAPACITY_10_GBPS': ('10g', 'Gateway will have capacity of 10 Gbps'),
-          'CAPACITY_25_GBPS': ('25g', 'Gateway will have capacity of 25 Gbps'),
-          'CAPACITY_50_GBPS': ('50g', 'Gateway will have capacity of 50 Gbps'),
           'CAPACITY_100_GBPS': (
               '100g',
               'Gateway will have capacity of 100 Gbps',

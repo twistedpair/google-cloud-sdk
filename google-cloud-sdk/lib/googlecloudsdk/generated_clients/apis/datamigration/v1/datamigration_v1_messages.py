@@ -745,6 +745,7 @@ class ColumnEntity(_messages.Message):
     charset: Charset override - instead of table level charset.
     collation: Collation override - instead of table level collation.
     comment: Comment associated with the column.
+    computed: Is the column a computed column.
     customFeatures: Custom engine specific features.
     dataType: Column data type.
     defaultValue: Default value of the column.
@@ -792,18 +793,19 @@ class ColumnEntity(_messages.Message):
   charset = _messages.StringField(4)
   collation = _messages.StringField(5)
   comment = _messages.StringField(6)
-  customFeatures = _messages.MessageField('CustomFeaturesValue', 7)
-  dataType = _messages.StringField(8)
-  defaultValue = _messages.StringField(9)
-  fractionalSecondsPrecision = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  length = _messages.IntegerField(11)
-  name = _messages.StringField(12)
-  nullable = _messages.BooleanField(13)
-  ordinalPosition = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  precision = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  scale = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  setValues = _messages.StringField(17, repeated=True)
-  udt = _messages.BooleanField(18)
+  computed = _messages.BooleanField(7)
+  customFeatures = _messages.MessageField('CustomFeaturesValue', 8)
+  dataType = _messages.StringField(9)
+  defaultValue = _messages.StringField(10)
+  fractionalSecondsPrecision = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  length = _messages.IntegerField(12)
+  name = _messages.StringField(13)
+  nullable = _messages.BooleanField(14)
+  ordinalPosition = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  precision = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  scale = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  setValues = _messages.StringField(18, repeated=True)
+  udt = _messages.BooleanField(19)
 
 
 class CommitConversionWorkspaceRequest(_messages.Message):

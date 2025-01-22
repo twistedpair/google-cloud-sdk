@@ -19,6 +19,50 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
+from googlecloudsdk.calliope import exceptions
+
+
+def GenerateMetadataJob(args):
+  """Generates a Metadata Job."""
+  if args.type == 'IMPORT':
+    module = dataplex_api.GetMessageModule()
+    return module.GoogleCloudDataplexV1MetadataJob(
+        labels=dataplex_api.CreateLabels(
+            module.GoogleCloudDataplexV1MetadataJob, args
+        ),
+        type=module.GoogleCloudDataplexV1MetadataJob.TypeValueValuesEnum(
+            args.type
+        ),
+        importSpec=GenerateImportMetadataJobSpec(args),
+    )
+  raise exceptions.BadArgumentException(
+      '--type', 'Current type is not supported in Gcloud.'
+  )
+
+
+def GenerateImportMetadataJobSpec(args):
+  """Generates a Metadata Import Job Spec."""
+  module = dataplex_api.GetMessageModule()
+  import_job_spec = module.GoogleCloudDataplexV1MetadataJobImportJobSpec(
+      aspectSyncMode=module.GoogleCloudDataplexV1MetadataJobImportJobSpec.AspectSyncModeValueValuesEnum(
+          args.import_aspect_sync_mode
+      ),
+      entrySyncMode=module.GoogleCloudDataplexV1MetadataJobImportJobSpec.EntrySyncModeValueValuesEnum(
+          args.import_entry_sync_mode
+      ),
+      scope=module.GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(
+          entryGroups=args.import_entry_groups,
+          entryTypes=args.import_entry_types,
+          aspectTypes=args.import_aspect_types,
+      ),
+      sourceCreateTime=args.import_source_create_time,
+      sourceStorageUri=args.import_source_storage_uri,
+  )
+  if hasattr(args, 'import_log_level') and args.IsSpecified('import_log_level'):
+    import_job_spec.logLevel = module.GoogleCloudDataplexV1MetadataJobImportJobSpec.LogLevelValueValuesEnum(
+        args.import_log_level
+    )
+  return import_job_spec
 
 
 def WaitForOperation(operation):

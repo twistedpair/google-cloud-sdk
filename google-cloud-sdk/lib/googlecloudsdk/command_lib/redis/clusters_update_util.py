@@ -80,6 +80,7 @@ def UpdateMaintenanceWindowAny(unused_cluster_ref, args, patch_request):
 def UpdateOnDemandMaintenance(unused_cluster_ref, args, patch_request):
   """Hook to update on demand maintenance to the update mask of the request."""
   if args.IsSpecified('ondemand_maintenance'):
+    patch_request.cluster.ondemandMaintenance = args.ondemand_maintenance
     patch_request = AddFieldToUpdateMask(
         'ondemand_maintenance', patch_request
     )

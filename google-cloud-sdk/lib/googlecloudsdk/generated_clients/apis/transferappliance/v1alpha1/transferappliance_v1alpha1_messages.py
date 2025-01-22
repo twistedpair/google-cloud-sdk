@@ -562,11 +562,11 @@ class GcsDestination(_messages.Message):
   a transfer.
 
   Fields:
-    outputBucket: The name of the Cloud Storage bucket where files should be
-      placed.
-    outputPath: The path in the output bucket where files should be placed.
-      This must either be empty, in which case files will be placed in the
-      root of the bucket, or it must end with a "/".
+    outputBucket: Optional. The name of the Cloud Storage bucket where files
+      should be placed.
+    outputPath: Optional. The path in the output bucket where files should be
+      placed. This must either be empty, in which case files will be placed in
+      the root of the bucket, or it must end with a "/".
   """
 
   outputBucket = _messages.StringField(1)
@@ -853,9 +853,9 @@ class OfflineExportFeature(_messages.Message):
     stsAccount: Output only. The Storage Transfer Service service account used
       for this transfer. This account must be given roles/storage.admin access
       to the output bucket.
-    transferManifest: Manifest file for the transfer. When this is provided,
-      only files specificied in the manifest file are transferred. Only one
-      GCSSource can be set with this option.
+    transferManifest: Optional. Manifest file for the transfer. When this is
+      provided, only files specificied in the manifest file are transferred.
+      Only one GCSSource can be set with this option.
     workloadAccount: Output only. The service account associated with this
       transfer. This account must be granted the roles/storage.admin role on
       the output bucket, and the roles/cloudkms.cryptoKeyDecrypter and
@@ -882,7 +882,7 @@ class OfflineImportFeature(_messages.Message):
   Fields:
     allocatedBytesCount: Output only. The total number of bytes allocated on
       the appliance for data transfer.
-    destination: The destination of the transfer.
+    destination: Optional. The destination of the transfer.
     lastNonCancelledState: Output only. Holds the last active state of the
       transfer before it was set to CANCELLED. When the transfer state is
       CANCELLED, this field reflects its most recent active state. If the
@@ -972,7 +972,7 @@ class OnlineImportFeature(_messages.Message):
   connection.
 
   Fields:
-    destination: The destination of the transfer.
+    destination: Optional. The destination of the transfer.
     jobName: Output only. The Transfer Job Name for Online Imports.
     transferResults: Output only. The results of the transfer.
   """
@@ -1140,8 +1140,8 @@ class Order(_messages.Message):
       [a-z0-9_-]{0,63}.
 
   Fields:
-    address: The address to ship the order to. See https://github.com/googleap
-      is/googleapis/blob/master/google/type/postal_address.proto.
+    address: Optional. The address to ship the order to. See https://github.co
+      m/googleapis/googleapis/blob/master/google/type/postal_address.proto.
     annotations: User annotations. See https://google.aip.dev/128#annotations.
     appliances: The appliances included in this order.
     cancelled: Whether the order has been cancelled. For an order that is in
@@ -1551,12 +1551,12 @@ class SavedAddress(_messages.Message):
       [a-z0-9_-]{0,63}.
 
   Fields:
-    address: The saved shipping address.
+    address: Optional. The saved shipping address.
     annotations: User annotations. See https://google.aip.dev/128#annotations.
     createTime: Output only. Create time.
     deleteTime: Output only. Delete time stamp.
-    displayName: A mutable, user-settable name for the resource. It does not
-      need to be unique and should be less than 64 characters.
+    displayName: Optional. A mutable, user-settable name for the resource. It
+      does not need to be unique and should be less than 64 characters.
     etag: Strongly validated etag, computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding. See
@@ -1808,8 +1808,8 @@ class SubmitOrderRequest(_messages.Message):
   r"""Request message for the SubmitOrder method.
 
   Fields:
-    etag: Strongly validated etag, computed by the server to ensure the client
-      has an up-to-date value before proceeding. See
+    etag: Optional. Strongly validated etag, computed by the server to ensure
+      the client has an up-to-date value before proceeding. See
       https://google.aip.dev/154.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server

@@ -73,14 +73,19 @@ class IndexesClient(object):
 
     index_update_method = None
     if args.index_update_method:
-      if args.index_update_method == 'stream_update':
+      if args.index_update_method == 'stream-update':
         index_update_method = (
             self.messages.GoogleCloudAiplatformV1beta1Index.
             IndexUpdateMethodValueValuesEnum.STREAM_UPDATE)
-      else:
+      elif args.index_update_method == 'batch-update':
         index_update_method = (
             self.messages.GoogleCloudAiplatformV1beta1Index.
             IndexUpdateMethodValueValuesEnum.BATCH_UPDATE)
+      else:
+        raise gcloud_exceptions.BadArgumentException(
+            '--index-update-method',
+            'Invalid index update method: {}'.format(args.index_update_method),
+        )
 
     encryption_spec = None
     if args.encryption_kms_key_name is not None:
@@ -108,14 +113,18 @@ class IndexesClient(object):
 
     index_update_method = None
     if args.index_update_method:
-      if args.index_update_method == 'stream_update':
+      if args.index_update_method == 'stream-update':
         index_update_method = (
             self.messages.GoogleCloudAiplatformV1Index
             .IndexUpdateMethodValueValuesEnum.STREAM_UPDATE)
-      else:
+      elif args.index_update_method == 'batch-update':
         index_update_method = (
-            self.messages.GoogleCloudAiplatformV1Index
-            .IndexUpdateMethodValueValuesEnum.BATCH_UPDATE
+            self.messages.GoogleCloudAiplatformV1Index.IndexUpdateMethodValueValuesEnum.BATCH_UPDATE
+        )
+      else:
+        raise gcloud_exceptions.BadArgumentException(
+            '--index-update-method',
+            'Invalid index update method: {}'.format(args.index_update_method),
         )
 
     encryption_spec = None

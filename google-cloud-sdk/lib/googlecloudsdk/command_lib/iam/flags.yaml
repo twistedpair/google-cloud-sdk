@@ -64,7 +64,9 @@ oauth_client:
 
       * `openid`: Associate you with your personal info on Google Cloud.
 
-      * `email`: View your Google Cloud Account email address.
+      * `email`: The OAuth client can read a federated identity's email address.
+
+      * `groups`: The OAuth client can read a federated identity's groups.
   allowed_redirect_uris:
     api_field: oauthClient.allowedRedirectUris
     arg_name: allowed-redirect-uris

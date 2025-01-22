@@ -33,6 +33,12 @@ ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'disable_managed_prometheus': (
         'monitoring_config.managed_prometheus_config.enabled'
     ),
+    'enable_cloud_monitoring': (
+        'monitoring_config.cloud_monitoring_config.enabled'
+    ),
+    'disable_cloud_monitoring': (
+        'monitoring_config.cloud_monitoring_config.enabled'
+    ),
     'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
     'proxy_secret_name': 'proxy_config.kubernetes_secret.name',
     'proxy_secret_namespace': 'proxy_config.kubernetes_secret.namespace',

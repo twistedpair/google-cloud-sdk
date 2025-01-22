@@ -4898,6 +4898,9 @@ class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Mes
         fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
         cases).
       STORAGE_USED_BYTES: Sotrage used by a resource.
+      NODE_COUNT: Node count for a resource. It represents the number of nodes
+        units in a bigtable/spanner instance.
+      MEMORY_USED_BYTES: Memory used by a resource (in bytes).
     """
     METRIC_TYPE_UNSPECIFIED = 0
     CPU_UTILIZATION = 1
@@ -4905,6 +4908,8 @@ class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Mes
     NETWORK_CONNECTIONS = 3
     STORAGE_UTILIZATION = 4
     STORAGE_USED_BYTES = 5
+    NODE_COUNT = 6
+    MEMORY_USED_BYTES = 7
 
   aggregationType = _messages.EnumField('AggregationTypeValueValuesEnum', 1)
   metricType = _messages.EnumField('MetricTypeValueValuesEnum', 2)

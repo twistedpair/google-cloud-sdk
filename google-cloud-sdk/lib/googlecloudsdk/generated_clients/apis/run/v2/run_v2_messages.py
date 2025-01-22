@@ -37,6 +37,91 @@ class GoogleCloudRunV2BinaryAuthorization(_messages.Message):
   useDefault = _messages.BooleanField(3)
 
 
+class GoogleCloudRunV2BuildConfig(_messages.Message):
+  r"""Describes the Build step of the function that builds a container from
+  the given source.
+
+  Messages:
+    EnvironmentVariablesValue: Optional. User-provided build-time environment
+      variables for the function
+
+  Fields:
+    baseImage: Optional. The base image used to build the function.
+    enableAutomaticUpdates: Optional. Sets whether the function will receive
+      automatic base image updates.
+    environmentVariables: Optional. User-provided build-time environment
+      variables for the function
+    functionTarget: Optional. The name of the function (as defined in source
+      code) that will be executed. Defaults to the resource name suffix, if
+      not specified. For backward compatibility, if function with given name
+      is not found, then the system will try to use function named "function".
+    imageUri: Optional. Artifact Registry URI to store the built image.
+    name: Output only. The Cloud Build name of the latest successful
+      deployment of the function.
+    serviceAccount: Optional. Service account to be used for building the
+      container. The format of this field is
+      `projects/{projectId}/serviceAccounts/{serviceAccountEmail}`.
+    sourceLocation: The Cloud Storage bucket URI where the function source
+      code is located.
+    workerPool: Optional. Name of the Cloud Build Custom Worker Pool that
+      should be used to build the Cloud Run function. The format of this field
+      is `projects/{project}/locations/{region}/workerPools/{workerPool}`
+      where {project} and {region} are the project id and region respectively
+      where the worker pool is defined and {workerPool} is the short name of
+      the worker pool.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentVariablesValue(_messages.Message):
+    r"""Optional. User-provided build-time environment variables for the
+    function
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EnvironmentVariablesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EnvironmentVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  baseImage = _messages.StringField(1)
+  enableAutomaticUpdates = _messages.BooleanField(2)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
+  functionTarget = _messages.StringField(4)
+  imageUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  sourceLocation = _messages.StringField(8)
+  workerPool = _messages.StringField(9)
+
+
+class GoogleCloudRunV2BuildInfo(_messages.Message):
+  r"""Build information of the image.
+
+  Fields:
+    functionTarget: Output only. Entry point of the function when the image is
+      a Cloud Run function.
+    sourceLocation: Output only. Source code location of the image.
+  """
+
+  functionTarget = _messages.StringField(1)
+  sourceLocation = _messages.StringField(2)
+
+
 class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
   r"""Build the source using Buildpacks.
 
@@ -45,8 +130,7 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
       variables.
 
   Fields:
-    baseImage: Optional. The base image used to opt into automatic base image
-      updates.
+    baseImage: Optional. The base image to use for the build.
     cacheImageUri: Optional. cache_image_uri is the GCR/AR URL where the cache
       image will be stored. cache_image_uri is optional and omitting it will
       disable caching. This URL must be stable across builds. It is used to
@@ -322,6 +406,10 @@ class GoogleCloudRunV2Container(_messages.Message):
   Fields:
     args: Arguments to the entrypoint. The docker image's CMD is used if this
       is not provided.
+    baseImageUri: Base image for this container. Only supported for services.
+      If set. it indicates that the service is enrolled into automatic base
+      image update.
+    buildInfo: Output only. The build info of the container image.
     command: Entrypoint array. Not executed within a shell. The docker image's
       ENTRYPOINT is used if this is not provided.
     dependsOn: Names of the containers that must start before this container.
@@ -348,17 +436,19 @@ class GoogleCloudRunV2Container(_messages.Message):
   """
 
   args = _messages.StringField(1, repeated=True)
-  command = _messages.StringField(2, repeated=True)
-  dependsOn = _messages.StringField(3, repeated=True)
-  env = _messages.MessageField('GoogleCloudRunV2EnvVar', 4, repeated=True)
-  image = _messages.StringField(5)
-  livenessProbe = _messages.MessageField('GoogleCloudRunV2Probe', 6)
-  name = _messages.StringField(7)
-  ports = _messages.MessageField('GoogleCloudRunV2ContainerPort', 8, repeated=True)
-  resources = _messages.MessageField('GoogleCloudRunV2ResourceRequirements', 9)
-  startupProbe = _messages.MessageField('GoogleCloudRunV2Probe', 10)
-  volumeMounts = _messages.MessageField('GoogleCloudRunV2VolumeMount', 11, repeated=True)
-  workingDir = _messages.StringField(12)
+  baseImageUri = _messages.StringField(2)
+  buildInfo = _messages.MessageField('GoogleCloudRunV2BuildInfo', 3)
+  command = _messages.StringField(4, repeated=True)
+  dependsOn = _messages.StringField(5, repeated=True)
+  env = _messages.MessageField('GoogleCloudRunV2EnvVar', 6, repeated=True)
+  image = _messages.StringField(7)
+  livenessProbe = _messages.MessageField('GoogleCloudRunV2Probe', 8)
+  name = _messages.StringField(9)
+  ports = _messages.MessageField('GoogleCloudRunV2ContainerPort', 10, repeated=True)
+  resources = _messages.MessageField('GoogleCloudRunV2ResourceRequirements', 11)
+  startupProbe = _messages.MessageField('GoogleCloudRunV2Probe', 12)
+  volumeMounts = _messages.MessageField('GoogleCloudRunV2VolumeMount', 13, repeated=True)
+  workingDir = _messages.StringField(14)
 
 
 class GoogleCloudRunV2ContainerOverride(_messages.Message):
@@ -2241,6 +2331,7 @@ class GoogleCloudRunV2Service(_messages.Message):
       limits, and rules.
     binaryAuthorization: Optional. Settings for the Binary Authorization
       feature.
+    buildConfig: Optional. Configuration for building a Cloud Run function.
     client: Arbitrary identifier for the API client.
     clientVersion: Arbitrary version identifier for the API client.
     conditions: Output only. The Conditions of all other associated sub-
@@ -2490,38 +2581,39 @@ class GoogleCloudRunV2Service(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
-  client = _messages.StringField(3)
-  clientVersion = _messages.StringField(4)
-  conditions = _messages.MessageField('GoogleCloudRunV2Condition', 5, repeated=True)
-  createTime = _messages.StringField(6)
-  creator = _messages.StringField(7)
-  customAudiences = _messages.StringField(8, repeated=True)
-  defaultUriDisabled = _messages.BooleanField(9)
-  deleteTime = _messages.StringField(10)
-  description = _messages.StringField(11)
-  etag = _messages.StringField(12)
-  expireTime = _messages.StringField(13)
-  generation = _messages.IntegerField(14)
-  ingress = _messages.EnumField('IngressValueValuesEnum', 15)
-  invokerIamDisabled = _messages.BooleanField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  lastModifier = _messages.StringField(18)
-  latestCreatedRevision = _messages.StringField(19)
-  latestReadyRevision = _messages.StringField(20)
-  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 21)
-  name = _messages.StringField(22)
-  observedGeneration = _messages.IntegerField(23)
-  reconciling = _messages.BooleanField(24)
-  satisfiesPzs = _messages.BooleanField(25)
-  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 26)
-  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 27)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 28)
-  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 29, repeated=True)
-  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 30, repeated=True)
-  uid = _messages.StringField(31)
-  updateTime = _messages.StringField(32)
-  uri = _messages.StringField(33)
-  urls = _messages.StringField(34, repeated=True)
+  buildConfig = _messages.MessageField('GoogleCloudRunV2BuildConfig', 3)
+  client = _messages.StringField(4)
+  clientVersion = _messages.StringField(5)
+  conditions = _messages.MessageField('GoogleCloudRunV2Condition', 6, repeated=True)
+  createTime = _messages.StringField(7)
+  creator = _messages.StringField(8)
+  customAudiences = _messages.StringField(9, repeated=True)
+  defaultUriDisabled = _messages.BooleanField(10)
+  deleteTime = _messages.StringField(11)
+  description = _messages.StringField(12)
+  etag = _messages.StringField(13)
+  expireTime = _messages.StringField(14)
+  generation = _messages.IntegerField(15)
+  ingress = _messages.EnumField('IngressValueValuesEnum', 16)
+  invokerIamDisabled = _messages.BooleanField(17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  lastModifier = _messages.StringField(19)
+  latestCreatedRevision = _messages.StringField(20)
+  latestReadyRevision = _messages.StringField(21)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 22)
+  name = _messages.StringField(23)
+  observedGeneration = _messages.IntegerField(24)
+  reconciling = _messages.BooleanField(25)
+  satisfiesPzs = _messages.BooleanField(26)
+  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 27)
+  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 28)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 29)
+  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 30, repeated=True)
+  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 31, repeated=True)
+  uid = _messages.StringField(32)
+  updateTime = _messages.StringField(33)
+  uri = _messages.StringField(34)
+  urls = _messages.StringField(35, repeated=True)
 
 
 class GoogleCloudRunV2ServiceMesh(_messages.Message):
@@ -3583,6 +3675,8 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
       pool.
 
   Fields:
+    manualInstanceCount: Optional. The total number of instances in manual
+      scaling mode.
     maxInstanceCount: Optional. The maximum count of instances distributed
       among revisions based on the specified instance split percentages.
     maxSurge: Optional. A maximum percentage of instances that will be moved
@@ -3616,11 +3710,12 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
-  maxInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 5)
+  manualInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxSurge = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 6)
 
 
 class GoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):
@@ -4030,6 +4125,9 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
       string operations to the substitutions. NOTE: this is always enabled for
       triggered builds and cannot be overridden in the build configuration
       file.
+    enableStructuredLogging: Optional. Option to specify whether structured
+      logging is enabled. If true, JSON-formatted logs are parsed as
+      structured logs.
     env: A list of global environment variable definitions that will exist for
       all build steps in this build. If a variable is defined in both globally
       and in a build step, the variable will use the build step value. The
@@ -4179,17 +4277,18 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
   defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 2)
   diskSizeGb = _messages.IntegerField(3)
   dynamicSubstitutions = _messages.BooleanField(4)
-  env = _messages.StringField(5, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 7)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
-  pool = _messages.MessageField('GoogleDevtoolsCloudbuildV1PoolOption', 9)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 10)
-  secretEnv = _messages.StringField(11, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 12, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 13)
-  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 14, repeated=True)
-  workerPool = _messages.StringField(15)
+  enableStructuredLogging = _messages.BooleanField(5)
+  env = _messages.StringField(6, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 7)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 8)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 9)
+  pool = _messages.MessageField('GoogleDevtoolsCloudbuildV1PoolOption', 10)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 11)
+  secretEnv = _messages.StringField(12, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 13, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 14)
+  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 15, repeated=True)
+  workerPool = _messages.StringField(16)
 
 
 class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
@@ -6492,7 +6591,8 @@ class UtilStatusProto(_messages.Message):
       status. copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
       optional proto2.bridge.MessageSet message_set = 5;
     space: The following are usually only present when code != 0 Space to
-      which this status belongs
+      which this status belongs copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional string space = 2;
   """
 
   canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)

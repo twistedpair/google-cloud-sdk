@@ -6031,11 +6031,17 @@ class GoogleCloudDataplexV1DataQualitySpecPostScanActionsScoreThresholdTrigger(_
 
 class GoogleCloudDataplexV1DataScan(_messages.Message):
   r"""Represents a user-visible job which provides the insights for the
-  related data source.For example: Data Quality: generates queries based on
-  the rules and runs against the data to get data quality check results. Data
-  Profile: analyzes the data in table(s) and generates insights about the
+  related data source.For example: Data quality: generates queries based on
+  the rules and runs against the data to get data quality check results. For
+  more information, see Auto data quality overview
+  (https://cloud.google.com/dataplex/docs/auto-data-quality-overview). Data
+  profile: analyzes the data in tables and generates insights about the
   structure, content and relationships (such as null percent, cardinality,
-  min/max/mean, etc).
+  min/max/mean, etc). For more information, see About data profiling
+  (https://cloud.google.com/dataplex/docs/data-profiling-overview). Data
+  discovery: scans data in Cloud Storage buckets to extract and then catalog
+  metadata. For more information, see Discover and catalog Cloud Storage data
+  (https://cloud.google.com/bigquery/docs/automatic-discovery).
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the DataScan.
@@ -7102,7 +7108,9 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
     name: Identifier. The relative resource name of the entry, in the format p
       rojects/{project_id_or_number}/locations/{location_id}/entryGroups/{entr
       y_group_id}/entries/{entry_id}.
-    parentEntry: Optional. Immutable. The resource name of the parent entry.
+    parentEntry: Optional. Immutable. The resource name of the parent entry,
+      in the format projects/{project_id_or_number}/locations/{location_id}/en
+      tryGroups/{entry_group_id}/entries/{entry_id}.
     updateTime: Output only. The time when the entry was last updated in
       Dataplex.
   """

@@ -743,7 +743,7 @@ class ArgObject(arg_utils.ArgObjectType):
         value_type=value_type,
         help_text=self.help_text,
         hidden=field_spec.hidden,
-        enable_shorthand=is_root,
+        root_level=is_root,
         disable_key_description=self.disable_key_description)
 
     additional_prop_spec_type = _AdditionalPropsType(
@@ -799,7 +799,7 @@ class ArgObject(arg_utils.ArgObjectType):
         required_keys=required,
         repeated=field_spec.repeated,
         hidden=field_spec.hidden,
-        enable_shorthand=is_root,
+        root_level=is_root,
         disable_key_description=self.disable_key_description)
 
     return _MessageFieldType(
@@ -834,7 +834,7 @@ class ArgObject(arg_utils.ArgObjectType):
         help_text=self.help_text or default_help_text,
         repeated=field_spec.repeated,
         hidden=field_spec.hidden,
-        enable_shorthand=False,
+        root_level=False,
         enable_file_upload=(
             not isinstance(value_type, arg_parsers.FileContents)),
         disable_key_description=self.disable_key_description

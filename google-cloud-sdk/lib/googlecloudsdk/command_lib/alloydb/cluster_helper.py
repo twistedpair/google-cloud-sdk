@@ -719,3 +719,36 @@ def ConstructExportRequestFromArgs(alloydb_messages, cluster_ref, args):
       name=cluster_ref.RelativeName(),
       exportClusterRequest=export_cluster_request,
   )
+
+
+def ConstructImportRequestFromArgs(alloydb_messages, cluster_ref, args):
+  """Returns the cluster import request based on args."""
+  import_cluster_request = alloydb_messages.ImportClusterRequest()
+  import_cluster_request.database = args.database
+  import_cluster_request.user = args.user
+  import_cluster_request.gcsUri = args.gcs_uri
+  import_cluster_request.usernameOptional = True
+  if args.csv:
+    import_cluster_request.csvImportOptions = (
+        alloydb_messages.CsvImportOptions()
+    )
+    import_cluster_request.csvImportOptions.table = args.table
+    if args.columns:
+      import_cluster_request.csvImportOptions.columns = args.columns.split(',')
+    import_cluster_request.csvImportOptions.fieldDelimiter = (
+        args.field_delimiter
+    )
+    import_cluster_request.csvImportOptions.escapeCharacter = (
+        args.escape_character
+    )
+    import_cluster_request.csvImportOptions.quoteCharacter = (
+        args.quote_character
+    )
+  elif args.sql:
+    import_cluster_request.sqlImportOptions = (
+        alloydb_messages.SqlImportOptions()
+    )
+  return alloydb_messages.AlloydbProjectsLocationsClustersImportRequest(
+      name=cluster_ref.RelativeName(),
+      importClusterRequest=import_cluster_request,
+  )

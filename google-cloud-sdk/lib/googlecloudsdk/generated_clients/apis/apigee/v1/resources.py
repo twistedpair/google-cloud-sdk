@@ -646,6 +646,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SECURITYMONITORINGCONDITIONS = (
+      'organizations.securityMonitoringConditions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/securityMonitoringConditions/'
+              '{securityMonitoringConditionsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SECURITYPROFILES = (
       'organizations.securityProfiles',
       '{+name}',

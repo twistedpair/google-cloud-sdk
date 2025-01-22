@@ -50,6 +50,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
+    self.projects_locations_spokes_gatewayAdvertisedRoutes = self.ProjectsLocationsSpokesGatewayAdvertisedRoutesService(self)
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1808,6 +1809,151 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsRegionalEndpointsListRequest',
         response_type_name='GoogleCloudNetworkconnectivityV1betaListRegionalEndpointsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSpokesGatewayAdvertisedRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_spokes_gatewayAdvertisedRoutes resource."""
+
+    _NAME = 'projects_locations_spokes_gatewayAdvertisedRoutes'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsSpokesGatewayAdvertisedRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a GatewayAdvertisedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}/gatewayAdvertisedRoutes',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.spokes.gatewayAdvertisedRoutes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['gatewayAdvertisedRouteId', 'requestId'],
+        relative_path='v1beta/{+parent}/gatewayAdvertisedRoutes',
+        request_field='googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a GatewayAdvertisedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}/gatewayAdvertisedRoutes/{gatewayAdvertisedRoutesId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.spokes.gatewayAdvertisedRoutes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a GatewayAdvertisedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}/gatewayAdvertisedRoutes/{gatewayAdvertisedRoutesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.spokes.gatewayAdvertisedRoutes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List GatewayAdvertisedRoutes.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListGatewayAdvertisedRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}/gatewayAdvertisedRoutes',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.spokes.gatewayAdvertisedRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/gatewayAdvertisedRoutes',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListGatewayAdvertisedRoutesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a GatewayAdvertisedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}/gatewayAdvertisedRoutes/{gatewayAdvertisedRoutesId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.spokes.gatewayAdvertisedRoutes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesGatewayAdvertisedRoutesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

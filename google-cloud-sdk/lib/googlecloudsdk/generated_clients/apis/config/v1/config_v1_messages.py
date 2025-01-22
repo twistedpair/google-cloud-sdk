@@ -827,12 +827,12 @@ class ConfigProjectsLocationsTerraformVersionsListRequest(_messages.Message):
       synonymous with equality). {field} can refer to a proto or JSON field,
       or a synthetic field. Field names can be camelCase or snake_case.
     orderBy: Optional. Field to use to sort the list.
-    pageSize: Optional. When requesting a page of resources, 'page_size'
-      specifies number of resources to return. If unspecified, at most 500
-      will be returned. The maximum value is 1000.
+    pageSize: Optional. When requesting a page of terraform versions,
+      'page_size' specifies number of terraform versions to return. If
+      unspecified, at most 500 will be returned. The maximum value is 1000.
     pageToken: Optional. Token returned by previous call to
       'ListTerraformVersions' which specifies the position in the list from
-      where to continue listing the resources.
+      where to continue listing the terraform versions.
     parent: Required. The parent in whose context the TerraformVersions are
       listed. The parent value is in the format:
       'projects/{project_id}/locations/{location}'.

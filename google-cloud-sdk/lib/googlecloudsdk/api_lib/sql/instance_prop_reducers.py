@@ -211,6 +211,24 @@ def DatabaseFlags(sql_messages,
   return updated_flags
 
 
+def Tags(sql_messages, tags=None):
+  """Generates the tags for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    tags: list of tags.
+
+  Returns:
+    list of sql_messages.Tags objects
+  """
+  updated_tags = []
+  if tags:
+    for tag in tags:
+      updated_tags.append(sql_messages.Tags(tag=tag))
+
+  return updated_tags
+
+
 def MaintenanceWindow(sql_messages,
                       instance,
                       maintenance_release_channel=None,

@@ -1657,6 +1657,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       string operations to the substitutions. NOTE: this is always enabled for
       triggered builds and cannot be overridden in the build configuration
       file.
+    enableStructuredLogging: Optional. Option to specify whether structured
+      logging is enabled. If true, JSON-formatted logs are parsed as
+      structured logs.
     env: A list of global environment variable definitions that will exist for
       all build steps in this build. If a variable is defined in both globally
       and in a build step, the variable will use the build step value. The
@@ -1806,17 +1809,18 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
   defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 2)
   diskSizeGb = _messages.IntegerField(3)
   dynamicSubstitutions = _messages.BooleanField(4)
-  env = _messages.StringField(5, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 7)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
-  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 9)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 10)
-  secretEnv = _messages.StringField(11, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 12, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 13)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 14, repeated=True)
-  workerPool = _messages.StringField(15)
+  enableStructuredLogging = _messages.BooleanField(5)
+  env = _messages.StringField(6, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 7)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 8)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 9)
+  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 10)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 11)
+  secretEnv = _messages.StringField(12, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 13, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 14)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 15, repeated=True)
+  workerPool = _messages.StringField(16)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption(_messages.Message):

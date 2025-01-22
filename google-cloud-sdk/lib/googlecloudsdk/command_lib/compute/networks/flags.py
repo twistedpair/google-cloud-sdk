@@ -32,6 +32,17 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+LIST_FORMAT_WITH_ULA_IPV6 = """\
+    table(
+      name,
+      x_gcloud_subnet_mode:label=SUBNET_MODE,
+      x_gcloud_bgp_routing_mode:label=BGP_ROUTING_MODE,
+      IPv4Range:label=IPV4_RANGE,
+      gatewayIPv4,
+      internalIpv6Range
+    )"""
+
+
 class NetworksCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):

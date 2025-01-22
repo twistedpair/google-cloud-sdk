@@ -139,7 +139,7 @@ def AddFullManagement(parser):
       # details.
       action="store_const",
       const=True,
-      help=("Enable full cluster management type. This is a preview feature."))
+      help=("Enable full cluster management type."))
 
 
 def AddUsePrivateEndpoint(parser):

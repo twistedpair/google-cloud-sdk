@@ -83,6 +83,17 @@ def NormalizeForSearch(value, html=False):
                   if not unicodedata.combining(c)])
 
 
+def _NumericType(value):
+  """Returns value converted to int or float type."""
+  # If already a number, return it to avoid rounding errors.
+  if isinstance(value, int) or isinstance(value, float):
+    return value
+  try:
+    return int(value)
+  except ValueError:
+    return float(value)
+
+
 def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
   """Returns True if value word matches pattern.
 
@@ -104,9 +115,9 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     See surface/topic/filters.py for a table of example matches.
   """
   operand, standard_regex, deprecated_regex = pattern
-  if isinstance(value, float):
+  if isinstance(value, (int, float)):
     try:
-      if value == float(operand):
+      if value == _NumericType(operand):
         return True
     except ValueError:
       pass
@@ -452,12 +463,9 @@ class _ExprOperand(object):
         self.numeric_constant = True
       except KeyError:
         try:
-          self.numeric_value = int(value)
+          self.numeric_value = _NumericType(value)
         except ValueError:
-          try:
-            self.numeric_value = float(value)
-          except ValueError:
-            pass
+          pass
     else:
       self.string_value = _Stringize(value)
       self.numeric_value = value
@@ -578,7 +586,7 @@ class _ExprOperator(_Expr):
 
         if operand.numeric_value is not None:
           try:
-            if self.Apply(float(value), operand.numeric_value):
+            if self.Apply(_NumericType(value), operand.numeric_value):
               return True
             if not operand.numeric_constant:
               continue

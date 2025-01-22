@@ -13,6 +13,33 @@ from apitools.base.py import extra_types
 package = 'storagebatchoperations'
 
 
+class Bucket(_messages.Message):
+  r"""Describes configuration of a single bucket and its objects to be
+  transformed.
+
+  Fields:
+    bucket: Required. Bucket name for the objects to be transformed.
+    manifest: Specifies objects in a manifest file.
+    prefixList: Specifies objects matching a prefix set.
+  """
+
+  bucket = _messages.StringField(1)
+  manifest = _messages.MessageField('Manifest', 2)
+  prefixList = _messages.MessageField('PrefixList', 3)
+
+
+class BucketList(_messages.Message):
+  r"""Describes list of buckets and their objects to be transformed.
+
+  Fields:
+    buckets: Required. List of buckets and their objects to be transformed.
+      Currently, only one bucket configuration is supported. If multiple
+      buckets are specified, an error will be returned.
+  """
+
+  buckets = _messages.MessageField('Bucket', 1, repeated=True)
+
+
 class CancelJobRequest(_messages.Message):
   r"""Message for Job to Cancel
 
@@ -220,6 +247,8 @@ class Job(_messages.Message):
     StateValueValuesEnum: Output only. State of the job.
 
   Fields:
+    bucketList: Specifies a list of buckets and their objects to be
+      transformed.
     completeTime: Output only. The time that the job was completed.
     counters: Output only. Information about the progress of the job.
     createTime: Output only. The time that the job was created.
@@ -229,13 +258,15 @@ class Job(_messages.Message):
     errorSummaries: Output only. Summarizes errors encountered with sample
       error log entries.
     manifest: Manifest specifies list of objects to be transformed.
+      Deprecated. Use `bucket_list` instead.
     name: Identifier. The resource name of the Job. job_id is unique within
       the project and location, that is either set by the customer or defined
       by the service. Format:
       projects/{project}/locations/{location}/jobs/{job_id} . For example:
       "projects/123456/locations/us-central1/jobs/job01".
     prefixList: Specifies prefixes of objects to be transformed. Note:
-      `prefix_list` must belong to the same bucket.
+      `prefix_list` must belong to the same bucket. Deprecated. Use
+      `bucket_list` instead.
     putKmsKey: Update objects KMS key.
     putMetadata: Updates object metadata. Allows updating fixed-key and custom
       metadata and fixed-key metadata i.e. Cache-Control, Content-Disposition,
@@ -261,20 +292,21 @@ class Job(_messages.Message):
     CANCELED = 3
     FAILED = 4
 
-  completeTime = _messages.StringField(1)
-  counters = _messages.MessageField('Counters', 2)
-  createTime = _messages.StringField(3)
-  deleteObject = _messages.MessageField('DeleteObject', 4)
-  description = _messages.StringField(5)
-  errorSummaries = _messages.MessageField('ErrorSummary', 6, repeated=True)
-  manifest = _messages.MessageField('Manifest', 7)
-  name = _messages.StringField(8)
-  prefixList = _messages.MessageField('PrefixList', 9)
-  putKmsKey = _messages.MessageField('PutKmsKey', 10)
-  putMetadata = _messages.MessageField('PutMetadata', 11)
-  putObjectHold = _messages.MessageField('PutObjectHold', 12)
-  scheduleTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  bucketList = _messages.MessageField('BucketList', 1)
+  completeTime = _messages.StringField(2)
+  counters = _messages.MessageField('Counters', 3)
+  createTime = _messages.StringField(4)
+  deleteObject = _messages.MessageField('DeleteObject', 5)
+  description = _messages.StringField(6)
+  errorSummaries = _messages.MessageField('ErrorSummary', 7, repeated=True)
+  manifest = _messages.MessageField('Manifest', 8)
+  name = _messages.StringField(9)
+  prefixList = _messages.MessageField('PrefixList', 10)
+  putKmsKey = _messages.MessageField('PutKmsKey', 11)
+  putMetadata = _messages.MessageField('PutMetadata', 12)
+  putObjectHold = _messages.MessageField('PutObjectHold', 13)
+  scheduleTime = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class ListJobsResponse(_messages.Message):
@@ -567,12 +599,18 @@ class PrefixList(_messages.Message):
   r"""Describes prefixes of objects to be transformed.
 
   Fields:
+    includedObjectPrefixes: Optional. Include prefixes of the objects to be
+      transformed. * Supports full object name * Supports prefix of the object
+      name * Wildcards are not supported * Supports empty string for all
+      objects in a bucket.
     prefixes: Optional. Prefixes of the objects to be transformed. This field
       does not support multiple prefixes. Use `included_object_prefixes`
-      instead to specify multiple prefixes.
+      instead to specify multiple prefixes. Deprecated. Use
+      `included_object_prefixes` instead.
   """
 
-  prefixes = _messages.MessageField('Prefix', 1, repeated=True)
+  includedObjectPrefixes = _messages.StringField(1, repeated=True)
+  prefixes = _messages.MessageField('Prefix', 2, repeated=True)
 
 
 class PutKmsKey(_messages.Message):

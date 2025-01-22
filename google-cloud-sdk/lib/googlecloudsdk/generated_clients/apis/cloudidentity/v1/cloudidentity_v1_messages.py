@@ -1277,11 +1277,12 @@ class CloudidentityPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: Optional. A CEL expression for filtering the results. Policies can
-      be filtered by application with this expression: setting.name =
-      'settings/gmail.*' Policies can be filtered by setting type with this
-      expression: setting.name = '*.service_status' A maximum of one of the
-      above setting.name clauses can be used. Policies can be filtered by
-      customer with this expression: customer = "customers/{customer}" Where
+      be filtered by application with this expression:
+      setting.type.matches('^settings/gmail\\..*$') Policies can be filtered
+      by setting type with this expression:
+      setting.type.matches('^.*\\.service_status$') A maximum of one of the
+      above setting.type clauses can be used. Policies can be filtered by
+      customer with this expression: customer == "customers/{customer}" Where
       `customer` is the `id` from the [Admin SDK `Customer`
       resource](https://developers.google.com/admin-
       sdk/directory/reference/rest/v1/customers). You may use

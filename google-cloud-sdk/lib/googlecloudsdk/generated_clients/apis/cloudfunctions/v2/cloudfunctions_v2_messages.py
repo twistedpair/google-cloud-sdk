@@ -182,9 +182,13 @@ class BuildConfig(_messages.Message):
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
       This configuration is only applicable to 1st Gen functions, 2nd Gen
-      functions can only use Artifact Registry. If unspecified, it defaults to
-      `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this
-      field should either be left unspecified or set to `ARTIFACT_REGISTRY`.
+      functions can only use Artifact Registry. Deprecated: Container Registry
+      option will no longer be available after March 2025:
+      https://cloud.google.com/artifact-registry/docs/transition/transition-
+      from-gcr Please use Artifact Registry instead, which is the default
+      choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+      `docker_repository` field is specified, this field should either be left
+      unspecified or set to `ARTIFACT_REGISTRY`.
 
   Messages:
     EnvironmentVariablesValue: User-provided build-time environment variables
@@ -196,9 +200,13 @@ class BuildConfig(_messages.Message):
       deployment of the function.
     dockerRegistry: Docker Registry to use for this deployment. This
       configuration is only applicable to 1st Gen functions, 2nd Gen functions
-      can only use Artifact Registry. If unspecified, it defaults to
-      `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this
-      field should either be left unspecified or set to `ARTIFACT_REGISTRY`.
+      can only use Artifact Registry. Deprecated: Container Registry option
+      will no longer be available after March 2025:
+      https://cloud.google.com/artifact-registry/docs/transition/transition-
+      from-gcr Please use Artifact Registry instead, which is the default
+      choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+      `docker_repository` field is specified, this field should either be left
+      unspecified or set to `ARTIFACT_REGISTRY`.
     dockerRepository: Repository in Artifact Registry to which the function
       docker image will be pushed after it is built by Cloud Build. If
       specified by user, it is created and managed by user with a customer
@@ -243,9 +251,12 @@ class BuildConfig(_messages.Message):
   class DockerRegistryValueValuesEnum(_messages.Enum):
     r"""Docker Registry to use for this deployment. This configuration is only
     applicable to 1st Gen functions, 2nd Gen functions can only use Artifact
-    Registry. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
-    `docker_repository` field is specified, this field should either be left
-    unspecified or set to `ARTIFACT_REGISTRY`.
+    Registry. Deprecated: Container Registry option will no longer be
+    available after March 2025: https://cloud.google.com/artifact-
+    registry/docs/transition/transition-from-gcr Please use Artifact Registry
+    instead, which is the default choice. If unspecified, it defaults to
+    `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this field
+    should either be left unspecified or set to `ARTIFACT_REGISTRY`.
 
     Values:
       DOCKER_REGISTRY_UNSPECIFIED: Unspecified.
@@ -1958,7 +1969,17 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SetupFunctionUpgradeConfigRequest(_messages.Message):
-  r"""Request for the `SetupFunctionUpgradeConfig` method."""
+  r"""Request for the `SetupFunctionUpgradeConfig` method.
+
+  Fields:
+    triggerServiceAccount: Optional. The trigger's service account. The
+      service account must have permission to invoke Cloud Run services, the
+      permission is `run.routes.invoke`. If empty, defaults to the Compute
+      Engine default service account:
+      `{project_number}-compute@developer.gserviceaccount.com`.
+  """
+
+  triggerServiceAccount = _messages.StringField(1)
 
 
 class Source(_messages.Message):

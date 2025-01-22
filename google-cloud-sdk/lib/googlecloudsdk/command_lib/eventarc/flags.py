@@ -48,10 +48,12 @@ def LocationAttributeConfig(allow_aggregation=False, allow_global=True):
     fallthroughs_list.append(
         deps.Fallthrough(
             googlecloudsdk.command_lib.eventarc.flags.SetLocation,
-            'use \'-\' location to aggregate results for all Eventarc locations'
-        ))
+            "use '-' location to aggregate results for all Eventarc locations",
+        )
+    )
   return concepts.ResourceParameterAttributeConfig(
-      name='location', fallthroughs=fallthroughs_list, help_text=help_text)
+      name='location', fallthroughs=fallthroughs_list, help_text=help_text
+  )
 
 
 def SetLocation():
@@ -110,7 +112,8 @@ def TriggerResourceSpec():
       resource_name='trigger',
       triggersId=TriggerAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def ChannelResourceSpec():
@@ -120,7 +123,8 @@ def ChannelResourceSpec():
       resource_name='channel',
       channelsId=ChannelAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def ChannelConnectionResourceSpec():
@@ -130,7 +134,8 @@ def ChannelConnectionResourceSpec():
       resource_name='channel connection',
       channelConnectionsId=ChannelConnectionAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def ProviderResourceSpec():
@@ -194,7 +199,8 @@ def AddTransportTopicResourceArg(parser, required=False):
       'pubsub.projects.topics',
       resource_name='Pub/Sub topic',
       topicsId=TransportTopicAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
   concept_parser = concept_parsers.ConceptParser.ForResource(
       '--transport-topic',
       resource_spec,
@@ -203,7 +209,8 @@ def AddTransportTopicResourceArg(parser, required=False):
       "of event type ``google.cloud.pubsub.topic.v1.messagePublished''. "
       'The topic must be in the same project as the trigger. '
       'If not specified, a transport topic will be created.',
-      required=required)
+      required=required,
+  )
   concept_parser.AddToParser(parser)
 
 
@@ -218,7 +225,8 @@ def AddLocationResourceArg(
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
   concept_parser = concept_parsers.ConceptParser.ForResource(
-      '--location', resource_spec, group_help_text, required=required)
+      '--location', resource_spec, group_help_text, required=required
+  )
   concept_parser.AddToParser(parser)
 
 
@@ -227,20 +235,22 @@ def AddProjectResourceArg(parser):
   resource_spec = concepts.ResourceSpec(
       'eventarc.projects',
       resource_name='project',
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
   concept_parser = concept_parsers.ConceptParser.ForResource(
       '--project',
       resource_spec,
       'Project ID of the Google Cloud project for the {resource}.',
-      required=True)
+      required=True,
+  )
   concept_parser.AddToParser(parser)
 
 
 def AddTriggerResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc trigger."""
   concept_parsers.ConceptParser.ForResource(
-      'trigger', TriggerResourceSpec(), group_help_text,
-      required=required).AddToParser(parser)
+      'trigger', TriggerResourceSpec(), group_help_text, required=required
+  ).AddToParser(parser)
 
 
 def AddCreateTrigerResourceArgs(parser, release_track):
@@ -252,18 +262,20 @@ def AddCreateTrigerResourceArgs(parser, release_track):
                 'trigger',
                 TriggerResourceSpec(),
                 'The trigger to create.',
-                required=True),
+                required=True,
+            ),
             presentation_specs.ResourcePresentationSpec(
                 '--channel',
                 ChannelResourceSpec(),
-                'The channel to use in the trigger. The channel is needed only if trigger is created for a third-party provider.',
-                flag_name_overrides={'location': ''})
+                'The channel to use in the trigger. The channel is needed only'
+                ' if trigger is created for a third-party provider.',
+                flag_name_overrides={'location': ''},
+            ),
         ],
         # This configures the fallthrough from the channel 's location to
         # the primary flag for the trigger's location.
-        command_level_fallthroughs={
-            '--channel.location': ['trigger.location']
-        }).AddToParser(parser)
+        command_level_fallthroughs={'--channel.location': ['trigger.location']},
+    ).AddToParser(parser)
   else:
     AddTriggerResourceArg(parser, 'The trigger to create.', required=True)
 
@@ -271,8 +283,8 @@ def AddCreateTrigerResourceArgs(parser, release_track):
 def AddChannelResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc channel."""
   concept_parsers.ConceptParser.ForResource(
-      'channel', ChannelResourceSpec(), group_help_text,
-      required=required).AddToParser(parser)
+      'channel', ChannelResourceSpec(), group_help_text, required=required
+  ).AddToParser(parser)
 
 
 def AddChannelConnectionResourceArg(parser, group_help_text):
@@ -281,7 +293,8 @@ def AddChannelConnectionResourceArg(parser, group_help_text):
       'channel_connection',
       ChannelConnectionResourceSpec(),
       group_help_text,
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddProviderResourceArg(parser, group_help_text, required=False):
@@ -447,8 +460,12 @@ def AddProviderNameArg(parser):
   parser.add_argument(
       '--name',
       required=False,
-      help='A provider name (e.g. `storage.googleapis.com`) List results will be filtered on this provider. '
-      'Only exact match of the provider name is supported.')
+      help=(
+          'A provider name (e.g. `storage.googleapis.com`) List results will be'
+          ' filtered on this provider. Only exact match of the provider name is'
+          ' supported.'
+      ),
+  )
 
 
 def AddMessageBusPublishingArgs(parser):
@@ -471,30 +488,37 @@ def AddEventPublishingArgs(parser):
   parser.add_argument(
       '--event-id',
       required=True,
-      help='An event id. The id of a published event.')
+      help='An event id. The id of a published event.',
+  )
 
   parser.add_argument(
       '--event-type',
       required=True,
-      help='An event type. The event type of a published event.')
+      help='An event type. The event type of a published event.',
+  )
 
   parser.add_argument(
       '--event-source',
       required=True,
-      help='An event source. The event source of a published event.')
+      help='An event source. The event source of a published event.',
+  )
 
   parser.add_argument(
       '--event-data',
       required=True,
-      help='An event data. The event data of a published event.')
+      help='An event data. The event data of a published event.',
+  )
 
   parser.add_argument(
       '--event-attributes',
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(),
       metavar='ATTRIBUTE=VALUE',
-      help='Event attributes. The event attributes of a published event.'
-      'This flag can be repeated to add more attributes.')
+      help=(
+          'Event attributes. The event attributes of a published event.'
+          'This flag can be repeated to add more attributes.'
+      ),
+  )
 
 
 def AddServiceAccountArg(parser, required=False):
@@ -502,7 +526,8 @@ def AddServiceAccountArg(parser, required=False):
   parser.add_argument(
       '--service-account',
       required=required,
-      help='The IAM service account email associated with the trigger.')
+      help='The IAM service account email associated with the trigger.',
+  )
 
 
 def AddEventFiltersArg(parser, release_track, required=False):
@@ -514,7 +539,8 @@ def AddEventFiltersArg(parser, release_track, required=False):
         'This flag can be repeated to add more filters to the list. Only '
         'events that match all these filters will be sent to the destination. '
         "The filters must include the ``type'' attribute, as well as any other "
-        'attributes that are expected for the chosen type.')
+        'attributes that are expected for the chosen type.'
+    )
   else:
     flag = '--matching-criteria'
     help_text = (
@@ -523,20 +549,21 @@ def AddEventFiltersArg(parser, release_track, required=False):
         'This flag can also be repeated to add more criteria to the list. Only '
         'events that match with this criteria will be sent to the destination. '
         "The criteria must include the ``type'' attribute, as well as any "
-        'other attributes that are expected for the chosen type.')
+        'other attributes that are expected for the chosen type.'
+    )
   parser.add_argument(
       flag,
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(),
       required=required,
       help=help_text,
-      metavar='ATTRIBUTE=VALUE')
+      metavar='ATTRIBUTE=VALUE',
+  )
 
 
-def AddEventFiltersPathPatternArg(parser,
-                                  release_track,
-                                  required=False,
-                                  hidden=False):
+def AddEventFiltersPathPatternArg(
+    parser, release_track, required=False, hidden=False
+):
   """Adds an argument for the trigger's event filters in path pattern format."""
   if release_track == base.ReleaseTrack.GA:
     parser.add_argument(
@@ -545,12 +572,16 @@ def AddEventFiltersPathPatternArg(parser,
         type=arg_parsers.ArgDict(),
         hidden=hidden,
         required=required,
-        help="The trigger's list of filters in path pattern format that apply "
-        'to CloudEvent attributes. This flag can be repeated to add more '
-        'filters to the list. Only events that match all these filters will be '
-        'sent to the destination. Currently, path pattern format is only '
-        'available for the resourceName attribute for Cloud Audit Log events.',
-        metavar='ATTRIBUTE=PATH_PATTERN')
+        help=(
+            "The trigger's list of filters in path pattern format that apply to"
+            ' CloudEvent attributes. This flag can be repeated to add more'
+            ' filters to the list. Only events that match all these filters'
+            ' will be sent to the destination. Currently, path pattern format'
+            ' is only available for the resourceName attribute for Cloud Audit'
+            ' Log events.'
+        ),
+        metavar='ATTRIBUTE=PATH_PATTERN',
+    )
 
 
 def AddEventDataContentTypeArg(
@@ -608,12 +639,14 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's destination for create operations."""
   dest_group = parser.add_mutually_exclusive_group(
       required=required,
-      help='Flags for specifying the destination to which events should be sent.'
+      help=(
+          'Flags for specifying the destination to which events should be sent.'
+      ),
   )
   _AddCreateCloudRunDestinationArgs(dest_group, release_track)
   if release_track == base.ReleaseTrack.GA:
     _AddCreateGKEDestinationArgs(dest_group)
-    _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
+    _AddCreateWorkflowDestinationArgs(dest_group)
     _AddCreateFunctionDestinationArgs(dest_group, hidden=True)
     _AddCreateHTTPEndpointDestinationArgs(dest_group)
 
@@ -622,7 +655,9 @@ def _AddCreateCloudRunDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's Cloud Run fully-managed resource destination for create operations."""
   run_group = parser.add_group(
       required=required,
-      help='Flags for specifying a Cloud Run fully-managed resource destination.'
+      help=(
+          'Flags for specifying a Cloud Run fully-managed resource destination.'
+      ),
   )
   resource_group = run_group.add_mutually_exclusive_group(required=True)
   AddDestinationRunServiceArg(resource_group)
@@ -639,7 +674,8 @@ def _AddCreateGKEDestinationArgs(parser, required=False, hidden=False):
   gke_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for specifying a GKE service destination.')
+      help='Flags for specifying a GKE service destination.',
+  )
   _AddDestinationGKEClusterArg(gke_group, required=True)
   _AddDestinationGKELocationArg(gke_group)
   _AddDestinationGKENamespaceArg(gke_group)
@@ -652,7 +688,8 @@ def _AddCreateWorkflowDestinationArgs(parser, required=False, hidden=False):
   workflow_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for specifying a Workflow destination.')
+      help='Flags for specifying a Cloud Workflows destination.',
+  )
   _AddDestinationWorkflowArg(workflow_group, required=True)
   _AddDestinationWorkflowLocationArg(workflow_group)
 
@@ -662,7 +699,8 @@ def _AddCreateHTTPEndpointDestinationArgs(parser, required=False, hidden=False):
   http_endpoint_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for specifying a HTTP Endpoint destination.')
+      help='Flags for specifying a HTTP Endpoint destination.',
+  )
   _AddDestinationHTTPEndpointUriArg(http_endpoint_group, required=True)
   _AddCreateNetworkConfigDestinationArgs(http_endpoint_group)
 
@@ -684,7 +722,8 @@ def _AddCreateFunctionDestinationArgs(parser, required=False, hidden=False):
   function_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for specifying a Function destination.')
+      help='Flags for specifying a Function destination.',
+  )
   _AddDestinationFunctionArg(function_group, required=True)
   _AddDestinationFunctionLocationArg(function_group)
 
@@ -693,11 +732,12 @@ def AddUpdateDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's destination for update operations."""
   dest_group = parser.add_mutually_exclusive_group(
       required=required,
-      help='Flags for updating the destination to which events should be sent.')
+      help='Flags for updating the destination to which events should be sent.',
+  )
   _AddUpdateCloudRunDestinationArgs(dest_group, release_track)
   if release_track == base.ReleaseTrack.GA:
     _AddUpdateGKEDestinationArgs(dest_group)
-    _AddUpdateWorkflowDestinationArgs(dest_group, hidden=True)
+    _AddUpdateWorkflowDestinationArgs(dest_group)
     _AddUpdateFunctionDestinationArgs(dest_group, hidden=True)
 
 
@@ -705,7 +745,8 @@ def _AddUpdateCloudRunDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's Cloud Run fully-managed resource destination for update operations."""
   run_group = parser.add_group(
       required=required,
-      help='Flags for updating a Cloud Run fully-managed resource destination.')
+      help='Flags for updating a Cloud Run fully-managed resource destination.',
+  )
   resource_group = run_group.add_mutually_exclusive_group()
   AddDestinationRunServiceArg(resource_group)
   # When this is not True and only the service flag is in the mutually exclusive
@@ -723,7 +764,8 @@ def _AddUpdateGKEDestinationArgs(parser, required=False, hidden=False):
   gke_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for updating a GKE service destination.')
+      help='Flags for updating a GKE service destination.',
+  )
   _AddDestinationGKENamespaceArg(gke_group)
   _AddDestinationGKEServiceArg(gke_group)
   destination_gke_path_group = gke_group.add_mutually_exclusive_group()
@@ -736,7 +778,8 @@ def _AddUpdateWorkflowDestinationArgs(parser, required=False, hidden=False):
   workflow_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for updating a Workflow destination.')
+      help='Flags for updating a Cloud Workflows destination.',
+  )
   _AddDestinationWorkflowArg(workflow_group)
   _AddDestinationWorkflowLocationArg(workflow_group)
 
@@ -746,7 +789,8 @@ def _AddUpdateFunctionDestinationArgs(parser, required=False, hidden=False):
   function_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for updating a Function destination.')
+      help='Flags for updating a Function destination.',
+  )
   _AddDestinationFunctionArg(function_group)
   _AddDestinationFunctionLocationArg(function_group)
 
@@ -755,9 +799,12 @@ def AddDestinationRunServiceArg(parser):
   """Adds an argument for the trigger's destination Cloud Run service."""
   parser.add_argument(
       '--destination-run-service',
-      help='Name of the Cloud Run fully-managed service that receives the '
-      'events for the trigger. The service must be in the same project as the '
-      'trigger.')
+      help=(
+          'Name of the Cloud Run fully-managed service that receives the events'
+          ' for the trigger. The service must be in the same project as the'
+          ' trigger.'
+      ),
+  )
 
 
 def AddDestinationRunJobArg(parser):
@@ -765,9 +812,12 @@ def AddDestinationRunJobArg(parser):
   parser.add_argument(
       '--destination-run-job',
       hidden=True,
-      help='Name of the Cloud Run fully-managed job that receives the '
-      'events for the trigger. The job must be in the same project as the '
-      'trigger.')
+      help=(
+          'Name of the Cloud Run fully-managed job that receives the '
+          'events for the trigger. The job must be in the same project as the '
+          'trigger.'
+      ),
+  )
 
 
 def AddDestinationRunPathArg(parser, required=False):
@@ -775,9 +825,12 @@ def AddDestinationRunPathArg(parser, required=False):
   parser.add_argument(
       '--destination-run-path',
       required=required,
-      help='Relative path on the destination Cloud Run service to which '
-      "the events for the trigger should be sent. Examples: ``/route'', "
-      "``route'', ``route/subroute''.")
+      help=(
+          'Relative path on the destination Cloud Run service to which '
+          "the events for the trigger should be sent. Examples: ``/route'', "
+          "``route'', ``route/subroute''."
+      ),
+  )
 
 
 def AddDestinationRunRegionArg(parser, required=False):
@@ -785,9 +838,12 @@ def AddDestinationRunRegionArg(parser, required=False):
   parser.add_argument(
       '--destination-run-region',
       required=required,
-      help='Region in which the destination Cloud Run service can be '
-      'found. If not specified, it is assumed that the service is in the same '
-      'region as the trigger.')
+      help=(
+          'Region in which the destination Cloud Run service can be found. If'
+          ' not specified, it is assumed that the service is in the same region'
+          ' as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationGKEClusterArg(parser, required=False):
@@ -795,8 +851,11 @@ def _AddDestinationGKEClusterArg(parser, required=False):
   parser.add_argument(
       '--destination-gke-cluster',
       required=required,
-      help='Name of the GKE cluster that the destination GKE service is '
-      'running in.  The cluster must be in the same project as the trigger.')
+      help=(
+          'Name of the GKE cluster that the destination GKE service is '
+          'running in.  The cluster must be in the same project as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationGKELocationArg(parser, required=False):
@@ -804,9 +863,12 @@ def _AddDestinationGKELocationArg(parser, required=False):
   parser.add_argument(
       '--destination-gke-location',
       required=required,
-      help='Location of the GKE cluster that the destination GKE service '
-      'is running in. If not specified, it is assumed that the cluster is a '
-      'regional cluster and is in the same region as the trigger.')
+      help=(
+          'Location of the GKE cluster that the destination GKE service is'
+          ' running in. If not specified, it is assumed that the cluster is a'
+          ' regional cluster and is in the same region as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationGKENamespaceArg(parser, required=False):
@@ -814,8 +876,11 @@ def _AddDestinationGKENamespaceArg(parser, required=False):
   parser.add_argument(
       '--destination-gke-namespace',
       required=required,
-      help='Namespace that the destination GKE service is running in. If '
-      "not specified, the ``default'' namespace is used.")
+      help=(
+          'Namespace that the destination GKE service is running in. If '
+          "not specified, the ``default'' namespace is used."
+      ),
+  )
 
 
 def _AddDestinationGKEServiceArg(parser, required=False):
@@ -823,8 +888,11 @@ def _AddDestinationGKEServiceArg(parser, required=False):
   parser.add_argument(
       '--destination-gke-service',
       required=required,
-      help='Name of the destination GKE service that receives the events '
-      'for the trigger.')
+      help=(
+          'Name of the destination GKE service that receives the events '
+          'for the trigger.'
+      ),
+  )
 
 
 def _AddDestinationGKEPathArg(parser, required=False):
@@ -832,9 +900,12 @@ def _AddDestinationGKEPathArg(parser, required=False):
   parser.add_argument(
       '--destination-gke-path',
       required=required,
-      help='Relative path on the destination GKE service to which '
-      "the events for the trigger should be sent. Examples: ``/route'', "
-      "``route'', ``route/subroute''.")
+      help=(
+          'Relative path on the destination GKE service to which '
+          "the events for the trigger should be sent. Examples: ``/route'', "
+          "``route'', ``route/subroute''."
+      ),
+  )
 
 
 def _AddDestinationWorkflowArg(parser, required=False):
@@ -842,8 +913,11 @@ def _AddDestinationWorkflowArg(parser, required=False):
   parser.add_argument(
       '--destination-workflow',
       required=required,
-      help='ID of the Workflow that receives the events for the trigger. '
-      'The Workflow must be in the same project as the trigger.')
+      help=(
+          'ID of the workflow that receives the events for the trigger. '
+          'The workflow must be in the same project as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationWorkflowLocationArg(parser, required=False):
@@ -851,9 +925,12 @@ def _AddDestinationWorkflowLocationArg(parser, required=False):
   parser.add_argument(
       '--destination-workflow-location',
       required=required,
-      help='Location that the destination Workflow is running in. '
-      'If not specified, it is assumed that the Workflow is in the same '
-      'location as the trigger.')
+      help=(
+          'Location that the destination workflow is running in. '
+          'If not specified, it is assumed that the workflow is in the same '
+          'location as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationFunctionArg(parser, required=False):
@@ -861,8 +938,11 @@ def _AddDestinationFunctionArg(parser, required=False):
   parser.add_argument(
       '--destination-function',
       required=required,
-      help='ID of the Function that receives the events for the trigger. '
-      'The Function must be in the same project as the trigger.')
+      help=(
+          'ID of the Function that receives the events for the trigger. '
+          'The Function must be in the same project as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationFunctionLocationArg(parser, required=False):
@@ -870,9 +950,12 @@ def _AddDestinationFunctionLocationArg(parser, required=False):
   parser.add_argument(
       '--destination-function-location',
       required=required,
-      help='Location that the destination Function is running in. '
-      'If not specified, it is assumed that the Function is in the same '
-      'location as the trigger.')
+      help=(
+          'Location that the destination Function is running in. '
+          'If not specified, it is assumed that the Function is in the same '
+          'location as the trigger.'
+      ),
+  )
 
 
 def _AddDestinationHTTPEndpointUriArg(parser, required=False):
@@ -880,7 +963,8 @@ def _AddDestinationHTTPEndpointUriArg(parser, required=False):
   parser.add_argument(
       '--destination-http-endpoint-uri',
       required=required,
-      help='URI that the destination HTTP Endpoint is connecting to.')
+      help='URI that the destination HTTP Endpoint is connecting to.',
+  )
 
 
 def _AddNetworkAttachmentArg(parser, required=False):
@@ -908,8 +992,11 @@ def AddClearDestinationRunPathArg(parser):
   parser.add_argument(
       '--clear-destination-run-path',
       action='store_true',
-      help='Clear the relative path on the destination Cloud Run service to '
-      'which the events for the trigger should be sent.')
+      help=(
+          'Clear the relative path on the destination Cloud Run service to '
+          'which the events for the trigger should be sent.'
+      ),
+  )
 
 
 def _AddClearDestinationGKEPathArg(parser):
@@ -917,8 +1004,11 @@ def _AddClearDestinationGKEPathArg(parser):
   parser.add_argument(
       '--clear-destination-gke-path',
       action='store_true',
-      help='Clear the relative path on the destination GKE service to which '
-      'the events for the trigger should be sent.')
+      help=(
+          'Clear the relative path on the destination GKE service to which '
+          'the events for the trigger should be sent.'
+      ),
+  )
 
 
 def AddTypePositionalArg(parser, help_text):
@@ -936,7 +1026,8 @@ def AddServiceNameArg(parser, required=False):
   parser.add_argument(
       '--service-name',
       required=required,
-      help='The value of the serviceName CloudEvents attribute.')
+      help='The value of the serviceName CloudEvents attribute.',
+  )
 
 
 def AddCreateChannelArg(parser):
@@ -946,18 +1037,19 @@ def AddCreateChannelArg(parser):
               'channel',
               ChannelResourceSpec(),
               'Channel to create.',
-              required=True),
+              required=True,
+          ),
           presentation_specs.ResourcePresentationSpec(
               '--provider',
               ProviderResourceSpec(),
               'Provider to use for the channel.',
-              flag_name_overrides={'location': ''}),
+              flag_name_overrides={'location': ''},
+          ),
       ],
       # This configures the fallthrough from the provider's location to the
       # primary flag for the channel's location
-      command_level_fallthroughs={
-          '--provider.location': ['channel.location']
-      }).AddToParser(parser)
+      command_level_fallthroughs={'--provider.location': ['channel.location']},
+  ).AddToParser(parser)
 
 
 def AddCryptoKeyArg(parser, required=False, hidden=False, with_clear=True):
@@ -970,9 +1062,12 @@ def AddCryptoKeyArg(parser, required=False, hidden=False, with_clear=True):
       '--crypto-key',
       required=required,
       hidden=hidden,
-      help='Fully qualified name of the crypto key to use for '
-      'customer-managed encryption. If this is unspecified, Google-managed '
-      'keys will be used for encryption.')
+      help=(
+          'Fully qualified name of the crypto key to use for '
+          'customer-managed encryption. If this is unspecified, Google-managed '
+          'keys will be used for encryption.'
+      ),
+  )
 
 
 def AddClearCryptoNameArg(parser, required=False, hidden=False):

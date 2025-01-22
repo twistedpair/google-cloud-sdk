@@ -27,11 +27,13 @@ class WireGroup(object):
       self,
       ref,
       project,
+      cross_site_network,
       compute_client=None,
       resources=None,
   ):
     self.ref = ref
     self.project = project
+    self.cross_site_network = cross_site_network
     self._compute_client = compute_client
     self._resources = resources
 
@@ -45,7 +47,6 @@ class WireGroup(object):
 
   def _MakeCreateRequestTuple(
       self,
-      cross_site_network,
       description,
       wire_group_type,
       bandwidth_unmetered,
@@ -59,7 +60,6 @@ class WireGroup(object):
     """Make a tuple for wire group insert request.
 
     Args:
-      cross_site_network: cross site network to create the wiregroup under.
       description: String that represents the description of the Cloud
         Wire Group resource.
       wire_group_type: type of the wire group.
@@ -79,7 +79,7 @@ class WireGroup(object):
         'Insert',
         messages.ComputeWireGroupsInsertRequest(
             project=self.project,
-            crossSiteNetwork=cross_site_network,
+            crossSiteNetwork=self.cross_site_network,
             wireGroup=messages.WireGroup(
                 name=self.ref.Name(),
                 description=description,
@@ -107,10 +107,96 @@ class WireGroup(object):
         ),
     )
 
+  def _MakePatchRequestTuple(
+      self,
+      description=None,
+      wire_group_type=None,
+      bandwidth_unmetered=None,
+      bandwidth_metered=None,
+      fault_response=None,
+      admin_enabled=None,
+      network_service_class=None,
+      bandwidth_allocation=None,
+      validate_only=None,
+  ):
+    """Make a tuple for wire group patch request."""
+    messages = self._messages
+    update_mask = []
+    if description:
+      update_mask.append('description')
+    if wire_group_type:
+      update_mask.append('wireGroupProperties.type')
+    if bandwidth_unmetered:
+      update_mask.append('wireProperties.bandwidthUnmetered')
+    if bandwidth_metered:
+      update_mask.append('wireProperties.bandwidthMetered')
+    if network_service_class:
+      update_mask.append('wireProperties.networkServiceClass')
+    if bandwidth_allocation:
+      update_mask.append('wireProperties.bandwidthAllocation')
+    if fault_response:
+      update_mask.append('wireProperties.faultResponse')
+    if admin_enabled:
+      update_mask.append('adminEnabled')
+    return (
+        self._client.wireGroups,
+        'Patch',
+        messages.ComputeWireGroupsPatchRequest(
+            project=self.project,
+            crossSiteNetwork=self.cross_site_network,
+            wireGroup=self.ref.Name(),
+            wireGroupResource=messages.WireGroup(
+                description=description,
+                wireGroupProperties=messages.WireGroupProperties(
+                    type=messages.WireGroupProperties.TypeValueValuesEnum(
+                        wire_group_type
+                    ) if wire_group_type else None,
+                ),
+                wireProperties=messages.WireProperties(
+                    bandwidthUnmetered=bandwidth_unmetered,
+                    bandwidthMetered=bandwidth_metered,
+                    networkServiceClass=messages.WireProperties.NetworkServiceClassValueValuesEnum(
+                        network_service_class
+                    ) if network_service_class else None,
+                    bandwidthAllocation=messages.WireProperties.BandwidthAllocationValueValuesEnum(
+                        bandwidth_allocation
+                    ) if bandwidth_allocation else None,
+                    faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
+                        fault_response
+                    ) if fault_response else None,
+                ),
+                adminEnabled=admin_enabled,
+            ),
+            validateOnly=validate_only if validate_only else None,
+            updateMask=','.join(update_mask),
+        ),
+    )
+
+  def _MakeDeleteRequestTuple(self):
+    return (
+        self._client.wireGroups,
+        'Delete',
+        self._messages.ComputeWireGroupsDeleteRequest(
+            project=self.project,
+            crossSiteNetwork=self.cross_site_network,
+            wireGroup=self.ref.Name(),
+        ),
+    )
+
+  def _MakeDescribeRequestTuple(self):
+    return (
+        self._client.wireGroups,
+        'Get',
+        self._messages.ComputeWireGroupsGetRequest(
+            project=self.ref.project,
+            crossSiteNetwork=self.cross_site_network,
+            wireGroup=self.ref.Name(),
+        ),
+    )
+
   def Create(
       self,
       description='',
-      cross_site_network=None,
       wire_group_type=None,
       bandwidth_unmetered=None,
       bandwidth_metered=None,
@@ -124,7 +210,6 @@ class WireGroup(object):
     """Create a wire group."""
     requests = [
         self._MakeCreateRequestTuple(
-            cross_site_network,
             description,
             wire_group_type,
             bandwidth_unmetered,
@@ -136,6 +221,27 @@ class WireGroup(object):
             validate_only
         )
     ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def Patch(self, only_generate_request=False, **kwargs):
+    """Patch description of a wire group."""
+    requests = [self._MakePatchRequestTuple(**kwargs)]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def Delete(self, only_generate_request=False):
+    requests = [self._MakeDeleteRequestTuple()]
+    if not only_generate_request:
+      return self._compute_client.MakeRequests(requests)
+    return requests
+
+  def Describe(self, only_generate_request=False):
+    requests = [self._MakeDescribeRequestTuple()]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]

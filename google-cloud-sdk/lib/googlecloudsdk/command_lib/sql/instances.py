@@ -33,6 +33,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+import six
 
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 
@@ -1011,6 +1012,19 @@ class _BaseInstances(object):
           kind='sql#diskEncryptionConfiguration', kmsKeyName=key_name
       )
       instance_resource.diskEncryptionConfiguration = config
+
+    if IsBetaOrNewer(release_track):
+      tags = getattr(args, 'tags')
+      if tags is not None:
+        instance_resource.tags = sql_messages.DatabaseInstance.TagsValue(
+            additionalProperties=[
+                sql_messages.DatabaseInstance.TagsValue.AdditionalProperty(
+                    key=tag,
+                    value=value,
+                )
+                for tag, value in six.iteritems(tags)
+            ]
+        )
 
     return instance_resource
 

@@ -222,7 +222,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
       "activationConditions": { "iam.googleapis.com": { "cel_condition": } }
       Each rule is evaluated independently. If this rule does not apply to a
       request, other rules might still apply. Currently supported keys are: *
-      `iam.googleapis.com`
+      `eventarc.googleapis.com`
 
   Fields:
     activationConditions: Optional. The conditions that determine whether this
@@ -231,7 +231,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
       "activationConditions": { "iam.googleapis.com": { "cel_condition": } }
       Each rule is evaluated independently. If this rule does not apply to a
       request, other rules might still apply. Currently supported keys are: *
-      `iam.googleapis.com`
+      `eventarc.googleapis.com`
     description: Optional. Customer specified description of the rule. Must be
       less than or equal to 256 characters.
     effect: Required. The effect of the rule (deny)
@@ -247,8 +247,8 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
     permissions: Required. The permissions that are explicitly affected by
       this rule. Each permission uses the format
       `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
-      qualified domain name for the service. For example,
-      `iam.messageintegrationpolicies.get`. //
+      qualified domain name for the service. Currently supported permissions
+      are: * `eventarc.googleapis.com/messageBuses.publish`.
     principals: Required. The identities for which this rule's effect governs
       using one or more permissions on Google Cloud resources. This field can
       contain the following values: * `principal://goog/subject/{email_id}`: A
@@ -303,7 +303,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
     service that they are relevant to, e.g.: "activationConditions": {
     "iam.googleapis.com": { "cel_condition": } } Each rule is evaluated
     independently. If this rule does not apply to a request, other rules might
-    still apply. Currently supported keys are: * `iam.googleapis.com`
+    still apply. Currently supported keys are: * `eventarc.googleapis.com`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -547,34 +547,34 @@ class GoogleIamV3alphaPolicyBinding(_messages.Message):
       (will be automatically set to the policy kind) - The input policy kind
 
   Messages:
-    AnnotationsValue: Optional. User defined annotations. See
+    AnnotationsValue: Optional. User-defined annotations. See
       https://google.aip.dev/148#annotations for more details such as format
       and size limitations
 
   Fields:
-    annotations: Optional. User defined annotations. See
+    annotations: Optional. User-defined annotations. See
       https://google.aip.dev/148#annotations for more details such as format
       and size limitations
-    condition: Optional. Condition can either be a principal condition or a
-      resource condition. It depends on the type of target, the policy it is
-      attached to, and/or the expression itself. When set, the `expression`
-      field in the `Expr` must include from 1 to 10 subexpressions, joined by
-      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators
-      and cannot contain more than 250 characters. Allowed operations for
-      principal.subject: - `principal.subject == ` - `principal.subject != ` -
-      `principal.subject in []` - `principal.subject.startsWith()` -
-      `principal.subject.endsWith()` Allowed operations for principal.type: -
-      `principal.type == ` - `principal.type != ` - `principal.type in []`
+    condition: Optional. The condition to apply to the policy binding. When
+      set, the `expression` field in the `Expr` must include from 1 to 10
+      subexpressions, joined by the "||"(Logical OR), "&&"(Logical AND) or
+      "!"(Logical NOT) operators and cannot contain more than 250 characters.
+      The condition is currently only supported when bound to policies of kind
+      principal access boundary. When the bound policy is a principal access
+      boundary policy, the only supported attributes in any subexpression are
+      `principal.type` and `principal.subject`. An example expression is:
+      "principal.type == 'iam.googleapis.com/ServiceAccount'" or
+      "principal.subject == 'bob@example.com'". Allowed operations for
+      `principal.subject`: - `principal.subject == ` - `principal.subject != `
+      - `principal.subject in []` - `principal.subject.startsWith()` -
+      `principal.subject.endsWith()` Allowed operations for `principal.type`:
+      - `principal.type == ` - `principal.type != ` - `principal.type in []`
       Supported principal types are Workspace, Workforce Pool, Workload Pool
       and Service Account. Allowed string must be one of: -
       iam.googleapis.com/WorkspaceIdentity -
       iam.googleapis.com/WorkforcePoolIdentity -
       iam.googleapis.com/WorkloadPoolIdentity -
-      iam.googleapis.com/ServiceAccount When the bound policy is a principal
-      access boundary policy, the only supported attributes in any
-      subexpression are `principal.type` and `principal.subject`. An example
-      expression is: "principal.type == 'iam.googleapis.com/ServiceAccount'"
-      or "principal.subject == 'bob@example.com'".
+      iam.googleapis.com/ServiceAccount
     createTime: Output only. The time when the policy binding was created.
     displayName: Optional. The description of the policy binding. Must be less
       than or equal to 63 characters.
@@ -582,16 +582,15 @@ class GoogleIamV3alphaPolicyBinding(_messages.Message):
       update, it must match the server's etag.
     name: Identifier. The name of the policy binding, in the format
       `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
-      `. The binding parent is the closest Resource Manager resource (i.e.,
-      Project, Folder or Organization) to the binding target. Format: * `proje
-      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}`
+      `. The binding parent is the closest Resource Manager resource (project,
+      folder, or organization) to the binding target. Format: * `projects/{pro
+      ject_id}/locations/{location}/policyBindings/{policy_binding_id}` * `pro
+      jects/{project_number}/locations/{location}/policyBindings/{policy_bindi
+      ng_id}` * `folders/{folder_id}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `organizations/{organization_id}/locations/{location}/
+      policyBindings/{policy_binding_id}`
     policy: Required. Immutable. The resource name of the policy to be bound.
-      The binding parent and policy must belong to the same Organization (or
-      Project).
+      The binding parent and policy must belong to the same organization.
     policyKind: Immutable. The kind of the policy to attach in this binding.
       This field must be one of the following: - Left empty (will be
       automatically set to the policy kind) - The input policy kind
@@ -621,7 +620,7 @@ class GoogleIamV3alphaPolicyBinding(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Optional. User defined annotations. See
+    r"""Optional. User-defined annotations. See
     https://google.aip.dev/148#annotations for more details such as format and
     size limitations
 
@@ -984,11 +983,10 @@ class GoogleIamV3alphaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
   r"""Principal access boundary policy details
 
   Fields:
-    enforcementVersion: Optional. The version number that indicates which
-      Google Cloud services are included in the enforcement (e.g. "latest",
-      "1", ...). If empty, the PAB policy version will be set to the current
-      latest version, and this version won't get updated when new versions are
-      released.
+    enforcementVersion: Optional. The version number (for example, `1` or
+      `latest`) that indicates which permissions are able to be blocked by the
+      policy. If empty, the PAB policy version will be set to the most recent
+      version number at the time of the policy's creation.
     rules: Required. A list of principal access boundary policy rules. The
       number of rules in a policy is limited to 500.
   """
@@ -1010,10 +1008,11 @@ class GoogleIamV3alphaPrincipalAccessBoundaryPolicyRule(_messages.Message):
       policy rule. Must be less than or equal to 256 characters.
     effect: Required. The access relationship of principals to the resources
       in this rule.
-    resources: Required. A list of Cloud Resource Manager resources. The
-      resource and all the descendants are included. The number of resources
-      in a policy is limited to 500 across all rules. The following resource
-      types are supported: * Organizations, such as
+    resources: Required. A list of Resource Manager resources. If a resource
+      is listed in the rule, then the rule applies for that resource and its
+      descendants. The number of resources in a policy is limited to 500
+      across all rules in the policy. The following resource types are
+      supported: * Organizations, such as
       `//cloudresourcemanager.googleapis.com/organizations/123`. * Folders,
       such as `//cloudresourcemanager.googleapis.com/folders/123`. * Projects,
       such as `//cloudresourcemanager.googleapis.com/projects/123` or
@@ -1706,7 +1705,7 @@ class IamFoldersLocationsPolicyBindingsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this policy binding will be
       created. The binding parent is the closest Resource Manager resource
-      (Project, Folder or Organization) to the binding target. Format: *
+      (project, folder or organization) to the binding target. Format: *
       `projects/{project_id}/locations/{location}` *
       `projects/{project_number}/locations/{location}` *
       `folders/{folder_id}/locations/{location}` *
@@ -1801,13 +1800,13 @@ class IamFoldersLocationsPolicyBindingsPatchRequest(_messages.Message):
       be passed as the request body.
     name: Identifier. The name of the policy binding, in the format
       `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
-      `. The binding parent is the closest Resource Manager resource (i.e.,
-      Project, Folder or Organization) to the binding target. Format: * `proje
-      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}`
+      `. The binding parent is the closest Resource Manager resource (project,
+      folder, or organization) to the binding target. Format: * `projects/{pro
+      ject_id}/locations/{location}/policyBindings/{policy_binding_id}` * `pro
+      jects/{project_number}/locations/{location}/policyBindings/{policy_bindi
+      ng_id}` * `folders/{folder_id}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `organizations/{organization_id}/locations/{location}/
+      policyBindings/{policy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -1987,7 +1986,7 @@ class IamOrganizationsLocationsPolicyBindingsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this policy binding will be
       created. The binding parent is the closest Resource Manager resource
-      (Project, Folder or Organization) to the binding target. Format: *
+      (project, folder or organization) to the binding target. Format: *
       `projects/{project_id}/locations/{location}` *
       `projects/{project_number}/locations/{location}` *
       `folders/{folder_id}/locations/{location}` *
@@ -2082,13 +2081,13 @@ class IamOrganizationsLocationsPolicyBindingsPatchRequest(_messages.Message):
       be passed as the request body.
     name: Identifier. The name of the policy binding, in the format
       `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
-      `. The binding parent is the closest Resource Manager resource (i.e.,
-      Project, Folder or Organization) to the binding target. Format: * `proje
-      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}`
+      `. The binding parent is the closest Resource Manager resource (project,
+      folder, or organization) to the binding target. Format: * `projects/{pro
+      ject_id}/locations/{location}/policyBindings/{policy_binding_id}` * `pro
+      jects/{project_number}/locations/{location}/policyBindings/{policy_bindi
+      ng_id}` * `folders/{folder_id}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `organizations/{organization_id}/locations/{location}/
+      policyBindings/{policy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -2148,7 +2147,7 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesCreateRequest(_mes
       GoogleIamV3alphaPrincipalAccessBoundaryPolicy resource to be passed as
       the request body.
     parent: Required. The parent resource where this principal access boundary
-      policy will be created. Only organization is supported now. Format:
+      policy will be created. Only organizations are supported. Format:
       `organizations/{organization_id}/locations/{location}`
     principalAccessBoundaryPolicyId: Required. The ID to use for the principal
       access boundary policy, which will become the final component of the
@@ -2173,7 +2172,7 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesDeleteRequest(_mes
     etag: Optional. The etag of the principal access boundary policy. If this
       is provided, it must match the server's etag.
     force: Optional. If set to true, the request will force the deletion of
-      the Policy even if the Policy references PolicyBindings.
+      the policy even if the policy is referenced in policy bindings.
     name: Required. The name of the principal access boundary policy to
       delete. Format: `organizations/{organization_id}/locations/{location}/pr
       incipalAccessBoundaryPolicies/{principal_access_boundary_policy_id}`
@@ -2401,7 +2400,7 @@ class IamProjectsLocationsPolicyBindingsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this policy binding will be
       created. The binding parent is the closest Resource Manager resource
-      (Project, Folder or Organization) to the binding target. Format: *
+      (project, folder or organization) to the binding target. Format: *
       `projects/{project_id}/locations/{location}` *
       `projects/{project_number}/locations/{location}` *
       `folders/{folder_id}/locations/{location}` *
@@ -2496,13 +2495,13 @@ class IamProjectsLocationsPolicyBindingsPatchRequest(_messages.Message):
       be passed as the request body.
     name: Identifier. The name of the policy binding, in the format
       `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
-      `. The binding parent is the closest Resource Manager resource (i.e.,
-      Project, Folder or Organization) to the binding target. Format: * `proje
-      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}`
+      `. The binding parent is the closest Resource Manager resource (project,
+      folder, or organization) to the binding target. Format: * `projects/{pro
+      ject_id}/locations/{location}/policyBindings/{policy_binding_id}` * `pro
+      jects/{project_number}/locations/{location}/policyBindings/{policy_bindi
+      ng_id}` * `folders/{folder_id}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `organizations/{organization_id}/locations/{location}/
+      policyBindings/{policy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.

@@ -154,6 +154,10 @@ class Backup(_messages.Message):
       backup.
     name: Output only. The resource name of the backup. Format:
       projects/{project}/backups/{backup}
+    satisfiesPzi: Output only. This status indicates whether the backup
+      satisfies PZI. The status is reserved for future use.
+    satisfiesPzs: Output only. This status indicates whether the backup
+      satisfies PZS. The status is reserved for future use.
     selfLink: Output only. The URI of this resource.
     state: Output only. The state of this backup.
     timeZone: Output only. This output contains a backup time zone. If a Cloud
@@ -228,11 +232,13 @@ class Backup(_messages.Message):
   location = _messages.StringField(13)
   maxChargeableBytes = _messages.IntegerField(14)
   name = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  timeZone = _messages.StringField(18)
-  ttlDays = _messages.IntegerField(19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  selfLink = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  timeZone = _messages.StringField(20)
+  ttlDays = _messages.IntegerField(21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
 
 
 class BackupConfiguration(_messages.Message):
@@ -5159,10 +5165,14 @@ class SqlProjectsInstancesGetLatestRecoveryTimeRequest(_messages.Message):
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
+    sourceInstanceDeletionTime: The timestamp used to identify the time when
+      the source instance is deleted. If this instance is deleted, then you
+      must set the timestamp.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  sourceInstanceDeletionTime = _messages.StringField(3)
 
 
 class SqlProjectsInstancesPerformDiskShrinkRequest(_messages.Message):

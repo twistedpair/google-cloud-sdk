@@ -9083,12 +9083,18 @@ class ThreatPreventionProfile(_messages.Message):
       threat_id match. If a threat is matched both by configuration provided
       in severity_overrides and threat_overrides, the threat_overrides action
       is applied.
+    wildfireInlineMlOverrides: Optional. Configuration for overriding wildfire
+      inline ml actions per protocol.
+    wildfireOverrides: Optional. Configuration for overriding wildfire actions
+      per protocol.
   """
 
   antivirusOverrides = _messages.MessageField('AntivirusOverride', 1, repeated=True)
   antivirusThreatOverrides = _messages.MessageField('AntivirusThreatOverride', 2, repeated=True)
   severityOverrides = _messages.MessageField('SeverityOverride', 3, repeated=True)
   threatOverrides = _messages.MessageField('ThreatOverride', 4, repeated=True)
+  wildfireInlineMlOverrides = _messages.MessageField('WildfireInlineMlOverride', 5, repeated=True)
+  wildfireOverrides = _messages.MessageField('WildfireOverride', 6, repeated=True)
 
 
 class TlsCertificateFiles(_messages.Message):
@@ -9498,6 +9504,126 @@ class ValidationCA(_messages.Message):
   caCertPath = _messages.StringField(1)
   certificateProviderInstance = _messages.MessageField('CertificateProviderInstance', 2)
   grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 3)
+
+
+class WildfireInlineMlOverride(_messages.Message):
+  r"""Defines what action to take for wildfire inline ml threats per protocol.
+
+  Enums:
+    ActionValueValuesEnum: Required. Threat action override. For some threat
+      types, only a subset of actions applies.
+    ProtocolValueValuesEnum: Required. Protocol to match.
+
+  Fields:
+    action: Required. Threat action override. For some threat types, only a
+      subset of actions applies.
+    protocol: Required. Protocol to match.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Threat action override. For some threat types, only a subset
+    of actions applies.
+
+    Values:
+      THREAT_ACTION_UNSPECIFIED: Threat action not specified.
+      DEFAULT_ACTION: The default action (as specified by the vendor) is
+        taken.
+      ALLOW: The packet matching this rule will be allowed to transmit.
+      ALERT: The packet matching this rule will be allowed to transmit, but a
+        threat_log entry will be sent to the consumer project.
+      DENY: The packet matching this rule will be dropped, and a threat_log
+        entry will be sent to the consumer project.
+    """
+    THREAT_ACTION_UNSPECIFIED = 0
+    DEFAULT_ACTION = 1
+    ALLOW = 2
+    ALERT = 3
+    DENY = 4
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Required. Protocol to match.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Protocol not specified.
+      SMTP: SMTP prtocol
+      SMB: SMB protocol
+      POP3: POP3 protocol
+      IMAP: IMAP protocol
+      HTTP2: HTTP2 protocol
+      HTTP: HTTP protocol
+      FTP: FTP protocol
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    SMTP = 1
+    SMB = 2
+    POP3 = 3
+    IMAP = 4
+    HTTP2 = 5
+    HTTP = 6
+    FTP = 7
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 2)
+
+
+class WildfireOverride(_messages.Message):
+  r"""Defines what action to take for wildfire threats per protocol.
+
+  Enums:
+    ActionValueValuesEnum: Required. Threat action override. For some threat
+      types, only a subset of actions applies.
+    ProtocolValueValuesEnum: Required. Protocol to match.
+
+  Fields:
+    action: Required. Threat action override. For some threat types, only a
+      subset of actions applies.
+    protocol: Required. Protocol to match.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Threat action override. For some threat types, only a subset
+    of actions applies.
+
+    Values:
+      THREAT_ACTION_UNSPECIFIED: Threat action not specified.
+      DEFAULT_ACTION: The default action (as specified by the vendor) is
+        taken.
+      ALLOW: The packet matching this rule will be allowed to transmit.
+      ALERT: The packet matching this rule will be allowed to transmit, but a
+        threat_log entry will be sent to the consumer project.
+      DENY: The packet matching this rule will be dropped, and a threat_log
+        entry will be sent to the consumer project.
+    """
+    THREAT_ACTION_UNSPECIFIED = 0
+    DEFAULT_ACTION = 1
+    ALLOW = 2
+    ALERT = 3
+    DENY = 4
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Required. Protocol to match.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Protocol not specified.
+      SMTP: SMTP prtocol
+      SMB: SMB protocol
+      POP3: POP3 protocol
+      IMAP: IMAP protocol
+      HTTP2: HTTP2 protocol
+      HTTP: HTTP protocol
+      FTP: FTP protocol
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    SMTP = 1
+    SMB = 2
+    POP3 = 3
+    IMAP = 4
+    HTTP2 = 5
+    HTTP = 6
+    FTP = 7
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(
