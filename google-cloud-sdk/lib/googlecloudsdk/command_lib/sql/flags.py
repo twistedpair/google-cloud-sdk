@@ -858,9 +858,10 @@ def AddStorageType(parser, hidden=False):
   parser.add_argument(
       '--storage-type',
       required=False,
-      # TODO(b/339092559): Remove SSD from the list for non-default universe
       choices=(
-          ['SSD', 'HDD'] if properties.IsDefaultUniverse() else ['SSD', 'HDB']
+          ['SSD', 'HDD']
+          if properties.IsDefaultUniverse()
+          else ['HYPERDISK_BALANCED']
       ),
       default=None,
       hidden=hidden,

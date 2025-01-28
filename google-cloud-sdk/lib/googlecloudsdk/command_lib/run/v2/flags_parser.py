@@ -307,5 +307,7 @@ def GetWorkerPoolConfigurationChanges(args):
     changes.append(_GetWorkerPoolScalingChange(args))
   if flags.HasInstanceSplitChanges(args):
     changes.append(_GetInstanceSplitChanges(args))
+  if 'no_promote' in args and args.no_promote:
+    changes.append(config_changes.NoPromoteChange())
   _PrependClientNameAndVersionChange(args, changes)
   return changes

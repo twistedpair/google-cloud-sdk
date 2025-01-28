@@ -72,17 +72,17 @@ project_location_connection:
     attribute_name: connection
     help: The connection id of the {resource} resource.
   disable_auto_completers: false
-project_location_user_connection:
-  name: userConnection
-  plural_name: userConnections
-  collection: developerconnect.projects.locations.userConnections
+project_location_account_connector:
+  name: accountConnector
+  plural_name: accountConnectors
+  collection: developerconnect.projects.locations.accountConnectors
   attributes:
   - *project
   - *location
-  - &userConnection
-    parameter_name: userConnectionsId
-    attribute_name: user_connection
-    help: The userConnection id of the {resource} resource.
+  - &accountConnector
+    parameter_name: accountConnectorsId
+    attribute_name: account_connector
+    help: The accountConnector id of the {resource} resource.
   disable_auto_completers: false
 project_location_key_ring:
   name: keyRing
@@ -147,14 +147,14 @@ project_location_connection_git_repository_link:
     attribute_name: git_repository_link
     help: The gitRepositoryLink id of the {resource} resource.
   disable_auto_completers: false
-project_location_user_connection_user:
+project_location_account_connector_user:
   name: user
   plural_name: users
-  collection: developerconnect.projects.locations.userConnections.users
+  collection: developerconnect.projects.locations.accountConnectors.users
   attributes:
   - *project
   - *location
-  - *userConnection
+  - *accountConnector
   - &user
     parameter_name: usersId
     attribute_name: user

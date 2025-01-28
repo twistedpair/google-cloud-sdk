@@ -38,37 +38,60 @@ class StorageBatchOperationsApi:
 
   def _instantiate_job_with_source(
       self,
+      bucket_name,
       manifest_location=None,
-      prefix_list_file=None,
+      included_object_prefixes=None,
       description=None,
   ):
     """Instatiates a Job object using the source and description provided.
 
     Args:
+      bucket_name (str): Bucket name that contains the source objects described
+        by the manifest or prefix list.
       manifest_location (str): Absolute path to the manifest source file in a
         Google Cloud Storage bucket.
-      prefix_list_file (str): Path to a local JSON or YAML file containing a
-        list of prefixes.
+      included_object_prefixes (list[str]): list of object prefixes to describe
+        the objects being transformed.
       description (str): Description of the job.
 
     Returns:
       A Job object.
     """
-    if bool(manifest_location) == bool(prefix_list_file):
+    # empty prefix list is still allowed and considered set.
+    prefix_list_set = included_object_prefixes is not None
+    if bool(manifest_location) == prefix_list_set:
       raise errors.StorageBatchOperationsApiError(
-          "Exactly one of manifest-location or prefix-list-file must be"
+          "Exactly one of manifest-location or included-object-prefixes must be"
           " specified."
       )
     job = self.messages.Job(
         description=description,
     )
     if manifest_location:
-      job.manifest = self.messages.Manifest(
+      manifest_payload = self.messages.Manifest(
           manifestLocation=manifest_location,
       )
+      job.bucketList = self.messages.BucketList(
+          buckets=[
+              self.messages.Bucket(
+                  bucket=bucket_name,
+                  manifest=manifest_payload,
+              )
+          ]
+      )
     else:
-      job.prefixList = storage_batch_operations_util.process_prefix_list_file(
-          prefix_list_file
+      prefix_list = (
+          storage_batch_operations_util.process_included_object_prefixes(
+              included_object_prefixes
+          )
+      )
+      job.bucketList = self.messages.BucketList(
+          buckets=[
+              self.messages.Bucket(
+                  bucket=bucket_name,
+                  prefixList=prefix_list,
+              )
+          ]
       )
     return job
 
@@ -146,8 +169,9 @@ class StorageBatchOperationsApi:
   def create_batch_job(self, args, batch_job_name):
     """Creates a batch job based on command arguments."""
     job = self._instantiate_job_with_source(
+        args.bucket,
         manifest_location=args.manifest_location,
-        prefix_list_file=args.prefix_list_file,
+        included_object_prefixes=args.included_object_prefixes,
         description=args.description,
     )
     if (

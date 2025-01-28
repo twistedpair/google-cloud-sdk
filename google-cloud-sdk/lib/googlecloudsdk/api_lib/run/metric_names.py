@@ -131,3 +131,12 @@ LIST_WORKER_POOLS = _SERVERLESS_PREFIX + 'list_worker_pools'
 
 # Time to get a worker pool
 GET_WORKER_POOL = _SERVERLESS_PREFIX + 'get_worker_pool'
+
+# Time to delete a worker pool revision
+DELETE_WORKER_POOL_REVISION = _SERVERLESS_PREFIX + 'delete_worker_pool_revision'
+
+# Time to list worker pool revisions
+LIST_WORKER_POOL_REVISIONS = _SERVERLESS_PREFIX + 'list_worker_pool_revisions'
+
+# Time to get a worker pool revision
+GET_WORKER_POOL_REVISION = _SERVERLESS_PREFIX + 'get_worker_pool_revision'

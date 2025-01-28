@@ -5,6 +5,102 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 508.0.0 (2025-01-28)
+
+### AlloyDB
+
+* Added flag `--keep-extra-roles` to keep extra database roles when creating or setting database roles for an existing user.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.32 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.32>.
+
+### Backup For GKE
+
+* Added command `gcloud beta container backup-restore operations list` to list Backup for GKE operations.
+
+### Cloud DNS
+
+* Add support for DNS64 policies.
+
+### Cloud Dataflow
+
+* Added `launcher_machine_type` parameter to `gcloud dataflow flex-template run`
+to support to specify the machine type to use for launching the flex template
+job.
+
+### Cloud Datastream
+
+*   Added `--postgresql-ca-certificate` flag to `gcloud datastream
+    connection-profiles create` commands to create connection with SSL server
+    only verification for PostgreSQL source.
+*   Added `--postgresql-ca-certificate`, `--postgresql-client-certificate`
+    and `--postgresql-client-key` flags to `gcloud datastream
+    connection-profiles create` commands to create connection with SSL server
+    and client verification for PostgreSQL source.
+*   Added `--postgresql-ca-certificate` flags to `gcloud datastream
+    connection-profiles update` commands to update SSL server only verification
+    config for PostgreSQL source.
+*   Added `--postgresql-ca-certificate`, `--postgresql-client-certificate`
+    and `--postgresql-client-key` flags and support for PostgreSQL profile to
+    `gcloud datastream connection-profiles update` commands to update SSL
+    config for server and client verification for PostgreSQL source.
+*   Fixed `gcloud datastream objects list` command with SQL Server source.
+
+### Cloud Filestore
+
+* Added `--performance` flag to `gcloud filestore instances create`.
+* Added `--performance` flag to `gcloud filestore instances update`.
+* Added `--performance` flag to `gcloud beta filestore instances create`.
+* Added `--performance` flag to `gcloud beta filestore instances update`.
+
+### Cloud Key Management Service
+
+*   Added `gcloud beta kms autokey-config` which helps users update and retrieve
+    the Autokey Config.
+*   Added `gcloud beta kms key-handles` which helps users create and retrieve
+    key-handles.
+
+### Cloud On Demand Scanning
+
+* Monthly release of local-extract with updated package dependencies (2025-01).
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager tags keys create` to require the organization
+  ID in `purpose-data=organization=<org-id>`.
+
+### Cloud Spanner
+
+* Add `target_database_move_configs` to `gcloud spanner instances move` command for ALPHA track.
+
+### Compute Engine
+
+* Added `tls-ja4-fingerprint` as valid rate limit key types in `gcloud compute security-policies rules`.
+* Promoted IPv6-only stack type support for `gcloud compute instances create-with-container` and `gcloud compute instance-templates create-with-container` to GA.
+
+### Database Migration
+
+* Added sub-entity support to `gcloud database-migration conversion-workspaces describe-entities` command.
+* Added `--ssl-type` flag to `gcloud database-migration connection-profiles create` command for PostgreSQL and MySQL.
+* Added `--ssl-type` flag to `gcloud database-migration connection-profiles update` command for PostgreSQL and MySQL.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.30.8 to 1.30.9.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.15
+  * kubectl.1.29 (1.29.13)
+  * kubectl.1.30 (1.30.9)
+  * kubectl.1.31 (1.31.5)
+  * kubectl.1.32 (1.32.1)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 507.0.0 (2025-01-22)
 
 ### Breaking Changes

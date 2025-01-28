@@ -220,3 +220,58 @@ class WorkerPoolsOperations(object):
     )
     with metrics.RecordDuration(metric_names.UPDATE_WORKER_POOL):
       return worker_pools.update_worker_pool(update_request)
+
+  def GetRevision(self, worker_pool_revision_ref):
+    """Get the Revision.
+
+    Args:
+      worker_pool_revision_ref: Resource, Revision to get.
+
+    Returns:
+      A Revision object.
+    """
+    worker_pool_revisions = self._client.revisions
+    get_request = self._client.types.GetRevisionRequest(
+        name=worker_pool_revision_ref.RelativeName()
+    )
+    try:
+      with metrics.RecordDuration(metric_names.GET_WORKER_POOL_REVISION):
+        return worker_pool_revisions.get_revision(get_request)
+    except exceptions.NotFound:
+      return None
+
+  def DeleteRevision(self, worker_pool_revision_ref):
+    """Delete the Revision.
+
+    Args:
+      worker_pool_revision_ref: Resource, Revision to delete.
+
+    Returns:
+      A LRO for delete operation.
+    """
+    worker_pool_revisions = self._client.revisions
+    delete_request = self._client.types.DeleteRevisionRequest(
+        name=worker_pool_revision_ref.RelativeName()
+    )
+    try:
+      with metrics.RecordDuration(metric_names.DELETE_WORKER_POOL_REVISION):
+        return worker_pool_revisions.delete_revision(delete_request)
+    except exceptions.NotFound:
+      return None
+
+  def ListRevisions(self, worker_pool_ref):
+    """List the Revisions in a region under the given WorkerPool.
+
+    Args:
+      worker_pool_ref: Resource, WorkerPool to get the list of Revisions from.
+
+    Returns:
+      A list of Revision objects.
+    """
+    worker_pool_revisions = self._client.revisions
+    list_request = self._client.types.ListRevisionsRequest(
+        parent=worker_pool_ref.RelativeName()
+    )
+    # TODO(b/366501494): Support `next_page_token`
+    with metrics.RecordDuration(metric_names.LIST_WORKER_POOL_REVISIONS):
+      return worker_pool_revisions.list_revisions(list_request)

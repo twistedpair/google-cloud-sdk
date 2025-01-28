@@ -23,6 +23,13 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
 
 
+_HF_WILDCARD_FILTER = 'is_hf_wildcard(true)'
+_NATIVE_MODEL_FILTER = 'is_hf_wildcard(false)'
+_VERIFIED_DEPLOYMENT_FILTER = (
+    'labels.VERIFIED_DEPLOYMENT_CONFIG=VERIFIED_DEPLOYMENT_SUCCEED'
+)
+
+
 class ModelGardenClient(object):
   """Client used for interacting with Model Garden APIs."""
 
@@ -89,7 +96,8 @@ class ModelGardenClient(object):
                 machineType=machine_type,
                 acceleratorType=accelerator_type,
                 acceleratorCount=accelerator_count,
-            )
+            ),
+            minReplicaCount=1,
         ),
     )
     request = self._messages.AiplatformProjectsLocationsDeployRequest(
@@ -112,14 +120,17 @@ class ModelGardenClient(object):
     Returns:
       The list of publisher models in Model Garden..
     """
+    filter_str = _NATIVE_MODEL_FILTER
+    if list_hf_models:
+      filter_str = ' AND '.join(
+          [_HF_WILDCARD_FILTER, _VERIFIED_DEPLOYMENT_FILTER]
+      )
     return list_pager.YieldFromList(
         self._publishers_models_service,
         self._messages.AiplatformPublishersModelsListRequest(
             parent='publishers/*',
             listAllVersions=True,
-            filter='is_hf_wildcard(true)'
-            if list_hf_models
-            else 'is_hf_wildcard(false)',
+            filter=filter_str,
         ),
         field='publisherModels',
         batch_size_attribute='pageSize',

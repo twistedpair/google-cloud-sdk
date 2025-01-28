@@ -574,8 +574,9 @@ class ResourceResolver(object):
           source_project, collection='compute.projects')
       source_project = source_project_ref.Name()
 
-    project = source_project or properties.VALUES.core.project.GetOrFail()
+    project = None
     if with_project:
+      project = source_project or properties.VALUES.core.project.GetOrFail()
       params = {
           'project': project,
       }

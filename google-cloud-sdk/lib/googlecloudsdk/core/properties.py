@@ -32,8 +32,6 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.resource import resource_printer_types as formats
-from googlecloudsdk.core.universe_descriptor import universe_descriptor
-from googlecloudsdk.core.universe_descriptor.v1 import universe_descriptor_data_pb2
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import scaled_integer
@@ -4668,45 +4666,6 @@ def GetUniverseDomain():
   """Get the universe domain."""
 
   return VALUES.core.universe_domain.Get()
-
-
-def GetUniverseDomainDescriptor() -> (
-    universe_descriptor_data_pb2.UniverseDescriptorData
-):
-  """Returns the universe document domain descriptor.
-
-  If the universe domain is not available, returns the default document domain.
-
-  Returns:
-    The universe document domain.
-  """
-  universe_desc = universe_descriptor.UniverseDescriptor()
-  try:
-    return universe_desc.Get(GetUniverseDomain())
-  except universe_descriptor.UniverseDescriptorError:
-    pass
-
-  return universe_desc.Get(VALUES.core.universe_domain.default)
-
-
-def GetUniverseDocumentDomain() -> str:
-  """Returns the universe document domain.
-
-  If the universe domain is not available, returns the default document domain.
-
-  Returns:
-    The universe document domain.
-  """
-  try:
-    universe_domain = GetUniverseDomain()
-    universe_descriptor_data = universe_descriptor.UniverseDescriptor()
-    cached_descriptor_data = universe_descriptor_data.Get(universe_domain)
-    if cached_descriptor_data and cached_descriptor_data.documentation_domain:
-      return cached_descriptor_data.documentation_domain
-  except universe_descriptor.UniverseDescriptorError:
-    pass
-
-  return 'cloud.google.com'
 
 
 def GetMetricsEnvironment():

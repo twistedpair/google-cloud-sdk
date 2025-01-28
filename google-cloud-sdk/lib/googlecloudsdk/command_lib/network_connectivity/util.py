@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import argparse
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta.networkconnectivity_v1beta_messages import GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute
 
 
 # Constants
@@ -179,16 +180,53 @@ class StoreGlobalAction(argparse._StoreConstAction):
   # pylint: disable=redefined-builtin
   """Return "global" if the --global argument is used."""
 
-  def __init__(self,
-               option_strings,
-               dest,
-               default="",
-               required=False,
-               help=None):
+  def __init__(
+      self, option_strings, dest, default="", required=False, help=None
+  ):
     super(StoreGlobalAction, self).__init__(
         option_strings=option_strings,
         dest=dest,
         const="global",
         default=default,
         required=required,
-        help=help)
+        help=help,
+    )
+
+
+def SetGatewayAdvertisedRouteRecipient(unused_ref, args, request):
+  """Set the route's `recipient` field based on boolean flags.
+
+  Args:
+    args: The command arguments.
+    request: The request to set the `recipient` field on.
+  Returns:
+    The request with the `recipient` field set.
+  """
+  if args.advertise_to_hub:
+    request.googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute.recipient = (
+        GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute.RecipientValueValuesEnum.ADVERTISE_TO_HUB
+    )
+  return request
+
+
+def CheckRegionSpecifiedIfSpokeSpecified(unused_ref, unused_args, request):
+  """If a spoke name is specified, then its region must also be specified.
+
+  This is because CCFE doesn't support a wildcard ("-") in this case but returns
+  a confusing error message. So we give the user a friendlier error.
+
+  Args:
+    request: The request object. We will inspect the parent field.
+
+  Returns:
+    The unmodified request object.
+  Raises:
+    InvalidInputError: If the region is unspecified when a spoke is.
+  """
+  region_wildcard = "/locations/-/" in request.parent
+  spoke_wildcard = request.parent.endswith("/spokes/-")
+  if region_wildcard and not spoke_wildcard:
+    raise InvalidInputError(
+        "A region must be specified if a spoke name is specified"
+    )
+  return request

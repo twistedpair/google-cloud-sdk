@@ -619,6 +619,18 @@ def GetWorkerPoolResourceSpec(prompt=False):
   )
 
 
+def GetWorkerPoolRevisionResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.projects.locations.workerPools.revisions',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      workerPoolsId=WorkerPoolAttributeConfig(prompt),
+      revisionsId=RevisionAttributeConfig(),
+      resource_name='WorkerPoolRevision',
+      api_version='v2',
+  )
+
+
 def GetProjectResourceSpec():
   return concepts.ResourceSpec(
       'run.projects',

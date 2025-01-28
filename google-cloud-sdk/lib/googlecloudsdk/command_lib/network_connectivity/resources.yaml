@@ -34,6 +34,21 @@ regionDefaultGlobal:
       hint: |
         use default global location
 
+regionDefaultAll:
+  name: region
+  collection: networkconnectivity.projects.locations
+  attributes:
+  - *project
+  - &regionDefaultAll
+    parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The location ID.
+    fallthroughs:
+    - value: "-"
+      hint: |
+        use default wildcard location
+
 location:
   name: location
   collection: networkconnectivity.projects.locations
@@ -90,6 +105,22 @@ spoke:
   - &spoke
     parameter_name: spokesId
     attribute_name: spoke
+    help: Id of the spoke.
+
+spokeDefaultAll:
+  name: spoke
+  collection: networkconnectivity.projects.locations.spokes
+  request_id_field: spokeId
+  attributes:
+  - *project
+  - *regionDefaultAll
+  - &spokeDefaultAll
+    parameter_name: spokesId
+    attribute_name: spoke
+    fallthroughs:
+    - value: "-"
+      hint: |-
+        if left empty, will use the wildcard '-' to list all spokes
     help: Id of the spoke.
 
 policyBasedRoute:
@@ -163,3 +194,16 @@ regionalEndpoint:
     parameter_name: regionalEndpointsId
     attribute_name: regional_endpoint
     help: Id of the regionalEndpoint.
+
+gatewayAdvertisedRoute:
+  name: gatewayAdvertisedRoute
+  collection: networkconnectivity.projects.locations.spokes.gatewayAdvertisedRoutes
+  request_id_field: gatewayAdvertisedRouteId
+  attributes:
+  - *project
+  - *region
+  - *spoke
+  - &gatewayAdvertisedRoute
+    parameter_name: gatewayAdvertisedRoutesId
+    attribute_name: gateway_advertised_route
+    help: Id of the gateway advertised route.

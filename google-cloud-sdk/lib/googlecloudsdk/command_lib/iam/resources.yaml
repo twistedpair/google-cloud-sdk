@@ -338,6 +338,23 @@ workforce_pool_operation:
       The ID of the operation.
   disable_auto_completers: false
 
+workforce_pool_installed_app:
+  name: workforce pool installed app
+  collection: iam.locations.workforcePools.installedApps
+  request_id_field: workforcePoolInstalledAppId
+  attributes:
+  - *wf_location
+  - *workforce_pool
+  - &workforce_pool_installed_app
+    parameter_name: installedAppsId
+    attribute_name: installed_app
+    help: |
+      The ID to use for the workforce pool installed app, which becomes the final component of the
+      resource name. This value must be unique within the workforce pool, 4-32 characters in length,
+      and may contain the characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google,
+      and may not be specified.
+  disable_auto_completers: false
+
 workforce_pool_provider:
   name: workforce pool provider
   collection: iam.locations.workforcePools.providers

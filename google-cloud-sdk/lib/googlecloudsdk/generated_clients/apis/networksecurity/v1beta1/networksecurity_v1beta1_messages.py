@@ -2313,6 +2313,8 @@ class MirroringDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment. Used
+      as additional context for the deployment.
     forwardingRule: Required. Immutable. The regional load balancer which the
       mirrored traffic should be forwarded to. Format is:
       projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
@@ -2375,13 +2377,14 @@ class MirroringDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  forwardingRule = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  mirroringDeploymentGroup = _messages.StringField(4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(2)
+  forwardingRule = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  mirroringDeploymentGroup = _messages.StringField(5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringDeploymentGroup(_messages.Message):
@@ -2397,6 +2400,8 @@ class MirroringDeploymentGroup(_messages.Message):
     connectedEndpointGroups: Output only. The list of Mirroring Endpoint
       Groups that are connected to this resource.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment group.
+      Used as additional context for the deployment group.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. Then name of the MirroringDeploymentGroup.
     network: Required. Immutable. The network that is being used for the
@@ -2447,12 +2452,13 @@ class MirroringDeploymentGroup(_messages.Message):
 
   connectedEndpointGroups = _messages.MessageField('MirroringDeploymentGroupConnectedEndpointGroup', 1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
@@ -2478,6 +2484,8 @@ class MirroringEndpointGroup(_messages.Message):
     associations: Output only. List of Mirroring Endpoint Group Associations
       that are associated to this endpoint group.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the endpoint group.
+      Used as additional context for the endpoint group.
     labels: Optional. Labels as key value pairs
     mirroringDeploymentGroup: Required. Immutable. The Mirroring Deployment
       Group that this resource is connected to. Format is: `projects/{project}
@@ -2540,12 +2548,13 @@ class MirroringEndpointGroup(_messages.Message):
 
   associations = _messages.MessageField('MirroringEndpointGroupAssociationDetails', 1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  mirroringDeploymentGroup = _messages.StringField(4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  mirroringDeploymentGroup = _messages.StringField(5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringEndpointGroupAssociation(_messages.Message):

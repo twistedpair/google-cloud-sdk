@@ -65,10 +65,15 @@ class ServicePrinter(cp.CustomPrinterBase):
     labels = [
         cp.Labeled([
             ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
-            ('Service-Level Min Instances', GetServiceMinInstances(record)),
-            ('Service-Level Max Instances', GetServiceMaxInstances(record)),
         ])
     ]
+
+    scaling_mode = self._GetScalingMode(record)
+    if scaling_mode:
+      scaling_mode_label = cp.Labeled([
+          ('Scaling', scaling_mode),
+      ])
+      labels.append(scaling_mode_label)
 
     breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
     if breakglass_value is not None:
@@ -85,12 +90,6 @@ class ServicePrinter(cp.CustomPrinterBase):
           ('Description', description),
       ])
       labels.append(description_label)
-    scaling_mode = self._GetScalingMode(record)
-    if scaling_mode:
-      scaling_mode_label = cp.Labeled([
-          ('Scaling', scaling_mode),
-      ])
-      labels.append(scaling_mode_label)
     return cp.Section(labels)
 
   def BuildHeader(self, record):
@@ -108,10 +107,18 @@ class ServicePrinter(cp.CustomPrinterBase):
       )
       return 'Manual (Instances: %s)' % instance_count
     else:
-      instance_count = record.annotations.get(
+      min_instance_count = record.annotations.get(
           service.SERVICE_MIN_SCALE_ANNOTATION, '0'
       )
-      return 'Auto (Min: %s)' % instance_count
+      max_instance_count = record.annotations.get(
+          service.SERVICE_MAX_SCALE_ANNOTATION, ''
+      )
+      if max_instance_count:
+        return 'Auto (Min: %s, Max: %s)' % (
+            min_instance_count,
+            max_instance_count,
+        )
+      return 'Auto (Min: %s)' % min_instance_count
 
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
@@ -133,11 +140,3 @@ class MultiRegionServicePrinter(ServicePrinter):
 
   def BuildHeader(self, record):
     return k8s_util.BuildHeader(record, is_multi_region=True)
-
-
-def GetServiceMinInstances(record):
-  return record.annotations.get(service.SERVICE_MIN_SCALE_ANNOTATION, '')
-
-
-def GetServiceMaxInstances(record):
-  return record.annotations.get(service.SERVICE_MAX_SCALE_ANNOTATION, '')

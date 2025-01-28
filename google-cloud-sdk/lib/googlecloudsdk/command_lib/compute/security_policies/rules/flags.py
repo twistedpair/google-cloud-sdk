@@ -166,6 +166,9 @@ _RATE_LIMIT_ENFORCE_ON_KEY_TYPES_DESCRIPTION = """
       - ``user-ip'': key type takes the IP address of the originating client,
                      which is resolved based on user-ip-request-headers
                      configured with the security policy
+      - ``tls-ja4-fingerprint'': key type takes the value of JA4 TLS/SSL
+                                 fingerprint if the client connects using HTTPS,
+                                 HTTP/2 or HTTP/3
 """
 
 
@@ -462,6 +465,7 @@ def AddRateLimitOptions(
       'region-code',
       'tls-ja3-fingerprint',
       'user-ip',
+      'tls-ja4-fingerprint',
   ]
   parser.add_argument(
       '--enforce-on-key',
@@ -496,8 +500,9 @@ def AddRateLimitOptions(
       # [http-header=HTTP-HEADER],[http-path=HTTP-PATH],
       # [ip=IP],[region-code=REGION-CODE],[sni=SNI],
       # [tls-ja3-fingerprint=TLS-JA3-FINGERPRINT],[user-ip=USER-IP],
+      # [tls-ja4-fingerprint=TLS-JA4-FINGERPRINT],
       # [xff-ip=XFF-IP]]
-      metavar='[[all],[ip],[xff-ip],[http-cookie=HTTP_COOKIE],[http-header=HTTP_HEADER],[http-path],[sni],[region-code],[tls-ja3-fingerprint],[user-ip]]',
+      metavar='[[all],[ip],[xff-ip],[http-cookie=HTTP_COOKIE],[http-header=HTTP_HEADER],[http-path],[sni],[region-code],[tls-ja3-fingerprint],[user-ip],[tls-ja4-fingerprint]]',
       help="""\
       Specify up to 3 key type/name pairs to rate limit.
       Valid key types are:

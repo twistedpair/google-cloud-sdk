@@ -1,0 +1,38 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyAuthzRuleToRequestOperationHeaderSet export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- headers
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  headers:
+    description: |-
+      A list of headers to match against in http header. The match can be one of
+      exact, prefix, suffix, or contains (substring match). The match follows
+      AND semantics which means all the headers must match. Matches are always
+      case sensitive unless the ignoreCase is set. Limited to 5 matches.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleHeaderMatch.yaml

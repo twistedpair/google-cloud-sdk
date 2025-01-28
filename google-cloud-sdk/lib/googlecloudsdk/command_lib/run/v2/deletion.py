@@ -38,16 +38,32 @@ def IsConditionFailed(condition):
 class DeletionPoller(waiter.OperationPoller):
   """Polls for deletion of a resource."""
 
+  _ready_condition = 'READY'
+
   def __init__(self, getter):
     """Supply getter as the resource getter."""
     self._getter = getter
     self._ret = None
 
+  def _GetReadyCondition(self, conditions):
+    for condition in conditions:
+      if condition.type == self._ready_condition:
+        return condition
+    return None
+
   def IsDone(self, obj):
+    if obj is None:
+      return True
+    # Currently, child resources do not have terminal_condition field. So we
+    # use ready condition instead.
+    terminal_condition = (
+        obj.terminal_condition
+        if hasattr(obj, 'terminal_condition')
+        else self._GetReadyCondition(obj.conditions)
+    )
     return (
-        obj is None
-        or obj.terminal_condition is None
-        or IsConditionFailed(obj.terminal_condition)
+        terminal_condition is None
+        or IsConditionFailed(terminal_condition)
     )
 
   def Poll(self, ref):
@@ -58,12 +74,20 @@ class DeletionPoller(waiter.OperationPoller):
     return self._ret
 
   def GetMessage(self):
+    if not self._ret:
+      return ''
+    # Currently, child resources do not have terminal_condition field. So we
+    # use ready condition instead.
+    terminal_condition = (
+        self._ret.terminal_condition
+        if hasattr(self._ret, 'terminal_condition')
+        else self._GetReadyCondition(self._ret.conditions)
+    )
     if (
-        self._ret
-        and self._ret.terminal_condition
-        and not IsConditionReady(self._ret.terminal_condition)
+        terminal_condition
+        and not IsConditionReady(terminal_condition)
     ):
-      return self._ret.terminal_condition.message or ''
+      return terminal_condition.message or ''
     return ''
 
   def GetResult(self, obj):
@@ -78,14 +102,16 @@ def Delete(ref, getter, deleter, async_):
   poller = DeletionPoller(getter)
   with progress_tracker.ProgressTracker(
       message='Deleting [{}]'.format(ref.Name()),
-      detail_message_callback=poller.GetMessage):
+      detail_message_callback=poller.GetMessage,
+  ):
     deleter(ref)
     res = waiter.PollUntilDone(poller, ref)
     if res:
       if poller.GetMessage():
         raise serverless_exceptions.DeletionFailedError(
-            'Failed to delete [{}]: {}.'.format(ref.Name(),
-                                                poller.GetMessage()))
+            'Failed to delete [{}]: {}.'.format(ref.Name(), poller.GetMessage())
+        )
       else:
         raise serverless_exceptions.DeletionFailedError(
-            'Failed to delete [{}].'.format(ref.Name()))
+            'Failed to delete [{}].'.format(ref.Name())
+        )

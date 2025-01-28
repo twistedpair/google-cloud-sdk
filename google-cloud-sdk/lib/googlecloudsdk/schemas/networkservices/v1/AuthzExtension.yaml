@@ -1,0 +1,120 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1 AuthzExtension export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- authority
+- loadBalancingScheme
+- name
+- service
+- timeout
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  authority:
+    description: |-
+      The `:authority` header in the gRPC request sent from Envoy to the
+      extension service.
+    type: string
+  description:
+    description: A human-readable description of the resource.
+    type: string
+  failOpen:
+    description: |-
+      Determines how the proxy behaves if the call to the extension fails or
+      times out. When set to `TRUE`, request or response processing continues
+      without error. Any subsequent extensions in the extension chain are also
+      executed. When set to `FALSE` or the default setting of `FALSE` is used,
+      one of the following happens: * If response headers have not been
+      delivered to the downstream client, a generic 500 error is returned to the
+      client. The error response can be tailored by configuring a custom error
+      response in the load balancer. * If response headers have been delivered,
+      then the HTTP stream to the downstream client is reset.
+    type: boolean
+  forwardHeaders:
+    description: |-
+      List of the HTTP headers to forward to the extension (from the client). If
+      omitted, all headers are sent. Each element is a string indicating the
+      header name.
+    type: array
+    items:
+      type: string
+  labels:
+    description: |-
+      Set of labels associated with the `AuthzExtension` resource. The
+      format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google
+      Cloud resources.
+    $ref: LabelsValue.yaml
+  loadBalancingScheme:
+    description: |-
+      All backend services and forwarding rules referenced by this extension
+      must share the same load balancing scheme. Supported values:
+      `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+      [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
+    type: string
+    enum:
+    - EXTERNAL_MANAGED
+    - INTERNAL_MANAGED
+    - LOAD_BALANCING_SCHEME_UNSPECIFIED
+  metadata:
+    description: |-
+      The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+    type: object
+  name:
+    description: |-
+      Identifier. Name of the `AuthzExtension` resource in the following
+      format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    type: string
+  service:
+    description: |-
+      The reference to the service that runs the extension. To configure a
+      callout extension, `service` must be a fully-qualified reference to a
+      [backend service](https://cloud.google.com/compute/docs/r
+      eference/rest/v1/backendServices) in the format:
+      `https://www.googleapis .com/compute/v1/projects/{project}/regions/{re
+      gion}/backendServices/{bac kendService}` or
+      `https://www.googleapis.com/compute/v1/projects/{projec
+      t}/global/backendServices/{backendService}`.
+    type: string
+  timeout:
+    description: |-
+      Specifies the timeout for each individual message on the stream. The
+      timeout must be between 10-10000 milliseconds.
+    type: string
+  wireFormat:
+    description: |-
+      The format of communication supported by the callout extension. If not
+      specified, the default is `EXT_PROC_GRPC`.
+    type: string
+    enum:
+    - EXT_PROC_GRPC
+    - WIRE_FORMAT_UNSPECIFIED

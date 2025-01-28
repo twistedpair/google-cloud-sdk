@@ -38,6 +38,17 @@ default_location:
     property: gkebackup/location
     help: Google Cloud location.
 
+operation:
+  name: operation
+  collection: gkebackup.projects.locations.operations
+  attributes:
+  - *default_project
+  - *default_location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: ID of the operation.
+
 backup_plan:
   name: backup plan
   collection: gkebackup.projects.locations.backupPlans

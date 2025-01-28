@@ -1,0 +1,37 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyAuthzRuleRequestResource export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  iamServiceAccount:
+    description: |-
+      An IAM service account to match against the source service account of the
+      VM sending the request.
+    $ref: AuthzPolicyAuthzRuleStringMatch.yaml
+  tagValueIdSet:
+    description: |-
+      A list of resource tag value permanent IDs to match against the resource
+      manager tags value associated with the source VM of a request.
+    $ref: AuthzPolicyAuthzRuleRequestResourceTagValueIdSet.yaml

@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from typing import List, Dict, Union
+from typing import Dict, List, Union
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import instance_split
@@ -263,6 +263,33 @@ def GetUpdatedSplits(
               percent=percent,
           )
           for key, percent in int_percent_splits.items()
+          if percent > 0
+      ],
+      key=_SortKeyFromInstanceSplit,
+  )
+
+
+def ZeroLatestAssignment(
+    current_splits: List[instance_split.InstanceSplit],
+    latest_ready_revision_name: str,
+) -> List[instance_split.InstanceSplit]:
+  """Returns the instance splits with LATEST assignment moved to the latest ready revision."""
+  current_splits_map = _GetCurrentSplitsMap(current_splits)
+  if LATEST_REVISION_KEY in current_splits_map:
+    latest = current_splits_map.pop(LATEST_REVISION_KEY)
+    current_splits_map[latest_ready_revision_name] = (
+        current_splits_map.get(latest_ready_revision_name, 0) + latest
+    )
+  return sorted(
+      [
+          instance_split.InstanceSplit(
+              type_=instance_split.InstanceSplitAllocationType.INSTANCE_SPLIT_ALLOCATION_TYPE_LATEST
+              if key == LATEST_REVISION_KEY
+              else instance_split.InstanceSplitAllocationType.INSTANCE_SPLIT_ALLOCATION_TYPE_REVISION,
+              revision=key if key != LATEST_REVISION_KEY else None,
+              percent=percent,
+          )
+          for key, percent in current_splits_map.items()
           if percent > 0
       ],
       key=_SortKeyFromInstanceSplit,

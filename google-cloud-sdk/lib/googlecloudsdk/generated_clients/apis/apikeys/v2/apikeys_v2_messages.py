@@ -115,7 +115,7 @@ class ApikeysProjectsLocationsKeysPatchRequest(_messages.Message):
       `global`.
     updateMask: The field mask specifies which fields to be updated as part of
       this request. All other fields are ignored. Mutable fields are:
-      `display_name`,`restrictions` and `annotations`. If an update mask is
+      `display_name`, `restrictions`, and `annotations`. If an update mask is
       not provided, the service treats it as an implied mask equivalent to all
       allowed fields that are set on the wire. If the field mask has a special
       value "*", the service treats it equivalent to replace all allowed
@@ -151,8 +151,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -174,7 +174,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -213,9 +213,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -401,8 +401,9 @@ class V2ApiTarget(_messages.Message):
       `TranslateText` `Get*` `translate.googleapis.com.Get*`
     service: The service for this restriction. It should be the canonical
       service name, for example: `translate.googleapis.com`. You can use
-      [`gcloud services list`](/sdk/gcloud/reference/services/list) to get a
-      list of services that are enabled in the project.
+      [`gcloud services
+      list`](https://cloud.google.com/sdk/gcloud/reference/services/list) to
+      get a list of services that are enabled in the project.
   """
 
   methods = _messages.StringField(1, repeated=True)
@@ -473,6 +474,9 @@ class V2Key(_messages.Message):
       a global resource; hence the only supported value for location is
       `global`.
     restrictions: Key restrictions.
+    serviceAccountEmail: Optional. The email address of [the service
+      account](https://cloud.google.com/iam/docs/service-accounts) the key is
+      bound to.
     uid: Output only. Unique id in UUID4 format.
     updateTime: Output only. A timestamp identifying the time this key was
       last updated.
@@ -513,8 +517,9 @@ class V2Key(_messages.Message):
   keyString = _messages.StringField(6)
   name = _messages.StringField(7)
   restrictions = _messages.MessageField('V2Restrictions', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  serviceAccountEmail = _messages.StringField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class V2ListKeysResponse(_messages.Message):

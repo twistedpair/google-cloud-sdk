@@ -996,6 +996,17 @@ def GpuFlag(hidden=True):
   )
 
 
+def ZonalGpuRedundancyFlag(parser, hidden=True):
+  """Add the --zonal-gpu-redundancy flag."""
+  return parser.add_argument(
+      '--zonal-gpu-redundancy',
+      metavar='ZONAL_GPU_REDUNDANCY',
+      hidden=hidden,
+      default=True,
+      help='Set zonal GPU redundancy.',
+  )
+
+
 _SUPPORTED_LIVENESS_PROBE_KEYS = (
     'initialDelaySeconds',
     'timeoutSeconds',
@@ -2866,6 +2877,12 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.ResourceChanges(gpu=args.gpu))
     if args.gpu == '0':
       changes.append(config_changes.GpuTypeChange(gpu_type=''))
+  if FlagIsExplicitlySet(args, 'zonal_gpu_redundancy'):
+    changes.append(
+        config_changes.ZonalGpuRedundancyChange(
+            zonal_gpu_redundancy=args.zonal_gpu_redundancy
+        )
+    )
   if FlagIsExplicitlySet(args, 'startup_probe'):
     if args.startup_probe:
       changes.append(

@@ -9498,6 +9498,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CreateMembers(self, request, global_params=None):
+      r"""Create Interconnects with redundancy by creating them in a specified interconnect group.
+
+      Args:
+        request: (ComputeInterconnectGroupsCreateMembersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectGroupsCreateMembersResponse) The response message.
+      """
+      config = self.GetMethodConfig('CreateMembers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateMembers.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectGroups.createMembers',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}/createMembers',
+        request_field='interconnectGroupsCreateMembersRequest',
+        request_type_name='ComputeInterconnectGroupsCreateMembersRequest',
+        response_type_name='InterconnectGroupsCreateMembersResponse',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified InterconnectGroup in the given scope.
 

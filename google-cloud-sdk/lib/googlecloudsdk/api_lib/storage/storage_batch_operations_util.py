@@ -17,49 +17,22 @@
 import re
 
 from googlecloudsdk.api_lib.storage import errors
-from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.api_lib.util import messages as messages_util
 
 
-def process_prefix_list_file(prefix_list_file):
-  """Converts Prefix List file to Apitools PrefixList object.
+def process_included_object_prefixes(included_object_prefixes):
+  """Converts a list of prefixes to Apitools PrefixList object.
 
   Args:
-    prefix_list_file (str): File path to the prefix list file describing
-      prefixes of objects to be transformed.
+    included_object_prefixes (list[str]): list of prefixes.
 
   Returns:
     A PrefixList object.
   """
   messages = core_apis.GetMessagesModule("storagebatchoperations", "v1")
-  # parsed_prefix_list is either a list or a dict.
-  parsed_prefix_list = metadata_util.cached_read_yaml_json_file(
-      prefix_list_file
-  )
-  if not parsed_prefix_list:
-    raise errors.PreconditionFailedError(
-        "Found empty JSON/YAML for prefix list. Must be a list of "
-        'prefixes in the format {"bucket": BUCKET_NAME, '
-        '"objectPrefix": OBJECT_PREFIX}'
-    )
-  if not isinstance(parsed_prefix_list, list):
-    parsed_prefix_list = [parsed_prefix_list]
-
   prefix_list = messages.PrefixList()
-  for prefix_dict in parsed_prefix_list:
-    try:
-      prefix_list.prefixes.append(
-          messages_util.DictToMessageWithErrorCheck(
-              prefix_dict, messages.Prefix
-          )
-      )
-    except messages_util.DecodeError:
-      raise errors.PreconditionFailedError(
-          "Found invalid JSON/YAML for prefix list. Must be a list of "
-          'prefixes in the format {"bucket": BUCKET_NAME, '
-          '"objectPrefix": OBJECT_PREFIX}'
-      )
+  for prefix in included_object_prefixes:
+    prefix_list.includedObjectPrefixes.append(prefix.strip())
   return prefix_list
 
 

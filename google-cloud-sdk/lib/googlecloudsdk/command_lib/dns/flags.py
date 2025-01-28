@@ -359,6 +359,17 @@ def GetPolicyPrivateAltNameServersArg():
       ))
 
 
+def GetEnableDns64AllQueriesArg():
+  return base.Argument(
+      '--enable-dns64-all-queries',
+      action='store_true',
+      help=(
+          'Specifies whether to allow networks bound to this policy to use '
+          'DNS64 for IPv6-only VM instances.'
+      ),
+  )
+
+
 ## ResourceRecordSets flags.
 def GetResourceRecordSetsNameArg():
   return base.Argument(

@@ -1,0 +1,46 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyAuthzRuleFromRequestSource export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  principals:
+    description: |-
+      A list of identities derived from the client's certificate. This field
+      will not match on a request unless mutual TLS is enabled for the
+      Forwarding rule or Gateway. Each identity is a string whose value is
+      matched against the URI SAN, or DNS SAN or the subject field in the
+      client's certificate. The match can be exact, prefix, suffix or a
+      substring match. One of exact, prefix, suffix or contains must be
+      specified. Limited to 5 principals.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleStringMatch.yaml
+  resources:
+    description: |-
+      A list of resources to match against the resource of the source VM of
+      a request. Limited to 5 resources.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleRequestResource.yaml

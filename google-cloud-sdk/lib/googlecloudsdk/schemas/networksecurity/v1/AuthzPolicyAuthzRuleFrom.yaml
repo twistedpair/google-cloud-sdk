@@ -1,0 +1,46 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyAuthzRuleFrom export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  notSources:
+    description: |-
+      Describes the negated properties of request sources. Matches requests from
+      sources that do not match the criteria specified in this field. At least
+      one of sources or notSources must be specified.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleFromRequestSource.yaml
+  sources:
+    description: |-
+      Describes the properties of a request's sources. At least one of
+      sources or notSources must be specified. Limited to 1 source. A match
+      occurs when ANY source (in sources or notSources) matches the request.
+      Within a single source, the match follows AND semantics across fields
+      and OR semantics within a single field, i.e. a match occurs when ANY
+      principal matches AND ANY ipBlocks match.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleFromRequestSource.yaml

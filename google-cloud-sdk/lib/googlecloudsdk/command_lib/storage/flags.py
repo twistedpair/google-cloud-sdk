@@ -885,6 +885,13 @@ def check_if_use_gsutil_style(args):
 def add_batch_jobs_flags(parser):
   """Adds the flags for the batch-operations jobs create command."""
 
+  parser.add_argument(
+      '--bucket',
+      required=True,
+      help='Bucket containing the objects that the batch job will operate on.',
+      type=str,
+  )
+
   source = parser.add_group(
       mutex=True,
       required=True,
@@ -893,7 +900,7 @@ def add_batch_jobs_flags(parser):
           'Source specifying objects to perform batch operations on. '
           'Must be one of `--manifest-location=``MANIFEST_LOCATION'
           '` '
-          'or `--prefix-list-file=``PREFIX_LIST_FILE'
+          'or `--included-object-prefixes=``COMMA_SEPARATED_PREFIXES'
           '`'
       ),
   )
@@ -910,15 +917,13 @@ def add_batch_jobs_flags(parser):
       type=str,
   )
   source.add_argument(
-      '--prefix-list-file',
+      '--included-object-prefixes',
       help=(
-          'A path to a local JSON or YAML file containing a list of prefixes.'
-          ' prefix is specified in the format of {"bucket": BUCKET_NAME,'
-          ' "objectPrefix": OBJECT_PREFIX} where bucket is the name of the'
-          ' bucket on which batch operation is being performed and objectPrefix'
-          ' is the prefix of objects in the bucket that will be acted upon.'
+          'A comma-separated list of object prefixes to describe the objects'
+          ' being transformed. An empty string means all objects in the bucket.'
       ),
-      type=str,
+      type=arg_parsers.ArgList(),
+      metavar='PREFIXES',
   )
   transformation = parser.add_group(
       mutex=True,

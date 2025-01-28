@@ -18652,6 +18652,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Allows customers to perform maintenance on a reservation block.
+
+      Args:
+        request: (ComputeReservationBlocksPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationBlocks.performMaintenance',
+        ordered_params=['project', 'zone', 'reservation', 'reservationBlock'],
+        path_params=['project', 'reservation', 'reservationBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}/performMaintenance',
+        request_field='reservationsBlocksPerformMaintenanceRequest',
+        request_type_name='ComputeReservationBlocksPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ReservationsService(base_api.BaseApiService):
     """Service class for the reservations resource."""
 
@@ -18815,6 +18841,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeReservationsListRequest',
         response_type_name='ReservationList',
+        supports_download=False,
+    )
+
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform maintenance on an extended reservation.
+
+      Args:
+        request: (ComputeReservationsPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservations.performMaintenance',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/performMaintenance',
+        request_field='reservationsPerformMaintenanceRequest',
+        request_type_name='ComputeReservationsPerformMaintenanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

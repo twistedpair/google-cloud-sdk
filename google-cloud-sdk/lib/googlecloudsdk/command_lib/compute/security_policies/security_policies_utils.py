@@ -757,6 +757,7 @@ def ConvertEnforceOnKey(enforce_on_key):
       'region-code': 'REGION_CODE',
       'tls-ja3-fingerprint': 'TLS_JA3_FINGERPRINT',
       'user-ip': 'USER_IP',
+      'tls-ja4-fingerprint': 'TLS_JA4_FINGERPRINT'
   }.get(enforce_on_key, enforce_on_key)
 
 

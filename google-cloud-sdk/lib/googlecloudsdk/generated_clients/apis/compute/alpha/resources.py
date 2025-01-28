@@ -866,7 +866,11 @@ class Collections(enum.Enum):
       'wireGroups',
       'projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/'
       'wireGroups/{wireGroup}',
-      {},
+      {
+          '':
+              'projects/{project}/global/crossSiteNetworks/'
+              '{crossSiteNetwork}/wireGroups/{wireGroup}',
+      },
       ['project', 'crossSiteNetwork', 'wireGroup'],
       True
   )

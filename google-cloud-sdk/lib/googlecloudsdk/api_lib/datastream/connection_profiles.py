@@ -50,10 +50,22 @@ class ConnectionProfilesClient:
     self._ValidateSslConfigArgs(args)
 
   def _ValidateSslConfigArgs(self, args):
+    """Validates Format of all SSL config args."""
     self._ValidateCertificateFormat(args.ca_certificate, 'CA certificate')
     self._ValidateCertificateFormat(args.client_certificate,
                                     'client certificate')
     self._ValidateCertificateFormat(args.client_key, 'client key')
+
+    # Validation for all Postgresql SSL config fields.
+    self._ValidateCertificateFormat(
+        args.postgresql_ca_certificate, 'Postgresql CA certificate'
+    )
+    self._ValidateCertificateFormat(
+        args.postgresql_client_certificate, 'Postgresql client certificate'
+    )
+    self._ValidateCertificateFormat(
+        args.postgresql_client_key, 'Postgresql client private key'
+    )
 
   def _ValidateCertificateFormat(self, certificate, name):
     if not certificate:
@@ -90,13 +102,33 @@ class ConnectionProfilesClient:
         password=args.oracle_password,
         databaseService=args.database_service)
 
+  def _GetPostgresqlSslConfig(self, args):
+    """Returns a PostgresqlSslConfig message based on the given args."""
+    if args.postgresql_client_certificate or args.postgresql_client_key:
+      return self._messages.PostgresqlSslConfig(
+          serverAndClientVerification=self._messages.ServerAndClientVerification(
+              clientCertificate=args.postgresql_client_certificate,
+              clientKey=args.postgresql_client_key,
+              caCertificate=args.postgresql_ca_certificate,
+          ))
+
+    if args.postgresql_ca_certificate:
+      return self._messages.PostgresqlSslConfig(
+          serverVerification=self._messages.ServerVerification(
+              caCertificate=args.postgresql_ca_certificate,
+          ))
+
+    return None
+
   def _GetPostgresqlProfile(self, args):
+    ssl_config = self._GetPostgresqlSslConfig(args)
     return self._messages.PostgresqlProfile(
         hostname=args.postgresql_hostname,
         port=args.postgresql_port,
         username=args.postgresql_username,
         password=args.postgresql_password,
-        database=args.postgresql_database)
+        database=args.postgresql_database,
+        sslConfig=ssl_config)
 
   def _GetSqlServerProfile(self, args):
     return self._messages.SqlServerProfile(
@@ -376,6 +408,40 @@ class ConnectionProfilesClient:
 
     self._UpdateMysqlSslConfig(connection_profile, args, update_fields)
 
+  def _UpdatePostgresqlSslConfig(self, connection_profile, args, update_fields):
+    """Updates Postgresql SSL config."""
+    if args.IsSpecified('postgresql_client_certificate'):
+      connection_profile.postgresqlProfile.sslConfig.serverAndClientVerification.clientCertificate = (
+          args.postgresql_client_certificate
+      )
+      update_fields.append(
+          'postgresqlProfile.sslConfig.serverAndClientVerification.clientCertificate'
+      )
+
+    if args.IsSpecified('postgresql_client_key'):
+      connection_profile.postgresqlProfile.sslConfig.serverAndClientVerification.clientKey = (
+          args.postgresql_client_key
+      )
+      update_fields.append(
+          'postgresqlProfile.sslConfig.serverAndClientVerification.clientKey'
+      )
+
+    if args.IsSpecified('postgresql_ca_certificate'):
+      if connection_profile.postgresqlProfile.sslConfig.serverAndClientVerification:
+        connection_profile.postgresqlProfile.sslConfig.serverAndClientVerification.caCertificate = (
+            args.postgresql_ca_certificate
+        )
+        update_fields.append(
+            'postgresqlProfile.sslConfig.serverAndClientVerification.caCertificate'
+        )
+      else:
+        connection_profile.postgresqlProfile.sslConfig.serverVerification.caCertificate = (
+            args.postgresql_ca_certificate
+        )
+        update_fields.append(
+            'postgresqlProfile.sslConfig.serverVerification.caCertificate'
+        )
+
   def _UpdatePostgresqlProfile(self, connection_profile, args, update_fields):
     """Updates Postgresql connection profile."""
     if args.IsSpecified('postgresql_hostname'):
@@ -393,6 +459,8 @@ class ConnectionProfilesClient:
     if args.IsSpecified('postgresql_database'):
       connection_profile.postgresqlProfile.database = args.postgresql_database
       update_fields.append('postgresqlProfile.database')
+
+    self._UpdatePostgresqlSslConfig(connection_profile, args, update_fields)
 
   def _UpdateSqlServerProfile(self, connection_profile, args, update_fields):
     """Updates SqlServer connection profile."""

@@ -1138,21 +1138,12 @@ class SanitizeModelResponseRequest(_messages.Message):
   r"""Sanitize Model Response request.
 
   Fields:
-    filterConfig: Optional. Optional Filter configuration to Sanitize User
-      Prompt. If below configuration is specified then Sanitization will be
-      performed using settings in this configuration along with settings
-      defined at template level (union of both). If a filter overlaps, then
-      the highest level of strictness will be applied. For example, the
-      filter_configuration specifies LOW_AND_ABOVE confidence level for
-      TOXICITY filter and template uses HIGH confidence level, then
-      Sanitization is performed using LOW_AND_ABOVE confidence level.
     modelResponseData: Required. Model response data to sanitize.
     userPrompt: Optional. User Prompt associated with Model response.
   """
 
-  filterConfig = _messages.MessageField('FilterConfig', 1)
-  modelResponseData = _messages.MessageField('DataItem', 2)
-  userPrompt = _messages.StringField(3)
+  modelResponseData = _messages.MessageField('DataItem', 1)
+  userPrompt = _messages.StringField(2)
 
 
 class SanitizeModelResponseResponse(_messages.Message):
@@ -1169,20 +1160,10 @@ class SanitizeUserPromptRequest(_messages.Message):
   r"""Sanitize User Prompt request.
 
   Fields:
-    filterConfig: Optional. Optional Filter configuration to Sanitize User
-      Prompt. If below configuration is specified then Sanitization will be
-      performed using settings in this configuration along with settings
-      defined at template level (union of both). If a filter setting overlaps,
-      then the lowest threshold value i.e. value with greater false positives
-      will be applied. For example, the `filter_configuration` defines
-      LOW_AND_ABOVE confidence level for TOXICITY, and template defines HIGH
-      confidence level, then Sanitization is performed using LOW_AND_ABOVE
-      confidence level.
     userPromptData: Required. User prompt data to sanitize.
   """
 
-  filterConfig = _messages.MessageField('FilterConfig', 1)
-  userPromptData = _messages.MessageField('DataItem', 2)
+  userPromptData = _messages.MessageField('DataItem', 1)
 
 
 class SanitizeUserPromptResponse(_messages.Message):

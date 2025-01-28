@@ -334,6 +334,7 @@ class TemplateArguments:
   network = None
   subnetwork = None
   worker_machine_type = None
+  launcher_machine_type = None
   staging_location = None
   temp_location = None
   kms_key_name = None
@@ -360,6 +361,7 @@ class TemplateArguments:
                network=None,
                subnetwork=None,
                worker_machine_type=None,
+               launcher_machine_type=None,
                staging_location=None,
                temp_location=None,
                kms_key_name=None,
@@ -384,6 +386,7 @@ class TemplateArguments:
     self.network = network
     self.subnetwork = subnetwork
     self.worker_machine_type = worker_machine_type
+    self.launcher_machine_type = launcher_machine_type
     self.staging_location = staging_location
     self.temp_location = temp_location
     self.kms_key_name = kms_key_name
@@ -1178,6 +1181,7 @@ class Templates:
                 network=template_args.network,
                 subnetwork=template_args.subnetwork,
                 machineType=template_args.worker_machine_type,
+                launcherMachineType=template_args.launcher_machine_type,
                 tempLocation=template_args.temp_location if template_args
                 .temp_location else template_args.staging_location,
                 stagingLocation=template_args.staging_location,

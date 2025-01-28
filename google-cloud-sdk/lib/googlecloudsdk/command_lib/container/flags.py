@@ -3116,10 +3116,20 @@ def AddIpAliasCoreFlag(parser):
       action='store_true',
       default=None,
       help="""\
-Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
-for Pod IPs. This will require at least two secondary ranges in the
-subnetwork, one for the pod IPs and another to reserve space for the
-services range.
+--enable-ip-alias creates a VPC-native cluster. If you set this option, you
+can optionally specify the IP address ranges to use for Pods and Services.
+For instructions, see
+https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips.
+
+--no-enable-ip-alias creates a routes-based cluster. This type of cluster
+routes traffic between Pods using Google Cloud Routes. This option is not
+recommended; use the default VPC-native cluster type instead. For instructions,
+see
+https://cloud.google.com/kubernetes-engine/docs/how-to/routes-based-cluster
+
+You can't specify both --enable-ip-alias and --no-enable-ip-alias.
+If you omit both --enable-ip-alias and --no-enable-ip-alias,
+the default is a VPC-native cluster.
 """,
   )
 

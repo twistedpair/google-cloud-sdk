@@ -36,6 +36,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.util import pkg_resources
 from oauthlib.oauth2.rfc6749 import errors as rfc6749_errors
 from requests import exceptions as requests_exceptions
@@ -569,6 +570,10 @@ class NoBrowserFlow(InstalledAppFlow):
   (exchanging for the refresh/access tokens).
   """
 
+   # These _REQUIRED_VERSIONs are used in the --no-browser flows, which are
+   # used when interacting with the CLI and using a different machine.
+   # That other machine's version might be out of date.
+  _REQUIRED_GCLOUD_VERSION_FOR_TPC = '506.0.0'
   _REQUIRED_GCLOUD_VERSION_FOR_BYOID = '420.0.0'
   _REQUIRED_GCLOUD_VERSION = '372.0.0'
   _HELPER_MSG = ('You are authorizing {target} without access to a web '
@@ -601,11 +606,22 @@ class NoBrowserFlow(InstalledAppFlow):
     else:
       target = 'client libraries'
       command = 'gcloud auth application-default login'
+
+    universe_domain_property = properties.VALUES.core.universe_domain
+    if (
+        universe_domain_property is not None
+        and properties.VALUES.core.universe_domain.Get()
+        != universe_domain_property.default
+    ):
+      required_gcloud_version = self._REQUIRED_GCLOUD_VERSION_FOR_TPC
+    elif self.client_config.get('3pi'):
+      required_gcloud_version = self._REQUIRED_GCLOUD_VERSION_FOR_BYOID
+    else:
+      required_gcloud_version = self._REQUIRED_GCLOUD_VERSION
+
     helper_msg = self._HELPER_MSG.format(
         target=target,
-        version=self._REQUIRED_GCLOUD_VERSION_FOR_BYOID
-        if self.client_config.get('3pi')
-        else self._REQUIRED_GCLOUD_VERSION,
+        version=required_gcloud_version,
         command=command,
         partial_url=partial_url,
     )
@@ -873,11 +889,13 @@ class _RedirectWSGIApp(object):
     page_string = pkg_resources.GetResource(__name__, page)
     if not properties.IsDefaultUniverse():
       # decode and replace cloud.google.com with the universe document domain
-      # and encode again.
       page_string = bytes(
           bytes(page_string)
           .decode('utf-8')
-          .replace('cloud.google.com', properties.GetUniverseDocumentDomain()),
+          .replace(
+              'cloud.google.com',
+              universe_descriptor.GetUniverseDocumentDomain(),
+          ),
           'utf-8',
       )
     return [page_string]

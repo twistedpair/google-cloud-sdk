@@ -267,6 +267,7 @@ def get_signing_information_from_json(raw_data, password_bytes=None):
     private_key, certificate, _ = pkcs12.load_key_and_certificates(
         raw_data, password=password_bytes
     )
+    private_key = crypto.PKey.from_cryptography_key(private_key)
     client_id = certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
 
     return client_id[0].value, private_key

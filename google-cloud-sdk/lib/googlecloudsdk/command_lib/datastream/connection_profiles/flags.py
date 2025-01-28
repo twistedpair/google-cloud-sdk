@@ -152,6 +152,29 @@ def AddPostgresqlProfileGroup(parser, required=True):
       action='store_true',
       help='Prompt for the password used to connect to the database.')
 
+  ssl_config = postgresql_profile.add_group()
+  ssl_config.add_argument(
+      '--postgresql-ca-certificate',
+      help="""\
+          x509 PEM-encoded certificate of the CA that signed the source database
+          server's certificate. The replica will use this certificate to verify
+          it's connecting to the right host.""",
+      required=required)
+
+  client_ssl_config = ssl_config.add_group()
+  client_ssl_config.add_argument(
+      '--postgresql-client-certificate',
+      help="""\
+          x509 PEM-encoded certificate that will be used by the replica to
+          authenticate against the source database server.""",
+      required=required)
+  client_ssl_config.add_argument(
+      '--postgresql-client-key',
+      help="""\
+          Unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with
+          the Client Certificate.""",
+      required=required)
+
 
 def AddSqlServerProfileGroup(parser, required=True):
   """Adds necessary sqlserver profile flags to the given parser."""

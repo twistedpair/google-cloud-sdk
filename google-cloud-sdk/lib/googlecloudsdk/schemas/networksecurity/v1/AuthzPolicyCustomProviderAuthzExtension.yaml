@@ -1,0 +1,36 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyCustomProviderAuthzExtension export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- resources
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  resources:
+    description: |-
+      A list of references to authorization extensions that will be invoked for
+      requests matching this policy. Limited to 1 custom provider.
+    type: array
+    items:
+      type: string

@@ -491,7 +491,7 @@ def DeployPublisherModel(
         endpoint_display_name=endpoint_name,
         hugging_face_access_token=args.hugging_face_access_token,
     )
-  except apitools_exceptions.HttpBadRequestError as e:
+  except apitools_exceptions.HttpError as e:
     # Keep prompting for HF token if the error is due to missing HF token.
     if (
         e.status_code == 400
@@ -501,6 +501,39 @@ def DeployPublisherModel(
       while not args.hugging_face_access_token:
         args.hugging_face_access_token = console_io.PromptPassword(
             'Please enter your Hugging Face read access token: '
+        )
+      DeployPublisherModel(
+          args,
+          machine_spec,
+          endpoint_name,
+          model,
+          operation_client,
+          mg_client,
+      )
+      return
+    elif e.status_code == 403 and 'EULA' in e.content:
+      log.status.Print(
+          'The End User License Agreement'
+          ' (EULA) of the model has not been accepted.'
+      )
+      publisher, model_id = args.model.split('@')[0].split('/')
+      try:
+        args.accept_eula = console_io.PromptContinue(
+            message=(
+                'The model can be deployed only if the EULA of the model has'
+                ' been'
+                ' accepted. You can view it at'
+                f' https://console.cloud.google.com/vertex-ai/publishers/{publisher}/model-garden/{model_id}):'
+            ),
+            prompt_string='Do you want to accept the EULA?',
+            default=False,
+            cancel_on_no=True,
+            cancel_string='EULA is not accepted.',
+            throw_if_unattended=True,
+        )
+      except console_io.Error:
+        raise core_exceptions.Error(
+            'Please accept the EULA using the `--accept-eula` flag.'
         )
       DeployPublisherModel(
           args,

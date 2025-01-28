@@ -1,0 +1,57 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicyAuthzRuleToRequestOperation export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  headerSet:
+    description: A list of headers to match against in http header.
+    $ref: AuthzPolicyAuthzRuleToRequestOperationHeaderSet.yaml
+  hosts:
+    description: |-
+      A list of HTTP Hosts to match against. The match can be one of exact,
+      prefix, suffix, or contains (substring match). Matches are always case
+      sensitive unless the ignoreCase is set. Limited to 5 matches.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleStringMatch.yaml
+  methods:
+    description: |-
+      A list of HTTP methods to match against. Each entry must be a valid
+      HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE, OPTIONS). It
+      only allows exact match and is always case sensitive.
+    type: array
+    items:
+      type: string
+  paths:
+    description: |-
+      A list of paths to match against. The match can be one of exact,
+      prefix, suffix, or contains (substring match). Matches are always
+      case sensitive unless the ignoreCase is set. Limited to 5 matches.
+      Note that this path match includes the query parameters. For gRPC
+      services, this should be a fully-qualified name of the form
+      /package.service/method.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRuleStringMatch.yaml

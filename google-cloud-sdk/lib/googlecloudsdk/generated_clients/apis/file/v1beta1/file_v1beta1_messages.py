@@ -1954,14 +1954,10 @@ class NetworkConfig(_messages.Message):
       PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
         Service Access. Private services access provides an IP address range
         for multiple Google Cloud services, including Filestore.
-      PRIVATE_SERVICE_CONNECT: Connect to your Filestore instance using
-        Private Service Connect. A connection policy must exist in the region
-        for the VPC network and the google-cloud-filestore service class.
     """
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1
     PRIVATE_SERVICE_ACCESS = 2
-    PRIVATE_SERVICE_CONNECT = 3
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
     r"""ModesValueListEntryValuesEnum enum type.

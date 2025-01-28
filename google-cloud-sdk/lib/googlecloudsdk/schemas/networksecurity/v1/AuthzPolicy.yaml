@@ -1,0 +1,87 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1 AuthzPolicy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- action
+- name
+- target
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  action:
+    description: |-
+      Can be one of `ALLOW`, `DENY`, `CUSTOM`. When the action is `CUSTOM`,
+      `customProvider` must be specified. When the action is `ALLOW`, only
+      requests matching the policy will be allowed. When the action is `DENY`,
+      only requests matching the policy will be denied. When a request arrives,
+      the policies are evaluated in the following order: 1. If there is a
+      `CUSTOM` policy that matches the request, the `CUSTOM` policy is evaluated
+      using the custom authorization providers and the request is denied if the
+      provider rejects the request. 2. If there are any `DENY` policies that
+      match the request, the request is denied. 3. If there are no `ALLOW`
+      policies for the resource or if any of the `ALLOW` policies match the
+      request, the request is allowed. 4. Else the request is denied by default
+      if none of the configured AuthzPolicies with `ALLOW` action match the
+      request.
+    type: string
+    enum:
+    - ALLOW
+    - AUTHZ_ACTION_UNSPECIFIED
+    - CUSTOM
+    - DENY
+  customProvider:
+    description: |-
+      Required if the action is `CUSTOM`. Allows delegating authorization
+      decisions to Cloud IAP or to Service Extensions. One of `cloudIap` or
+      `authzExtension` must be specified.
+    $ref: AuthzPolicyCustomProvider.yaml
+  description:
+    description: A human-readable description of the resource.
+    type: string
+  httpRules:
+    description: |-
+      A list of authorization HTTP rules to match against the incoming request.
+      A policy match occurs when at least one HTTP rule matches the request or
+      when no HTTP rules are specified in the policy. At least one HTTP Rule is
+      required for Allow or Deny Action. Limited to 5 rules.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRule.yaml
+  labels:
+    description: |-
+      Set of labels associated with the `AuthzPolicy` resource. The format
+      must comply with [the following requirements](/compute/docs/labeling-
+      resources#requirements).
+    $ref: LabelsValue.yaml
+  name:
+    description: |-
+      Identifier. Name of the `AuthzPolicy` resource in the following
+      format: `projects/{project}/locations/{location}/authzPolicies/{authz_
+      policy}`.
+    type: string
+  target:
+    description: |-
+      Specifies the set of resources to which this policy should be applied
+      to.
+    $ref: AuthzPolicyTarget.yaml

@@ -58,6 +58,7 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import parallel
@@ -357,7 +358,9 @@ def AddTargetForAttachments(unused_repo_ref, repo_args, request):
 def _GetServiceAgent(project_id):
   """Returns the service agent for the given project."""
   project_num = project_util.GetProjectNumber(project_id)
-  project_prefix = properties.GetUniverseDomainDescriptor().project_prefix
+  project_prefix = (
+      universe_descriptor.GetUniverseDomainDescriptor().project_prefix
+  )
   if project_prefix:
     project_prefix = project_prefix + "."
   return _AR_SERVICE_ACCOUNT.format(
@@ -1168,27 +1171,39 @@ def RecommendAuthChange(
     )
 
   edited = False
+  c = console_attr.GetConsoleAttr()
   while True:
-    options = [
-        "Apply {} policy to the {}/{} Artifact Registry repository".format(
-            "edited" if edited else "above", project, repo
-        ),
-        "Edit policy",
-    ]
+    choices = []
+    options = []
     if pkg_dev:
-      options.append("Do not change permissions for this repo")
+      options = [
+          "Apply {} policy to the {}/{} Artifact Registry repository".format(
+              "edited" if edited else "above", project, repo
+          ),
+          "Edit policy",
+          "Do not copy permissions for this repo",
+          "Exit",
+      ]
       choices = ["apply", "edit", "skip", "exit"]
     else:
-      options.append(
-          "Do not change permissions for this repo"
-          f" (users may lose access to {repo}/{project.replace(':', '/')})"
-      )
-      options.append(
-          "Skip permission updates for all remaining repos (users may"
-          " lose access to all remaining repos)"
-      )
+      options = [
+          "Apply {} policy to the {}/{} Artifact Registry repository".format(
+              "edited" if edited else "above", project, repo
+          )
+          + c.Colorize(" (preserves accesss for GCR users)", "green"),
+          "Edit policy",
+          "Do not copy permissions for this repo"
+          + c.Colorize(
+              f" (users may lose access to {repo}/{project.replace(':', '/')})",
+              "red",
+          ),
+          "Skip permission copying for all remaining repos"
+          + c.Colorize(
+              " (users may lose access to all remaining repos)", "red"
+          ),
+          "Exit",
+      ]
       choices = ["apply", "edit", "skip", "skip_all", "exit"]
-    options.append("Exit")
 
     option = console_io.PromptChoice(
         message=message,
@@ -2171,7 +2186,8 @@ def CopyImagesFromGCR(
       if e.status == 429:
         # All requests will likely hit quota at ~same time, so randomize backoff
         # to spread them out
-        backoff += random.randrange(5, 20)
+        if backoff < 100:
+          backoff += random.randrange(1, 25)
         time.sleep(backoff)
         continue
       raise

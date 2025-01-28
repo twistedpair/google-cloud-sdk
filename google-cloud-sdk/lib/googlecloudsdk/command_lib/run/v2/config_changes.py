@@ -768,6 +768,22 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class NoPromoteChange(config_changes.NonTemplateConfigChanger):
+  """Represents the user intent to block instance assignment for a new worker revision."""
+
+  def Adjust(self, resource: worker_pool.WorkerPool):
+    """Removes LATEST from the worker pools instance assignments and assign the percent to the latest ready revision."""
+    if not resource.generation:
+      raise exceptions.ConfigurationError(
+          '--no-promote not supported when creating a new worker pool.'
+      )
+    resource.instance_splits = instance_split_lib.ZeroLatestAssignment(
+        list(resource.instance_splits), resource.latest_ready_revision
+    )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class InstanceSplitChange(config_changes.NonTemplateConfigChanger):
   """Represents the user intent to change a worker pool's instance split assignments.
 

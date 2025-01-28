@@ -107,6 +107,45 @@ class UniverseDescriptorDataSQLiteError(UniverseDescriptorError, sqlite3.Error):
     )
 
 
+def GetUniverseDomainDescriptor() -> (
+    universe_descriptor_data_pb2.UniverseDescriptorData
+):
+  """Returns the universe domain descriptor.
+
+  If the universe domain is not available, returns the default domain.
+
+  Returns:
+    The universe domain descriptor.
+  """
+  universe_desc = UniverseDescriptor()
+  try:
+    return universe_desc.Get(properties.GetUniverseDomain())
+  except UniverseDescriptorError:
+    pass
+
+  return universe_desc.Get(properties.VALUES.core.universe_domain.default)
+
+
+def GetUniverseDocumentDomain() -> str:
+  """Returns the universe document domain.
+
+  If the universe domain is not available, returns the default document domain.
+
+  Returns:
+    The universe document domain.
+  """
+  try:
+    universe_domain = properties.GetUniverseDomain()
+    universe_descriptor_data = UniverseDescriptor()
+    cached_descriptor_data = universe_descriptor_data.Get(universe_domain)
+    if cached_descriptor_data and cached_descriptor_data.documentation_domain:
+      return cached_descriptor_data.documentation_domain
+  except UniverseDescriptorError:
+    pass
+
+  return 'cloud.google.com'
+
+
 def _GetValidatedDescriptorData(
     descriptor_data: Mapping[str, Any], universe_domain: str
 ) -> universe_descriptor_data_pb2.UniverseDescriptorData:

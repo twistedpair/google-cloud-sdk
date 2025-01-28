@@ -675,7 +675,7 @@ def AddResourceTypeSelectorFlag(parser, required=False):
       '--resource-type',
       help=(
           'The resource type selector for key handles of the form'
-          f' {{SERVICE}}.{properties.VALUES.core.universe_domain.Get()}/{{TYPE}}.'
+          ' {{SERVICE}}.{{UNIVERSE_DOMAIN}}/{{TYPE}}.'
       ),
       required=required,
   )

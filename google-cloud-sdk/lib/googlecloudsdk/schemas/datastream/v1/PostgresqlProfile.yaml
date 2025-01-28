@@ -42,6 +42,13 @@ properties:
   port:
     description: Port for the PostgreSQL connection, default value is 5432.
     type: integer
+  sslConfig:
+    description: |-
+      SSL configuration for the PostgreSQL connection. In case
+      PostgresqlSslConfig is not set, the connection will use the default SSL
+      mode, which is `prefer` (i.e. this mode will only use encryption if
+      enabled from database side, otherwise will use unencrypted communication)
+    $ref: PostgresqlSslConfig.yaml
   username:
     description: Username for the PostgreSQL connection.
     type: string

@@ -110,6 +110,9 @@ def ConstructUserAndMaskFromArgs(alloydb_messages, user_ref, args):
   # handle set-database-roles
   if 'set-roles' in args.command_path:
     user_resource.databaseRoles = args.db_roles
+    # set keep extra roles if provided
+    if args.keep_extra_roles:
+      user_resource.keepExtraRoles = args.keep_extra_roles
     return user_resource, database_roles_path
 
   # handle set-superuser

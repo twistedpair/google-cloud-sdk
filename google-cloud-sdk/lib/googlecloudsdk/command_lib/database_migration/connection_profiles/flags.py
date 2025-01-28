@@ -98,7 +98,7 @@ def AddSslConfigGroup(parser, release_track):
   """Adds ssl server only & server client config group to the given parser."""
   ssl_config = parser.add_group()
   if release_track == release_track.GA:
-    AddSslTypeFlag(ssl_config, hidden=True, choices=None)
+    AddSslTypeFlag(ssl_config, hidden=False, choices=None)
   AddCaCertificateFlag(ssl_config, True)
   client_cert = ssl_config.add_group()
   AddPrivateKeyFlag(client_cert, required=True)

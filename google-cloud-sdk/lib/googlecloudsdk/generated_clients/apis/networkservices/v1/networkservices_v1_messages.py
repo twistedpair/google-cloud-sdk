@@ -1619,8 +1619,7 @@ class Gateway(_messages.Message):
   r"""Gateway represents the configuration for a proxy, typically a load
   balancer. It captures the ip:port over which the services are exposed by the
   proxy, along with any policy configurations. Routes have reference to to
-  Gateways to dictate how requests should be routed by this Gateway. Next id:
-  33
+  Gateways to dictate how requests should be routed by this Gateway.
 
   Enums:
     EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
@@ -1682,8 +1681,9 @@ class Gateway(_messages.Message):
     scope: Optional. Scope determines how configuration across multiple
       Gateway instances are merged. The configuration for multiple Gateway
       instances with the same scope will be merged as presented as a single
-      coniguration to the proxy/load balancer. Max length 64 characters. Scope
-      should start with a letter and can only have letters, numbers, hyphens.
+      configuration to the proxy/load balancer. Max length 64 characters.
+      Scope should start with a letter and can only have letters, numbers,
+      hyphens.
     securityPolicy: Optional. A fully-qualified GatewaySecurityPolicy URL
       reference. Defines how a server should apply security policy to inbound
       (VM to Proxy) initiated connections. This policy is specific to gateways

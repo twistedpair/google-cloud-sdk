@@ -377,8 +377,7 @@ def AddNetworkArg(parser):
         overlap with either existing subnets or assigned IP address ranges for
         other Cloud Filestore instances in the selected VPC network.
         *connect-mode*::: Network connection mode used by instances.
-        CONNECT_MODE must be one of: DIRECT_PEERING, PRIVATE_SERVICE_ACCESS or
-        PRIVATE_SERVICE_CONNECT.
+        CONNECT_MODE must be one of: DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
   """
 
   parser.add_argument(
@@ -663,9 +662,7 @@ def AddInstanceCreateArgs(parser, api_version):
   ]:
     AddKmsKeyArg(parser)
     AddSourceInstanceArg(parser)
-
-    # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
-    AddPerformanceArg(parser, hidden=True)
+    AddPerformanceArg(parser)
     GetTagsArg().AddToParser(parser)
     dp_util.AddDeletionProtectionCreateArgs(parser)
 
@@ -696,5 +693,5 @@ def AddInstanceUpdateArgs(parser, api_version):
       filestore_client.V1_API_VERSION,
   ]:
     # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
-    AddPerformanceArg(parser, hidden=True)
+    AddPerformanceArg(parser)
     dp_util.AddDeletionProtectionUpdateArgs(parser)

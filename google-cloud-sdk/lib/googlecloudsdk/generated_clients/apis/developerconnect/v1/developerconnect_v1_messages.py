@@ -14,6 +14,43 @@ from apitools.base.py import extra_types
 package = 'developerconnect'
 
 
+class AppHubWorkload(_messages.Message):
+  r"""AppHubWorkload represents the App Hub Workload.
+
+  Fields:
+    criticality: Output only. The criticality of the App Hub Workload.
+    environment: Output only. The environment of the App Hub Workload.
+    workload: Required. Output only. Immutable. The name of the App Hub
+      Workload. Format: `projects/{project}/locations/{location}/applications/
+      {application}/workloads/{workload}`.
+  """
+
+  criticality = _messages.StringField(1)
+  environment = _messages.StringField(2)
+  workload = _messages.StringField(3)
+
+
+class ArtifactConfig(_messages.Message):
+  r"""The artifact config of the artifact that is deployed.
+
+  Fields:
+    googleArtifactAnalysis: Optional. Set if the artifact metadata is stored
+      in Artifact analysis.
+    googleArtifactRegistry: Optional. Set if the artifact is stored in
+      Artifact regsitry.
+    sourceRepositories: Optional. The list of source repositories where the
+      artifact is built from.
+    uri: Required. Immutable. The URI of the artifact that is deployed. e.g.
+      `us-docker.pkg.dev/my-project/my-repo/image`. The URI does not include
+      the tag / digest because it captures a lineage of artifacts.
+  """
+
+  googleArtifactAnalysis = _messages.MessageField('GoogleArtifactAnalysis', 1)
+  googleArtifactRegistry = _messages.MessageField('GoogleArtifactRegistry', 2)
+  sourceRepositories = _messages.MessageField('SourceRepository', 3, repeated=True)
+  uri = _messages.StringField(4)
+
+
 class BitbucketCloudConfig(_messages.Message):
   r"""Configuration for connections to an instance of Bitbucket Cloud.
 
@@ -590,6 +627,86 @@ class DeveloperconnectProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest object.
+
+  Fields:
+    insightsConfig: A InsightsConfig resource to be passed as the request
+      body.
+    insightsConfigId: Required. ID of the requesting InsightsConfig.
+    parent: Required. Value for parent.
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  insightsConfig = _messages.MessageField('InsightsConfig', 1)
+  insightsConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DeveloperconnectProjectsLocationsInsightsConfigsDeleteRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsInsightsConfigsDeleteRequest object.
+
+  Fields:
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    name: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DeveloperconnectProjectsLocationsInsightsConfigsGetRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsInsightsConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DeveloperconnectProjectsLocationsInsightsConfigsListRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsInsightsConfigsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results. See https://google.aip.dev/160 for
+      more details. Filter string, adhering to the rules in
+      https://google.aip.dev/160. List only InsightsConfigs matching the
+      filter. If filter is empty, all InsightsConfigs are listed.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListInsightsConfigsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DeveloperconnectProjectsLocationsListRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsListRequest object.
 
@@ -746,6 +863,24 @@ class FetchReadWriteTokenResponse(_messages.Message):
   expirationTime = _messages.StringField(1)
   gitUsername = _messages.StringField(2)
   token = _messages.StringField(3)
+
+
+class GKEWorkload(_messages.Message):
+  r"""GKEWorkload represents the Google Kubernetes Engine runtime.
+
+  Fields:
+    cluster: Required. Immutable. The name of the GKE cluster. Format:
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
+    deployment: Output only. The name of the GKE deployment. Format: `projects
+      /{project}/locations/{location}/clusters/{cluster}/namespaces/{namespace
+      }/deployments/{deployment}`.
+    errors: Output only. Any errors that occurred while setting up to listen
+      to GKE workload.
+  """
+
+  cluster = _messages.StringField(1)
+  deployment = _messages.StringField(2)
+  errors = _messages.MessageField('Status', 3, repeated=True)
 
 
 class GitHubConfig(_messages.Message):
@@ -992,6 +1127,36 @@ class GitRepositoryLink(_messages.Message):
   webhookId = _messages.StringField(12)
 
 
+class GoogleArtifactAnalysis(_messages.Message):
+  r"""Google Artifact Analysis configurations.
+
+  Fields:
+    errors: Output only. Any errors that occurred while setting up to listen
+      Google Artifact Analysis.
+    projectId: Required. The project id of the project where the provenance is
+      stored.
+  """
+
+  errors = _messages.MessageField('Status', 1, repeated=True)
+  projectId = _messages.StringField(2)
+
+
+class GoogleArtifactRegistry(_messages.Message):
+  r"""Google Artifact Registry configurations.
+
+  Fields:
+    artifactRegistryPackage: Required. Immutable. The name of the artifact
+      registry package.
+    errors: Output only. Any errors that occurred while setting up to listen
+      Google Artifact Registry.
+    projectId: Required. The host project of Artifact Registry.
+  """
+
+  artifactRegistryPackage = _messages.StringField(1)
+  errors = _messages.MessageField('Status', 2, repeated=True)
+  projectId = _messages.StringField(3)
+
+
 class HttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
@@ -1051,6 +1216,126 @@ class HttpBody(_messages.Message):
   contentType = _messages.StringField(1)
   data = _messages.BytesField(2)
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
+class InsightsConfig(_messages.Message):
+  r"""The InsightsConfig resource is the core configuration object to capture
+  events from your Software Development Lifecycle. It acts as the central hub
+  for managing how Developer connect understands your application, its runtime
+  environments, and the artifacts deployed within them.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the InsightsConfig.
+
+  Messages:
+    AnnotationsValue: Optional. User specified annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations.
+    LabelsValue: Optional. Set of labels associated with an InsightsConfig.
+
+  Fields:
+    annotations: Optional. User specified annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations.
+    appHubApplication: Optional. The name of the App Hub Application. Format:
+      projects/{project}/locations/{location}/applications/{application}
+    artifactConfigs: Optional. The artifact configurations of the artifacts
+      that are deployed.
+    createTime: Output only. [Output only] Create timestamp
+    labels: Optional. Set of labels associated with an InsightsConfig.
+    name: Identifier. The name of the InsightsConfig. Format:
+      projects/{project}/locations/{location}/insightsConfigs/{insightsConfig}
+    reconciling: Output only. Reconciling
+      (https://google.aip.dev/128#reconciliation). Set to true if the current
+      state of InsightsConfig does not match the user's intended state, and
+      the service is actively updating the resource to reconcile them. This
+      can happen due to user-triggered updates or system actions like failover
+      or maintenance.
+    runtimeConfigs: Output only. The runtime configurations where the
+      application is deployed.
+    state: Output only. The state of the InsightsConfig.
+    updateTime: Output only. [Output only] Update timestamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the InsightsConfig.
+
+    Values:
+      STATE_UNSPECIFIED: No state specified.
+      PENDING_APPLICATION_DISCOVERY: The InsightsConfig is pending application
+        discovery.
+      PENDING_RUNTIME_DISCOVERY: The InsightsConfig is pending runtime
+        discovery.
+      COMPLETE: The initial discovery process is complete.
+      ERROR: The InsightsConfig is in an error state.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING_APPLICATION_DISCOVERY = 1
+    PENDING_RUNTIME_DISCOVERY = 2
+    COMPLETE = 3
+    ERROR = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User specified annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with an InsightsConfig.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  appHubApplication = _messages.StringField(2)
+  artifactConfigs = _messages.MessageField('ArtifactConfig', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  runtimeConfigs = _messages.MessageField('RuntimeConfig', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class Installation(_messages.Message):
@@ -1146,6 +1431,21 @@ class ListGitRepositoryLinksResponse(_messages.Message):
   """
 
   gitRepositoryLinks = _messages.MessageField('GitRepositoryLink', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListInsightsConfigsResponse(_messages.Message):
+  r"""Request for response to listing InsightsConfigs.
+
+  Fields:
+    insightsConfigs: The list of InsightsConfigs.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  insightsConfigs = _messages.MessageField('InsightsConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -1438,6 +1738,39 @@ class ProcessGitLabWebhookRequest(_messages.Message):
   body = _messages.MessageField('HttpBody', 1)
 
 
+class RuntimeConfig(_messages.Message):
+  r"""RuntimeConfig represents the runtimes where the application is deployed.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the Runtime.
+
+  Fields:
+    appHubWorkload: Output only. App Hub Workload.
+    gkeWorkload: Output only. Google Kubernetes Engine runtime.
+    state: Output only. The state of the Runtime.
+    uri: Required. Immutable. The URI of the runtime configuration. For GKE,
+      this is the cluster name. For Cloud Run, this is the service name.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the Runtime.
+
+    Values:
+      STATE_UNSPECIFIED: No state specified.
+      LINKED: The runtime configuration has been linked to the InsightsConfig.
+      UNLINKED: The runtime configuration has been unlinked to the
+        InsightsConfig.
+    """
+    STATE_UNSPECIFIED = 0
+    LINKED = 1
+    UNLINKED = 2
+
+  appHubWorkload = _messages.MessageField('AppHubWorkload', 1)
+  gkeWorkload = _messages.MessageField('GKEWorkload', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  uri = _messages.StringField(4)
+
+
 class ServiceDirectoryConfig(_messages.Message):
   r"""ServiceDirectoryConfig represents Service Directory configuration for a
   connection.
@@ -1448,6 +1781,57 @@ class ServiceDirectoryConfig(_messages.Message):
   """
 
   service = _messages.StringField(1)
+
+
+class SourceConnection(_messages.Message):
+  r"""SourceConnection is the Developer Connect connection to a third party
+  source repository.
+
+  Enums:
+    ProviderValueValuesEnum: Required. The name of the provider of the
+      connection.
+
+  Fields:
+    errors: Output only. Any errors that occurred while setting up to listen
+      to this connection.
+    gitRepositoryLink: Required. Immutable. Developer Connect git repository
+      link name. Format:
+      `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+    provider: Required. The name of the provider of the connection.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Required. The name of the provider of the connection.
+
+    Values:
+      PROVIDER_UNSPECIFIED: No provider specified.
+      GITHUB: GitHub provider.
+      GITHUB_ENTERPRISE: GitHub Enterprise provider.
+      GITLAB: GitLab provider.
+      GITLAB_ENTERPRISE: GitLab Enterprise provider.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GITHUB = 1
+    GITHUB_ENTERPRISE = 2
+    GITLAB = 3
+    GITLAB_ENTERPRISE = 4
+
+  errors = _messages.MessageField('Status', 1, repeated=True)
+  gitRepositoryLink = _messages.StringField(2)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 3)
+
+
+class SourceRepository(_messages.Message):
+  r"""The source repository that was used to build the artifact.
+
+  Fields:
+    thirdPartyRepository: Optional. The third party repository that stores the
+      source repository.
+    uri: Required. Immutable. The URI of the git repository.
+  """
+
+  thirdPartyRepository = _messages.MessageField('SourceConnection', 1)
+  uri = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

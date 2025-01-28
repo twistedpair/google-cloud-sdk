@@ -525,12 +525,14 @@ def GetLocations(instance, verbose_flag):
   return command_output
 
 
-def Move(instance, target_instance_config):
+def Move(instance, target_instance_config, target_database_move_configs):
   """Moves an instance from one instance-config to another.
 
   Args:
       instance: Instance to move.
       target_instance_config: Target instance config to move the instance to.
+      target_database_move_configs: Configurations for databases in the
+        destination instance config.
 
   The configs can be google-managed or user-managed.
   Ex: gcloud spanner instances move instance-to-move
@@ -574,10 +576,26 @@ def Move(instance, target_instance_config):
       cancel_on_no=True,
       prompt_string='Do you want to proceed',
   )
+  req_args = {'targetConfig': config_ref.RelativeName()}
+  if target_database_move_configs is not None:
+    req_args['targetDatabaseMoveConfigs'] = []
+    for target_database_move_config in target_database_move_configs:
+      kms_key_names = target_database_move_config['kms-keys'].split(',')
+      encryption_config_args = {}
+      encryption_config_args['kmsKeyNames'] = []
+      for kms_key_name in kms_key_names:
+        encryption_config_args['kmsKeyNames'].append(kms_key_name)
+      encryption_config = msgs.InstanceEncryptionConfig(
+          **encryption_config_args
+      )
+      req_args['targetDatabaseMoveConfigs'].append(
+          msgs.DatabaseMoveConfig(
+              databaseId=target_database_move_config['database-id'],
+              encryptionConfig=encryption_config,
+          )
+      )
   move_req = msgs.SpannerProjectsInstancesMoveRequest(
-      moveInstanceRequest=msgs.MoveInstanceRequest(
-          targetConfig=config_ref.RelativeName()
-      ),
+      moveInstanceRequest=msgs.MoveInstanceRequest(**req_args),
       name=instance_ref.RelativeName(),
   )
   move_operation_id = client.projects_instances.Move(move_req).name

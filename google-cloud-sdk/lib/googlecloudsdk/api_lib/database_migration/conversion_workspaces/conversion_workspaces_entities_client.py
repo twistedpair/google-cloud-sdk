@@ -19,6 +19,8 @@ from typing import Any, Generator, Iterable, Mapping, Optional
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.database_migration.conversion_workspaces import base_conversion_workspaces_client
+from googlecloudsdk.api_lib.database_migration.conversion_workspaces.database_entity import entity_builder
+from googlecloudsdk.api_lib.database_migration.conversion_workspaces.database_entity import entity_serializers
 
 
 class ConversionWorkspacesEntitiesClient(
@@ -231,16 +233,9 @@ class ConversionWorkspacesEntitiesClient(
       Entities for the conversion worksapce.
     """
     for entity in getattr(response, entities_field):
-      yield {
-          'parentEntity': entity.parentEntity,
-          'shortName': entity.shortName,
-          'tree': entity.tree,
-          'entityType': self._RemovePrefix(
-              value=str(entity.entityType),
-              prefix='DATABASE_ENTITY_TYPE_',
-          ),
-          'status': self._GetEntityStatus(entity=entity),
-      }
+      builder = entity_builder.EntityBuilder(database_entity_proto=entity)
+      entity_obj = builder.Build()
+      yield from entity_serializers.GetSummaries(entity_obj=entity_obj)
 
   def _ExtractDdlsFromDescribeEntitiesResponse(
       self,
@@ -257,8 +252,9 @@ class ConversionWorkspacesEntitiesClient(
       DDLs for the entities of the conversion worksapce.
     """
     for entity in getattr(response, entities_field):
-      for ddl in entity.entityDdl:
-        yield ddl
+      builder = entity_builder.EntityBuilder(database_entity_proto=entity)
+      entity_obj = builder.Build()
+      yield from entity_serializers.GetDdls(entity_obj=entity_obj)
 
   def _ExtractIssuesFromDescribeEntitiesResponse(
       self,
@@ -277,51 +273,13 @@ class ConversionWorkspacesEntitiesClient(
       Issues with high severity found for the database entities of the
       conversion worksapce.
     """
-
     for entity in getattr(response, entities_field):
-      for issue in entity.issues:
-        if issue.severity not in issue_severities:
-          continue
-
-        yield {
-            'parentEntity': entity.parentEntity,
-            'shortName': entity.shortName,
-            'entityType': self._RemovePrefix(
-                value=str(entity.entityType),
-                prefix='DATABASE_ENTITY_TYPE_',
-            ),
-            'issueType': str(issue.type).replace('ISSUE_TYPE_', ''),
-            'issueSeverity': self._RemovePrefix(
-                value=str(issue.severity),
-                prefix='ISSUE_SEVERITY_',
-            ),
-            'issueCode': issue.code,
-            'issueMessage': issue.message,
-        }
-
-  def _GetEntityStatus(self, entity) -> str:
-    """Get entity status.
-
-    The status is determined by the highest severity issue found for the entity.
-
-    Args:
-      entity: Entity to get status for.
-
-    Returns:
-      Entity status: `ACTION_REQUIRED'/`REVIEW_RECOMMENDED`/`NO_ISSUES`.
-    """
-    severities = set(map(lambda issue: issue.severity, entity.issues))
-    if (
-        self.messages.EntityIssue.SeverityValueValuesEnum.ISSUE_SEVERITY_ERROR
-        in severities
-    ):
-      return 'ACTION_REQUIRED'
-    if (
-        self.messages.EntityIssue.SeverityValueValuesEnum.ISSUE_SEVERITY_WARNING
-        in severities
-    ):
-      return 'REVIEW_RECOMMENDED'
-    return 'NO_ISSUES'
+      builder = entity_builder.EntityBuilder(database_entity_proto=entity)
+      entity_obj = builder.Build()
+      yield from entity_serializers.GetIssues(
+          entity_obj=entity_obj,
+          issue_severities=issue_severities,
+      )
 
   def _GetAdditionalProperties(self, name: str) -> Mapping[str, Any]:
     """Get conversion workspace additional properties.
@@ -383,15 +341,3 @@ class ConversionWorkspacesEntitiesClient(
     return ' AND '.join(
         map(lambda filter_expr: f'({filter_expr})', filter_exprs)
     )
-
-  def _RemovePrefix(self, value: str, prefix: str) -> str:
-    """Remove a prefix from a string, if it exists.
-
-    Args:
-      value: The value to remove the prefix from.
-      prefix: The prefix to remove.
-
-    Returns:
-        The value with the prefix removed.
-    """
-    return value[len(prefix) :] if value.startswith(prefix) else value

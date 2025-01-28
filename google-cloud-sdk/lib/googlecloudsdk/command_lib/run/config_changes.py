@@ -1950,6 +1950,23 @@ class GpuTypeChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class ZonalGpuRedundancyChange(TemplateConfigChanger):
+  """Sets the zonal gpu redundancy annotation on the revision annotations.
+
+  Attributes:
+    zonal_gpu_redundancy: The zonal_gpu_redundancy annotation value to set.
+  """
+
+  zonal_gpu_redundancy: bool
+
+  def Adjust(self, resource):
+    resource.template.annotations[
+        revision.ZONAL_GPU_REDUNDANCY_DISABLED_ANNOTATION
+    ] = str(not self.zonal_gpu_redundancy)
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class RemoveContainersChange(TemplateConfigChanger):
   """Removes the specified containers.
 

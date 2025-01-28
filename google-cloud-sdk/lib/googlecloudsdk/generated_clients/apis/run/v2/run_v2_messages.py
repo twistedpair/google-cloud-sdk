@@ -601,6 +601,7 @@ class GoogleCloudRunV2Execution(_messages.Message):
     createTime: Output only. Represents time when the execution was
       acknowledged by the execution controller. It is not guaranteed to be set
       in happens-before order across separate operations.
+    creator: Output only. Email address of the authenticated creator.
     deleteTime: Output only. For a deleted resource, the deletion time. It is
       only populated as a response to a Delete request.
     etag: Output only. A system-generated fingerprint for this version of the
@@ -772,28 +773,29 @@ class GoogleCloudRunV2Execution(_messages.Message):
   completionTime = _messages.StringField(3)
   conditions = _messages.MessageField('GoogleCloudRunV2Condition', 4, repeated=True)
   createTime = _messages.StringField(5)
-  deleteTime = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  expireTime = _messages.StringField(8)
-  failedCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  generation = _messages.IntegerField(10)
-  job = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 13)
-  logUri = _messages.StringField(14)
-  name = _messages.StringField(15)
-  observedGeneration = _messages.IntegerField(16)
-  parallelism = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  reconciling = _messages.BooleanField(18)
-  retriedCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  runningCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(21)
-  startTime = _messages.StringField(22)
-  succeededCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  taskCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
+  creator = _messages.StringField(6)
+  deleteTime = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  expireTime = _messages.StringField(9)
+  failedCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  generation = _messages.IntegerField(11)
+  job = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 14)
+  logUri = _messages.StringField(15)
+  name = _messages.StringField(16)
+  observedGeneration = _messages.IntegerField(17)
+  parallelism = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  reconciling = _messages.BooleanField(19)
+  retriedCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  runningCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(22)
+  startTime = _messages.StringField(23)
+  succeededCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  taskCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
 
 
 class GoogleCloudRunV2ExecutionReference(_messages.Message):
@@ -3824,10 +3826,6 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
       objects fail to be pushed, the build is marked FAILURE.
-    testResults: Optional. Files in the workspace matching specified paths
-      globs will be uploaded to the specified Cloud Storage location using the
-      builder service account's credentials. Will also contain the format of
-      the test which by default will be JUnit
   """
 
   goModules = _messages.MessageField('GoogleDevtoolsCloudbuildV1GoModule', 1, repeated=True)
@@ -3836,7 +3834,6 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
   npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1NpmPackage', 4, repeated=True)
   objects = _messages.MessageField('GoogleDevtoolsCloudbuildV1ArtifactObjects', 5)
   pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 6, repeated=True)
-  testResults = _messages.MessageField('GoogleDevtoolsCloudbuildV1TestResults', 7)
 
 
 class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
@@ -5109,38 +5106,6 @@ class GoogleDevtoolsCloudbuildV1StorageSourceManifest(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
-
-
-class GoogleDevtoolsCloudbuildV1TestResults(_messages.Message):
-  r"""Files in the workspace to upload to Cloud Storage upon successful
-  completion of all build steps.
-
-  Enums:
-    FormatValueValuesEnum: Optional. Format of the test results.
-
-  Fields:
-    bucketUri: Optional. Cloud Storage bucket and optional object path, in the
-      form "gs://bucket/path/to/somewhere/". (see [Bucket Name
-      Requirements](https://cloud.google.com/storage/docs/bucket-
-      naming#requirements)). Files in the workspace matching any path pattern
-      will be uploaded to Cloud Storage with this location as a prefix.
-    format: Optional. Format of the test results.
-    paths: Optional. Path globs used to match files in the build's workspace.
-  """
-
-  class FormatValueValuesEnum(_messages.Enum):
-    r"""Optional. Format of the test results.
-
-    Values:
-      FORMAT_UNSPECIFIED: The default format is JUnit.
-      JUNIT: The test results are in JUnit format.
-    """
-    FORMAT_UNSPECIFIED = 0
-    JUNIT = 1
-
-  bucketUri = _messages.StringField(1)
-  format = _messages.EnumField('FormatValueValuesEnum', 2)
-  paths = _messages.StringField(3, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1TimeSpan(_messages.Message):
@@ -6507,6 +6472,54 @@ class RunProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
+
+
+class RunProjectsLocationsWorkerPoolsRevisionsDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsRevisionsDeleteRequest object.
+
+  Fields:
+    etag: A system-generated fingerprint for this version of the resource.
+      This may be used to detect modification conflict during updates.
+    name: Required. The name of the Revision to delete. Format: projects/{proj
+      ect}/locations/{location}/services/{service}/revisions/{revision}
+    validateOnly: Indicates that the request should be validated without
+      actually deleting any resources.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class RunProjectsLocationsWorkerPoolsRevisionsGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsRevisionsGetRequest object.
+
+  Fields:
+    name: Required. The full name of the Revision. Format: projects/{project}/
+      locations/{location}/services/{service}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsWorkerPoolsRevisionsListRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsRevisionsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of revisions to return in this call.
+    pageToken: A page token received from a previous call to ListRevisions.
+      All other parameters must match.
+    parent: Required. The Service from which the Revisions should be listed.
+      To list all Revisions across Services, use "-" instead of Service name.
+      Format: projects/{project}/locations/{location}/services/{service}
+    showDeleted: If true, returns deleted (but unexpired) resources along with
+      active ones.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
 
 
 class StandardQueryParameters(_messages.Message):

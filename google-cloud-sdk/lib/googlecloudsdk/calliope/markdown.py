@@ -28,6 +28,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 import six
 
 
@@ -1123,7 +1124,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # command is available in the universe.
     if self._IsUniverseCompatible():
       doc = re.sub(
-          r'cloud.google.com', properties.GetUniverseDocumentDomain(), doc
+          r'cloud.google.com',
+          universe_descriptor.GetUniverseDocumentDomain(),
+          doc,
       )
 
     return doc

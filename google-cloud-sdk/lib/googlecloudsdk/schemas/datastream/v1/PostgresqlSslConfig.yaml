@@ -1,0 +1,38 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: datastream v1 PostgresqlSslConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  serverAndClientVerification:
+    description: |-
+      If this field is set, the communication will be encrypted with TLS
+      encryption and both the server identity and the client identity will be
+      authenticated.
+    $ref: ServerAndClientVerification.yaml
+  serverVerification:
+    description: |-
+      If this field is set, the communication will be encrypted with TLS
+      encryption and the server identity will be authenticated.
+    $ref: ServerVerification.yaml
