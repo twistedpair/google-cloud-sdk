@@ -95,7 +95,6 @@ class VpnTunnelHelper(object):
                                    peer_ip,
                                    shared_secret,
                                    target_vpn_gateway,
-                                   router=None,
                                    local_traffic_selector=None,
                                    remote_traffic_selector=None):
     """Returns the Classic VpnTunnel message for an insert request.
@@ -109,8 +108,6 @@ class VpnTunnelHelper(object):
       shared_secret: String representing the shared secret (IKE pre-shared key).
       target_vpn_gateway: String representing the Target VPN Gateway URL the VPN
         tunnel resource should be associated with.
-      router: String representing the Router URL the VPN tunnel resource should
-        be associated with.
       local_traffic_selector: List of strings representing the local CIDR ranges
         that should be able to send traffic using this VPN tunnel.
       remote_traffic_selector: List of strings representing the remote CIDR
@@ -126,7 +123,7 @@ class VpnTunnelHelper(object):
         peerIp=peer_ip,
         sharedSecret=shared_secret,
         targetVpnGateway=target_vpn_gateway,
-        router=router,
+        router=None,
         localTrafficSelector=local_traffic_selector or [],
         remoteTrafficSelector=remote_traffic_selector or [])
 

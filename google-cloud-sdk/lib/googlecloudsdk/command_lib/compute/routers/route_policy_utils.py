@@ -48,3 +48,35 @@ def FindPolicyTermOrRaise(resource, term_priority):
     if term.priority == term_priority:
       return term
   raise PolicyTermNotFoundError(term_priority)
+
+
+class NamedSetError(core_exceptions.Error):
+  """Error superclass for all router named set surface-related errors."""
+
+
+class NamedSetElementNotFoundError(NamedSetError):
+  """Error raised when a named set element is not found."""
+
+  def __init__(self, element):
+    msg = 'Named set element {element} not found.'.format(element=element)
+    super(NamedSetElementNotFoundError, self).__init__(msg)
+
+
+def FindNamedSetElementOrRise(resource, element_cel):
+  """Searches for and returns an element in the named set resource.
+
+  Args:
+    resource: The named set resource to find element for.
+    element_cel: The CEL expression of the element to find.
+
+  Returns:
+    The element with the given CEL expression, if found.
+
+  Raises:
+    NamedSetElementNotFoundError: If no element with the given CEL expression is
+    found.
+  """
+  for element in resource.elements:
+    if element.expression == element_cel:
+      return element
+  raise NamedSetElementNotFoundError(element_cel)

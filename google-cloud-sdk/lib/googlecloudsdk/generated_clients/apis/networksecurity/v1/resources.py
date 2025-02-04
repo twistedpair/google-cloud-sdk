@@ -188,6 +188,51 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTGROUPS = (
+      'projects.locations.mirroringDeploymentGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringDeploymentGroups/{mirroringDeploymentGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTS = (
+      'projects.locations.mirroringDeployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringDeployments/{mirroringDeploymentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGENDPOINTGROUPASSOCIATIONS = (
+      'projects.locations.mirroringEndpointGroupAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringEndpointGroupAssociations/'
+              '{mirroringEndpointGroupAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGENDPOINTGROUPS = (
+      'projects.locations.mirroringEndpointGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringEndpointGroups/{mirroringEndpointGroupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

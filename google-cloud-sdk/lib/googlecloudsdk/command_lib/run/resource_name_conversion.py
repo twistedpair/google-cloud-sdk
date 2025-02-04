@@ -38,4 +38,52 @@ def K8sToOnePlatform(service_resource, region):
       service=service)
 
 
+display_kinds_map = {
+    'workerPools': 'WorkerPool',
+}
 
+
+def _GetKind(kind):
+  if kind in display_kinds_map:
+    return display_kinds_map[kind]
+  return kind
+
+
+one_platform_resource_ref = re.compile(
+    r'projects/(?P<PROJECT>.*?)/locations/(?P<REGION>.*)/(?P<KIND>.*)/(?P<NAME>.*)'
+)
+
+
+def GetInfoFromFullName(full_name):
+  """Extracts project, region, resource kind, and name from One Platform-style name."""
+  parts = one_platform_resource_ref.match(full_name)
+  return (
+      parts.group('PROJECT'),
+      parts.group('REGION'),
+      _GetKind(parts.group('KIND')),
+      parts.group('NAME'),
+  )
+
+
+one_platform_child_resource_ref = re.compile(
+    r'projects/(?P<PROJECT>.*?)/locations/(?P<REGION>.*)/(?P<PARENT_KIND>.*)/(?P<PARENT_NAME>.*)/(?P<KIND>.*)/(?P<NAME>.*)'
+)
+
+
+def GetInfoFromFullChildName(full_name):
+  """Extracts project, region, resource kind, and name from One Platform-style name."""
+  parts = one_platform_child_resource_ref.match(full_name)
+  return (
+      parts.group('PROJECT'),
+      parts.group('REGION'),
+      parts.group('PARENT_KIND'),
+      parts.group('PARENT_NAME'),
+      _GetKind(parts.group('KIND')),
+      parts.group('NAME'),
+  )
+
+
+def GetNameFromFullChildName(full_name):
+  """Extracts name from One Platform-style name."""
+  *_, name = GetInfoFromFullChildName(full_name)
+  return name

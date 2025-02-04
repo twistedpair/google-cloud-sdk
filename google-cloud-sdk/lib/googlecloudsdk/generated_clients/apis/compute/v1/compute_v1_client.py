@@ -9261,6 +9261,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AddPacketMirroringRule(self, request, global_params=None):
+      r"""Inserts a packet mirroring rule into a firewall policy.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesAddPacketMirroringRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddPacketMirroringRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddPacketMirroringRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkFirewallPolicies.addPacketMirroringRule',
+        ordered_params=['project', 'firewallPolicy'],
+        path_params=['firewallPolicy', 'project'],
+        query_params=['maxPriority', 'minPriority', 'requestId'],
+        relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/addPacketMirroringRule',
+        request_field='firewallPolicyRule',
+        request_type_name='ComputeNetworkFirewallPoliciesAddPacketMirroringRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AddRule(self, request, global_params=None):
       r"""Inserts a rule into a firewall policy.
 
@@ -9443,6 +9469,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetPacketMirroringRule(self, request, global_params=None):
+      r"""Gets a packet mirroring rule of the specified priority.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesGetPacketMirroringRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetPacketMirroringRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPacketMirroringRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkFirewallPolicies.getPacketMirroringRule',
+        ordered_params=['project', 'firewallPolicy'],
+        path_params=['firewallPolicy', 'project'],
+        query_params=['priority'],
+        relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/getPacketMirroringRule',
+        request_field='',
+        request_type_name='ComputeNetworkFirewallPoliciesGetPacketMirroringRuleRequest',
+        response_type_name='FirewallPolicyRule',
+        supports_download=False,
+    )
+
     def GetRule(self, request, global_params=None):
       r"""Gets a rule of the specified priority.
 
@@ -9547,6 +9599,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PatchPacketMirroringRule(self, request, global_params=None):
+      r"""Patches a packet mirroring rule of the specified priority.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesPatchPacketMirroringRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchPacketMirroringRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchPacketMirroringRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkFirewallPolicies.patchPacketMirroringRule',
+        ordered_params=['project', 'firewallPolicy'],
+        path_params=['firewallPolicy', 'project'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/patchPacketMirroringRule',
+        request_field='firewallPolicyRule',
+        request_type_name='ComputeNetworkFirewallPoliciesPatchPacketMirroringRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def PatchRule(self, request, global_params=None):
       r"""Patches a rule of the specified priority.
 
@@ -9595,6 +9673,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/removeAssociation',
         request_field='',
         request_type_name='ComputeNetworkFirewallPoliciesRemoveAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemovePacketMirroringRule(self, request, global_params=None):
+      r"""Deletes a packet mirroring rule of the specified priority.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesRemovePacketMirroringRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemovePacketMirroringRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemovePacketMirroringRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkFirewallPolicies.removePacketMirroringRule',
+        ordered_params=['project', 'firewallPolicy'],
+        path_params=['firewallPolicy', 'project'],
+        query_params=['priority', 'requestId'],
+        relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/removePacketMirroringRule',
+        request_field='',
+        request_type_name='ComputeNetworkFirewallPoliciesRemovePacketMirroringRuleRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -12320,7 +12424,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+      r"""Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
 
       Args:
         request: (ComputeRegionCommitmentsUpdateRequest) input message

@@ -2734,6 +2734,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'modelarmor': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.modelarmor.v1',
+                    client_classpath='modelarmor_v1_client.ModelarmorV1',
+                    base_url='https://modelarmor.googleapis.com/',
+                    messages_modulepath='modelarmor_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2741,7 +2751,7 @@ MAP = {
                     client_classpath='modelarmor_v1alpha_client.ModelarmorV1alpha',
                     base_url='https://modelarmor.googleapis.com/',
                     messages_modulepath='modelarmor_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -3803,6 +3813,16 @@ MAP = {
                     client_classpath='serviceusage_v2alpha_client.ServiceusageV2alpha',
                     base_url='https://serviceusage.googleapis.com/',
                     messages_modulepath='serviceusage_v2alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.serviceusage.v2beta',
+                    client_classpath='serviceusage_v2beta_client.ServiceusageV2beta',
+                    base_url='https://serviceusage.googleapis.com/',
+                    messages_modulepath='serviceusage_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

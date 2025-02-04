@@ -1936,10 +1936,19 @@ class ImageImportOsAdaptationParameters(_messages.Message):
   r"""Parameters affecting the OS adaptation process.
 
   Enums:
+    BootConversionValueValuesEnum: Optional. By default the image will keep
+      its existing boot option. Setting this property will trigger an internal
+      process which will convert the image from using the existing boot option
+      to another. The size of the boot disk might be increased to allow the
+      conversion
     LicenseTypeValueValuesEnum: Optional. Choose which type of license to
       apply to the imported image.
 
   Fields:
+    bootConversion: Optional. By default the image will keep its existing boot
+      option. Setting this property will trigger an internal process which
+      will convert the image from using the existing boot option to another.
+      The size of the boot disk might be increased to allow the conversion
     generalize: Optional. Set to true in order to generalize the imported
       image. The generalization process enables co-existence of multiple VMs
       created from the same image. For Windows, generalizing the image removes
@@ -1948,6 +1957,21 @@ class ImageImportOsAdaptationParameters(_messages.Message):
     licenseType: Optional. Choose which type of license to apply to the
       imported image.
   """
+
+  class BootConversionValueValuesEnum(_messages.Enum):
+    r"""Optional. By default the image will keep its existing boot option.
+    Setting this property will trigger an internal process which will convert
+    the image from using the existing boot option to another. The size of the
+    boot disk might be increased to allow the conversion
+
+    Values:
+      BOOT_CONVERSION_UNSPECIFIED: Unspecified conversion type.
+      NONE: No conversion.
+      BIOS_TO_EFI: Convert from BIOS to EFI.
+    """
+    BOOT_CONVERSION_UNSPECIFIED = 0
+    NONE = 1
+    BIOS_TO_EFI = 2
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Choose which type of license to apply to the imported image.
@@ -1964,8 +1988,9 @@ class ImageImportOsAdaptationParameters(_messages.Message):
     COMPUTE_ENGINE_LICENSE_TYPE_PAYG = 1
     COMPUTE_ENGINE_LICENSE_TYPE_BYOL = 2
 
-  generalize = _messages.BooleanField(1)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 2)
+  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 1)
+  generalize = _messages.BooleanField(2)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 3)
 
 
 class ImageImportStep(_messages.Message):

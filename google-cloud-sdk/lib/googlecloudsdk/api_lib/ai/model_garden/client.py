@@ -107,7 +107,7 @@ class ModelGardenClient(object):
     return self._projects_locations_service.Deploy(request)
 
   def ListPublisherModels(
-      self, limit=None, batch_size=100, list_hf_models=False
+      self, limit=None, batch_size=100, list_hf_models=False, model_filter=None
   ):
     """List publisher models in Model Garden.
 
@@ -116,6 +116,7 @@ class ModelGardenClient(object):
         should be yielded.
       batch_size: The number of items to list per page.
       list_hf_models: Whether to only list Hugging Face models.
+      model_filter: The filter on model name to apply on server-side.
 
     Returns:
       The list of publisher models in Model Garden..
@@ -124,6 +125,11 @@ class ModelGardenClient(object):
     if list_hf_models:
       filter_str = ' AND '.join(
           [_HF_WILDCARD_FILTER, _VERIFIED_DEPLOYMENT_FILTER]
+      )
+    if model_filter:
+      filter_str = (
+          f'{filter_str} AND (model_user_id=~"(?i).*{model_filter}.*" OR'
+          f' display_name=~"(?i).*{model_filter}.*")'
       )
     return list_pager.YieldFromList(
         self._publishers_models_service,

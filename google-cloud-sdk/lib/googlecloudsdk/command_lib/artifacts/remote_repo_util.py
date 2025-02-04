@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
 from typing import List
 
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
@@ -26,6 +27,9 @@ from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 GITHUB_URI = "https://github.com"
+GOOGLE_MODULE_PROXY = re.compile(
+    r"(http(|s))://proxy\.golang\.org(|/)"
+)
 
 
 def Args():
@@ -253,8 +257,12 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
     if _IsRemoteURI(remote_input):  # input is CustomRepository
       if remote_input[-1] == "/":
         remote_input = remote_input[:-1]
-      if remote_input != GITHUB_URI:
-        _RaiseCustomUpstreamUnsupportedError(facade, remote_input, [GITHUB_URI])
+      if remote_input != GITHUB_URI and not GOOGLE_MODULE_PROXY.match(
+          remote_input
+      ):
+        _RaiseCustomUpstreamUnsupportedError(
+            facade, remote_input, ["https://proxy.golang.org"]
+        )
       remote_cfg.commonRepository = messages.CommonRemoteRepository()
       remote_cfg.commonRepository.uri = remote_input
     elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository

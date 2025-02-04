@@ -5,6 +5,102 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 509.0.0 (2025-02-04)
+
+### Google Cloud CLI
+
+* Updated windows bundled Python for the `gcloud` CLI to 3.12.8.
+* Updated openssl version in bundled Python to 3.0.15.
+* Updated Linux bundled Python for the `gcloud` CLI to 3.12.8.
+
+### Cloud Functions
+
+* Launched `gcloud beta functions detach <function>` command. This command
+allows users to detach a Cloud Run function from Cloud Functions API
+(cloudfunctions.googleapis.com) and make it a native Cloud Run function
+managed by Cloud Run API(run.googleapis.com).
+
+### Cloud NetApp
+
+* Added `gcloud netapp volumes quota-rules create`.
+* Added `gcloud netapp volumes quota-rules describe`.
+* Added `gcloud netapp volumes quota-rules list`.
+* Added `gcloud netapp volumes quota-rules update`.
+* Added `gcloud netapp volumes quota-rules delete`.
+* Added `gcloud beta netapp volumes quota-rules create`.
+* Added `gcloud beta netapp volumes quota-rules describe`.
+* Added `gcloud beta netapp volumes quota-rules list`.
+* Added `gcloud beta netapp volumes quota-rules update`.
+* Added `gcloud beta netapp volumes quota-rules delete`.
+
+### Cloud Run
+
+* Promoted `--scaling` flag from alpha to `gcloud beta run deploy` and
+`gcloud beta run services update`.
+
+### Cloud SQL
+
+* Added `HDB` option to `--storage-type` flag of `gcloud sql instances create`
+and `gcloud sql instances patch` commands to allow choosing Hyperdisk as a
+storage type.
+
+### Cloud Storage
+
+* Added `--lifecycle-file` flag to `gcloud storage buckets create`.
+
+### Cloud Workstations
+
+* Added support for `--ssh-flags` in the `workstations ssh` command.
+
+### Compute Engine
+
+* Enabled error message extraction for more use cases of quota exceeded error.
+* Added `--commitment-name` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--commitment-plan` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--previous-commitment-terms` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Promoted Tls Settings to Beta/GA in `gcloud compute backend-services import`
+  and `gcloud compute backend-services export`.
+* Added `gcloud compute reservations perform-maintenance` command in beta.
+* Added `gcloud compute reservations blocks perform-maintenance` command in
+  beta.
+* Added `MAX_VMS` field to `gcloud compute sole-tenancy node-types list`.
+* Deprecated `--router` flag of `gcloud compute vpn-tunnels create` with Classic
+  VPN. Use static routing instead.
+* Deprecated `--router` flag of `gcloud compute vpn-tunnels update` with Classic
+  VPN. Use static routing instead.
+* Fix "compute instances perform-maintenance" to have a error message related to
+  perform maintenance.
+
+### Compute Firewall Policy Mirroring Rules
+
+* Promoted `--target-secure-tags` flag of `gcloud compute network-firewall-policies mirroring-rules create` to beta.
+* Promoted `--target-secure-tags` flag of `gcloud compute network-firewall-policies mirroring-rules update` to beta.
+
+### Database Migration
+
+* Updated `gcloud database-migrate migration-jobs create` to allow users the
+option of migrating all databases for PSQL to AlloyDB migrations.
+* Updated `gcloud database-migrate migration-jobs update` to allow users the
+option of migrating all databases for PSQL to AlloyDB migrations.
+
+### Developer Connect
+
+* Added flags for Bitbucket Data Center and Bitbucket Cloud connection types to `gcloud developer-connect connections create|update` commands.
+
+### Network Services
+
+* Added etag field to the following resources: HttpRoute, TcpRoute, TlsRoute, GrpcRoute.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 508.0.0 (2025-01-28)
 
 ### AlloyDB

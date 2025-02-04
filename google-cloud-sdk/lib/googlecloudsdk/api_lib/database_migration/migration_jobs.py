@@ -336,12 +336,17 @@ class MigrationJobsClient(object):
       )
     return sqlserver_homogeneous_migration_job_config_obj
 
-  def _GetMigrationJobObjectsConfig(self, databases_filter):
-    """Returns the migration job objects config.
+  def _GetSourceObjectsConfigForAllDatabases(self):
+    """Returns the source objects config."""
+    return self.messages.SourceObjectsConfig(
+        objectsSelectionType=self.messages.SourceObjectsConfig.ObjectsSelectionTypeValueValuesEnum.ALL_OBJECTS
+    )
 
-    Args:
-      databases_filter: The list of databases to be migrated.
-    """
+  def _GetSourceObjectsConfigForSpecifiedDatabases(self, databases_filter):
+    """Returns the source objects config."""
+    source_objects_conifg = self.messages.SourceObjectsConfig(
+        objectsSelectionType=self.messages.SourceObjectsConfig.ObjectsSelectionTypeValueValuesEnum.SPECIFIED_OBJECTS
+    )
     source_object_configs = []
     for database in databases_filter:
       source_object_identifier = self.messages.SourceObjectIdentifier(
@@ -355,11 +360,27 @@ class MigrationJobsClient(object):
               objectIdentifier=source_object_identifier,
           ),
       )
+    source_objects_conifg.objectConfigs = source_object_configs
+    return source_objects_conifg
+
+  def _GetMigrationJobObjectsConfig(self, args):
+    """Returns the migration job objects config.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+    """
+    source_objects_conifg = self.messages.SourceObjectsConfig()
+
+    if args.IsKnownAndSpecified('all_databases'):
+      source_objects_conifg = self._GetSourceObjectsConfigForAllDatabases()
+    elif args.IsKnownAndSpecified('databases_filter'):
+      source_objects_conifg = self._GetSourceObjectsConfigForSpecifiedDatabases(
+          args.databases_filter
+      )
 
     return self.messages.MigrationJobObjectsConfig(
-        sourceObjectsConfig=self.messages.SourceObjectsConfig(
-            objectConfigs=source_object_configs
-        ),
+        sourceObjectsConfig=source_objects_conifg
     )
 
   def _GetMigrationJob(
@@ -425,10 +446,10 @@ class MigrationJobsClient(object):
           self._GetSqlserverHomogeneousMigrationJobConfig(args)
       )
 
-    if args.IsKnownAndSpecified('databases_filter'):
-      migration_job_obj.objectsConfig = self._GetMigrationJobObjectsConfig(
-          args.databases_filter
-      )
+    if args.IsKnownAndSpecified('databases_filter') or args.IsKnownAndSpecified(
+        'all_databases'
+    ):
+      migration_job_obj.objectsConfig = self._GetMigrationJobObjectsConfig(args)
 
     return migration_job_obj
 
@@ -495,12 +516,13 @@ class MigrationJobsClient(object):
           ' --sqlserver-databases is specified.',
       )
 
-  def _UpdateMigrationJobObjectsConfig(self, database_filter, migration_job):
+  def _UpdateMigrationJobObjectsConfig(self, args, migration_job):
     """Update the migration job objects config for the migration job."""
 
-    migration_job.objectsConfig = self._GetMigrationJobObjectsConfig(
-        database_filter
-    )
+    if args.IsKnownAndSpecified('databases_filter') or args.IsKnownAndSpecified(
+        'all_databases'
+    ):
+      migration_job.objectsConfig = self._GetMigrationJobObjectsConfig(args)
 
   def _GetUpdateMask(self, args):
     """Returns update mask for specified fields."""
@@ -547,7 +569,9 @@ class MigrationJobsClient(object):
       update_fields.append(
           'sqlserverHomogeneousMigrationJobConfig.databaseBackups'
       )
-    if args.IsKnownAndSpecified('databases_filter'):
+    if args.IsKnownAndSpecified('databases_filter') or args.IsKnownAndSpecified(
+        'all_databases'
+    ):
       update_fields.append('objectsConfig.sourceObjectsConfig')
     return update_fields
 
@@ -602,10 +626,7 @@ class MigrationJobsClient(object):
     ):
       self._UpdateSqlserverHomogeneousMigrationJobConfig(args, migration_job)
 
-    if args.IsKnownAndSpecified('databases_filter'):
-      self._UpdateMigrationJobObjectsConfig(
-          args.databases_filter, migration_job
-      )
+    self._UpdateMigrationJobObjectsConfig(args, migration_job)
     return migration_job, update_fields
 
   def _GetExistingMigrationJob(self, name):
@@ -736,9 +757,7 @@ class MigrationJobsClient(object):
     """
     promote_mj_req = self.messages.PromoteMigrationJobRequest()
     if args.IsKnownAndSpecified('databases_filter'):
-      promote_mj_req.objectsFilter = self._GetMigrationJobObjectsConfig(
-          args.databases_filter
-      )
+      promote_mj_req.objectsFilter = self._GetMigrationJobObjectsConfig(args)
 
     promote_req = (
         self.messages.DatamigrationProjectsLocationsMigrationJobsPromoteRequest(
@@ -766,9 +785,7 @@ class MigrationJobsClient(object):
     """
     restart_mj_req = self.messages.RestartMigrationJobRequest()
     if args.IsKnownAndSpecified('databases_filter'):
-      restart_mj_req.objectsFilter = self._GetMigrationJobObjectsConfig(
-          args.databases_filter
-      )
+      restart_mj_req.objectsFilter = self._GetMigrationJobObjectsConfig(args)
     if args.IsKnownAndSpecified('skip_validation'):
       restart_mj_req.skipValidation = True
     if args.IsKnownAndSpecified('restart_failed_objects'):

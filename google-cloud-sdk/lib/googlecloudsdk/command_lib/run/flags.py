@@ -166,7 +166,9 @@ def ImageArg(
     help_text += (
         ' When used with --source, the image must be the URI of an Artifact '
         'Registry Docker repository in the Docker format '
-        '($REGION-docker.pkg.dev/$PROJECT/$REPOSITORY").'
+        '($REGION-docker.pkg.dev/$PROJECT/$REPOSITORY") or '
+        '($REGION-docker.pkg.dev/$PROJECT/$REPOSITORY/$IMAGE_NAME"). '
+        'The image name must be the same as the name of the service.'
     )
   return base.Argument(
       '--image',
@@ -1376,7 +1378,7 @@ def AddGeneralAnnotationFlags(parser):
   )
 
 
-class _ScaleValue:
+class ScaleValue:
   """Type for min/max-instances flag values."""
 
   def __init__(self, value):
@@ -1425,7 +1427,7 @@ def AddMinInstancesFlag(parser, resource_kind='service'):
   resource = 'Service' if resource_kind == 'service' else 'Worker'
   parser.add_argument(
       '--min-instances',
-      type=_ScaleValue,
+      type=ScaleValue,
       help=(
           'The minimum number of container instances to run for this Revision '
           " or 'default' to remove. This setting is immutably set on each new "
@@ -1440,7 +1442,7 @@ def AddServiceMinInstancesFlag(parser):
   """Add service-level min scaling flag."""
   parser.add_argument(
       '--min',
-      type=_ScaleValue,
+      type=ScaleValue,
       help=(
           'The minimum number of container instances to run for this Service '
           "or 'default' to remove. These instances will be divided among all "
@@ -1451,7 +1453,7 @@ def AddServiceMinInstancesFlag(parser):
 
   parser.add_argument(
       '--service-min-instances',
-      type=_ScaleValue,
+      type=ScaleValue,
       hidden=True,
       help=(
           'The minimum number of container instances to run for this Service '
@@ -1466,7 +1468,7 @@ def AddServiceMaxInstancesFlag(parser):
   """Add service-level max scaling flag."""
   parser.add_argument(
       '--max',
-      type=_ScaleValue,
+      type=ScaleValue,
       help=(
           'The maximum number of container instances  to run for this Service. '
           'This instance limit will be divided among all Revisions receiving a '
@@ -1478,13 +1480,41 @@ def AddServiceMaxInstancesFlag(parser):
 
   parser.add_argument(
       '--service-max-instances',
-      type=_ScaleValue,
+      type=ScaleValue,
       hidden=True,
       help=(
           'The maximum number of container instances for this Service to run. '
           'This instance limit will be divided among all Revisions receiving a '
           'percentage of traffic. Once service-max-instances is enabled for a '
           'service, it cannot be disabled.'
+      ),
+  )
+
+
+def AddWorkerPoolMinInstancesFlag(parser):
+  """Add min instances flag for worker pools."""
+  parser.add_argument(
+      '--min',
+      type=ScaleValue,
+      help=(
+          'The minimum number of container instances to run for this WorkerPool'
+          " or 'default' to use system default of 1. These instances will be"
+          ' divided among all Revisions receiving a percentage of instance'
+          ' assignments and can be modified without deploying a new Revision.'
+      ),
+  )
+
+
+def AddWorkerPoolMaxInstancesFlag(parser):
+  """Add max instances flag for worker pools."""
+  parser.add_argument(
+      '--max',
+      type=ScaleValue,
+      help=(
+          'The maximum number of container instances to run for this WorkerPool'
+          " or 'default' to use system default of 100. This instance limit will"
+          ' be divided among all Revisions receiving a percentage of instance'
+          ' assignments and can be modified without deploying a new Revision. '
       ),
   )
 
@@ -1506,12 +1536,12 @@ def AddMaxInstancesFlag(parser, resource_kind='service'):
     )
   parser.add_argument(
       '--max-instances',
-      type=_ScaleValue,
+      type=ScaleValue,
       help=help_text,
   )
 
 
-class _MaxSurgeValue:
+class MaxSurgeValue:
   """Type for max-surge flag values."""
 
   def __init__(self, value):
@@ -1540,7 +1570,7 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
   split_type = 'instance' if resource_kind == 'worker' else 'traffic'
   parser.add_argument(
       '--max-surge',
-      type=_MaxSurgeValue,
+      type=MaxSurgeValue,
       help=(
           'A maximum percentage of instances that will be moved in each step of'
           ' {split_type} split changes. Use "default" to unset the limit and'
@@ -1549,7 +1579,7 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
   )
 
 
-class _MaxUnavailableValue:
+class MaxUnavailableValue:
   """Type for max-unavailable flag values."""
 
   def __init__(self, value):
@@ -1579,7 +1609,7 @@ def AddMaxUnavailableFlag(parser, resource_kind='service'):
   split_type = 'instance' if resource_kind == 'worker' else 'traffic'
   parser.add_argument(
       '--max-unavailable',
-      type=_MaxUnavailableValue,
+      type=MaxUnavailableValue,
       help=(
           'A maximum percentage of instances that may be unavailable during'
           ' {split_type} split changes. Use "default" to unset the limit and'
@@ -2320,8 +2350,9 @@ def _GetScalingChanges(args):
 def _GetServiceScalingChanges(args):
   """Return the changes for service-level scaling for the given args."""
   result = []
-  min_scale_value = (getattr(args, 'service_min_instances', None)
-                     or getattr(args, 'min', None))
+  min_scale_value = getattr(args, 'service_min_instances', None) or getattr(
+      args, 'min', None
+  )
   if min_scale_value is not None:
     if min_scale_value.restore_default or min_scale_value.instance_count == 0:
       result.append(
@@ -2337,8 +2368,9 @@ def _GetServiceScalingChanges(args):
           )
       )
 
-  max_scale_value = (getattr(args, 'service_max_instances', None)
-                     or getattr(args, 'max', None))
+  max_scale_value = getattr(args, 'service_max_instances', None) or getattr(
+      args, 'max', None
+  )
   if max_scale_value is not None:
     if getattr(args, 'scaling', None) and not args.scaling.auto_scaling:
       # TODO(b/373873152): this validation should expand to service min instance
@@ -2486,6 +2518,21 @@ def _GetWorkerScalingChanges(args):
           config_changes.SetAnnotationChange(
               service.SERVICE_MAX_SURGE_ANNOTATION,
               str(max_surge_value.surge_percent),
+          )
+      )
+  if 'max_unavailable' in args and args.max_unavailable is not None:
+    max_unav_val = args.max_unavailable
+    if max_unav_val.restore_default or max_unav_val.unavailable_percent == 0:
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION,
+              str(max_unav_val.unavailable_percent),
           )
       )
   if 'scaling' in args and args.scaling is not None:
@@ -4563,15 +4610,14 @@ def SourceArg():
 def AddSourceAndImageFlags(
     parser,
     image='us-docker.pkg.dev/cloudrun/container/hello:latest',
-    mutex=True
+    mutex=True,
 ):
   """Add deploy source flags, an image or a source for build."""
   SourceAndImageFlags(image=image, mutex=mutex).AddToParser(parser)
 
 
 def SourceAndImageFlags(
-    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
-    mutex=True
+    image='us-docker.pkg.dev/cloudrun/container/hello:latest', mutex=True
 ):
   group = base.ArgumentGroup(mutex=mutex)
   group.AddArgument(ImageArg(required=False, image=image, mutex=mutex))

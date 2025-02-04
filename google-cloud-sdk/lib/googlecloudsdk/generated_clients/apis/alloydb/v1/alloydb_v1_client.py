@@ -763,6 +763,33 @@ class AlloydbV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Import(self, request, global_params=None):
+      r"""Imports data to the cluster. Imperative only.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:import',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.import',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:import',
+        request_field='importClusterRequest',
+        request_type_name='AlloydbProjectsLocationsClustersImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Clusters in a given project and location.
 

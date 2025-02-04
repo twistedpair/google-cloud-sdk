@@ -44,7 +44,7 @@ def GetClearNamePrefixFlag():
   )
 
 
-def GetTotalCountFlag(required=True):
+def GetTotalCountFlag(required=False):
   """Gets the --total-count flag."""
   help_text = """\
   The total number of instances for which capacity assurance is requested at a
@@ -359,6 +359,7 @@ def AddCreateFlags(
     support_gsc=False,
     support_cuds=False,
     support_dws_gpu=False,
+    support_dws_tpu=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
@@ -369,16 +370,18 @@ def AddCreateFlags(
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)
 
-  specific_sku_properties_group = base.ArgumentGroup(
-      'Manage the instance properties for the auto-created reservations. You'
-      ' must either provide a source instance template or define the instance'
-      ' properties.',
+  reservation_properties_group = base.ArgumentGroup(
+      'To create a future reservation request, specify the properties of the'
+      ' resources that you want to reserve and when you want to start using'
+      ' them. After the request is approved, Compute Engine automatically'
+      ' creates reservations for your requested resources at your specified'
+      ' start time.',
       required=True,
       mutex=True,
   )
 
   if support_instance_template:
-    specific_sku_properties_group.AddArgument(
+    reservation_properties_group.AddArgument(
         reservation_flags.GetSourceInstanceTemplateFlag()
     )
 
@@ -406,8 +409,23 @@ def AddCreateFlags(
         instance_flags.AddMaintenanceInterval()
     )
 
-  specific_sku_properties_group.AddArgument(instance_properties_group)
-  specific_sku_properties_group.AddToParser(parser)
+  if support_dws_tpu:
+    aggregate_reservation_group = base.ArgumentGroup(
+        'You must define the version and number of TPUs to reserve.'
+    )
+    aggregate_reservation_group.AddArgument(
+        reservation_flags.GetTpuVersion()
+    )
+    aggregate_reservation_group.AddArgument(
+        reservation_flags.GetTpuCount()
+    )
+    aggregate_reservation_group.AddArgument(
+        reservation_flags.GetWorkloadType()
+    )
+    reservation_properties_group.AddArgument(aggregate_reservation_group)
+
+  reservation_properties_group.AddArgument(instance_properties_group)
+  reservation_properties_group.AddToParser(parser)
 
   if support_share_setting:
     share_group = base.ArgumentGroup(

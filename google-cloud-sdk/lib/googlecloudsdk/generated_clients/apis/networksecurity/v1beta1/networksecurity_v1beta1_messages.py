@@ -5885,6 +5885,8 @@ class SecurityProfileGroup(_messages.Message):
       CustomIntercept configuration.
     customMirroringProfile: Optional. Reference to a SecurityProfile with the
       CustomMirroring configuration.
+    dataPathId: Output only. Identifier used by the data-path. Unique within
+      {container, location}.
     description: Optional. An optional description of the profile group. Max
       length 2048 characters.
     etag: Output only. This checksum is computed by the server based on the
@@ -5926,12 +5928,13 @@ class SecurityProfileGroup(_messages.Message):
   createTime = _messages.StringField(1)
   customInterceptProfile = _messages.StringField(2)
   customMirroringProfile = _messages.StringField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  threatPreventionProfile = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  dataPathId = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  threatPreventionProfile = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ServerTlsPolicy(_messages.Message):

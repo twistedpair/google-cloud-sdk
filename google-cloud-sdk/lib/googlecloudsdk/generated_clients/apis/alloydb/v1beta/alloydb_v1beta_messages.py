@@ -1858,7 +1858,7 @@ class CsvImportOptions(_messages.Message):
     quoteCharacter: Optional. Specifies the quoting character to be used when
       a data value is quoted. The default is double-quote. The value of this
       argument has to be a character in Hex ASCII Code.
-    table: Required. The database table to import csv file into.
+    table: Required. The database table to import CSV file into.
   """
 
   columns = _messages.StringField(1, repeated=True)
@@ -2175,21 +2175,20 @@ class GoogleTypeTimeOfDay(_messages.Message):
 
 
 class ImportClusterRequest(_messages.Message):
-  r"""Import a cluster.
+  r"""Import cluster request.
 
   Fields:
     csvImportOptions: Options for importing data in CSV format.
     database: Optional. Name of the database to which the import will be done.
-      For Import from SQL dump file, this is required only if the file does
-      not specify a database. Note - Value provided should be the same as
-      expected from `SELECT current_database();` and NOT as a resource
-      reference.
+      For import from SQL file, this is required only if the file does not
+      specify a database. Note - Value provided should be the same as expected
+      from `SELECT current_database();` and NOT as a resource reference.
     gcsUri: Required. The path to the file in Google Cloud Storage where the
       source file for import will be stored. The URI is in the form
       `gs://bucketName/fileName`.
     password: Optional. The database native user's password.
     sqlImportOptions: Options for importing data in SQL format.
-    user: Required. Database user to be used for importing the data. Note -
+    user: Optional. Database user to be used for importing the data. Note -
       Value provided should be the same as expected from `SELECT
       current_user;` and NOT as a resource reference.
     usernameOptional: Optional. If true, does not require username to be
@@ -3301,7 +3300,7 @@ class SqlExportOptions(_messages.Message):
 
 
 class SqlImportOptions(_messages.Message):
-  r"""Options for importing data in SQL format. These will be added later."""
+  r"""Options for importing data in SQL format."""
 
 
 class SslConfig(_messages.Message):

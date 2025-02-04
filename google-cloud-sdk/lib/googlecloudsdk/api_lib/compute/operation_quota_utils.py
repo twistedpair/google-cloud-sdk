@@ -46,7 +46,16 @@ def CreateOperationQuotaExceededMsg(data):
       if item.get('@type') == 'type.googleapis.com/google.rpc.LocalizedMessage':
         localized_message = item
     localized_message_text = localized_message.get('message')
-    metadata = error_info.get('metadatas')
+
+    # Historically, metadata field was incorrectly named the plural form
+    # "metadatas". We should first check for the presence of the standard
+    # singular form "metadata" and then fall back to the plural form. If both
+    # are missing, an AttributeError is raised and handled gracefully by
+    # returning the original error message.
+    if 'metadata' in error_info:
+      metadata = error_info.get('metadata')
+    else:
+      metadata = error_info.get('metadatas')
     container_type = metadata.get('containerType')
     container_id = metadata.get('containerId')
     location = metadata.get('location')

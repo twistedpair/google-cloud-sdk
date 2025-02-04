@@ -516,6 +516,12 @@ properties:
       validateForProxyless field set to true.
       Instead, use maxStreamDuration.
     type: integer
+  tlsSettings:
+    description: |-
+      Configuration for Backend Authenticated TLS
+      and mTLS. May only be specified when the
+      backend protocol is SSL, HTTPS or HTTP2.
+    $ref: BackendServiceTlsSettings.yaml
   usedBy:
     description: |-
       [Output Only] List of resources referencing

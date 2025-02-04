@@ -688,7 +688,8 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         and the image is SEV Compatible.
         """,
     )
-  parser.add_argument(
+  metastore_group = parser.add_argument_group(mutex=True)  # Mutually exclusive
+  metastore_group.add_argument(
       '--dataproc-metastore',
       help="""\
       Specify the name of a Dataproc Metastore service to be used as an
@@ -696,6 +697,28 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       "projects/{project-id}/locations/{region}/services/{service-name}".
       """,
   )
+  # Not mutually exclusive
+  if alpha or beta:
+    bqms_group = metastore_group.add_argument_group(help='BQMS flags')
+    bqms_group.add_argument(
+        '--bigquery-metastore-project-id',
+        help="""\
+      The project ID of the  BigQuery metastore database to be used as an external metastore.
+        """,
+    )
+    bqms_group.add_argument(
+        '--bigquery-metastore-database-location',
+        help="""\
+      Location of the  BigQuery metastore database to be used as an external metastore.
+        """,
+    )
+    bqms_group.add_argument(
+        '--bigquery-metastore',
+        action='store_true',
+        help="""\
+        Indicates that BigQuery metastore is to be used.
+        """,
+    )
 
   parser.add_argument(
       '--enable-node-groups',
@@ -1438,6 +1461,17 @@ def GetClusterConfig(
     cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
         dataprocMetastoreService=args.dataproc_metastore
     )
+  elif (alpha or beta) and (
+      args.bigquery_metastore_project_id is not None
+      or args.bigquery_metastore_database_location is not None
+      or args.bigquery_metastore
+  ):
+    bigquery_metastore_config = GetBigQueryConfig(
+        dataproc, args,
+    )
+    cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
+        bigqueryMetastoreConfig=bigquery_metastore_config
+    )
 
   if include_ttl_config:
     lifecycle_config = dataproc.messages.LifecycleConfig()
@@ -1749,6 +1783,22 @@ def _GetPrivateIpv6GoogleAccess(dataproc, private_ipv6_google_access_type):
   raise exceptions.ArgumentError(
       'Unsupported --private-ipv6-google-access-type flag value: '
       + private_ipv6_google_access_type
+  )
+
+
+def GetBigQueryConfig(dataproc, args):
+  """Get BigQuery config.
+
+  Args:
+    dataproc: Dataproc object that contains client, messages, and resources
+    args: arguments of the request
+
+  Returns:
+    bigquery_config: BigQuery config.
+  """
+  return dataproc.messages.BigqueryMetastoreConfig(
+      projectId=args.bigquery_metastore_project_id,
+      location=args.bigquery_metastore_database_location,
   )
 
 

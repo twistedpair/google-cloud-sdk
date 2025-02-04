@@ -238,16 +238,14 @@ def AddScopeFlags(parser):
       metavar='SCOPE',
       type=lambda x: x.lower(),
       choices={
-          'all': (
-              'Maintenance should be performed on all hosts in the reservation.'
-          ),
+          'all': 'Perform maintenance on all hosts in the reservation.',
           'running': (
-              'Maintenance should be performed only on the hosts in the '
-              ' reservation which have running VMs.'
+              'Perform maintenance only on the hosts in the reservation that'
+              ' have running VMs.'
           ),
           'unused': (
-              'Maintenance should be performed only on the hosts in the'
-              ' reservation which have no running VMs.'
+              'Perform maintenance only on the hosts in the reservation that'
+              " don't have running VMs."
           ),
       },
       help='The maintenance scope to set for the reservation.',
@@ -310,6 +308,65 @@ def GetReservationSharingPolicyFlag(custom_name=None):
       },
       help=help_text,
   )
+
+
+def GetTpuVersion(required=True):
+  """Gets the --tpu-version flag."""
+  help_text = """\
+  The version of Cloud TPU to reserve.
+  """
+  return base.Argument(
+      '--tpu-version',
+      type=lambda x: x.upper(),
+      choices={
+          'V5E': 'Cloud TPU v5e Lite',
+          'V5P': 'Cloud TPU v5p',
+          'V6E': 'Cloud TPU v6e',
+      },
+      required=required,
+      help=help_text,
+  )
+
+
+def GetTpuCount(required=False):
+  """Gets the --tpu-count flag."""
+  help_text = """\
+  The number of TPUs to reserve.
+  """
+  return base.Argument(
+      '--tpu-count', type=int, required=required, help=help_text
+  )
+
+
+def GetWorkloadType(required=False):
+  """Gets the --workload-type flag."""
+  help_text = """\
+  The workload type of the TPU reservation.
+  """
+  return base.Argument(
+      '--workload-type',
+      type=lambda x: x.upper(),
+      choices={
+          'SERVING': (
+              'Reserved resources will be optimized for SERVING workloads, such'
+              ' as ML inference'
+          ),
+          'BATCH': (
+              'Reserved resources will be optimized for BATCH workloads, such'
+              ' as ML training.'
+          ),
+      },
+      required=required,
+      help=help_text,
+  )
+
+
+def GetAcceleratorType(required=True):
+  """Gets the --accelerator-type flag."""
+  help_text = """\
+  The accelerator type to use for this reservation.
+  """
+  return base.Argument('--accelerator-type', required=required, help=help_text)
 
 
 def AddCreateFlags(

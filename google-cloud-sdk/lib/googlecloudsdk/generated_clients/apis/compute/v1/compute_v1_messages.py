@@ -1632,14 +1632,18 @@ class AllocationAggregateReservation(_messages.Message):
       VM_FAMILY_CLOUD_TPU_DEVICE_CT3: <no description>
       VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L: <no description>
       VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP: <no description>
+      VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT6E: <no description>
       VM_FAMILY_CLOUD_TPU_POD_SLICE_CT3P: <no description>
       VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P: <no description>
+      VM_FAMILY_CLOUD_TPU_POD_SLICE_CT5P: <no description>
     """
     VM_FAMILY_CLOUD_TPU_DEVICE_CT3 = 0
     VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L = 1
     VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP = 2
-    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT3P = 3
-    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 4
+    VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT6E = 3
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT3P = 4
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 5
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT5P = 6
 
   class WorkloadTypeValueValuesEnum(_messages.Enum):
     r"""The workload type of the instances that will target this reservation.
@@ -6517,104 +6521,145 @@ class CircuitBreakers(_messages.Message):
 
 
 class Commitment(_messages.Message):
-  r"""Represents a regional Commitment resource. Creating a commitment
-  resource means that you are purchasing a committed use contract with an
-  explicit start and end time. You can create commitments based on vCPUs and
-  memory usage and receive discounted rates. For full details, read Signing Up
-  for Committed Use Discounts.
+  r"""Represents a regional resource-based commitment resource. Creating this
+  commitment resource means that you are purchasing a resource-based committed
+  use contract, with an explicit start and end time. You can purchase
+  resource-based commitments for both hardware and software resources. For
+  more information, read Resource-based committed use discounts
 
   Enums:
-    CategoryValueValuesEnum: The category of the commitment. Category MACHINE
-      specifies commitments composed of machine resources such as VCPU or
-      MEMORY, listed in resources. Category LICENSE specifies commitments
-      composed of software licenses, listed in licenseResources. Note that
-      only MACHINE commitments should have a Type specified.
-    PlanValueValuesEnum: The plan for this commitment, which determines
-      duration and discount rate. The currently supported plans are
-      TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
+    CategoryValueValuesEnum: The category of the commitment; specifies whether
+      the commitment is for hardware or software resources. Category MACHINE
+      specifies that you are committing to hardware machine resources such as
+      VCPU or MEMORY, listed in resources. Category LICENSE specifies that you
+      are committing to software licenses, listed in licenseResources. Note
+      that if you specify MACHINE commitments, then you must also specify a
+      type to indicate the machine series of the hardware resource that you
+      are committing to.
+    PlanValueValuesEnum: The minimum time duration that you commit to
+      purchasing resources. The plan that you choose determines the preset
+      term length of the commitment (which is 1 year or 3 years) and affects
+      the discount rate that you receive for your resources. Committing to a
+      longer time duration typically gives you a higher discount rate. The
+      supported values for this field are TWELVE_MONTH (1 year), and
+      THIRTY_SIX_MONTH (3 years).
     StatusValueValuesEnum: [Output Only] Status of the commitment with regards
-      to eventual expiration (each commitment has an end date defined). One of
-      the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
-    TypeValueValuesEnum: The type of commitment, which affects the discount
-      rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a
-      commitment that will only apply to memory optimized machines. Type
-      ACCELERATOR_OPTIMIZED specifies a commitment that will only apply to
-      accelerator optimized machines.
+      to eventual expiration (each commitment has an end date defined). Status
+      can be one of the following values: NOT_YET_ACTIVE, ACTIVE, or EXPIRED.
+    TypeValueValuesEnum: The type of commitment; specifies the machine series
+      for which you want to commit to purchasing resources. The choice of
+      machine series affects the discount rate and the eligible resource
+      types. The type must be one of the following: ACCELERATOR_OPTIMIZED,
+      ACCELERATOR_OPTIMIZED_A3, ACCELERATOR_OPTIMIZED_A3_MEGA,
+      COMPUTE_OPTIMIZED, COMPUTE_OPTIMIZED_C2D, COMPUTE_OPTIMIZED_C3,
+      COMPUTE_OPTIMIZED_C3D, COMPUTE_OPTIMIZED_H3, GENERAL_PURPOSE,
+      GENERAL_PURPOSE_C4, GENERAL_PURPOSE_E2, GENERAL_PURPOSE_N2,
+      GENERAL_PURPOSE_N2D, GENERAL_PURPOSE_N4, GENERAL_PURPOSE_T2D,
+      GRAPHICS_OPTIMIZED, MEMORY_OPTIMIZED, MEMORY_OPTIMIZED_M3,
+      MEMORY_OPTIMIZED_X4, STORAGE_OPTIMIZED_Z3. For example, type
+      MEMORY_OPTIMIZED specifies a commitment that applies only to eligible
+      resources of memory optimized M1 and M2 machine series. Type
+      GENERAL_PURPOSE specifies a commitment that applies only to eligible
+      resources of general purpose N1 machine series.
 
   Fields:
-    autoRenew: Specifies whether to enable automatic renewal for the
-      commitment. The default value is false if not specified. The field can
-      be updated until the day of the commitment expiration at 12:00am PST. If
-      the field is set to true, the commitment will be automatically renewed
-      for either one or three years according to the terms of the existing
-      commitment.
-    category: The category of the commitment. Category MACHINE specifies
-      commitments composed of machine resources such as VCPU or MEMORY, listed
-      in resources. Category LICENSE specifies commitments composed of
-      software licenses, listed in licenseResources. Note that only MACHINE
-      commitments should have a Type specified.
+    autoRenew: Specifies whether to automatically renew the commitment at the
+      end of its current term. The default value is false. If you set the
+      field to true, each time your commitment reaches the end of its term,
+      Compute Engine automatically renews it for another term. You can update
+      this field anytime before the commitment expires. For example, if the
+      commitment is set to expire at 12 AM UTC-8 on January 3, 2027, you can
+      update this field until 11:59 PM UTC-8 on January 2, 2027.
+    category: The category of the commitment; specifies whether the commitment
+      is for hardware or software resources. Category MACHINE specifies that
+      you are committing to hardware machine resources such as VCPU or MEMORY,
+      listed in resources. Category LICENSE specifies that you are committing
+      to software licenses, listed in licenseResources. Note that if you
+      specify MACHINE commitments, then you must also specify a type to
+      indicate the machine series of the hardware resource that you are
+      committing to.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    customEndTimestamp: [Input Only] Optional, specifies the CUD end time
-      requested by the customer in RFC3339 text format. Needed when the
-      customer wants CUD's end date is later than the start date + term
+    customEndTimestamp: [Input Only] Optional, specifies the requested
+      commitment end time in RFC3339 text format. Use this option when the
+      desired commitment's end date is later than the start date + term
       duration.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description of the commitment. You can provide
+      this property when you create the resource.
     endTimestamp: [Output Only] Commitment end time in RFC3339 text format.
-    existingReservations: Specifies the already existing reservations to
-      attach to the Commitment. This field is optional, and it can be a full
-      or partial URL. For example, the following are valid URLs to an
-      reservation: -
-      https://www.googleapis.com/compute/v1/projects/project/zones/zone
-      /reservations/reservation -
-      projects/project/zones/zone/reservations/reservation
+    existingReservations: A string attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#commitment for
       commitments.
     licenseResource: The license specification required as part of a license
       commitment.
-    mergeSourceCommitments: List of source commitments to be merged into a new
-      commitment.
-    name: Name of the resource. Provided by the client when the resource is
-      created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
-    plan: The plan for this commitment, which determines duration and discount
-      rate. The currently supported plans are TWELVE_MONTH (1 year), and
-      THIRTY_SIX_MONTH (3 years).
-    region: [Output Only] URL of the region where this commitment may be used.
-    reservations: List of create-on-create reservations for this commitment.
+    mergeSourceCommitments: The list of source commitments that you are
+      merging to create the new merged commitment. For more information, see
+      Merging commitments.
+    name: Name of the commitment. You must specify a name when you purchase
+      the commitment. The name must be 1-63 characters long, and comply with
+      RFC1035. Specifically, the name must be 1-63 characters long and match
+      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
+    plan: The minimum time duration that you commit to purchasing resources.
+      The plan that you choose determines the preset term length of the
+      commitment (which is 1 year or 3 years) and affects the discount rate
+      that you receive for your resources. Committing to a longer time
+      duration typically gives you a higher discount rate. The supported
+      values for this field are TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3
+      years).
+    region: [Output Only] URL of the region where the commitment and committed
+      resources are located.
+    reservations: The list of new reservations that you want to create and
+      attach to this commitment. You must attach reservations to your
+      commitment if your commitment specifies any GPUs or Local SSD disks. For
+      more information, see Attach reservations to resource-based commitments.
+      Specify this property only if you want to create new reservations to
+      attach. To attach existing reservations, specify the
+      existingReservations property instead.
     resourceStatus: [Output Only] Status information for Commitment resource.
-    resources: A list of commitment amounts for particular resources. Note
-      that VCPU and MEMORY resource commitments must occur together.
+    resources: The list of all the hardware resources, with their types and
+      amounts, that you want to commit to. Specify as a separate entry in the
+      list for each individual resource type.
     selfLink: [Output Only] Server-defined URL for the resource.
-    splitSourceCommitment: Source commitment to be split into a new
-      commitment.
+    splitSourceCommitment: The source commitment from which you are
+      transferring resources to create the new split commitment. For more
+      information, see Split commitments.
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
     status: [Output Only] Status of the commitment with regards to eventual
-      expiration (each commitment has an end date defined). One of the
-      following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+      expiration (each commitment has an end date defined). Status can be one
+      of the following values: NOT_YET_ACTIVE, ACTIVE, or EXPIRED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
-    type: The type of commitment, which affects the discount rate and the
-      eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that
-      will only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED
-      specifies a commitment that will only apply to accelerator optimized
-      machines.
+    type: The type of commitment; specifies the machine series for which you
+      want to commit to purchasing resources. The choice of machine series
+      affects the discount rate and the eligible resource types. The type must
+      be one of the following: ACCELERATOR_OPTIMIZED,
+      ACCELERATOR_OPTIMIZED_A3, ACCELERATOR_OPTIMIZED_A3_MEGA,
+      COMPUTE_OPTIMIZED, COMPUTE_OPTIMIZED_C2D, COMPUTE_OPTIMIZED_C3,
+      COMPUTE_OPTIMIZED_C3D, COMPUTE_OPTIMIZED_H3, GENERAL_PURPOSE,
+      GENERAL_PURPOSE_C4, GENERAL_PURPOSE_E2, GENERAL_PURPOSE_N2,
+      GENERAL_PURPOSE_N2D, GENERAL_PURPOSE_N4, GENERAL_PURPOSE_T2D,
+      GRAPHICS_OPTIMIZED, MEMORY_OPTIMIZED, MEMORY_OPTIMIZED_M3,
+      MEMORY_OPTIMIZED_X4, STORAGE_OPTIMIZED_Z3. For example, type
+      MEMORY_OPTIMIZED specifies a commitment that applies only to eligible
+      resources of memory optimized M1 and M2 machine series. Type
+      GENERAL_PURPOSE specifies a commitment that applies only to eligible
+      resources of general purpose N1 machine series.
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
-    r"""The category of the commitment. Category MACHINE specifies commitments
-    composed of machine resources such as VCPU or MEMORY, listed in resources.
-    Category LICENSE specifies commitments composed of software licenses,
-    listed in licenseResources. Note that only MACHINE commitments should have
-    a Type specified.
+    r"""The category of the commitment; specifies whether the commitment is
+    for hardware or software resources. Category MACHINE specifies that you
+    are committing to hardware machine resources such as VCPU or MEMORY,
+    listed in resources. Category LICENSE specifies that you are committing to
+    software licenses, listed in licenseResources. Note that if you specify
+    MACHINE commitments, then you must also specify a type to indicate the
+    machine series of the hardware resource that you are committing to.
 
     Values:
       CATEGORY_UNSPECIFIED: <no description>
@@ -6626,9 +6671,12 @@ class Commitment(_messages.Message):
     MACHINE = 2
 
   class PlanValueValuesEnum(_messages.Enum):
-    r"""The plan for this commitment, which determines duration and discount
-    rate. The currently supported plans are TWELVE_MONTH (1 year), and
-    THIRTY_SIX_MONTH (3 years).
+    r"""The minimum time duration that you commit to purchasing resources. The
+    plan that you choose determines the preset term length of the commitment
+    (which is 1 year or 3 years) and affects the discount rate that you
+    receive for your resources. Committing to a longer time duration typically
+    gives you a higher discount rate. The supported values for this field are
+    TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
 
     Values:
       INVALID: <no description>
@@ -6641,8 +6689,8 @@ class Commitment(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] Status of the commitment with regards to eventual
-    expiration (each commitment has an end date defined). One of the following
-    values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+    expiration (each commitment has an end date defined). Status can be one of
+    the following values: NOT_YET_ACTIVE, ACTIVE, or EXPIRED.
 
     Values:
       ACTIVE: <no description>
@@ -6659,16 +6707,26 @@ class Commitment(_messages.Message):
     NOT_YET_ACTIVE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of commitment, which affects the discount rate and the
-    eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will
-    only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED
-    specifies a commitment that will only apply to accelerator optimized
-    machines.
+    r"""The type of commitment; specifies the machine series for which you
+    want to commit to purchasing resources. The choice of machine series
+    affects the discount rate and the eligible resource types. The type must
+    be one of the following: ACCELERATOR_OPTIMIZED, ACCELERATOR_OPTIMIZED_A3,
+    ACCELERATOR_OPTIMIZED_A3_MEGA, COMPUTE_OPTIMIZED, COMPUTE_OPTIMIZED_C2D,
+    COMPUTE_OPTIMIZED_C3, COMPUTE_OPTIMIZED_C3D, COMPUTE_OPTIMIZED_H3,
+    GENERAL_PURPOSE, GENERAL_PURPOSE_C4, GENERAL_PURPOSE_E2,
+    GENERAL_PURPOSE_N2, GENERAL_PURPOSE_N2D, GENERAL_PURPOSE_N4,
+    GENERAL_PURPOSE_T2D, GRAPHICS_OPTIMIZED, MEMORY_OPTIMIZED,
+    MEMORY_OPTIMIZED_M3, MEMORY_OPTIMIZED_X4, STORAGE_OPTIMIZED_Z3. For
+    example, type MEMORY_OPTIMIZED specifies a commitment that applies only to
+    eligible resources of memory optimized M1 and M2 machine series. Type
+    GENERAL_PURPOSE specifies a commitment that applies only to eligible
+    resources of general purpose N1 machine series.
 
     Values:
       ACCELERATOR_OPTIMIZED: <no description>
       ACCELERATOR_OPTIMIZED_A3: <no description>
       ACCELERATOR_OPTIMIZED_A3_MEGA: <no description>
+      ACCELERATOR_OPTIMIZED_A3_ULTRA: <no description>
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
       COMPUTE_OPTIMIZED_C3: <no description>
@@ -6689,32 +6747,36 @@ class Commitment(_messages.Message):
       MEMORY_OPTIMIZED_X4_24TB: <no description>
       MEMORY_OPTIMIZED_X4_32TB: <no description>
       STORAGE_OPTIMIZED_Z3: <no description>
-      TYPE_UNSPECIFIED: <no description>
+      TYPE_UNSPECIFIED: Note for internal users: When adding a new enum Type
+        for v1, make sure to also add it in the comment for the `optional Type
+        type` definition. This ensures that the public documentation displays
+        the new enum Type.
     """
     ACCELERATOR_OPTIMIZED = 0
     ACCELERATOR_OPTIMIZED_A3 = 1
     ACCELERATOR_OPTIMIZED_A3_MEGA = 2
-    COMPUTE_OPTIMIZED = 3
-    COMPUTE_OPTIMIZED_C2D = 4
-    COMPUTE_OPTIMIZED_C3 = 5
-    COMPUTE_OPTIMIZED_C3D = 6
-    COMPUTE_OPTIMIZED_H3 = 7
-    GENERAL_PURPOSE = 8
-    GENERAL_PURPOSE_C4 = 9
-    GENERAL_PURPOSE_C4A = 10
-    GENERAL_PURPOSE_E2 = 11
-    GENERAL_PURPOSE_N2 = 12
-    GENERAL_PURPOSE_N2D = 13
-    GENERAL_PURPOSE_N4 = 14
-    GENERAL_PURPOSE_T2D = 15
-    GRAPHICS_OPTIMIZED = 16
-    MEMORY_OPTIMIZED = 17
-    MEMORY_OPTIMIZED_M3 = 18
-    MEMORY_OPTIMIZED_X4_16TB = 19
-    MEMORY_OPTIMIZED_X4_24TB = 20
-    MEMORY_OPTIMIZED_X4_32TB = 21
-    STORAGE_OPTIMIZED_Z3 = 22
-    TYPE_UNSPECIFIED = 23
+    ACCELERATOR_OPTIMIZED_A3_ULTRA = 3
+    COMPUTE_OPTIMIZED = 4
+    COMPUTE_OPTIMIZED_C2D = 5
+    COMPUTE_OPTIMIZED_C3 = 6
+    COMPUTE_OPTIMIZED_C3D = 7
+    COMPUTE_OPTIMIZED_H3 = 8
+    GENERAL_PURPOSE = 9
+    GENERAL_PURPOSE_C4 = 10
+    GENERAL_PURPOSE_C4A = 11
+    GENERAL_PURPOSE_E2 = 12
+    GENERAL_PURPOSE_N2 = 13
+    GENERAL_PURPOSE_N2D = 14
+    GENERAL_PURPOSE_N4 = 15
+    GENERAL_PURPOSE_T2D = 16
+    GRAPHICS_OPTIMIZED = 17
+    MEMORY_OPTIMIZED = 18
+    MEMORY_OPTIMIZED_M3 = 19
+    MEMORY_OPTIMIZED_X4_16TB = 20
+    MEMORY_OPTIMIZED_X4_24TB = 21
+    MEMORY_OPTIMIZED_X4_32TB = 22
+    STORAGE_OPTIMIZED_Z3 = 23
+    TYPE_UNSPECIFIED = 24
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -7122,7 +7184,8 @@ class CommitmentsScopedList(_messages.Message):
       of commitments when the list is empty.
 
   Fields:
-    commitments: [Output Only] A list of commitments contained in this scope.
+    commitments: [Output Only] The list of commitments contained in this
+      scope.
     warning: [Output Only] Informational warning which replaces the list of
       commitments when the list is empty.
   """
@@ -18051,6 +18114,40 @@ class ComputeNetworkFirewallPoliciesAddAssociationRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeNetworkFirewallPoliciesAddPacketMirroringRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesAddPacketMirroringRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    maxPriority: When rule.priority is not specified, auto choose a unused
+      priority between minPriority and maxPriority>. This field is exclusive
+      with rule.priority.
+    minPriority: When rule.priority is not specified, auto choose a unused
+      priority between minPriority and maxPriority>. This field is exclusive
+      with rule.priority.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  maxPriority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minPriority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  project = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+
+
 class ComputeNetworkFirewallPoliciesAddRuleRequest(_messages.Message):
   r"""A ComputeNetworkFirewallPoliciesAddRuleRequest object.
 
@@ -18243,6 +18340,21 @@ class ComputeNetworkFirewallPoliciesGetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(3, required=True)
 
 
+class ComputeNetworkFirewallPoliciesGetPacketMirroringRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetPacketMirroringRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried rule
+      belongs.
+    priority: The priority of the rule to get from the firewall policy.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+
+
 class ComputeNetworkFirewallPoliciesGetRequest(_messages.Message):
   r"""A ComputeNetworkFirewallPoliciesGetRequest object.
 
@@ -18363,6 +18475,34 @@ class ComputeNetworkFirewallPoliciesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
+class ComputeNetworkFirewallPoliciesPatchPacketMirroringRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesPatchPacketMirroringRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
 class ComputeNetworkFirewallPoliciesPatchRequest(_messages.Message):
   r"""A ComputeNetworkFirewallPoliciesPatchRequest object.
 
@@ -18438,6 +18578,31 @@ class ComputeNetworkFirewallPoliciesRemoveAssociationRequest(_messages.Message):
 
   firewallPolicy = _messages.StringField(1, required=True)
   name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesRemovePacketMirroringRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesRemovePacketMirroringRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    priority: The priority of the rule to remove from the firewall policy.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
 
@@ -21789,7 +21954,7 @@ class ComputeRegionCommitmentsUpdateRequest(_messages.Message):
   r"""A ComputeRegionCommitmentsUpdateRequest object.
 
   Fields:
-    commitment: Name of the commitment for which auto renew is being updated.
+    commitment: Name of the commitment that you want to update.
     commitmentResource: A Commitment resource to be passed as the request
       body.
     paths: A string attribute.
@@ -36817,6 +36982,8 @@ class FirewallPolicy(_messages.Message):
     name: Name of the resource. For Organization Firewall Policies it's a
       [Output Only] numeric ID allocated by Google Cloud which uniquely
       identifies the Organization Firewall Policy.
+    packetMirroringRules: A list of packet mirroring rules that belong to this
+      policy.
     parent: [Output Only] The parent of the firewall policy. This field is not
       applicable to network firewall policies.
     region: [Output Only] URL of the region where the regional firewall policy
@@ -36851,13 +37018,14 @@ class FirewallPolicy(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default='compute#firewallPolicy')
   name = _messages.StringField(8)
-  parent = _messages.StringField(9)
-  region = _messages.StringField(10)
-  ruleTupleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('FirewallPolicyRule', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  shortName = _messages.StringField(15)
+  packetMirroringRules = _messages.MessageField('FirewallPolicyRule', 9, repeated=True)
+  parent = _messages.StringField(10)
+  region = _messages.StringField(11)
+  ruleTupleCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 13, repeated=True)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  shortName = _messages.StringField(16)
 
 
 class FirewallPolicyAssociation(_messages.Message):
@@ -46498,6 +46666,8 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     displayName: [Output Only] Deprecated, please use short name instead. The
       display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
+    packetMirroringRules: [Output Only] The packet mirroring rules that apply
+      to the instance.
     priority: [Output only] Priority of firewall policy association. Not
       applicable for type=HIERARCHY.
     rules: [Output Only] The rules that apply to the instance. Only rules that
@@ -46529,10 +46699,11 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
-  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('FirewallPolicyRule', 4, repeated=True)
-  shortName = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  packetMirroringRules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 5, repeated=True)
+  shortName = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class InstancesRemoveResourcePoliciesRequest(_messages.Message):
@@ -50456,10 +50627,9 @@ class LicenseResourceCommitment(_messages.Message):
   r"""Commitment for a particular license resource.
 
   Fields:
-    amount: The number of licenses purchased.
-    coresPerLicense: Specifies the core range of the instance for which this
-      license applies.
-    license: Any applicable license URI.
+    amount: The number of licenses you plan to purchase.
+    coresPerLicense: The number of cores per license.
+    license: The applicable license URI.
   """
 
   amount = _messages.IntegerField(1)
@@ -55076,7 +55246,6 @@ class NetworkProfile(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
-    zone: [Output Only] Zone to which the network is restricted.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -55088,7 +55257,6 @@ class NetworkProfile(_messages.Message):
   name = _messages.StringField(7)
   selfLink = _messages.StringField(8)
   selfLinkWithId = _messages.StringField(9)
-  zone = _messages.StringField(10)
 
 
 class NetworkProfileLocation(_messages.Message):
@@ -55793,6 +55961,8 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
     displayName: [Output Only] Deprecated, please use short name instead. The
       display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
+    packetMirroringRules: [Output Only] The packet mirroring rules that apply
+      to the network.
     priority: [Output only] Priority of firewall policy association. Not
       applicable for type=HIERARCHY.
     rules: [Output Only] The rules that apply to the network.
@@ -55816,10 +55986,11 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
-  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('FirewallPolicyRule', 4, repeated=True)
-  shortName = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  packetMirroringRules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 5, repeated=True)
+  shortName = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class NetworksRemovePeeringRequest(_messages.Message):
@@ -57513,6 +57684,8 @@ class NodeType(_messages.Message):
       node types.
     localSsdGb: [Output Only] Local SSD available to the node type, defined in
       GB.
+    maxVms: [Output Only] Maximum number of VMs that can be created for this
+      node type.
     memoryMb: [Output Only] The amount of physical memory available to the
       node type, defined in MB.
     name: [Output Only] Name of the resource.
@@ -57529,10 +57702,11 @@ class NodeType(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default='compute#nodeType')
   localSsdGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  memoryMb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  maxVms = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class NodeTypeAggregatedList(_messages.Message):
@@ -64022,6 +64196,8 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
   Fields:
     displayName: [Output Only] The display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
+    packetMirroringRules: [Output only] The packet mirroring rules that apply
+      to the network.
     rules: [Output only] The rules that apply to the network.
     type: [Output Only] The type of the firewall policy. Can be one of
       HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
@@ -64044,8 +64220,9 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
-  rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  packetMirroringRules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  rules = _messages.MessageField('FirewallPolicyRule', 4, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class RegionSetLabelsRequest(_messages.Message):
@@ -64850,27 +65027,36 @@ class ReservationsScopedList(_messages.Message):
 
 
 class ResourceCommitment(_messages.Message):
-  r"""Commitment for a particular resource (a Commitment is composed of one or
-  more of these).
+  r"""Commitment for a particular hardware resource (a commitment is composed
+  of one or more of these).
 
   Enums:
-    TypeValueValuesEnum: Type of resource for which this commitment applies.
-      Possible values are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.
+    TypeValueValuesEnum: The type of hardware resource that you want to
+      specify. You can specify any of the following values: - VCPU - MEMORY -
+      LOCAL_SSD - ACCELERATOR Specify as a separate entry in the list for each
+      individual resource type.
 
   Fields:
-    acceleratorType: Name of the accelerator type resource. Applicable only
-      when the type is ACCELERATOR.
-    amount: The amount of the resource purchased (in a type-dependent unit,
-      such as bytes). For vCPUs, this can just be an integer. For memory, this
-      must be provided in MB. Memory must be a multiple of 256 MB, with up to
-      6.5GB of memory per every vCPU.
-    type: Type of resource for which this commitment applies. Possible values
-      are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.
+    acceleratorType: Name of the accelerator type or GPU resource. Specify
+      this field only when the type of hardware resource is ACCELERATOR.
+    amount: The quantity of the hardware resource that you want to commit to
+      purchasing (in a type-dependent unit). - For vCPUs, you must specify an
+      integer value. - For memory, you specify the amount of MB that you want.
+      The value you specify must be a multiple of 256 MB, with up to 6.5 GB of
+      memory per every vCPU. - For GPUs, you must specify an integer value. -
+      For Local SSD disks, you must specify the amount in GB. The size of a
+      single Local SSD disk is 375 GB.
+    type: The type of hardware resource that you want to specify. You can
+      specify any of the following values: - VCPU - MEMORY - LOCAL_SSD -
+      ACCELERATOR Specify as a separate entry in the list for each individual
+      resource type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Type of resource for which this commitment applies. Possible values
-    are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.
+    r"""The type of hardware resource that you want to specify. You can
+    specify any of the following values: - VCPU - MEMORY - LOCAL_SSD -
+    ACCELERATOR Specify as a separate entry in the list for each individual
+    resource type.
 
     Values:
       ACCELERATOR: <no description>
@@ -66955,9 +67141,9 @@ class RouterInterface(_messages.Message):
       the IP address of the interface. - For Internet Protocol version 6
       (IPv6), the value must be a unique local address (ULA) range from
       fdff:1::/64 with a mask length of 126 or less. This value should be a
-      CIDR-formatted string, for example, fc00:0:1:1::1/112. Within the
-      router's VPC, this IPv6 prefix will be reserved exclusively for this
-      connection and cannot be used for any other purpose.
+      CIDR-formatted string, for example, fdff:1::1/112. Within the router's
+      VPC, this IPv6 prefix will be reserved exclusively for this connection
+      and cannot be used for any other purpose.
     ipVersion: IP version of this interface.
     linkedInterconnectAttachment: URI of the linked Interconnect attachment.
       It must be in the same region as the router. Each interface can have one
@@ -68275,6 +68461,10 @@ class Scheduling(_messages.Message):
       instance in. The value must be a number between 1 and the number of
       availability domains specified in the spread placement policy attached
       to the instance.
+    hostErrorTimeoutSeconds: Specify the time in seconds for host error
+      detection, the value must be within the range of [90, 330] with the
+      increment of 30, if unset, the default behavior of host error recovery
+      will be used.
     instanceTerminationAction: Specifies the termination action for the
       instance.
     localSsdRecoveryTimeout: Specifies the maximum amount of time a Local Ssd
@@ -68351,17 +68541,18 @@ class Scheduling(_messages.Message):
 
   automaticRestart = _messages.BooleanField(1)
   availabilityDomain = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 3)
-  localSsdRecoveryTimeout = _messages.MessageField('Duration', 4)
-  locationHint = _messages.StringField(5)
-  maxRunDuration = _messages.MessageField('Duration', 6)
-  minNodeCpus = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 8, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 9)
-  onInstanceStopAction = _messages.MessageField('SchedulingOnInstanceStopAction', 10)
-  preemptible = _messages.BooleanField(11)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 12)
-  terminationTime = _messages.StringField(13)
+  hostErrorTimeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 4)
+  localSsdRecoveryTimeout = _messages.MessageField('Duration', 5)
+  locationHint = _messages.StringField(6)
+  maxRunDuration = _messages.MessageField('Duration', 7)
+  minNodeCpus = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 9, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 10)
+  onInstanceStopAction = _messages.MessageField('SchedulingOnInstanceStopAction', 11)
+  preemptible = _messages.BooleanField(12)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 13)
+  terminationTime = _messages.StringField(14)
 
 
 class SchedulingNodeAffinity(_messages.Message):

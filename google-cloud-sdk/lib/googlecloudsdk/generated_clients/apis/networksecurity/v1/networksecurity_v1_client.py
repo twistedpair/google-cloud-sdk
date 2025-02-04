@@ -53,6 +53,10 @@ class NetworksecurityV1(base_api.BaseApiClient):
     self.projects_locations_firewallEndpointAssociations = self.ProjectsLocationsFirewallEndpointAssociationsService(self)
     self.projects_locations_gatewaySecurityPolicies_rules = self.ProjectsLocationsGatewaySecurityPoliciesRulesService(self)
     self.projects_locations_gatewaySecurityPolicies = self.ProjectsLocationsGatewaySecurityPoliciesService(self)
+    self.projects_locations_mirroringDeploymentGroups = self.ProjectsLocationsMirroringDeploymentGroupsService(self)
+    self.projects_locations_mirroringDeployments = self.ProjectsLocationsMirroringDeploymentsService(self)
+    self.projects_locations_mirroringEndpointGroupAssociations = self.ProjectsLocationsMirroringEndpointGroupAssociationsService(self)
+    self.projects_locations_mirroringEndpointGroups = self.ProjectsLocationsMirroringEndpointGroupsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_serverTlsPolicies = self.ProjectsLocationsServerTlsPoliciesService(self)
     self.projects_locations_tlsInspectionPolicies = self.ProjectsLocationsTlsInspectionPoliciesService(self)
@@ -2329,6 +2333,586 @@ class NetworksecurityV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='gatewaySecurityPolicy',
         request_type_name='NetworksecurityProjectsLocationsGatewaySecurityPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMirroringDeploymentGroupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_mirroringDeploymentGroups resource."""
+
+    _NAME = 'projects_locations_mirroringDeploymentGroups'
+
+    def __init__(self, client):
+      super(NetworksecurityV1.ProjectsLocationsMirroringDeploymentGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new MirroringDeploymentGroup in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeploymentGroups',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.mirroringDeploymentGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['mirroringDeploymentGroupId', 'requestId'],
+        relative_path='v1/{+parent}/mirroringDeploymentGroups',
+        request_field='mirroringDeploymentGroup',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single MirroringDeploymentGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeploymentGroups/{mirroringDeploymentGroupsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.mirroringDeploymentGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single MirroringDeploymentGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MirroringDeploymentGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeploymentGroups/{mirroringDeploymentGroupsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringDeploymentGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentGroupsGetRequest',
+        response_type_name='MirroringDeploymentGroup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MirroringDeploymentGroups in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMirroringDeploymentGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeploymentGroups',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringDeploymentGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/mirroringDeploymentGroups',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentGroupsListRequest',
+        response_type_name='ListMirroringDeploymentGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringDeploymentGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeploymentGroups/{mirroringDeploymentGroupsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringDeploymentGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='mirroringDeploymentGroup',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMirroringDeploymentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_mirroringDeployments resource."""
+
+    _NAME = 'projects_locations_mirroringDeployments'
+
+    def __init__(self, client):
+      super(NetworksecurityV1.ProjectsLocationsMirroringDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new MirroringDeployment in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeployments',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.mirroringDeployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['mirroringDeploymentId', 'requestId'],
+        relative_path='v1/{+parent}/mirroringDeployments',
+        request_field='mirroringDeployment',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single MirroringDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeployments/{mirroringDeploymentsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.mirroringDeployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single MirroringDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MirroringDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeployments/{mirroringDeploymentsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringDeployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentsGetRequest',
+        response_type_name='MirroringDeployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MirroringDeployments in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMirroringDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeployments',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringDeployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/mirroringDeployments',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentsListRequest',
+        response_type_name='ListMirroringDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringDeployments/{mirroringDeploymentsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringDeployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='mirroringDeployment',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMirroringEndpointGroupAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_mirroringEndpointGroupAssociations resource."""
+
+    _NAME = 'projects_locations_mirroringEndpointGroupAssociations'
+
+    def __init__(self, client):
+      super(NetworksecurityV1.ProjectsLocationsMirroringEndpointGroupAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new MirroringEndpointGroupAssociation in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroupAssociations',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroupAssociations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['mirroringEndpointGroupAssociationId', 'requestId'],
+        relative_path='v1/{+parent}/mirroringEndpointGroupAssociations',
+        request_field='mirroringEndpointGroupAssociation',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single MirroringEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroupAssociations/{mirroringEndpointGroupAssociationsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroupAssociations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single MirroringEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MirroringEndpointGroupAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroupAssociations/{mirroringEndpointGroupAssociationsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroupAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsGetRequest',
+        response_type_name='MirroringEndpointGroupAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MirroringEndpointGroupAssociations in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMirroringEndpointGroupAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroupAssociations',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroupAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/mirroringEndpointGroupAssociations',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsListRequest',
+        response_type_name='ListMirroringEndpointGroupAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroupAssociations/{mirroringEndpointGroupAssociationsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroupAssociations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='mirroringEndpointGroupAssociation',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMirroringEndpointGroupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_mirroringEndpointGroups resource."""
+
+    _NAME = 'projects_locations_mirroringEndpointGroups'
+
+    def __init__(self, client):
+      super(NetworksecurityV1.ProjectsLocationsMirroringEndpointGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new MirroringEndpointGroup in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroups',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['mirroringEndpointGroupId', 'requestId'],
+        relative_path='v1/{+parent}/mirroringEndpointGroups',
+        request_field='mirroringEndpointGroup',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single MirroringEndpointGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroups/{mirroringEndpointGroupsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single MirroringEndpointGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MirroringEndpointGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroups/{mirroringEndpointGroupsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupsGetRequest',
+        response_type_name='MirroringEndpointGroup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MirroringEndpointGroups in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMirroringEndpointGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroups',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/mirroringEndpointGroups',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupsListRequest',
+        response_type_name='ListMirroringEndpointGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringEndpointGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroups/{mirroringEndpointGroupsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='mirroringEndpointGroup',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

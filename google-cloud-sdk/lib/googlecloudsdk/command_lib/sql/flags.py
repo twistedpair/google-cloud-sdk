@@ -859,7 +859,7 @@ def AddStorageType(parser, hidden=False):
       '--storage-type',
       required=False,
       choices=(
-          ['SSD', 'HDD']
+          ['SSD', 'HDD', 'HYPERDISK_BALANCED']
           if properties.IsDefaultUniverse()
           else ['HYPERDISK_BALANCED']
       ),
@@ -2397,18 +2397,6 @@ OPERATION_FORMAT_BETA = """
   table(
     name,
     operationType:label=TYPE,
-    startTime.iso():label=START,
-    endTime.iso():label=END,
-    error.errors[0].code.yesno(no="-"):label=ERROR,
-    status:label=STATUS
-  )
-"""
-
-OPERATION_FORMAT_BETA_WITH_INSERT_TIME = """
-  table(
-    name,
-    operationType:label=TYPE,
-    insertTime.iso():label=INSERTED_AT,
     startTime.iso():label=START,
     endTime.iso():label=END,
     error.errors[0].code.yesno(no="-"):label=ERROR,

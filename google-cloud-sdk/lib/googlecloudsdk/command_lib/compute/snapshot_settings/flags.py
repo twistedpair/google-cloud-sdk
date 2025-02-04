@@ -89,3 +89,8 @@ def AddUpdateSnapshotSettingsAccessLocationFlags(parser):
       metavar='REMOVE_ACCESS_LOCATIONS',
       type=arg_parsers.ArgList(),
   )
+  parser.add_argument(
+      '--access-location-policy',
+      help="""The access location policy. ACCESS_LOCATION_POLICY must be one of: all-regions, specific-regions.""",
+      metavar='ACCESS_LOCATION_POLICY',
+  )

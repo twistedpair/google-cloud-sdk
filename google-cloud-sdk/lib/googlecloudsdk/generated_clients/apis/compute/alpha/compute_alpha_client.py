@@ -8984,6 +8984,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CreateMembers(self, request, global_params=None):
+      r"""Create Interconnect Attachments with redundancy by creating them in a specified interconnect attachment group.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsCreateMembersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentGroupsCreateMembersResponse) The response message.
+      """
+      config = self.GetMethodConfig('CreateMembers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateMembers.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectAttachmentGroups.createMembers',
+        ordered_params=['project', 'interconnectAttachmentGroup'],
+        path_params=['interconnectAttachmentGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}/createMembers',
+        request_field='interconnectAttachmentGroupsCreateMembersRequest',
+        request_type_name='ComputeInterconnectAttachmentGroupsCreateMembersRequest',
+        response_type_name='InterconnectAttachmentGroupsCreateMembersResponse',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified InterconnectAttachmentGroup in the given scope.
 
@@ -15355,7 +15381,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+      r"""Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
 
       Args:
         request: (ComputeRegionCommitmentsUpdateRequest) input message
@@ -15381,7 +15407,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def UpdateReservations(self, request, global_params=None):
-      r"""Transfers GPUs or local SSDs between reservations within commitments.
+      r"""Transfers GPUs or Local SSD disks between reservations that are attached to the same commitment.
 
       Args:
         request: (ComputeRegionCommitmentsUpdateReservationsRequest) input message

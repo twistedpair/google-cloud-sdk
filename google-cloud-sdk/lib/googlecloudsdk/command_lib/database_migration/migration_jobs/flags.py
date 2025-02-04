@@ -314,16 +314,27 @@ def AddSkipValidationFlag(parser):
   )
 
 
-def AddMigrationJobObjectsConfigFlag(parser, is_sqlserver=False):
+def AddMigrationJobObjectsConfigFlagForCreateAndUpdate(parser):
   """Adds migration job objects config flag group to the given parser."""
-  sqlserver_homogeneous_migration_config = parser.add_group(
+  migration_config = parser.add_group(
       'The migration job objects config.',
       mutex=True,
   )
-  if is_sqlserver:
-    AddDatabasesFilterFlagForSqlServer(sqlserver_homogeneous_migration_config)
-  else:
-    AddDatabasesFilterFlag(sqlserver_homogeneous_migration_config)
+  database_config = migration_config.add_group(
+      'The migration job objects config for databases.',
+      mutex=True,
+  )
+  AddDatabasesFilterFlag(database_config)
+  AddAllDatabasesFlag(database_config)
+
+
+def AddMigrationJobObjectsConfigFlagForRestartAndPromote(parser):
+  """Adds migration job objects config flag group to the given parser."""
+  migration_config = parser.add_group(
+      'The migration job objects config.',
+      mutex=True,
+  )
+  AddDatabasesFilterFlagForSqlServer(migration_config)
 
 
 def AddDatabasesFilterFlag(parser):
@@ -332,8 +343,7 @@ def AddDatabasesFilterFlag(parser):
   help_text = """\
     A list of databases to be migrated to the destination instance.
     Provide databases as a comma separated list. This flag is used only for
-    Postgres to AlloyDB and SQL Server to Cloud
-    SQL SQL Server migrations.
+    Postgres to AlloyDB migrations.
     """
   parser.add_argument(
       '--databases-filter',
@@ -341,6 +351,16 @@ def AddDatabasesFilterFlag(parser):
       type=arg_parsers.ArgList(min_length=1),
       help=help_text,
   )
+
+
+def AddAllDatabasesFlag(parser):
+  """Adds --all-databases flag to the given parser."""
+  # TODO(b/365922318) : Add Postgres to Cloud SQL Postgres when it is supported.
+  help_text = """\
+    Migrate all databases for the migration job. This flag is used only for
+    Postgres to AlloyDB migrations.
+    """
+  parser.add_argument('--all-databases', action='store_true', help=help_text)
 
 
 def AddDatabasesFilterFlagForSqlServer(parser):

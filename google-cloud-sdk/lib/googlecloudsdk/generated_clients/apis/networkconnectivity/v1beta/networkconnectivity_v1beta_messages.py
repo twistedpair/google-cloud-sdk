@@ -22,7 +22,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -506,23 +505,15 @@ class GoogleCloudNetworkconnectivityV1betaGateway(_messages.Message):
     Values:
       GATEWAY_CAPACITY_UNSPECIFIED: The gateway capacity is unspecified.
       CAPACITY_1_GBPS: The gateway has 1 Gbps of aggregate processing capacity
-      CAPACITY_5_GBPS: The gateway has 5 Gbps of aggregate processing capacity
       CAPACITY_10_GBPS: The gateway has 10 Gbps of aggregate processing
-        capacity
-      CAPACITY_25_GBPS: The gateway has 25 Gbps of aggregate processing
-        capacity
-      CAPACITY_50_GBPS: The gateway has 50 Gbps of aggregate processing
         capacity
       CAPACITY_100_GBPS: The gateway has 100 Gbps of aggregate processing
         capacity
     """
     GATEWAY_CAPACITY_UNSPECIFIED = 0
     CAPACITY_1_GBPS = 1
-    CAPACITY_5_GBPS = 2
-    CAPACITY_10_GBPS = 3
-    CAPACITY_25_GBPS = 4
-    CAPACITY_50_GBPS = 5
-    CAPACITY_100_GBPS = 6
+    CAPACITY_10_GBPS = 2
+    CAPACITY_100_GBPS = 3
 
   capacity = _messages.EnumField('CapacityValueValuesEnum', 1)
   ipRangeReservations = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaIpRangeReservation', 2, repeated=True)
@@ -589,8 +580,9 @@ class GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute(_messages.Messa
     ADVERTISE_TO_HUB = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current lifecycle state of this gateway advertised
-    route.
+    r"""Output only.
+
+    The current lifecycle state of this gateway advertised route.
 
     Values:
       STATE_UNSPECIFIED: No state information available
@@ -605,6 +597,9 @@ class GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute(_messages.Messa
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -617,6 +612,7 @@ class GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute(_messages.Messa
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -707,6 +703,9 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -719,6 +718,7 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -881,6 +881,9 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -893,6 +896,7 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1819,6 +1823,9 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1831,6 +1838,7 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The route's type. Its type is determined by the
@@ -1942,6 +1950,9 @@ class GoogleCloudNetworkconnectivityV1betaRouteTable(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1954,6 +1965,7 @@ class GoogleCloudNetworkconnectivityV1betaRouteTable(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2109,6 +2121,9 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2121,6 +2136,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2196,6 +2212,9 @@ class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2208,6 +2227,7 @@ class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   count = _messages.IntegerField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -4005,6 +4025,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
 
 class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_messages.Message):
   r"""A
+
   NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest
   object.
 
@@ -4014,7 +4035,13 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_
       passed as the request body.
     parent: Required. The parent resource's name of the PolicyBasedRoute.
     policyBasedRouteId: Required. Unique id for the policy-based route to
-      create.
+      create. Provided by the client when the resource is created. The name
+      must comply with https://google.aip.dev/122#resource-id-segments.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([a-z0-9-]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       knows to ignore the request if it has already been completed. The server

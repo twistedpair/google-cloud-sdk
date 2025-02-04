@@ -754,9 +754,9 @@ class GrpcRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Output only. Etag of the resource. If this is provided, it
-      must match the server's etag. If the provided etag does not match the
-      server's etag, the request will fail with a 409 ABORTED error.
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this GrpcRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -1100,9 +1100,9 @@ class HttpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Output only. Etag of the resource. If this is provided, it
-      must match the server's etag. If the provided etag does not match the
-      server's etag, the request will fail with a 409 ABORTED error.
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -3015,6 +3015,9 @@ class MulticastGroupConsumerActivation(_messages.Message):
     description: Optional. An optional text description of the multicast group
       consumer activation.
     labels: Optional. Labels as key-value pairs
+    logConfig: Optional. Specifies the logging options for the activities
+      performed related to the multicast group consumer activation. Defaults
+      to false. If logging is enabled, logs are exported to Cloud Logging.
     multicastConsumerAssociation: Required. The resource name of the multicast
       consumer association that is in the same zone as this multicast group
       consumer activation. Use the following format:
@@ -3083,13 +3086,14 @@ class MulticastGroupConsumerActivation(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  multicastConsumerAssociation = _messages.StringField(4)
-  multicastGroup = _messages.StringField(5)
-  multicastGroupRangeActivation = _messages.StringField(6)
-  name = _messages.StringField(7)
-  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  logConfig = _messages.MessageField('MulticastLogConfig', 4)
+  multicastConsumerAssociation = _messages.StringField(5)
+  multicastGroup = _messages.StringField(6)
+  multicastGroupRangeActivation = _messages.StringField(7)
+  name = _messages.StringField(8)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastGroupProducerActivation(_messages.Message):
@@ -3184,6 +3188,10 @@ class MulticastGroupRange(_messages.Message):
     ipCidrRange: Output only. [Output only] The multicast group IP address
       range.
     labels: Optional. Labels as key-value pairs.
+    logConfig: Optional. Specifies the logging options for the activities
+      performed related to all the multicast group range activations
+      associated with the multicast group range. Defaults to false. If logging
+      is enabled, logs are exported to Cloud Logging.
     multicastDomain: Required. The resource name of the multicast domain in
       which to create this multicast group range. Use the following format:
       `projects/*/locations/global/multicastDomains/*`.
@@ -3233,12 +3241,13 @@ class MulticastGroupRange(_messages.Message):
   description = _messages.StringField(3)
   ipCidrRange = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  multicastDomain = _messages.StringField(6)
-  name = _messages.StringField(7)
-  requireExplicitAccept = _messages.BooleanField(8)
-  reservedInternalRange = _messages.StringField(9)
-  uniqueId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  logConfig = _messages.MessageField('MulticastLogConfig', 6)
+  multicastDomain = _messages.StringField(7)
+  name = _messages.StringField(8)
+  requireExplicitAccept = _messages.BooleanField(9)
+  reservedInternalRange = _messages.StringField(10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class MulticastGroupRangeActivation(_messages.Message):
@@ -3255,6 +3264,13 @@ class MulticastGroupRangeActivation(_messages.Message):
     ipCidrRange: Output only. [Output only] The multicast group IP address
       range.
     labels: Optional. Labels as key-value pairs.
+    logConfig: Optional. Specifies the logging options for the activities
+      performed regarding the multicast group range activation. Defaults to
+      false. If not specified, inherit the logging options from the global
+      multicast group range resource. If logging is enabled, logs are exported
+      to Cloud Logging. If the log config is explicitly set for the multicast
+      group range activation, regardless if it is enabled or not, the value
+      overrides what is configured by the multicast group range resource.
     multicastDomainActivation: Optional. The resource name of a multicast
       domain activation that is in the same zone as this multicast group. Use
       the following format:
@@ -3304,12 +3320,23 @@ class MulticastGroupRangeActivation(_messages.Message):
   description = _messages.StringField(2)
   ipCidrRange = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  multicastDomainActivation = _messages.StringField(5)
-  multicastGroupConsumerActivations = _messages.StringField(6, repeated=True)
-  multicastGroupRange = _messages.StringField(7)
-  name = _messages.StringField(8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  logConfig = _messages.MessageField('MulticastLogConfig', 5)
+  multicastDomainActivation = _messages.StringField(6)
+  multicastGroupConsumerActivations = _messages.StringField(7, repeated=True)
+  multicastGroupRange = _messages.StringField(8)
+  name = _messages.StringField(9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class MulticastLogConfig(_messages.Message):
+  r"""The logging configuration.
+
+  Fields:
+    enabled: Optional. Whether to enable logging or not.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class MulticastProducerAssociation(_messages.Message):
@@ -6390,9 +6417,9 @@ class TcpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Output only. Etag of the resource. If this is provided, it
-      must match the server's etag. If the provided etag does not match the
-      server's etag, the request will fail with a 409 ABORTED error.
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -6540,9 +6567,9 @@ class TlsRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Output only. Etag of the resource. If this is provided, it
-      must match the server's etag. If the provided etag does not match the
-      server's etag, the request will fail with a 409 ABORTED error.
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag. If the provided etag does not match the server's
+      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:

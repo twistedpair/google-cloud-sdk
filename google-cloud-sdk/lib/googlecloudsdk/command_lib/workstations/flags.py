@@ -791,7 +791,7 @@ def AddCommandField(parser):
 
 
 def AddSshArgsAndUserField(parser):
-  """Adds a --user flag to the given parser."""
+  """Additional flags and positional args to be passed to *ssh(1)*."""
   help_text = """\
   The username with which to SSH.
   """
@@ -800,6 +800,17 @@ def AddSshArgsAndUserField(parser):
   help_text = """\
   Flags and positionals passed to the underlying ssh implementation."""
   parser.add_argument('ssh_args', nargs=argparse.REMAINDER, help=help_text)
+
+  help_text = """\
+  Additional flags to be passed to *ssh(1)*. It is recommended that flags
+  be passed using an assignment operator and quotes. Example:
+
+    $ {command} --ssh-flag="-vvv" --ssh-flag="-L 80:localhost:80"
+  """
+  parser.add_argument(
+      '--ssh-flag',
+      action='append',
+      help=help_text)
 
 
 def AddEncryptionKeyFields(parser):

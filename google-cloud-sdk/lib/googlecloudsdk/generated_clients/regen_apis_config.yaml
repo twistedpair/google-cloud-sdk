@@ -1484,6 +1484,8 @@ apis:
       default: true
     v2alpha:
       discovery_doc: serviceusage_v2alpha.json
+    v2beta:
+      discovery_doc: serviceusage_v2beta.json
   cloudquotas:
     v1:
       discovery_doc: cloudquotas_v1.json
@@ -1810,9 +1812,11 @@ apis:
     v1alpha1:
       discovery_doc: vmmigration_v1alpha1.json
   modelarmor:
+    v1:
+      discovery_doc: modelarmor_v1.json
+      default: true
     v1alpha:
       discovery_doc: modelarmor_v1alpha.json
-      default: true
   cloudaicompanion:
     v1alpha:
       discovery_doc: cloudaicompanion_v1alpha.json

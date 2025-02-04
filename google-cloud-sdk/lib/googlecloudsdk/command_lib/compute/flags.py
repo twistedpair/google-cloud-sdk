@@ -525,7 +525,8 @@ class ResourceResolver(object):
                        default_scope=None,
                        scope_lister=None,
                        with_project=True,
-                       source_project=None):
+                       source_project=None,
+                       additional_params=None):
     """Resolve this resource against the arguments.
 
     Args:
@@ -554,6 +555,7 @@ class ResourceResolver(object):
       source_project: indicates whether or not a project is specified. It could
           be other projects. If it is None, then it will use the current project
           if with_project is true
+      additional_params: Dict, additional parameters to pass in.
     Returns:
       Resource reference or list of references if plural.
     Raises:
@@ -584,6 +586,9 @@ class ResourceResolver(object):
       params = {}
     if scope_value is None:
       resource_scope = self.scopes.GetImplicitScope(default_scope)
+
+    if additional_params:
+      params = {**params, **additional_params}
 
     resource_scope_param = self._GetResourceScopeParam(
         resource_scope,
@@ -891,7 +896,8 @@ class ResourceArgument(object):
                         default_scope=None,
                         scope_lister=None,
                         with_project=True,
-                        source_project=None):
+                        source_project=None,
+                        additional_params=None):
     """Resolve this resource against the arguments.
 
     Args:
@@ -908,6 +914,7 @@ class ResourceArgument(object):
       source_project: indicates whether or not a project is specified. It could
         be other projects. If it is None, then it will use the current project
         if with_project is true
+      additional_params: Dict, additional parameters to pass in.
     Returns:
       Resource reference or list of references if plural.
     """
@@ -938,7 +945,8 @@ class ResourceArgument(object):
         default_scope,
         scope_lister,
         with_project=with_project,
-        source_project=source_project)
+        source_project=source_project,
+        additional_params=additional_params)
     if self.plural:
       return refs
     if refs:

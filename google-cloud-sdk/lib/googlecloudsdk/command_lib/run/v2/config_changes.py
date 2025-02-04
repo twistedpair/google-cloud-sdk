@@ -21,7 +21,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+from collections.abc import Iterable
 import dataclasses
+from typing import TypedDict
 
 from cloudsdk.google.protobuf import duration_pb2  # pytype: disable=import-error
 from google.api import launch_stage_pb2  # pytype: disable=import-error
@@ -30,6 +32,7 @@ from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run.v2 import instance_split as instance_split_lib
+from googlecloudsdk.command_lib.run.v2 import volumes as volumes_lib
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import instance_split
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import k8s_min
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import vendor_settings
@@ -714,6 +717,120 @@ class CmekKeyChanges(config_changes.TemplateConfigChanger):
     return resource
 
 
+@dataclasses.dataclass(frozen=True)
+class RemoveVolumeChange(config_changes.TemplateConfigChanger):
+  """Removes volumes from the service/job/worker-pool template.
+
+  Attributes:
+    removed_volumes: The volumes to remove.
+  """
+
+  removed_volumes: Iterable[str]
+  clear_volumes: bool
+
+  def Adjust(self, resource):
+    # having remove and clear is redundant, but we'll allow it.
+    if self.clear_volumes:
+      resource.template.volumes.clear()
+    elif self.removed_volumes:
+      current_volumes = {
+          volume.name: volume for volume in resource.template.volumes
+      }
+      for to_remove in self.removed_volumes:
+        if to_remove in current_volumes:
+          del current_volumes[to_remove]
+      resource.template.volumes = list(current_volumes.values())
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class AddVolumeChange(config_changes.TemplateConfigChanger):
+  """Updates Volumes set on the service/job/worker-pool template.
+
+  Attributes:
+    new_volumes: The volumes to add.
+    release_track: The resource's release track. Used to verify volume types are
+      supported in that release track.
+  """
+
+  new_volumes: Iterable[volumes_lib.VolumeDict]
+  release_track: base.ReleaseTrack = base.ReleaseTrack.ALPHA
+
+  def Adjust(self, resource):
+    # Make a dictionary of the current volumes with name as the key.
+    current_volumes = {
+        volume.name: volume for volume in resource.template.volumes
+    }
+    for volume_dict in self.new_volumes:
+      new_volume = volumes_lib.CreateVolume(volume_dict, self.release_track)
+      current_volumes[new_volume.name] = new_volume
+    resource.template.volumes = list(current_volumes.values())
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class RemoveVolumeMountChange(ContainerConfigChanger):
+  """Removes Volume Mounts from the container.
+
+  Attributes:
+    removed_mounts: Volume mounts to remove from the adjusted container.
+    clear_mounts: Whether to clear all volume mounts.
+  """
+
+  removed_mounts: Iterable[str] = dataclasses.field(default_factory=list)
+  clear_mounts: bool = False
+
+  def AdjustContainer(self, container):
+    if self.clear_mounts:
+      container.volume_mounts.clear()
+    else:
+      removed_mounts = set(self.removed_mounts)
+      container.volume_mounts = [
+          volume_mount
+          for volume_mount in container.volume_mounts
+          if volume_mount.mount_path not in removed_mounts
+      ]
+    return container
+
+
+VolumeMountDict = TypedDict(
+    'VolumeMountDict',
+    {
+        'volume': str,
+        'mount-path': str,
+    },
+)
+
+
+@dataclasses.dataclass(frozen=True)
+class AddVolumeMountChange(ContainerConfigChanger):
+  """Updates Volume Mounts set on the container.
+
+  Attributes:
+    new_mounts: Mounts to add to the adjusted container.
+  """
+
+  new_mounts: Iterable[VolumeMountDict] = dataclasses.field(
+      default_factory=list
+  )
+
+  def AdjustContainer(self, container: k8s_min.Container):
+    current_mounts = {
+        volume_mount.mount_path: volume_mount
+        for volume_mount in container.volume_mounts
+    }
+    for mount in self.new_mounts:
+      if 'volume' not in mount or 'mount-path' not in mount:
+        raise exceptions.ConfigurationError(
+            'Added Volume mounts must have a `volume` and a `mount-path`.'
+        )
+      current_mounts[mount['mount-path']] = k8s_min.VolumeMount(
+          name=mount['volume'], mount_path=mount['mount-path']
+      )
+    container.volume_mounts = list(current_mounts.values())
+    return container
+
+
 # Common config changes to all resource types ends.
 
 
@@ -725,45 +842,72 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
   Attributes:
     min_instance_count: The minimum count of instances to set.
     max_instance_count: The maximum count of instances to set.
-    scaling: Scaling mode to set.
+    scaling: Scaling flag value that either contains manual instance count or
+      auto scaling mode.
     max_surge: Max surge to set.
     max_unavailable: Max unavailable to set.
   """
 
-  # TODO(b/369135381): For now, this is as simple as setting the fields that's
-  # provided. Still need to decided on `default` or unsetting, etc.
-  min_instance_count: int | None = None
-  max_instance_count: int | None = None
+  min_instance_count: flags.ScaleValue | None = None
+  max_instance_count: flags.ScaleValue | None = None
   scaling: flags.ScalingValue | None = None
-  max_surge: int | None = None
-  max_unavailable: int | None = None
+  max_surge: flags.MaxSurgeValue | None = None
+  max_unavailable: flags.MaxUnavailableValue | None = None
 
   def Adjust(self, worker_pool_resource: worker_pool.WorkerPool):
     """Adjusts worker pool scaling."""
-    scaling = worker_pool_resource.scaling
-    if self.min_instance_count is not None:
-      scaling.min_instance_count = self.min_instance_count
-    if self.max_instance_count is not None:
-      scaling.max_instance_count = self.max_instance_count
-    if self.max_surge is not None:
-      scaling.max_surge = self.max_surge
-    if self.max_unavailable is not None:
-      scaling.max_unavailable = self.max_unavailable
-    if self.scaling is not None:
-      # Automatic scaling.
+    # Min instance count
+    if self.min_instance_count:
+      if self.scaling and not self.scaling.auto_scaling:
+        raise exceptions.ConfigurationError(
+            'Cannot set --min when --scaling is set to a manual instance count.'
+        )
+      if self.min_instance_count.restore_default:
+        worker_pool_resource.scaling.min_instance_count = 1
+      else:
+        worker_pool_resource.scaling.min_instance_count = (
+            self.min_instance_count.instance_count
+        )
+    # Max instance count
+    if self.max_instance_count:
+      if self.scaling and not self.scaling.auto_scaling:
+        raise exceptions.ConfigurationError(
+            'Cannot set --max when --scaling is set to a manual instance count.'
+        )
+      if self.max_instance_count.restore_default:
+        worker_pool_resource.scaling.max_instance_count = 100
+      else:
+        worker_pool_resource.scaling.max_instance_count = (
+            self.max_instance_count.instance_count
+        )
+    # Scaling mode & manual instance count
+    if self.scaling:
+      # Auto scaling mode
       if self.scaling.auto_scaling:
-        scaling.scaling_mode = (
+        # Remove manual instance count if auto scaling is set.
+        worker_pool_resource.scaling.manual_instance_count = None
+        worker_pool_resource.scaling.scaling_mode = (
             vendor_settings.WorkerPoolScaling.ScalingMode.AUTOMATIC
         )
-      # Manual scaling with flag value as an instance count.
-      # TODO(b/376749010): Use manual instance count once supported in V2
-      # WorkerPool API.
+      # Manual scaling mode
       else:
-        scaling.scaling_mode = (
+        # Remove min and max instance count if manual instance count is set.
+        worker_pool_resource.scaling.min_instance_count = None
+        worker_pool_resource.scaling.max_instance_count = None
+        worker_pool_resource.scaling.scaling_mode = (
             vendor_settings.WorkerPoolScaling.ScalingMode.MANUAL
         )
-        scaling.min_instance_count = self.scaling.instance_count
-        scaling.max_instance_count = None
+        worker_pool_resource.scaling.manual_instance_count = (
+            self.scaling.instance_count
+        )
+    # Max surge
+    if self.max_surge and not self.max_surge.restore_default:
+      worker_pool_resource.scaling.max_surge = self.max_surge.surge_percent
+    # Max unavailable
+    if self.max_unavailable and not self.max_unavailable.restore_default:
+      worker_pool_resource.scaling.max_unavailable = (
+          self.max_unavailable.unavailable_percent
+      )
     return worker_pool_resource
 
 

@@ -188,6 +188,37 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   )
   if 'gpu_type' in args and args.gpu_type:
     changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+  # Volumes / Volume Mounts / Secrets changes
+  if flags.FlagIsExplicitlySet(
+      args, 'remove_volume_mount'
+  ) or flags.FlagIsExplicitlySet(args, 'clear_volume_mounts'):
+    changes.append(
+        config_changes.RemoveVolumeMountChange(
+            removed_mounts=args.remove_volume_mount,
+            clear_mounts=args.clear_volume_mounts,
+        )
+    )
+  if (
+      flags.FlagIsExplicitlySet(args, 'remove_volume') and args.remove_volume
+  ) or (
+      flags.FlagIsExplicitlySet(args, 'clear_volumes') and args.clear_volumes
+  ):
+    changes.append(
+        config_changes.RemoveVolumeChange(
+            args.remove_volume, args.clear_volumes
+        )
+    )
+  if flags.FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
+    changes.append(config_changes.AddVolumeChange(args.add_volume))
+  if (
+      flags.FlagIsExplicitlySet(args, 'add_volume_mount')
+      and args.add_volume_mount
+  ):
+    changes.append(
+        config_changes.AddVolumeMountChange(
+            new_mounts=args.add_volume_mount,
+        )
+    )
   return changes
 
 
@@ -200,9 +231,7 @@ def _GetEnvChanges(args, **kwargs):
           or args.env_vars_file
           or {}
       ),
-      removes=flags.MapLStrip(
-          getattr(args, 'remove_env_vars', None) or []
-      ),
+      removes=flags.MapLStrip(getattr(args, 'remove_env_vars', None) or []),
       clear_others=bool(
           args.set_env_vars or args.env_vars_file or args.clear_env_vars
       ),
@@ -213,8 +242,8 @@ def _GetEnvChanges(args, **kwargs):
 def _HasWorkerPoolScalingChanges(args):
   """Returns true iff any worker pool scaling changes are specified."""
   scaling_flags = [
-      'min_instances',
-      'max_instances',
+      'min',
+      'max',
       'max_surge',
       'scaling',
       'max_unavailable',
@@ -222,21 +251,19 @@ def _HasWorkerPoolScalingChanges(args):
   return flags.HasChanges(args, scaling_flags)
 
 
-# TODO(b/369135381): For now, this is as simple as setting the fields that's
-# provided. Still need to decided on `default` or unsetting, etc.
 def _GetWorkerPoolScalingChange(args):
-  """Return the changes for engine-level scaling for Worker resources for the given args."""
+  """Return the changes for engine-level scaling for Worker Pools for the given args."""
   return config_changes.WorkerPoolScalingChange(
-      min_instance_count=args.min_instances.instance_count
-      if 'min_instances' in args and args.min_instances is not None
+      min_instance_count=args.min
+      if 'min' in args and args.min is not None
       else None,
-      max_instance_count=args.max_instances.instance_count
-      if 'max_instances' in args and args.max_instances is not None
+      max_instance_count=args.max
+      if 'max' in args and args.max is not None
       else None,
-      max_surge=args.max_surge.surge_percent
+      max_surge=args.max_surge
       if 'max_surge' in args and args.max_surge is not None
       else None,
-      max_unavailable=args.max_unavailable.unavailable_percent
+      max_unavailable=args.max_unavailable
       if 'max_unavailable' in args and args.max_unavailable is not None
       else None,
       scaling=args.scaling

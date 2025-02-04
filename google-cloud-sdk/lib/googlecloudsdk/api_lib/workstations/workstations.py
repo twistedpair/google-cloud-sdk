@@ -243,6 +243,8 @@ class Workstations:
         'ServerAliveInterval': '0',
     }
 
+    extra_flags = self._ParseSshFlags(args)
+
     remainder = []
     if args.ssh_args:
       remainder.extend(args.ssh_args)
@@ -255,12 +257,23 @@ class Workstations:
         remote=remote,
         port=port,
         options=options,
+        extra_flags=extra_flags,
         tty=tty,
         remainder=remainder,
         remote_command=remote_command,
     )
 
     return cmd.Run(self.env)
+
+  def _ParseSshFlags(self, args):
+    """Obtain extra flags from the command arguments."""
+    extra_flags = []
+    if args.ssh_flag:
+      for flag in args.ssh_flag:
+        if flag and flag != '--':
+          for flag_part in flag.split():
+            extra_flags.append(flag_part)
+    return extra_flags
 
   def _FetchAccessToken(self, workstation, threaded=False):
     try:

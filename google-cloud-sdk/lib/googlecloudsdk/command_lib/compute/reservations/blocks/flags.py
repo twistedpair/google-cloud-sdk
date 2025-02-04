@@ -36,19 +36,15 @@ def AddScopeFlags(parser):
       metavar='SCOPE',
       type=lambda x: x.lower(),
       choices={
-          'all': (
-              'Maintenance should be performed on all hosts in the reservation'
-              ' block.'
-          ),
+          'all': 'Perform maintenance on all hosts in the reservation block.',
           'running': (
-              'Maintenance should be performed only on the hosts in the '
-              ' reservation block which have running VMs.'
+              'Perform maintenance only on the hosts in the reservation block'
+              ' that have running VMs.'
           ),
           'unused': (
-              'Maintenance should be performed only on the hosts in the'
-              ' reservation block which have no running VMs.'
+              'Perform maintenance only on the hosts in the reservation block'
+              " that don't have running VMs."
           ),
       },
       help='The maintenance scope to set for the reservation block.',
   )
-

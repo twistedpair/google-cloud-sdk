@@ -83,6 +83,21 @@ hub:
     attribute_name: hub
     help: Id of the hub.
 
+hubDefaultAll:
+  name: hub
+  collection: networkconnectivity.projects.locations.global.hubs
+  request_id_field: hubId
+  attributes:
+  - *project
+  - &hubDefaultAll
+    parameter_name: hubsId
+    attribute_name: hub
+    help: Id of the hub.
+    fallthroughs:
+    - value: "-"
+      hint: |-
+        if hub is empty, will use the wildcard '-' to indicate all hubs
+
 internalRange:
   name: internal range
   collection: networkconnectivity.projects.locations.internalRanges
@@ -120,7 +135,7 @@ spokeDefaultAll:
     fallthroughs:
     - value: "-"
       hint: |-
-        if left empty, will use the wildcard '-' to list all spokes
+        if spoke is empty, will use the wildcard '-' to list all spokes
     help: Id of the spoke.
 
 policyBasedRoute:
@@ -145,6 +160,22 @@ routeTable:
     parameter_name: routeTablesId
     attribute_name: route_table
     help: Id of the route table.
+
+routeTableDefaultAll:
+  name: route table
+  collection: networkconnectivity.projects.locations.global.hubs.routeTables
+  request_id_field: routeTablesId
+  attributes:
+  - *project
+  - *hubDefaultAll
+  - &routeTableDefaultAll
+    parameter_name: routeTablesId
+    attribute_name: route_table
+    help: Id of the route table.
+    fallthroughs:
+    - value: "-"
+      hint: |
+        if route table is empty, will use wildcard '-' to list all route tables
 
 route:
   name: route

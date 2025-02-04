@@ -230,3 +230,30 @@ def CheckRegionSpecifiedIfSpokeSpecified(unused_ref, unused_args, request):
         "A region must be specified if a spoke name is specified"
     )
   return request
+
+
+def CheckForRouteTableAndHubWildcardMismatch(unused_ref, unused_args, request):
+  """Check that hub and route table are both specified or both unspecified.
+
+  This is because CCFE doesn't support wildcards ("-") in this case but returns
+  a confusing error message. So we give he user a friendlier error.
+
+  Args:
+   request: The request object.
+  Returns:
+    The unmodified request object.
+  Raises:
+    InvalidInputError: If the user needs to specify a hub name or route table
+    name.
+  """
+  hub_wildcard = "/hubs/-/" in request.parent
+  route_table_wildcard = request.parent.endswith("/routeTables/-")
+  if hub_wildcard and not route_table_wildcard:
+    raise InvalidInputError(
+        "A hub must be specified if a route table is specified"
+    )
+  if route_table_wildcard and not hub_wildcard:
+    raise InvalidInputError(
+        "A route table must be specified if a hub is specified"
+    )
+  return request

@@ -49,7 +49,7 @@ class Client(sp_api.Client):
         return response.etag, {
             'severityOverrides': [],
             'threatOverrides': [],
-            'antivirusThreatOverrides': [],
+            'antivirusOverrides': [],
         }
       else:
         return response.etag, {
@@ -65,7 +65,7 @@ class Client(sp_api.Client):
           return response.etag, {
               'severityOverrides': [],
               'threatOverrides': [],
-              'antivirusThreatOverrides': [],
+              'antivirusOverrides': [],
           }
         else:
           return response.etag, {
@@ -74,8 +74,8 @@ class Client(sp_api.Client):
           }
       else:
         if enable_antivirus:
-          if profile.get('antivirusThreatOverrides') is None:
-            profile['antivirusThreatOverrides'] = []
+          if profile.get('antivirusOverrides') is None:
+            profile['antivirusOverrides'] = []
         if profile.get('severityOverrides') is None:
           profile['severityOverrides'] = []
         if profile.get('threatOverrides') is None:
@@ -107,7 +107,7 @@ class Client(sp_api.Client):
     update_field = ''
 
     if enable_antivirus:
-      if update_mask == 'antivirusThreatOverrides':
+      if update_mask == 'antivirusOverrides':
         update_field = 'protocol'
     if update_mask == 'severityOverrides':
       update_field = 'severity'
@@ -251,7 +251,7 @@ class Client(sp_api.Client):
     if update_mask in existing_threat_prevention_profile_object:
       update_field = ''
       if enable_antivirus:
-        if update_mask == 'antivirusThreatOverrides':
+        if update_mask == 'antivirusOverrides':
           update_field = 'protocol'
       if update_mask == 'severityOverrides':
         update_field = 'severity'

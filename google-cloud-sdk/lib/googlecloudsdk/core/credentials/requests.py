@@ -95,12 +95,12 @@ class RequestWrapper(transport.CredentialWrappingMixin,
     """Returns an http_client authorized with the given credentials."""
     orig_request = http_client.request
     credential_refresh_state = {'attempt': 0}
+    auth_request = google_auth_requests.Request(http_client)
 
     def WrappedRequest(method, url, data=None, headers=None, **kwargs):
       wrapped_request = http_client.request
       http_client.request = orig_request
 
-      auth_request = google_auth_requests.Request(http_client)
       creds.before_request(auth_request, method, url, headers)
 
       http_client.request = wrapped_request

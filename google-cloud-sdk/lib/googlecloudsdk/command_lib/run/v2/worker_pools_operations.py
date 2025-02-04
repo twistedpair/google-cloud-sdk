@@ -181,7 +181,6 @@ class WorkerPoolsOperations(object):
       worker_pool = self.GetWorkerPool(worker_pool_ref)
     else:
       worker_pool = prefetch or self.GetWorkerPool(worker_pool_ref)
-    # TODO(b/376904673): Add progress tracker.
     metric_name = metric_names.UPDATE_WORKER_POOL
     if worker_pool is None:
       # WorkerPool does not exist, create it.
@@ -205,7 +204,6 @@ class WorkerPoolsOperations(object):
       config_changes,
   ):
     """Update the instance split of a WorkerPool."""
-    # TODO: b/376904673 - Add progress tracker.
     worker_pool = self.GetWorkerPool(worker_pool_ref)
     if worker_pool is None:
       raise exceptions.NotFound(

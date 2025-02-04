@@ -4,7 +4,6 @@ title: networkservices v1alpha1 TlsRoute export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
 required:
-- name
 - rules
 additionalProperties: false
 properties:
@@ -32,6 +31,12 @@ properties:
     description: |-
       A free-text description of the resource. Max length 1024 characters.
     type: string
+  etag:
+    description: |-
+      Etag of the resource. If this is provided, it must match the server's
+      etag. If the provided etag does not match the server's etag, the request
+      will fail with a 409 ABORTED error.
+    type: string
   gateways:
     description: |-
       Gateways defines a list of gateways this TlsRoute is attached to, as one
@@ -56,7 +61,7 @@ properties:
       type: string
   name:
     description: |-
-      Name of the TlsRoute resource. It matches pattern
+      Identifier. Name of the TlsRoute resource. It matches pattern
       `projects/*/locations/global/tlsRoutes/tls_route_name>`.
     type: string
   rules:

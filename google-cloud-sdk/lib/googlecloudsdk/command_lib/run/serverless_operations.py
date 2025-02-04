@@ -22,6 +22,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
+import copy
 import dataclasses
 import functools
 import json
@@ -46,6 +47,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -755,6 +757,22 @@ class ServerlessOperations(object):
           return env_var.split('=', 1)[1]
     return None
 
+  def _ValidateServiceBeforeSourceDeploy(
+      self, tracker, service_ref, prefetch, config_changes
+  ):
+    """Validate the service in dry run before building."""
+    svc = None
+    if prefetch:
+      svc = service.Service(
+          copy.deepcopy(prefetch.Message()), self.messages_module
+      )
+    tracker.StartStage(stages.VALIDATE_SERVICE)
+    tracker.UpdateHeaderMessage('Validating Service...')
+    self._UpdateOrCreateService(
+        service_ref, config_changes, True, svc, dry_run=True
+    )
+    tracker.CompleteStage(stages.VALIDATE_SERVICE)
+
   def ReleaseService(
       self,
       service_ref,
@@ -838,6 +856,8 @@ class ServerlessOperations(object):
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(
               allow_unauthenticated is not None,
+              include_validate_service=build_source is not None
+              and release_track == base.ReleaseTrack.ALPHA,
               include_build=build_source is not None,
               include_create_repo=repo_to_create is not None,
           ),
@@ -846,6 +866,10 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
+      if release_track == base.ReleaseTrack.ALPHA:
+        self._ValidateServiceBeforeSourceDeploy(
+            tracker, service_ref, prefetch, config_changes
+        )
       # TODO(b/355762514): Either remove or re-enable this validation.
       # self._ValidateService(service_ref, config_changes)
       (

@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - hostnames
-- name
 - rules
 additionalProperties: false
 properties:
@@ -32,6 +31,12 @@ properties:
   description:
     description: |-
       A free-text description of the resource. Max length 1024 characters.
+    type: string
+  etag:
+    description: |-
+      Etag of the resource. If this is provided, it must match the server's
+      etag. If the provided etag does not match the server's etag, the request
+      will fail with a 409 ABORTED error.
     type: string
   gateways:
     description: |-
@@ -83,7 +88,7 @@ properties:
       type: string
   name:
     description: |-
-      Name of the GrpcRoute resource. It matches pattern
+      Identifier. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     type: string
   rules:

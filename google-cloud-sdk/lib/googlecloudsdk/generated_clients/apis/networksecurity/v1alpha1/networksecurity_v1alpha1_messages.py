@@ -1416,7 +1416,7 @@ class FirewallEndpointAssociationReference(_messages.Message):
 
 
 class FirstPartyEndpointSettings(_messages.Message):
-  r"""Next ID: 1."""
+  r"""A FirstPartyEndpointSettings object."""
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -3133,7 +3133,7 @@ class MirroringEndpoint(_messages.Message):
     r"""Output only. The current state of the endpoint.
 
     Values:
-      STATE_UNSPECIFIED: Not state is set.
+      STATE_UNSPECIFIED: No state is set.
       CREATING: The endpoint is being created.
       ACTIVE: The endpoint is processing configuration updates.
       DELETING: The endpoint is being deleted.
@@ -7846,10 +7846,8 @@ class PartnerSSEEnvironment(_messages.Message):
     deleteTime: Output only. [Output only] Delete time stamp
     dnsPeeringZones: Optional. Configured DNS peering zones.
     labels: Optional. Labels as key value pair
-    name: Identifier. Name of the Partner SSE Environment. Partner SSE
-      Environment is global so the name should be unique per project. Partners
-      should use the name "default" for the environment that want customers to
-      use. See google.aip.dev/122 for resource naming.
+    name: Identifier. Name of the Partner SSE Environment in the form of
+      "projects/{project}/locations/global/partnerSSEEnvironments/{id}".
     partnerNetwork: Required. Partner-owned network in the partner project
       created for this environment. Supports all user traffic and peers to
       sse_network.
@@ -8494,12 +8492,17 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
       secret or secret version name (URI) can be specified, but it will be
       parsed and stored as just the ID. For example, if the user inputs
       "projects/my-project/secrets/my-secret/versions/1", the SAC Realm will
-      hold just "my-secret".
+      hold just "my-secret". This field is deprecated and only visible to
+      v1alpha1. Use secret_path instead.
+    secretPath: Optional. A secret ID or secret version name (URI) can be
+      specified, but it will be parsed and stored as secret URI in the format
+      of "projects/my-project/secrets/my-secret".
   """
 
   apiKey = _messages.StringField(1)
   availableSymantecSites = _messages.StringField(2, repeated=True)
   secretId = _messages.StringField(3)
+  secretPath = _messages.StringField(4)
 
 
 class SSEGatewayReference(_messages.Message):
@@ -8656,6 +8659,8 @@ class SecurityProfileGroup(_messages.Message):
       CustomIntercept configuration.
     customMirroringProfile: Optional. Reference to a SecurityProfile with the
       CustomMirroring configuration.
+    dataPathId: Output only. Identifier used by the data-path. Unique within
+      {container, location}.
     description: Optional. An optional description of the profile group. Max
       length 2048 characters.
     domainFilteringProfile: Optional.
@@ -8700,14 +8705,15 @@ class SecurityProfileGroup(_messages.Message):
   createTime = _messages.StringField(1)
   customInterceptProfile = _messages.StringField(2)
   customMirroringProfile = _messages.StringField(3)
-  description = _messages.StringField(4)
-  domainFilteringProfile = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  threatPreventionProfile = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  urlFilteringProfile = _messages.StringField(11)
+  dataPathId = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  description = _messages.StringField(5)
+  domainFilteringProfile = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  threatPreventionProfile = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  urlFilteringProfile = _messages.StringField(12)
 
 
 class ServerTlsPolicy(_messages.Message):
@@ -8995,7 +9001,7 @@ class Status(_messages.Message):
 
 
 class ThirdPartyEndpointSettings(_messages.Message):
-  r"""Next ID: 2.
+  r"""A ThirdPartyEndpointSettings object.
 
   Fields:
     targetFirewallAttachment: Optional. URL of the target firewall attachment.

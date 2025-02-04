@@ -201,9 +201,7 @@ def AddMetadataArg(parser, required=True):
       the following metadata keys have special meanings:
 
       *startup-script*::: Specifies a script that will be executed
-      by the instances once they start running. For convenience,
-      ``--metadata-from-file'' can be used to pull the value from a
-      file.
+      by the instances once they start running.
 
       *startup-script-url*::: Same as ``startup-script'' except that
       the script contents are pulled from a publicly-accessible

@@ -119,7 +119,6 @@ def AddLandingNetworkFlag(parser):
   # TODO: b/233653552 - Parse this with a resource argument.
   parser.add_argument(
       '--landing-network',
-      required=True,
       help="""The landing network for the spoke. The network must already
       exist.""",
   )

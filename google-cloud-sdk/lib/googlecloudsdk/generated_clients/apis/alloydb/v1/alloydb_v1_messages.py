@@ -302,6 +302,19 @@ class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
+class AlloydbProjectsLocationsClustersImportRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersImportRequest object.
+
+  Fields:
+    importClusterRequest: A ImportClusterRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the cluster.
+  """
+
+  importClusterRequest = _messages.MessageField('ImportClusterRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesCreateRequest object.
 
@@ -1784,6 +1797,32 @@ class CsvExportOptions(_messages.Message):
   selectQuery = _messages.StringField(4)
 
 
+class CsvImportOptions(_messages.Message):
+  r"""Options for importing data in CSV format.
+
+  Fields:
+    columns: Optional. The columns to which CSV data is imported. If not
+      specified, all columns of the database table are loaded with CSV data.
+    escapeCharacter: Optional. Specifies the character that should appear
+      before a data character that needs to be escaped. The default is same as
+      quote character. The value of this argument has to be a character in Hex
+      ASCII Code.
+    fieldDelimiter: Optional. Specifies the character that separates columns
+      within each row (line) of the file. The default is comma. The value of
+      this argument has to be a character in Hex ASCII Code.
+    quoteCharacter: Optional. Specifies the quoting character to be used when
+      a data value is quoted. The default is double-quote. The value of this
+      argument has to be a character in Hex ASCII Code.
+    table: Required. The database table to import CSV file into.
+  """
+
+  columns = _messages.StringField(1, repeated=True)
+  escapeCharacter = _messages.StringField(2)
+  fieldDelimiter = _messages.StringField(3)
+  quoteCharacter = _messages.StringField(4)
+  table = _messages.StringField(5)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2020,6 +2059,42 @@ class GoogleTypeTimeOfDay(_messages.Message):
   minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ImportClusterRequest(_messages.Message):
+  r"""Import cluster request.
+
+  Fields:
+    csvImportOptions: Options for importing data in CSV format.
+    database: Optional. Name of the database to which the import will be done.
+      For import from SQL file, this is required only if the file does not
+      specify a database. Note - Value provided should be the same as expected
+      from `SELECT current_database();` and NOT as a resource reference.
+    gcsUri: Required. The path to the file in Google Cloud Storage where the
+      source file for import will be stored. The URI is in the form
+      `gs://bucketName/fileName`.
+    sqlImportOptions: Options for importing data in SQL format.
+    user: Optional. Database user to be used for importing the data. Note -
+      Value provided should be the same as expected from `SELECT
+      current_user;` and NOT as a resource reference.
+  """
+
+  csvImportOptions = _messages.MessageField('CsvImportOptions', 1)
+  database = _messages.StringField(2)
+  gcsUri = _messages.StringField(3)
+  sqlImportOptions = _messages.MessageField('SqlImportOptions', 4)
+  user = _messages.StringField(5)
+
+
+class ImportClusterResponse(_messages.Message):
+  r"""Response of import rpc.
+
+  Fields:
+    bytesDownloaded: Required. Size of the object downloaded from Google Cloud
+      Storage in bytes.
+  """
+
+  bytesDownloaded = _messages.IntegerField(1)
 
 
 class InjectFaultRequest(_messages.Message):
@@ -3041,6 +3116,10 @@ class SqlExportOptions(_messages.Message):
   ifExistTargetObjects = _messages.BooleanField(2)
   schemaOnly = _messages.BooleanField(3)
   tables = _messages.StringField(4, repeated=True)
+
+
+class SqlImportOptions(_messages.Message):
+  r"""Options for importing data in SQL format."""
 
 
 class SslConfig(_messages.Message):

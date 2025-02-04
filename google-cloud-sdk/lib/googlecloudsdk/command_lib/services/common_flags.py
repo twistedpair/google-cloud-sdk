@@ -164,6 +164,17 @@ def key_id_flag(parser, suffix='to act on'):
   ).AddToParser(parser)
 
 
+def service_account_flag(parser):
+  base.Argument(
+      '--service-account',
+      help=(
+          'The email of the service account the key is bound to. If this field'
+          ' is specified, the key is a service account bound key and auth'
+          ' enabled.'
+      ),
+  ).AddToParser(parser)
+
+
 def add_key_undelete_args(parser):
   """Adds args for api-keys undelete command."""
   undelete_set_group = parser.add_mutually_exclusive_group(required=True)
