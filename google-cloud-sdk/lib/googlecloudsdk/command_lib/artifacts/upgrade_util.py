@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import copy
 import functools
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -27,8 +26,14 @@ import frozendict
 from google.api_core.exceptions import ResourceExhausted
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.asset import client_util as asset
+from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api as crm
+from googlecloudsdk.api_lib.resource_manager import folders
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.artifacts import requests as artifacts
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 
@@ -95,17 +100,24 @@ def bucket_resource_name(domain, project):
   return "//storage.googleapis.com/{0}artifacts.{1}".format(prefix, suffix)
 
 
+def bucket_url(domain, project):
+  prefix = _DOMAIN_TO_BUCKET_PREFIX[domain]
+  suffix = bucket_suffix(project)
+  return f"gs://{prefix}artifacts.{suffix}"
+
+
 def project_resource_name(project):
   # gcloud-disable-gdu-domain
   return "//cloudresourcemanager.googleapis.com/projects/{0}".format(project)
 
 
-def iam_policy(domain, project):
+def iam_policy(domain, project, use_analyze=True):
   """Generates an AR-equivalent IAM policy for a GCR registry.
 
   Args:
     domain: The domain of the GCR registry.
     project: The project of the GCR registry.
+    use_analyze: If true, use AnalyzeIamPolicy to generate the policy
 
   Returns:
     An iam.Policy.
@@ -115,8 +127,12 @@ def iam_policy(domain, project):
   """
 
   # Convert the map to an iam.Policy object so that gcloud can format it nicely.
-  m, _ = copy.deepcopy(
-      iam_map(domain, project, skip_bucket=False, from_ar_permissions=False)
+  m, _ = iam_map(
+      domain,
+      project,
+      skip_bucket=False,
+      from_ar_permissions=False,
+      use_analyze=use_analyze,
   )
   return policy_from_map(m)
 
@@ -163,7 +179,12 @@ def policy_from_map(role_to_members):
 
 @functools.lru_cache(maxsize=None)
 def iam_map(
-    domain, project, skip_bucket, from_ar_permissions, best_effort=False
+    domain,
+    project,
+    skip_bucket,
+    from_ar_permissions,
+    best_effort=False,
+    use_analyze=True,
 ):
   """Generates an AR-equivalent IAM mapping for a GCR registry.
 
@@ -176,6 +197,7 @@ def iam_map(
       would not need to be added to AR since user already has equivalent access
       for docker commands
     best_effort: If true, lower the scope when encountering auth errors
+    use_analyze: If true, use AnalyzeIamPolicy to generate the policy
 
   Returns:
     (map, failures) where map is a map of roles to sets of users and
@@ -184,10 +206,69 @@ def iam_map(
   Raises:
     Exception: A problem was encountered while generating the policy.
   """
-  if skip_bucket:
-    resource = project_resource_name(project)
+  perm_to_members = None
+  failures = []
+  if use_analyze:
+    if skip_bucket:
+      resource = project_resource_name(project)
+    else:
+      resource = bucket_resource_name(domain, project)
+    perm_to_members, failures = get_permissions_using_analyze(
+        project, resource, from_ar_permissions, best_effort
+    )
   else:
-    resource = bucket_resource_name(domain, project)
+    if from_ar_permissions:
+      perm_to_members, failures = get_permissions_with_ancestors(
+          project, _AR_PERMISSIONS, best_effort=best_effort
+      )
+    else:
+      if skip_bucket:
+        perm_to_members, failures = get_permissions_with_ancestors(
+            project, _PERMISSIONS, best_effort=best_effort
+        )
+      else:
+        gcs_bucket = bucket_url(domain, project)
+        perm_to_members, failures = get_permissions_with_ancestors(
+            project, _PERMISSIONS, gcs_bucket, best_effort=best_effort
+        )
+  if perm_to_members is None:
+    return None, failures
+
+  role_to_members = collections.defaultdict(set)
+
+  if from_ar_permissions:
+    # For AR roles, provide all roles that the user has every *Artifacts
+    # permission for
+    members = perm_to_members[_AR_PERMISSIONS_TO_ROLES[0][0]]
+    for needed_perm, role in _AR_PERMISSIONS_TO_ROLES:
+      members = members.intersection(perm_to_members[needed_perm])
+      for member in members:
+        role_to_members[role].add(member)
+    return role_to_members, failures
+
+  # For GCR roles, provide the smallest set of roles required to grant all
+  # permissions
+  for perm, members in perm_to_members.items():
+    role = _PERMISSION_TO_ROLE[perm]
+    role_to_members[role].update(members)
+
+  # Grant the most privileged role to a member.
+  upgraded_members = set()
+  final_map = collections.defaultdict(set)
+  for role in _AR_ROLES:
+    members = role_to_members[role]
+    members.difference_update(upgraded_members)
+    if not members:
+      continue
+    upgraded_members.update(members)
+    final_map[role].update(members)
+  return final_map, failures
+
+
+def get_permissions_using_analyze(
+    project, resource, from_ar_permissions, best_effort
+):
+  """Returns a map of permissions to members using AnalyzeIamPolicy."""
   ancestry = crm.GetAncestry(project_id=project)
   failures = []
   analysis = None
@@ -245,35 +326,7 @@ def iam_map(
         perm = access.permission
         perm_to_members[perm].update(members)
 
-  role_to_members = collections.defaultdict(set)
-
-  if from_ar_permissions:
-    # For AR roles, provide all roles that the user has every *Artifacts
-    # permission for
-    members = perm_to_members[_AR_PERMISSIONS_TO_ROLES[0][0]]
-    for needed_perm, role in _AR_PERMISSIONS_TO_ROLES:
-      members = members.intersection(perm_to_members[needed_perm])
-      for member in members:
-        role_to_members[role].add(member)
-    return role_to_members, failures
-
-  # For GCR roles, provide the smallest set of roles required to grant all
-  # permissions
-  for perm, members in perm_to_members.items():
-    role = _PERMISSION_TO_ROLE[perm]
-    role_to_members[role].update(members)
-
-  # Grant the most privileged role to a member.
-  upgraded_members = set()
-  final_map = collections.defaultdict(set)
-  for role in _AR_ROLES:
-    members = role_to_members[role]
-    members.difference_update(upgraded_members)
-    if not members:
-      continue
-    upgraded_members.update(members)
-    final_map[role].update(members)
-  return final_map, failures
+  return perm_to_members, failures
 
 
 def is_convenience(s):
@@ -282,6 +335,88 @@ def is_convenience(s):
       or s.startswith("projectEditor:")
       or s.startswith("projectViewer:")
   )
+
+
+def get_permissions_with_ancestors(
+    project_id, permissions, gcs_bucket=None, best_effort=True
+):
+  roles, failures = recursive_get_roles(project_id, best_effort, gcs_bucket)
+  perms, perm_failures = get_permissions(permissions, roles, best_effort)
+  return perms, failures + perm_failures
+
+
+def recursive_get_roles(project_id, best_effort, gcs_bucket=None):
+  """Returns a map of roles to members for the given project + ancestors (and bucket if provided)."""
+  ancestry = crm.GetAncestry(project_id=project_id)
+  role_to_members = collections.defaultdict(set)
+  if gcs_bucket:
+    for binding in (
+        storage_api.StorageClient()
+        .GetIamPolicy(storage_util.BucketReference.FromUrl(gcs_bucket))
+        .bindings
+    ):
+      role_to_members[binding.role].update(binding.members)
+
+  failures = []
+  for resource in reversed(ancestry.ancestor):
+    bindings = []
+    try:
+      if resource.resourceId.type == "project":
+        bindings = crm.GetIamPolicy(
+            projects_util.ParseProject(project_id)
+        ).bindings
+      elif resource.resourceId.type == "folder":
+        bindings = folders.GetIamPolicy(resource.resourceId.id).bindings
+      elif resource.resourceId.type == "organization":
+        bindings = (
+            organizations.Client().GetIamPolicy(resource.resourceId.id).bindings
+        )
+      for binding in bindings:
+        role_to_members[binding.role].update(binding.members)
+    except apitools_exceptions.HttpForbiddenError:
+      failures.append(resource.resourceId.type + "s/" + resource.resourceId.id)
+      if not best_effort:
+        raise
+      if resource.resourceId.type == "project":
+        return None, failures
+  return role_to_members, failures
+
+
+def get_permissions(permissions, role_map, best_effort=True):
+  """Returns a map of permissions to members for the given roles.
+
+  Args:
+    permissions: The permissions to look for. All other permissions are ignored.
+    role_map: A map of roles to members.
+    best_effort: If true, warn instead of failing on auth errors.
+
+  Returns:
+    (map, failures) where map is a map of permissions to members and failures
+    is a list of roles that failed
+  """
+  failures = []
+  permission_map = collections.defaultdict(set)
+  iam_messages = apis.GetMessagesModule("iam", "v1")
+  for role, members in role_map.items():
+    members = [m for m in members if not is_convenience(m)]
+    # if not members:
+    #  continue
+    request = iam_messages.IamRolesGetRequest(name=role)
+    try:
+      role_permissions = set(
+          apis.GetClientInstance("iam", "v1")
+          .roles.Get(request)
+          .includedPermissions
+      )
+    except apitools_exceptions.HttpForbiddenError as e:
+      failures.append(role)
+      if not best_effort:
+        raise e
+      continue
+    for p in permissions:
+      if p in role_permissions:
+        permission_map[p].update(members)
+  return permission_map, failures
 
 
 def analyze_iam_policy(permissions, resource, scope):

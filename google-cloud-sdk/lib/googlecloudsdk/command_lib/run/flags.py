@@ -998,14 +998,14 @@ def GpuFlag(hidden=True):
   )
 
 
-def ZonalGpuRedundancyFlag(parser, hidden=True):
-  """Add the --zonal-gpu-redundancy flag."""
+def GpuZonalRedundancyFlag(parser, hidden=True):
+  """Add the --gpu-zonal-redundancy flag."""
   return parser.add_argument(
-      '--zonal-gpu-redundancy',
-      metavar='ZONAL_GPU_REDUNDANCY',
+      '--gpu-zonal-redundancy',
+      metavar='GPU_ZONAL_REDUNDANCY',
       hidden=hidden,
       default=True,
-      help='Set zonal GPU redundancy.',
+      help='Set GPU zonal redundancy.',
   )
 
 
@@ -2219,7 +2219,7 @@ def HasLabelChanges(args):
   return HasChanges(args, label_flags)
 
 
-def _HasSecretsChanges(args):
+def HasSecretsChanges(args):
   """True iff any of the secret flags are set."""
   secret_flags = [
       'update_secrets',
@@ -2902,7 +2902,7 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
             args.remove_volume, args.clear_volumes
         )
     )
-  if _HasSecretsChanges(args):
+  if HasSecretsChanges(args):
     changes.extend(_GetSecretsChanges(args))
   if FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
     changes.append(
@@ -2924,10 +2924,10 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.ResourceChanges(gpu=args.gpu))
     if args.gpu == '0':
       changes.append(config_changes.GpuTypeChange(gpu_type=''))
-  if FlagIsExplicitlySet(args, 'zonal_gpu_redundancy'):
+  if FlagIsExplicitlySet(args, 'gpu_zonal_redundancy'):
     changes.append(
-        config_changes.ZonalGpuRedundancyChange(
-            zonal_gpu_redundancy=args.zonal_gpu_redundancy
+        config_changes.GpuZonalRedundancyChange(
+            gpu_zonal_redundancy=args.gpu_zonal_redundancy
         )
     )
   if FlagIsExplicitlySet(args, 'startup_probe'):
@@ -3232,7 +3232,7 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
             container_name=container_name,
         )
     )
-  if _HasSecretsChanges(container_args):
+  if HasSecretsChanges(container_args):
     changes.extend(
         _GetSecretsChanges(container_args, container_name=container_name)
     )
@@ -3413,6 +3413,8 @@ def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'task_timeout'):
     changes.append(config_changes.JobTaskTimeoutChange(args.task_timeout))
+  if 'gpu_type' in args and args.gpu_type:
+    changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
 
   _PrependClientNameAndVersionChange(args, changes)
 

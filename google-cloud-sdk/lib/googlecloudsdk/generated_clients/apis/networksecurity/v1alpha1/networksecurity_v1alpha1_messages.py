@@ -943,24 +943,27 @@ class CloneAddressGroupItemsRequest(_messages.Message):
 
 
 class CustomInterceptProfile(_messages.Message):
-  r"""CustomInterceptProfile defines the Packet Intercept Endpoint Group used
-  to intercept traffic to a third-party firewall in a Firewall rule.
+  r"""CustomInterceptProfile defines in-band integration behavior (intercept).
+  It is used by firewall rules with an APPLY_SECURITY_PROFILE_GROUP action.
 
   Fields:
-    interceptEndpointGroup: Required. The InterceptEndpointGroup to which
-      traffic associated with the SP should be mirrored.
+    interceptEndpointGroup: Required. The target InterceptEndpointGroup. When
+      a firewall rule with this security profile attached matches a packet,
+      the packet will be intercepted to the location-local target in this
+      group.
   """
 
   interceptEndpointGroup = _messages.StringField(1)
 
 
 class CustomMirroringProfile(_messages.Message):
-  r"""CustomMirroringProfile defines an action for mirroring traffic to a
-  collector's EndpointGroup
+  r"""CustomMirroringProfile defines out-of-band integration behavior
+  (mirroring). It is used by mirroring rules with a MIRROR action.
 
   Fields:
-    mirroringEndpointGroup: Required. The MirroringEndpointGroup to which
-      traffic associated with the SP should be mirrored.
+    mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
+      a mirroring rule with this security profile attached matches a packet, a
+      replica will be mirrored to the location-local target in this group.
   """
 
   mirroringEndpointGroup = _messages.StringField(1)
@@ -9441,6 +9444,9 @@ class UrlFilter(_messages.Message):
 
   Fields:
     filteringAction: Required. The action taken when this filter is applied.
+    priority: Required. The priority of this filter within the URL Filtering
+      Profile. Lower integers indicate higher priorities. The priority of a
+      filter must be unique within a URL Filtering Profile.
     urls: Required. The list of strings that a URL must match with for this
       filter to be applied.
   """
@@ -9458,7 +9464,8 @@ class UrlFilter(_messages.Message):
     DENY = 2
 
   filteringAction = _messages.EnumField('FilteringActionValueValuesEnum', 1)
-  urls = _messages.StringField(2, repeated=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  urls = _messages.StringField(3, repeated=True)
 
 
 class UrlFilteringProfile(_messages.Message):

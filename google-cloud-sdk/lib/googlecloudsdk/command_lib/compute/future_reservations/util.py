@@ -58,7 +58,7 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
   aggregate_reservation_properties = MakeAggregateReservationPropertiesMessage(
       messages,
       getattr(args, 'tpu_version', None),
-      getattr(args, 'tpu_count', None),
+      getattr(args, 'chip_count', None),
       getattr(args, 'workload_type', None),
   )
 
@@ -184,7 +184,7 @@ def MakeSpecificSKUPropertiesMessage(
 
 
 def MakeAggregateReservationPropertiesMessage(
-    messages, tpu_version, tpu_count, workload_type
+    messages, tpu_version, chip_count, workload_type
 ):
   """Constructs an aggregate reservation properties message object."""
   if not tpu_version:
@@ -206,7 +206,7 @@ def MakeAggregateReservationPropertiesMessage(
   reserved_resources = []
   accelerator = (
       messages.AllocationAggregateReservationReservedResourceInfoAccelerator(
-          acceleratorCount=tpu_count,
+          acceleratorCount=chip_count,
       )
   )
   reserved_resources.append(

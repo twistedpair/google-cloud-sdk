@@ -975,14 +975,18 @@ def add_batch_jobs_flags(parser):
       ),
   )
   transformation.add_argument(
-      '--put-kms-key',
+      '--rewrite-object',
       help=(
-          'Sets the resource name of the Cloud KMS key that will be used to '
-          'encrypt the object. The Cloud KMS key must be located in same '
-          'location as the object. Format: '
-          '`--put-kms-key=projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/CRYPTO_KEY`'
+          'Rewrites object and the specified metadata. Currently only supports'
+          ' rewriting kms-key. A metadata field MUST be specified. For example,'
+          ' `--rewrite-object=kms-key=projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/CRYPTO_KEY`'
+          ' will rewrite the Cloud KMS key that will be used to encrypt the'
+          ' object.'
       ),
-      type=str,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction,
   )
   transformation.add_argument(
       '--put-metadata',

@@ -21,7 +21,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 import dataclasses
 from typing import TypedDict
 
@@ -31,6 +31,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
+from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run.v2 import instance_split as instance_split_lib
 from googlecloudsdk.command_lib.run.v2 import volumes as volumes_lib
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import instance_split
@@ -358,8 +359,9 @@ class RevisionNameChange(config_changes.TemplateConfigChanger):
     max_prefix_length = (
         _MAX_RESOURCE_NAME_LENGTH - len(self.revision_suffix) - 1
     )
+    *_, name = resource_name_conversion.GetInfoFromFullName(resource.name)
     resource.template.revision = '{}-{}'.format(
-        resource.name[:max_prefix_length], self.revision_suffix
+        name[:max_prefix_length], self.revision_suffix
     )
     return resource
 
@@ -448,12 +450,6 @@ class EnvVarLiteralChanges(ContainerConfigChanger):
   removes: list[str] = dataclasses.field(default_factory=list)
   clear_others: bool = False
 
-  def __init__(self, updates=None, removes=None, clear_others=False, **kwargs):
-    super().__init__(**kwargs)
-    object.__setattr__(self, 'updates', updates if updates is not None else {})
-    object.__setattr__(self, 'removes', removes if removes is not None else [])
-    object.__setattr__(self, 'clear_others', clear_others)
-
   def AdjustContainer(self, container: k8s_min.Container):
     """Mutates the given config's env vars literals to match the desired changes.
 
@@ -508,6 +504,106 @@ class EnvVarLiteralChanges(ContainerConfigChanger):
     for env_var_name, env_var_value in self.updates.items():
       updated_env_vars.append(
           k8s_min.EnvVar(name=env_var_name, value=env_var_value)
+      )
+    container.env = updated_env_vars
+
+
+@dataclasses.dataclass(frozen=True)
+class SecretsEnvVarChanges(ContainerConfigChanger):
+  """Represents the user intent to modify environment variable secrets.
+
+  Attributes:
+    updates: Updated env var names and values to set.
+    removes: Secret env vars to remove.
+    clear_others: If true clear all non-updated secret env vars.
+  """
+
+  updates: dict[str, str] = dataclasses.field(default_factory=dict)
+  removes: list[str] = dataclasses.field(default_factory=list)
+  clear_others: bool = False
+
+  def _BuildSecretEnvVarSource(self, secret: str) -> k8s_min.EnvVarSource:
+    """Builds a secret env var source from the given secret name and version."""
+    parts = secret.split(':')
+    if len(parts) == 1:
+      raise exceptions.ConfigurationError(
+          'No secret version specified for {secret}. '
+          'Use {secret}:latest to reference the latest version.'.format(
+              secret=secret
+          )
+      )
+    elif len(parts) == 2:
+      secret_name, secret_version = parts
+    else:
+      raise exceptions.ConfigurationError(
+          'Invalid secret name and version: {}'.format(secret)
+      )
+    return k8s_min.EnvVarSource(
+        secret_key_ref=k8s_min.SecretKeySelector(
+            secret=secret_name,
+            version=secret_version,
+        )
+    )
+
+  def AdjustContainer(self, container: k8s_min.Container):
+    """Mutates the given config's secrets env vars to match the desired changes.
+
+    Args:
+      container: container to adjust
+
+    Returns:
+      The adjusted container
+
+    Raises:
+      ConfigurationError if there's an attempt to replace the source of an
+        existing environment variable whose source is of a different type
+        (e.g. env var's secret source can't be replaced with a config map
+        source).
+    """
+    # Make a copy of the current env vars.
+    current_env_vars = list(container.env)
+    if self.clear_others:
+      # Remove all secret env vars that aren't being updated.
+      current_env_vars = [
+          env_var
+          for env_var in current_env_vars
+          if 'value_source' not in env_var or env_var.name in self.updates
+      ]
+    # Create a new, updated env vars list.
+    updated_env_vars = []
+    for env_var in current_env_vars:
+      # Env var literals.
+      if 'value_source' not in env_var:
+        # If the env var literals key is in the updates list, error.
+        if env_var.name in self.updates:
+          raise exceptions.ConfigurationError(
+              'Cannot update environment variable [{}] to secret source env var'
+              ' because it has already been set with a different type.'.format(
+                  env_var.name
+              )
+          )
+        # Else, put it in the list without touching it.
+        updated_env_vars.append(env_var)
+        continue
+      # If env var is in removes list, skip it.
+      if env_var.name in self.removes:
+        continue
+      # If env var is in updates list, update the value before appending and
+      # remove the key from the updates list.
+      if env_var.name in self.updates:
+        env_var.value_source = self._BuildSecretEnvVarSource(
+            self.updates[env_var.name]
+        )
+        self.updates.pop(env_var.name)
+      updated_env_vars.append(env_var)
+    # Iterate over the remaining items in the updates list and add them as new
+    # env var literals.
+    for env_var_name, secret in self.updates.items():
+      updated_env_vars.append(
+          k8s_min.EnvVar(
+              name=env_var_name,
+              value_source=self._BuildSecretEnvVarSource(secret),
+          )
       )
     container.env = updated_env_vars
 
@@ -831,6 +927,72 @@ class AddVolumeMountChange(ContainerConfigChanger):
     return container
 
 
+@dataclasses.dataclass(frozen=True)
+class RemoveContainersChange(config_changes.TemplateConfigChanger):
+  """Removes the specified containers.
+
+  Attributes:
+    containers_to_remove: Containers to remove.
+  """
+
+  containers_to_remove: Iterable[str]
+
+  def Adjust(self, resource):
+    containers_to_remove = set(self.containers_to_remove)
+    resource.template.containers = [
+        container
+        for container in resource.template.containers
+        if container.name not in containers_to_remove
+    ]
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class ContainerDependenciesChange(config_changes.TemplateConfigChanger):
+  """Sets container dependencies.
+
+  Updates container dependencies to add the dependencies in new_dependencies.
+  Additionally, dependencies to or from a container which does not exist will be
+  removed.
+
+  Attributes:
+      new_dependencies: A map of containers to their updated dependencies.
+        Defaults to an empty map.
+  """
+
+  new_dependencies: Mapping[str, Iterable[str]] = dataclasses.field(
+      default_factory=dict
+  )
+
+  def Adjust(self, resource):
+    """Updates container dependencies."""
+    current_containers = set(
+        [container.name for container in resource.template.containers]
+    )
+    # Filter removed containers from existing container dependencies.
+    current_dependencies = {
+        container.name: [
+            c for c in container.depends_on if c in current_containers
+        ]
+        for container in resource.template.containers
+    }
+    for container_name, depends_on in self.new_dependencies.items():
+      depends_on = frozenset(depends_on)
+      if missing := depends_on - current_containers:
+        raise exceptions.ConfigurationError(
+            f'--depends_on for container {container_name} references'
+            f' nonexistent containers: {",".join(missing)}.'
+        )
+      if depends_on:
+        current_dependencies[container_name] = sorted(depends_on)
+      else:
+        del current_dependencies[container_name]
+    # Set each container's depends_on field with the new dependencies.
+    for container in resource.template.containers:
+      container.depends_on = current_dependencies.get(container.name, [])
+    return resource
+
+
 # Common config changes to all resource types ends.
 
 
@@ -855,7 +1017,32 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
   max_unavailable: flags.MaxUnavailableValue | None = None
 
   def Adjust(self, worker_pool_resource: worker_pool.WorkerPool):
-    """Adjusts worker pool scaling."""
+    """Adjusts worker pool scaling.
+
+    Args:
+      worker_pool_resource: The worker pool resource to modify.
+
+    Raises:
+      ConfigurationError: If the user attempts to set min or max instance count
+      without setting --scaling=auto when the current scaling mode is manual.
+      ConfigurationError: If the user attempts to set min or max instance count
+      along with a manual instance count using --scaling flag.
+
+    Returns:
+      The adjusted worker pool resource.
+    """
+    # Catch the case where user sets min or max without setting --scaling=auto
+    # when the current scaling mode is manual.
+    current_scaling_mode = worker_pool_resource.scaling.scaling_mode
+    if (
+        (self.min_instance_count or self.max_instance_count)
+        and not self.scaling
+        and current_scaling_mode
+        == vendor_settings.WorkerPoolScaling.ScalingMode.MANUAL
+    ):
+      raise exceptions.ConfigurationError(
+          'Need to specify --scaling=auto to swtich mode from manual to auto.'
+      )
     # Min instance count
     if self.min_instance_count:
       if self.scaling and not self.scaling.auto_scaling:
@@ -901,13 +1088,19 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
             self.scaling.instance_count
         )
     # Max surge
-    if self.max_surge and not self.max_surge.restore_default:
-      worker_pool_resource.scaling.max_surge = self.max_surge.surge_percent
+    if self.max_surge:
+      if self.max_surge.restore_default:
+        worker_pool_resource.scaling.max_surge = None
+      else:
+        worker_pool_resource.scaling.max_surge = self.max_surge.surge_percent
     # Max unavailable
-    if self.max_unavailable and not self.max_unavailable.restore_default:
-      worker_pool_resource.scaling.max_unavailable = (
-          self.max_unavailable.unavailable_percent
-      )
+    if self.max_unavailable:
+      if self.max_unavailable.restore_default:
+        worker_pool_resource.scaling.max_unavailable = None
+      else:
+        worker_pool_resource.scaling.max_unavailable = (
+            self.max_unavailable.unavailable_percent
+        )
     return worker_pool_resource
 
 
@@ -921,8 +1114,13 @@ class NoPromoteChange(config_changes.NonTemplateConfigChanger):
       raise exceptions.ConfigurationError(
           '--no-promote not supported when creating a new worker pool.'
       )
+    latest_ready_revision_name = (
+        resource_name_conversion.GetNameFromFullChildName(
+            resource.latest_ready_revision
+        )
+    )
     resource.instance_splits = instance_split_lib.ZeroLatestAssignment(
-        list(resource.instance_splits), resource.latest_ready_revision
+        list(resource.instance_splits), latest_ready_revision_name
     )
     return resource
 

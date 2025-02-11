@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import datetime
 
+from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.command_lib.run.printers import container_and_volume_printer_util as container_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.util import time_util
@@ -86,6 +87,10 @@ class JobPrinter(cp.CustomPrinterBase):
         field.key: field.value
         for field in record.spec.template.metadata.annotations.additionalProperties
     }
+    gpu_type = None
+    node_selector = record.template.node_selector
+    if k8s_object.GPU_TYPE_NODE_SELECTOR in node_selector:
+      gpu_type = node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
     return cp.Labeled([
         ('Image', record.template.image),
         ('Tasks', record.task_count),
@@ -100,6 +105,8 @@ class JobPrinter(cp.CustomPrinterBase):
         ),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
+        ('GPU', limits['nvidia.com/gpu']),
+        ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
         (
             'Task Timeout',
             FormatDurationShort(record.template.spec.timeoutSeconds)
@@ -195,12 +202,18 @@ class TaskPrinter(cp.CustomPrinterBase):
   @staticmethod
   def TransformSpec(record):
     limits = container_util.GetLimits(record)
+    gpu_type = None
+    node_selector = record.node_selector
+    if k8s_object.GPU_TYPE_NODE_SELECTOR in node_selector:
+      gpu_type = node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
     return cp.Labeled([
         ('Image', record.image),
         ('Command', ' '.join(record.container.command)),
         ('Args', ' '.join(record.container.args)),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
+        ('GPU', limits['nvidia.com/gpu']),
+        ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
         (
             'Timeout',
             FormatDurationShort(record.spec.timeoutSeconds)
@@ -267,6 +280,10 @@ class ExecutionPrinter(cp.CustomPrinterBase):
   def TransformSpec(record):
     limits = container_util.GetLimits(record.template)
     breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
+    gpu_type = None
+    node_selector = record.template.node_selector
+    if k8s_object.GPU_TYPE_NODE_SELECTOR in node_selector:
+      gpu_type = node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
     return cp.Labeled([
         ('Image', record.template.image),
         ('Tasks', record.spec.taskCount),
@@ -281,6 +298,8 @@ class ExecutionPrinter(cp.CustomPrinterBase):
         ),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
+        ('GPU', limits['nvidia.com/gpu']),
+        ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
         (
             'Task Timeout',
             FormatDurationShort(record.template.spec.timeoutSeconds)

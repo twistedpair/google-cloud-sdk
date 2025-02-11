@@ -627,7 +627,7 @@ class MonitoringV3(base_api.BaseApiClient):
         method_id='monitoring.projects.metricDescriptors.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['activeOnly', 'filter', 'pageSize', 'pageToken'],
         relative_path='v3/{+name}/metricDescriptors',
         request_field='',
         request_type_name='MonitoringProjectsMetricDescriptorsListRequest',
@@ -1199,7 +1199,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Query(self, request, global_params=None):
-      r"""Queries time series using Monitoring Query Language.
+      r"""Queries time series by using Monitoring Query Language (MQL). We recommend using PromQL instead of MQL. For more information about the status of MQL, see the MQL deprecation notice (https://cloud.google.com/stackdriver/docs/deprecations/mql).
 
       Args:
         request: (MonitoringProjectsTimeSeriesQueryRequest) input message

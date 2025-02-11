@@ -116,6 +116,7 @@ class BigQueryDestinationConfig(_messages.Message):
 
   Fields:
     appendOnly: Append only mode
+    blmtConfig: Optional. Big Lake Managed Tables (BLMT) configuration.
     dataFreshness: The guaranteed data freshness (in seconds) when querying
       tables created by the stream. Editing this field will only affect new
       tables created in the future, but existing tables will not be impacted.
@@ -127,10 +128,11 @@ class BigQueryDestinationConfig(_messages.Message):
   """
 
   appendOnly = _messages.MessageField('AppendOnly', 1)
-  dataFreshness = _messages.StringField(2)
-  merge = _messages.MessageField('Merge', 3)
-  singleTargetDataset = _messages.MessageField('SingleTargetDataset', 4)
-  sourceHierarchyDatasets = _messages.MessageField('SourceHierarchyDatasets', 5)
+  blmtConfig = _messages.MessageField('BlmtConfig', 2)
+  dataFreshness = _messages.StringField(3)
+  merge = _messages.MessageField('Merge', 4)
+  singleTargetDataset = _messages.MessageField('SingleTargetDataset', 5)
+  sourceHierarchyDatasets = _messages.MessageField('SourceHierarchyDatasets', 6)
 
 
 class BigQueryProfile(_messages.Message):
@@ -151,6 +153,49 @@ class BinaryLogParser(_messages.Message):
 
 class BinaryLogPosition(_messages.Message):
   r"""Use Binary log position based replication."""
+
+
+class BlmtConfig(_messages.Message):
+  r"""The configuration for BLMT.
+
+  Enums:
+    FileFormatValueValuesEnum: Required. The file format.
+    TableFormatValueValuesEnum: Required. The table format.
+
+  Fields:
+    bucket: Required. The Cloud Storage bucket name.
+    connectionName: Required. The bigquery connection. Format:
+      `{project}.{location}.{name}`
+    fileFormat: Required. The file format.
+    rootPath: The root path inside the Cloud Storage bucket.
+    tableFormat: Required. The table format.
+  """
+
+  class FileFormatValueValuesEnum(_messages.Enum):
+    r"""Required. The file format.
+
+    Values:
+      FILE_FORMAT_UNSPECIFIED: Default value.
+      PARQUET: Parquet file format.
+    """
+    FILE_FORMAT_UNSPECIFIED = 0
+    PARQUET = 1
+
+  class TableFormatValueValuesEnum(_messages.Enum):
+    r"""Required. The table format.
+
+    Values:
+      TABLE_FORMAT_UNSPECIFIED: Default value.
+      ICEBERG: Iceberg table format.
+    """
+    TABLE_FORMAT_UNSPECIFIED = 0
+    ICEBERG = 1
+
+  bucket = _messages.StringField(1)
+  connectionName = _messages.StringField(2)
+  fileFormat = _messages.EnumField('FileFormatValueValuesEnum', 3)
+  rootPath = _messages.StringField(4)
+  tableFormat = _messages.EnumField('TableFormatValueValuesEnum', 5)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1368,6 +1413,16 @@ class MysqlDatabase(_messages.Message):
   mysqlTables = _messages.MessageField('MysqlTable', 2, repeated=True)
 
 
+class MysqlGtidPosition(_messages.Message):
+  r"""MySQL GTID position
+
+  Fields:
+    gtidSet: Required. The gtid set to start replication from.
+  """
+
+  gtidSet = _messages.StringField(1)
+
+
 class MysqlLogPosition(_messages.Message):
   r"""MySQL log position
 
@@ -1394,7 +1449,7 @@ class MysqlObjectIdentifier(_messages.Message):
 
 
 class MysqlProfile(_messages.Message):
-  r"""MySQL database profile. Next ID: 7.
+  r"""MySQL database profile.
 
   Fields:
     hostname: Required. Hostname for the MySQL connection.
@@ -1636,7 +1691,6 @@ class OperationMetadata(_messages.Message):
 
 class OracleAsmConfig(_messages.Message):
   r"""Configuration for Oracle Automatic Storage Management (ASM) connection.
-  .
 
   Messages:
     ConnectionAttributesValue: Optional. Connection string attributes
@@ -1729,7 +1783,7 @@ class OracleObjectIdentifier(_messages.Message):
 
 
 class OracleProfile(_messages.Message):
-  r"""Oracle database profile. Next ID: 10.
+  r"""Oracle database profile.
 
   Messages:
     ConnectionAttributesValue: Connection string attributes
@@ -2267,14 +2321,16 @@ class SpecificStartPosition(_messages.Message):
   source.
 
   Fields:
+    mysqlGtidPosition: MySQL GTID set to start replicating from.
     mysqlLogPosition: MySQL specific log position to start replicating from.
     oracleScnPosition: Oracle SCN to start replicating from.
     sqlServerLsnPosition: SqlServer LSN to start replicating from.
   """
 
-  mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 1)
-  oracleScnPosition = _messages.MessageField('OracleScnPosition', 2)
-  sqlServerLsnPosition = _messages.MessageField('SqlServerLsnPosition', 3)
+  mysqlGtidPosition = _messages.MessageField('MysqlGtidPosition', 1)
+  mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 2)
+  oracleScnPosition = _messages.MessageField('OracleScnPosition', 3)
+  sqlServerLsnPosition = _messages.MessageField('SqlServerLsnPosition', 4)
 
 
 class SqlServerChangeTables(_messages.Message):
@@ -2328,7 +2384,7 @@ class SqlServerObjectIdentifier(_messages.Message):
 
 
 class SqlServerProfile(_messages.Message):
-  r"""SQLServer database profile. Next ID: 8.
+  r"""SQLServer database profile.
 
   Fields:
     database: Required. Database for the SQLServer connection.

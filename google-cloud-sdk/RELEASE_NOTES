@@ -5,6 +5,107 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 510.0.0 (2025-02-11)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Enforced a maximum duration of 12 hours for `--duration` flag of `gcloud storage sign-url` command when using a system-managed key. This limit has been always enforced by the backend.
+
+
+### Google Cloud CLI
+
+* Updated MacOS Python Virtualenv for the `gcloud` CLI to 3.12.8.
+
+### AlloyDB
+
+*   Added migrate-cloud-sql command to support migrating data from an existing
+    Cloud SQL instance backup to an AlloyDB cluster in beta track.
+* Added `gcloud alloydb clusters import` command to support importing data to an AlloyDB cluster from Google Cloud Storage.
+
+### Anthos
+
+* `anthos-cli` component updated to address CVEs flagged by scanning tools:
+  * golang updated to 1.23.5
+  * golang.org/x/net to 0.34.0 (CVE-2024-45338)
+  * golang.org/x/crypto to 0.32.0 (CVE-2024-45337)
+  * github.com/golang/glog to 1.2.4 (CVE-2024-45339)
+
+### Cloud Dataflow
+
+* Added `--cloud-build-service-account` flag to `gcloud dataflow
+  flex-template build` for specifying the Cloud Build service account to build
+  the image.
+
+### Cloud Deploy
+
+* Added IAM policy commands to `gcloud deploy deploy-policies`.
+
+### Cloud Monitoring
+
+*   Added `--criteria-filter` flag to `gcloud monitoring snoozes create` to
+    support snoozing alert policies by resource labels.
+
+### Cloud Run
+
+* Added `roles/run.builder` IAM policy check for default build service account when users are doing source deploy with `gcloud beta run deploy --source`.
+* Verified whether build service account provided in `gcloud beta run deploy --build-service-account` or default build service account is active.
+
+### Cloud SQL
+
+*   Add `--custom-subject-alternative-names` flag to support
+customer-specified DNS names in SSL certificates for Cloud SQL instances.
+
+### Cloud Services
+
+*  Added `--service-account` flag to `gcloud beta services api-keys create`.
+
+### Cloud Spanner
+
+* Add `target_database_move_configs` to `gcloud spanner instances move` command for beta and GA track.
+
+### Cloud Storage
+
+* Removed `S3 support is unstable` warning from `gcloud storage` commands.
+
+### Cloud Workstations
+
+* Added support updating `--pd-disk-size` and `pd-disk-type` in the
+  `workstations config update` command.
+
+### Compute Engine
+
+* Promoted the `INTERNAL_IPV6_RANGE` output field in
+  `gcloud compute networks create` and `gcloud compute networks list` to
+  Beta/GA.
+* Added `--tags` flag to the following command:
+  - `gcloud beta compute url-maps invalidate-cdn-cache`.
+
+### Compute Firewall Policy Mirroring Rules
+
+* Updated `gcloud compute network get-effective-firewalls` to include mirroring
+rules (in beta).
+* Updated `gcloud compute instances network-interfaces get-effective-firewalls`
+to include mirroring rules (in beta).
+* Updated `gcloud compute network-firewall-policies get-effective-firewalls`
+to include mirroring rules (in beta).
+
+### GKE Hub
+
+* Added `gcloud container fleet mesh update --config-api` to GA which sets up configuration API for service mesh.
+* Enable `gcloud container fleet XXX describe` and `gcloud container fleet features list` to return partial results when a google cloud region is unavailable, instead of returning an error.
+
+### Model Armor
+
+* Promoted `model_armor` command group to GA.
+
+### Workbench
+
+* Added `--container-repository` and `--container-tag` to `gcloud workbench instances update` command.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 509.0.0 (2025-02-04)
 
 ### Google Cloud CLI

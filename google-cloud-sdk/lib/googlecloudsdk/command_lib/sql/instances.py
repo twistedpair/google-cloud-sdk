@@ -334,6 +334,8 @@ class _BaseInstances(object):
       args.follow_gae_app = None
     if 'pricing_plan' not in args:
       args.pricing_plan = 'PER_USE'
+    if not args.IsKnownAndSpecified('replication'):
+      args.replication = None
 
     settings = sql_messages.Settings(
         kind='sql#settings',
@@ -439,7 +441,7 @@ class _BaseInstances(object):
           sql_messages, args.connector_enforcement
       )
 
-    if args.recreate_replicas_on_primary_crash is not None:
+    if args.IsKnownAndSpecified('recreate_replicas_on_primary_crash'):
       settings.recreateReplicasOnPrimaryCrash = (
           args.recreate_replicas_on_primary_crash
       )
@@ -617,15 +619,16 @@ class _BaseInstances(object):
           sql_messages, args.active_directory_domain
       )
 
-    settings.passwordValidationPolicy = reducers.PasswordPolicy(
-        sql_messages,
-        password_policy_min_length=args.password_policy_min_length,
-        password_policy_complexity=args.password_policy_complexity,
-        password_policy_reuse_interval=args.password_policy_reuse_interval,
-        password_policy_disallow_username_substring=args.password_policy_disallow_username_substring,
-        password_policy_password_change_interval=args.password_policy_password_change_interval,
-        enable_password_policy=args.enable_password_policy,
-    )
+    if args.IsKnownAndSpecified('password_policy_min_length'):
+      settings.passwordValidationPolicy = reducers.PasswordPolicy(
+          sql_messages,
+          password_policy_min_length=args.password_policy_min_length,
+          password_policy_complexity=args.password_policy_complexity,
+          password_policy_reuse_interval=args.password_policy_reuse_interval,
+          password_policy_disallow_username_substring=args.password_policy_disallow_username_substring,
+          password_policy_password_change_interval=args.password_policy_password_change_interval,
+          enable_password_policy=args.enable_password_policy,
+      )
 
     settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
         sql_messages,
@@ -637,7 +640,10 @@ class _BaseInstances(object):
     if args.time_zone is not None:
       settings.timeZone = args.time_zone
 
-    if args.threads_per_core is not None:
+    if (
+        args.IsKnownAndSpecified('threads_per_core')
+        and args.threads_per_core is not None
+    ):
       settings.advancedMachineFeatures = sql_messages.AdvancedMachineFeatures()
       settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
 
@@ -904,8 +910,12 @@ class _BaseInstances(object):
     instance_resource.databaseVersion = ParseDatabaseVersion(
         sql_messages, args.database_version
     )
-    instance_resource.masterInstanceName = args.master_instance_name
-    instance_resource.rootPassword = args.root_password
+
+    if args.IsKnownAndSpecified('master_instance_name'):
+      instance_resource.masterInstanceName = args.master_instance_name
+
+    if args.IsKnownAndSpecified('root_password'):
+      instance_resource.rootPassword = args.root_password
 
     # BETA: Set the host port and return early if external master instance.
     if IsBetaOrNewer(release_track) and args.IsSpecified('source_ip_address'):
@@ -919,7 +929,7 @@ class _BaseInstances(object):
         sql_messages, args, original, release_track
     )
 
-    if args.master_instance_name:
+    if args.IsKnownAndSpecified('master_instance_name'):
       replication = (
           sql_messages.Settings.ReplicationTypeValueValuesEnum.ASYNCHRONOUS
       )
@@ -948,10 +958,10 @@ class _BaseInstances(object):
       replication = (
           sql_messages.Settings.ReplicationTypeValueValuesEnum.SYNCHRONOUS
       )
-    if not args.replication:
+    if not args.IsKnownAndSpecified('replication'):
       instance_resource.settings.replicationType = replication
 
-    if args.failover_replica_name:
+    if args.IsKnownAndSpecified('failover_replica_name'):
       _ShowFailoverReplicaDeprecationWarning()
       instance_resource.failoverReplica = (
           sql_messages.DatabaseInstance.FailoverReplicaValue(

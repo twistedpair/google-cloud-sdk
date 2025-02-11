@@ -100,9 +100,6 @@ class S3XmlClient(cloud_api.CloudApi):
   scheme = storage_url.ProviderPrefix.S3
 
   def __init__(self):
-    log.warning(
-        'S3 support is currently unstable and should not be relied on for'
-        ' production workloads.')
     self.endpoint_url = properties.VALUES.storage.s3_endpoint_url.Get()
     self.client = self.create_client()
 

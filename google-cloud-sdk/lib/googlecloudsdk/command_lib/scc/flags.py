@@ -48,8 +48,7 @@ READ_TIME_FLAG = base.Argument(
         "--read-time",
         warn=textwrap.dedent("""\
             The --read-time option is deprecated.
-            For more information, [see the deprecation notice]
-            (https://cloud.google.com/security-command-center/docs/release-notes#April_15_2024)
+            For more information, [see the deprecation notice](https://cloud.google.com/security-command-center/docs/release-notes#April_15_2024)
             on the SCC release notes page."""),
         removed=False,
     ),

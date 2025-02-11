@@ -411,7 +411,31 @@ def AddCriteriaPoliciesFlag(parser, resource):
       '--criteria-policies',
       metavar='CRITERIA_POLICIES',
       type=arg_parsers.ArgList(min_length=1, max_length=16),
-      help='The policies that the {} applies to.'.format(resource))
+      help=(
+          'The policies that the {} applies to. Exactly 1 alert policy is'
+          ' required if `criteria-filter` is specified at the same time.'
+          .format(resource)
+      ),
+  )
+
+
+def AddCriteriaFilterFlag(parser, resource):
+  parser.add_argument(
+      '--criteria-filter',
+      metavar='CRITERIA_FILTER',
+      type=str,
+      help=(
+          'The filter that the {} applies to, which is a string to match on'
+          ' Alert fields when silencing the alerts. It follows the standard'
+          ' https://google.aip.dev/160 syntax. Filters can be defined for'
+          ' snoozes that apply to one alerting policy. Filters must be a string'
+          ' formatted as one or more resource labels with specific label'
+          ' values. If multiple resource labels are used, then they must be'
+          ' connected with an AND operator. For'
+          ' example: resource.labels.instance_id="1234567890" AND'
+          ' resource.labels.zone="us-central1-a"'.format(resource)
+      ),
+  )
 
 
 def AddStartTimeFlag(parser, resource):
@@ -437,6 +461,7 @@ def AddSnoozeSettingsFlags(parser, update=False):
   AddDisplayNameFlag(snooze_settings_group, resource='Snooze')
   if not update:
     AddCriteriaPoliciesFlag(snooze_settings_group, resource='Snooze')
+    AddCriteriaFilterFlag(snooze_settings_group, resource='Snooze')
   AddStartTimeFlag(snooze_settings_group, resource='Snooze')
   AddEndTimeFlag(snooze_settings_group, resource='Snooze')
 

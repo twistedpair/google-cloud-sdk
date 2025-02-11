@@ -1337,6 +1337,8 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
       [running builds in a private
       pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
       private-pool) for more information.
+    pubsubTopic: Optional. Option to specify the Pub/Sub topic to receive
+      build status updates.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
       using a Cloud Key Management Service crypto key. These values must be
@@ -1478,12 +1480,13 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
   logging = _messages.EnumField('LoggingValueValuesEnum', 8)
   machineType = _messages.EnumField('MachineTypeValueValuesEnum', 9)
   pool = _messages.MessageField('GoogleDevtoolsCloudbuildV1PoolOption', 10)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 13, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 14)
-  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 15, repeated=True)
-  workerPool = _messages.StringField(16)
+  pubsubTopic = _messages.StringField(11)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 14, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 15)
+  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 16, repeated=True)
+  workerPool = _messages.StringField(17)
 
 
 class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
@@ -5379,11 +5382,17 @@ class TaskAttemptResult(_messages.Message):
 class TaskSpec(_messages.Message):
   r"""TaskSpec is a description of a task.
 
+  Messages:
+    NodeSelectorValue: Optional. The Node Selector configuration. Map of
+      selector key to a value which matches a node.
+
   Fields:
     containers: Optional. List of containers belonging to the task. We
       disallow a number of fields on this Container.
     maxRetries: Optional. Number of retries allowed per task, before marking
       this job failed. Defaults to 3.
+    nodeSelector: Optional. The Node Selector configuration. Map of selector
+      key to a value which matches a node.
     serviceAccountName: Optional. Email address of the IAM service account
       associated with the task of a job execution. The service account
       represents the identity of the running task, and determines what
@@ -5397,11 +5406,38 @@ class TaskSpec(_messages.Message):
       belonging to the task.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeSelectorValue(_messages.Message):
+    r"""Optional. The Node Selector configuration. Map of selector key to a
+    value which matches a node.
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeSelectorValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeSelectorValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeSelectorValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   containers = _messages.MessageField('Container', 1, repeated=True)
   maxRetries = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  serviceAccountName = _messages.StringField(3)
-  timeoutSeconds = _messages.IntegerField(4)
-  volumes = _messages.MessageField('Volume', 5, repeated=True)
+  nodeSelector = _messages.MessageField('NodeSelectorValue', 3)
+  serviceAccountName = _messages.StringField(4)
+  timeoutSeconds = _messages.IntegerField(5)
+  volumes = _messages.MessageField('Volume', 6, repeated=True)
 
 
 class TaskStatus(_messages.Message):

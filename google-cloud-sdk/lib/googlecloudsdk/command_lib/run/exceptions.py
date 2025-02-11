@@ -47,12 +47,9 @@ class BucketAccessError(exceptions.Error):
 class CancellationFailedError(exceptions.Error):
   """Indicates failure to cancel."""
 
-  pass
-
 
 class DeletionFailedError(exceptions.Error):
   """Indicates failure to delete."""
-  pass
 
 
 class ConfigurationError(exceptions.Error):
@@ -178,7 +175,8 @@ class FieldMismatchError(exceptions.Error):
 # prefix added by that.
 VALIDATION_ERROR_MSG_REGEX = re.compile(
     r'^.*(?:\n.*)*Expected type .+? for field (.+?), found (.+?) \(type .+?\)',
-    re.MULTILINE)
+    re.MULTILINE,
+)
 
 
 def MaybeRaiseCustomFieldMismatch(error, help_text=''):
@@ -202,10 +200,12 @@ def MaybeRaiseCustomFieldMismatch(error, help_text=''):
       raise FieldMismatchError(
           'Error decoding the "port" field. Only integer ports are supported '
           'by gcloud. Please change your port from "{}" to an integer value to '
-          'be compatible with gcloud.'.format(regex_match.group(2)))
+          'be compatible with gcloud.'.format(regex_match.group(2))
+      )
     elif regex_match.group(1) == 'value':
-      raise FieldMismatchError('{0}\n{1}'.format(
-          six.text_type(error), help_text))
+      raise FieldMismatchError(
+          '{0}\n{1}'.format(six.text_type(error), help_text)
+      )
   raise error
 
 
@@ -291,6 +291,10 @@ class KubernetesExceptionParser(object):
 
 class BaseImageError(exceptions.Error):
   """An error was encountered when parsing the base image."""
+
+
+class ServiceAccountError(exceptions.Error):
+  """Indicates error due to service account misconfiguration."""
 
 
 class RequiredImageArgumentException(c_exceptions.RequiredArgumentException):

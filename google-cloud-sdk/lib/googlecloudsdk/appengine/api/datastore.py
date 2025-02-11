@@ -1291,7 +1291,7 @@ class Query(dict):
 
   UPPERBOUND_INEQUALITY_OPERATORS = frozenset(['<', '<='])
   FILTER_REGEX = re.compile(
-    '^\s*([^\s]+)(\s+(%s)\s*)?$' % '|'.join(OPERATORS),
+    '^\\s*([^\\s]+)(\\s+(%s)\\s*)?$' % '|'.join(OPERATORS),
     re.IGNORECASE | re.UNICODE)
 
   __kind = None

@@ -117,11 +117,16 @@ class WireGroup(object):
       admin_enabled=None,
       network_service_class=None,
       bandwidth_allocation=None,
-      validate_only=None,
+      endpoints=None,
+      validate_only=False,
+      update_mask=None,
   ):
     """Make a tuple for wire group patch request."""
     messages = self._messages
-    update_mask = []
+
+    if update_mask is None:
+      update_mask = []
+
     if description:
       update_mask.append('description')
     if wire_group_type:
@@ -138,6 +143,9 @@ class WireGroup(object):
       update_mask.append('wireProperties.faultResponse')
     if admin_enabled:
       update_mask.append('adminEnabled')
+    if endpoints:
+      update_mask.append('endpoints')
+
     return (
         self._client.wireGroups,
         'Patch',
@@ -166,6 +174,7 @@ class WireGroup(object):
                     ) if fault_response else None,
                 ),
                 adminEnabled=admin_enabled,
+                endpoints=endpoints or None,
             ),
             validateOnly=validate_only if validate_only else None,
             updateMask=','.join(update_mask),

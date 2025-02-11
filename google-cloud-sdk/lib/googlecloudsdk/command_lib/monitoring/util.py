@@ -592,6 +592,7 @@ def ModifySnooze(
     messages,
     display_name=None,
     criteria_policies=None,
+    criteria_filter=None,
     start_time=None,
     end_time=None,
     field_masks=None,
@@ -644,6 +645,18 @@ def ModifySnooze(
     criteria = messages.Criteria()
     criteria.policies = criteria_policies
     base_snooze.criteria = criteria
+    if criteria_filter is not None:
+      if len(criteria_policies) != 1:
+        raise ValueError(
+            'Exactly 1 alert policy is required if criteria-filter is'
+            ' specified.'
+        )
+      criteria.filter = criteria_filter
+      base_snooze.criteria = criteria
+  elif criteria_filter is not None:
+    raise MissingRequiredFieldError(
+        'criteria-policies is required if criteria-filter is specified.'
+    )
 
 
 def CreateSnoozeFromArgs(args, messages):
@@ -659,6 +672,7 @@ def CreateSnoozeFromArgs(args, messages):
       messages,
       display_name=args.display_name,
       criteria_policies=args.criteria_policies,
+      criteria_filter=args.criteria_filter,
       start_time=args.start_time,
       end_time=args.end_time)
 

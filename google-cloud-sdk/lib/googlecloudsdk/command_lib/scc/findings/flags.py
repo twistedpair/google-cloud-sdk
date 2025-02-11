@@ -68,8 +68,7 @@ COMPARE_DURATION_FLAG = base.Argument(
         '--compare-duration',
         warn=textwrap.dedent("""\
             The --compare-duration option is deprecated.
-            For more information, [see the deprecation notice]
-            (https://cloud.google.com/security-command-center/docs/release-notes#April_15_2024)
+            For more information, [see the deprecation notice](https://cloud.google.com/security-command-center/docs/release-notes#April_15_2024)
             on the SCC release notes page."""),
         removed=False,
     ),

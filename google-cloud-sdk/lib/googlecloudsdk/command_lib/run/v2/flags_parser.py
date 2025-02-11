@@ -14,9 +14,30 @@
 # limitations under the License.
 """Parsers given command arguments for the Cloud Run V2 command surface into configuration changes."""
 
+from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run.v2 import config_changes
 from googlecloudsdk.core import config
+
+
+def SecretsFlags():
+  """Creates flags for creating, updating, and deleting secrets."""
+  return flags.MapFlagsNoFile(
+      group_help=(
+          'Specify secrets to provide as environment variables. '
+          "For example: '--set-secrets=ENV=mysecret:latest,"
+          "OTHER_ENV=othersecret:1' "
+          'will create an environment variable named ENV whose value is the '
+          "latest version of secret 'mysecret' and an environment variable "
+          "OTHER_ENV whose value is version of 1 of secret 'othersecret'."
+      ),
+      flag_name='secrets',
+  )
+
+
+def AddSecretsFlags(parser):
+  """Adds flags for creating, updating, and deleting secrets."""
+  SecretsFlags().AddToParser(parser)
 
 
 def _PrependClientNameAndVersionChange(args, changes):
@@ -141,6 +162,127 @@ def _GetCmekKeyChange(args):
   )
 
 
+# TODO: b/392685307 - Add support for secrets changes using Volume/VolumeMount.
+def _GetSecretsChanges(args, non_ingress_type=False, container_name=None):
+  """Returns the secrets changes for the given args."""
+  changes = []
+  updates = flags.StripKeys(
+      getattr(args, 'update_secrets', None) or args.set_secrets or {}
+  )
+  for key in updates:
+    # Secrets volume mount is not supported for Worker Pools yet.
+    if key.startswith('/'):
+      raise exceptions.ConfigurationError(
+          'Secrets volume mount is not supported for Worker Pools yet.'
+      )
+  removes = flags.MapLStrip(getattr(args, 'remove_secrets', None) or [])
+  for key in removes:
+    # Secrets volume mount is not supported for Worker Pools yet.
+    if key.startswith('/'):
+      raise exceptions.ConfigurationError(
+          'Secrets volume mount is not supported for Worker Pools yet.'
+      )
+  clear_others = bool(args.set_secrets or args.clear_secrets)
+  if updates or removes or clear_others:
+    changes.append(
+        config_changes.SecretsEnvVarChanges(
+            updates=updates,
+            removes=removes,
+            clear_others=clear_others,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  return changes
+
+
+def _GetContainerConfigurationChanges(
+    container_args, container_name=None, non_ingress_type=True
+):
+  """Returns per-container configuration changes."""
+  changes = []
+  # FlagIsExplicitlySet can't be used here because args.image is also set from
+  # code in deploy.py.
+  if hasattr(container_args, 'image') and container_args.image is not None:
+    changes.append(
+        config_changes.ImageChange(
+            container_args.image,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if flags.HasEnvChanges(container_args):
+    changes.append(
+        _GetEnvChanges(
+            container_args,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if container_args.IsSpecified('cpu'):
+    changes.append(
+        config_changes.ResourceLimitsChange(
+            cpu=container_args.cpu,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if container_args.IsSpecified('memory'):
+    changes.append(
+        config_changes.ResourceLimitsChange(
+            memory=container_args.memory,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if container_args.IsSpecified('command'):
+    # Allow passing an empty string here to reset the field
+    changes.append(
+        config_changes.ContainerCommandChange(
+            container_args.command,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if container_args.IsSpecified('args'):
+    # Allow passing an empty string here to reset the field
+    changes.append(
+        config_changes.ContainerArgsChange(
+            container_args.args,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if flags.FlagIsExplicitlySet(
+      container_args, 'remove_volume_mount'
+  ) or flags.FlagIsExplicitlySet(container_args, 'clear_volume_mounts'):
+    changes.append(
+        config_changes.RemoveVolumeMountChange(
+            removed_mounts=container_args.remove_volume_mount,
+            clear_mounts=container_args.clear_volume_mounts,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if flags.HasSecretsChanges(container_args):
+    changes.extend(
+        _GetSecretsChanges(
+            container_args,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  if flags.FlagIsExplicitlySet(container_args, 'add_volume_mount'):
+    changes.append(
+        config_changes.AddVolumeMountChange(
+            new_mounts=container_args.add_volume_mount,
+            container_name=container_name,
+            non_ingress_type=non_ingress_type,
+        )
+    )
+  return changes
+
+
 def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   """Returns a list of changes shared by multiple resources, based on the flags set."""
   changes = []
@@ -196,6 +338,7 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
         config_changes.RemoveVolumeMountChange(
             removed_mounts=args.remove_volume_mount,
             clear_mounts=args.clear_volume_mounts,
+            non_ingress_type=non_ingress_type,
         )
     )
   if (
@@ -208,6 +351,8 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
             args.remove_volume, args.clear_volumes
         )
     )
+  if flags.HasSecretsChanges(args):
+    changes.extend(_GetSecretsChanges(args, non_ingress_type=non_ingress_type))
   if flags.FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
     changes.append(config_changes.AddVolumeChange(args.add_volume))
   if (
@@ -216,9 +361,37 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   ):
     changes.append(
         config_changes.AddVolumeMountChange(
-            new_mounts=args.add_volume_mount,
+            new_mounts=args.add_volume_mount, non_ingress_type=non_ingress_type,
         )
     )
+  if flags.FlagIsExplicitlySet(args, 'remove_containers'):
+    changes.append(
+        config_changes.RemoveContainersChange(args.remove_containers)
+    )
+    # Add an empty ContainerDependenciesChange to update dependencies.
+    changes.append(config_changes.ContainerDependenciesChange())
+
+  # Per container changes
+  if flags.FlagIsExplicitlySet(args, 'containers'):
+    for container_name, container_args in args.containers.items():
+      changes.extend(
+          _GetContainerConfigurationChanges(
+              container_args, container_name=container_name
+          )
+      )
+
+  # Dependencies
+  if flags.FlagIsExplicitlySet(args, 'containers'):
+    # TODO: b/393482156 - Add support for per container config changes.
+    dependency_changes = {
+        container_name: container_args.depends_on
+        for container_name, container_args in args.containers.items()
+        if container_args.IsSpecified('depends_on')
+    }
+    if dependency_changes:
+      changes.append(
+          config_changes.ContainerDependenciesChange(dependency_changes)
+      )
   return changes
 
 

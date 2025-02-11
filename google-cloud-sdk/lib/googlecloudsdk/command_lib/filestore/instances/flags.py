@@ -692,6 +692,5 @@ def AddInstanceUpdateArgs(parser, api_version):
       filestore_client.BETA_API_VERSION,
       filestore_client.V1_API_VERSION,
   ]:
-    # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
     AddPerformanceArg(parser)
     dp_util.AddDeletionProtectionUpdateArgs(parser)

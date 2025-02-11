@@ -603,6 +603,54 @@ def AddPdDiskSizeOrSnapshot(parser):
   )
 
 
+def AddPdDiskTypeArg():
+  help_text = """\
+  Type of the persistent directory."""
+  return base.Argument(
+      '--pd-disk-type',
+      choices=['pd-standard', 'pd-balanced', 'pd-ssd'],
+      default='pd-standard',
+      help=help_text,
+  )
+
+
+def AddPdDiskSizeArg(use_default):
+  help_text = """\
+  Size of the persistent directory in GB."""
+  return base.Argument(
+      '--pd-disk-size',
+      choices=[10, 50, 100, 200, 500, 1000],
+      default=200 if use_default else None,
+      type=int,
+      help=help_text,
+  )
+
+
+def AddPdSourceSnapshotArg():
+  help_text = """\
+  Name of the snapshot to use as the source for the persistent directory."""
+  return base.Argument(
+      '--pd-source-snapshot',
+      default='',
+      help=help_text,
+  )
+
+
+def AddPersistentDirectories(parser, use_default=True):
+  """Adds a --pd-disk-size, --pd-disk-type, and --pd-source-snapshot flag to the given parser."""
+
+  persistent_directory_group = parser.add_mutually_exclusive_group()
+  AddPdSourceSnapshotArg().AddToParser(persistent_directory_group)
+
+  help_text = """\
+  --pd-source-snapshot cannot be specified when --pd-disk-size or --pd-disk-type is specified."""
+  type_size_group = persistent_directory_group.add_group(
+      mutex=False, help=help_text
+  )
+  AddPdDiskTypeArg().AddToParser(type_size_group)
+  AddPdDiskSizeArg(use_default).AddToParser(type_size_group)
+
+
 def AddPdReclaimPolicy(parser):
   """Adds a --pd-reclaim-policy flag to the given parser."""
   help_text = """\
@@ -617,17 +665,6 @@ def AddPdReclaimPolicy(parser):
           ),
       },
       default='delete',
-      help=help_text,
-  )
-
-
-def AddPdSourceSnapshot(parser):
-  """Adds a --pd-source-snapshot flag to the given parser."""
-  help_text = """\
-  Name of the snapshot to use as the source for the home disk."""
-  parser.add_argument(
-      '--pd-source-snapshot',
-      default='',
       help=help_text,
   )
 

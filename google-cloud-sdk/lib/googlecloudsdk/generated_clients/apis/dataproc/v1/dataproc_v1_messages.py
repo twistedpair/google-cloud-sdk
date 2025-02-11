@@ -5162,6 +5162,10 @@ class GceClusterConfig(_messages.Message):
       instances (see Project and instance metadata
       (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
+    ResourceManagerTagsValue: Optional. Resource manager tags to add to all
+      instances (see Resource manager tags resources
+      (https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
+      managing)).
 
   Fields:
     confidentialInstanceConfig: Optional. Confidential Instance Config for
@@ -5194,6 +5198,10 @@ class GceClusterConfig(_messages.Message):
     privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
+    resourceManagerTags: Optional. Resource manager tags to add to all
+      instances (see Resource manager tags resources
+      (https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
+      managing)).
     serviceAccount: Optional. The Dataproc service account
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/service-accounts#service_accounts_in_dataproc) (also see VM
@@ -5280,6 +5288,34 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Optional. Resource manager tags to add to all instances (see Resource
+    manager tags resources (https://cloud.google.com/resource-
+    manager/docs/tags/tags-creating-and-managing)).
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 1)
   internalIpOnly = _messages.BooleanField(2)
   metadata = _messages.MessageField('MetadataValue', 3)
@@ -5287,12 +5323,13 @@ class GceClusterConfig(_messages.Message):
   nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 5)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 7)
-  serviceAccount = _messages.StringField(8)
-  serviceAccountScopes = _messages.StringField(9, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 10)
-  subnetworkUri = _messages.StringField(11)
-  tags = _messages.StringField(12, repeated=True)
-  zoneUri = _messages.StringField(13)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 8)
+  serviceAccount = _messages.StringField(9)
+  serviceAccountScopes = _messages.StringField(10, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 11)
+  subnetworkUri = _messages.StringField(12)
+  tags = _messages.StringField(13, repeated=True)
+  zoneUri = _messages.StringField(14)
 
 
 class GdceClusterConfig(_messages.Message):

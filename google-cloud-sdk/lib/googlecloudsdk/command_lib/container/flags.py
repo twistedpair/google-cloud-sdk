@@ -5234,10 +5234,10 @@ List of supported sysctls in 'linuxConfig'.
 KEY                                        | VALUE
 ------------------------------------------ | ------------------------------------------
 net.core.netdev_max_backlog                        | Any positive integer, less than 2147483647
-net.core.rmem_default                              | Any positive integer, less than 2147483647
-net.core.rmem_max                                  | Any positive integer, less than 2147483647
-net.core.wmem_default                              | Any positive integer, less than 2147483647
-net.core.wmem_max                                  | Any positive integer, less than 2147483647
+net.core.rmem_default                              | Must be between [2304, 2147483647]
+net.core.rmem_max                                  | Must be between [2304, 2147483647]
+net.core.wmem_default                              | Must be between [4608, 2147483647]
+net.core.wmem_max                                  | Must be between [4608, 2147483647]
 net.core.optmem_max                                | Any positive integer, less than 2147483647
 net.core.somaxconn                                 | Must be between [128, 2147483647]
 net.ipv4.tcp_rmem                                  | Any positive integer tuple

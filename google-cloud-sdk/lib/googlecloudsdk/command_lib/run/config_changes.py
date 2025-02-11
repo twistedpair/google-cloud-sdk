@@ -1950,19 +1950,19 @@ class GpuTypeChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
-class ZonalGpuRedundancyChange(TemplateConfigChanger):
-  """Sets the zonal gpu redundancy annotation on the revision annotations.
+class GpuZonalRedundancyChange(TemplateConfigChanger):
+  """Sets the gpu zonal redundancy annotation on the revision annotations.
 
   Attributes:
-    zonal_gpu_redundancy: The zonal_gpu_redundancy annotation value to set.
+    gpu_zonal_redundancy: The gpu_zonal_redundancy annotation value to set.
   """
 
-  zonal_gpu_redundancy: bool
+  gpu_zonal_redundancy: bool
 
   def Adjust(self, resource):
     resource.template.annotations[
-        revision.ZONAL_GPU_REDUNDANCY_DISABLED_ANNOTATION
-    ] = str(not self.zonal_gpu_redundancy)
+        revision.GPU_ZONAL_REDUNDANCY_DISABLED_ANNOTATION
+    ] = str(not self.gpu_zonal_redundancy)
     return resource
 
 

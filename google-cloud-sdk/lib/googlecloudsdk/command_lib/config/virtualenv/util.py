@@ -37,6 +37,7 @@ MODULES = [
     .format('cp39-abi3-macosx_10_12_universal2'
             if platform.processor() == 'arm'
             else 'cp37-abi3-macosx_10_12_x86_64'),
+    'setuptools',
 ]
 
 # Enable file name.

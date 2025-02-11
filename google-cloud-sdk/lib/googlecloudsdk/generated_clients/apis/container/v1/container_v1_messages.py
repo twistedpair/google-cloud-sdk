@@ -331,7 +331,7 @@ class AutopilotCompatibilityIssue(_messages.Message):
   Fields:
     constraintType: The constraint type of the issue.
     description: The description of the issue.
-    documentationUrl: A URL to a public documnetation, which addresses
+    documentationUrl: A URL to a public documentation, which addresses
       resolving this issue.
     incompatibilityType: The incompatibility type of this issue.
     lastObservation: The last time when this issue was observed.
@@ -362,6 +362,18 @@ class AutopilotCompatibilityIssue(_messages.Message):
   incompatibilityType = _messages.EnumField('IncompatibilityTypeValueValuesEnum', 4)
   lastObservation = _messages.StringField(5)
   subjects = _messages.StringField(6, repeated=True)
+
+
+class AutopilotConfig(_messages.Message):
+  r"""AutopilotConfig contains configuration of autopilot feature for this
+  nodepool.
+
+  Fields:
+    enabled: Denotes that nodes belonging to this node pool are Autopilot
+      nodes.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class AutopilotConversionStatus(_messages.Message):
@@ -652,8 +664,8 @@ class CertificateAuthorityDomainConfig(_messages.Message):
 
   Fields:
     fqdns: List of fully qualified domain names (FQDN). Specifying port is
-      supported. Wilcards are NOT supported. Examples: - my.customdomain.com -
-      10.0.1.2:5000
+      supported. Wildcards are NOT supported. Examples: - my.customdomain.com
+      - 10.0.1.2:5000
     gcpSecretManagerCertificateConfig: Google Secret Manager (GCP) certificate
       configuration.
   """
@@ -1348,6 +1360,8 @@ class ClusterUpdate(_messages.Message):
     desiredStackType: The desired stack type of the cluster. If a stack type
       is provided and does not match the current stack type of the cluster,
       update will attempt to change the stack type to the new type.
+    desiredUserManagedKeysConfig: The desired user managed keys config for the
+      cluster.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
@@ -1498,12 +1512,13 @@ class ClusterUpdate(_messages.Message):
   desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 68)
   desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 69)
   desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 70)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 71)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 72)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 73)
-  etag = _messages.StringField(74)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 75)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 76)
+  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 71)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 72)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 73)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 74)
+  etag = _messages.StringField(75)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 76)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 77)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -1688,11 +1703,33 @@ class ConfidentialNodes(_messages.Message):
   r"""ConfidentialNodes is configuration for the confidential nodes feature,
   which makes nodes run on confidential VMs.
 
+  Enums:
+    ConfidentialInstanceTypeValueValuesEnum: Defines the type of technology
+      used by the confidential node.
+
   Fields:
+    confidentialInstanceType: Defines the type of technology used by the
+      confidential node.
     enabled: Whether Confidential Nodes feature is enabled.
   """
 
-  enabled = _messages.BooleanField(1)
+  class ConfidentialInstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of technology used by the confidential node.
+
+    Values:
+      CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED: No type specified. Do not use
+        this value.
+      SEV: AMD Secure Encrypted Virtualization.
+      SEV_SNP: AMD Secure Encrypted Virtualization - Secure Nested Paging.
+      TDX: Intel Trust Domain eXtension.
+    """
+    CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED = 0
+    SEV = 1
+    SEV_SNP = 2
+    TDX = 3
+
+  confidentialInstanceType = _messages.EnumField('ConfidentialInstanceTypeValueValuesEnum', 1)
+  enabled = _messages.BooleanField(2)
 
 
 class ConfigConnectorConfig(_messages.Message):
@@ -2776,11 +2813,13 @@ class Filter(_messages.Message):
       UPGRADE_AVAILABLE_EVENT: Corresponds with UpgradeAvailableEvent.
       UPGRADE_EVENT: Corresponds with UpgradeEvent.
       SECURITY_BULLETIN_EVENT: Corresponds with SecurityBulletinEvent.
+      UPGRADE_INFO_EVENT: Corresponds with UpgradeInfoEvent.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     UPGRADE_AVAILABLE_EVENT = 1
     UPGRADE_EVENT = 2
     SECURITY_BULLETIN_EVENT = 3
+    UPGRADE_INFO_EVENT = 4
 
   eventType = _messages.EnumField('EventTypeValueListEntryValuesEnum', 1, repeated=True)
 
@@ -2981,7 +3020,7 @@ class GcsFuseCsiDriverConfig(_messages.Message):
 
 
 class GetJSONWebKeysResponse(_messages.Message):
-  r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
+  r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specified in rfc
   7517
 
   Fields:
@@ -3822,7 +3861,7 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
     cidrBlocks: cidr_blocks define up to 50 external networks that could
       access Kubernetes master through HTTPS.
     enabled: Whether or not master authorized networks is enabled.
-    gcpPublicCidrsAccessEnabled: Whether master is accessbile via Google
+    gcpPublicCidrsAccessEnabled: Whether master is accessible via Google
       Compute Engine Public IP addresses.
     privateEndpointEnforcementEnabled: Whether master authorized networks is
       enforced on private endpoint or not.
@@ -4005,7 +4044,7 @@ class NetworkConfig(_messages.Message):
     inTransitEncryptionConfig: Specify the details of in-transit encryption.
       Now named inter-node transparent encryption.
     network: Output only. The relative name of the Google Compute Engine
-      network(https://cloud.google.com/compute/docs/networks-and-
+      [network](https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. Example:
       projects/my-project/global/networks/my-network
     networkPerformanceConfig: Network bandwidth tier configuration.
@@ -4212,7 +4251,7 @@ class NodeConfig(_messages.Message):
       cgroup mode specified in the LinuxNodeConfig or the default cgroup mode
       based on the cluster creation version.
     LocalSsdEncryptionModeValueValuesEnum: Specifies which method should be
-      used for encrypting the Local SSDs attahced to the node.
+      used for encrypting the Local SSDs attached to the node.
 
   Messages:
     LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied
@@ -4295,7 +4334,7 @@ class NodeConfig(_messages.Message):
       https://cloud.google.com/compute/docs/disks/local-ssd for more
       information.
     localSsdEncryptionMode: Specifies which method should be used for
-      encrypting the Local SSDs attahced to the node.
+      encrypting the Local SSDs attached to the node.
     loggingConfig: Logging configuration.
     machineType: The name of a Google Compute Engine [machine
       type](https://cloud.google.com/compute/docs/machine-types) If
@@ -4398,7 +4437,7 @@ class NodeConfig(_messages.Message):
 
   class LocalSsdEncryptionModeValueValuesEnum(_messages.Enum):
     r"""Specifies which method should be used for encrypting the Local SSDs
-    attahced to the node.
+    attached to the node.
 
     Values:
       LOCAL_SSD_ENCRYPTION_MODE_UNSPECIFIED: The given node will be encrypted
@@ -4812,6 +4851,9 @@ class NodePool(_messages.Message):
       instance.
 
   Fields:
+    autopilotConfig: Specifies the autopilot configuration for this node pool.
+      This field is exclusively reserved for Cluster Autoscaler to implement
+      go/gke-managed-nodes-ccc-api
     autoscaling: Autoscaler configuration for this NodePool. Autoscaler is
       enabled only if a valid configuration is present.
     bestEffortProvisioning: Enable best effort provisioning for nodes
@@ -4891,27 +4933,28 @@ class NodePool(_messages.Message):
     STOPPING = 5
     ERROR = 6
 
-  autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
-  bestEffortProvisioning = _messages.MessageField('BestEffortProvisioning', 2)
-  conditions = _messages.MessageField('StatusCondition', 3, repeated=True)
-  config = _messages.MessageField('NodeConfig', 4)
-  etag = _messages.StringField(5)
-  initialNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(7, repeated=True)
-  locations = _messages.StringField(8, repeated=True)
-  management = _messages.MessageField('NodeManagement', 9)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
-  name = _messages.StringField(11)
-  networkConfig = _messages.MessageField('NodeNetworkConfig', 12)
-  placementPolicy = _messages.MessageField('PlacementPolicy', 13)
-  podIpv4CidrSize = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 15)
-  selfLink = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  updateInfo = _messages.MessageField('UpdateInfo', 19)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 20)
-  version = _messages.StringField(21)
+  autopilotConfig = _messages.MessageField('AutopilotConfig', 1)
+  autoscaling = _messages.MessageField('NodePoolAutoscaling', 2)
+  bestEffortProvisioning = _messages.MessageField('BestEffortProvisioning', 3)
+  conditions = _messages.MessageField('StatusCondition', 4, repeated=True)
+  config = _messages.MessageField('NodeConfig', 5)
+  etag = _messages.StringField(6)
+  initialNodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(8, repeated=True)
+  locations = _messages.StringField(9, repeated=True)
+  management = _messages.MessageField('NodeManagement', 10)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
+  name = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NodeNetworkConfig', 13)
+  placementPolicy = _messages.MessageField('PlacementPolicy', 14)
+  podIpv4CidrSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 16)
+  selfLink = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  updateInfo = _messages.MessageField('UpdateInfo', 20)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 21)
+  version = _messages.StringField(22)
 
 
 class NodePoolAutoConfig(_messages.Message):

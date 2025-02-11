@@ -34,6 +34,21 @@ globalDefaultLocation:
     - hook: googlecloudsdk.command_lib.network_security.util:SetGlobalLocation
       hint: location is global by default
 
+allDefaultLocation:
+  name: location
+  collection: networksecurity.projects.locations
+  attributes:
+  - *project
+  - &allDefaultLocation
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location Id.
+    fallthroughs:
+    - value: "-"
+      hint: |-
+        if left empty, will use the wildcard '-' to list all locations
+
 serverTlsPolicy:
   name: server TLS policy
   collection: networksecurity.projects.locations.serverTlsPolicies
@@ -330,7 +345,7 @@ backendAuthenticationConfig:
   request_id_field: backendAuthenticationConfigId
   attributes:
   - *project
-  - *globalDefaultLocation
+  - *location
   - &backendAuthenticationConfig
     parameter_name: backendAuthenticationConfigsId
     attribute_name: backend_authentication_config

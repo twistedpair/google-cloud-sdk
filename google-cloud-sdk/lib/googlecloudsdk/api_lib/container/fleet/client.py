@@ -23,6 +23,7 @@ from typing import Generator
 
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.container.fleet import gkehub_api_util
 from googlecloudsdk.api_lib.container.fleet import types
 from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.util import waiter
@@ -52,7 +53,7 @@ class HubClient(object):
     self.resourceless_waiter = waiter.CloudOperationPollerNoResources(
         operation_service=self.client.projects_locations_operations
     )
-    self.feature_waiter = waiter.CloudOperationPoller(
+    self.feature_waiter = gkehub_api_util.HubFeatureOperationPoller(
         result_service=self.client.projects_locations_features,
         operation_service=self.client.projects_locations_operations,
     )
@@ -87,7 +88,10 @@ class HubClient(object):
     Returns:
       The Feature message.
     """
-    req = self.messages.GkehubProjectsLocationsFeaturesGetRequest(name=name)
+    req = self.messages.GkehubProjectsLocationsFeaturesGetRequest(
+        name=name,
+        returnPartialSuccess=True,
+    )
     return self.client.projects_locations_features.Get(req)
 
   def ListFeatures(self, parent):
@@ -100,7 +104,8 @@ class HubClient(object):
       A list of Features.
     """
     req = self.messages.GkehubProjectsLocationsFeaturesListRequest(
-        parent=parent
+        parent=parent,
+        returnPartialSuccess=True,
     )
     # We skip the pagination for now, since it will never be hit.
     resp = self.client.projects_locations_features.List(req)

@@ -539,7 +539,11 @@ def AddTags(parser):
 
 
 def AddDatabaseVersion(
-    parser, restrict_choices=True, hidden=False, support_default_version=True
+    parser,
+    restrict_choices=True,
+    hidden=False,
+    support_default_version=True,
+    additional_help_text=None,
 ):
   """Adds `--database-version` to the parser with choices restricted or not."""
   # Section for engine-specific content.
@@ -591,6 +595,9 @@ def AddDatabaseVersion(
         ' Apart from listed major versions, DATABASE_VERSION also accepts'
         ' supported minor versions.'
     )
+
+  if additional_help_text:
+    help_text += additional_help_text
 
   parser.add_argument(
       '--database-version',
@@ -2630,13 +2637,21 @@ def AddClearPscAutoConnections(parser, hidden=False):
 
 
 def AddCustomSubjectAlternativeNames(parser, hidden=False):
+  """Adds --custom-subject-alternative-names argument."""
   parser.add_argument(
       '--custom-subject-alternative-names',
       type=arg_parsers.ArgList(min_length=1, max_length=3),
       metavar='DNS',
       required=False,
       help=(
-          'A comma-separated list of customer specified DNS names.'
+          "A comma-separated list of DNS names to add to the instance's SSL"
+          ' certificate. A custom SAN is a structured way to add additional'
+          ' DNS names (host names) that are not managed by Cloud SQL to an'
+          ' instance. It allows for hostname verification during establishment'
+          ' of a database connection using the DNS name over SSL/TLS.'
+          ' When you create and/or update an instance, you can add a'
+          ' comma-separated list of up to three DNS names to the server'
+          ' certificate of your instance.'
       ),
       hidden=hidden,
       action=arg_parsers.FlattenAction(),
@@ -2649,7 +2664,7 @@ def AddClearCustomSubjectAlternativeNames(parser, hidden=False):
       '--clear-custom-subject-alternative-names',
       required=False,
       help=(
-          'This will clear the customer specified DNS names.'
+          'This clears the customer specified DNS names.'
       ),
       hidden=hidden,
       **kwargs

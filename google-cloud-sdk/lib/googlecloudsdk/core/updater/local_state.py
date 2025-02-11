@@ -612,11 +612,15 @@ class InstallationState(object):
             '|third_party/.*/python2/'
             '|third_party/yaml/[a-z]*.py'
             '|third_party/yaml/lib2/'
-            '|third_party/appengine/'
+            '|third_party/antlr3/'
+            '|appengine/'
+            '|google/cloud/appengine_'
+            '|google/cloud/bigquery_logging_v1'
             '|third_party/fancy_urllib/'
             '|platform/bq/third_party/gflags'
             '|platform/ext-runtime/nodejs/test/'
             '|platform/gsutil/third_party/apitools/ez_setup'
+            '|platform/gsutil/third_party/pyparsing'
             '|platform/gsutil/third_party/crcmod_osx/crcmod/test)')
       else:
         regex_exclusion = None

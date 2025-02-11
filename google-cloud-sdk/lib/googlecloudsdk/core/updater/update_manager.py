@@ -910,18 +910,6 @@ version [{1}].  To clear your fixed version setting, run:
       first = False
     return results_map
 
-  def _DownloadAndInstallFunction(self, install_state, diff):
-    def Inner(component_id, progress_callback):
-      (download_callback, install_callback) = (
-          console_io.SplitProgressBar(progress_callback, [1, 1]))
-      downloaded_archive = install_state.Download(
-          diff.latest, component_id, progress_callback=download_callback,
-          command_path='components.update')
-      return install_state.Install(
-          diff.latest, component_id, downloaded_archive,
-          progress_callback=install_callback)
-    return Inner
-
   def _DownloadFunction(self, install_state, diff):
     def Inner(component_id, progress_callback):
       return install_state.Download(

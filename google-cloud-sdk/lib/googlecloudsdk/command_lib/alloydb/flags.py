@@ -32,6 +32,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
 import re
 
 from googlecloudsdk.calliope import arg_parsers
@@ -601,9 +602,7 @@ def AddKeepExtraRoles(parser):
       '--keep-extra-roles',
       type=arg_parsers.ArgBoolean(),
       default=False,
-      help=(
-          'If the user already exists and has extra roles, keep them.'
-      ),
+      help='If the user already exists and has extra roles, keep them.',
   )
 
 
@@ -1636,9 +1635,12 @@ def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
   if not tags:
     return None
   # Sorted for test stability
-  return tags_message(additionalProperties=[
-      tags_message.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(tags.items())])
+  return tags_message(
+      additionalProperties=[
+          tags_message.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(tags.items())
+      ]
+  )
 
 
 def AddAssignInboundPublicIp(parser):
@@ -2117,3 +2119,47 @@ def AddImportOptions(parser):
       help='Specify source file type.',
   )
 
+
+def AddMigrateCloudSqlFlags(parser: argparse.PARSER) -> None:
+  """Adds the Migrate Cloud SQL specific flags.
+
+  Args:
+    parser: Parser object for command line inputs.
+  """
+  group = parser.add_group(
+      mutex=True, required=True, help='Migrate Cloud SQL strategy.'
+  )
+  parser.add_argument(
+      '--cloud-sql-project-id',
+      required=True,
+      type=str,
+      help=(
+          'CloudSQL project to migrate from. This must be the'
+          ' project ID (myProject).'
+      ),
+  )
+  parser.add_argument(
+      '--cloud-sql-instance-id',
+      required=True,
+      type=str,
+      help=(
+          'CloudSQL instance ID to migrate from. This must be the'
+          ' instance ID (myInstance).'
+      ),
+  )
+  # Currently, only migration via restore from CloudSQL backup is supported.
+  migrate_cloud_sql_group = group.add_group(
+      help=(
+          'Migrate CloudSQL instance to an AlloyDB cluster by restoring from'
+          ' an existing backup.'
+      )
+  )
+  migrate_cloud_sql_group.add_argument(
+      '--cloud-sql-backup-id',
+      required=True,
+      type=int,
+      help=(
+          'CloudSQL backup ID to migrate from. This must be the'
+          ' backup ID (myBackup).'
+      ),
+  )

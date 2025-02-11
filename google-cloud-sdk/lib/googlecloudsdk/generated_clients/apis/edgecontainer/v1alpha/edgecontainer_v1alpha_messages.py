@@ -82,6 +82,8 @@ class Cluster(_messages.Message):
     clusterType: Optional. Cluster Type to specify if the cluster is BAREMETAL
       or VIRTUAL
     connectionState: Output only. The current connection state of the cluster.
+    containerRuntimeConfig: Optional. The container runtime config of the
+      cluster.
     controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
       options. This field is only used when enabling CMEK support.
@@ -197,31 +199,32 @@ class Cluster(_messages.Message):
   clusterCaCertificate = _messages.StringField(2)
   clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
   connectionState = _messages.MessageField('ConnectionState', 4)
-  controlPlane = _messages.MessageField('ControlPlane', 5)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 6)
-  controlPlaneVersion = _messages.StringField(7)
-  createTime = _messages.StringField(8)
-  defaultMaxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(10)
-  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 11, repeated=True)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(12, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(13, repeated=True)
-  fleet = _messages.MessageField('Fleet', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 16, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 17)
-  name = _messages.StringField(18)
-  networking = _messages.MessageField('ClusterNetworking', 19)
-  nodeVersion = _messages.StringField(20)
-  port = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 24)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 25)
-  targetVersion = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 28)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 29)
+  containerRuntimeConfig = _messages.MessageField('ContainerRuntimeConfig', 5)
+  controlPlane = _messages.MessageField('ControlPlane', 6)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 7)
+  controlPlaneVersion = _messages.StringField(8)
+  createTime = _messages.StringField(9)
+  defaultMaxPodsPerNode = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(11)
+  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 12, repeated=True)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(13, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(14, repeated=True)
+  fleet = _messages.MessageField('Fleet', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 17, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 18)
+  name = _messages.StringField(19)
+  networking = _messages.MessageField('ClusterNetworking', 20)
+  nodeVersion = _messages.StringField(21)
+  port = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 25)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 26)
+  targetVersion = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 29)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 30)
 
 
 class ClusterNetworking(_messages.Message):
@@ -325,6 +328,34 @@ class ConnectionState(_messages.Message):
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
   updateTime = _messages.StringField(2)
+
+
+class ContainerRuntimeConfig(_messages.Message):
+  r"""Container runtime config of the cluster.
+
+  Enums:
+    DefaultContainerRuntimeValueValuesEnum: Optional. The default container
+      runtime to be configured in the cluster.
+
+  Fields:
+    defaultContainerRuntime: Optional. The default container runtime to be
+      configured in the cluster.
+  """
+
+  class DefaultContainerRuntimeValueValuesEnum(_messages.Enum):
+    r"""Optional. The default container runtime to be configured in the
+    cluster.
+
+    Values:
+      DEFAULT_CONTAINER_RUNTIME_UNSPECIFIED: Container runtime not specified.
+      RUNC: Use runc as the default container runtime in the cluster.
+      GVISOR: Use gVisor as the default container runtime in the cluster.
+    """
+    DEFAULT_CONTAINER_RUNTIME_UNSPECIFIED = 0
+    RUNC = 1
+    GVISOR = 2
+
+  defaultContainerRuntime = _messages.EnumField('DefaultContainerRuntimeValueValuesEnum', 1)
 
 
 class ControlPlane(_messages.Message):
@@ -2425,7 +2456,8 @@ class ZonalService(_messages.Message):
     serviceSelector: Required. The service to enable/disable.
     state: Output only. The state of the service.
     updateTime: Output only. The time when the service was last updated.
-    zone: The zone on which the service has to be enabled/disabled.
+    zone: The zone id of the zone on which the service has to be
+      enabled/disabled.
   """
 
   class ServiceSelectorValueValuesEnum(_messages.Enum):

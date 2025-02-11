@@ -399,6 +399,8 @@ def CreateUpdateMask(args):
       'metadata': 'gce_setup.metadata',
       'machine_type': 'gce_setup.machine_type',
       'tags': 'gce_setup.tags',
+      'container_repository': 'gce_setup.container_image.repository',
+      'container_tag': 'gce_setup.container_image.tag',
   }
   for key, value in sorted(field_mask_dict.items()):
     if args.IsSpecified(key):
@@ -488,6 +490,7 @@ def UpdateInstance(args, messages):
       metadata=GetMetadataFromArgs(args, messages),
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
       tags=GetTagsFromArgs(args),
+      containerImage=CreateContainerImageFromArgs(args, messages),
   )
   if args.IsSpecified('accelerator_type') or args.IsSpecified(
       'accelerator_core_count'

@@ -126,3 +126,20 @@ class Task(container_resource.ContainerResource):
         self.status.lastAttemptResult.status.message is not None):
       return self.status.lastAttemptResult.status.message
     return ''
+
+  def _EnsureNodeSelector(self):
+    if self.spec.nodeSelector is None:
+      self.spec.nodeSelector = k8s_object.InitializedInstance(
+          self._messages.TaskSpec.NodeSelectorValue
+      )
+
+  @property
+  def node_selector(self):
+    """The node selector as a dictionary { accelerator_type: value}."""
+    self._EnsureNodeSelector()
+    return k8s_object.KeyValueListAsDictionaryWrapper(
+        self.spec.nodeSelector.additionalProperties,
+        self._messages.TaskSpec.NodeSelectorValue.AdditionalProperty,
+        key_field='key',
+        value_field='value',
+    )

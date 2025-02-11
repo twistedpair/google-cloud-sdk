@@ -530,7 +530,8 @@ def Move(instance, target_instance_config, target_database_move_configs):
 
   Args:
       instance: Instance to move.
-      target_instance_config: Target instance config to move the instance to.
+      target_instance_config: The target instance configuration to move the
+        instance.
       target_database_move_configs: Configurations for databases in the
         destination instance config.
 
@@ -580,7 +581,7 @@ def Move(instance, target_instance_config, target_database_move_configs):
   if target_database_move_configs is not None:
     req_args['targetDatabaseMoveConfigs'] = []
     for target_database_move_config in target_database_move_configs:
-      kms_key_names = target_database_move_config['kms-keys'].split(',')
+      kms_key_names = target_database_move_config['kms-key-names'].split(',')
       encryption_config_args = {}
       encryption_config_args['kmsKeyNames'] = []
       for kms_key_name in kms_key_names:

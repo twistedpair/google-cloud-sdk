@@ -138,6 +138,13 @@ class StorageBatchOperationsApi:
           else self.messages.PutObjectHold.EventBasedHoldValueValuesEnum.UNSET
       )
 
+  def _modify_job_rewrite_object(self, job, rewrite_object_dict):
+    """Modifies a job to rewrite object and the specified metadata."""
+    rewrite_object = self.messages.RewriteObject()
+    if rewrite_object_dict.get("kms-key"):
+      rewrite_object.kmsKey = rewrite_object_dict["kms-key"]
+    job.rewriteObject = rewrite_object
+
   def _modify_job_put_metadata(self, job, put_metadata_dict):
     """Modifies a job to put metadata."""
     put_metadata = self.messages.PutMetadata()
@@ -185,8 +192,8 @@ class StorageBatchOperationsApi:
       job.deleteObject = self.messages.DeleteObject(
           permanentObjectDeletionEnabled=args.enable_permanent_object_deletion,
       )
-    elif args.put_kms_key:
-      job.putKmsKey = self.messages.PutKmsKey(kmsKey=args.put_kms_key)
+    elif args.rewrite_object:
+      self._modify_job_rewrite_object(job, args.rewrite_object)
     elif args.put_metadata:
       self._modify_job_put_metadata(job, args.put_metadata)
     else:

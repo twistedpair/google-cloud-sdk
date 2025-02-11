@@ -55,84 +55,111 @@ class LookerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+    def Create(self, request, global_params=None):
+      r"""Backup Looker instance.
 
       Args:
-        request: (LookerProjectsLocationsInstancesBackupsGetIamPolicyRequest) input message
+        request: (LookerProjectsLocationsInstancesBackupsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (Operation) The response message.
       """
-      config = self.GetMethodConfig('GetIamPolicy')
+      config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}:getIamPolicy',
-        http_method='GET',
-        method_id='looker.projects.locations.instances.backups.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/backups',
+        request_field='instanceBackup',
+        request_type_name='LookerProjectsLocationsInstancesBackupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete backup.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='looker.projects.locations.instances.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
         request_field='',
-        request_type_name='LookerProjectsLocationsInstancesBackupsGetIamPolicyRequest',
-        response_type_name='Policy',
+        request_type_name='LookerProjectsLocationsInstancesBackupsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+    def Get(self, request, global_params=None):
+      r"""Get method for the projects_locations_instances_backups service.
 
       Args:
-        request: (LookerProjectsLocationsInstancesBackupsSetIamPolicyRequest) input message
+        request: (LookerProjectsLocationsInstancesBackupsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (InstanceBackup) The response message.
       """
-      config = self.GetMethodConfig('SetIamPolicy')
+      config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}:setIamPolicy',
-        http_method='POST',
-        method_id='looker.projects.locations.instances.backups.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='looker.projects.locations.instances.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='LookerProjectsLocationsInstancesBackupsSetIamPolicyRequest',
-        response_type_name='Policy',
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='LookerProjectsLocationsInstancesBackupsGetRequest',
+        response_type_name='InstanceBackup',
         supports_download=False,
     )
 
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+    def List(self, request, global_params=None):
+      r"""List backups of Looker instance.
 
       Args:
-        request: (LookerProjectsLocationsInstancesBackupsTestIamPermissionsRequest) input message
+        request: (LookerProjectsLocationsInstancesBackupsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TestIamPermissionsResponse) The response message.
+        (ListInstanceBackupsResponse) The response message.
       """
-      config = self.GetMethodConfig('TestIamPermissions')
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}:testIamPermissions',
-        http_method='POST',
-        method_id='looker.projects.locations.instances.backups.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='LookerProjectsLocationsInstancesBackupsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups',
+        http_method='GET',
+        method_id='looker.projects.locations.instances.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backups',
+        request_field='',
+        request_type_name='LookerProjectsLocationsInstancesBackupsListRequest',
+        response_type_name='ListInstanceBackupsResponse',
         supports_download=False,
     )
 
@@ -254,33 +281,6 @@ class LookerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (LookerProjectsLocationsInstancesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getIamPolicy',
-        http_method='GET',
-        method_id='looker.projects.locations.instances.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='LookerProjectsLocationsInstancesGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def Import(self, request, global_params=None):
       r"""Import instance.
 
@@ -389,57 +389,30 @@ class LookerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+    def Restore(self, request, global_params=None):
+      r"""Restore Looker instance.
 
       Args:
-        request: (LookerProjectsLocationsInstancesSetIamPolicyRequest) input message
+        request: (LookerProjectsLocationsInstancesRestoreRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (Operation) The response message.
       """
-      config = self.GetMethodConfig('SetIamPolicy')
+      config = self.GetMethodConfig('Restore')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setIamPolicy',
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore',
         http_method='POST',
-        method_id='looker.projects.locations.instances.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
+        method_id='looker.projects.locations.instances.restore',
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path='v1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='LookerProjectsLocationsInstancesSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (LookerProjectsLocationsInstancesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:testIamPermissions',
-        http_method='POST',
-        method_id='looker.projects.locations.instances.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='LookerProjectsLocationsInstancesTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        relative_path='v1/{+name}:restore',
+        request_field='restoreInstanceRequest',
+        request_type_name='LookerProjectsLocationsInstancesRestoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

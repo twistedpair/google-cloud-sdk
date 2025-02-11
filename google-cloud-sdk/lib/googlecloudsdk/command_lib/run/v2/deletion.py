@@ -21,49 +21,24 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
+from googlecloudsdk.command_lib.run.v2 import conditions
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import condition as condition_objects
-
-
-def IsConditionReady(condition):
-  return (
-      condition.state == condition_objects.Condition.State.CONDITION_SUCCEEDED
-  )
-
-
-def IsConditionFailed(condition):
-  return condition.state == condition_objects.Condition.State.CONDITION_FAILED
 
 
 class DeletionPoller(waiter.OperationPoller):
   """Polls for deletion of a resource."""
-
-  _ready_condition = 'READY'
 
   def __init__(self, getter):
     """Supply getter as the resource getter."""
     self._getter = getter
     self._ret = None
 
-  def _GetReadyCondition(self, conditions):
-    for condition in conditions:
-      if condition.type == self._ready_condition:
-        return condition
-    return None
-
   def IsDone(self, obj):
     if obj is None:
       return True
-    # Currently, child resources do not have terminal_condition field. So we
-    # use ready condition instead.
-    terminal_condition = (
-        obj.terminal_condition
-        if hasattr(obj, 'terminal_condition')
-        else self._GetReadyCondition(obj.conditions)
-    )
-    return (
-        terminal_condition is None
-        or IsConditionFailed(terminal_condition)
+    terminal_condition = conditions.GetTerminalCondition(self._ret)
+    return terminal_condition is None or conditions.IsConditionFailed(
+        terminal_condition
     )
 
   def Poll(self, ref):
@@ -76,16 +51,9 @@ class DeletionPoller(waiter.OperationPoller):
   def GetMessage(self):
     if not self._ret:
       return ''
-    # Currently, child resources do not have terminal_condition field. So we
-    # use ready condition instead.
-    terminal_condition = (
-        self._ret.terminal_condition
-        if hasattr(self._ret, 'terminal_condition')
-        else self._GetReadyCondition(self._ret.conditions)
-    )
-    if (
+    terminal_condition = conditions.GetTerminalCondition(self._ret)
+    if terminal_condition and not conditions.IsConditionReady(
         terminal_condition
-        and not IsConditionReady(terminal_condition)
     ):
       return terminal_condition.message or ''
     return ''

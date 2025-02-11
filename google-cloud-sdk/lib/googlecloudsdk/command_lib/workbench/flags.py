@@ -706,6 +706,24 @@ def AddUpdateInstanceFlags(parser):
       type=arg_parsers.ArgList(),
       metavar='TAGS',
   )
+  container_group = gce_setup_group.add_group(
+      help='Container image configurations.'
+  )
+  container_group.add_argument(
+      '--container-repository',
+      help=(
+          'The path to the container image repository. '
+          'For example: gcr.io/`{project_id}`/`{image_name}`.'
+      ),
+      required=True,
+  )
+  container_group.add_argument(
+      '--container-tag',
+      help=(
+          'The tag of the container image. If not specified, '
+          'this defaults to the latest tag.'
+      ),
+  )
 
 
 def AddDiagnoseInstanceFlags(parser):

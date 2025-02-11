@@ -1262,6 +1262,7 @@ def SetupAuthForProject(
     repos_with_buckets,
     output_iam_policy_dir=None,
     input_iam_policy_dir=None,
+    use_analyze=True,
 ):
   """Sets up auth for all repos in the given project."""
   diffs_found = False
@@ -1275,6 +1276,7 @@ def SetupAuthForProject(
         has_bucket,
         output_iam_policy_dir=output_iam_policy_dir,
         input_iam_policy_dir=input_iam_policy_dir,
+        use_analyze=use_analyze,
     )
     if repo_diffs:
       diffs_found = True
@@ -1343,6 +1345,7 @@ def SetupAuthForRepository(
     pkg_dev=False,
     output_iam_policy_dir=None,
     input_iam_policy_dir=None,
+    use_analyze=True,
 ):
   """Checks permissions for a repository and prompts for changes if any is missing.
 
@@ -1359,6 +1362,7 @@ def SetupAuthForRepository(
     pkg_dev: If true, this is for a single pkg.dev repo (prompts are different)
     output_iam_policy_dir: If set, output iam files to this dir
     input_iam_policy_dir: If set, use iam files from this dir
+    use_analyze: If true, use AnalyzeIamPolicy to generate the policy
 
   Returns:
     A tuple of (diffs_found, should_continue) where diffs_found is true if
@@ -1414,6 +1418,7 @@ def SetupAuthForRepository(
           skip_bucket=(not has_bucket),
           from_ar_permissions=False,
           best_effort=True,
+          use_analyze=use_analyze,
       )
   )
   if not gcr_auth and failures:
@@ -1427,6 +1432,7 @@ def SetupAuthForRepository(
           skip_bucket=True,
           from_ar_permissions=True,
           best_effort=True,
+          use_analyze=use_analyze,
       )
   )
 
@@ -1456,11 +1462,10 @@ def SetupAuthForRepository(
     # Nothing to do, but we still need to warn
     con = console_attr.GetConsoleAttr()
     warning_message = (
-        f"Unable to confirm auth bindings for {ar_project}/{repo['repository']}"
-        " are sufficient because you do not have access to analyze IAM for the"
-        f" following resources: {failures}"
-        "\nSee"
-        " https://cloud.google.com/policy-intelligence/docs/analyze-iam-policies#required-permissions"
+        "Unable to confirm IAM bindings for"
+        f" {ar_project}/{repo['repository']} are sufficient because you do not"
+        " have access to view IAM bindings for the following resources:"
+        f" {failures}\nUse --log-http to see detailed errors."
     )
     log.status.Print(f"\n{con.Colorize('Warning:','red')} {warning_message}")
     return True, True
@@ -1484,6 +1489,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
   skip_iam = args.skip_iam_update
   ar_location = args.pkg_dev_location
   skip_pre_copy = args.skip_pre_copy
+  use_analyze = args.use_analyze_iam
   if ar_location and not to_pkg_dev:
     log.status.Print(
         "--pkg-dev-location is only used when migrating to pkg.dev repos"
@@ -1595,6 +1601,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
             pkg_dev=True,
             input_iam_policy_dir=input_iam_policy_dir,
             output_iam_policy_dir=output_iam_policy_dir,
+            use_analyze=use_analyze,
         )
         if output_iam_policy_dir:
           if diffs_found:
@@ -1811,6 +1818,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
             repo_bucket_map[project],
             output_iam_policy_dir=output_iam_policy_dir,
             input_iam_policy_dir=input_iam_policy_dir,
+            use_analyze=use_analyze,
         )
       except apitools_exceptions.HttpError as e:
         needs_removal.append(project)

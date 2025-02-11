@@ -24,11 +24,19 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
+DEFAULT_CREATE_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      network.basename().if(network),
+      ncc_gateway.basename().if(ncc_gateway)
+    )"""
+
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
       region.basename(),
-      network.basename()
+      network.basename().yesno(no="N/A")
     )"""
 
 _MODE_CHOICES = {
@@ -167,6 +175,17 @@ def AddBgpIdentifierRangeArg(parser):
           ' even if the BGP sessions are over IPv6. It must not overlap with'
           ' any IPv4 BGP session ranges. This is commonly called "router ID" by'
           ' other vendors.'
+      ),
+  )
+
+
+def AddNccGatewayArg(parser):
+  """NccGateway for router."""
+  parser.add_argument(
+      '--ncc-gateway',
+      type=str,
+      help=(
+          'The NCC gateway for this router.'
       ),
   )
 

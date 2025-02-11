@@ -64,3 +64,18 @@ def IsProjectLevelBackupRequest(backup_id):
     return True
   else:
     return False
+
+
+def IsBackupDrBackupRequest(backup_id: str) -> bool:
+  """Checks if the backup request is a backupdr backup by checking if the backup id contains /backupVaults.
+
+  A backupdr backup will have the backup in the format of
+  projects/{project}/locations/{location}/backupVaults/{backup_vault}/dataSources/{data_source}/backups/{backup}.
+
+  Args:
+    backup_id: The id of the requested backup.
+
+  Returns:
+    True if the request is a backupdr backup request.
+  """
+  return backup_id and '/backupVaults' in backup_id

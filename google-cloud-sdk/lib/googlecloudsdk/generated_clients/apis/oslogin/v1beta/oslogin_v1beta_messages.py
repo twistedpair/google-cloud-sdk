@@ -176,6 +176,20 @@ class OsloginUsersProjectsLocationsSignSshPublicKeyRequest(_messages.Message):
   signSshPublicKeyRequest = _messages.MessageField('SignSshPublicKeyRequest', 2)
 
 
+class OsloginUsersProjectsProvisionPosixAccountRequest(_messages.Message):
+  r"""A OsloginUsersProjectsProvisionPosixAccountRequest object.
+
+  Fields:
+    name: Required. The unique ID for the user in format
+      `users/{user}/projects/{project}`.
+    provisionPosixAccountRequest: A ProvisionPosixAccountRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  provisionPosixAccountRequest = _messages.MessageField('ProvisionPosixAccountRequest', 2)
+
+
 class OsloginUsersProjectsZonesSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsZonesSignSshPublicKeyRequest object.
 
@@ -288,6 +302,18 @@ class PosixAccount(_messages.Message):
   systemId = _messages.StringField(9)
   uid = _messages.IntegerField(10)
   username = _messages.StringField(11)
+
+
+class ProvisionPosixAccountRequest(_messages.Message):
+  r"""A request message for creating a POSIX account entry.
+
+  Fields:
+    regions: Optional. The regions to wait for a POSIX account to be written
+      to before returning a response. If unspecified, defaults to all regions.
+      Regions are listed at https://cloud.google.com/about/locations#region.
+  """
+
+  regions = _messages.StringField(1, repeated=True)
 
 
 class SecurityKey(_messages.Message):

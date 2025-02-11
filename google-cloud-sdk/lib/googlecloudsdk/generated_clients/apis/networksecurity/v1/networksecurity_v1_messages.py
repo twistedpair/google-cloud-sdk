@@ -709,24 +709,27 @@ class CloneAddressGroupItemsRequest(_messages.Message):
 
 
 class CustomInterceptProfile(_messages.Message):
-  r"""CustomInterceptProfile defines the Packet Intercept Endpoint Group used
-  to intercept traffic to a third-party firewall in a Firewall rule.
+  r"""CustomInterceptProfile defines in-band integration behavior (intercept).
+  It is used by firewall rules with an APPLY_SECURITY_PROFILE_GROUP action.
 
   Fields:
-    interceptEndpointGroup: Required. The InterceptEndpointGroup to which
-      traffic associated with the SP should be mirrored.
+    interceptEndpointGroup: Required. The target InterceptEndpointGroup. When
+      a firewall rule with this security profile attached matches a packet,
+      the packet will be intercepted to the location-local target in this
+      group.
   """
 
   interceptEndpointGroup = _messages.StringField(1)
 
 
 class CustomMirroringProfile(_messages.Message):
-  r"""CustomMirroringProfile defines an action for mirroring traffic to a
-  collector's EndpointGroup
+  r"""CustomMirroringProfile defines out-of-band integration behavior
+  (mirroring). It is used by mirroring rules with a MIRROR action.
 
   Fields:
-    mirroringEndpointGroup: Required. The MirroringEndpointGroup to which
-      traffic associated with the SP should be mirrored.
+    mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
+      a mirroring rule with this security profile attached matches a packet, a
+      replica will be mirrored to the location-local target in this group.
   """
 
   mirroringEndpointGroup = _messages.StringField(1)

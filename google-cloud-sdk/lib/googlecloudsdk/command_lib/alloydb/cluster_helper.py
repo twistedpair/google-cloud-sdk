@@ -18,8 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+import types
+
+from apitools.base.protorpclite import messages
 from googlecloudsdk.command_lib.alloydb import flags
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 def _ConstructAutomatedBackupPolicy(alloydb_messages, args):
@@ -36,15 +41,18 @@ def _ConstructAutomatedBackupPolicy(alloydb_messages, args):
     if args.automated_backup_retention_count:
       backup_policy.quantityBasedRetention = (
           alloydb_messages.QuantityBasedRetention(
-              count=args.automated_backup_retention_count))
+              count=args.automated_backup_retention_count
+          )
+      )
     elif args.automated_backup_retention_period:
-      backup_policy.timeBasedRetention = (
-          alloydb_messages.TimeBasedRetention(retentionPeriod='{}s'.format(
-              args.automated_backup_retention_period)))
+      backup_policy.timeBasedRetention = alloydb_messages.TimeBasedRetention(
+          retentionPeriod='{}s'.format(args.automated_backup_retention_period)
+      )
     if args.automated_backup_window:
       backup_policy.backupWindow = '{}s'.format(args.automated_backup_window)
     kms_key = flags.GetAndValidateKmsKeyName(
-        args, flag_overrides=flags.GetAutomatedBackupKmsFlagOverrides())
+        args, flag_overrides=flags.GetAutomatedBackupKmsFlagOverrides()
+    )
     if kms_key:
       encryption_config = alloydb_messages.EncryptionConfig()
       encryption_config.kmsKeyName = kms_key
@@ -115,7 +123,8 @@ def _ConstructContinuousBackupConfig(alloydb_messages, args, update=False):
         args.continuous_backup_recovery_window_days
     )
   kms_key = flags.GetAndValidateKmsKeyName(
-      args, flag_overrides=flags.GetContinuousBackupKmsFlagOverrides())
+      args, flag_overrides=flags.GetContinuousBackupKmsFlagOverrides()
+  )
 
   if kms_key:
     encryption_config = alloydb_messages.EncryptionConfig()
@@ -129,7 +138,8 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
   cluster = alloydb_messages.Cluster()
   cluster.network = args.network
   cluster.initialUser = alloydb_messages.UserPassword(
-      password=args.password, user='postgres')
+      password=args.password, user='postgres'
+  )
   kms_key = flags.GetAndValidateKmsKeyName(args)
   if kms_key:
     encryption_config = alloydb_messages.EncryptionConfig()
@@ -138,7 +148,8 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
 
   if args.disable_automated_backup or args.automated_backup_days_of_week:
     cluster.automatedBackupPolicy = _ConstructAutomatedBackupPolicy(
-        alloydb_messages, args)
+        alloydb_messages, args
+    )
 
   if (
       args.enable_continuous_backup is not None
@@ -146,7 +157,8 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
       or args.continuous_backup_encryption_key
   ):
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
-        alloydb_messages, args)
+        alloydb_messages, args
+    )
 
   if args.allocated_ip_range_name:
     cluster.networkConfig = alloydb_messages.NetworkConfig(
@@ -162,9 +174,7 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
       args.maintenance_window_day or args.maintenance_window_hour
   )
   if configure_maintenance_window:
-    cluster.maintenanceUpdatePolicy = (
-        alloydb_messages.MaintenanceUpdatePolicy()
-    )
+    cluster.maintenanceUpdatePolicy = alloydb_messages.MaintenanceUpdatePolicy()
     cluster.maintenanceUpdatePolicy.maintenanceWindows = (
         _ConstructMaintenanceWindows(alloydb_messages, args)
     )
@@ -231,7 +241,8 @@ def ConstructCreateRequestFromArgsGA(alloydb_messages, location_ref, args):
   return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
       cluster=cluster,
       clusterId=args.cluster,
-      parent=location_ref.RelativeName())
+      parent=location_ref.RelativeName(),
+  )
 
 
 def ConstructCreateRequestFromArgsBeta(alloydb_messages, location_ref, args):
@@ -241,7 +252,8 @@ def ConstructCreateRequestFromArgsBeta(alloydb_messages, location_ref, args):
   return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
       cluster=cluster,
       clusterId=args.cluster,
-      parent=location_ref.RelativeName())
+      parent=location_ref.RelativeName(),
+  )
 
 
 def ConstructCreateRequestFromArgsAlpha(alloydb_messages, location_ref, args):
@@ -314,11 +326,13 @@ def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
   return cluster_resource
 
 
-def ConstructRestoreRequestFromArgsGA(alloydb_messages, location_ref,
-                                      resource_parser, args):
+def ConstructRestoreRequestFromArgsGA(
+    alloydb_messages, location_ref, resource_parser, args
+):
   """Returns the cluster restore request for GA track based on args."""
   cluster_resource = _ConstructClusterResourceForRestoreRequest(
-      alloydb_messages, args)
+      alloydb_messages, args
+  )
 
   backup_source, continuous_backup_source = (
       _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
@@ -333,7 +347,8 @@ def ConstructRestoreRequestFromArgsGA(alloydb_messages, location_ref,
           continuousBackupSource=continuous_backup_source,
           clusterId=args.cluster,
           cluster=cluster_resource,
-      ))
+      ),
+  )
 
 
 def _ConstructClusterResourceForRestoreRequestAlpha(alloydb_messages, args):
@@ -412,10 +427,14 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
   update_masks = []
   continuous_backup_update_masks = []
 
-  if (args.disable_automated_backup or args.automated_backup_days_of_week or
-      args.clear_automated_backup):
+  if (
+      args.disable_automated_backup
+      or args.automated_backup_days_of_week
+      or args.clear_automated_backup
+  ):
     cluster.automatedBackupPolicy = _ConstructAutomatedBackupPolicy(
-        alloydb_messages, args)
+        alloydb_messages, args
+    )
     update_masks.append('automated_backup_policy')
 
   if args.enable_continuous_backup:
@@ -425,7 +444,8 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
     # configuration when disabling continuous backups
     update_masks.append('continuous_backup_config')
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
-        alloydb_messages, args, update=True)
+        alloydb_messages, args, update=True
+    )
     return cluster, update_masks
 
   if args.continuous_backup_recovery_window_days:
@@ -443,7 +463,8 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
   update_masks.extend(continuous_backup_update_masks)
   if continuous_backup_update_masks:
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
-        alloydb_messages, args, update=True)
+        alloydb_messages, args, update=True
+    )
 
   update_maintenance_window = (
       args.maintenance_window_any
@@ -546,11 +567,13 @@ def _ConstructDenyPeriods(alloydb_messages, args, update=False):
 def ConstructPatchRequestFromArgsGA(alloydb_messages, cluster_ref, args):
   """Returns the cluster patch request for GA release track based on args."""
   cluster, update_masks = _ConstructClusterAndMaskForPatchRequestGA(
-      alloydb_messages, args)
+      alloydb_messages, args
+  )
   return alloydb_messages.AlloydbProjectsLocationsClustersPatchRequest(
       name=cluster_ref.RelativeName(),
       cluster=cluster,
-      updateMask=','.join(update_masks))
+      updateMask=','.join(update_masks),
+  )
 
 
 def ConstructPatchRequestFromArgsBeta(alloydb_messages, cluster_ref, args):
@@ -620,17 +643,16 @@ def _ConstructClusterForCreateSecondaryRequestGA(alloydb_messages, args):
   return cluster
 
 
-def _ConstructClusterForCreateSecondaryRequestBeta(
-    alloydb_messages, args):
+def _ConstructClusterForCreateSecondaryRequestBeta(alloydb_messages, args):
   cluster = _ConstructClusterForCreateSecondaryRequestGA(alloydb_messages, args)
 
   return cluster
 
 
-def _ConstructClusterForCreateSecondaryRequestAlpha(
-    alloydb_messages, args):
+def _ConstructClusterForCreateSecondaryRequestAlpha(alloydb_messages, args):
   cluster = _ConstructClusterForCreateSecondaryRequestBeta(
-      alloydb_messages, args)
+      alloydb_messages, args
+  )
   return cluster
 
 
@@ -654,7 +676,8 @@ def ConstructCreatesecondaryRequestFromArgsBeta(
   """Returns the cluster create-secondary request for Beta release track based on args."""
 
   cluster = _ConstructClusterForCreateSecondaryRequestBeta(
-      alloydb_messages, args)
+      alloydb_messages, args
+  )
 
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersCreatesecondaryRequest(
@@ -671,7 +694,8 @@ def ConstructCreatesecondaryRequestFromArgsAlpha(
   """Returns the cluster create-secondary request for Alpha release track based on args."""
 
   cluster = _ConstructClusterForCreateSecondaryRequestAlpha(
-      alloydb_messages, args)
+      alloydb_messages, args
+  )
 
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersCreatesecondaryRequest(
@@ -727,7 +751,6 @@ def ConstructImportRequestFromArgs(alloydb_messages, cluster_ref, args):
   import_cluster_request.database = args.database
   import_cluster_request.user = args.user
   import_cluster_request.gcsUri = args.gcs_uri
-  import_cluster_request.usernameOptional = True
   if args.csv:
     import_cluster_request.csvImportOptions = (
         alloydb_messages.CsvImportOptions()
@@ -751,4 +774,84 @@ def ConstructImportRequestFromArgs(alloydb_messages, cluster_ref, args):
   return alloydb_messages.AlloydbProjectsLocationsClustersImportRequest(
       name=cluster_ref.RelativeName(),
       importClusterRequest=import_cluster_request,
+  )
+
+
+def ConstructMigrateCloudSqlRequestFromArgsAlpha(
+    alloydb_messages: types.ModuleType,
+    location_ref: resources.Resource,
+    args: argparse.Namespace,
+) -> messages.Message:
+  """Constructs the Migrate Cloud Sql request for Alpha release track.
+
+  Args:
+    alloydb_messages: The AlloyDB messages module.
+    location_ref: The location reference for the request.
+    args: An object that contains the values for the arguments specified in the
+      .Args() method.
+
+  Returns:
+    The Migrate Cloud Sql request based on args for Alpha release track.
+  """
+  migrate_cloud_sql_request = alloydb_messages.RestoreFromCloudSQLRequest()
+  migrate_cloud_sql_request.cluster = _ConstructClusterForCreateRequestAlpha(
+      alloydb_messages, args
+  )
+  migrate_cloud_sql_request.clusterId = args.cluster
+  migrate_cloud_sql_request.cloudsqlBackupRunSource = (
+      alloydb_messages.CloudSQLBackupRunSource()
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.backupRunId = (
+      args.cloud_sql_backup_id
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.instanceId = (
+      args.cloud_sql_instance_id
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.project = (
+      args.cloud_sql_project_id
+  )
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest(
+      parent=location_ref.RelativeName(),
+      restoreFromCloudSQLRequest=migrate_cloud_sql_request,
+  )
+
+
+def ConstructMigrateCloudSqlRequestFromArgsBeta(
+    alloydb_messages: types.ModuleType,
+    location_ref: resources.Resource,
+    args: argparse.Namespace,
+) -> messages.Message:
+  """Constructs the Migrate Cloud Sql request for Beta release track.
+
+  Args:
+    alloydb_messages: The AlloyDB messages module.
+    location_ref: The location reference for the request.
+    args: An object that contains the values for the arguments specified in the
+      .Args() method.
+
+  Returns:
+    The Migrate Cloud Sql request based on args for Beta release track.
+  """
+  migrate_cloud_sql_request = alloydb_messages.RestoreFromCloudSQLRequest()
+  migrate_cloud_sql_request.cluster = _ConstructClusterForCreateRequestBeta(
+      alloydb_messages, args
+  )
+  migrate_cloud_sql_request.clusterId = args.cluster
+  migrate_cloud_sql_request.cloudsqlBackupRunSource = (
+      alloydb_messages.CloudSQLBackupRunSource()
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.backupRunId = (
+      args.cloud_sql_backup_id
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.instanceId = (
+      args.cloud_sql_instance_id
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.project = (
+      args.cloud_sql_project_id
+  )
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest(
+      parent=location_ref.RelativeName(),
+      restoreFromCloudSQLRequest=migrate_cloud_sql_request,
   )

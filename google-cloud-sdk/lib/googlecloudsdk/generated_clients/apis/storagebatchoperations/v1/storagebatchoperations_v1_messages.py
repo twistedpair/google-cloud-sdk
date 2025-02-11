@@ -257,21 +257,17 @@ class Job(_messages.Message):
       max length is 1024 bytes when Unicode-encoded.
     errorSummaries: Output only. Summarizes errors encountered with sample
       error log entries.
-    manifest: Manifest specifies list of objects to be transformed.
-      Deprecated. Use `bucket_list` instead.
     name: Identifier. The resource name of the Job. job_id is unique within
       the project and location, that is either set by the customer or defined
       by the service. Format:
       projects/{project}/locations/{location}/jobs/{job_id} . For example:
       "projects/123456/locations/us-central1/jobs/job01".
-    prefixList: Specifies prefixes of objects to be transformed. Note:
-      `prefix_list` must belong to the same bucket. Deprecated. Use
-      `bucket_list` instead.
     putKmsKey: Update objects KMS key.
     putMetadata: Updates object metadata. Allows updating fixed-key and custom
       metadata and fixed-key metadata i.e. Cache-Control, Content-Disposition,
       Content-Encoding, Content-Language, Content-Type, Custom-Time.
     putObjectHold: Changes object hold status.
+    rewriteObject: Rewrite the object and updates metadata like KMS key.
     scheduleTime: Output only. The time that the job was scheduled.
     state: Output only. State of the job.
   """
@@ -299,14 +295,13 @@ class Job(_messages.Message):
   deleteObject = _messages.MessageField('DeleteObject', 5)
   description = _messages.StringField(6)
   errorSummaries = _messages.MessageField('ErrorSummary', 7, repeated=True)
-  manifest = _messages.MessageField('Manifest', 8)
-  name = _messages.StringField(9)
-  prefixList = _messages.MessageField('PrefixList', 10)
-  putKmsKey = _messages.MessageField('PutKmsKey', 11)
-  putMetadata = _messages.MessageField('PutMetadata', 12)
-  putObjectHold = _messages.MessageField('PutObjectHold', 13)
-  scheduleTime = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
+  name = _messages.StringField(8)
+  putKmsKey = _messages.MessageField('PutKmsKey', 9)
+  putMetadata = _messages.MessageField('PutMetadata', 10)
+  putObjectHold = _messages.MessageField('PutObjectHold', 11)
+  rewriteObject = _messages.MessageField('RewriteObject', 12)
+  scheduleTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class ListJobsResponse(_messages.Message):
@@ -579,22 +574,6 @@ class OperationMetadata(_messages.Message):
   requestedCancellation = _messages.BooleanField(7)
 
 
-class Prefix(_messages.Message):
-  r"""Describes prefix of objects to be transformed.
-
-  Fields:
-    bucket: Optional. Bucket name on which batch ops is being performed Note:
-      Only one bucket is supported for v1. For future versions we will extend
-      this to multi bucket.
-    objectPrefix: Optional. object must be in the `bucket`. * Supports full
-      object name * Supports prefix of the object name * Wildcards are not
-      supported * Supports empty string for all objects in a bucket.
-  """
-
-  bucket = _messages.StringField(1)
-  objectPrefix = _messages.StringField(2)
-
-
 class PrefixList(_messages.Message):
   r"""Describes prefixes of objects to be transformed.
 
@@ -603,14 +582,9 @@ class PrefixList(_messages.Message):
       transformed. * Supports full object name * Supports prefix of the object
       name * Wildcards are not supported * Supports empty string for all
       objects in a bucket.
-    prefixes: Optional. Prefixes of the objects to be transformed. This field
-      does not support multiple prefixes. Use `included_object_prefixes`
-      instead to specify multiple prefixes. Deprecated. Use
-      `included_object_prefixes` instead.
   """
 
   includedObjectPrefixes = _messages.StringField(1, repeated=True)
-  prefixes = _messages.MessageField('Prefix', 2, repeated=True)
 
 
 class PutKmsKey(_messages.Message):
@@ -635,48 +609,55 @@ class PutMetadata(_messages.Message):
 
   Messages:
     CustomMetadataValue: Optional. Updates objects custom metadata. Adds or
-      sets individual custom metadata key value pairs on objects. Empty custom
-      metadata values are ignored. Existing custom metadata not specified with
-      this flag is not changed. Refer to documentation in
+      sets individual custom metadata key value pairs on objects. Keys that
+      are set with empty custom metadata values will have its value cleared.
+      Existing custom metadata not specified with this flag is not changed.
+      Refer to documentation in
       https://cloud.google.com/storage/docs/metadata#custom-metadata
 
   Fields:
     cacheControl: Optional. Updates objects Cache-Control fixed metadata.
-      Empty values are ignored. Additionally, the value for Custom-Time cannot
-      decrease. Refer to documentation in
+      Unset values will be ignored. Set empty values to clear the metadata.
+      Additionally, the value for Custom-Time cannot decrease. Refer to
+      documentation in
       https://cloud.google.com/storage/docs/metadata#caching_data.
     contentDisposition: Optional. Updates objects Content-Disposition fixed
-      metadata. Empty values will be ignored. Refer
-      https://cloud.google.com/storage/docs/metadata#content-disposition for
-      additional documentation.
+      metadata. Unset values will be ignored. Set empty values to clear the
+      metadata. Refer https://cloud.google.com/storage/docs/metadata#content-
+      disposition for additional documentation.
     contentEncoding: Optional. Updates objects Content-Encoding fixed
-      metadata. Empty values will be ignored. Refer to documentation in
+      metadata. Unset values will be ignored. Set empty values to clear the
+      metadata. Refer to documentation in
       https://cloud.google.com/storage/docs/metadata#content-encoding.
     contentLanguage: Optional. Updates objects Content-Language fixed
       metadata. Refer to ISO 639-1 language codes for typical values of this
-      metadata. Max length 100 characters. Empty values are ignored. Refer to
+      metadata. Max length 100 characters. Unset values will be ignored. Set
+      empty values to clear the metadata. Refer to documentation in
+      https://cloud.google.com/storage/docs/metadata#content-language.
+    contentType: Optional. Updates objects Content-Type fixed metadata. Unset
+      values will be ignored. Set empty values to clear the metadata. Refer to
       documentation in https://cloud.google.com/storage/docs/metadata#content-
-      language.
-    contentType: Optional. Updates objects Content-Type fixed metadata. Refer
-      to documentation in
-      https://cloud.google.com/storage/docs/metadata#content-type
+      type
     customMetadata: Optional. Updates objects custom metadata. Adds or sets
-      individual custom metadata key value pairs on objects. Empty custom
-      metadata values are ignored. Existing custom metadata not specified with
-      this flag is not changed. Refer to documentation in
-      https://cloud.google.com/storage/docs/metadata#custom-metadata
-    customTime: Optional. Updates objects Custom-Time fixed metadata. Empty
-      values are ignored. Refer to documentation in
-      https://cloud.google.com/storage/docs/metadata#custom-time.
+      individual custom metadata key value pairs on objects. Keys that are set
+      with empty custom metadata values will have its value cleared. Existing
+      custom metadata not specified with this flag is not changed. Refer to
+      documentation in https://cloud.google.com/storage/docs/metadata#custom-
+      metadata
+    customTime: Optional. Updates objects Custom-Time fixed metadata. Unset
+      values will be ignored. Set empty values to clear the metadata. Refer to
+      documentation in https://cloud.google.com/storage/docs/metadata#custom-
+      time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
     r"""Optional. Updates objects custom metadata. Adds or sets individual
-    custom metadata key value pairs on objects. Empty custom metadata values
-    are ignored. Existing custom metadata not specified with this flag is not
-    changed. Refer to documentation in
-    https://cloud.google.com/storage/docs/metadata#custom-metadata
+    custom metadata key value pairs on objects. Keys that are set with empty
+    custom metadata values will have its value cleared. Existing custom
+    metadata not specified with this flag is not changed. Refer to
+    documentation in https://cloud.google.com/storage/docs/metadata#custom-
+    metadata
 
     Messages:
       AdditionalProperty: An additional property for a CustomMetadataValue
@@ -760,6 +741,24 @@ class PutObjectHold(_messages.Message):
 
   eventBasedHold = _messages.EnumField('EventBasedHoldValueValuesEnum', 1)
   temporaryHold = _messages.EnumField('TemporaryHoldValueValuesEnum', 2)
+
+
+class RewriteObject(_messages.Message):
+  r"""Describes options for object rewrite.
+
+  Fields:
+    kmsKey: Required. Resource name of the Cloud KMS key that will be used to
+      encrypt the object. The Cloud KMS key must be located in same location
+      as the object. Refer to
+      https://cloud.google.com/storage/docs/encryption/using-customer-managed-
+      keys#add-object-key for additional documentation. Format: projects/{proj
+      ect}/locations/{location}/keyRings/{keyring}/cryptoKeys/{key} For
+      example: "projects/123456/locations/us-central1/keyRings/my-
+      keyring/cryptoKeys/my-key". The object will be rewritten and set with
+      the specified KMS key.
+  """
+
+  kmsKey = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

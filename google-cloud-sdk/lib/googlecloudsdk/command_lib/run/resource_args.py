@@ -248,7 +248,7 @@ def WorkerPoolAttributeConfig(prompt=False):
   else:
     fallthroughs = []
   return concepts.ResourceParameterAttributeConfig(
-      name='workerpool',
+      name='worker-pool',
       help_text='WorkerPool for the {resource}.',
       fallthroughs=fallthroughs,
   )

@@ -328,13 +328,13 @@ def GetTpuVersion(required=True):
   )
 
 
-def GetTpuCount(required=False):
-  """Gets the --tpu-count flag."""
+def GetChipCount(required=False):
+  """Gets the --chip-count flag."""
   help_text = """\
-  The number of TPUs to reserve.
+  The number of chips to reserve.
   """
   return base.Argument(
-      '--tpu-count', type=int, required=required, help=help_text
+      '--chip-count', type=int, required=required, help=help_text
   )
 
 

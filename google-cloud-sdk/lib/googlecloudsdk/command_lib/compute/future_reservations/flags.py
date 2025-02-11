@@ -417,7 +417,7 @@ def AddCreateFlags(
         reservation_flags.GetTpuVersion()
     )
     aggregate_reservation_group.AddArgument(
-        reservation_flags.GetTpuCount()
+        reservation_flags.GetChipCount()
     )
     aggregate_reservation_group.AddArgument(
         reservation_flags.GetWorkloadType()

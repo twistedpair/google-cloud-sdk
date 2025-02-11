@@ -40,7 +40,16 @@ def AddDiskSettingArg(parser):
   )
 
 
+POLICY_OPTIONS = {
+    'all-regions': 'All regions will be allowed to access the source disk.',
+    'specific-regions': (
+        'Only the specified regions will be allowed to access the source disk.'
+    ),
+}
+
+
 def AddUpdateDiskSettingsFlags(parser):
+  """Add flags for updating disk settings."""
   parser.add_argument(
       '--add-access-locations',
       help='Access locations to add to disk settings',
@@ -52,4 +61,11 @@ def AddUpdateDiskSettingsFlags(parser):
       help='Access locations to remove from disk settings',
       metavar='REMOVE_ACCESS_LOCATIONS',
       type=arg_parsers.ArgList(),
+  )
+
+  parser.add_argument(
+      '--access-location-policy',
+      help="""The access location policy for disk settings""",
+      metavar='ACCESS_LOCATION_POLICY',
+      choices=POLICY_OPTIONS,
   )

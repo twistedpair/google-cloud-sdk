@@ -536,16 +536,29 @@ class Configs:
       config.container.runAsUser = args.container_run_as_user
       update_mask.append('container.run_as_user')
 
-    if args.IsSpecified('pd_source_snapshot'):
-      if not old_config.persistentDirectories:
-        log.error('Cannot add persistent directories in update.')
-        return
+    if args.IsSpecified('pd_disk_type') or args.IsSpecified('pd_disk_size'):
       config.persistentDirectories = old_config.persistentDirectories
-      config.persistentDirectories[0].gcePd.sourceSnapshot = (
-          args.pd_source_snapshot
+      if not old_config.persistentDirectories:
+        config.persistentDirectories = [self.messages.PersistentDirectory()]
+
+      config.persistentDirectories[0].gcePd = (
+          self.messages.GceRegionalPersistentDisk(
+              sizeGb=args.pd_disk_size,
+              diskType=args.pd_disk_type
+          )
       )
-      config.persistentDirectories[0].gcePd.sizeGb = 0
-      config.persistentDirectories[0].gcePd.fsType = ''
+      update_mask.append('persistent_directories')
+    elif args.IsSpecified('pd_source_snapshot'):
+      config.persistentDirectories = old_config.persistentDirectories
+      if not old_config.persistentDirectories:
+        config.persistentDirectories = [self.messages.PersistentDirectory()]
+      config.persistentDirectories[0].gcePd = (
+          self.messages.GceRegionalPersistentDisk(
+              sizeGb=0,
+              fsType='',
+              sourceSnapshot=args.pd_source_snapshot
+          )
+      )
       update_mask.append('persistent_directories')
 
     if args.IsSpecified('vm_tags'):

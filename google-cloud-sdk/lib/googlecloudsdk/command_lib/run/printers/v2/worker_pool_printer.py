@@ -22,18 +22,19 @@ from googlecloudsdk.command_lib.run.printers.v2 import printer_util
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import vendor_settings
+from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as worker_pool_objects
 
 WORKER_POOL_PRINTER_FORMAT = 'workerpool'
 
 
-class WorkerPoolV2Printer(cp.CustomPrinterBase):
+class WorkerPoolPrinter(cp.CustomPrinterBase):
   """Prints the Run v2 WorkerPool in a custom human-readable format.
 
   Format specific to Cloud Run worker pools. Only available on Cloud Run
   commands that print worker pools.
   """
 
-  def _GetRevisionHeader(self, record):
+  def _GetRevisionHeader(self, record: worker_pool_objects.WorkerPool):
     header = 'Unknown revision'
     if record.latest_created_revision:
       header = 'Revision {}'.format(
@@ -43,19 +44,12 @@ class WorkerPoolV2Printer(cp.CustomPrinterBase):
       )
     return console_attr.GetConsoleAttr().Emphasize(header)
 
-  def _GetCMEK(self, record):
-    cmek_key = record.encryption_key
-    if not cmek_key:
-      return ''
-    cmek_name = cmek_key.split('/')[-1]
-    return cmek_name
-
-  def _TransformTemplate(self, record):
+  def _TransformTemplate(self, record: worker_pool_objects.WorkerPool):
     labels = [('Service account', record.service_account)]
     labels.extend([
         # TODO(b/366115709): add SQL connections printer.
         ('VPC access', printer_util.GetVpcNetwork(record.vpc_access)),
-        ('CMEK', self._GetCMEK(record)),
+        ('CMEK', printer_util.GetCMEK(record.encryption_key)),
         ('Session Affinity', 'True' if record.session_affinity else ''),
         # TODO(b/366115709): add volumes printer.
     ])
@@ -64,7 +58,7 @@ class WorkerPoolV2Printer(cp.CustomPrinterBase):
         cp.Labeled(labels),
     ])
 
-  def _RevisionPrinters(self, record):
+  def _RevisionPrinters(self, record: worker_pool_objects.WorkerPool):
     """Adds printers for the revision."""
     return cp.Lines([
         self._GetRevisionHeader(record),
@@ -72,7 +66,7 @@ class WorkerPoolV2Printer(cp.CustomPrinterBase):
         self._TransformTemplate(record.template),
     ])
 
-  def _GetBinaryAuthorization(self, record):
+  def _GetBinaryAuthorization(self, record: worker_pool_objects.WorkerPool):
     """Adds worker pool level values."""
     if record.binary_authorization is None:
       return None
@@ -80,7 +74,7 @@ class WorkerPoolV2Printer(cp.CustomPrinterBase):
       return 'Default'
     return record.binary_authorization.policy
 
-  def _GetWorkerPoolSettings(self, record):
+  def _GetWorkerPoolSettings(self, record: worker_pool_objects.WorkerPool):
     """Adds worker pool level values."""
     labels = [
         cp.Labeled([
@@ -111,7 +105,7 @@ class WorkerPoolV2Printer(cp.CustomPrinterBase):
       labels.append(scaling_mode_label)
     return cp.Section(labels)
 
-  def _GetScalingMode(self, record):
+  def _GetScalingMode(self, record: worker_pool_objects.WorkerPool):
     """Returns the scaling mode of the worker pool."""
     scaling_mode = record.scaling.scaling_mode
 
@@ -127,7 +121,7 @@ class WorkerPoolV2Printer(cp.CustomPrinterBase):
         )
       return 'Auto (Min: %s)' % instance_count
 
-  def Transform(self, record):
+  def Transform(self, record: worker_pool_objects.WorkerPool):
     """Transform a worker pool into the output structure of marker classes."""
     worker_pool_settings = self._GetWorkerPoolSettings(record)
     fmt = cp.Lines([

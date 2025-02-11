@@ -110,14 +110,20 @@ def GetStartDeployMessage(
       '[{{bold}}{resource}{{reset}}] in {ns_label} [{{bold}}{ns}{{reset}}]'
   )
   msg += conn_context.location_label
-
+  # For WorkerPools case resource_ref.Parent().Name() returns the region name
+  # which is not what we want.
+  ns = (
+      resource_ref.projectsId
+      if resource_kind_lower == 'worker pool'
+      else resource_ref.Parent().Name()
+  )
   return msg.format(
       operation=operation,
       operator=conn_context.operator,
       resource_kind=resource_kind_lower,
       ns_label=conn_context.ns_label,
       resource=resource_ref.Name(),
-      ns=resource_ref.Parent().Name(),
+      ns=ns,
   )
 
 

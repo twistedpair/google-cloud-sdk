@@ -112,6 +112,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstances = self.RegionInstancesService(self)
     self.regionInstantSnapshotGroups = self.RegionInstantSnapshotGroupsService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
+    self.regionMultiMigMembers = self.RegionMultiMigMembersService(self)
     self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
@@ -1892,6 +1893,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/disks/bulkInsert',
         request_field='bulkInsertDiskResource',
         request_type_name='ComputeDisksBulkInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def BulkSetLabels(self, request, global_params=None):
+      r"""Sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeDisksBulkSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkSetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkSetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.bulkSetLabels',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'resource'],
+        relative_path='projects/{project}/zones/{zone}/disks/bulkSetLabels',
+        request_field='bulkZoneSetLabelsRequest',
+        request_type_name='ComputeDisksBulkSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -8991,7 +9018,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         request: (ComputeInterconnectAttachmentGroupsCreateMembersRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (InterconnectAttachmentGroupsCreateMembersResponse) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('CreateMembers')
       return self._RunMethod(
@@ -9006,7 +9033,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}/createMembers',
         request_field='interconnectAttachmentGroupsCreateMembersRequest',
         request_type_name='ComputeInterconnectAttachmentGroupsCreateMembersRequest',
-        response_type_name='InterconnectAttachmentGroupsCreateMembersResponse',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -9531,7 +9558,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         request: (ComputeInterconnectGroupsCreateMembersRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (InterconnectGroupsCreateMembersResponse) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('CreateMembers')
       return self._RunMethod(
@@ -9546,7 +9573,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}/createMembers',
         request_field='interconnectGroupsCreateMembersRequest',
         request_type_name='ComputeInterconnectGroupsCreateMembersRequest',
-        response_type_name='InterconnectGroupsCreateMembersResponse',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -17993,6 +18020,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionInstantSnapshotsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionMultiMigMembersService(base_api.BaseApiService):
+    """Service class for the regionMultiMigMembers resource."""
+
+    _NAME = 'regionMultiMigMembers'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionMultiMigMembersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified multi-MIG member.
+
+      Args:
+        request: (ComputeRegionMultiMigMembersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MultiMigMember) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionMultiMigMembers.get',
+        ordered_params=['project', 'region', 'multiMig', 'multiMigMember'],
+        path_params=['multiMig', 'multiMigMember', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}/multiMigMembers/{multiMigMember}',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigMembersGetRequest',
+        response_type_name='MultiMigMember',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of members of a specific multi-MIG.
+
+      Args:
+        request: (ComputeRegionMultiMigMembersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MultiMigMemberList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionMultiMigMembers.list',
+        ordered_params=['project', 'region', 'multiMig'],
+        path_params=['multiMig', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}/multiMigMembers',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigMembersListRequest',
+        response_type_name='MultiMigMemberList',
         supports_download=False,
     )
 

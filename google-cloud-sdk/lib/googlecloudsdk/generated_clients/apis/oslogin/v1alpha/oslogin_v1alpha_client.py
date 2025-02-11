@@ -156,6 +156,33 @@ class OsloginV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ProvisionPosixAccount(self, request, global_params=None):
+      r"""Create a POSIX account if it doesn't exist.
+
+      Args:
+        request: (OsloginUsersProjectsProvisionPosixAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PosixAccount) The response message.
+      """
+      config = self.GetMethodConfig('ProvisionPosixAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProvisionPosixAccount.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/users/{usersId}/projects/{projectsId}',
+        http_method='POST',
+        method_id='oslogin.users.projects.provisionPosixAccount',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='provisionPosixAccountRequest',
+        request_type_name='OsloginUsersProjectsProvisionPosixAccountRequest',
+        response_type_name='PosixAccount',
+        supports_download=False,
+    )
+
   class UsersSshPublicKeysService(base_api.BaseApiService):
     """Service class for the users_sshPublicKeys resource."""
 

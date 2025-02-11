@@ -53,7 +53,11 @@ _REQUESTED_FEATURES_CHOICES = {
         'hardware ports. If not specified, the interconnect is created on '
         'non-MACsec capable ports first, if available. This parameter can only '
         'be provided during interconnect INSERT and cannot be changed using '
-        'interconnect PATCH.'
+        'interconnect PATCH.',
+    'CROSS_SITE_NETWORK':
+        'If specified then the interconnect is created on Cross-Site Network '
+        'capable hardware ports. This parameter can only be provided during '
+        'interconnect INSERT and cannot be changed using interconnect PATCH.',
 }
 
 
@@ -163,6 +167,10 @@ def GetRequestedFeature(messages, feature_arg):
   if feature_arg == 'MACSEC':
     return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
         'IF_MACSEC'
+    )
+  if feature_arg == 'CROSS_SITE_NETWORK':
+    return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
+        'IF_CROSS_SITE_NETWORK'
     )
   return None
 

@@ -17,6 +17,7 @@
 import textwrap
 
 from googlecloudsdk.command_lib.run import resource_name_conversion
+from googlecloudsdk.command_lib.run.v2 import conditions
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import condition as condition_objects
@@ -40,15 +41,13 @@ def _PickSymbol(best, alt, encoding):
 def ReadySymbolAndColor(record):
   """Return a tuple of ready_symbol and display color for this object."""
   encoding = console_attr.GetConsoleAttr().GetEncoding()
-  if record.terminal_condition is None:
+  terminal_condition = conditions.GetTerminalCondition(record)
+  if terminal_condition is None:
     return (
         _PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding),
         'yellow',
     )
-  elif (
-      record.terminal_condition.state
-      == condition_objects.Condition.State.CONDITION_SUCCEEDED
-  ):
+  elif conditions.IsConditionReady(terminal_condition):
     return _PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green'
   else:
     return 'X', 'red'
@@ -56,15 +55,14 @@ def ReadySymbolAndColor(record):
 
 def FormatReadyMessage(record):
   """Returns the record's status condition Ready (or equivalent) message."""
-  if record.terminal_condition and record.terminal_condition.message:
+  terminal_condition = conditions.GetTerminalCondition(record)
+  if terminal_condition and terminal_condition.message:
     symbol, color = ReadySymbolAndColor(record)
     return console_attr.GetConsoleAttr().Colorize(
-        textwrap.fill(
-            '{} {}'.format(symbol, record.terminal_condition.message), 100
-        ),
+        textwrap.fill('{} {}'.format(symbol, terminal_condition.message), 100),
         color,
     )
-  elif record.terminal_condition is None:
+  elif terminal_condition is None:
     return console_attr.GetConsoleAttr().Colorize(
         'Error getting status information', 'red'
     )
@@ -82,12 +80,18 @@ def LastUpdatedMessage(record):
   return 'Last updated on {} by {}'.format(last_transition_time, modifier)
 
 
-def BuildHeader(record, is_multi_region=False):
+def BuildHeader(record, is_multi_region=False, is_child_resource=False):
+  """Returns a display header for a resource."""
   con = console_attr.GetConsoleAttr()
   status = con.Colorize(*ReadySymbolAndColor(record))
-  _, region, resource_kind, name = resource_name_conversion.GetInfoFromFullName(
-      record.name
-  )
+  if is_child_resource:
+    _, region, _, _, resource_kind, name = (
+        resource_name_conversion.GetInfoFromFullChildName(record.name)
+    )
+  else:
+    _, region, resource_kind, name = (
+        resource_name_conversion.GetInfoFromFullName(record.name)
+    )
   place = ('regions ' if is_multi_region else 'region ') + region
   kind = ('Multi-Region ' if is_multi_region else '') + resource_kind
   return con.Emphasize('{} {} {} in {}'.format(status, kind, name, place))
@@ -269,3 +273,18 @@ def GetActiveStateFromDict(resource):
   if active_condition:
     return active_condition.get('state') == _CONDITION_SUCCEEDED_VALUE
   return False
+
+
+def GetCMEK(cmek_key: str) -> str:
+  """Returns the CMEK name from a full CMEK key name.
+
+  Args:
+    cmek_key: The full CMEK key name.
+
+  Returns:
+    The CMEK name.
+  """
+  if not cmek_key:
+    return ''
+  cmek_name = cmek_key.split('/')[-1]
+  return cmek_name

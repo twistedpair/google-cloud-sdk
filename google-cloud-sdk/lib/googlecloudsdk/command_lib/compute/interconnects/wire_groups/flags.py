@@ -150,3 +150,39 @@ def AddValidateOnly(parser):
       help='Only validates the configuration, but does not create it.',
   )
 
+
+def AddEndpointLabel(parser, required=True):
+  """Adds endpoint-label flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--endpoint-label',
+      required=required,
+      help='The endpoint label for the wire group.',
+  )
+
+
+def AddInterconnectLabel(parser, required=True):
+  """Adds interconnect-label flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--interconnect-label',
+      required=required,
+      help='The interconnect label for the wire group endpoint.',
+  )
+
+
+def AddInterconnect(parser, required=True):
+  """Adds interconnect flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--interconnect',
+      required=required,
+      help='The interconnect for the wire group endpoint.',
+  )
+
+
+def AddVlanTags(parser, required=True):
+  """Adds vlan-tags flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--vlan-tags',
+      required=required,
+      help='The vlan tags for the interconnect on the wire group endpoint.',
+  )
+
