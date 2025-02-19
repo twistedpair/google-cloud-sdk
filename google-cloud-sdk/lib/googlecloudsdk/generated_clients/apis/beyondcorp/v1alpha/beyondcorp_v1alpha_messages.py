@@ -2464,7 +2464,7 @@ class BeyondcorpProjectsLocationsGlobalSecurityGatewaysApplicationsPatchRequest(
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Mutable fields include: display_name.
+    updateMask: Optional. Mutable fields include: display_name.
   """
 
   googleCloudBeyondcorpSecuritygatewaysV1alphaApplication = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplication', 1)
@@ -3012,7 +3012,7 @@ class BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest(_messages.Message)
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Mutable fields include: display_name, hubs.
+    updateMask: Optional. Mutable fields include: display_name, hubs.
   """
 
   googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway', 1)

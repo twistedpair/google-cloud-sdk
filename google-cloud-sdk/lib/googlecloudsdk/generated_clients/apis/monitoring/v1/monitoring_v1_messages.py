@@ -2237,6 +2237,9 @@ class Scorecard(_messages.Message):
   Fields:
     blankView: Will cause the Scorecard to show only the value, with no
       indicator to its value relative to its thresholds.
+    breakdowns: Optional. The collection of breakdowns to be applied to the
+      dataset. A breakdown is a way to slice the data. For example, you can
+      break down the data by region.
     dimensions: Optional. A dimension is a structured label, class, or
       category for a set of measurements in your data.
     gaugeView: Will cause the scorecard to show a gauge chart.
@@ -2265,12 +2268,13 @@ class Scorecard(_messages.Message):
   """
 
   blankView = _messages.MessageField('Empty', 1)
-  dimensions = _messages.MessageField('Dimension', 2, repeated=True)
-  gaugeView = _messages.MessageField('GaugeView', 3)
-  measures = _messages.MessageField('Measure', 4, repeated=True)
-  sparkChartView = _messages.MessageField('SparkChartView', 5)
-  thresholds = _messages.MessageField('Threshold', 6, repeated=True)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 7)
+  breakdowns = _messages.MessageField('Breakdown', 2, repeated=True)
+  dimensions = _messages.MessageField('Dimension', 3, repeated=True)
+  gaugeView = _messages.MessageField('GaugeView', 4)
+  measures = _messages.MessageField('Measure', 5, repeated=True)
+  sparkChartView = _messages.MessageField('SparkChartView', 6)
+  thresholds = _messages.MessageField('Threshold', 7, repeated=True)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 8)
 
 
 class SectionHeader(_messages.Message):
@@ -2558,6 +2562,49 @@ class TableDisplayOptions(_messages.Message):
   """
 
   shownColumns = _messages.StringField(1, repeated=True)
+
+
+class TemplateVariableCondition(_messages.Message):
+  r"""A condition whose evaluation is based on the value of a template
+  variable.
+
+  Enums:
+    ComparatorValueValuesEnum: Comparator to use to evaluate whether the value
+      of the template variable matches the template_variable_value. For
+      example, if the comparator is REGEX_FULL_MATCH, template_variable_value
+      would contain a regex that is matched against the value of the template
+      variable.
+
+  Fields:
+    comparator: Comparator to use to evaluate whether the value of the
+      template variable matches the template_variable_value. For example, if
+      the comparator is REGEX_FULL_MATCH, template_variable_value would
+      contain a regex that is matched against the value of the template
+      variable.
+    templateVariable: The template variable whose value is evaluated.
+    templateVariableValue: The value to compare the template variable to. For
+      example, if the comparator is REGEX_FULL_MATCH, this field should
+      contain a regex.
+  """
+
+  class ComparatorValueValuesEnum(_messages.Enum):
+    r"""Comparator to use to evaluate whether the value of the template
+    variable matches the template_variable_value. For example, if the
+    comparator is REGEX_FULL_MATCH, template_variable_value would contain a
+    regex that is matched against the value of the template variable.
+
+    Values:
+      COMPARATOR_UNSPECIFIED: No comparator specified. Behavior defaults to
+        REGEX_FULL_MATCH.
+      REGEX_FULL_MATCH: Condition with this comparator evaluates to true when
+        the value of the template variables matches the specified regex.
+    """
+    COMPARATOR_UNSPECIFIED = 0
+    REGEX_FULL_MATCH = 1
+
+  comparator = _messages.EnumField('ComparatorValueValuesEnum', 1)
+  templateVariable = _messages.StringField(2)
+  templateVariableValue = _messages.StringField(3)
 
 
 class Text(_messages.Message):
@@ -2971,6 +3018,17 @@ class Type(_messages.Message):
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
 
 
+class VisibilityCondition(_messages.Message):
+  r"""Condition that determines whether the widget should be displayed.
+
+  Fields:
+    templateVariableCondition: A condition whose evaluation is based on the
+      value of a template variable.
+  """
+
+  templateVariableCondition = _messages.MessageField('TemplateVariableCondition', 1)
+
+
 class Widget(_messages.Message):
   r"""Widget contains a single dashboard component and configuration of how to
   present the component in the dashboard.
@@ -2996,6 +3054,8 @@ class Widget(_messages.Message):
     timeSeriesTable: A widget that displays time series data in a tabular
       format.
     title: Optional. The title of the widget.
+    visibilityCondition: Optional. If set, this widget is rendered only when
+      the condition is evaluated to true.
     xyChart: A chart of time series data.
   """
 
@@ -3013,7 +3073,8 @@ class Widget(_messages.Message):
   text = _messages.MessageField('Text', 12)
   timeSeriesTable = _messages.MessageField('TimeSeriesTable', 13)
   title = _messages.StringField(14)
-  xyChart = _messages.MessageField('XyChart', 15)
+  visibilityCondition = _messages.MessageField('VisibilityCondition', 15)
+  xyChart = _messages.MessageField('XyChart', 16)
 
 
 class XyChart(_messages.Message):

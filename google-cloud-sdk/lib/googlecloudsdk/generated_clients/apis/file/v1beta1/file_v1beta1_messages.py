@@ -2221,15 +2221,14 @@ class PerformanceConfig(_messages.Message):
       update would result in a value outside the supported range, the update
       will fail with an `InvalidArgument` error.
     iopsPerTb: Provision IOPS dynamically based on the capacity of the
-      instance. Provisioned read IOPS will be calculated by multiplying the
+      instance. Provisioned IOPS will be calculated by multiplying the
       capacity of the instance in TiB by the `iops_per_tb` value. For example,
       for a 2 TiB instance with an `iops_per_tb` value of 17000 the
-      provisioned read IOPS will be 34000. If the calculated value is outside
-      the supported range for the instance's capacity during instance
-      creation, instance creation will fail with an `InvalidArgument` error.
-      Similarly, if an instance capacity update would result in a value
-      outside the supported range, the update will fail with an
-      `InvalidArgument` error.
+      provisioned IOPS will be 34000. If the calculated value is outside the
+      supported range for the instance's capacity during instance creation,
+      instance creation will fail with an `InvalidArgument` error. Similarly,
+      if an instance capacity update would result in a value outside the
+      supported range, the update will fail with an `InvalidArgument` error.
   """
 
   fixedIops = _messages.MessageField('FixedIOPS', 1)
@@ -2259,8 +2258,16 @@ class PerformanceLimits(_messages.Message):
 
 class PromoteReplicaRequest(_messages.Message):
   r"""PromoteReplicaRequest promotes a Filestore standby instance (replica).
+
+  Fields:
+    peerInstance: Optional. The resource name of the peer instance to promote,
+      in the format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+      The peer instance is required if the operation is called on an active
+      instance.
   """
 
+  peerInstance = _messages.StringField(1)
 
 
 class ReplicaConfig(_messages.Message):
@@ -2285,9 +2292,11 @@ class ReplicaConfig(_messages.Message):
     Values:
       STATE_REASON_UNSPECIFIED: Reason not specified.
       PEER_INSTANCE_UNREACHABLE: The peer instance is unreachable.
+      REMOVE_FAILED: The remove replica peer instance operation failed.
     """
     STATE_REASON_UNSPECIFIED = 0
     PEER_INSTANCE_UNREACHABLE = 1
+    REMOVE_FAILED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The replica state.

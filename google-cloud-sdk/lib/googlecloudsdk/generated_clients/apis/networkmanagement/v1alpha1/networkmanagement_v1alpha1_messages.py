@@ -115,6 +115,9 @@ class AbortInfo(_messages.Message):
       UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG: Aborted due to an unsupported
         configuration of the Google-managed project.
       INVALID_JUSTIFICATION: Aborted due to an invalid justification.
+      NO_SERVERLESS_IP_RANGES: Aborted because the source endpoint is a Cloud
+        Run revision with direct VPC access enabled, but there are no reserved
+        serverless IP ranges.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -153,6 +156,7 @@ class AbortInfo(_messages.Message):
     UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 34
     UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 35
     INVALID_JUSTIFICATION = 36
+    NO_SERVERLESS_IP_RANGES = 37
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)

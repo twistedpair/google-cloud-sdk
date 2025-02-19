@@ -374,6 +374,60 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AccessNativeBuildInfo(self, request, global_params=None):
+      r"""Obtain build data for Native Job.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeBuildInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationNativeBuildInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessNativeBuildInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessNativeBuildInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessNativeBuildInfo',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessNativeBuildInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:accessNativeBuildInfo',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeBuildInfoRequest',
+        response_type_name='AccessSparkApplicationNativeBuildInfoResponse',
+        supports_download=False,
+    )
+
+    def AccessNativeSqlQuery(self, request, global_params=None):
+      r"""Obtain data corresponding to a particular Native SQL Query for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeSqlQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationNativeSqlQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessNativeSqlQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessNativeSqlQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessNativeSqlQuery',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessNativeSqlQuery',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['executionId', 'parent'],
+        relative_path='v1/{+name}:accessNativeSqlQuery',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeSqlQueryRequest',
+        response_type_name='AccessSparkApplicationNativeSqlQueryResponse',
+        supports_download=False,
+    )
+
     def AccessSqlPlan(self, request, global_params=None):
       r"""Obtain Spark Plan Graph for a Spark Application SQL execution. Limits the number of clusters returned as part of the graph to 10000.
 
@@ -587,6 +641,33 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchJobsRequest',
         response_type_name='SearchSparkApplicationJobsResponse',
+        supports_download=False,
+    )
+
+    def SearchNativeSqlQueries(self, request, global_params=None):
+      r"""Obtain data corresponding to Native SQL Queries for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchNativeSqlQueriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationNativeSqlQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchNativeSqlQueries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchNativeSqlQueries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchNativeSqlQueries',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchNativeSqlQueries',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchNativeSqlQueries',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchNativeSqlQueriesRequest',
+        response_type_name='SearchSparkApplicationNativeSqlQueriesResponse',
         supports_download=False,
     )
 
@@ -1332,6 +1413,60 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AccessNativeBuildInfo(self, request, global_params=None):
+      r"""Obtain data corresponding to Native Build Information for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeBuildInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationNativeBuildInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessNativeBuildInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessNativeBuildInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessNativeBuildInfo',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessNativeBuildInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:accessNativeBuildInfo',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeBuildInfoRequest',
+        response_type_name='AccessSessionSparkApplicationNativeBuildInfoResponse',
+        supports_download=False,
+    )
+
+    def AccessNativeSqlQuery(self, request, global_params=None):
+      r"""Obtain data corresponding to a particular Native SQL Query for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeSqlQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationNativeSqlQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessNativeSqlQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessNativeSqlQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessNativeSqlQuery',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessNativeSqlQuery',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['executionId', 'parent'],
+        relative_path='v1/{+name}:accessNativeSqlQuery',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeSqlQueryRequest',
+        response_type_name='AccessSessionSparkApplicationNativeSqlQueryResponse',
+        supports_download=False,
+    )
+
     def AccessSqlPlan(self, request, global_params=None):
       r"""Obtain Spark Plan Graph for a Spark Application SQL execution. Limits the number of clusters returned as part of the graph to 10000.
 
@@ -1545,6 +1680,33 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest',
         response_type_name='SearchSessionSparkApplicationJobsResponse',
+        supports_download=False,
+    )
+
+    def SearchNativeSqlQueries(self, request, global_params=None):
+      r"""Obtain data corresponding to Native SQL Queries for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchNativeSqlQueriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationNativeSqlQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchNativeSqlQueries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchNativeSqlQueries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchNativeSqlQueries',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchNativeSqlQueries',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchNativeSqlQueries',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchNativeSqlQueriesRequest',
+        response_type_name='SearchSessionSparkApplicationNativeSqlQueriesResponse',
         supports_download=False,
     )
 

@@ -155,6 +155,8 @@ class Backup(_messages.Message):
     createTime: Output only. The time when the backup was created.
     description: A description of the backup with 2048 characters or less.
       Requests with longer descriptions will be rejected.
+    enforcedRetentionEndTime: Output only. The time until which the backup is
+      not deletable.
     labels: Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup. Format: `projects/{proj
       ect_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{bac
@@ -241,15 +243,16 @@ class Backup(_messages.Message):
   chainStorageBytes = _messages.IntegerField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  sourceSnapshot = _messages.StringField(10)
-  sourceVolume = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  volumeRegion = _messages.StringField(13)
-  volumeUsageBytes = _messages.IntegerField(14)
+  enforcedRetentionEndTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  sourceSnapshot = _messages.StringField(11)
+  sourceVolume = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  volumeRegion = _messages.StringField(14)
+  volumeUsageBytes = _messages.IntegerField(15)
 
 
 class BackupConfig(_messages.Message):
@@ -604,13 +607,22 @@ class HybridPeeringDetails(_messages.Message):
       executed on user's ONTAP.
     passphrase: Optional. Temporary passphrase generated to accept cluster
       peering command.
+    peerClusterName: Optional. Name of the user's local source cluster to be
+      peered with the destination cluster.
+    peerSvmName: Optional. Name of the user's local source vserver svm to be
+      peered with the destination vserver svm.
+    peerVolumeName: Optional. Name of the user's local source volume to be
+      peered with the destination volume.
     subnetIp: Optional. IP address of the subnet.
   """
 
   command = _messages.StringField(1)
   commandExpiryTime = _messages.StringField(2)
   passphrase = _messages.StringField(3)
-  subnetIp = _messages.StringField(4)
+  peerClusterName = _messages.StringField(4)
+  peerSvmName = _messages.StringField(5)
+  peerVolumeName = _messages.StringField(6)
+  subnetIp = _messages.StringField(7)
 
 
 class HybridReplicationParameters(_messages.Message):
@@ -1028,12 +1040,27 @@ class LocationMetadata(_messages.Message):
   r"""Metadata for a given google.cloud.location.Location.
 
   Enums:
+    SupportedFlexPerformanceValueListEntryValuesEnum:
     SupportedServiceLevelsValueListEntryValuesEnum:
 
   Fields:
+    supportedFlexPerformance: Output only. Supported flex performance in a
+      location.
     supportedServiceLevels: Output only. Supported service levels in a
       location.
   """
+
+  class SupportedFlexPerformanceValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedFlexPerformanceValueListEntryValuesEnum enum type.
+
+    Values:
+      FLEX_PERFORMANCE_UNSPECIFIED: Unspecified flex performance.
+      FLEX_PERFORMANCE_DEFAULT: Flex Storage Pool with default performance.
+      FLEX_PERFORMANCE_CUSTOM: Flex Storage Pool with custom performance.
+    """
+    FLEX_PERFORMANCE_UNSPECIFIED = 0
+    FLEX_PERFORMANCE_DEFAULT = 1
+    FLEX_PERFORMANCE_CUSTOM = 2
 
   class SupportedServiceLevelsValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedServiceLevelsValueListEntryValuesEnum enum type.
@@ -1051,7 +1078,8 @@ class LocationMetadata(_messages.Message):
     STANDARD = 3
     FLEX = 4
 
-  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 1, repeated=True)
+  supportedFlexPerformance = _messages.EnumField('SupportedFlexPerformanceValueListEntryValuesEnum', 1, repeated=True)
+  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 2, repeated=True)
 
 
 class MonthlySchedule(_messages.Message):

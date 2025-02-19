@@ -444,13 +444,23 @@ def SetSource(
         ignore_file=ignore_file,
         hide_logs=hide_logs,
     )
-    build_config.source = messages.Source(
-        storageSource=messages.StorageSource(
-            bucket=staged_source_obj.bucket,
-            object=staged_source_obj.name,
-            generation=staged_source_obj.generation,
-        )
-    )
+
+    if suffix == '.json':
+      build_config.source = messages.Source(
+          storageSourceManifest=messages.StorageSourceManifest(
+              bucket=staged_source_obj.bucket,
+              object=staged_source_obj.name,
+              generation=staged_source_obj.generation,
+          )
+      )
+    else:
+      build_config.source = messages.Source(
+          storageSource=messages.StorageSource(
+              bucket=staged_source_obj.bucket,
+              object=staged_source_obj.name,
+              generation=staged_source_obj.generation,
+          )
+      )
   else:
     # No source
     if not no_source:

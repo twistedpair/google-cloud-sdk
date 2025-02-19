@@ -810,7 +810,7 @@ class Instance(_messages.Message):
       for disabling the instance.
     displayName: Display name for an instance.
     enableRbac: Option to enable granular role-based access control.
-    enableStackdriverLogging: Option to enable Stackdriver Logging.
+    enableStackdriverLogging: Option to enable Dataproc Stackdriver Logging.
     enableStackdriverMonitoring: Option to enable Stackdriver Monitoring.
     enableZoneSeparation: Option to enable zone separation.
     eventPublishConfig: Option to enable and pass metadata for event
@@ -820,6 +820,8 @@ class Instance(_messages.Message):
     labels: The resource labels for instance to use to annotate any related
       underlying resources such as Compute Engine VMs. The character '=' is
       not allowed to be used within the labels.
+    loggingConfig: Optional. The logging configuration for this instance. This
+      field is supported only in CDF versions 6.11.0 and above.
     maintenanceEvents: Output only. The maintenance events for this instance.
     maintenancePolicy: Optional. Configure the maintenance policy for this
       instance.
@@ -1010,26 +1012,27 @@ class Instance(_messages.Message):
   eventPublishConfig = _messages.MessageField('EventPublishConfig', 15)
   gcsBucket = _messages.StringField(16)
   labels = _messages.MessageField('LabelsValue', 17)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 18, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 19)
-  name = _messages.StringField(20)
-  networkConfig = _messages.MessageField('NetworkConfig', 21)
-  options = _messages.MessageField('OptionsValue', 22)
-  p4ServiceAccount = _messages.StringField(23)
-  patchRevision = _messages.StringField(24)
-  privateInstance = _messages.BooleanField(25)
-  satisfiesPzs = _messages.BooleanField(26)
-  serviceAccount = _messages.StringField(27)
-  serviceEndpoint = _messages.StringField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  stateMessage = _messages.StringField(30)
-  tags = _messages.MessageField('TagsValue', 31)
-  tenantProjectId = _messages.StringField(32)
-  type = _messages.EnumField('TypeValueValuesEnum', 33)
-  updateTime = _messages.StringField(34)
-  version = _messages.StringField(35)
-  workforceIdentityServiceEndpoint = _messages.StringField(36)
-  zone = _messages.StringField(37)
+  loggingConfig = _messages.MessageField('LoggingConfig', 18)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 19, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 20)
+  name = _messages.StringField(21)
+  networkConfig = _messages.MessageField('NetworkConfig', 22)
+  options = _messages.MessageField('OptionsValue', 23)
+  p4ServiceAccount = _messages.StringField(24)
+  patchRevision = _messages.StringField(25)
+  privateInstance = _messages.BooleanField(26)
+  satisfiesPzs = _messages.BooleanField(27)
+  serviceAccount = _messages.StringField(28)
+  serviceEndpoint = _messages.StringField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  stateMessage = _messages.StringField(31)
+  tags = _messages.MessageField('TagsValue', 32)
+  tenantProjectId = _messages.StringField(33)
+  type = _messages.EnumField('TypeValueValuesEnum', 34)
+  updateTime = _messages.StringField(35)
+  version = _messages.StringField(36)
+  workforceIdentityServiceEndpoint = _messages.StringField(37)
+  zone = _messages.StringField(38)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1193,6 +1196,18 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LoggingConfig(_messages.Message):
+  r"""Logging configuration for a Data Fusion instance.
+
+  Fields:
+    instanceCloudLoggingDisabled: Optional. Option to determine whether
+      instance logs should be written to Cloud Logging. By default, instance
+      logs are written to Cloud Logging.
+  """
+
+  instanceCloudLoggingDisabled = _messages.BooleanField(1)
 
 
 class MaintenanceEvent(_messages.Message):

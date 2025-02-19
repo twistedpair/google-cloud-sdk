@@ -181,6 +181,19 @@ class BatchProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BatchProjectsLocationsJobsCancelRequest(_messages.Message):
+  r"""A BatchProjectsLocationsJobsCancelRequest object.
+
+  Fields:
+    cancelJobRequest: A CancelJobRequest resource to be passed as the request
+      body.
+    name: Required. Job name.
+  """
+
+  cancelJobRequest = _messages.MessageField('CancelJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BatchProjectsLocationsJobsCreateRequest(_messages.Message):
   r"""A BatchProjectsLocationsJobsCreateRequest object.
 
@@ -363,6 +376,26 @@ class BatchProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class CancelJobRequest(_messages.Message):
+  r"""CancelJob Request.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -937,6 +970,10 @@ class JobStatus(_messages.Message):
       DELETION_IN_PROGRESS: The Job will be deleted, but has not been deleted
         yet. Typically this is because resources used by the Job are still
         being cleaned up.
+      CANCELLATION_IN_PROGRESS: The Job cancellation is in progress, this is
+        because the resources used by the Job are still being cleaned up.
+      CANCELLED: The Job has been cancelled, the task executions were stopped
+        and the resources were cleaned up.
     """
     STATE_UNSPECIFIED = 0
     QUEUED = 1
@@ -945,6 +982,8 @@ class JobStatus(_messages.Message):
     SUCCEEDED = 4
     FAILED = 5
     DELETION_IN_PROGRESS = 6
+    CANCELLATION_IN_PROGRESS = 7
+    CANCELLED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TaskGroupsValue(_messages.Message):
@@ -1264,6 +1303,10 @@ class Message(_messages.Message):
       DELETION_IN_PROGRESS: The Job will be deleted, but has not been deleted
         yet. Typically this is because resources used by the Job are still
         being cleaned up.
+      CANCELLATION_IN_PROGRESS: The Job cancellation is in progress, this is
+        because the resources used by the Job are still being cleaned up.
+      CANCELLED: The Job has been cancelled, the task executions were stopped
+        and the resources were cleaned up.
     """
     STATE_UNSPECIFIED = 0
     QUEUED = 1
@@ -1272,6 +1315,8 @@ class Message(_messages.Message):
     SUCCEEDED = 4
     FAILED = 5
     DELETION_IN_PROGRESS = 6
+    CANCELLATION_IN_PROGRESS = 7
+    CANCELLED = 8
 
   class NewTaskStateValueValuesEnum(_messages.Enum):
     r"""The new task state.

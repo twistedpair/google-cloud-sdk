@@ -169,6 +169,20 @@ class AttestationOccurrence(_messages.Message):
   signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
+class BaseImage(_messages.Message):
+  r"""BaseImage describes a base image of a container image.
+
+  Fields:
+    name: The name of the base image.
+    numLayers: The number of layers that the base image is composed of.
+    repository: The repository name in which the base image is from.
+  """
+
+  name = _messages.StringField(1)
+  numLayers = _messages.StringField(2)
+  repository = _messages.StringField(3)
+
+
 class BinarySourceInfo(_messages.Message):
   r"""A BinarySourceInfo object.
 
@@ -1303,6 +1317,26 @@ class Layer(_messages.Message):
   directive = _messages.StringField(2)
 
 
+class LayerDetails(_messages.Message):
+  r"""Details about the layer a package was found in. This should be the same
+  as the LayerDetails message in
+  google3/third_party/scalibr/binary/proto/scan_result.proto.
+
+  Fields:
+    baseImages: The base images the layer is found within.
+    command: The layer build command that was used to build the layer. This
+      may not be found in all layers depending on how the container image is
+      built.
+    diffId: The diff ID (sha256 hash) of the layer in the container image.
+    index: The index of the layer in the container image.
+  """
+
+  baseImages = _messages.MessageField('BaseImage', 1, repeated=True)
+  command = _messages.StringField(2)
+  diffId = _messages.StringField(3)
+  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class License(_messages.Message):
   r"""License information.
 
@@ -1774,6 +1808,7 @@ class PackageData(_messages.Message):
     hashDigest: HashDigest stores the SHA512 hash digest of the jar file if
       the package is of type Maven. This field will be unset for non Maven
       packages.
+    layerDetails: A LayerDetails attribute.
     licenses: The list of licenses found that are related to a given package.
       Note that licenses may also be stored on the BinarySourceInfo. If there
       is no BinarySourceInfo (because there's no concept of source vs binary),
@@ -1831,16 +1866,17 @@ class PackageData(_messages.Message):
   dependencyChain = _messages.MessageField('LanguagePackageDependency', 5, repeated=True)
   fileLocation = _messages.MessageField('FileLocation', 6, repeated=True)
   hashDigest = _messages.StringField(7)
-  licenses = _messages.StringField(8, repeated=True)
-  maintainer = _messages.MessageField('Maintainer', 9)
-  os = _messages.StringField(10)
-  osVersion = _messages.StringField(11)
-  package = _messages.StringField(12)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 13)
-  patchedCve = _messages.StringField(14, repeated=True)
-  sourceVersion = _messages.MessageField('PackageVersion', 15)
-  unused = _messages.StringField(16)
-  version = _messages.StringField(17)
+  layerDetails = _messages.MessageField('LayerDetails', 8)
+  licenses = _messages.StringField(9, repeated=True)
+  maintainer = _messages.MessageField('Maintainer', 10)
+  os = _messages.StringField(11)
+  osVersion = _messages.StringField(12)
+  package = _messages.StringField(13)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 14)
+  patchedCve = _messages.StringField(15, repeated=True)
+  sourceVersion = _messages.MessageField('PackageVersion', 16)
+  unused = _messages.StringField(17)
+  version = _messages.StringField(18)
 
 
 class PackageIssue(_messages.Message):

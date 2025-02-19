@@ -852,12 +852,15 @@ class ServerlessOperations(object):
       service.Service, the service as returned by the server on the POST/PUT
        request to create/update the service.
     """
+    should_validate_service = (
+        build_source is not None
+        and release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]
+    )
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(
               allow_unauthenticated is not None,
-              include_validate_service=build_source is not None
-              and release_track == base.ReleaseTrack.ALPHA,
+              include_validate_service=should_validate_service,
               include_build=build_source is not None,
               include_create_repo=repo_to_create is not None,
           ),
@@ -866,7 +869,7 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      if release_track == base.ReleaseTrack.ALPHA:
+      if should_validate_service:
         self._ValidateServiceBeforeSourceDeploy(
             tracker, service_ref, prefetch, config_changes
         )

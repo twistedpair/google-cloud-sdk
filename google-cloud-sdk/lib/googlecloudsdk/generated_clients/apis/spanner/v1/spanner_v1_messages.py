@@ -15,12 +15,107 @@ from apitools.base.py import extra_types
 package = 'spanner'
 
 
+class AdaptMessageRequest(_messages.Message):
+  r"""Message sent by the client to the adapter.
+
+  Messages:
+    AttachmentsValue: Optional. Opaque request state passed by the client to
+      the server.
+
+  Fields:
+    attachments: Optional. Opaque request state passed by the client to the
+      server.
+    payload: Optional. Uninterpreted bytes from the underlying wire protocol.
+    protocol: Required. Identifier for the underlying wire protocol.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttachmentsValue(_messages.Message):
+    r"""Optional. Opaque request state passed by the client to the server.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttachmentsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttachmentsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttachmentsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attachments = _messages.MessageField('AttachmentsValue', 1)
+  payload = _messages.BytesField(2)
+  protocol = _messages.StringField(3)
+
+
+class AdaptMessageResponse(_messages.Message):
+  r"""Message sent by the adapter to the client.
+
+  Messages:
+    StateUpdatesValue: Optional. Opaque state updates to be applied by the
+      client.
+
+  Fields:
+    payload: Optional. Uninterpreted bytes from the underlying wire protocol.
+    stateUpdates: Optional. Opaque state updates to be applied by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StateUpdatesValue(_messages.Message):
+    r"""Optional. Opaque state updates to be applied by the client.
+
+    Messages:
+      AdditionalProperty: An additional property for a StateUpdatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type StateUpdatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StateUpdatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  payload = _messages.BytesField(1)
+  stateUpdates = _messages.MessageField('StateUpdatesValue', 2)
+
+
+class AdapterSession(_messages.Message):
+  r"""A session in the Cloud Spanner Adapter API.
+
+  Fields:
+    name: Identifier. The name of the session. This is always system-assigned.
+  """
+
+  name = _messages.StringField(1)
+
+
 class AddSplitPointsRequest(_messages.Message):
   r"""The request for AddSplitPoints.
 
   Fields:
     initiator: Optional. A user-supplied tag associated with the split points.
-      For example, "intital_data_load", "special_event_1". Defaults to
+      For example, "initial_data_load", "special_event_1". Defaults to
       "CloudAddSplitPointsAPI" if not specified. The length of the tag must
       not exceed 50 characters,else will be trimmed. Only valid UTF8
       characters are allowed.
@@ -321,9 +416,9 @@ class BackupSchedule(_messages.Message):
   a Spanner database.
 
   Fields:
-    encryptionConfig: Optional. The encryption configuration that will be used
-      to encrypt the backup. If this field is not specified, the backup will
-      use the same encryption configuration as the database.
+    encryptionConfig: Optional. The encryption configuration that is used to
+      encrypt the backup. If this field is not specified, the backup uses the
+      same encryption configuration as the database.
     fullBackupSpec: The schedule creates only full backups.
     incrementalBackupSpec: The schedule creates incremental backup chains.
     name: Identifier. Output only for the CreateBackupSchedule operation.
@@ -1120,14 +1215,14 @@ class CreateSessionRequest(_messages.Message):
 
 class CrontabSpec(_messages.Message):
   r"""CrontabSpec can be used to specify the version time and frequency at
-  which the backup should be created.
+  which the backup is created.
 
   Fields:
-    creationWindow: Output only. Schedule backups will contain an externally
+    creationWindow: Output only. Scheduled backups contain an externally
       consistent copy of the database at the version time specified in
-      `schedule_spec.cron_spec`. However, Spanner may not initiate the
-      creation of the scheduled backups at that version time. Spanner will
-      initiate the creation of scheduled backups within the time window
+      `schedule_spec.cron_spec`. However, Spanner might not initiate the
+      creation of the scheduled backups at that version time. Spanner
+      initiates the creation of scheduled backups within the time window
       bounded by the version_time specified in `schedule_spec.cron_spec` and
       version_time + `creation_window`.
     text: Required. Textual representation of the crontab. User can customize
@@ -1138,13 +1233,13 @@ class CrontabSpec(_messages.Message):
       incremental backups must be scheduled a minimum of 4 hours apart.
       Examples of valid cron specifications: * `0 2/12 * * *` : every 12 hours
       at (2, 14) hours past midnight in UTC. * `0 2,14 * * *` : every 12 hours
-      at (2,14) hours past midnight in UTC. * `0 */4 * * *` : (incremental
+      at (2, 14) hours past midnight in UTC. * `0 */4 * * *` : (incremental
       backups only) every 4 hours at (0, 4, 8, 12, 16, 20) hours past midnight
       in UTC. * `0 2 * * *` : once a day at 2 past midnight in UTC. * `0 2 * *
       0` : once a week every Sunday at 2 past midnight in UTC. * `0 2 8 * *` :
       once a month on 8th day at 2 past midnight in UTC.
     timeZone: Output only. The time zone of the times in `CrontabSpec.text`.
-      Currently only UTC is supported.
+      Currently, only UTC is supported.
   """
 
   creationWindow = _messages.StringField(1)
@@ -2143,7 +2238,10 @@ class Instance(_messages.Message):
       number of nodes allocated to the instance. If autoscaling is enabled,
       `node_count` is treated as an `OUTPUT_ONLY` field and reflects the
       current number of nodes allocated to the instance. This might be zero in
-      API responses for instances that are not yet in the `READY` state. For
+      API responses for instances that are not yet in the `READY` state. If
+      the instance has varying node count across replicas (achieved by setting
+      `asymmetric_autoscaling_options` in the autoscaling configuration), the
+      `node_count` set here is the maximum node count across all replicas. For
       more information, see [Compute capacity, nodes, and processing
       units](https://cloud.google.com/spanner/docs/compute-capacity).
     processingUnits: The number of processing units allocated to this
@@ -2153,9 +2251,13 @@ class Instance(_messages.Message):
       instance. If autoscaling is enabled, `processing_units` is treated as an
       `OUTPUT_ONLY` field and reflects the current number of processing units
       allocated to the instance. This might be zero in API responses for
-      instances that are not yet in the `READY` state. For more information,
-      see [Compute capacity, nodes and processing
-      units](https://cloud.google.com/spanner/docs/compute-capacity).
+      instances that are not yet in the `READY` state. If the instance has
+      varying processing units per replica (achieved by setting
+      `asymmetric_autoscaling_options` in the autoscaling configuration), the
+      `processing_units` set here is the maximum processing units across all
+      replicas. For more information, see [Compute capacity, nodes and
+      processing units](https://cloud.google.com/spanner/docs/compute-
+      capacity).
     replicaComputeCapacity: Output only. Lists the compute capacity per
       ReplicaSelection. A replica selection identifies a set of replicas with
       common properties. Replicas identified by a ReplicaSelection are scaled
@@ -4851,7 +4953,7 @@ class Session(_messages.Message):
     multiplexed: Optional. If true, specifies a multiplexed session. Use a
       multiplexed session for multiple, concurrent read-only operations. Don't
       use them for read-write transactions, partitioned reads, or partitioned
-      queries. Use CreateSession to create multiplexed sessions. Don't use
+      queries. Use `sessions.create` to create multiplexed sessions. Don't use
       BatchCreateSessions to create a multiplexed session. You can't delete or
       list multiplexed sessions.
     name: Output only. The name of the session. This is always system-
@@ -6001,6 +6103,33 @@ class SpannerProjectsInstancesDatabasesRestoreRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   restoreDatabaseRequest = _messages.MessageField('RestoreDatabaseRequest', 2)
+
+
+class SpannerProjectsInstancesDatabasesSessionsAdaptMessageRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesSessionsAdaptMessageRequest object.
+
+  Fields:
+    adaptMessageRequest: A AdaptMessageRequest resource to be passed as the
+      request body.
+    name: Required. The database session in which the adapter request is
+      processed.
+  """
+
+  adaptMessageRequest = _messages.MessageField('AdaptMessageRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesDatabasesSessionsAdapterRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesSessionsAdapterRequest object.
+
+  Fields:
+    adapterSession: A AdapterSession resource to be passed as the request
+      body.
+    parent: Required. The database in which the new session is created.
+  """
+
+  adapterSession = _messages.MessageField('AdapterSession', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesDatabasesSessionsBatchCreateRequest(_messages.Message):

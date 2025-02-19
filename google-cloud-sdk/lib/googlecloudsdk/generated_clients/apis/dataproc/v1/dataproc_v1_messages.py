@@ -61,6 +61,26 @@ class AccessSessionSparkApplicationJobResponse(_messages.Message):
   jobData = _messages.MessageField('JobData', 1)
 
 
+class AccessSessionSparkApplicationNativeBuildInfoResponse(_messages.Message):
+  r"""Details of a native build info for a Spark Application
+
+  Fields:
+    executionData: Native SQL Execution Data
+  """
+
+  executionData = _messages.MessageField('NativeBuildInfoUiData', 1)
+
+
+class AccessSessionSparkApplicationNativeSqlQueryResponse(_messages.Message):
+  r"""Details of a native query for a Spark Application
+
+  Fields:
+    executionData: Native SQL Execution Data
+  """
+
+  executionData = _messages.MessageField('NativeSqlExecutionUiData', 1)
+
+
 class AccessSessionSparkApplicationResponse(_messages.Message):
   r"""A summary of Spark Application
 
@@ -133,6 +153,26 @@ class AccessSparkApplicationJobResponse(_messages.Message):
   """
 
   jobData = _messages.MessageField('JobData', 1)
+
+
+class AccessSparkApplicationNativeBuildInfoResponse(_messages.Message):
+  r"""Details of Native Build Info for a Spark Application
+
+  Fields:
+    buildInfo: Native Build Info Data
+  """
+
+  buildInfo = _messages.MessageField('NativeBuildInfoUiData', 1)
+
+
+class AccessSparkApplicationNativeSqlQueryResponse(_messages.Message):
+  r"""Details of a query for a Spark Application
+
+  Fields:
+    executionData: Native SQL Execution Data
+  """
+
+  executionData = _messages.MessageField('NativeSqlExecutionUiData', 1)
 
 
 class AccessSparkApplicationResponse(_messages.Message):
@@ -557,14 +597,14 @@ class AuthenticationConfig(_messages.Message):
     Values:
       AUTHENTICATION_TYPE_UNSPECIFIED: If AuthenticationType is unspecified
         then END_USER_CREDENTIALS is used for 3.0 and newer runtimes, and
-        SYSTEM_SERVICE_ACCOUNT is used for older runtimes.
-      SYSTEM_SERVICE_ACCOUNT: Use the system service account credentials for
-        authenticating to other services.
+        SERVICE_ACCOUNT is used for older runtimes.
+      SERVICE_ACCOUNT: Use service account credentials for authenticating to
+        other services.
       END_USER_CREDENTIALS: Use OAuth credentials associated with the workload
         creator/user for authenticating to other services.
     """
     AUTHENTICATION_TYPE_UNSPECIFIED = 0
-    SYSTEM_SERVICE_ACCOUNT = 1
+    SERVICE_ACCOUNT = 1
     END_USER_CREDENTIALS = 2
 
   userWorkloadAuthenticationType = _messages.EnumField('UserWorkloadAuthenticationTypeValueValuesEnum', 1)
@@ -1055,6 +1095,18 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class BuildInfo(_messages.Message):
+  r"""Native Build Info
+
+  Fields:
+    buildKey: Optional. Build key.
+    buildValue: Optional. Build value.
+  """
+
+  buildKey = _messages.StringField(1)
+  buildValue = _messages.StringField(2)
 
 
 class CancelJobRequest(_messages.Message):
@@ -1935,6 +1987,39 @@ class DataprocProjectsLocationsBatchesSparkApplicationsAccessJobRequest(_message
   parent = _messages.StringField(3)
 
 
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeBuildInfoRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeBuildInfo
+  Request object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeSqlQueryRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsAccessNativeSqlQueryRequest
+  object.
+
+  Fields:
+    executionId: Required. Execution ID
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  executionId = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
+
+
 class DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest(_messages.Message):
   r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest object.
 
@@ -2145,6 +2230,29 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchJobsRequest(_messag
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchNativeSqlQueriesRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchNativeSqlQuerie
+  sRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of queries to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSparkApplicationNativeSqlQueries call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
 
 
 class DataprocProjectsLocationsBatchesSparkApplicationsSearchRequest(_messages.Message):
@@ -2658,6 +2766,38 @@ class DataprocProjectsLocationsSessionsSparkApplicationsAccessJobRequest(_messag
   parent = _messages.StringField(3)
 
 
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeBuildInfoRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeBuildInf
+  oRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeSqlQueryRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessNativeSqlQuery
+  Request object.
+
+  Fields:
+    executionId: Required. Execution ID
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  executionId = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
+
+
 class DataprocProjectsLocationsSessionsSparkApplicationsAccessRequest(_messages.Message):
   r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessRequest
   object.
@@ -2870,6 +3010,29 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest(_messa
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5)
+
+
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchNativeSqlQueriesRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchNativeSqlQueri
+  esRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of queries to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationSqlQueries call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSearchRequest(_messages.Message):
@@ -5086,6 +5249,18 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FallbackReason(_messages.Message):
+  r"""Native SQL Execution Data
+
+  Fields:
+    fallbackNode: Optional. Fallback node information.
+    fallbackReason: Optional. Fallback to Spark reason.
+  """
+
+  fallbackNode = _messages.StringField(1)
+  fallbackReason = _messages.StringField(2)
+
+
 class FlinkJob(_messages.Message):
   r"""A Dataproc job for running Apache Flink applications on YARN.
 
@@ -7202,6 +7377,38 @@ class NamespacedGkeDeploymentTarget(_messages.Message):
   targetGkeCluster = _messages.StringField(2)
 
 
+class NativeBuildInfoUiData(_messages.Message):
+  r"""A NativeBuildInfoUiData object.
+
+  Fields:
+    buildClass: Optional. Build class of Native.
+    buildInfo: Optional. Build related details.
+  """
+
+  buildClass = _messages.StringField(1)
+  buildInfo = _messages.MessageField('BuildInfo', 2, repeated=True)
+
+
+class NativeSqlExecutionUiData(_messages.Message):
+  r"""Native SQL Execution Data
+
+  Fields:
+    description: Optional. Description of the execution.
+    executionId: Required. Execution ID of the Native SQL Execution.
+    fallbackDescription: Optional. Description of the fallback.
+    fallbackNodeToReason: Optional. Fallback node to reason.
+    numFallbackNodes: Optional. Number of nodes fallen back to Spark.
+    numNativeNodes: Optional. Number of nodes in Native.
+  """
+
+  description = _messages.StringField(1)
+  executionId = _messages.IntegerField(2)
+  fallbackDescription = _messages.StringField(3)
+  fallbackNodeToReason = _messages.MessageField('FallbackReason', 4, repeated=True)
+  numFallbackNodes = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  numNativeNodes = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class NodeGroup(_messages.Message):
   r"""Dataproc Node Group. The Dataproc NodeGroup resource is not related to
   the Dataproc NodeGroupAffinity resource.
@@ -8860,6 +9067,21 @@ class SearchSessionSparkApplicationJobsResponse(_messages.Message):
   sparkApplicationJobs = _messages.MessageField('JobData', 2, repeated=True)
 
 
+class SearchSessionSparkApplicationNativeSqlQueriesResponse(_messages.Message):
+  r"""List of all Native queries for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationSqlQueriesRequest.
+    sparkApplicationNativeSqlQueries: Output only. Native SQL Execution Data
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationNativeSqlQueries = _messages.MessageField('NativeSqlExecutionUiData', 2, repeated=True)
+
+
 class SearchSessionSparkApplicationSqlQueriesResponse(_messages.Message):
   r"""List of all queries for a Spark Application.
 
@@ -8978,6 +9200,21 @@ class SearchSparkApplicationJobsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sparkApplicationJobs = _messages.MessageField('JobData', 2, repeated=True)
+
+
+class SearchSparkApplicationNativeSqlQueriesResponse(_messages.Message):
+  r"""List of all Native SQL queries details for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSparkApplicationNativeSqlQueriesRequest.
+    sparkApplicationNativeSqlQueries: Output only. Native SQL Execution Data
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationNativeSqlQueries = _messages.MessageField('NativeSqlExecutionUiData', 2, repeated=True)
 
 
 class SearchSparkApplicationSqlQueriesResponse(_messages.Message):
@@ -9619,7 +9856,7 @@ class SoftwareConfig(_messages.Message):
         version-clusters#supported-dataproc-image-versions). It cannot be
         activated on clusters created with supported Dataproc on Compute
         Engine image versions.
-      DELTA_LAKE: Delta Lake.
+      DELTA: Delta Lake.
       DOCKER: Docker
       DRUID: The Druid query engine. (alpha)
       FLINK: Flink
@@ -9630,6 +9867,7 @@ class SoftwareConfig(_messages.Message):
       ICEBERG: Iceberg.
       JUPYTER: The Jupyter Notebook.
       KERBEROS: The Kerberos security feature.
+      PIG: The Pig component.
       PRESTO: The Presto query engine.
       TRINO: The Trino query engine.
       RANGER: The Ranger service.
@@ -9641,7 +9879,7 @@ class SoftwareConfig(_messages.Message):
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
-    DELTA_LAKE = 2
+    DELTA = 2
     DOCKER = 3
     DRUID = 4
     FLINK = 5
@@ -9651,14 +9889,15 @@ class SoftwareConfig(_messages.Message):
     ICEBERG = 9
     JUPYTER = 10
     KERBEROS = 11
-    PRESTO = 12
-    TRINO = 13
-    RANGER = 14
-    SOLR = 15
-    ZEPPELIN = 16
-    ZOOKEEPER = 17
-    DASK = 18
-    GPU_DRIVER = 19
+    PIG = 12
+    PRESTO = 13
+    TRINO = 14
+    RANGER = 15
+    SOLR = 16
+    ZEPPELIN = 17
+    ZOOKEEPER = 18
+    DASK = 19
+    GPU_DRIVER = 20
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -10237,6 +10476,8 @@ class SparkWrapperObject(_messages.Message):
     executorStageSummary: A ExecutorStageSummary attribute.
     executorSummary: A ExecutorSummary attribute.
     jobData: A JobData attribute.
+    nativeBuildInfoUiData: Native Build Info
+    nativeSqlExecutionUiData: Native SQL Execution Info
     poolData: A PoolData attribute.
     processSummary: A ProcessSummary attribute.
     rddOperationGraph: A RddOperationGraph attribute.
@@ -10260,19 +10501,21 @@ class SparkWrapperObject(_messages.Message):
   executorStageSummary = _messages.MessageField('ExecutorStageSummary', 6)
   executorSummary = _messages.MessageField('ExecutorSummary', 7)
   jobData = _messages.MessageField('JobData', 8)
-  poolData = _messages.MessageField('PoolData', 9)
-  processSummary = _messages.MessageField('ProcessSummary', 10)
-  rddOperationGraph = _messages.MessageField('RddOperationGraph', 11)
-  rddStorageInfo = _messages.MessageField('RddStorageInfo', 12)
-  resourceProfileInfo = _messages.MessageField('ResourceProfileInfo', 13)
-  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 14)
-  speculationStageSummary = _messages.MessageField('SpeculationStageSummary', 15)
-  sqlExecutionUiData = _messages.MessageField('SqlExecutionUiData', 16)
-  stageData = _messages.MessageField('StageData', 17)
-  streamBlockData = _messages.MessageField('StreamBlockData', 18)
-  streamingQueryData = _messages.MessageField('StreamingQueryData', 19)
-  streamingQueryProgress = _messages.MessageField('StreamingQueryProgress', 20)
-  taskData = _messages.MessageField('TaskData', 21)
+  nativeBuildInfoUiData = _messages.MessageField('NativeBuildInfoUiData', 9)
+  nativeSqlExecutionUiData = _messages.MessageField('NativeSqlExecutionUiData', 10)
+  poolData = _messages.MessageField('PoolData', 11)
+  processSummary = _messages.MessageField('ProcessSummary', 12)
+  rddOperationGraph = _messages.MessageField('RddOperationGraph', 13)
+  rddStorageInfo = _messages.MessageField('RddStorageInfo', 14)
+  resourceProfileInfo = _messages.MessageField('ResourceProfileInfo', 15)
+  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 16)
+  speculationStageSummary = _messages.MessageField('SpeculationStageSummary', 17)
+  sqlExecutionUiData = _messages.MessageField('SqlExecutionUiData', 18)
+  stageData = _messages.MessageField('StageData', 19)
+  streamBlockData = _messages.MessageField('StreamBlockData', 20)
+  streamingQueryData = _messages.MessageField('StreamingQueryData', 21)
+  streamingQueryProgress = _messages.MessageField('StreamingQueryProgress', 22)
+  taskData = _messages.MessageField('TaskData', 23)
 
 
 class SpeculationStageSummary(_messages.Message):

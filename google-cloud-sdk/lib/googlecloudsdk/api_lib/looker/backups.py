@@ -14,39 +14,44 @@
 # limitations under the License.
 """Useful commands for interacting with the Looker Backups API."""
 
+from googlecloudsdk.api_lib.looker import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
 
 # API version constants
-API_VERSION_DEFAULT = 'v1alpha2'
+API_VERSION_DEFAULT = 'v1'
 
 
-def GetClient():
+def GetClient(release_track):
   """Returns the Looker client for backups."""
-  return apis.GetClientInstance('looker', API_VERSION_DEFAULT)
+  return apis.GetClientInstance('looker', utils.VERSION_MAP[release_track])
 
 
-def GetService():
+def GetService(release_track):
   """Returns the service for interacting with the Backups service."""
-  return GetClient().projects_locations_instances_backups
+  return GetClient(release_track).projects_locations_instances_backups
 
 
-def GetMessages():
+def GetMessages(release_track):
   """Import and return the appropriate operations messages module."""
-  return apis.GetMessagesModule('looker', API_VERSION_DEFAULT)
+  return apis.GetMessagesModule('looker', utils.VERSION_MAP[release_track])
 
 
-def CreateBackup(parent):
+def CreateBackup(parent, release_track):
   """Creates the Backup with the given parent.
 
   Args:
     parent: the instance where the backup will be created, a string.
+    release_track: the release track to use for the API call.
 
   Returns:
     a long running Operation
   """
   log.status.Print(
-      'Creating backup for instance {parent}'.format(parent=parent))
-  return GetService().Create(
-      GetMessages().LookerProjectsLocationsInstancesBackupsCreateRequest(
-          parent=parent))
+      'Creating backup for instance {parent}'.format(parent=parent)
+  )
+  return GetService(release_track).Create(
+      GetMessages(
+          release_track
+      ).LookerProjectsLocationsInstancesBackupsCreateRequest(parent=parent)
+  )

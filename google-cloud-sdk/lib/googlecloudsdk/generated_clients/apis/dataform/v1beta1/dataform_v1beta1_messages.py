@@ -160,7 +160,8 @@ class CodeCompilationConfig(_messages.Message):
     defaultLocation: Optional. The default BigQuery location to use. Defaults
       to "US". See the BigQuery docs for a full list of locations:
       https://cloud.google.com/bigquery/docs/locations.
-    defaultNotebookRuntimeOptions: A NotebookRuntimeOptions attribute.
+    defaultNotebookRuntimeOptions: Optional. The default notebook runtime
+      options.
     defaultSchema: Optional. The default schema (BigQuery dataset ID).
     schemaSuffix: Optional. The suffix that should be appended to all schema
       (BigQuery dataset ID) names.
@@ -266,13 +267,14 @@ class CommitRepositoryChangesRequest(_messages.Message):
   r"""`CommitRepositoryChanges` request message.
 
   Messages:
-    FileOperationsValue: A map to the path of the file to the operation. The
-      path is the full file path including filename, from repository root.
+    FileOperationsValue: Optional. A map to the path of the file to the
+      operation. The path is the full file path including filename, from
+      repository root.
 
   Fields:
     commitMetadata: Required. The changes to commit to the repository.
-    fileOperations: A map to the path of the file to the operation. The path
-      is the full file path including filename, from repository root.
+    fileOperations: Optional. A map to the path of the file to the operation.
+      The path is the full file path including filename, from repository root.
     requiredHeadCommitSha: Optional. The commit SHA which must be the
       repository's current HEAD before applying this commit; otherwise this
       request will fail. If unset, no validation on the current HEAD commit
@@ -281,8 +283,8 @@ class CommitRepositoryChangesRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FileOperationsValue(_messages.Message):
-    r"""A map to the path of the file to the operation. The path is the full
-    file path including filename, from repository root.
+    r"""Optional. A map to the path of the file to the operation. The path is
+    the full file path including filename, from repository root.
 
     Messages:
       AdditionalProperty: An additional property for a FileOperationsValue
@@ -476,8 +478,8 @@ class DataEncryptionState(_messages.Message):
   r"""Describes encryption state of a resource.
 
   Fields:
-    kmsKeyVersionName: The KMS key version name with which data of a resource
-      is encrypted.
+    kmsKeyVersionName: Required. The KMS key version name with which data of a
+      resource is encrypted.
   """
 
   kmsKeyVersionName = _messages.StringField(1)
@@ -645,9 +647,9 @@ class DataformProjectsLocationsRepositoriesDeleteRequest(_messages.Message):
   r"""A DataformProjectsLocationsRepositoriesDeleteRequest object.
 
   Fields:
-    force: If set to true, any child resources of this repository will also be
-      deleted. (Otherwise, the request will only succeed if the repository has
-      no child resources.)
+    force: Optional. If set to true, any child resources of this repository
+      will also be deleted. (Otherwise, the request will only succeed if the
+      repository has no child resources.)
     name: Required. The repository's name.
   """
 
@@ -2020,7 +2022,7 @@ class MoveFileResponse(_messages.Message):
 
 
 class Notebook(_messages.Message):
-  r"""A Notebook object.
+  r"""Represents a notebook.
 
   Fields:
     contents: The contents of the notebook.
@@ -2050,7 +2052,7 @@ class NotebookAction(_messages.Message):
 
 
 class NotebookRuntimeOptions(_messages.Message):
-  r"""A NotebookRuntimeOptions object.
+  r"""Configures various aspects of Dataform notebook runtime.
 
   Fields:
     gcsOutputBucket: Optional. The Google Cloud Storage location to upload the
@@ -2594,7 +2596,7 @@ class ScheduledExecutionRecord(_messages.Message):
   Fields:
     errorStatus: The error status encountered upon this attempt to create the
       workflow invocation, if the attempt was unsuccessful.
-    executionTime: The timestamp of this execution attempt.
+    executionTime: Output only. The timestamp of this execution attempt.
     workflowInvocation: The name of the created workflow invocation, if one
       was successfully created. Must be in the format
       `projects/*/locations/*/repositories/*/workflowInvocations/*`.
@@ -2615,7 +2617,7 @@ class ScheduledReleaseRecord(_messages.Message):
       `projects/*/locations/*/repositories/*/compilationResults/*`.
     errorStatus: The error status encountered upon this attempt to create the
       compilation result, if the attempt was unsuccessful.
-    releaseTime: The timestamp of this release attempt.
+    releaseTime: Output only. The timestamp of this release attempt.
   """
 
   compilationResult = _messages.StringField(1)
@@ -2796,9 +2798,10 @@ class Target(_messages.Message):
   will be written to the referenced database object.
 
   Fields:
-    database: The action's database (Google Cloud project ID) .
-    name: The action's name, within `database` and `schema`.
-    schema: The action's schema (BigQuery dataset ID), within `database`.
+    database: Optional. The action's database (Google Cloud project ID) .
+    name: Optional. The action's name, within `database` and `schema`.
+    schema: Optional. The action's schema (BigQuery dataset ID), within
+      `database`.
   """
 
   database = _messages.StringField(1)
@@ -2834,16 +2837,16 @@ class UncommittedFileChange(_messages.Message):
   r"""Represents the Git state of a file with uncommitted changes.
 
   Enums:
-    StateValueValuesEnum: Indicates the status of the file.
+    StateValueValuesEnum: Output only. Indicates the status of the file.
 
   Fields:
     path: The file's full path including filename, relative to the workspace
       root.
-    state: Indicates the status of the file.
+    state: Output only. Indicates the status of the file.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Indicates the status of the file.
+    r"""Output only. Indicates the status of the file.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.

@@ -23,6 +23,27 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
+def ModifyInstanceBackupNameAlpha(unused_instance_ref, args, patch_request):
+  """Create a backup of a Looker instance."""
+  if args.IsSpecified('backup'):
+    backup_name = args.backup
+    if len(backup_name.split('/')) <= 1:
+      parent = resources.REGISTRY.Parse(
+          args.instance,
+          params={
+              'projectsId': properties.VALUES.core.project.GetOrFail,
+              'locationsId': args.region,
+          },
+          api_version='v1alpha2',
+          collection='looker.projects.locations.instances',
+      ).RelativeName()
+      patch_request.restoreInstanceRequest.backup = (
+          parent + '/backups/' + backup_name
+      )
+    return patch_request
+  return patch_request
+
+
 def ModifyInstanceBackupName(unused_instance_ref, args, patch_request):
   """Create a backup of a Looker instance."""
   if args.IsSpecified('backup'):

@@ -115,10 +115,12 @@ class CreatePredictionRequest(_messages.Message):
       BASIC_POSTURE: Basic predefined posture prediction type.
       NATURAL_LANGUAGE_QUERY: Posture prediction type to query predictions
         based on an intent provided in the request.
+      ADVANCED_POSTURE: Advanced posture prediction type.
     """
     PREDICTION_TYPE_UNSPECIFIED = 0
     BASIC_POSTURE = 1
     NATURAL_LANGUAGE_QUERY = 2
+    ADVANCED_POSTURE = 3
 
   environmentOptions = _messages.MessageField('EnvironmentOptions', 1)
   intent = _messages.StringField(2)
@@ -1070,6 +1072,7 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time at which the operation finished running.
     errorMessage: Output only. An error message. Returned when a
       PostureDeployment enters a failure state like UPDATE_FAILED.
+    predictionMetadata: Output only. Metadata for Prediction LRO.
     requestedCancellation: Output only. Whether a request to cancel the
       operation has been received. For operations that have been cancelled
       successfully, the Operation.error field contains the error code
@@ -1084,10 +1087,11 @@ class OperationMetadata(_messages.Message):
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
   errorMessage = _messages.StringField(4)
-  requestedCancellation = _messages.BooleanField(5)
-  statusMessage = _messages.StringField(6)
-  target = _messages.StringField(7)
-  verb = _messages.StringField(8)
+  predictionMetadata = _messages.MessageField('PredictionMetadata', 5)
+  requestedCancellation = _messages.BooleanField(6)
+  statusMessage = _messages.StringField(7)
+  target = _messages.StringField(8)
+  verb = _messages.StringField(9)
 
 
 class OrgPolicyConstraint(_messages.Message):
@@ -1587,16 +1591,67 @@ class Prediction(_messages.Message):
       BASIC_POSTURE: Basic predefined posture prediction type.
       NATURAL_LANGUAGE_QUERY: Posture prediction type to query predictions
         based on an intent provided in the request.
+      ADVANCED_POSTURE: Advanced posture prediction type.
     """
     PREDICTION_TYPE_UNSPECIFIED = 0
     BASIC_POSTURE = 1
     NATURAL_LANGUAGE_QUERY = 2
+    ADVANCED_POSTURE = 3
 
   createTime = _messages.StringField(1)
   environmentOptions = _messages.MessageField('EnvironmentOptions', 2)
   name = _messages.StringField(3)
   posture = _messages.MessageField('Posture', 4)
   predictionType = _messages.EnumField('PredictionTypeValueValuesEnum', 5)
+
+
+class PredictionMetadata(_messages.Message):
+  r"""Metadata for Prediction LRO.
+
+  Enums:
+    OperationStateValueValuesEnum: Output only. Progress state of the given
+      operation.
+
+  Fields:
+    environmentOptions: Output only. The environment options used to generate
+      the prediction.
+    operationState: Output only. Progress state of the given operation.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Progress state of the given operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Operation state unspecified.
+      ENQUEUED: Operation is enqueued.
+      ROUTING_USER_INTENT: Operation is routing user intent.
+      GENERATING_SHA_BUILT_IN_POLICIES: Operation is generating SHA built-in
+        policies.
+      GENERATING_SHA_CUSTOM_POLICIES: Operation is generating SHA custom
+        policies.
+      GENERATING_ORG_BUILT_IN_POLICIES: Operation is generating org built-in
+        policies.
+      GENERATING_ORG_CUSTOM_POLICIES: Operation is generating org custom
+        policies.
+      GENERATING_REGO_POLICIES: Operation is generating Rego policies.
+      FILTERING_POLICIES: Operation is filtering policies.
+      GENERATING_PREDICTION: Operation is generating prediction.
+      PREDICTION_GENERATED: Operation has generated prediction.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    ENQUEUED = 1
+    ROUTING_USER_INTENT = 2
+    GENERATING_SHA_BUILT_IN_POLICIES = 3
+    GENERATING_SHA_CUSTOM_POLICIES = 4
+    GENERATING_ORG_BUILT_IN_POLICIES = 5
+    GENERATING_ORG_CUSTOM_POLICIES = 6
+    GENERATING_REGO_POLICIES = 7
+    FILTERING_POLICIES = 8
+    GENERATING_PREDICTION = 9
+    PREDICTION_GENERATED = 10
+
+  environmentOptions = _messages.MessageField('EnvironmentOptions', 1)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 2)
 
 
 class Property(_messages.Message):
@@ -2363,10 +2418,21 @@ class SecuritypostureOrganizationsLocationsRemediationIntentsPatchRequest(_messa
     remediationIntent: A RemediationIntent resource to be passed as the
       request body.
     updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Remediation Intent resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      overwritten in the RemediationIntent resource by the update method. You
+      can update only the following fields depending on the state transition:
+      * RemediationIntent.state (MUST for any transition) *
+      RemediationIntent.remediation_input (update to IN_PROGRESS state) *
+      RemediationIntent.remediation_artifacts (update to PR_GENERATION_SUCCESS
+      state) * RemediationIntent.error_details (update to PR_GENERATION_FAILED
+      state) Also the allowable state transitions are: *
+      RemediationIntent.State.ENQUEUED to RemediationIntent.State.IN_PROGRESS
+      * RemediationIntent.State.REMEDIATION_SUCCESS to
+      RemediationIntent.State.PR_GENERATION_SUCCESS *
+      RemediationIntent.State.REMEDIATION_SUCCESS to
+      RemediationIntent.State.PR_GENERATION_FAILED The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      will be overwritten if it is in the mask. If the user does not provide a
+      mask then all relevant fields will be overwritten.
   """
 
   name = _messages.StringField(1, required=True)

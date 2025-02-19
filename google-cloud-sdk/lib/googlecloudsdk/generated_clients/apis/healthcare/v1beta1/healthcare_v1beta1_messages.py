@@ -806,6 +806,22 @@ class BoundingPoly(_messages.Message):
   vertices = _messages.MessageField('Vertex', 2, repeated=True)
 
 
+class BulkExportGcsDestination(_messages.Message):
+  r"""The configuration for exporting to Cloud Storage using the bulk export
+  API.
+
+  Fields:
+    uriPrefix: Optional. URI for a Cloud Storage directory where the server
+      writes result files, in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`. If there is no trailing slash, the
+      service appends one when composing the object path. The user is
+      responsible for creating the Cloud Storage bucket referenced in
+      `uri_prefix`.
+  """
+
+  uriPrefix = _messages.StringField(1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1138,9 +1154,10 @@ class ConsentAccessorScope(_messages.Message):
       or a characteristic of the accessor. This can be a resource ID (such as
       `{resourceType}/{id}`) or an external URI. This value must be present.
     environment: An abstract identifier that describes the environment or
-      conditions under which the accessor is acting. Can be "*" if it applies
-      to all environments.
-    purpose: The intent of data use. Can be "*" if it applies to all purposes.
+      conditions under which the accessor is acting. If it's not specified, it
+      applies to all environments.
+    purpose: The intent of data use. If it's not specified, it applies to all
+      purposes.
   """
 
   actor = _messages.StringField(1)
@@ -2819,6 +2836,12 @@ class FhirStore(_messages.Message):
       with a given store.
 
   Fields:
+    bulkExportGcsDestination: Optional. FHIR bulk export exports resources to
+      the specified Cloud Storage destination. A Cloud Storage destination is
+      a URI for a Cloud Storage directory where result files will be written.
+      Only used in the spec-defined bulk $export methods. The Cloud Healthcare
+      Service Agent requires the `roles/storage.objectAdmin` Cloud IAM role on
+      the destination.
     complexDataTypeReferenceParsing: Enable parsing of references within
       complex FHIR data types such as Extensions. If this value is set to
       ENABLED, then features like referential integrity and Bundle reference
@@ -2980,21 +3003,22 @@ class FhirStore(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 1)
-  consentConfig = _messages.MessageField('ConsentConfig', 2)
-  defaultSearchHandlingStrict = _messages.BooleanField(3)
-  disableReferentialIntegrity = _messages.BooleanField(4)
-  disableResourceVersioning = _messages.BooleanField(5)
-  enableHistoryModifications = _messages.BooleanField(6)
-  enableUpdateCreate = _messages.BooleanField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  notificationConfig = _messages.MessageField('NotificationConfig', 10)
-  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 11, repeated=True)
-  searchConfig = _messages.MessageField('SearchConfig', 12)
-  streamConfigs = _messages.MessageField('StreamConfig', 13, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 14)
-  version = _messages.EnumField('VersionValueValuesEnum', 15)
+  bulkExportGcsDestination = _messages.MessageField('BulkExportGcsDestination', 1)
+  complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 2)
+  consentConfig = _messages.MessageField('ConsentConfig', 3)
+  defaultSearchHandlingStrict = _messages.BooleanField(4)
+  disableReferentialIntegrity = _messages.BooleanField(5)
+  disableResourceVersioning = _messages.BooleanField(6)
+  enableHistoryModifications = _messages.BooleanField(7)
+  enableUpdateCreate = _messages.BooleanField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  notificationConfig = _messages.MessageField('NotificationConfig', 11)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 12, repeated=True)
+  searchConfig = _messages.MessageField('SearchConfig', 13)
+  streamConfigs = _messages.MessageField('StreamConfig', 14, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 15)
+  version = _messages.EnumField('VersionValueValuesEnum', 16)
 
 
 class FhirStoreMetric(_messages.Message):
@@ -5398,10 +5422,14 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFrames
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
       t_id}/dicomStores/{dicom_store_id}`.
+    viewport: Optional. The viewport setting to use as specified in https://di
+      com.nema.org/medical/dicom/current/output/chtml/part18/sect_8.3.5.html#s
+      ect_8.3.5.1.3
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
   parent = _messages.StringField(2, required=True)
+  viewport = _messages.StringField(3)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrieveInstanceRequest(_messages.Message):
@@ -5449,10 +5477,14 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrie
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
       t_id}/dicomStores/{dicom_store_id}`.
+    viewport: Optional. The viewport setting to use as specified in https://di
+      com.nema.org/medical/dicom/current/output/chtml/part18/sect_8.3.5.html#s
+      ect_8.3.5.1.3
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
   parent = _messages.StringField(2, required=True)
+  viewport = _messages.StringField(3)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesRetrieveMetadataRequest(_messages.Message):
@@ -5573,6 +5605,43 @@ class HealthcareProjectsLocationsDatasetsFhirStoresApplyConsentsRequest(_message
 
   applyConsentsRequest = _messages.MessageField('ApplyConsentsRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresBulkExportGroupRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresBulkExportGroupRequest
+  object.
+
+  Fields:
+    _since: Optional. If provided, only resources updated after this time are
+      exported. The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For
+      example, `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The
+      time must be specified to the second and include a time zone.
+    _type: Optional. String of comma-delimited FHIR resource types. If
+      provided, only resources of the specified resource type(s) are exported.
+    name: Required. Name of the `Group` resource that is exported, in format `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhir
+      Stores/{fhir_store_id}/fhir/Group/{group_id}`.
+    organizeOutputBy: Optional. Required. The FHIR resource type used to
+      organize exported resources. Only supports "Patient". When organized by
+      Patient resource, output files are grouped as follows: * Patient file(s)
+      containing the Patient resources. Each Patient is sequentially followed
+      by all resources the Patient references, and all resources that
+      reference the Patient (equivalent to a GetPatientEverything request). *
+      Individual files grouped by resource type for resources in the Group's
+      member field and the Group resource itself. Resources may be duplicated
+      across multiple Patients. For example, if two Patient resources
+      reference the same Organization resource, it will appear twice, once
+      after each Patient. The Group resource from the request does not appear
+      in the Patient files.
+    outputFormat: Optional. Output format of the export. This field is
+      optional and only `application/fhir+ndjson` is supported.
+  """
+
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  organizeOutputBy = _messages.StringField(4)
+  outputFormat = _messages.StringField(5)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresConfigureSearchRequest(_messages.Message):
@@ -5724,6 +5793,30 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest(_messa
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBulkExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBulkExportRequest
+  object.
+
+  Fields:
+    _since: Optional. If provided, only resources updated after this time are
+      exported. The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For
+      example, `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The
+      time must be specified to the second and include a time zone.
+    _type: Optional. String of comma-delimited FHIR resource types. If
+      provided, only resources of the specified resource type(s) are exported.
+    name: Required. The name of the FHIR store to export resources from, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/fhirStores/{fhir_store_id}`.
+    outputFormat: Optional. Output format of the export. This field is
+      optional and only `application/fhir+ndjson` is supported.
+  """
+
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  outputFormat = _messages.StringField(4)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest(_messages.Message):
@@ -6316,6 +6409,32 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresOperationsDeleteFhirOperationRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresOperationsDeleteFhirOpera
+  tionRequest object.
+
+  Fields:
+    name: Required. Name of the operation to be deleted, in the format `projec
+      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores
+      /{fhir_store_id}/operations/{operation_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresOperationsGetFhirOperationStatusRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresOperationsGetFhirOperatio
+  nStatusRequest object.
+
+  Fields:
+    name: Required. Name of the operation to query, in the format `projects/{p
+      roject_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhi
+      r_store_id}/operations/{operation_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Message):

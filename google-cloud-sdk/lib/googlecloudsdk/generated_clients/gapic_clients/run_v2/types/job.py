@@ -428,11 +428,9 @@ class Job(proto.Message):
             that stage. On read (or output), describes whether the
             resource uses preview features.
 
-            .. raw:: html
-
-                <p>
-                For example, if ALPHA is provided as input, but only BETA and GA-level
-                features are used, this field will be BETA on output.
+            For example, if ALPHA is provided as input, but only BETA
+            and GA-level features are used, this field will be BETA on
+            output.
         binary_authorization (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BinaryAuthorization):
             Settings for the Binary Authorization
             feature.

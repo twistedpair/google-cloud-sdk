@@ -1638,6 +1638,32 @@ class ArgObject(ArgDict):
     # stringifying json at each level
     return self._Map(arg_value, self._StringifyValues)
 
+  def _CheckIfJsonObject(self, arg_value):
+    """Checks if arg_value can be loaded into a json object."""
+    if not self._keyed_values:
+      return False
+
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import yaml
+    # pylint: enable=g-import-not-at-top
+    try:
+      parsed_json = yaml.load(arg_value)
+      if isinstance(parsed_json, list) and parsed_json:
+        json_dict = parsed_json.pop()
+      else:
+        json_dict = parsed_json
+
+      if not isinstance(json_dict, dict):
+        # Only return true for arg_values that parse into key-value pairs.
+        return False
+      elif all(val is None for val in json_dict.values()):
+        # '{foo=1}' will be parsed as {'foo': None}
+        return False
+      else:
+        return True
+    except yaml.YAMLParseError:
+      return False
+
   def _LoadJsonOrFile(self, arg_value):
     """Loads json string or file into a dictionary.
 
@@ -1678,13 +1704,19 @@ class ArgObject(ArgDict):
 
     return result
 
+  def _ContainsArgDict(self, arg_value):
+    ops = '|'.join(self.operators.keys())
+    return re.search(f'({ops})', arg_value)
+
   def _ParseArgDict(self, arg_value):
-    if arg_value.startswith('[') and self.repeated:
-      values = _TokenizeQuotedList(arg_value.strip('[]'), includes_json=True)
+    stripped_value = arg_value.strip()
+    if (stripped_value.startswith('[') and stripped_value.endswith(']')
+        and self.repeated):
+      values = _TokenizeQuotedList(stripped_value[1:-1], includes_json=True)
       return [self._ParseArgDict(val.strip()) for val in values]
 
-    if arg_value.startswith('{'):
-      arg_dict_str = arg_value.strip('{}')
+    if stripped_value.startswith('{') and stripped_value.endswith('}'):
+      arg_dict_str = stripped_value[1:-1]
     else:
       arg_dict_str = arg_value
     return super(ArgObject, self).__call__(arg_dict_str)
@@ -1695,13 +1727,14 @@ class ArgObject(ArgDict):
           'ArgObject can only convert string values. Received {}.'.format(
               arg_value))
 
-    ops = self.operators.keys()
-    arg_dict_pattern = '({})'.format('|'.join(ops))
-    if re.search(arg_dict_pattern, arg_value) and self.parse_as_arg_dict:
-      # parse as arg_dict
+    if (self.parse_as_arg_dict and
+        self._ContainsArgDict(arg_value) and
+        not self._CheckIfJsonObject(arg_value)):
+      # If value contains arg_dict syntax and does not easily parse into a
+      # json object, we assume it is an arg_dict.
       value = self._ParseArgDict(arg_value)
     else:
-      # parse as json
+      # parse everything else as json / yaml
       json_dict = self._LoadJsonOrFile(arg_value)
       value = self._ParseAndValidateJson(json_dict)
 

@@ -170,7 +170,8 @@ class BundlesConfig(_messages.Message):
   "GOOGLE_INTERNAL, YAKIMA_TRUSTED_TESTER, GCLOUD_TESTER"];
 
   Fields:
-    configControllerConfig: Configuration for the Config Controller bundle.
+    configControllerConfig: Optional. Configuration for the Config Controller
+      bundle.
   """
 
   configControllerConfig = _messages.MessageField('ConfigControllerConfig', 1)
@@ -200,7 +201,7 @@ class ConfigControllerConfig(_messages.Message):
   r"""Configuration options for the Config Controller bundle.
 
   Fields:
-    enabled: Whether the Config Controller bundle is enabled on the
+    enabled: Optional. Whether the Config Controller bundle is enabled on the
       KrmApiHost.
   """
 

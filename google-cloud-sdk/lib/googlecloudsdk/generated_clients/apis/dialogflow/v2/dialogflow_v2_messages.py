@@ -1365,9 +1365,12 @@ class DialogflowProjectsAnswerRecordsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. Filters to restrict results to specific answer records.
-      Marked deprecated as it hasn't been, and isn't currently, supported. For
-      more information about filtering, see [API
-      Filtering](https://aip.dev/160).
+      The expression has the following syntax: [AND ] ... The following fields
+      and operators are supported: * conversation_id with equals(=) operator
+      Examples: * "conversation_id=bar" matches answer records in the
+      projects/foo/locations/global/conversations/bar conversation (assuming
+      the parent is projects/foo/locations/global). For more information about
+      filtering, see [API Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of records to return in a single
       page. The server may return fewer records than this. If unspecified, we
       use 10. The maximum is 100.
@@ -3362,9 +3365,12 @@ class DialogflowProjectsLocationsAnswerRecordsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. Filters to restrict results to specific answer records.
-      Marked deprecated as it hasn't been, and isn't currently, supported. For
-      more information about filtering, see [API
-      Filtering](https://aip.dev/160).
+      The expression has the following syntax: [AND ] ... The following fields
+      and operators are supported: * conversation_id with equals(=) operator
+      Examples: * "conversation_id=bar" matches answer records in the
+      projects/foo/locations/global/conversations/bar conversation (assuming
+      the parent is projects/foo/locations/global). For more information about
+      filtering, see [API Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of records to return in a single
       page. The server may return fewer records than this. If unspecified, we
       use 10. The maximum is 100.
@@ -6915,7 +6921,7 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig(_messages.Mes
 
   Fields:
     clientId: Required. The client ID provided by the 3rd party platform.
-    clientSecret: Required. The client secret provided by the 3rd party
+    clientSecret: Optional. The client secret provided by the 3rd party
       platform.
     scopes: Optional. The OAuth scopes to grant.
     tokenEndpoint: Required. The token endpoint provided by the 3rd party
@@ -9721,7 +9727,7 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig(_message
 
   Fields:
     clientId: Required. The client ID provided by the 3rd party platform.
-    clientSecret: Required. The client secret provided by the 3rd party
+    clientSecret: Optional. The client secret provided by the 3rd party
       platform.
     scopes: Optional. The OAuth scopes to grant.
     tokenEndpoint: Required. The token endpoint provided by the 3rd party
@@ -10326,6 +10332,7 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
 
   Fields:
     assistQueryParams: Parameters for a human assist query.
+    audioInput: The natural language speech audio to be processed.
     cxParameters: Additional parameters to be put into Dialogflow CX session
       parameters. To remove a parameter from the session, clients should
       explicitly set the parameter value to null. Note: this field should only
@@ -10372,13 +10379,14 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
-  cxParameters = _messages.MessageField('CxParametersValue', 2)
-  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 3)
-  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 4)
-  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 5)
-  requestId = _messages.StringField(6)
-  suggestionInput = _messages.MessageField('GoogleCloudDialogflowV2SuggestionInput', 7)
-  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 8)
+  audioInput = _messages.MessageField('GoogleCloudDialogflowV2AudioInput', 2)
+  cxParameters = _messages.MessageField('CxParametersValue', 3)
+  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 4)
+  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 5)
+  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 6)
+  requestId = _messages.StringField(7)
+  suggestionInput = _messages.MessageField('GoogleCloudDialogflowV2SuggestionInput', 8)
+  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 9)
 
 
 class GoogleCloudDialogflowV2AnalyzeContentResponse(_messages.Message):
@@ -10664,6 +10672,22 @@ class GoogleCloudDialogflowV2AssistQueryParameters(_messages.Message):
   documentsMetadataFilters = _messages.MessageField('DocumentsMetadataFiltersValue', 1)
 
 
+class GoogleCloudDialogflowV2AudioInput(_messages.Message):
+  r"""Represents the natural language speech audio to be processed.
+
+  Fields:
+    audio: Required. The natural language speech audio to be processed. A
+      single request can contain up to 2 minutes of speech audio data. The
+      transcribed text cannot contain more than 256 bytes for virtual agent
+      interactions.
+    config: Required. Instructs the speech recognizer how to process the
+      speech audio.
+  """
+
+  audio = _messages.BytesField(1)
+  config = _messages.MessageField('GoogleCloudDialogflowV2InputAudioConfig', 2)
+
+
 class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
   r"""Defines the Automated Agent to connect to a conversation.
 
@@ -10930,6 +10954,8 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigOperationMetadata(_mess
       ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model for chat.
       SMART_REPLY: Run smart reply model for chat.
+      CONVERSATION_SUMMARIZATION: Run conversation summarization model for
+        chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
       KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
@@ -10938,8 +10964,9 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigOperationMetadata(_mess
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
-    KNOWLEDGE_SEARCH = 4
-    KNOWLEDGE_ASSIST = 5
+    CONVERSATION_SUMMARIZATION = 4
+    KNOWLEDGE_SEARCH = 5
+    KNOWLEDGE_ASSIST = 6
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -10989,6 +11016,8 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigRequest(_messages.Messa
       ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model for chat.
       SMART_REPLY: Run smart reply model for chat.
+      CONVERSATION_SUMMARIZATION: Run conversation summarization model for
+        chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
       KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
@@ -10997,8 +11026,9 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigRequest(_messages.Messa
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
-    KNOWLEDGE_SEARCH = 4
-    KNOWLEDGE_ASSIST = 5
+    CONVERSATION_SUMMARIZATION = 4
+    KNOWLEDGE_SEARCH = 5
+    KNOWLEDGE_ASSIST = 6
 
   participantRole = _messages.EnumField('ParticipantRoleValueValuesEnum', 1)
   suggestionFeatureType = _messages.EnumField('SuggestionFeatureTypeValueValuesEnum', 2)
@@ -16107,6 +16137,8 @@ class GoogleCloudDialogflowV2SetSuggestionFeatureConfigOperationMetadata(_messag
       ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model for chat.
       SMART_REPLY: Run smart reply model for chat.
+      CONVERSATION_SUMMARIZATION: Run conversation summarization model for
+        chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
       KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
@@ -16115,8 +16147,9 @@ class GoogleCloudDialogflowV2SetSuggestionFeatureConfigOperationMetadata(_messag
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
-    KNOWLEDGE_SEARCH = 4
-    KNOWLEDGE_ASSIST = 5
+    CONVERSATION_SUMMARIZATION = 4
+    KNOWLEDGE_SEARCH = 5
+    KNOWLEDGE_ASSIST = 6
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -16780,6 +16813,8 @@ class GoogleCloudDialogflowV2SuggestionFeature(_messages.Message):
       ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model for chat.
       SMART_REPLY: Run smart reply model for chat.
+      CONVERSATION_SUMMARIZATION: Run conversation summarization model for
+        chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
       KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
@@ -16788,8 +16823,9 @@ class GoogleCloudDialogflowV2SuggestionFeature(_messages.Message):
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
-    KNOWLEDGE_SEARCH = 4
-    KNOWLEDGE_ASSIST = 5
+    CONVERSATION_SUMMARIZATION = 4
+    KNOWLEDGE_SEARCH = 5
+    KNOWLEDGE_ASSIST = 6
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 

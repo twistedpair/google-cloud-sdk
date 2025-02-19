@@ -243,6 +243,7 @@ class BackupCollection(_messages.Message):
       collection belongs to. Example:
       projects/{project}/locations/{location}/clusters/{cluster}
     clusterUid: Output only. The cluster uid of the backup collection.
+    createTime: Output only. The time when the backup collection was created.
     kmsKey: Output only. The KMS key used to encrypt the backups under this
       backup collection.
     name: Identifier. Full resource path of the backup collection.
@@ -252,9 +253,10 @@ class BackupCollection(_messages.Message):
 
   cluster = _messages.StringField(1)
   clusterUid = _messages.StringField(2)
-  kmsKey = _messages.StringField(3)
-  name = _messages.StringField(4)
-  uid = _messages.StringField(5)
+  createTime = _messages.StringField(3)
+  kmsKey = _messages.StringField(4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
 
 
 class BackupConfiguration(_messages.Message):
@@ -627,8 +629,8 @@ class ClusterEndpoint(_messages.Message):
   one connection for each service attachment in the cluster.
 
   Fields:
-    connections: A group of PSC connections. They are created in the same VPC
-      network, one for each service attachment in the cluster.
+    connections: Required. A group of PSC connections. They are created in the
+      same VPC network, one for each service attachment in the cluster.
   """
 
   connections = _messages.MessageField('ConnectionDetail', 1, repeated=True)
@@ -1193,6 +1195,18 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         is using a weak password hash algorithm.
       SIGNAL_TYPE_NO_USER_PASSWORD_POLICY: Detects if a database instance has
         no user password policy set.
+      SIGNAL_TYPE_HOT_NODE: Detects if a database instance/cluster has a hot
+        node.
+      SIGNAL_TYPE_NO_POINT_IN_TIME_RECOVERY: Detects if a database instance
+        has no point in time recovery enabled.
+      SIGNAL_TYPE_RESOURCE_SUSPENDED: Detects if a database instance/cluster
+        is suspended.
+      SIGNAL_TYPE_EXPENSIVE_COMMANDS: Detects that expensive commands are
+        being run on a database instance impacting overall performance.
+      SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED: Indicates that the
+        instance does not have a maintenance policy configured.
+      SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
+        resource
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1275,6 +1289,12 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
     SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM = 79
     SIGNAL_TYPE_NO_USER_PASSWORD_POLICY = 80
+    SIGNAL_TYPE_HOT_NODE = 81
+    SIGNAL_TYPE_NO_POINT_IN_TIME_RECOVERY = 82
+    SIGNAL_TYPE_RESOURCE_SUSPENDED = 83
+    SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
+    SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
+    SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1389,7 +1409,7 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 23
+  r"""Common model for database resource instance metadata. Next ID: 25
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -1401,6 +1421,8 @@ class DatabaseResourceMetadata(_messages.Message):
       wrong patch update, while the expected state will remain at the HEALTHY.
     InstanceTypeValueValuesEnum: The type of the instance. Specified at
       creation time.
+    SuspensionReasonValueValuesEnum: Optional. Suspension reason for the
+      resource.
 
   Fields:
     availabilityConfiguration: Availability configuration for this instance
@@ -1417,6 +1439,7 @@ class DatabaseResourceMetadata(_messages.Message):
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
       patch update, while the expected state will remain at the HEALTHY.
+    gcbdrConfiguration: GCBDR configuration for the resource.
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
     location: The resource location. REQUIRED
@@ -1439,6 +1462,7 @@ class DatabaseResourceMetadata(_messages.Message):
       "ABC" is deleted, the name "ABC" can be used to to create a new resource
       within the same source. Resource name to follow CAIS resource_name
       format as noted here go/condor-common-datamodel
+    suspensionReason: Optional. Suspension reason for the resource.
     tagsSet: Optional. Tags associated with this resources.
     updationTime: The time at which the resource was updated and recorded at
       partner service.
@@ -1502,7 +1526,7 @@ class DatabaseResourceMetadata(_messages.Message):
     r"""The type of the instance. Specified at creation time.
 
     Values:
-      INSTANCE_TYPE_UNSPECIFIED: <no description>
+      INSTANCE_TYPE_UNSPECIFIED: Unspecified.
       SUB_RESOURCE_TYPE_UNSPECIFIED: For rest of the other categories.
       PRIMARY: A regular primary database instance.
       SECONDARY: A cluster or an instance acting as a secondary.
@@ -1512,6 +1536,8 @@ class DatabaseResourceMetadata(_messages.Message):
       SUB_RESOURCE_TYPE_SECONDARY: A cluster or an instance acting as a
         secondary.
       SUB_RESOURCE_TYPE_READ_REPLICA: An instance acting as a read-replica.
+      SUB_RESOURCE_TYPE_EXTERNAL_PRIMARY: An instance acting as an external
+        primary.
       SUB_RESOURCE_TYPE_OTHER: For rest of the other categories.
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
@@ -1523,7 +1549,29 @@ class DatabaseResourceMetadata(_messages.Message):
     SUB_RESOURCE_TYPE_PRIMARY = 6
     SUB_RESOURCE_TYPE_SECONDARY = 7
     SUB_RESOURCE_TYPE_READ_REPLICA = 8
-    SUB_RESOURCE_TYPE_OTHER = 9
+    SUB_RESOURCE_TYPE_EXTERNAL_PRIMARY = 9
+    SUB_RESOURCE_TYPE_OTHER = 10
+
+  class SuspensionReasonValueValuesEnum(_messages.Enum):
+    r"""Optional. Suspension reason for the resource.
+
+    Values:
+      SUSPENSION_REASON_UNSPECIFIED: Suspension reason is unspecified.
+      WIPEOUT_HIDE_EVENT: Wipeout hide event.
+      WIPEOUT_PURGE_EVENT: Wipeout purge event.
+      BILLING_DISABLED: Billing disabled for project
+      ABUSER_DETECTED: Abuse detected for resource
+      ENCRYPTION_KEY_INACCESSIBLE: Encryption key inaccessible.
+      REPLICATED_CLUSTER_ENCRYPTION_KEY_INACCESSIBLE: Replicated cluster
+        encryption key inaccessible.
+    """
+    SUSPENSION_REASON_UNSPECIFIED = 0
+    WIPEOUT_HIDE_EVENT = 1
+    WIPEOUT_PURGE_EVENT = 2
+    BILLING_DISABLED = 3
+    ABUSER_DETECTED = 4
+    ENCRYPTION_KEY_INACCESSIBLE = 5
+    REPLICATED_CLUSTER_ENCRYPTION_KEY_INACCESSIBLE = 6
 
   availabilityConfiguration = _messages.MessageField('AvailabilityConfiguration', 1)
   backupConfiguration = _messages.MessageField('BackupConfiguration', 2)
@@ -1534,18 +1582,20 @@ class DatabaseResourceMetadata(_messages.Message):
   edition = _messages.EnumField('EditionValueValuesEnum', 7)
   entitlements = _messages.MessageField('Entitlement', 8, repeated=True)
   expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 9)
-  id = _messages.MessageField('DatabaseResourceId', 10)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
-  location = _messages.StringField(12)
-  machineConfiguration = _messages.MessageField('MachineConfiguration', 13)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 14)
-  primaryResourceLocation = _messages.StringField(15)
-  product = _messages.MessageField('Product', 16)
-  resourceContainer = _messages.StringField(17)
-  resourceName = _messages.StringField(18)
-  tagsSet = _messages.MessageField('Tags', 19)
-  updationTime = _messages.StringField(20)
-  userLabelSet = _messages.MessageField('UserLabels', 21)
+  gcbdrConfiguration = _messages.MessageField('GCBDRConfiguration', 10)
+  id = _messages.MessageField('DatabaseResourceId', 11)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
+  location = _messages.StringField(13)
+  machineConfiguration = _messages.MessageField('MachineConfiguration', 14)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 15)
+  primaryResourceLocation = _messages.StringField(16)
+  product = _messages.MessageField('Product', 17)
+  resourceContainer = _messages.StringField(18)
+  resourceName = _messages.StringField(19)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 20)
+  tagsSet = _messages.MessageField('Tags', 21)
+  updationTime = _messages.StringField(22)
+  userLabelSet = _messages.MessageField('UserLabels', 23)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -1804,6 +1854,18 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         is using a weak password hash algorithm.
       SIGNAL_TYPE_NO_USER_PASSWORD_POLICY: Detects if a database instance has
         no user password policy set.
+      SIGNAL_TYPE_HOT_NODE: Detects if a database instance/cluster has a hot
+        node.
+      SIGNAL_TYPE_NO_POINT_IN_TIME_RECOVERY: Detects if a database instance
+        has no point in time recovery enabled.
+      SIGNAL_TYPE_RESOURCE_SUSPENDED: Detects if a database instance/cluster
+        is suspended.
+      SIGNAL_TYPE_EXPENSIVE_COMMANDS: Detects that expensive commands are
+        being run on a database instance impacting overall performance.
+      SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED: Indicates that the
+        instance does not have a maintenance policy configured.
+      SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
+        resource
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1886,6 +1948,12 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
     SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM = 79
     SIGNAL_TYPE_NO_USER_PASSWORD_POLICY = 80
+    SIGNAL_TYPE_HOT_NODE = 81
+    SIGNAL_TYPE_NO_POINT_IN_TIME_RECOVERY = 82
+    SIGNAL_TYPE_RESOURCE_SUSPENDED = 83
+    SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
+    SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
+    SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -2075,11 +2143,17 @@ class Entitlement(_messages.Message):
     r"""An enum that represents the type of this entitlement.
 
     Values:
-      ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
-      GEMINI: The root entitlement representing Gemini package ownership.
+      ENTITLEMENT_TYPE_UNSPECIFIED: The entitlement type is unspecified.
+      GEMINI: The root entitlement representing Gemini package ownership.This
+        will no longer be supported in the future.
+      NATIVE: The entitlement representing Native Tier, This will be the
+        default Entitlement going forward with GCA Enablement.
+      GCA_STANDARD: The entitlement representing GCA-Standard Tier.
     """
     ENTITLEMENT_TYPE_UNSPECIFIED = 0
     GEMINI = 1
+    NATIVE = 2
+    GCA_STANDARD = 3
 
   entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2151,6 +2225,16 @@ class FixedFrequencySchedule(_messages.Message):
   """
 
   startTime = _messages.MessageField('TimeOfDay', 1)
+
+
+class GCBDRConfiguration(_messages.Message):
+  r"""GCBDR Configuration for the resource.
+
+  Fields:
+    gcbdrManaged: Whether the resource is managed by GCBDR.
+  """
+
+  gcbdrManaged = _messages.BooleanField(1)
 
 
 class GcsBackupSource(_messages.Message):
@@ -2609,6 +2693,8 @@ class InternalResourceMetadata(_messages.Message):
   Fields:
     backupConfiguration: Backup configuration for this database
     backupRun: Information about the last backup attempt for this database
+    isDeletionProtectionEnabled: Whether deletion protection is enabled for
+      this internal resource.
     product: A Product attribute.
     resourceId: A DatabaseResourceId attribute.
     resourceName: Required. internal resource name for spanner this will be
@@ -2618,9 +2704,10 @@ class InternalResourceMetadata(_messages.Message):
 
   backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
   backupRun = _messages.MessageField('BackupRun', 2)
-  product = _messages.MessageField('Product', 3)
-  resourceId = _messages.MessageField('DatabaseResourceId', 4)
-  resourceName = _messages.StringField(5)
+  isDeletionProtectionEnabled = _messages.BooleanField(3)
+  product = _messages.MessageField('Product', 4)
+  resourceId = _messages.MessageField('DatabaseResourceId', 5)
+  resourceName = _messages.StringField(6)
 
 
 class ListBackupCollectionsResponse(_messages.Message):
@@ -3088,9 +3175,11 @@ class ObservabilityMetricData(_messages.Message):
         fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
         cases).
       STORAGE_USED_BYTES: Sotrage used by a resource.
-      NODE_COUNT: Node count for a resource. It represents the number of nodes
+      NODE_COUNT: Node count for a resource. It represents the number of node
         units in a bigtable/spanner instance.
       MEMORY_USED_BYTES: Memory used by a resource (in bytes).
+      PROCESSING_UNIT_COUNT: Processing units used by a resource. It
+        represents the number of processing units in a spanner instance.
     """
     METRIC_TYPE_UNSPECIFIED = 0
     CPU_UTILIZATION = 1
@@ -3100,6 +3189,7 @@ class ObservabilityMetricData(_messages.Message):
     STORAGE_USED_BYTES = 5
     NODE_COUNT = 6
     MEMORY_USED_BYTES = 7
+    PROCESSING_UNIT_COUNT = 8
 
   aggregationType = _messages.EnumField('AggregationTypeValueValuesEnum', 1)
   metricType = _messages.EnumField('MetricTypeValueValuesEnum', 2)
@@ -4649,13 +4739,34 @@ class TypedValue(_messages.Message):
 class UpdateInfo(_messages.Message):
   r"""Represents information about an updating cluster.
 
+  Enums:
+    TargetNodeTypeValueValuesEnum: Target node type for redis cluster.
+
   Fields:
+    targetNodeType: Target node type for redis cluster.
     targetReplicaCount: Target number of replica nodes per shard.
     targetShardCount: Target number of shards for redis cluster
   """
 
-  targetReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  targetShardCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  class TargetNodeTypeValueValuesEnum(_messages.Enum):
+    r"""Target node type for redis cluster.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: Node type unspecified
+      REDIS_SHARED_CORE_NANO: Redis shared core nano node_type.
+      REDIS_HIGHMEM_MEDIUM: Redis highmem medium node_type.
+      REDIS_HIGHMEM_XLARGE: Redis highmem xlarge node_type.
+      REDIS_STANDARD_SMALL: Redis standard small node_type.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    REDIS_SHARED_CORE_NANO = 1
+    REDIS_HIGHMEM_MEDIUM = 2
+    REDIS_HIGHMEM_XLARGE = 3
+    REDIS_STANDARD_SMALL = 4
+
+  targetNodeType = _messages.EnumField('TargetNodeTypeValueValuesEnum', 1)
+  targetReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  targetShardCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class UpgradeInstanceRequest(_messages.Message):

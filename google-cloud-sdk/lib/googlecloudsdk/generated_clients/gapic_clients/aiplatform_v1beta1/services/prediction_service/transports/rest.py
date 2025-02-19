@@ -1208,6 +1208,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                 'uri': '/v1beta1/{endpoint=projects/*/locations/*/publishers/*/models/*}:predict',
                 'body': '*',
             },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=endpoints/*}:predict',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=publishers/*/models/*}:predict',
+                'body': '*',
+            },
             ]
             request, metadata = self._interceptor.pre_predict(request, metadata)
             pb_request = prediction_service.PredictRequest.pb(request)

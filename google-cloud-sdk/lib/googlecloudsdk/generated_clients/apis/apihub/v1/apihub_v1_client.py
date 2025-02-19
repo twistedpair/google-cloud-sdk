@@ -712,7 +712,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an API resource in the API hub. The following fields in the API can be updated: * display_name * description * owner * documentation * target_user * team * business_unit * maturity_level * attributes The update_mask should be used to specify the fields being updated. Updating the owner field requires complete owner message and updates both owner and email fields.
+      r"""Update an API resource in the API hub. The following fields in the API can be updated: * display_name * description * owner * documentation * target_user * team * business_unit * maturity_level * api_style * attributes The update_mask should be used to specify the fields being updated. Updating the owner field requires complete owner message and updates both owner and email fields.
 
       Args:
         request: (ApihubProjectsLocationsApisPatchRequest) input message
@@ -1629,7 +1629,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get details about an API Hub plugin.
+      r"""Get an API Hub plugin.
 
       Args:
         request: (ApihubProjectsLocationsPluginsGetRequest) input message

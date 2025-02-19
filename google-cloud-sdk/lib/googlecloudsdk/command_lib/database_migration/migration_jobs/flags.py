@@ -339,11 +339,10 @@ def AddMigrationJobObjectsConfigFlagForRestartAndPromote(parser):
 
 def AddDatabasesFilterFlag(parser):
   """Adds a --databases-filter flag to the given parser."""
-  # TODO(b/365922318) : Add Postgres to Cloud SQL Postgres when it is supported.
   help_text = """\
     A list of databases to be migrated to the destination instance.
     Provide databases as a comma separated list. This flag is used only for
-    Postgres to AlloyDB migrations.
+    Postgres to AlloyDB migrations and Postgres to Cloud SQL Postgres migrations.
     """
   parser.add_argument(
       '--databases-filter',
@@ -355,10 +354,9 @@ def AddDatabasesFilterFlag(parser):
 
 def AddAllDatabasesFlag(parser):
   """Adds --all-databases flag to the given parser."""
-  # TODO(b/365922318) : Add Postgres to Cloud SQL Postgres when it is supported.
   help_text = """\
     Migrate all databases for the migration job. This flag is used only for
-    Postgres to AlloyDB migrations.
+    Postgres to AlloyDB migrations and Postgres to Cloud SQL Postgres migrations.
     """
   parser.add_argument('--all-databases', action='store_true', help=help_text)
 
@@ -395,10 +393,9 @@ def AddSqlServerPromoteWhenReadyFlag(parser):
 
 def AddRestartFailedObjectsFlag(parser):
   """Adds a --restart-failed-objects flag to the given parser."""
-  # TODO(b/365922318) : Add Postgres to Cloud SQL Postgres when it is supported.
   help_text = """\
     Restart the failed objects in the migration job. This flag is used only for
-    Postgres to AlloyDB migrations.
+    Postgres to AlloyDB migrations and Postgres to Cloud SQL Postgres migrations.
     """
   parser.add_argument(
       '--restart-failed-objects',

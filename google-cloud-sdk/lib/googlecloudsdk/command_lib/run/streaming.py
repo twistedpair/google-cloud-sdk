@@ -39,15 +39,20 @@ class LogStreamingWrapper(binary_operations.StreamingBinaryBackedOperation):
         install_if_missing=True,
         **kwargs)
 
-  def _ParseArgsForCommand(self,
-                           project_id=None,
-                           log_filter=None,
-                           log_format=None,
-                           **kwargs):
+  def _ParseArgsForCommand(
+      self,
+      project_id=None,
+      log_filter=None,
+      log_format=None,
+      token=None,
+      **kwargs
+  ):
     del kwargs
     exec_args = ['-projectId', project_id]
     if log_filter:
       exec_args.extend(['-filter', log_filter])
     if log_format:
       exec_args.extend(['-format', log_format])
+    if token:
+      exec_args.extend(['-token', token])
     return exec_args

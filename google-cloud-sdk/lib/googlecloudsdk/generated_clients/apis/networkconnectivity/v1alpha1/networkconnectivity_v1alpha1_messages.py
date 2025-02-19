@@ -476,12 +476,16 @@ class Hub(_messages.Message):
       ACTIVE: The resource is active
       DELETING: The resource's Delete operation is in progress
       UPDATING: The resource's Update operation is in progress
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     UPDATING = 4
+    FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1625,12 +1629,16 @@ class Spoke(_messages.Message):
       ACTIVE: The resource is active
       DELETING: The resource's Delete operation is in progress
       UPDATING: The resource's Update operation is in progress
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     UPDATING = 4
+    FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

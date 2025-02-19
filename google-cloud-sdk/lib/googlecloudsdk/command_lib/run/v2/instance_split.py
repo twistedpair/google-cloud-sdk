@@ -20,11 +20,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import collections
 from typing import Dict, List, Union
 
+from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import instance_split
+from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as worker_pool_objects
+import six
 
+
+# Human readable indicator for a missing split percentage.
+_MISSING_PERCENT = '-'
 
 # Designated key value for latest.
 # Revisions' names may not be uppercase, so this is distinct.
@@ -294,3 +301,183 @@ def ZeroLatestAssignment(
       ],
       key=_SortKeyFromInstanceSplit,
   )
+
+
+def _FormatPercentage(percent):
+  if percent == _MISSING_PERCENT:
+    return _MISSING_PERCENT
+  else:
+    return f'{percent}%'
+
+
+def _SumPercent(splits: List[instance_split.InstanceSplit]) -> int:
+  """Returns the sum of the instance split percentages."""
+  return sum([split.percent for split in splits])
+
+
+class InstanceSplitPair(object):
+  """Holder for InstanceSplit status information.
+
+  The representation of the status of instance split for a worker pool
+  includes:
+    o User requested assignments (instance_splits)
+    o Actual assignments (instance_split_statuses)
+  """
+
+  def __init__(
+      self,
+      target_splits: List[instance_split.InstanceSplit],
+      current_splits: List[instance_split.InstanceSplitStatus],
+      revision_name: str,
+      latest: bool,
+  ):
+    """Creates a new InstanceSplitPair.
+
+    Args:
+      target_splits: A list of target instance splits that all reference the
+        same revision, either by name or the latest ready.
+      current_splits: A list of current instance splits that all reference the
+        same revision, either by name or the latest ready.
+      revision_name: The name of the revision referenced by the instance splits.
+      latest: A boolean indicating if these instance splits reference the latest
+        ready revision.
+
+    Returns:
+      A new InstanceSplitPair instance.
+    """
+    self._target_splits = target_splits
+    self._current_splits = current_splits
+    self._revision_name = revision_name
+    self._latest = latest
+
+  @property
+  def key(self):
+    """The key for the instance split."""
+    return LATEST_REVISION_KEY if self.latest_revision else self.revision_name
+
+  @property
+  def latest_revision(self):
+    """True if the instance split reference the latest revision."""
+    return self._latest
+
+  @property
+  def revision_name(self):
+    """Name of the revision referenced by the instance split."""
+    return self._revision_name
+
+  @property
+  def target_percent(self):
+    """Target percent of instance split allocated to the revision."""
+    if self._target_splits:
+      return six.text_type(_SumPercent(self._target_splits))
+    else:
+      return _MISSING_PERCENT
+
+  @property
+  def status_percent(self):
+    """Current percent of instance split allocated to the revision."""
+    if self._current_splits:
+      return six.text_type(_SumPercent(self._current_splits))
+    else:
+      return _MISSING_PERCENT
+
+  @property
+  def display_percent(self):
+    """Human readable revision percent."""
+    if self.status_percent == self.target_percent:
+      return _FormatPercentage(self.status_percent)
+    else:
+      return (
+          f'{_FormatPercentage(self.target_percent):4} (currently'
+          f' {_FormatPercentage(self.status_percent)})'
+      )
+
+  @property
+  def display_revision_id(self):
+    """Human readable revision identifier."""
+    if self.latest_revision:
+      return f'{LATEST_REVISION_KEY} (currently {self.revision_name})'
+    else:
+      return self.revision_name
+
+
+def _SortKeyFromInstanceSplitPair(pair: InstanceSplitPair):
+  """Sorted key function to order InstanceSplitPair objects by key.
+
+  Args:
+    pair: A InstanceSplitPair.
+
+  Returns:
+    A value that sorts by revisionName with LATEST_REVISION_KEY last.
+  """
+  if pair.latest_revision:
+    key = LATEST_REVISION_KEY
+  else:
+    key = pair.revision_name
+  return _SortKeyFromKey(key)
+
+
+def _GetSplitsMap(
+    splits: List[
+        Union[instance_split.InstanceSplit, instance_split.InstanceSplitStatus]
+    ],
+    latest_ready_revision_name: str,
+) -> Dict[
+    str, Union[instance_split.InstanceSplit, instance_split.InstanceSplitStatus]
+]:
+  """Returns the instance split list into a map.
+
+  The map uses LATEST_REVISION_KEY as the key for the latest ready revision.
+
+  Args:
+    splits: A list of InstanceSplit or InstanceSplitStatus objects.
+    latest_ready_revision_name: The name of the latest ready revision.
+
+  Returns:
+    A map of revision names to InstanceSplit or InstanceSplitStatus objects.
+  """
+  splits_map = collections.defaultdict(list)
+  for split in splits:
+    if (
+        split.type_
+        == instance_split.InstanceSplitAllocationType.INSTANCE_SPLIT_ALLOCATION_TYPE_LATEST
+        or split.revision == latest_ready_revision_name
+    ):
+      splits_map[LATEST_REVISION_KEY].append(split)
+    else:
+      splits_map[split.revision].append(split)
+  return splits_map
+
+
+def GetInstanceSplitPairs(
+    worker_pool: worker_pool_objects.WorkerPool,
+) -> List[InstanceSplitPair]:
+  """Returns the instance split pairs for the worker pool."""
+  instance_split_pairs = []
+  try:
+    latest_ready_revision_name = (
+        resource_name_conversion.GetNameFromFullChildName(
+            worker_pool.latest_ready_revision
+        )
+    )
+  except AttributeError:
+    latest_ready_revision_name = ''
+  target_splits = _GetSplitsMap(
+      worker_pool.instance_splits, latest_ready_revision_name
+  )
+  current_splits = _GetSplitsMap(
+      worker_pool.instance_split_statuses, latest_ready_revision_name
+  )
+  for key in set(target_splits).union(current_splits):
+    revision_name = (
+        latest_ready_revision_name if key == LATEST_REVISION_KEY else key
+    )
+    instance_split_pairs.append(
+        InstanceSplitPair(
+            target_splits.get(key),
+            current_splits.get(key),
+            revision_name,
+            key == LATEST_REVISION_KEY,
+        )
+    )
+  return sorted(instance_split_pairs, key=_SortKeyFromInstanceSplitPair)

@@ -1780,7 +1780,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an Entry.Caution: The BigQuery metadata that is stored in Dataplex Catalog is changing. For more information, see Changes to BigQuery metadata stored in Dataplex Catalog (https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
+      r"""Gets an Entry.
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsEntriesGetRequest) input message
@@ -5719,7 +5719,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def LookupEntry(self, request, global_params=None):
-      r"""Looks up a single Entry by name using the permission on the source system.Caution: The BigQuery metadata that is stored in Dataplex Catalog is changing. For more information, see Changes to BigQuery metadata stored in Dataplex Catalog (https://cloud.google.com/dataplex/docs/biqquery-metadata-changes).
+      r"""Looks up an entry by name using the permission on the source system.
 
       Args:
         request: (DataplexProjectsLocationsLookupEntryRequest) input message

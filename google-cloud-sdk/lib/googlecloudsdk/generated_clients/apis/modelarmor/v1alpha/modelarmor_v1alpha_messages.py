@@ -1185,23 +1185,15 @@ class SdpAdvancedConfig(_messages.Message):
       action is performed during Sanitization using this template and inspect
       template. The De-identified data will be returned in
       SdpDeidentifyResult. Note that all info-types present in the deidentify
-      template must be present in inspect template. e.g. `organizations/{organ
-      ization}/deidentifyTemplates/{deidentify_template}`,
-      `projects/{project}/deidentifyTemplates/{deidentify_template}` `organiza
-      tions/{organization}/locations/{location}/deidentifyTemplates/{deidentif
-      y_template}` `projects/{project}/locations/{location}/deidentifyTemplate
-      s/{deidentify_template}`
+      template must be present in inspect template. e.g. `projects/{project}/l
+      ocations/{location}/deidentifyTemplates/{deidentify_template}`
     inspectTemplate: Optional. Sensitive Data Protection inspect template
       resource name If only inspect template is provided (de-identify template
       not provided), then Sensitive Data Protection InspectContent action is
       performed during Sanitization. All Sensitive Data Protection findings
       identified during inspection will be returned as SdpFinding in
-      SdpInsepctionResult e.g.
-      `organizations/{organization}/inspectTemplates/{inspect_template}`,
-      `projects/{project}/inspectTemplates/{inspect_template}` `organizations/
-      {organization}/locations/{location}/inspectTemplates/{inspect_template}`
-      `projects/{project}/locations/{location}/inspectTemplates/{inspect_templ
-      ate}`
+      SdpInsepctionResult. e.g. `projects/{project}/locations/{location}/inspe
+      ctTemplates/{inspect_template}`
   """
 
   deidentifyTemplate = _messages.StringField(1)

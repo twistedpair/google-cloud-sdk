@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.iam import util
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
@@ -174,106 +173,6 @@ def GeneratePublicKeyDataFromFile(path):
         'public_key_file',
         '{}. Please double check your input and try again.'.format(e))
   return public_key_data.encode('utf-8')
-
-
-def AddCreateExtraAttributesConfigToRequest(ref, args, request):
-  """Add ExtraAttributesOAuth2Client fields to create workforcePoolProvider requests."""
-
-  del ref
-  messages = apis.GetMessagesModule('iam', 'v1')
-  SetExtraAttributesOauth2ClientFields(request, args, messages)
-
-  return request
-
-
-def AddClearableExtraAttributesConfigToRequest(ref, args, request):
-  """Add ExtraAttributesOAuth2Client fields to update workforcePoolProvider requests."""
-  del ref
-  messages = apis.GetMessagesModule('iam', 'v1')
-  if (
-      args.clear_extra_attributes_config is not None
-      and args.clear_extra_attributes_config
-  ):
-    arg_utils.SetFieldInMessage(
-        request,
-        'workforcePoolProvider.extraAttributesOauth2Client',
-        None,
-    )
-  else:
-    SetExtraAttributesOauth2ClientFields(request, args, messages)
-
-  return request
-
-
-def SetExtraAttributesOauth2ClientFields(request, args, messages):
-  """Set ExtraAttributesOauth2Client fields in the request."""
-  if args.extra_attributes_type is not None:
-    response_type = (
-        messages.GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client.AttributesTypeValueValuesEnum
-    )
-    if 'azure-ad-groups-mail' in args.extra_attributes_type:
-      arg_utils.SetFieldInMessage(
-          request,
-          'workforcePoolProvider.extraAttributesOauth2Client.attributesType',
-          response_type.AZURE_AD_GROUPS_MAIL,
-      )
-    elif 'azure-ad-groups-id' in args.extra_attributes_type:
-      arg_utils.SetFieldInMessage(
-          request,
-          'workforcePoolProvider.extraAttributesOauth2Client.attributesType',
-          response_type.AZURE_AD_GROUPS_ID,
-      )
-  if args.extra_attributes_client_id is not None:
-    arg_utils.SetFieldInMessage(
-        request,
-        'workforcePoolProvider.extraAttributesOauth2Client.clientId',
-        args.extra_attributes_client_id,
-    )
-  if args.extra_attributes_client_secret_value is not None:
-    arg_utils.SetFieldInMessage(
-        request,
-        'workforcePoolProvider.extraAttributesOauth2Client.clientSecret.value.plainText',
-        args.extra_attributes_client_secret_value,
-    )
-  if args.extra_attributes_issuer_uri is not None:
-    arg_utils.SetFieldInMessage(
-        request,
-        'workforcePoolProvider.extraAttributesOauth2Client.issuerUri',
-        args.extra_attributes_issuer_uri,
-    )
-  if args.extra_attributes_filter is not None:
-    arg_utils.SetFieldInMessage(
-        request,
-        'workforcePoolProvider.extraAttributesOauth2Client.queryParameters.filter',
-        args.extra_attributes_filter,
-    )
-
-
-def AddExtraAttributesConfigFieldMask(unused_ref, args, request):
-  """Adds ExtraAttributesOauth2Client specific fieldmask entries to the update workforcePoolProvider request."""
-  mask_fields = []
-  if request.updateMask:
-    mask_fields = request.updateMask.split(',')
-  if (
-      args.clear_extra_attributes_config is not None
-      and args.clear_extra_attributes_config
-  ):
-    mask_fields.append('extraAttributesOauth2Client')
-  if args.extra_attributes_type is not None:
-    mask_fields.append('extraAttributesOauth2Client.attributesType')
-  if args.extra_attributes_client_id is not None:
-    mask_fields.append('extraAttributesOauth2Client.clientId')
-  if args.extra_attributes_client_secret_value is not None:
-    mask_fields.append(
-        'extraAttributesOauth2Client.clientSecret.value.plainText'
-    )
-  if args.extra_attributes_issuer_uri is not None:
-    mask_fields.append('extraAttributesOauth2Client.issuerUri')
-  if args.extra_attributes_filter is not None:
-    mask_fields.append('extraAttributesOauth2Client.queryParameters.filter')
-  if mask_fields:
-    request.updateMask = ','.join(mask_fields)
-  return request
 
 
 def ClearFlag(args):

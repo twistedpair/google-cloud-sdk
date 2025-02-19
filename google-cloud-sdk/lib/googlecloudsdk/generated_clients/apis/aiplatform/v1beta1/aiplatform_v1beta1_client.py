@@ -579,6 +579,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Predict(self, request, global_params=None):
+      r"""Perform an online prediction.
+
+      Args:
+        request: (AiplatformEndpointsPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1PredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('Predict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Predict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:predict',
+        http_method='POST',
+        method_id='aiplatform.endpoints.predict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predict',
+        request_field='googleCloudAiplatformV1beta1PredictRequest',
+        request_type_name='AiplatformEndpointsPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1PredictResponse',
+        supports_download=False,
+    )
+
     def StreamGenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs with streaming support.
 
@@ -5581,6 +5608,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single FeatureMonitor.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1FeatureMonitor',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFeatureGroupsFeaturesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_featureGroups_features_operations resource."""
 
@@ -8850,7 +8904,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def DeployIndex(self, request, global_params=None):
-      r"""Deploys an Index into this IndexEndpoint, creating a DeployedIndex within it. Only non-empty Indexes can be deployed.
+      r"""Deploys an Index into this IndexEndpoint, creating a DeployedIndex within it.
 
       Args:
         request: (AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest) input message
@@ -12613,6 +12667,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelsListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListModelsResponse',
+        supports_download=False,
+    )
+
+    def ListCheckpoints(self, request, global_params=None):
+      r"""Lists checkpoints of the specified model version.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsListCheckpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListModelVersionCheckpointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListCheckpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListCheckpoints.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:listCheckpoints',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.models.listCheckpoints',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}:listCheckpoints',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsListCheckpointsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListModelVersionCheckpointsResponse',
         supports_download=False,
     )
 
@@ -19708,6 +19789,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EvaluateDataset(self, request, global_params=None):
+      r"""Evaluates a dataset based on a set of given metrics.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluateDatasetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('EvaluateDataset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EvaluateDataset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:evaluateDataset',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.evaluateDataset',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1beta1/{+location}:evaluateDataset',
+        request_field='googleCloudAiplatformV1beta1EvaluateDatasetRequest',
+        request_type_name='AiplatformProjectsLocationsEvaluateDatasetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def EvaluateInstances(self, request, global_params=None):
       r"""Evaluates instances based on a given metric.
 
@@ -20022,6 +20130,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformPublishersModelsListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListPublisherModelsResponse',
+        supports_download=False,
+    )
+
+    def Predict(self, request, global_params=None):
+      r"""Perform an online prediction.
+
+      Args:
+        request: (AiplatformPublishersModelsPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1PredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('Predict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Predict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:predict',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.predict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predict',
+        request_field='googleCloudAiplatformV1beta1PredictRequest',
+        request_type_name='AiplatformPublishersModelsPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1PredictResponse',
         supports_download=False,
     )
 

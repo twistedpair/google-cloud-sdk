@@ -149,6 +149,7 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
       return
 
     context = CreateSSLContext()
+    context.load_default_certs()
 
     cert_chain_kwargs = {}
     if self._cert_info.keyfile:

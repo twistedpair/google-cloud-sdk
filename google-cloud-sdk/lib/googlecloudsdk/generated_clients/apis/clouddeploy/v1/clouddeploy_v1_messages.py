@@ -2902,7 +2902,7 @@ class DeployJobRun(_messages.Message):
       EXECUTION_FAILED: The deploy operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The deploy job run did not complete within the
-        alloted time.
+        allotted time.
       MISSING_RESOURCES_FOR_CANARY: There were missing resources in the
         runtime environment required for a canary deployment. Check the Cloud
         Build logs for more information.
@@ -4447,7 +4447,7 @@ class PostdeployJobRun(_messages.Message):
       EXECUTION_FAILED: The postdeploy operation did not complete
         successfully; check Cloud Build logs.
       DEADLINE_EXCEEDED: The postdeploy job run did not complete within the
-        alloted time.
+        allotted time.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
     """
@@ -4515,7 +4515,7 @@ class PredeployJobRun(_messages.Message):
       EXECUTION_FAILED: The predeploy operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The predeploy job run did not complete within the
-        alloted time.
+        allotted time.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
     """
@@ -5445,7 +5445,7 @@ class Rollout(_messages.Message):
         deploy-service-account#required_permissions).
       EXECUTION_FAILED: The deploy operation did not complete successfully;
         check Cloud Build logs.
-      DEADLINE_EXCEEDED: Deployment did not complete within the alloted time.
+      DEADLINE_EXCEEDED: Deployment did not complete within the allotted time.
       RELEASE_FAILED: Release is in a failed state.
       RELEASE_ABANDONED: Release is abandoned.
       VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
@@ -5798,7 +5798,7 @@ class RouteDestinations(_messages.Message):
     propagateService: Optional. Whether to propagate the Kubernetes Service to
       the route destination clusters. The Service will always be deployed to
       the Target cluster even if the HTTPRoute is not. This option may be used
-      to facilitiate successful DNS lookup in the route destination clusters.
+      to facilitate successful DNS lookup in the route destination clusters.
       Can only be set to true if destinations are specified.
   """
 
@@ -6830,7 +6830,7 @@ class VerifyJobRun(_messages.Message):
       EXECUTION_FAILED: The verify operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The verify job run did not complete within the
-        alloted time.
+        allotted time.
       VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
         found.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's

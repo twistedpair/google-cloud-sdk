@@ -6234,11 +6234,13 @@ class SDKInfo(_messages.Message):
       JAVA: Java.
       PYTHON: Python.
       GO: Go.
+      YAML: YAML.
     """
     UNKNOWN = 0
     JAVA = 1
     PYTHON = 2
     GO = 3
+    YAML = 4
 
   language = _messages.EnumField('LanguageValueValuesEnum', 1)
   version = _messages.StringField(2)
@@ -7874,6 +7876,7 @@ class TemplateMetadata(_messages.Message):
       supports at least once mode.
     supportsExactlyOnce: Optional. Indicates if the streaming template
       supports exactly once mode.
+    yamlDefinition: Optional. For future use.
   """
 
   defaultStreamingMode = _messages.StringField(1)
@@ -7883,6 +7886,7 @@ class TemplateMetadata(_messages.Message):
   streaming = _messages.BooleanField(5)
   supportsAtLeastOnce = _messages.BooleanField(6)
   supportsExactlyOnce = _messages.BooleanField(7)
+  yamlDefinition = _messages.StringField(8)
 
 
 class TemplateVersion(_messages.Message):

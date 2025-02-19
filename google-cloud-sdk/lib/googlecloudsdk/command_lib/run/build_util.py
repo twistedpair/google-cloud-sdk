@@ -26,7 +26,8 @@ from googlecloudsdk.core import log
 _RUN_BUILDER_ROLE = 'roles/run.builder'
 _EDITOR_ROLE = 'roles/editor'
 
-_GCE_SA = '{project_number}-compute@developer.gserviceaccount.com'
+_GCE_SA_FORMAT = r'^\d+-compute@developer\.gserviceaccount\.com$'
+_LEGACY_BUILD_SA_FORMAT = r'^\d+@cloudbuild\.gserviceaccount\.com$'
 
 
 def _GetDefaultBuildServiceAccount(project_id, region='global'):
@@ -79,16 +80,18 @@ def ValidateBuildServiceAccountAndPromptWarning(
   if build_service_account is None:
     build_service_account = _GetDefaultBuildServiceAccount(project_id, region)
   service_account_email = _ExtractServiceAccountEmail(build_service_account)
+
   try:
-    build_service_account_description = _DescribeServiceAccount(
-        service_account_email
-    )
-    if build_service_account_description.disabled:
-      raise serverless_exceptions.ServiceAccountError(
-          'Could not build the function due to disabled service account used by'
-          ' Cloud Build. Please make sure that the service account:'
-          f' [{build_service_account}] is active.'
+    if not re.match(_LEGACY_BUILD_SA_FORMAT, service_account_email):
+      build_service_account_description = _DescribeServiceAccount(
+          service_account_email
       )
+      if build_service_account_description.disabled:
+        raise serverless_exceptions.ServiceAccountError(
+            'Could not build the function due to disabled service account used'
+            ' by Cloud Build. Please make sure that the service account:'
+            f' [{build_service_account}] is active.'
+        )
   except apitools_exceptions.HttpForbiddenError:
     # Just show a warning but not breaking the deployment.
     # We are doing best effort here.
@@ -109,8 +112,7 @@ def ValidateBuildServiceAccountAndPromptWarning(
         f'Build service account {build_service_account} does not exist.'
     )
 
-  project_number = project_util.GetProjectNumber(project_id)
-  if service_account_email == _GCE_SA.format(project_number=project_number):
+  if re.match(_GCE_SA_FORMAT, service_account_email):
     try:
       iam_policy = projects_api.GetIamPolicy(
           project_util.ParseProject(project_id)

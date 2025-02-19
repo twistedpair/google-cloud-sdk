@@ -17,7 +17,9 @@
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run.v2 import config_changes
+from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import config
+from googlecloudsdk.core import properties
 
 
 def SecretsFlags():
@@ -38,6 +40,22 @@ def SecretsFlags():
 def AddSecretsFlags(parser):
   """Adds flags for creating, updating, and deleting secrets."""
   SecretsFlags().AddToParser(parser)
+
+
+def AddCloudSQLFlags(parser):
+  """Add flags for setting CloudSQL stuff."""
+  repeated.AddPrimitiveArgs(
+      parser,
+      'WorkerPool',
+      'cloudsql-instances',
+      'Cloud SQL instances',
+      auto_group_help=False,
+      additional_help="""\
+      These flags modify the Cloud SQL instances this WorkerPool connects to.
+      You can specify a name of a Cloud SQL instance if it's in the same
+      project and region as your Cloud Run worker pool; otherwise specify
+      <project>:<region>:<instance> for the instance.""",
+  )
 
 
 def _PrependClientNameAndVersionChange(args, changes):
@@ -162,7 +180,6 @@ def _GetCmekKeyChange(args):
   )
 
 
-# TODO: b/392685307 - Add support for secrets changes using Volume/VolumeMount.
 def _GetSecretsChanges(args, non_ingress_type=False, container_name=None):
   """Returns the secrets changes for the given args."""
   changes = []
@@ -194,6 +211,57 @@ def _GetSecretsChanges(args, non_ingress_type=False, container_name=None):
         )
     )
   return changes
+
+
+def _GetCloudSQLChanges(args):
+  """Returns the Cloud SQL changes for the given args."""
+  region = flags.GetRegion(args)
+  project = getattr(
+      args, 'project', None
+  ) or properties.VALUES.core.project.Get(required=True)
+  if flags.EnabledCloudSqlApiRequired(args):
+    flags.CheckCloudSQLApiEnablement()
+  # At most one of the cloud sql flags can be set.
+  change = []
+  if (
+      flags.FlagIsExplicitlySet(args, 'add_cloudsql_instances')
+      and args.add_cloudsql_instances
+  ):
+    change.append(
+        config_changes.AddCloudSQLChanges(
+            project=project,
+            region=region,
+            add_cloudsql_instances=args.add_cloudsql_instances,
+        )
+    )
+  elif (
+      flags.FlagIsExplicitlySet(args, 'remove_cloudsql_instances')
+      and args.remove_cloudsql_instances
+  ):
+    change.append(
+        config_changes.RemoveCloudSQLChanges(
+            project=project,
+            region=region,
+            remove_cloudsql_instances=args.remove_cloudsql_instances,
+        )
+    )
+  elif (
+      flags.FlagIsExplicitlySet(args, 'clear_cloudsql_instances')
+      and args.clear_cloudsql_instances
+  ):
+    change.append(config_changes.ClearCloudSQLChanges())
+  elif (
+      flags.FlagIsExplicitlySet(args, 'set_cloudsql_instances')
+      and args.set_cloudsql_instances
+  ):
+    change.append(
+        config_changes.SetCloudSQLChanges(
+            project=project,
+            region=region,
+            set_cloudsql_instances=args.set_cloudsql_instances,
+        )
+    )
+  return change
 
 
 def _GetContainerConfigurationChanges(
@@ -290,7 +358,12 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   if flags.FlagIsExplicitlySet(args, 'revision_suffix'):
     changes.append(config_changes.RevisionNameChange(args.revision_suffix))
   if flags.FlagIsExplicitlySet(args, 'mesh'):
-    changes.append(config_changes.MeshChange(mesh=args.mesh))
+    changes.append(
+        config_changes.MeshChange(
+            project=properties.VALUES.core.project.Get(required=True),
+            mesh_name=args.mesh,
+        )
+    )
   if _HasNetworkChanges(args):
     changes.append(_GetNetworkChange(args))
   if _HasCmekKeyChanges(args):
@@ -330,6 +403,9 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   )
   if 'gpu_type' in args and args.gpu_type:
     changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+  # Cloud SQL changes
+  if flags.HasCloudSQLChanges(args):
+    changes.extend(_GetCloudSQLChanges(args))
   # Volumes / Volume Mounts / Secrets changes
   if flags.FlagIsExplicitlySet(
       args, 'remove_volume_mount'
@@ -361,7 +437,8 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   ):
     changes.append(
         config_changes.AddVolumeMountChange(
-            new_mounts=args.add_volume_mount, non_ingress_type=non_ingress_type,
+            new_mounts=args.add_volume_mount,
+            non_ingress_type=non_ingress_type,
         )
     )
   if flags.FlagIsExplicitlySet(args, 'remove_containers'):

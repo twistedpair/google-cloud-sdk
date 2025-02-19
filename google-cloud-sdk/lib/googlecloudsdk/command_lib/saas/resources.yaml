@@ -52,6 +52,21 @@ rollout_type:
     attribute_name: rollout_type
     help: Rollout Type ID
   disable_auto_completers: false
+
+
+rollout_kind:
+  name: rolloutKindId
+  plural_name: rolloutKinds
+  collection: saasservicemgmt.projects.locations.rolloutKinds
+  attributes:
+  - *project
+  - *location
+  - &rolloutKindId
+    parameter_name: rolloutKindsId
+    attribute_name: rollout_kind
+    help: Rollout Kind ID.
+  disable_auto_completers: false
+
 rollout:
   name: rolloutId
   plural_name: rollouts

@@ -487,6 +487,88 @@ class DisableZonalServiceRequest(_messages.Message):
   requestId = _messages.StringField(1)
 
 
+class EdgecontainerOrganizationsLocationsGetRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerOrganizationsLocationsListRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class EdgecontainerOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class EdgecontainerOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class EdgecontainerOrganizationsLocationsZonesGetRequest(_messages.Message):
   r"""A EdgecontainerOrganizationsLocationsZonesGetRequest object.
 

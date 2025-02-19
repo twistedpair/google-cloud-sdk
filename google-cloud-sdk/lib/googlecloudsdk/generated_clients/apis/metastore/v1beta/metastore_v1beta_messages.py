@@ -175,33 +175,33 @@ class AuxiliaryVersionConfig(_messages.Message):
   r"""Configuration information for the auxiliary service versions.
 
   Messages:
-    ConfigOverridesValue: A mapping of Hive metastore configuration key-value
-      pairs to apply to the auxiliary Hive metastore (configured in hive-
-      site.xml) in addition to the primary version's overrides. If keys are
-      present in both the auxiliary version's overrides and the primary
+    ConfigOverridesValue: Optional. A mapping of Hive metastore configuration
+      key-value pairs to apply to the auxiliary Hive metastore (configured in
+      hive-site.xml) in addition to the primary version's overrides. If keys
+      are present in both the auxiliary version's overrides and the primary
       version's overrides, the value from the auxiliary version's overrides
       takes precedence.
 
   Fields:
-    configOverrides: A mapping of Hive metastore configuration key-value pairs
-      to apply to the auxiliary Hive metastore (configured in hive-site.xml)
-      in addition to the primary version's overrides. If keys are present in
-      both the auxiliary version's overrides and the primary version's
-      overrides, the value from the auxiliary version's overrides takes
-      precedence.
+    configOverrides: Optional. A mapping of Hive metastore configuration key-
+      value pairs to apply to the auxiliary Hive metastore (configured in
+      hive-site.xml) in addition to the primary version's overrides. If keys
+      are present in both the auxiliary version's overrides and the primary
+      version's overrides, the value from the auxiliary version's overrides
+      takes precedence.
     networkConfig: Output only. The network configuration contains the
       endpoint URI(s) of the auxiliary Hive metastore service.
-    version: The Hive metastore version of the auxiliary service. It must be
-      less than the primary Hive metastore service's version.
+    version: Optional. The Hive metastore version of the auxiliary service. It
+      must be less than the primary Hive metastore service's version.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigOverridesValue(_messages.Message):
-    r"""A mapping of Hive metastore configuration key-value pairs to apply to
-    the auxiliary Hive metastore (configured in hive-site.xml) in addition to
-    the primary version's overrides. If keys are present in both the auxiliary
-    version's overrides and the primary version's overrides, the value from
-    the auxiliary version's overrides takes precedence.
+    r"""Optional. A mapping of Hive metastore configuration key-value pairs to
+    apply to the auxiliary Hive metastore (configured in hive-site.xml) in
+    addition to the primary version's overrides. If keys are present in both
+    the auxiliary version's overrides and the primary version's overrides, the
+    value from the auxiliary version's overrides takes precedence.
 
     Messages:
       AdditionalProperty: An additional property for a ConfigOverridesValue
@@ -270,11 +270,11 @@ class Backup(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the backup was started.
-    description: The description of the backup.
+    description: Optional. The description of the backup.
     endTime: Output only. The time when the backup finished creating.
-    name: Immutable. The relative resource name of the backup, in the
-      following form:projects/{project_number}/locations/{location_id}/service
-      s/{service_id}/backups/{backup_id}
+    name: Immutable. Identifier. The relative resource name of the backup, in
+      the following form:projects/{project_number}/locations/{location_id}/ser
+      vices/{service_id}/backups/{backup_id}
     restoringServices: Output only. Services that are restoring from the
       backup.
     serviceRevision: Output only. The revision of the service at the time of
@@ -608,9 +608,9 @@ class DatabaseDump(_messages.Message):
 
   Fields:
     databaseType: The type of the database.
-    gcsUri: A Cloud Storage object or folder URI that specifies the source
-      from which to import metadata. It must begin with gs://.
-    sourceDatabase: The name of the source database.
+    gcsUri: Optional. A Cloud Storage object or folder URI that specifies the
+      source from which to import metadata. It must begin with gs://.
+    sourceDatabase: Optional. The name of the source database.
     type: Optional. The type of the database dump. If unspecified, defaults to
       MYSQL.
   """
@@ -649,20 +649,22 @@ class DataplexConfig(_messages.Message):
   service.
 
   Messages:
-    LakeResourcesValue: A reference to the Lake resources that this metastore
-      service is attached to. The key is the lake resource name. Example:
+    LakeResourcesValue: Optional. A reference to the Lake resources that this
+      metastore service is attached to. The key is the lake resource name.
+      Example:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
 
   Fields:
-    lakeResources: A reference to the Lake resources that this metastore
-      service is attached to. The key is the lake resource name. Example:
+    lakeResources: Optional. A reference to the Lake resources that this
+      metastore service is attached to. The key is the lake resource name.
+      Example:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LakeResourcesValue(_messages.Message):
-    r"""A reference to the Lake resources that this metastore service is
-    attached to. The key is the lake resource name. Example:
+    r"""Optional. A reference to the Lake resources that this metastore
+    service is attached to. The key is the lake resource name. Example:
     projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
 
     Messages:
@@ -702,10 +704,10 @@ class EncryptionConfig(_messages.Message):
   r"""Encryption settings for the service.
 
   Fields:
-    kmsKey: The fully qualified customer provided Cloud KMS key name to use
-      for customer data encryption, in the following format:projects/{project_
-      number}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/{crypt
-      o_key_id}.
+    kmsKey: Optional. The fully qualified customer provided Cloud KMS key name
+      to use for customer data encryption, in the following format:projects/{p
+      roject_number}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys
+      /{crypto_key_id}.
     kmsKeys: Optional. The list of fully qualified customer provided Cloud KMS
       key names for the multi-regional service. Each key must be in the
       following format:projects/{project_number}/locations/{location_id}/keyRi
@@ -1002,11 +1004,27 @@ class HiveMetastoreConfig(_messages.Message):
   software as the metastore service.
 
   Enums:
-    EndpointProtocolValueValuesEnum: The protocol to use for the metastore
-      service endpoint. If unspecified, defaults to THRIFT.
+    EndpointProtocolValueValuesEnum: Optional. The protocol to use for the
+      metastore service endpoint. If unspecified, defaults to THRIFT.
 
   Messages:
-    AuxiliaryVersionsValue: A mapping of Hive metastore version to the
+    AuxiliaryVersionsValue: Optional. A mapping of Hive metastore version to
+      the auxiliary version configuration. When specified, a secondary Hive
+      metastore service is created along with the primary service. All
+      auxiliary versions must be less than the service's primary version. The
+      key is the auxiliary service name and it must match the regular
+      expression a-z?. This means that the first character must be a lowercase
+      letter, and all the following characters must be hyphens, lowercase
+      letters, or digits, except the last character, which cannot be a hyphen.
+    ConfigOverridesValue: Optional. A mapping of Hive metastore configuration
+      key-value pairs to apply to the Hive metastore (configured in hive-
+      site.xml). The mappings override system defaults (some keys cannot be
+      overridden). These overrides are also applied to auxiliary versions and
+      can be further customized in the auxiliary version's
+      AuxiliaryVersionConfig.
+
+  Fields:
+    auxiliaryVersions: Optional. A mapping of Hive metastore version to the
       auxiliary version configuration. When specified, a secondary Hive
       metastore service is created along with the primary service. All
       auxiliary versions must be less than the service's primary version. The
@@ -1014,38 +1032,24 @@ class HiveMetastoreConfig(_messages.Message):
       expression a-z?. This means that the first character must be a lowercase
       letter, and all the following characters must be hyphens, lowercase
       letters, or digits, except the last character, which cannot be a hyphen.
-    ConfigOverridesValue: A mapping of Hive metastore configuration key-value
-      pairs to apply to the Hive metastore (configured in hive-site.xml). The
-      mappings override system defaults (some keys cannot be overridden).
-      These overrides are also applied to auxiliary versions and can be
-      further customized in the auxiliary version's AuxiliaryVersionConfig.
-
-  Fields:
-    auxiliaryVersions: A mapping of Hive metastore version to the auxiliary
-      version configuration. When specified, a secondary Hive metastore
-      service is created along with the primary service. All auxiliary
-      versions must be less than the service's primary version. The key is the
-      auxiliary service name and it must match the regular expression a-z?.
-      This means that the first character must be a lowercase letter, and all
-      the following characters must be hyphens, lowercase letters, or digits,
-      except the last character, which cannot be a hyphen.
-    configOverrides: A mapping of Hive metastore configuration key-value pairs
-      to apply to the Hive metastore (configured in hive-site.xml). The
-      mappings override system defaults (some keys cannot be overridden).
-      These overrides are also applied to auxiliary versions and can be
-      further customized in the auxiliary version's AuxiliaryVersionConfig.
-    endpointProtocol: The protocol to use for the metastore service endpoint.
-      If unspecified, defaults to THRIFT.
-    kerberosConfig: Information used to configure the Hive metastore service
-      as a service principal in a Kerberos realm. To disable Kerberos, use the
-      UpdateService method and specify this field's path
+    configOverrides: Optional. A mapping of Hive metastore configuration key-
+      value pairs to apply to the Hive metastore (configured in hive-
+      site.xml). The mappings override system defaults (some keys cannot be
+      overridden). These overrides are also applied to auxiliary versions and
+      can be further customized in the auxiliary version's
+      AuxiliaryVersionConfig.
+    endpointProtocol: Optional. The protocol to use for the metastore service
+      endpoint. If unspecified, defaults to THRIFT.
+    kerberosConfig: Optional. Information used to configure the Hive metastore
+      service as a service principal in a Kerberos realm. To disable Kerberos,
+      use the UpdateService method and specify this field's path
       (hive_metastore_config.kerberos_config) in the request's update_mask
       while omitting this field from the request's service.
     version: Immutable. The Hive metastore schema version.
   """
 
   class EndpointProtocolValueValuesEnum(_messages.Enum):
-    r"""The protocol to use for the metastore service endpoint. If
+    r"""Optional. The protocol to use for the metastore service endpoint. If
     unspecified, defaults to THRIFT.
 
     Values:
@@ -1061,7 +1065,7 @@ class HiveMetastoreConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AuxiliaryVersionsValue(_messages.Message):
-    r"""A mapping of Hive metastore version to the auxiliary version
+    r"""Optional. A mapping of Hive metastore version to the auxiliary version
     configuration. When specified, a secondary Hive metastore service is
     created along with the primary service. All auxiliary versions must be
     less than the service's primary version. The key is the auxiliary service
@@ -1094,11 +1098,11 @@ class HiveMetastoreConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigOverridesValue(_messages.Message):
-    r"""A mapping of Hive metastore configuration key-value pairs to apply to
-    the Hive metastore (configured in hive-site.xml). The mappings override
-    system defaults (some keys cannot be overridden). These overrides are also
-    applied to auxiliary versions and can be further customized in the
-    auxiliary version's AuxiliaryVersionConfig.
+    r"""Optional. A mapping of Hive metastore configuration key-value pairs to
+    apply to the Hive metastore (configured in hive-site.xml). The mappings
+    override system defaults (some keys cannot be overridden). These overrides
+    are also applied to auxiliary versions and can be further customized in
+    the auxiliary version's AuxiliaryVersionConfig.
 
     Messages:
       AdditionalProperty: An additional property for a ConfigOverridesValue
@@ -1145,13 +1149,14 @@ class KerberosConfig(_messages.Message):
   r"""Configuration information for a Kerberos principal.
 
   Fields:
-    keytab: A Kerberos keytab file that can be used to authenticate a service
-      principal with a Kerberos Key Distribution Center (KDC).
-    krb5ConfigGcsUri: A Cloud Storage URI that specifies the path to a
-      krb5.conf file. It is of the form gs://{bucket_name}/path/to/krb5.conf,
-      although the file does not need to be named krb5.conf explicitly.
-    principal: A Kerberos principal that exists in the both the keytab the KDC
-      to authenticate as. A typical principal is of the form
+    keytab: Optional. A Kerberos keytab file that can be used to authenticate
+      a service principal with a Kerberos Key Distribution Center (KDC).
+    krb5ConfigGcsUri: Optional. A Cloud Storage URI that specifies the path to
+      a krb5.conf file. It is of the form
+      gs://{bucket_name}/path/to/krb5.conf, although the file does not need to
+      be named krb5.conf explicitly.
+    principal: Optional. A Kerberos principal that exists in the both the
+      keytab the KDC to authenticate as. A typical principal is of the form
       primary/instance@REALM, but there is no exact format.
   """
 
@@ -1424,15 +1429,16 @@ class MaintenanceWindow(_messages.Message):
   system maintenance operation to the service.
 
   Enums:
-    DayOfWeekValueValuesEnum: The day of week, when the window starts.
+    DayOfWeekValueValuesEnum: Optional. The day of week, when the window
+      starts.
 
   Fields:
-    dayOfWeek: The day of week, when the window starts.
-    hourOfDay: The hour of day (0-23) when the window starts.
+    dayOfWeek: Optional. The day of week, when the window starts.
+    hourOfDay: Optional. The hour of day (0-23) when the window starts.
   """
 
   class DayOfWeekValueValuesEnum(_messages.Enum):
-    r"""The day of week, when the window starts.
+    r"""Optional. The day of week, when the window starts.
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
@@ -1521,11 +1527,11 @@ class MetadataImport(_messages.Message):
     createTime: Output only. The time when the metadata import was started.
     databaseDump: Immutable. A database dump from a pre-existing metastore's
       database.
-    description: The description of the metadata import.
+    description: Optional. The description of the metadata import.
     endTime: Output only. The time when the metadata import finished.
-    name: Immutable. The relative resource name of the metadata import, of the
-      form:projects/{project_number}/locations/{location_id}/services/{service
-      _id}/metadataImports/{metadata_import_id}.
+    name: Immutable. Identifier. The relative resource name of the metadata
+      import, of the form:projects/{project_number}/locations/{location_id}/se
+      rvices/{service_id}/metadataImports/{metadata_import_id}.
     state: Output only. The current state of the metadata import.
     updateTime: Output only. The time when the metadata import was last
       updated.
@@ -1564,7 +1570,7 @@ class MetadataIntegration(_messages.Message):
   Fields:
     dataCatalogConfig: Optional. The integration config for the Data Catalog
       service.
-    dataplexConfig: The integration config for the Dataplex service.
+    dataplexConfig: Optional. The integration config for the Dataplex service.
   """
 
   dataCatalogConfig = _messages.MessageField('DataCatalogConfig', 1)
@@ -2381,9 +2387,9 @@ class MetastoreProjectsLocationsServicesMetadataImportsPatchRequest(_messages.Me
   Fields:
     metadataImport: A MetadataImport resource to be passed as the request
       body.
-    name: Immutable. The relative resource name of the metadata import, of the
-      form:projects/{project_number}/locations/{location_id}/services/{service
-      _id}/metadataImports/{metadata_import_id}.
+    name: Immutable. Identifier. The relative resource name of the metadata
+      import, of the form:projects/{project_number}/locations/{location_id}/se
+      rvices/{service_id}/metadataImports/{metadata_import_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -2494,9 +2500,9 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesPatchRequest object.
 
   Fields:
-    name: Immutable. The relative resource name of the metastore service, in
-      the following format:projects/{project_number}/locations/{location_id}/s
-      ervices/{service_id}.
+    name: Immutable. Identifier. The relative resource name of the metastore
+      service, in the following format:projects/{project_number}/locations/{lo
+      cation_id}/services/{service_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -2741,8 +2747,8 @@ class NetworkConfig(_messages.Message):
   Fields:
     consumers: Immutable. The consumer-side network configuration for the
       Dataproc Metastore instance.
-    customRoutesEnabled: Enables custom routes to be imported and exported for
-      the Dataproc Metastore service's peered VPC network.
+    customRoutesEnabled: Optional. Enables custom routes to be imported and
+      exported for the Dataproc Metastore service's peered VPC network.
   """
 
   consumers = _messages.MessageField('Consumer', 1, repeated=True)
@@ -3199,9 +3205,9 @@ class Secret(_messages.Message):
   r"""A securely stored value.
 
   Fields:
-    cloudSecret: The relative resource name of a Secret Manager secret
-      version, in the following form:projects/{project_number}/secrets/{secret
-      _id}/versions/{version_id}.
+    cloudSecret: Optional. The relative resource name of a Secret Manager
+      secret version, in the following form:projects/{project_number}/secrets/
+      {secret_id}/versions/{version_id}.
   """
 
   cloudSecret = _messages.StringField(1)
@@ -3217,7 +3223,7 @@ class Service(_messages.Message):
       service. If unspecified, defaults to STABLE.
     StateValueValuesEnum: Output only. The current state of the metastore
       service.
-    TierValueValuesEnum: The tier of the service.
+    TierValueValuesEnum: Optional. The tier of the service.
 
   Messages:
     LabelsValue: User-defined labels for the metastore service.
@@ -3241,8 +3247,8 @@ class Service(_messages.Message):
     hiveMetastoreConfig: Configuration information specific to running Hive
       metastore software as the metastore service.
     labels: User-defined labels for the metastore service.
-    maintenanceWindow: The one hour maintenance window of the metastore
-      service. This specifies when the service can be restarted for
+    maintenanceWindow: Optional. The one hour maintenance window of the
+      metastore service. This specifies when the service can be restarted for
       maintenance purposes in UTC time. Maintenance window is not needed for
       services with the SPANNER database type.
     metadataIntegration: Optional. The setting that defines how metastore
@@ -3251,19 +3257,19 @@ class Service(_messages.Message):
       activities of the metastore service.
     multiRegionConfig: Optional. Specifies the multi-region configuration
       information for the Hive metastore service.
-    name: Immutable. The relative resource name of the metastore service, in
-      the following format:projects/{project_number}/locations/{location_id}/s
-      ervices/{service_id}.
+    name: Immutable. Identifier. The relative resource name of the metastore
+      service, in the following format:projects/{project_number}/locations/{lo
+      cation_id}/services/{service_id}.
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.
-    networkConfig: The configuration specifying the network settings for the
-      Dataproc Metastore service.
-    port: The TCP port at which the metastore service is reached. Default:
-      9083.
+    networkConfig: Optional. The configuration specifying the network settings
+      for the Dataproc Metastore service.
+    port: Optional. The TCP port at which the metastore service is reached.
+      Default: 9083.
     releaseChannel: Immutable. The release channel of the service. If
       unspecified, defaults to STABLE.
-    scalingConfig: Scaling configuration of the metastore service.
+    scalingConfig: Optional. Scaling configuration of the metastore service.
     scheduledBackup: Optional. The configuration of scheduled backup for the
       metastore service.
     state: Output only. The current state of the metastore service.
@@ -3272,9 +3278,9 @@ class Service(_messages.Message):
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
-    telemetryConfig: The configuration specifying telemetry settings for the
-      Dataproc Metastore service. If unspecified defaults to JSON.
-    tier: The tier of the service.
+    telemetryConfig: Optional. The configuration specifying telemetry settings
+      for the Dataproc Metastore service. If unspecified defaults to JSON.
+    tier: Optional. The tier of the service.
     uid: Output only. The globally unique resource identifier of the metastore
       service.
     updateTime: Output only. The time when the metastore service was last
@@ -3344,7 +3350,7 @@ class Service(_messages.Message):
     MIGRATING = 9
 
   class TierValueValuesEnum(_messages.Enum):
-    r"""The tier of the service.
+    r"""Optional. The tier of the service.
 
     Values:
       TIER_UNSPECIFIED: The tier is not set.
@@ -3591,15 +3597,16 @@ class TelemetryConfig(_messages.Message):
   r"""Telemetry Configuration for the Dataproc Metastore service.
 
   Enums:
-    LogFormatValueValuesEnum: The output format of the Dataproc Metastore
-      service's logs.
+    LogFormatValueValuesEnum: Optional. The output format of the Dataproc
+      Metastore service's logs.
 
   Fields:
-    logFormat: The output format of the Dataproc Metastore service's logs.
+    logFormat: Optional. The output format of the Dataproc Metastore service's
+      logs.
   """
 
   class LogFormatValueValuesEnum(_messages.Enum):
-    r"""The output format of the Dataproc Metastore service's logs.
+    r"""Optional. The output format of the Dataproc Metastore service's logs.
 
     Values:
       LOG_FORMAT_UNSPECIFIED: The LOG_FORMAT is not set.

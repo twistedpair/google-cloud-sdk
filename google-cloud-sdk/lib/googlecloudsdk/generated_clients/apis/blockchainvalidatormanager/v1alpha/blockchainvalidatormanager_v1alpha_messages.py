@@ -698,6 +698,11 @@ class EthereumDetails(_messages.Message):
       blockchain node and cannot be changed.
 
   Fields:
+    depositGwei: Immutable. The number of Gwei (Ethereum currency unit)
+      initially deposited for the validator. This is set when the deposit is
+      made and cannot be changed.
+    eth1WithdrawalAddress: Optional. Immutable. The Ethereum wallet address to
+      which withdrawals are sent. Once set this cannot be changed.
     gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
       gas per block. This is sent to the block builder service, however
       whether it is followed depends on the service. This field is only read
@@ -745,11 +750,13 @@ class EthereumDetails(_messages.Message):
     TESTNET_SEPOLIA = 3
     TESTNET_HOLESKY = 4
 
-  gasLimit = _messages.IntegerField(1)
-  graffiti = _messages.StringField(2)
-  network = _messages.EnumField('NetworkValueValuesEnum', 3)
-  suggestedFeeRecipient = _messages.StringField(4)
-  useBlockBuilderProposals = _messages.BooleanField(5)
+  depositGwei = _messages.IntegerField(1)
+  eth1WithdrawalAddress = _messages.StringField(2)
+  gasLimit = _messages.IntegerField(3)
+  graffiti = _messages.StringField(4)
+  network = _messages.EnumField('NetworkValueValuesEnum', 5)
+  suggestedFeeRecipient = _messages.StringField(6)
+  useBlockBuilderProposals = _messages.BooleanField(7)
 
 
 class EthereumDetailsTemplate(_messages.Message):
@@ -761,6 +768,11 @@ class EthereumDetailsTemplate(_messages.Message):
       blockchain node and cannot be changed.
 
   Fields:
+    depositGwei: Immutable. The number of Gwei (Ethereum currency unit)
+      deposited for the validator. This is set when the deposit is made and
+      cannot be changed.
+    eth1WithdrawalAddress: Optional. Immutable. The Ethereum wallet address to
+      which withdrawals are sent. Once set this cannot be changed.
     gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
       gas per block. This is sent to the block builder service, however
       whether it is followed depends on the service. This field is only read
@@ -808,11 +820,13 @@ class EthereumDetailsTemplate(_messages.Message):
     TESTNET_SEPOLIA = 3
     TESTNET_HOLESKY = 4
 
-  gasLimit = _messages.IntegerField(1)
-  graffiti = _messages.StringField(2)
-  network = _messages.EnumField('NetworkValueValuesEnum', 3)
-  suggestedFeeRecipient = _messages.StringField(4)
-  useBlockBuilderProposals = _messages.BooleanField(5)
+  depositGwei = _messages.IntegerField(1)
+  eth1WithdrawalAddress = _messages.StringField(2)
+  gasLimit = _messages.IntegerField(3)
+  graffiti = _messages.StringField(4)
+  network = _messages.EnumField('NetworkValueValuesEnum', 5)
+  suggestedFeeRecipient = _messages.StringField(6)
+  useBlockBuilderProposals = _messages.BooleanField(7)
 
 
 class EthereumNodeDetails(_messages.Message):

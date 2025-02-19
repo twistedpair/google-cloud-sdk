@@ -804,7 +804,9 @@ class Cluster(_messages.Message):
       and nodes. The cluster has no SLA for uptime and master/node upgrades
       are disabled. Alpha enabled clusters are automatically deleted thirty
       days after creation.
-    enableTpu: Enable the ability to use Cloud TPUs in this cluster.
+    enableTpu: Enable the ability to use Cloud TPUs in this cluster. This
+      field is deprecated due to the deprecation of 2VM TPU. The end of life
+      date for 2VM TPU is 2025-04-25.
     endpoint: Output only. The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`. See the `masterAuth` property of
@@ -842,11 +844,7 @@ class Cluster(_messages.Message):
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
     legacyAbac: Configuration for the legacy ABAC authorization mode.
-    location: Output only. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
-      zones#available) or
-      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
-      zones#available) in which the cluster resides.
+    location: A string attribute.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster's nodes should be located. This field provides a default
@@ -960,7 +958,9 @@ class Cluster(_messages.Message):
       the cluster is connected.
     tpuIpv4CidrBlock: Output only. The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
-      Domain_Routing) notation (e.g. `1.2.3.4/29`).
+      Domain_Routing) notation (e.g. `1.2.3.4/29`). This field is deprecated
+      due to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
+      2025-04-25.
     userManagedKeysConfig: The Custom keys configuration for the cluster.
     verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
@@ -3236,7 +3236,8 @@ class IPAllocationPolicy(_messages.Message):
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
-      range to use.
+      range to use. This field is deprecated due to the deprecation of 2VM
+      TPU. The end of life date for 2VM TPU is 2025-04-25.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
       This is used in conjunction with use_routes. It cannot be true if
       use_routes is true. If both use_ip_aliases and use_routes are false,
@@ -7525,9 +7526,13 @@ class UpgradeInfoEvent(_messages.Message):
       END_OF_SUPPORT: END_OF_SUPPORT indicates GKE version reaches end of
         support, check standard_support_end_time and extended_support_end_time
         for more details.
+      COS_MILESTONE_VERSION_UPDATE: COS_MILESTONE_VERSION_UPDATE indicates
+        that the COS node image will update COS milestone version for new
+        patch versions starting with the one in the description.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     END_OF_SUPPORT = 1
+    COS_MILESTONE_VERSION_UPDATE = 2
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
     r"""The resource type associated with the upgrade.

@@ -573,6 +573,8 @@ class Control(_messages.Message):
       Access Control.
 
   Fields:
+    controlFamily: Output only. Regulatory Family of the control E.g. Access
+      Control
     customerResponsibilityDescription: Output only. Description of the
       customer responsibility for implementing this control.
     customerResponsibilityImplementation: Output only. Implementation of the
@@ -634,15 +636,16 @@ class Control(_messages.Message):
     SI = 17
     SR = 18
 
-  customerResponsibilityDescription = _messages.StringField(1)
-  customerResponsibilityImplementation = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  family = _messages.EnumField('FamilyValueValuesEnum', 5)
-  googleResponsibilityDescription = _messages.StringField(6)
-  googleResponsibilityImplementation = _messages.StringField(7)
-  id = _messages.StringField(8)
-  responsibilityType = _messages.StringField(9)
+  controlFamily = _messages.MessageField('ControlFamily', 1)
+  customerResponsibilityDescription = _messages.StringField(2)
+  customerResponsibilityImplementation = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  family = _messages.EnumField('FamilyValueValuesEnum', 6)
+  googleResponsibilityDescription = _messages.StringField(7)
+  googleResponsibilityImplementation = _messages.StringField(8)
+  id = _messages.StringField(9)
+  responsibilityType = _messages.StringField(10)
 
 
 class ControlDetails(_messages.Message):
@@ -679,6 +682,18 @@ class ControlDetails(_messages.Message):
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
   control = _messages.MessageField('Control', 2)
   controlReportSummary = _messages.MessageField('ReportSummary', 3)
+
+
+class ControlFamily(_messages.Message):
+  r"""Regulatory Family of the control
+
+  Fields:
+    displayName: Display name of the regulatory control family.
+    familyId: ID of the regulatory control family.
+  """
+
+  displayName = _messages.StringField(1)
+  familyId = _messages.StringField(2)
 
 
 class DestinationDetails(_messages.Message):

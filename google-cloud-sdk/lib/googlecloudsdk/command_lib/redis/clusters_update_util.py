@@ -156,6 +156,13 @@ def UpdatePersistenceConfig(unused_cluster_ref, args, patch_request):
   return patch_request
 
 
+def UpdateNodeType(unused_cluster_ref, args, patch_request):
+  """Hook to add node type to the redis cluster update request."""
+  if args.IsSpecified('node_type'):
+    patch_request = AddFieldToUpdateMask('node_type', patch_request)
+  return patch_request
+
+
 def UpdateAutomatedBackupConfig(unused_cluster_ref, args, patch_request):
   """Hook to add automated backup config to the redis cluster update request."""
   if (

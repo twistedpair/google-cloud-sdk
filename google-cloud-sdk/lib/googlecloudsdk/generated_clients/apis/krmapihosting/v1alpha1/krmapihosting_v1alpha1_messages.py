@@ -181,7 +181,8 @@ class BundlesConfig(_messages.Message):
 
   Fields:
     anthosSseConfig: Configuration for the Anthos SSE bundle.
-    configControllerConfig: Configuration for the Config Controller bundle.
+    configControllerConfig: Optional. Configuration for the Config Controller
+      bundle.
     yakimaConfig: Configuration for the Yakima bundle.
   """
 
@@ -214,10 +215,10 @@ class ConfigControllerConfig(_messages.Message):
   r"""Configuration options for the Config Controller bundle.
 
   Fields:
-    enabled: Whether the Config Controller bundle is enabled on the
+    enabled: Optional. Whether the Config Controller bundle is enabled on the
       KrmApiHost.
-    experimentalFeatures: The experimentalFeautres of Config Controller bundle
-      that will be installed on the krmApiHost.
+    experimentalFeatures: Optional. The experimentalFeautres of Config
+      Controller bundle that will be installed on the krmApiHost.
   """
 
   enabled = _messages.BooleanField(1)

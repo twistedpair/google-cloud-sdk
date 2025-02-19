@@ -245,6 +245,60 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ProcessBitbucketCloudWebhook(self, request, global_params=None):
+      r"""ProcessBitbucketCloudWebhook is called by the external Bitbucket Cloud instances for notifying events.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketCloudWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ProcessBitbucketCloudWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProcessBitbucketCloudWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/gitRepositoryLinks/{gitRepositoryLinksId}:processBitbucketCloudWebhook',
+        http_method='POST',
+        method_id='developerconnect.projects.locations.connections.gitRepositoryLinks.processBitbucketCloudWebhook',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:processBitbucketCloudWebhook',
+        request_field='processBitbucketCloudWebhookRequest',
+        request_type_name='DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketCloudWebhookRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def ProcessBitbucketDataCenterWebhook(self, request, global_params=None):
+      r"""ProcessBitbucketDataCenterWebhook is called by the external Bitbucket Data Center instances for notifying events.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketDataCenterWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ProcessBitbucketDataCenterWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProcessBitbucketDataCenterWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/gitRepositoryLinks/{gitRepositoryLinksId}:processBitbucketDataCenterWebhook',
+        http_method='POST',
+        method_id='developerconnect.projects.locations.connections.gitRepositoryLinks.processBitbucketDataCenterWebhook',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:processBitbucketDataCenterWebhook',
+        request_field='processBitbucketDataCenterWebhookRequest',
+        request_type_name='DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketDataCenterWebhookRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def ProcessGitLabEnterpriseWebhook(self, request, global_params=None):
       r"""ProcessGitLabEnterpriseWebhook is called by the external GitLab Enterprise instances for notifying events.
 
@@ -640,6 +694,33 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsListRequest',
         response_type_name='ListInsightsConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single InsightsConfig.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/insightsConfigs/{insightsConfigsId}',
+        http_method='PATCH',
+        method_id='developerconnect.projects.locations.insightsConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='insightsConfig',
+        request_type_name='DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

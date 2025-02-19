@@ -302,6 +302,11 @@ def ReleaseTrackCommandPrefix(release_track):
   return prefix + ' ' if prefix else ''
 
 
+def DefaultToAllLocations():
+  """Returns '-' to be used as a fallthrough hook in resources.yaml."""
+  return '-'
+
+
 def DefaultToGlobal():
   """Returns 'global' to be used as a fallthrough hook in resources.yaml."""
   return 'global'

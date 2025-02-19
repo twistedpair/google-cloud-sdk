@@ -22,6 +22,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -148,6 +149,31 @@ class GoogleCloudNetworkconnectivityV1betaAcceptHubSpokeResponse(_messages.Messa
   spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
 
 
+class GoogleCloudNetworkconnectivityV1betaAcceptSpokeUpdateRequest(_messages.Message):
+  r"""The request for HubService.AcceptSpokeUpdate.
+
+  Fields:
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    spokeEtag: Required. The etag of the spoke to accept update.
+    spokeUri: Required. The URI of the spoke to accept update.
+  """
+
+  requestId = _messages.StringField(1)
+  spokeEtag = _messages.StringField(2)
+  spokeUri = _messages.StringField(3)
+
+
 class GoogleCloudNetworkconnectivityV1betaActivateSpokeRequest(_messages.Message):
   r"""The request for HubService.ActivateSpoke.
 
@@ -198,8 +224,6 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Messa
     name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
       {project}/locations/{location}/customHardwareInstances/{custom_hardware_
       instance_id}`. // This is populated by the service.
-    region: Required. The region associated with the CustomHardwareInstance.
-      Example: us-central1
     updateTime: Output only. Time when the CustomHardwareInstance was updated.
   """
 
@@ -230,8 +254,7 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Messa
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  region = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages.Message):
@@ -358,8 +381,6 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
       regex `^[a-zA-Z0-9-]*[a-zA-Z0-9]$` // This is populated by the service.
     updateTime: Output only. Time when the CustomHardwareLinkConnectPair was
       updated.
-    zone: Required. The zone associated with the
-      CustomHardwareLinkConnectPair. Example: us-central1-b
   """
 
   class LinkSpeedValueValuesEnum(_messages.Enum):
@@ -418,7 +439,6 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
   linkType = _messages.EnumField('LinkTypeValueValuesEnum', 5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
-  zone = _messages.StringField(8)
 
 
 class GoogleCloudNetworkconnectivityV1betaDeactivateSpokeRequest(_messages.Message):
@@ -440,6 +460,24 @@ class GoogleCloudNetworkconnectivityV1betaDeactivateSpokeRequest(_messages.Messa
   """
 
   requestId = _messages.StringField(1)
+
+
+class GoogleCloudNetworkconnectivityV1betaExportPscConfig(_messages.Message):
+  r"""Configuration for more granular control of Private Service Connect
+  connection propagation. This allows enabling or disabling connection
+  propagation for specific types of Private Service Connect endpoints.
+
+  Fields:
+    globalGapis: Optional. Controls whether Private Service Connect endpoints
+      for global Google APIs should be propagated. The default value is false.
+    regionalIlbAndRegionalGapis: Optional. Controls whether Private Service
+      Connect endpoints for regional ILBs and regional Google APIs should be
+      propagated. Default value is true if export_psc is true. Otherwise, the
+      default value is false.
+  """
+
+  globalGapis = _messages.BooleanField(1)
+  regionalIlbAndRegionalGapis = _messages.BooleanField(2)
 
 
 class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
@@ -580,9 +618,8 @@ class GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute(_messages.Messa
     ADVERTISE_TO_HUB = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only.
-
-    The current lifecycle state of this gateway advertised route.
+    r"""Output only. The current lifecycle state of this gateway advertised
+    route.
 
     Values:
       STATE_UNSPECIFIED: No state information available
@@ -790,10 +827,12 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
     exchangePupi: Optional. Whether Privately Used Public IP (PUPI) exchange
       is enabled for the hub. If true, PUPI exchange will be allowed in VPC
       spokes attached to the hub. The default value is false.
-    exportPsc: Optional. Whether Private Service Connect transitivity is
-      enabled for the hub. If true, Private Service Connect endpoints in VPC
-      spokes attached to the hub are made accessible to other VPC spokes
-      attached to the hub. The default value is false.
+    exportPsc: Optional. Whether Private Service Connect connection
+      propagation is enabled for the hub. If true, Private Service Connect
+      endpoints in VPC spokes attached to the hub are made accessible to other
+      VPC spokes attached to the hub. The default value is false.
+    exportPscConfig: Optional. Config for more granular control of Private
+      Service Connect transitivity.
     labels: Optional labels in key-value pair format. For more information
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
@@ -928,16 +967,17 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
   description = _messages.StringField(2)
   exchangePupi = _messages.BooleanField(3)
   exportPsc = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 7)
-  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 8)
-  routeTables = _messages.StringField(9, repeated=True)
-  routingVpcs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRoutingVPC', 10, repeated=True)
-  spokeSummary = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpokeSummary', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uniqueId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  exportPscConfig = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaExportPscConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 8)
+  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 9)
+  routeTables = _messages.StringField(10, repeated=True)
+  routingVpcs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRoutingVPC', 11, repeated=True)
+  spokeSummary = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpokeSummary', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uniqueId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudNetworkconnectivityV1betaHubStatusEntry(_messages.Message):
@@ -1043,6 +1083,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
       Consumer VPC and the Producer VPC (defined in the Tenant project) which
       is added to the NCC hub. This peering must be in ACTIVE state.
     producerNetwork: Output only. The URI of the Producer VPC.
+    proposedIncludeExportRanges: Optional. The proposed include export IP
+      ranges waiting for hub administration's approval.
     serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
   """
 
@@ -1051,7 +1093,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
   network = _messages.StringField(3)
   peering = _messages.StringField(4)
   producerNetwork = _messages.StringField(5)
-  serviceConsumerVpcSpoke = _messages.StringField(6)
+  proposedIncludeExportRanges = _messages.StringField(6, repeated=True)
+  serviceConsumerVpcSpoke = _messages.StringField(7)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messages.Message):
@@ -1094,13 +1137,16 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
       filters do not apply between the service consumer VPC spoke and any of
       its producer VPC spokes. This VPC spoke cannot be deleted as long as any
       of these producer VPC spokes are connected to the NCC Hub.
+    proposedIncludeExportRanges: Optional. The proposed include export IP
+      ranges waiting for hub administration's approval.
     uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
   producerVpcSpokes = _messages.StringField(3, repeated=True)
-  uri = _messages.StringField(4)
+  proposedIncludeExportRanges = _messages.StringField(4, repeated=True)
+  uri = _messages.StringField(5)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
@@ -1754,6 +1800,34 @@ class GoogleCloudNetworkconnectivityV1betaRejectHubSpokeResponse(_messages.Messa
   spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
 
 
+class GoogleCloudNetworkconnectivityV1betaRejectSpokeUpdateRequest(_messages.Message):
+  r"""The request for HubService.RejectSpokeUpdate.
+
+  Fields:
+    details: Optional. Additional information provided by the hub
+      administrator.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    spokeEtag: Required. The etag of the spoke to reject update.
+    spokeUri: Required. The URI of the spoke to reject update.
+  """
+
+  details = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  spokeEtag = _messages.StringField(3)
+  spokeUri = _messages.StringField(4)
+
+
 class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
   r"""A route defines a path from VM instances within a spoke to a specific
   destination resource. Only VPC spokes have routes.
@@ -2057,6 +2131,11 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
   Fields:
     createTime: Output only. The time the spoke was created.
     description: Optional. An optional description of the spoke.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    fieldPathsPendingUpdate: Optional. The list of fields waiting for hub
+      administration's approval.
     gateway: Optional. This is a gateway that can apply specialized processing
       to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
@@ -2166,21 +2245,23 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateway = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGateway', 3)
-  group = _messages.StringField(4)
-  hub = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  linkedInterconnectAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments', 7)
-  linkedProducerVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork', 8)
-  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 9)
-  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 10)
-  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 11)
-  name = _messages.StringField(12)
-  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 13, repeated=True)
-  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  uniqueId = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  etag = _messages.StringField(3)
+  fieldPathsPendingUpdate = _messages.StringField(4, repeated=True)
+  gateway = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGateway', 5)
+  group = _messages.StringField(6)
+  hub = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  linkedInterconnectAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments', 9)
+  linkedProducerVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork', 10)
+  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 11)
+  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 12)
+  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 13)
+  name = _messages.StringField(14)
+  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 15, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uniqueId = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
@@ -3546,6 +3627,21 @@ class NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest(_messages
   name = _messages.StringField(2, required=True)
 
 
+class NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeUpdateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeUpdateRequest
+  object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaAcceptSpokeUpdateRequest: A
+      GoogleCloudNetworkconnectivityV1betaAcceptSpokeUpdateRequest resource to
+      be passed as the request body.
+    name: Required. The name of the hub to accept spoke update.
+  """
+
+  googleCloudNetworkconnectivityV1betaAcceptSpokeUpdateRequest = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaAcceptSpokeUpdateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest object.
 
@@ -3925,6 +4021,21 @@ class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(_messages
   name = _messages.StringField(2, required=True)
 
 
+class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeUpdateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeUpdateRequest
+  object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaRejectSpokeUpdateRequest: A
+      GoogleCloudNetworkconnectivityV1betaRejectSpokeUpdateRequest resource to
+      be passed as the request body.
+    name: Required. The name of the hub to reject spoke update.
+  """
+
+  googleCloudNetworkconnectivityV1betaRejectSpokeUpdateRequest = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRejectSpokeUpdateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest
   object.
@@ -4025,7 +4136,6 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
 
 class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_messages.Message):
   r"""A
-
   NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest
   object.
 

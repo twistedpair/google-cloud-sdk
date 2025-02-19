@@ -161,6 +161,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ODBNETWORKS = (
+      'projects.locations.odbNetworks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/odbNetworks/'
+              '{odbNetworksId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ODBNETWORKS_ODBSUBNETS = (
+      'projects.locations.odbNetworks.odbSubnets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/odbNetworks/'
+              '{odbNetworksId}/odbSubnets/{odbSubnetsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

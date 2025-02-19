@@ -571,33 +571,6 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def QueryEffectiveSettingBindings(self, request, global_params=None):
-      r"""Lists the effective setting bindings for a given parent. This returns all SettingBinding objects where target is either this instance or an ancestor of this instance (and no child of this ancestor overrides it).
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsQueryEffectiveSettingBindingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QueryEffectiveSettingBindingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('QueryEffectiveSettingBindings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    QueryEffectiveSettingBindings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:queryEffectiveSettingBindings',
-        http_method='GET',
-        method_id='cloudaicompanion.projects.locations.queryEffectiveSettingBindings',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1alpha/{+name}:queryEffectiveSettingBindings',
-        request_field='',
-        request_type_name='CloudaicompanionProjectsLocationsQueryEffectiveSettingBindingsRequest',
-        response_type_name='QueryEffectiveSettingBindingsResponse',
-        supports_download=False,
-    )
-
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 

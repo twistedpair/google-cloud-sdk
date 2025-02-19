@@ -212,12 +212,10 @@ class Revision(proto.Message):
             Stages <https://cloud.google.com/terms/launch-stages>`__.
             Cloud Run supports ``ALPHA``, ``BETA``, and ``GA``.
 
-            .. raw:: html
-
-                <p>Note that this value might not be what was used
-                as input. For example, if ALPHA was provided as input in the parent
-                resource, but only BETA and GA-level features are were, this field will be
-                BETA.
+            Note that this value might not be what was used as input.
+            For example, if ALPHA was provided as input in the parent
+            resource, but only BETA and GA-level features are were, this
+            field will be BETA.
         service (str):
             Output only. The name of the parent service.
         scaling (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.RevisionScaling):
@@ -288,6 +286,9 @@ class Revision(proto.Message):
             settings for the revision.
         node_selector (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.NodeSelector):
             The node selector for the revision.
+        creator (str):
+            Output only. Email address of the
+            authenticated creator.
         etag (str):
             Output only. A system-generated fingerprint
             for this version of the resource. May be used to
@@ -436,6 +437,10 @@ class Revision(proto.Message):
         proto.MESSAGE,
         number=40,
         message=vendor_settings.NodeSelector,
+    )
+    creator: str = proto.Field(
+        proto.STRING,
+        number=49,
     )
     etag: str = proto.Field(
         proto.STRING,

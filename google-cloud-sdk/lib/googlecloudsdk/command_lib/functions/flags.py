@@ -834,20 +834,25 @@ def GetFunctionResourceSpec():
   )
 
 
-def AddFunctionResourceArg(parser, verb, required=True):
+def AddFunctionResourceArg(
+    parser, verb='', help_text_override='', required=True
+):
   """Adds a Cloud Function resource argument.
 
   NOTE: May be used only if it's the only resource arg in the command.
-
   Args:
     parser: the argparse parser for the command.
-    verb: str, the verb to describe the resource, such as 'to update'.
+    verb: (Optional) str, the verb to describe the resource, such as 'to
+      update'.
+    help_text_override: (Optional)str, the help text to use for the resource
+      argument. If override is providded, verb will be ignored.
     required: bool, whether the argument is required.
   """
+  help_text = help_text_override or 'The Cloud Function name {}.'.format(verb)
   concept_parsers.ConceptParser.ForResource(
       'NAME',
       GetFunctionResourceSpec(),
-      'The Cloud Function name {}.'.format(verb),
+      help_text,
       required=required,
   ).AddToParser(parser)
 
@@ -1081,8 +1086,21 @@ def AddConcurrencyFlag(parser):
 
 def AddUpgradeFlags(parser):
   """Adds upgrade related function flags."""
-  upgrade_group = parser.add_group(mutex=True)
-  upgrade_group.add_argument(
+  upgrade_group = parser.add_group(
+      mutex=True,
+      help="""\
+      Upgrade a 1st gen Cloud Function to the 2nd gen environment.
+      You must specify one of the following flags:
+      - `--setup-config` and optionally `--trigger-service-account`,
+      - `--redirect-traffic`,
+      - `--rollback-traffic`,
+      - `--commit`,
+      - `--abort`.
+  """,
+  )
+
+  setup_config_group = upgrade_group.add_argument_group()
+  setup_config_group.add_argument(
       '--setup-config',
       action='store_true',
       help=(
@@ -1090,6 +1108,8 @@ def AddUpgradeFlags(parser):
           " the function's code and configuration."
       ),
   )
+  AddTriggerServiceAccountFlag(setup_config_group)
+
   upgrade_group.add_argument(
       '--redirect-traffic',
       action='store_true',

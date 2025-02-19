@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import functools
+import operator
 import os
 import re
 import time
@@ -244,6 +246,7 @@ Must specify sandbox type.
 SANDBOX_TYPE_NOT_SUPPORTED = """\
 Provided sandbox type '{type}' not supported.
 """
+
 TPU_SERVING_MODE_ERROR = """\
 Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
@@ -305,6 +308,14 @@ Can not remove pod ipv4 range {range}: not found in additional subnetworks
 
 CLUSTER_TIER_NOT_SUPPORTED = """\
 Provided cluster tier '{tier}' is not supported.
+"""
+
+TPU_TOPOLOGY_INCORRECT_FORMAT_ERROR_MSG = """\
+Invalid format '{topology}' for argument --tpu-topology. Must provide 2-3 integers separated by 'x' (e.g. 2x4 or 2x2x4)
+"""
+
+MACHINE_TYPE_INCORRECT_FORMAT_ERROR_MSG = """\
+Invalid machine type '{machine_type}' for argument --machine-type. Unable to parse the number of chips.
 """
 
 DEFAULT_MAX_NODES_PER_POOL = 1000
@@ -435,6 +446,8 @@ LOCATION_POLICY_OPTIONS = ['BALANCED', 'ANY']
 SUBNETWORK_URL_PATTERN = (
     r'^https://www.googleapis.com/compute/[a-z1-9_]+/(?P<resource>.*)$')
 ZONE_PATTERN = '^[^-]+-[^-]+-[^-]+$'
+
+TPU_TOPOLOGY_PATTERN = r'^\d{1,3}x\d{1,3}(x\d{1,3})?$'
 
 
 def CheckResponse(response):
@@ -774,6 +787,8 @@ class CreateClusterOptions(object):
       resource_manager_tags=None,
       autoprovisioning_resource_manager_tags=None,
       enable_secret_manager=None,
+      enable_secret_manager_rotation=None,
+      secret_manager_rotation_interval=None,
       enable_cilium_clusterwide_network_policy=None,
       storage_pools=None,
       local_ssd_encryption_mode=None,
@@ -1021,6 +1036,8 @@ class CreateClusterOptions(object):
         autoprovisioning_resource_manager_tags
     )
     self.enable_secret_manager = enable_secret_manager
+    self.enable_secret_manager_rotation = enable_secret_manager_rotation
+    self.secret_manager_rotation_interval = secret_manager_rotation_interval
     self.enable_cilium_clusterwide_network_policy = (
         enable_cilium_clusterwide_network_policy
     )
@@ -1201,6 +1218,8 @@ class UpdateClusterOptions(object):
       convert_to_autopilot=None,
       convert_to_standard=None,
       enable_secret_manager=None,
+      enable_secret_manager_rotation=None,
+      secret_manager_rotation_interval=None,
       enable_cilium_clusterwide_network_policy=None,
       enable_insecure_kubelet_readonly_port=None,
       autoprovisioning_enable_insecure_kubelet_readonly_port=None,
@@ -1370,6 +1389,8 @@ class UpdateClusterOptions(object):
     self.convert_to_autopilot = convert_to_autopilot
     self.convert_to_standard = convert_to_standard
     self.enable_secret_manager = enable_secret_manager
+    self.enable_secret_manager_rotation = enable_secret_manager_rotation
+    self.secret_manager_rotation_interval = secret_manager_rotation_interval
     self.enable_cilium_clusterwide_network_policy = (
         enable_cilium_clusterwide_network_policy
     )
@@ -2709,6 +2730,26 @@ class APIAdapter(object):
       if cluster.secretManagerConfig is None:
         cluster.secretManagerConfig = self.messages.SecretManagerConfig()
       cluster.secretManagerConfig.enabled = options.enable_secret_manager
+    if options.enable_secret_manager_rotation is not None:
+      if cluster.secretManagerConfig is None:
+        cluster.secretManagerConfig = self.messages.SecretManagerConfig()
+      if cluster.secretManagerConfig.rotationConfig is None:
+        cluster.secretManagerConfig.rotationConfig = (
+            self.messages.RotationConfig()
+        )
+      cluster.secretManagerConfig.rotationConfig.enabled = (
+          options.enable_secret_manager_rotation
+      )
+    if options.secret_manager_rotation_interval is not None:
+      if cluster.secretManagerConfig is None:
+        cluster.secretManagerConfig = self.messages.SecretManagerConfig()
+      if cluster.secretManagerConfig.rotationConfig is None:
+        cluster.secretManagerConfig.rotationConfig = (
+            self.messages.RotationConfig()
+        )
+      cluster.secretManagerConfig.rotationConfig.rotationInterval = (
+          options.secret_manager_rotation_interval
+      )
 
     if options.enable_cilium_clusterwide_network_policy is not None:
       if cluster.networkConfig is None:
@@ -4364,11 +4405,35 @@ class APIAdapter(object):
           self.messages,
       )
 
-    if options.enable_secret_manager is not None:
+    if (
+        options.enable_secret_manager_rotation is not None
+        or options.secret_manager_rotation_interval is not None
+        or options.enable_secret_manager is not None
+    ):
+      old_cluster = self.GetCluster(cluster_ref)
+      secret_manager_config = old_cluster.secretManagerConfig
+      if options.enable_secret_manager is not None:
+        if secret_manager_config is None:
+          secret_manager_config = self.messages.SecretManagerConfig()
+        secret_manager_config.enabled = options.enable_secret_manager
+      if options.enable_secret_manager_rotation is not None:
+        if secret_manager_config is None:
+          secret_manager_config = self.messages.SecretManagerConfig()
+        if secret_manager_config.rotationConfig is None:
+          secret_manager_config.rotationConfig = self.messages.RotationConfig()
+        secret_manager_config.rotationConfig.enabled = (
+            options.enable_secret_manager_rotation
+        )
+      if options.secret_manager_rotation_interval is not None:
+        if secret_manager_config is None:
+          secret_manager_config = self.messages.SecretManagerConfig()
+        if secret_manager_config.rotationConfig is None:
+          secret_manager_config.rotationConfig = self.messages.RotationConfig()
+        secret_manager_config.rotationConfig.rotationInterval = (
+            options.secret_manager_rotation_interval
+        )
       update = self.messages.ClusterUpdate(
-          desiredSecretManagerConfig=self.messages.SecretManagerConfig(
-              enabled=options.enable_secret_manager
-          )
+          desiredSecretManagerConfig=secret_manager_config
       )
 
     if options.enable_cilium_clusterwide_network_policy is not None:
@@ -5053,6 +5118,17 @@ class APIAdapter(object):
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
     _AddSandboxConfigToNodeConfig(node_config, options, self.messages)
     _AddWindowsNodeConfigToNodeConfig(node_config, options, self.messages)
+
+    # if we are using a multi-host TPU (tpu_topology is specified)
+    # and num_nodes is not specified, calculate the
+    # num_nodes based on the tpu_topology as the new default. If not
+    # a multi-host TPU, default num_nodes to 3.
+    if (options.tpu_topology is not None) and (options.num_nodes is None):
+      options.num_nodes = TpuTopologyToNumNodes(
+          options.tpu_topology, options.machine_type
+      )
+    elif options.num_nodes is None:
+      options.num_nodes = 3
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -8188,6 +8264,28 @@ def SubnetworkNameToPath(subnetwork, project, location):
   if re.match(ZONE_PATTERN, location):
     location = location[:location.rfind('-')]
   return ProjectLocationSubnetwork(project, location, subnetwork)
+
+
+def TpuTopologyToNumNodes(tpu_topology, machine_type):
+  """Calculates the number of nodes needed for a given TPU topology and machine type."""
+  match = re.fullmatch(TPU_TOPOLOGY_PATTERN, tpu_topology)
+  if not match:
+    raise util.Error(
+        TPU_TOPOLOGY_INCORRECT_FORMAT_ERROR_MSG.format(topology=tpu_topology)
+    )
+
+  result = functools.reduce(operator.mul, map(int, tpu_topology.split('x')))
+
+  chips_match = re.search(r'(\d+)t$', machine_type)
+  if not chips_match:
+    raise util.Error(
+        MACHINE_TYPE_INCORRECT_FORMAT_ERROR_MSG.format(
+            machine_type=machine_type
+        )
+    )
+  num_chips_per_vm = int(chips_match.group(1))
+
+  return result // num_chips_per_vm
 
 
 def NormalizeBinauthzMode(mode):

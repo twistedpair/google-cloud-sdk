@@ -61,6 +61,8 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
       an event add-on is triggered.
 
   Fields:
+    calendarNotificationTrigger: An endpoint that triggers when there is a new
+      event for a previously configured calendar subscription.
     conferenceSolution: Defines conference solutions provided by this add-on.
       Third-party conferencing add-ons can only be built in [Apps
       Script](https://developers.google.com/apps-script/reference/conference-
@@ -106,13 +108,14 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
     WRITE = 3
     READ_WRITE = 4
 
-  conferenceSolution = _messages.MessageField('GoogleAppsScriptTypeCalendarConferenceSolution', 1, repeated=True)
-  createSettingsUrlFunction = _messages.StringField(2)
-  currentEventAccess = _messages.EnumField('CurrentEventAccessValueValuesEnum', 3)
-  eventAttachmentTrigger = _messages.MessageField('GoogleAppsScriptTypeMenuItemExtensionPoint', 4)
-  eventOpenTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 5)
-  eventUpdateTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 6)
-  homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 7)
+  calendarNotificationTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 1)
+  conferenceSolution = _messages.MessageField('GoogleAppsScriptTypeCalendarConferenceSolution', 2, repeated=True)
+  createSettingsUrlFunction = _messages.StringField(3)
+  currentEventAccess = _messages.EnumField('CurrentEventAccessValueValuesEnum', 4)
+  eventAttachmentTrigger = _messages.MessageField('GoogleAppsScriptTypeMenuItemExtensionPoint', 5)
+  eventOpenTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 6)
+  eventUpdateTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 7)
+  homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 8)
 
 
 class GoogleAppsScriptTypeCalendarCalendarExtensionPoint(_messages.Message):
@@ -383,7 +386,7 @@ class GoogleAppsScriptTypeHttpOptions(_messages.Message):
       HTTP_AUTHORIZATION_HEADER_UNSPECIFIED: Default value, equivalent to
         `SYSTEM_ID_TOKEN`.
       SYSTEM_ID_TOKEN: Send an ID token for the project-specific Google
-        Workspace Add-on's system service account (default).
+        Workspace add-on's system service account (default).
       USER_ID_TOKEN: Send an ID token for the end user.
       NONE: Do not send an Authentication header.
     """
@@ -607,11 +610,11 @@ class GoogleAppsScriptTypeUriPattern(_messages.Message):
 
 
 class GoogleCloudGsuiteaddonsV1AddOns(_messages.Message):
-  r"""A Google Workspace Add-on configuration.
+  r"""A Google Workspace add-on configuration.
 
   Fields:
     calendar: Calendar add-on configuration.
-    common: Configuration that is common across all Google Workspace Add-ons.
+    common: Configuration that is common across all Google Workspace add-ons.
     docs: Docs add-on configuration.
     drive: Drive add-on configuration.
     gmail: Gmail add-on configuration.
@@ -648,10 +651,10 @@ class GoogleCloudGsuiteaddonsV1Authorization(_messages.Message):
 
 
 class GoogleCloudGsuiteaddonsV1Deployment(_messages.Message):
-  r"""A Google Workspace Add-on deployment
+  r"""A Google Workspace add-on deployment
 
   Fields:
-    addOns: The Google Workspace Add-on configuration.
+    addOns: The Google Workspace add-on configuration.
     etag: This value is computed by the server based on the version of the
       deployment in storage, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -833,7 +836,7 @@ class GsuiteaddonsProjectsGetAuthorizationRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the project for which to get the Google Workspace
-      Add-on authorization information. Example:
+      add-on authorization information. Example:
       `projects/my_project/authorization`.
   """
 

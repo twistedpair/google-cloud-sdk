@@ -33,6 +33,7 @@ SecretVolumeSource = types.SecretVolumeSource
 NFSVolumeSource = types.NFSVolumeSource
 GCSVolumeSource = types.GCSVolumeSource
 EmptyDirVolumeSource = types.EmptyDirVolumeSource
+CloudSqlInstance = types.CloudSqlInstance
 VersionToPath = types.VersionToPath
 Medium = types.EmptyDirVolumeSource.Medium
 
@@ -151,6 +152,41 @@ def _ValidateAndBuildSecretVolume(
   )
 
 
+def _ValidateAndBuildCloudSqlVolume(
+    volume_dict: VolumeDict, release_track: base.ReleaseTrack
+) -> Volume:
+  """Validates and builds a Cloud SQL volume."""
+  if release_track != base.ReleaseTrack.ALPHA:
+    raise serverless_exceptions.ConfigurationError(
+        'Cloud SQL volumes are not supported in this release track'
+    )
+  if 'instances' not in volume_dict:
+    raise serverless_exceptions.ConfigurationError(
+        'Cloud SQL volumes must have at least one instance specified'
+    )
+  if volume_dict['name'] != 'cloudsql':
+    raise serverless_exceptions.ConfigurationError(
+        'Cloud SQL volumes can only be named "cloudsql" and can only be mounted'
+        ' at /cloudsql.'
+    )
+  for instance in volume_dict['instances'].split(';'):
+    instance = instance.strip().split(':')
+    if len(instance) != 3:
+      raise serverless_exceptions.ConfigurationError(
+          'Cloud SQL instance names must be in the form'
+          ' PROJECT_ID:REGION:INSTANCE_ID but got {}'.format(instance)
+      )
+  return Volume(
+      name=volume_dict['name'],
+      cloud_sql_instance=CloudSqlInstance(
+          instances=[
+              instance.strip()
+              for instance in volume_dict['instances'].split(';')
+          ]
+      ),
+  )
+
+
 VolumeDict = TypedDict(
     'VolumeDict',
     {
@@ -165,6 +201,7 @@ VolumeDict = TypedDict(
         'secret': str,
         'version': str,
         'path': str,
+        'instances': str,
     },
     total=False,
 )
@@ -190,6 +227,8 @@ def CreateVolume(
     return _ValidateAndBuildNFSVolume(volume_dict)
   elif volume_dict['type'] == 'secret':
     return _ValidateAndBuildSecretVolume(volume_dict, release_track)
+  elif volume_dict['type'] == 'cloudsql':
+    return _ValidateAndBuildCloudSqlVolume(volume_dict, release_track)
   else:
     raise serverless_exceptions.ConfigurationError(
         'Volume type {} not supported'.format(volume_dict['type'])

@@ -432,8 +432,8 @@ class Workflow(_messages.Message):
       logging to apply to calls and call responses during executions of this
       workflow. If both the workflow and the execution specify a logging
       level, the execution level takes precedence.
-    ExecutionHistoryLevelValueValuesEnum: Optional. Describes the level of the
-      execution history feature to apply to this workflow.
+    ExecutionHistoryLevelValueValuesEnum: Optional. Describes the execution
+      history level to apply to this workflow.
     StateValueValuesEnum: Output only. State of the workflow deployment.
 
   Messages:
@@ -474,8 +474,8 @@ class Workflow(_messages.Message):
     description: Description of the workflow provided by the user. Must be at
       most 1000 Unicode characters long. This is a workflow-wide field and is
       not tied to a specific revision.
-    executionHistoryLevel: Optional. Describes the level of the execution
-      history feature to apply to this workflow.
+    executionHistoryLevel: Optional. Describes the execution history level to
+      apply to this workflow.
     labels: Labels associated with this workflow. Labels can contain at most
       64 entries. Keys and values can be no longer than 63 characters and can
       only contain lowercase letters, numeric characters, underscores, and
@@ -537,8 +537,8 @@ class Workflow(_messages.Message):
     LOG_NONE = 3
 
   class ExecutionHistoryLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Describes the level of the execution history feature to
-    apply to this workflow.
+    r"""Optional. Describes the execution history level to apply to this
+    workflow.
 
     Values:
       EXECUTION_HISTORY_LEVEL_UNSPECIFIED: The default/unset value.

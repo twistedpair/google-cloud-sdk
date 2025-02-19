@@ -153,7 +153,7 @@ class Backup(_messages.Message):
     maxChargeableBytes: Output only. The maximum chargeable bytes for the
       backup.
     name: Output only. The resource name of the backup. Format:
-      projects/{project}/backups/{backup}
+      projects/{project}/backups/{backup}.
     satisfiesPzi: Output only. This status indicates whether the backup
       satisfies PZI. The status is reserved for future use.
     satisfiesPzs: Output only. This status indicates whether the backup
@@ -162,7 +162,7 @@ class Backup(_messages.Message):
     state: Output only. The state of this backup.
     timeZone: Output only. This output contains a backup time zone. If a Cloud
       SQL for SQL Server instance has a different time zone from the backup's
-      time zone, then restores to the instance won't happen.
+      time zone, then the restore to the instance doesn't happen.
     ttlDays: Input only. The time-to-live (TTL) interval for this resource (in
       days). For example: ttlDays:7 means 7 days.
     type: Output only. The type of this backup. The type can be "AUTOMATED",
@@ -1555,7 +1555,7 @@ class DemoteMasterMySqlReplicaConfiguration(_messages.Message):
     caCertificate: PEM representation of the trusted CA's x509 certificate.
     clientCertificate: PEM representation of the replica's x509 certificate.
     clientKey: PEM representation of the replica's private key. The
-      corresponsing public key is encoded in the client's certificate. The
+      corresponding public key is encoded in the client's certificate. The
       format of the replica's private key can be either PKCS #1 or PKCS #8.
     kind: This is always `sql#demoteMasterMysqlReplicaConfiguration`.
     password: The password for the replication connection.
@@ -2538,11 +2538,11 @@ class InstancesRestoreBackupRequest(_messages.Message):
       the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
-    restoreInstanceSettings: By using this parameter, Cloud SQL overrides any
-      instance settings that it stored with the instance settings that you
-      want to restore. You can't change the Instance's major database version
-      and you can only increase the disk size. You can use this field to
-      restore new instances only.
+    restoreInstanceSettings: Optional. By using this parameter, Cloud SQL
+      overrides any instance settings that it stored with the instance
+      settings that you want to restore. You can't change the Instance's major
+      database version and you can only increase the disk size. You can use
+      this field to restore new instances only.
   """
 
   backup = _messages.StringField(1)
@@ -2900,7 +2900,7 @@ class MySqlReplicaConfiguration(_messages.Message):
     caCertificate: PEM representation of the trusted CA's x509 certificate.
     clientCertificate: PEM representation of the replica's x509 certificate.
     clientKey: PEM representation of the replica's private key. The
-      corresponsing public key is encoded in the client's certificate.
+      corresponding public key is encoded in the client's certificate.
     connectRetryInterval: Seconds to wait between connect retries. MySQL's
       default is 60 seconds.
     dumpFilePath: Path to a SQL dump file in Google Cloud Storage from which
@@ -2954,7 +2954,7 @@ class OnPremisesConfiguration(_messages.Message):
     caCertificate: PEM representation of the trusted CA's x509 certificate.
     clientCertificate: PEM representation of the replica's x509 certificate.
     clientKey: PEM representation of the replica's private key. The
-      corresponsing public key is encoded in the client's certificate.
+      corresponding public key is encoded in the client's certificate.
     dumpFilePath: The dump file to create the Cloud SQL replica.
     hostPort: The host and port of the on-premises instance in host:port
       format
@@ -3045,7 +3045,7 @@ class Operation(_messages.Message):
       `2012-11-15T16:19:00.094Z`.
     status: The status of an operation.
     subOperationType: Optional. The sub operation based on the operation type.
-    targetId: A string attribute.
+    targetId: Name of the resource on which this operation runs.
     targetLink: A string attribute.
     targetProject: The project ID of the target instance related to this
       operation.
@@ -3155,7 +3155,10 @@ class Operation(_messages.Message):
         primary instance.
       MAJOR_VERSION_UPGRADE: Updates the major version of a Cloud SQL
         instance.
-      ADVANCED_BACKUP: Creates a backup for an Advanced BackupTier Cloud SQL
+      ADVANCED_BACKUP: Deprecated: ADVANCED_BACKUP is deprecated. Use
+        ENHANCED_BACKUP instead.
+      MANAGE_BACKUP: Changes the BackupTier of a Cloud SQL instance.
+      ENHANCED_BACKUP: Creates a backup for an Enhanced BackupTier Cloud SQL
         instance.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
@@ -3206,6 +3209,8 @@ class Operation(_messages.Message):
     SWITCHOVER_TO_REPLICA = 45
     MAJOR_VERSION_UPGRADE = 46
     ADVANCED_BACKUP = 47
+    MANAGE_BACKUP = 48
+    ENHANCED_BACKUP = 49
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3781,7 +3786,7 @@ class Settings(_messages.Message):
       PD_HDD: An HDD data disk.
       OBSOLETE_LOCAL_SSD: This field is deprecated and will be removed from a
         future version of the API.
-      HYPERDISK_BALANCED: HYPERDISK_BALANCED data disk
+      HYPERDISK_BALANCED: A Hyperdisk Balanced data disk.
     """
     SQL_DATA_DISK_TYPE_UNSPECIFIED = 0
     PD_SSD = 1
@@ -4045,7 +4050,7 @@ class SqlBackupsUpdateBackupRequest(_messages.Message):
   Fields:
     backup: A Backup resource to be passed as the request body.
     name: Output only. The resource name of the backup. Format:
-      projects/{project}/backups/{backup}
+      projects/{project}/backups/{backup}.
     updateMask: The list of fields that you can update. You can update only
       the description and retention period of the final backup.
   """
@@ -4438,7 +4443,7 @@ class SqlInstancesDeleteRequest(_messages.Message):
   Fields:
     enableFinalBackup: Flag to opt-in for final backup. By default, it is
       turned off.
-    finalBackupDescription: The description of the final backup.
+    finalBackupDescription: Optional. The description of the final backup.
     finalBackupExpiryTime: Optional. Final Backup expiration time. Timestamp
       in UTC of when this resource is considered expired.
     finalBackupTtlDays: Optional. Retention period of the final backup.

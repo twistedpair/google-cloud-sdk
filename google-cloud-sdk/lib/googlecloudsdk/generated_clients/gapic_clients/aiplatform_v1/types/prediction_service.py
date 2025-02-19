@@ -21,6 +21,7 @@ import proto  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
+from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import content
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import explanation
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import tool
@@ -840,6 +841,9 @@ class CountTokensResponse(proto.Message):
         total_billable_characters (int):
             The total number of billable characters
             counted across all instances from the request.
+        prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ModalityTokenCount]):
+            Output only. List of modalities that were
+            processed in the request input.
     """
 
     total_tokens: int = proto.Field(
@@ -849,6 +853,11 @@ class CountTokensResponse(proto.Message):
     total_billable_characters: int = proto.Field(
         proto.INT32,
         number=2,
+    )
+    prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=3,
+        message=content.ModalityTokenCount,
     )
 
 
@@ -971,6 +980,12 @@ class GenerateContentResponse(proto.Message):
         model_version (str):
             Output only. The model version used to
             generate the response.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. Timestamp when the request is
+            made to the server.
+        response_id (str):
+            Output only. response_id is used to identify each response.
+            It is the encoding of the event_id.
         prompt_feedback (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerateContentResponse.PromptFeedback):
             Output only. Content filter results for a
             prompt sent in the request. Note: Sent only in
@@ -1045,6 +1060,15 @@ class GenerateContentResponse(proto.Message):
             cached_content_token_count (int):
                 Output only. Number of tokens in the cached
                 part in the input (the cached content).
+            prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ModalityTokenCount]):
+                Output only. List of modalities that were
+                processed in the request input.
+            cache_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ModalityTokenCount]):
+                Output only. List of modalities of the cached
+                content in the request input.
+            candidates_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ModalityTokenCount]):
+                Output only. List of modalities that were
+                returned in the response.
         """
 
         prompt_token_count: int = proto.Field(
@@ -1063,6 +1087,21 @@ class GenerateContentResponse(proto.Message):
             proto.INT32,
             number=5,
         )
+        prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=9,
+            message=content.ModalityTokenCount,
+        )
+        cache_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=10,
+            message=content.ModalityTokenCount,
+        )
+        candidates_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=11,
+            message=content.ModalityTokenCount,
+        )
 
     candidates: MutableSequence[content.Candidate] = proto.RepeatedField(
         proto.MESSAGE,
@@ -1072,6 +1111,15 @@ class GenerateContentResponse(proto.Message):
     model_version: str = proto.Field(
         proto.STRING,
         number=11,
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=12,
+        message=timestamp_pb2.Timestamp,
+    )
+    response_id: str = proto.Field(
+        proto.STRING,
+        number=13,
     )
     prompt_feedback: PromptFeedback = proto.Field(
         proto.MESSAGE,

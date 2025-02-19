@@ -427,14 +427,14 @@ class GoogleDatastoreAdminV1RedirectWritesStepDetails(_messages.Message):
   r"""Details for the `REDIRECT_WRITES` step.
 
   Enums:
-    ConcurrencyModeValueValuesEnum: Ths concurrency mode for this database.
+    ConcurrencyModeValueValuesEnum: The concurrency mode for this database.
 
   Fields:
-    concurrencyMode: Ths concurrency mode for this database.
+    concurrencyMode: The concurrency mode for this database.
   """
 
   class ConcurrencyModeValueValuesEnum(_messages.Enum):
-    r"""Ths concurrency mode for this database.
+    r"""The concurrency mode for this database.
 
     Values:
       CONCURRENCY_MODE_UNSPECIFIED: Unspecified.

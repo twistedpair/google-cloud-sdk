@@ -403,7 +403,7 @@ class UpdateDefaultArgumentGenerator(UpdateBasicArgumentGenerator):
     )
 
   def ApplySetFlag(self, existing_val, set_val):
-    if set_val:
+    if set_val is not None:
       return set_val
     return existing_val
 
@@ -457,7 +457,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
     )
 
   def ApplySetFlag(self, existing_val, set_val):
-    if set_val:
+    if set_val is not None:
       return set_val
     return existing_val
 
@@ -569,7 +569,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
     )
 
   def ApplySetFlag(self, existing_val, set_val):
-    if set_val:
+    if set_val is not None:
       return set_val
     return existing_val
 

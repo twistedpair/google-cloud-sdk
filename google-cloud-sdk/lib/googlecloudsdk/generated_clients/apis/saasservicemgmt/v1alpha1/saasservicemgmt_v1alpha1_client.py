@@ -44,8 +44,8 @@ class SaasservicemgmtV1alpha1(base_api.BaseApiClient):
     self.projects_locations_rolloutKinds = self.ProjectsLocationsRolloutKindsService(self)
     self.projects_locations_rolloutTypes = self.ProjectsLocationsRolloutTypesService(self)
     self.projects_locations_rollouts = self.ProjectsLocationsRolloutsService(self)
+    self.projects_locations_saas = self.ProjectsLocationsSaasService(self)
     self.projects_locations_saasTypes = self.ProjectsLocationsSaasTypesService(self)
-    self.projects_locations_saases = self.ProjectsLocationsSaasesService(self)
     self.projects_locations_tenants = self.ProjectsLocationsTenantsService(self)
     self.projects_locations_unitKinds = self.ProjectsLocationsUnitKindsService(self)
     self.projects_locations_unitOperations = self.ProjectsLocationsUnitOperationsService(self)
@@ -751,6 +751,151 @@ class SaasservicemgmtV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsSaasService(base_api.BaseApiService):
+    """Service class for the projects_locations_saas resource."""
+
+    _NAME = 'projects_locations_saas'
+
+    def __init__(self, client):
+      super(SaasservicemgmtV1alpha1.ProjectsLocationsSaasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new saas.
+
+      Args:
+        request: (SaasservicemgmtProjectsLocationsSaasCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saas',
+        http_method='POST',
+        method_id='saasservicemgmt.projects.locations.saas.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'saasId', 'validateOnly'],
+        relative_path='v1alpha1/{+parent}/saas',
+        request_field='saas',
+        request_type_name='SaasservicemgmtProjectsLocationsSaasCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a single saas.
+
+      Args:
+        request: (SaasservicemgmtProjectsLocationsSaasDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saas/{saasId}',
+        http_method='DELETE',
+        method_id='saasservicemgmt.projects.locations.saas.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId', 'validateOnly'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='SaasservicemgmtProjectsLocationsSaasDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve a single saas.
+
+      Args:
+        request: (SaasservicemgmtProjectsLocationsSaasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Saas) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saas/{saasId}',
+        http_method='GET',
+        method_id='saasservicemgmt.projects.locations.saas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='SaasservicemgmtProjectsLocationsSaasGetRequest',
+        response_type_name='Saas',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieve a collection of saas.
+
+      Args:
+        request: (SaasservicemgmtProjectsLocationsSaasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSaasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saas',
+        http_method='GET',
+        method_id='saasservicemgmt.projects.locations.saas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/saas',
+        request_field='',
+        request_type_name='SaasservicemgmtProjectsLocationsSaasListRequest',
+        response_type_name='ListSaasResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a single saas.
+
+      Args:
+        request: (SaasservicemgmtProjectsLocationsSaasPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saas/{saasId}',
+        http_method='PATCH',
+        method_id='saasservicemgmt.projects.locations.saas.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1alpha1/{+name}',
+        request_field='saas',
+        request_type_name='SaasservicemgmtProjectsLocationsSaasPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsSaasTypesService(base_api.BaseApiService):
     """Service class for the projects_locations_saasTypes resource."""
 
@@ -892,151 +1037,6 @@ class SaasservicemgmtV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='saasType',
         request_type_name='SaasservicemgmtProjectsLocationsSaasTypesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsSaasesService(base_api.BaseApiService):
-    """Service class for the projects_locations_saases resource."""
-
-    _NAME = 'projects_locations_saases'
-
-    def __init__(self, client):
-      super(SaasservicemgmtV1alpha1.ProjectsLocationsSaasesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Create a new saas.
-
-      Args:
-        request: (SaasservicemgmtProjectsLocationsSaasesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saases',
-        http_method='POST',
-        method_id='saasservicemgmt.projects.locations.saases.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'saasId', 'validateOnly'],
-        relative_path='v1alpha1/{+parent}/saases',
-        request_field='saas',
-        request_type_name='SaasservicemgmtProjectsLocationsSaasesCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Delete a single saas.
-
-      Args:
-        request: (SaasservicemgmtProjectsLocationsSaasesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saases/{saasesId}',
-        http_method='DELETE',
-        method_id='saasservicemgmt.projects.locations.saases.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['etag', 'requestId', 'validateOnly'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='SaasservicemgmtProjectsLocationsSaasesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Retrieve a single saas.
-
-      Args:
-        request: (SaasservicemgmtProjectsLocationsSaasesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Saas) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saases/{saasesId}',
-        http_method='GET',
-        method_id='saasservicemgmt.projects.locations.saases.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='SaasservicemgmtProjectsLocationsSaasesGetRequest',
-        response_type_name='Saas',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Retrieve a collection of saases.
-
-      Args:
-        request: (SaasservicemgmtProjectsLocationsSaasesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListSaasesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saases',
-        http_method='GET',
-        method_id='saasservicemgmt.projects.locations.saases.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/saases',
-        request_field='',
-        request_type_name='SaasservicemgmtProjectsLocationsSaasesListRequest',
-        response_type_name='ListSaasesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Update a single saas.
-
-      Args:
-        request: (SaasservicemgmtProjectsLocationsSaasesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/saases/{saasesId}',
-        http_method='PATCH',
-        method_id='saasservicemgmt.projects.locations.saases.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['etag', 'requestId', 'updateMask', 'validateOnly'],
-        relative_path='v1alpha1/{+name}',
-        request_field='saas',
-        request_type_name='SaasservicemgmtProjectsLocationsSaasesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

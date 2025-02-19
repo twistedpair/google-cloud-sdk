@@ -45,10 +45,10 @@ class CancelJobRequest(_messages.Message):
 
   Fields:
     requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request. Requests
-      with same `request_id` will ignored for least 60 minutes since the first
-      request. The request ID must be a valid UUID with the exception that
-      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+      a unique request ID in case you need to retry your request. Requests
+      with same `request_id` will ignored for at least 60 minutes since the
+      first request. The request ID must be a valid UUID with the exception
+      that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   requestId = _messages.StringField(1)
@@ -257,12 +257,12 @@ class Job(_messages.Message):
       max length is 1024 bytes when Unicode-encoded.
     errorSummaries: Output only. Summarizes errors encountered with sample
       error log entries.
+    loggingConfig: Optional. Logging configuration.
     name: Identifier. The resource name of the Job. job_id is unique within
       the project and location, that is either set by the customer or defined
       by the service. Format:
       projects/{project}/locations/{location}/jobs/{job_id} . For example:
       "projects/123456/locations/us-central1/jobs/job01".
-    putKmsKey: Update objects KMS key.
     putMetadata: Updates object metadata. Allows updating fixed-key and custom
       metadata and fixed-key metadata i.e. Cache-Control, Content-Disposition,
       Content-Encoding, Content-Language, Content-Type, Custom-Time.
@@ -295,8 +295,8 @@ class Job(_messages.Message):
   deleteObject = _messages.MessageField('DeleteObject', 5)
   description = _messages.StringField(6)
   errorSummaries = _messages.MessageField('ErrorSummary', 7, repeated=True)
-  name = _messages.StringField(8)
-  putKmsKey = _messages.MessageField('PutKmsKey', 9)
+  loggingConfig = _messages.MessageField('LoggingConfig', 8)
+  name = _messages.StringField(9)
   putMetadata = _messages.MessageField('PutMetadata', 10)
   putObjectHold = _messages.MessageField('PutObjectHold', 11)
   rewriteObject = _messages.MessageField('RewriteObject', 12)
@@ -424,17 +424,63 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LoggingConfig(_messages.Message):
+  r"""Specifies the Cloud Logging behavior.
+
+  Enums:
+    LogActionStatesValueListEntryValuesEnum:
+    LogActionsValueListEntryValuesEnum:
+
+  Fields:
+    logActionStates: Required. States in which Action are logged.If empty, no
+      logs are generated.
+    logActions: Required. Specifies the actions to be logged.
+  """
+
+  class LogActionStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""LogActionStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      LOGGABLE_ACTION_STATE_UNSPECIFIED: Illegal value, to avoid allowing a
+        default.
+      SUCCEEDED: `LoggableAction` completed successfully. `SUCCEEDED` actions
+        are logged as INFO.
+      FAILED: `LoggableAction` terminated in an error state. `FAILED` actions
+        are logged as ERROR.
+    """
+    LOGGABLE_ACTION_STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  class LogActionsValueListEntryValuesEnum(_messages.Enum):
+    r"""LogActionsValueListEntryValuesEnum enum type.
+
+    Values:
+      LOGGABLE_ACTION_UNSPECIFIED: Illegal value, to avoid allowing a default.
+      TRANSFORM: The corresponding transform action in this job.
+    """
+    LOGGABLE_ACTION_UNSPECIFIED = 0
+    TRANSFORM = 1
+
+  logActionStates = _messages.EnumField('LogActionStatesValueListEntryValuesEnum', 1, repeated=True)
+  logActions = _messages.EnumField('LogActionsValueListEntryValuesEnum', 2, repeated=True)
+
+
 class Manifest(_messages.Message):
   r"""Describes list of objects to be transformed.
 
   Fields:
     manifestLocation: Required. `manifest_location` must contain the manifest
-      source file is a CSV file in a Google Cloud Storage bucket. Each row in
-      the file must include the object details i.e. ProjectId, BucketId and
-      Name. Generation may optionally be specified, when it is not specified
-      the live object is acted upon. `manifest_location` must be an absolute
-      path to the object. NOTE: All the objects must belong to the same
-      bucket. Format: gs://bucket_name/path/object_name.csv.
+      source file that is a CSV file in a Google Cloud Storage bucket. Each
+      row in the file must include the object details i.e. BucketId and Name.
+      Generation may optionally be specified. When it is not specified the
+      live object is acted upon. `manifest_location` should either be 1) An
+      absolute path to the object in the format of
+      gs://bucket_name/path/file_name.csv. 2) An absolute path with a single
+      wildcard character in the file name, for example
+      gs://bucket_name/path/file_name*.csv. If manifest location is specified
+      with a wildcard, objects in all manifest files matching the pattern will
+      be acted upon.
   """
 
   manifestLocation = _messages.StringField(1)
@@ -561,8 +607,8 @@ class OperationMetadata(_messages.Message):
       projects/{project}/locations/{location}/operations/{operation}.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      cancelled successfully have google.longrunning.Operation.error value
+      with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
   """
 
   apiVersion = _messages.StringField(1)
@@ -585,23 +631,6 @@ class PrefixList(_messages.Message):
   """
 
   includedObjectPrefixes = _messages.StringField(1, repeated=True)
-
-
-class PutKmsKey(_messages.Message):
-  r"""Describes options for object KMS key update.
-
-  Fields:
-    kmsKey: Required. Resource name of the Cloud KMS key that will be used to
-      encrypt the object. The Cloud KMS key must be located in same location
-      as the object. Refer to
-      https://cloud.google.com/storage/docs/encryption/using-customer-managed-
-      keys#add-object-key for additional documentation. Format: projects/{proj
-      ect}/locations/{location}/keyRings/{keyring}/cryptoKeys/{key} For
-      example: "projects/123456/locations/us-central1/keyRings/my-
-      keyring/cryptoKeys/my-key".
-  """
-
-  kmsKey = _messages.StringField(1)
 
 
 class PutMetadata(_messages.Message):
@@ -909,10 +938,10 @@ class StoragebatchoperationsProjectsLocationsJobsCreateRequest(_messages.Message
       include only characters available in DNS names, as defined by RFC-1123.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request. Requests
-      with same `request_id` will ignored for least 60 minutes since the first
-      request. The request ID must be a valid UUID with the exception that
-      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+      a unique request ID in case you need to retry your request. Requests
+      with same `request_id` will ignored for at least 60 minutes since the
+      first request. The request ID must be a valid UUID with the exception
+      that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   job = _messages.MessageField('Job', 1)
@@ -928,10 +957,10 @@ class StoragebatchoperationsProjectsLocationsJobsDeleteRequest(_messages.Message
     name: Required. The `name` of the job to delete. Format:
       projects/{project_id}/locations/{location_id}/jobs/{job_id} .
     requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request. Requests
-      with same `request_id` will ignored for least 60 minutes since the first
-      request. The request ID must be a valid UUID with the exception that
-      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+      a unique request ID in case you need to retry your request. Requests
+      with same `request_id` will ignored for at least 60 minutes since the
+      first request. The request ID must be a valid UUID with the exception
+      that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)

@@ -64,6 +64,76 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASHARINGWITHGOOGLESETTINGS = (
+      'projects.locations.dataSharingWithGoogleSettings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dataSharingWithGoogleSettings/'
+              '{dataSharingWithGoogleSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATASHARINGWITHGOOGLESETTINGS_SETTINGBINDINGS = (
+      'projects.locations.dataSharingWithGoogleSettings.settingBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dataSharingWithGoogleSettings/'
+              '{dataSharingWithGoogleSettingsId}/settingBindings/'
+              '{settingBindingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GEMINIGCPENABLEMENTSETTINGS = (
+      'projects.locations.geminiGcpEnablementSettings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'geminiGcpEnablementSettings/{geminiGcpEnablementSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GEMINIGCPENABLEMENTSETTINGS_SETTINGBINDINGS = (
+      'projects.locations.geminiGcpEnablementSettings.settingBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'geminiGcpEnablementSettings/{geminiGcpEnablementSettingsId}/'
+              'settingBindings/{settingBindingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LOGGINGSETTINGS = (
+      'projects.locations.loggingSettings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/loggingSettings/'
+              '{loggingSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LOGGINGSETTINGS_SETTINGBINDINGS = (
+      'projects.locations.loggingSettings.settingBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/loggingSettings/'
+              '{loggingSettingsId}/settingBindings/{settingBindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -71,6 +141,29 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RELEASECHANNELSETTINGS = (
+      'projects.locations.releaseChannelSettings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'releaseChannelSettings/{releaseChannelSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RELEASECHANNELSETTINGS_SETTINGBINDINGS = (
+      'projects.locations.releaseChannelSettings.settingBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'releaseChannelSettings/{releaseChannelSettingsId}/'
+              'settingBindings/{settingBindingsId}',
       },
       ['name'],
       True

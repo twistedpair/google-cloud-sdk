@@ -1699,7 +1699,7 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
     TypeValueValuesEnum: Type of this table.
 
   Fields:
-    databaseViewSpec: Spec what aplies to tables that are actually views. Not
+    databaseViewSpec: Spec what applies to tables that are actually views. Not
       set for "real" tables.
     dataplexTable: Output only. Fields specific to a Dataplex table and
       present only in the Dataplex table entries.
@@ -2187,21 +2187,21 @@ class GoogleCloudDatacatalogV1FeatureOnlineStoreSpec(_messages.Message):
   Store.
 
   Enums:
-    StorageTypeValueValuesEnum: Output only. Type of underelaying storage for
+    StorageTypeValueValuesEnum: Output only. Type of underlying storage for
       the FeatureOnlineStore.
 
   Fields:
-    storageType: Output only. Type of underelaying storage for the
+    storageType: Output only. Type of underlying storage for the
       FeatureOnlineStore.
   """
 
   class StorageTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Type of underelaying storage for the FeatureOnlineStore.
+    r"""Output only. Type of underlying storage for the FeatureOnlineStore.
 
     Values:
       STORAGE_TYPE_UNSPECIFIED: Should not be used.
       BIGTABLE: Underlsying storgae is Bigtable.
-      OPTIMIZED: Underlaying is optimized online server (Lightning).
+      OPTIMIZED: Underlying is optimized online server (Lightning).
     """
     STORAGE_TYPE_UNSPECIFIED = 0
     BIGTABLE = 1

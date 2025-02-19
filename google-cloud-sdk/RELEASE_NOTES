@@ -5,6 +5,221 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 511.0.0 (2025-02-19)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Removed explicit use of `true/false` values in `--user-output-enabled` flag.
+*   **(Container)** Fixed missing KeyError when parsing the `~/.kube/config` file. File is now
+*   **(Container)** recreated from scratch when such a corrupted entry
+*   **(Container)** is found in it. This is a breaking change as recreating the config may cause
+*   **(Container)** entries for already authenticated contexts to be lost.
+
+
+### Google Cloud CLI
+
+* Fixed issue where `gcloud auth login` was broken when mTLS was enabled over the legacy SecureConnect self-signed workflow.
+
+### AlloyDB
+
+* Added `--database-flags` to the list of optional flags for create-secondary instance command.
+
+### Backup For GKE
+
+* Added command `gcloud beta container backup-restore operations list` to list Backup for GKE operations.
+* Added command `gcloud beta container backup-restore operations describe` to describe Backup for GKE operations.
+
+### BigQuery
+
+* Updated `--max_staleness` and `--metadata_cache_mode` flag descriptions for `bq update` to mention their dependency on `--external_table_definition` flag.
+* Added support for setting `--apilog` flag to a directory and not just a file.
+* Added validation for when `--api` flag has no protocol prefix.
+* Updated the default CA certificate.
+* Fixed bug where windows line endings would print tables incorrectly.
+
+### Cloud Build
+
+* Added support for specifying source manifest JSON file as argument for source
+in `gcloud builds submit` command.
+* Fixed bug in which source is not displayed in builds list if source is a
+Git repo, 2nd-gen Cloud Build repo, or Developer Connect GitRepositoryLink.
+
+### Cloud Composer
+
+* Added `--airflow-database-retention-days` to `gcloud composer environments create/update` to specify database retention days.
+
+### Cloud DNS
+
+* Added GA support for creating health-checked routing policies in public
+zones. Use `--health-check` to indicate that all IP addresses should be health
+checked.
+
+### Cloud Functions
+
+* Promoted `gcloud functions detach` to GA.
+
+### Cloud IAM
+
+*   Added `--extra-attributes-client-id` flag to
+    `gcloud iam workforce-pools providers create-saml` and
+    `gcloud iam workforce-pools providers update-saml` which allow user to setup
+    client id for extra attributes oauth2 flow.
+*   Added `--extra-attributes-client-secret-value` flag to
+    `gcloud iam workforce-pools providers create-saml` and
+    `gcloud iam workforce-pools providers update-saml` which allow user to setup
+    client secret for extra attributes oauth2 flow.
+*   Added `--extra-attributes-issuer-uri` flag to
+    `gcloud iam workforce-pools providers create-saml` and
+    `gcloud iam workforce-pools providers update-saml` which allow user to setup
+    issuer uri for extra attributes oauth2 flow.
+*   Added `--extra-attributes-type` flag to
+    `gcloud iam workforce-pools providers create-saml` and
+    `gcloud iam workforce-pools providers update-saml` which allow user to setup
+    attributes type for extra attributes oauth2 flow.
+*   Added `--extra-attributes-filter` flag to
+    `gcloud iam workforce-pools providers create-saml` and
+    `gcloud iam workforce-pools providers update-saml` which allow user to setup
+    filter for extra attributes oauth2 flow.
+*   Added `--clear-extra-attributes-config` flag to
+    `gcloud iam workforce-pools providers update-saml` which allow user to clear
+    extra attributes oauth2 config.
+*   Added `azure-ad-groups-id` field to `--extra-attributes-type` flag to
+    `gcloud iam workforce-pools providers create-saml`,
+    `gcloud iam workforce-pools providers update-saml`,
+    `gcloud iam workforce-pools providers create-oidc`,
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    attributes type for extra attributes oauth2 that fetches azure ad group id
+    property.
+
+### Cloud Key Management Service
+
+*   Promoted `gcloud kms autokey-config` which helps users update and retrieve
+    the Autokey Config.
+*   Promoted `gcloud kms key-handles` which helps users create and retrieve
+    key-handles.
+
+### Cloud Memorystore
+
+* Add `gcloud memorystore locations list` and `gcloud memorystore locations describe` to list and describe locations for Memorystore for Valkey.
+
+### Cloud Pub/Sub
+
+*   Added flags to `gcloud pubsub topics create` for creating Cloud Pub/Sub Azure Event Hubs Import Topics.
+  *   Added `--azure-event-hubs-ingestion-resource-group`
+  *   Added `--azure-event-hubs-ingestion-namespace`
+  *   Added `--azure-event-hubs-ingestion-event-hub`
+  *   Added `--azure-event-hubs-ingestion-client-id`
+  *   Added `--azure-event-hubs-ingestion-tenant-id`
+  *   Added `--azure-event-hubs-ingestion-subscription-id`
+  *   Added `--azure-event-hubs-ingestion-service-account`
+*   Added flags to `gcloud pubsub topics update` for updating Cloud Pub/Sub Azure Event Hubs Import Topics.
+  *   Added `--azure-event-hubs-ingestion-resource-group`
+  *   Added `--azure-event-hubs-ingestion-namespace`
+  *   Added `--azure-event-hubs-ingestion-event-hub`
+  *   Added `--azure-event-hubs-ingestion-client-id`
+  *   Added `--azure-event-hubs-ingestion-tenant-id`
+  *   Added `--azure-event-hubs-ingestion-subscription-id`
+  *   Added `--azure-event-hubs-ingestion-service-account`
+*   Added flags to `gcloud pubsub topics create` for creating Cloud Pub/Sub AWS MSK Import Topics.
+  *   Added `--aws-msk-ingestion-cluster-arn`
+  *   Added `--aws-msk-ingestion-topic`
+  *   Added `--aws-msk-ingestion-aws-role-arn`
+  *   Added `--aws-msk-ingestion-service-account`
+*   Added flags to `gcloud pubsub topics update` for updating Cloud Pub/Sub AWS MSK Import Topics.
+  *   Added `--aws-msk-ingestion-cluster-arn`
+  *   Added `--aws-msk-ingestion-topic`
+  *   Added `--aws-msk-ingestion-aws-role-arn`
+  *   Added `--aws-msk-ingestion-service-account`
+*   Added flags to `gcloud pubsub topics create` for creating Cloud Pub/Sub Confluent Cloud Import Topics.
+  *   Added `--confluent-cloud-ingestion-bootstrap-server`
+  *   Added `--confluent-cloud-ingestion-cluster-id`
+  *   Added `--confluent-cloud-ingestion-topic`
+  *   Added `--confluent-cloud-ingestion-identity-pool-id`
+  *   Added `--confluent-cloud-ingestion-service-account`
+*   Added flags to `gcloud pubsub topics update` for updating Cloud Pub/Sub Confluent Cloud Import Topics.
+  *   Added `--confluent-cloud-ingestion-bootstrap-server`
+  *   Added `--confluent-cloud-ingestion-cluster-id`
+  *   Added `--confluent-cloud-ingestion-topic`
+  *   Added `--confluent-cloud-ingestion-identity-pool-id`
+  *   Added `--confluent-cloud-ingestion-service-account`
+
+### Cloud Run
+
+* Promoted the following source deploy configuration flags from beta to GA to support the GA release of Cloud Run functions: `--build-env-vars`, `--function`, `--base-image`, `--automatic-updates`, `--build-worker-pool`, and `--build-service-account`.
+* Added `--regions`, `--add-regions`, and `--remove-regions` support to `gcloud beta run multi-region-services replace`.
+
+### Cloud SQL
+
+* Added `--tags` flag to `gcloud sql instances create` to support creating instances with tags.
+* Added `--custom-subject-alternative-names` flag to support customer-specified DNS names in SSL certificates for Cloud SQL instances.
+* Added support for using backup names in `gcloud sql backups describe`, `gcloud sql backups delete` and `gcloud sql backups list` and made `--instance` flag as optional.
+* Added `--[no-]enable-final-backup` flag to `gcloud sql instances delete` to create a final backup and retain it after instance deletion.
+* Added `--final-backup-description` flag to `gcloud sql instances delete` to add a description to identify final backup when user opted in to create final backup using `--enable-final-backup`.
+* Added `--final-backup-expiry-time` flag to `gcloud sql instances delete` to specify the exact expiry time of the final backup.
+* Added `--final-backup-retention-days` flag to `gcloud sql instances delete` to specify the number of days from now to retain the final backup.
+* Added new command `gcloud sql instances patch` with flags `--backup-description`, `--ttl-days`, `--expiry_time` to update the final backups.
+* Added support in `gcloud sql backups restore` to restore to new instance with flags: `--assign-ip`, `--network`, `--authorized-networks`, `--enable-google-private-path`, `--availability-type`, `--backup`, `--backup-location`, `--backup-start-time`, `--collation`, `--cpu`, `--database-version`, `--enable-bin-log`, `--enable-point-in-time-recovery`, `--maintenance-release-channel`, `--maintenance-window-day`, `--maintenance-window-hour`, `--deny-maintenance-period-start-date`, `--deny-maintenance-period-end-date`, `--deny-maintenance-period-time`, `--insights-config-query-insights-enabled`, `--insights-config-query-string-length`, `--insights-config-record-application-tags`, `--insights-config-record-client-address`, `--insights-config-query-plans-per-minute`, `--memory`, `--password-policy-min-length`, `--region`, `--zone`, `--secondary-zone`, `--require-ssl`, `--retained-backups-count`, `--retained-transaction-log-days`,`--storage-auto-increase`, `--storage-size`, `--storage-type`, `--tier`, `--t`, `--edition`, `--disk-encryption-key`, `--active-directory-domain`, `--audit-bucket-path`, `--audit-retention-interval`, `--audit-upload-interval`, `--deletion-protection`, `--time-zone`, `--connector-enforcement`, `--timeout`, `--enable-private-service-connect`, `--allowed-psc-projects`, `--enable-data-cache`, `--ssl-mode`, `--enable-google-ml-integration`, `--enable-dataplex-integration`.
+
+### Cloud Storage
+
+* Added `gcloud storage buckets relocate` to GA.
+
+### Cloud Workflows
+
+* Added the `execution-history-level` flag to
+`gcloud workflows deploy|execute|run` to enable execution history level.
+
+### Compute Engine
+
+* Promoted `ADVANCED_PREVIEW` option for `--network-ddos-protection` flag of
+  `gcloud compute security-policies update` to GA.
+* Updated `--interconnect-attachments` support for single interconnect-attachment in `gcloud compute vpn-gateways create`.
+
+### Compute Firewall Policy Mirroring Rules
+
+* Promoted `gcloud compute network-firewall-policies mirroring-rules` to GA.
+* Updated `gcloud compute network get-effective-firewalls` to include mirroring
+rules (in GA).
+* Updated `gcloud compute instances network-interfaces get-effective-firewalls`
+to include mirroring rules (in GA).
+* Updated `gcloud compute network-firewall-policies get-effective-firewalls`
+to include mirroring rules (in GA).
+
+### Developer Connect
+
+* Added flag `--git-proxy-config-enabled` to `gcloud developer-connect connections create` and `gcloud developer-connect connections update` commands.
+
+### GKE Hub
+
+* Fixed issue where `gcloud container fleet policycontroller enable` didn't
+  enable the Policy Controller Feature after membership level enablement.
+* Added a flag `--location` to `gcloud (alpha|beta) container fleet memberships list` to allow list memberships in a specific location.
+
+### Kubernetes Engine
+
+* Updated default value of `--num-nodes` flag in `gcloud container node-pools create` command when `--tpu-topology` is specified for multi-host TPU machine types. The number of nodes will be calculated by `(product of topology)/(# of chips per VM)`.
+
+### Looker
+
+* Promoted `gcloud looker backups` to GA.
+* Promoted `gcloud looker instances restore` to GA.
+
+### Model Armor
+
+* Fixed an issue in `floorsettings update` command where new floorsettings
+  was not being updated.
+
+### Network Security
+
+*   Promoted the `network-security mirroring-endpoint-group-associations` commands which manage mirroring endpoint group associations to GA.
+*   Promoted the `network-security mirroring-endpoint-groups` commands which manage mirroring endpoint groups to GA.
+*   Promoted the `network-security mirroring-deployments` commands which manage mirroring deployments to GA.
+*   Promoted the `network-security mirroring-deployment-groups` commands which manage mirroring deployment groups to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 510.0.0 (2025-02-11)
 
 ### Breaking Changes

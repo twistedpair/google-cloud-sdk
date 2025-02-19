@@ -24,6 +24,34 @@ DOCS_URL = 'https://cloud.google.com/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      ['organizationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL_OPERATIONS = (
+      'organizations.locations.global.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/global/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

@@ -17093,6 +17093,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteRoutePolicy(self, request, global_params=None):
+      r"""Deletes Route Policy.
+
+      Args:
+        request: (ComputeRoutersDeleteRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.deleteRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['policy', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/deleteRoutePolicy',
+        request_field='',
+        request_type_name='ComputeRoutersDeleteRoutePolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the specified Router resource.
 
@@ -17168,6 +17194,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRoutersGetNatMappingInfoRequest',
         response_type_name='VmEndpointNatMappingsList',
+        supports_download=False,
+    )
+
+    def GetRoutePolicy(self, request, global_params=None):
+      r"""Returns specified Route Policy.
+
+      Args:
+        request: (ComputeRoutersGetRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersGetRoutePolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.getRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['policy'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getRoutePolicy',
+        request_field='',
+        request_type_name='ComputeRoutersGetRoutePolicyRequest',
+        response_type_name='RoutersGetRoutePolicyResponse',
         supports_download=False,
     )
 
@@ -17249,6 +17301,58 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListBgpRoutes(self, request, global_params=None):
+      r"""Retrieves a list of router bgp routes available to the specified project.
+
+      Args:
+        request: (ComputeRoutersListBgpRoutesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersListBgpRoutes) The response message.
+      """
+      config = self.GetMethodConfig('ListBgpRoutes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListBgpRoutes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.listBgpRoutes',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['addressFamily', 'destinationPrefix', 'filter', 'maxResults', 'orderBy', 'pageToken', 'peer', 'policyApplied', 'returnPartialSuccess', 'routeType'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/listBgpRoutes',
+        request_field='',
+        request_type_name='ComputeRoutersListBgpRoutesRequest',
+        response_type_name='RoutersListBgpRoutes',
+        supports_download=False,
+    )
+
+    def ListRoutePolicies(self, request, global_params=None):
+      r"""Retrieves a list of router route policy subresources available to the specified project.
+
+      Args:
+        request: (ComputeRoutersListRoutePoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersListRoutePolicies) The response message.
+      """
+      config = self.GetMethodConfig('ListRoutePolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRoutePolicies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.listRoutePolicies',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/listRoutePolicies',
+        request_field='',
+        request_type_name='ComputeRoutersListRoutePoliciesRequest',
+        response_type_name='RoutersListRoutePolicies',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
@@ -17271,6 +17375,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/routers/{router}',
         request_field='routerResource',
         request_type_name='ComputeRoutersPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchRoutePolicy(self, request, global_params=None):
+      r"""Patches Route Policy.
+
+      Args:
+        request: (ComputeRoutersPatchRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.patchRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/patchRoutePolicy',
+        request_field='routePolicy',
+        request_type_name='ComputeRoutersPatchRoutePolicyRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17323,6 +17453,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/routers/{router}',
         request_field='routerResource',
         request_type_name='ComputeRoutersUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def UpdateRoutePolicy(self, request, global_params=None):
+      r"""Updates or creates new Route Policy.
+
+      Args:
+        request: (ComputeRoutersUpdateRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.updateRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/updateRoutePolicy',
+        request_field='routePolicy',
+        request_type_name='ComputeRoutersUpdateRoutePolicyRequest',
         response_type_name='Operation',
         supports_download=False,
     )

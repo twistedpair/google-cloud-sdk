@@ -6474,33 +6474,6 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ReadMetadata(self, request, global_params=None):
-      r"""Retrieves metadata about a view.
-
-      Args:
-        request: (LoggingProjectsLocationsBucketsViewsReadMetadataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ReadViewMetadataResponse) The response message.
-      """
-      config = self.GetMethodConfig('ReadMetadata')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReadMetadata.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}:readMetadata',
-        http_method='GET',
-        method_id='logging.projects.locations.buckets.views.readMetadata',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}:readMetadata',
-        request_field='',
-        request_type_name='LoggingProjectsLocationsBucketsViewsReadMetadataRequest',
-        response_type_name='ReadViewMetadataResponse',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 

@@ -4255,7 +4255,10 @@ class OauthClient(_messages.Message):
       allowed to request during OAuth flows. The following scopes are
       supported: * `https://www.googleapis.com/auth/cloud-platform`: See,
       edit, configure, and delete your Google Cloud data and see the email
-      address for your Google Account.
+      address for your Google Account. * `openid`: The OAuth client can
+      associate you with your personal information on Google Cloud. * `email`:
+      The OAuth client can read a federated identity's email address. *
+      `groups`: The OAuth client can read a federated identity's groups.
     clientId: Output only. The system-generated OauthClient id.
     clientType: Immutable. The type of OauthClient. Either public or private.
       For private clients, the client secret can be managed using the

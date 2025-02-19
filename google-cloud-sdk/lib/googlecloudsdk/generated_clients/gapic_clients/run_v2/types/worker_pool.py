@@ -60,9 +60,9 @@ class CreateWorkerPoolRequest(proto.Message):
             fewer than 50 characters. The name of the worker pool
             becomes {parent}/workerPools/{worker_pool_id}.
         validate_only (bool):
-            Indicates that the request should be
-            validated and default values populated, without
-            persisting the request or creating any
+            Optional. Indicates that the request should
+            be validated and default values populated,
+            without persisting the request or creating any
             resources.
     """
 
@@ -94,16 +94,29 @@ class UpdateWorkerPoolRequest(proto.Message):
         worker_pool (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.WorkerPool):
             Required. The WorkerPool to be updated.
         validate_only (bool):
-            Indicates that the request should be
-            validated and default values populated, without
-            persisting the request or updating any
+            Optional. Indicates that the request should
+            be validated and default values populated,
+            without persisting the request or updating any
             resources.
         allow_missing (bool):
             Optional. If set to true, and if the
             WorkerPool does not exist, it will create a new
-            one. The caller must have 'run.services.create'
-            permissions if this is set to true and the
-            WorkerPool does not exist.
+            one. The caller must have
+            'run.workerpools.create' permissions if this is
+            set to true and the WorkerPool does not exist.
+        force_new_revision (bool):
+            Optional. If set to true, a new revision will
+            be created from the template even if the system
+            doesn't detect any changes from the previously
+            deployed revision.
+
+            This may be useful for cases where the
+            underlying resources need to be recreated or
+            reinitialized. For example if the image is
+            specified by label, but the underlying image
+            digest has changed) or if the container performs
+            deployment initialization work that needs to be
+            performed again.
     """
 
     update_mask: field_mask_pb2.FieldMask = proto.Field(
@@ -123,6 +136,10 @@ class UpdateWorkerPoolRequest(proto.Message):
     allow_missing: bool = proto.Field(
         proto.BOOL,
         number=4,
+    )
+    force_new_revision: bool = proto.Field(
+        proto.BOOL,
+        number=5,
     )
 
 
@@ -217,8 +234,8 @@ class DeleteWorkerPoolRequest(proto.Message):
             projects/{project}/locations/{location}/workerPools/{worker_pool},
             where {project} can be project id or number.
         validate_only (bool):
-            Indicates that the request should be
-            validated without actually deleting any
+            Optional. Indicates that the request should
+            be validated without actually deleting any
             resources.
         etag (str):
             A system-generated fingerprint for this
@@ -336,8 +353,8 @@ class WorkerPool(proto.Message):
             .. raw:: html
 
                 <p>
-                For example, if ALPHA is provided as input, but only BETA and GA-level
-                features are used, this field will be BETA on output.
+                 For example, if ALPHA is provided as input, but only BETA and GA-level
+                 features are used, this field will be BETA on output.
         binary_authorization (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BinaryAuthorization):
             Optional. Settings for the Binary
             Authorization feature.

@@ -197,69 +197,6 @@ class ApproveRedactionOperationResponse(_messages.Message):
   r"""Response type for ApproveRedaction method."""
 
 
-class AuditConfig(_messages.Message):
-  r"""Specifies the audit configuration for a service. The configuration
-  determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.If there are AuditConfigs for both allServices and a
-  specific service, the union of the two AuditConfigs is used for that
-  service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.Example Policy with
-  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
-  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
-  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
-  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
-  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
-  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
-
-  Fields:
-    auditLogConfigs: The configuration for logging of each type of permission.
-    service: Specifies a service that will be enabled for audit logging. For
-      example, storage.googleapis.com, cloudsql.googleapis.com. allServices is
-      a special value that covers all services.
-  """
-
-  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
-
-
-class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example: {
-  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
-  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
-  DATA_READ logging.
-
-  Enums:
-    LogTypeValueValuesEnum: The log type that this config enables.
-
-  Fields:
-    exemptedMembers: Specifies the identities that do not cause logging for
-      this type of permission. Follows the same format of Binding.members.
-    logType: The log type that this config enables.
-  """
-
-  class LogTypeValueValuesEnum(_messages.Enum):
-    r"""The log type that this config enables.
-
-    Values:
-      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
-      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
-      DATA_WRITE: Data writes. Example: CloudSQL Users create
-      DATA_READ: Data reads. Example: CloudSQL Users list
-    """
-    LOG_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    DATA_WRITE = 2
-    DATA_READ = 3
-
-  exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
-
-
 class BigQueryDataset(_messages.Message):
   r"""Describes a BigQuery dataset that was created by a link.
 
@@ -3064,7 +3001,7 @@ class LoggingBillingAccountsLocationsBucketsViewsCreateRequest(_messages.Message
       For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. A client-assigned identifier such as "my-view".
       Identifiers are limited to 100 characters and can include only letters,
-      digits, underscores, hyphens, and periods.
+      digits, underscores, and hyphens.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -4109,7 +4046,7 @@ class LoggingFoldersLocationsBucketsViewsCreateRequest(_messages.Message):
       For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. A client-assigned identifier such as "my-view".
       Identifiers are limited to 100 characters and can include only letters,
-      digits, underscores, hyphens, and periods.
+      digits, underscores, and hyphens.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -5126,7 +5063,7 @@ class LoggingLocationsBucketsViewsCreateRequest(_messages.Message):
       For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. A client-assigned identifier such as "my-view".
       Identifiers are limited to 100 characters and can include only letters,
-      digits, underscores, hyphens, and periods.
+      digits, underscores, and hyphens.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -5768,7 +5705,7 @@ class LoggingOrganizationsLocationsBucketsViewsCreateRequest(_messages.Message):
       For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. A client-assigned identifier such as "my-view".
       Identifiers are limited to 100 characters and can include only letters,
-      digits, underscores, hyphens, and periods.
+      digits, underscores, and hyphens.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -6901,7 +6838,7 @@ class LoggingProjectsLocationsBucketsViewsCreateRequest(_messages.Message):
       For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. A client-assigned identifier such as "my-view".
       Identifiers are limited to 100 characters and can include only letters,
-      digits, underscores, hyphens, and periods.
+      digits, underscores, and hyphens.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -7023,17 +6960,6 @@ class LoggingProjectsLocationsBucketsViewsPatchRequest(_messages.Message):
   logView = _messages.MessageField('LogView', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class LoggingProjectsLocationsBucketsViewsReadMetadataRequest(_messages.Message):
-  r"""A LoggingProjectsLocationsBucketsViewsReadMetadataRequest object.
-
-  Fields:
-    name: Required. The name of the view to get metadata for.For example: "pro
-      jects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID"
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class LoggingProjectsLocationsBucketsViewsSetIamPolicyRequest(_messages.Message):
@@ -8679,7 +8605,6 @@ class Policy(_messages.Message):
   documentation (https://cloud.google.com/iam/docs/).
 
   Fields:
-    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of members, or principals, with a role.
       Optionally, may specify a condition that determines how and when the
       bindings are applied. Each of the bindings must contain at least one
@@ -8717,10 +8642,9 @@ class Policy(_messages.Message):
       (https://cloud.google.com/iam/help/conditions/resource-policies).
   """
 
-  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
-  bindings = _messages.MessageField('Binding', 2, repeated=True)
-  etag = _messages.BytesField(3)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class ProjectedField(_messages.Message):
@@ -8731,10 +8655,7 @@ class ProjectedField(_messages.Message):
     OperationValueValuesEnum: The setting for the field.
 
   Fields:
-    aggregationFunction: The aggregation function for the field. This can be
-      one of: - SUM - MAX - MIN - COUNT - COUNT_DISTINCT -
-      COUNT_DISTINCT_APPROXIMATE - AVERAGE - PERCENTILE - PERCENTILE_99 -
-      PERCENTILE_95
+    aggregationFunction: The aggregation function for the field.
     alias: The alias name for the field. Valid alias examples are: - single
       word alias: TestAlias - numbers in an alias: Alias123 - multi word alias
       should be enclosed in quotes: "Test Alias" Invalid alias examples are: -
@@ -8753,6 +8674,13 @@ class ProjectedField(_messages.Message):
       REGEXP_EXTRACT(JSON_VALUE(field),"request(.*(autoscaler.*)$)")in SQL. -
       "\(test_value\)$" will be converted to
       REGEXP_EXTRACT(JSON_VALUE(field),"request(\(test_value\)$)") in SQL.
+    truncationGranularity: The truncation granularity when grouping by a
+      time/date field. This will be used to truncate the field to the
+      granularity specified. This can be either a date or a time granularity
+      found at https://cloud.google.com/bigquery/docs/reference/standard-
+      sql/timestamp_functions#timestamp_trunc_granularity_date and
+      https://cloud.google.com/bigquery/docs/reference/standard-
+      sql/timestamp_functions#timestamp_trunc_granularity_time respectively.
   """
 
   class OperationValueValuesEnum(_messages.Enum):
@@ -8769,12 +8697,13 @@ class ProjectedField(_messages.Message):
     GROUP_BY = 2
     AGGREGATE = 3
 
-  aggregationFunction = _messages.StringField(1)
+  aggregationFunction = _messages.MessageField('QueryStepAggregation', 1)
   alias = _messages.StringField(2)
   cast = _messages.StringField(3)
   field = _messages.StringField(4)
   operation = _messages.EnumField('OperationValueValuesEnum', 5)
   regexExtraction = _messages.StringField(6)
+  truncationGranularity = _messages.StringField(7)
 
 
 class QueryBuilderConfig(_messages.Message):
@@ -9365,16 +9294,6 @@ class ReadQueryResultsRequest(_messages.Message):
   readMetadataOnly = _messages.BooleanField(5)
   resourceNames = _messages.StringField(6, repeated=True)
   timeout = _messages.StringField(7)
-
-
-class ReadViewMetadataResponse(_messages.Message):
-  r"""The response data from ReadViewMetadata.
-
-  Fields:
-    viewMetadata: The metadata for the view.
-  """
-
-  viewMetadata = _messages.MessageField('ViewMetadata', 1)
 
 
 class RecentQuery(_messages.Message):
@@ -10212,50 +10131,6 @@ class ValueThreshold(_messages.Message):
 
   trigger = _messages.MessageField('AlertingTrigger', 1)
   valueColumn = _messages.StringField(2)
-
-
-class ViewMetadata(_messages.Message):
-  r"""A collection of metadata about a view.
-
-  Messages:
-    TableSchemaValue: The view schema in (column name, type) format.
-
-  Fields:
-    creationTime: The creation timestamp of the view.
-    lastModifiedTime: The last-modified timestamp of the view.
-    location: The geographic location of the view's underlying table.
-    tableSchema: The view schema in (column name, type) format.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TableSchemaValue(_messages.Message):
-    r"""The view schema in (column name, type) format.
-
-    Messages:
-      AdditionalProperty: An additional property for a TableSchemaValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type TableSchemaValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TableSchemaValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  creationTime = _messages.StringField(1)
-  lastModifiedTime = _messages.StringField(2)
-  location = _messages.StringField(3)
-  tableSchema = _messages.MessageField('TableSchemaValue', 4)
 
 
 class WriteLogEntriesRequest(_messages.Message):

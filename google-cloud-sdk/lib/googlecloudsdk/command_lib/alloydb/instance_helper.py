@@ -263,6 +263,11 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
   instance_resource.clientConnectionConfig = ClientConnectionConfig(
       alloydb_messages, args.ssl_mode, args.require_connectors
   )
+  instance_resource.databaseFlags = labels_util.ParseCreateArgs(
+      args,
+      alloydb_messages.Instance.DatabaseFlagsValue,
+      labels_dest='database_flags',
+  )
   instance_resource.networkConfig = NetworkConfig(
       alloydb_messages=alloydb_messages,
       assign_inbound_public_ip=args.assign_inbound_public_ip,

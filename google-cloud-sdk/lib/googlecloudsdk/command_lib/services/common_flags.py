@@ -184,13 +184,12 @@ def add_key_undelete_args(parser):
   _key_string_flag(undelete_set_group)
 
 
-def validate_only_args(parser):
+def validate_only_args(parser, suffix='to act on'):
   base.Argument(
       '--validate-only',
       action='store_true',
       help=(
-          'If set, the action will be validated and result will be preview but'
-          ' not exceuted.'
+          "Validate the {} action, but don't actually perform it".format(suffix)
       ),
   ).AddToParser(parser)
 

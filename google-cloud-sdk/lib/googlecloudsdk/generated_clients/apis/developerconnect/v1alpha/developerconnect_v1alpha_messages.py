@@ -14,6 +14,68 @@ from apitools.base.py import extra_types
 package = 'developerconnect'
 
 
+class BitbucketCloudConfig(_messages.Message):
+  r"""Configuration for connections to an instance of Bitbucket Cloud.
+
+  Fields:
+    authorizerCredential: Required. An access token with the minimum
+      `repository`, `pullrequest` and `webhook` scope access. It can either be
+      a workspace, project or repository access token. This is needed to
+      create webhooks. It's recommended to use a system account to generate
+      these credentials.
+    readAuthorizerCredential: Required. An access token with the minimum
+      `repository` access. It can either be a workspace, project or repository
+      access token. It's recommended to use a system account to generate the
+      credentials.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret used to verify webhook events, formatted
+      as `projects/*/secrets/*/versions/*`. This is used to validate and
+      create webhooks.
+    workspace: Required. The Bitbucket Cloud Workspace ID to be connected to
+      Google Cloud Platform.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 2)
+  webhookSecretSecretVersion = _messages.StringField(3)
+  workspace = _messages.StringField(4)
+
+
+class BitbucketDataCenterConfig(_messages.Message):
+  r"""Configuration for connections to an instance of Bitbucket Data Center.
+
+  Fields:
+    authorizerCredential: Required. An http access token with the minimum
+      `Repository admin` scope access. This is needed to create webhooks. It's
+      recommended to use a system account to generate these credentials.
+    hostUri: Required. The URI of the Bitbucket Data Center host this
+      connection is for.
+    readAuthorizerCredential: Required. An http access token with the minimum
+      `Repository read` access. It's recommended to use a system account to
+      generate the credentials.
+    serverVersion: Output only. Version of the Bitbucket Data Center server
+      running on the `host_uri`.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a Bitbucket Data Center instance. This
+      should only be set if the Bitbucket Data Center is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the Bitbucket Data Center will be made over the public internet.
+    sslCaCertificate: Optional. SSL certificate authority to trust when making
+      requests to Bitbucket Data Center.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret used to verify webhook events, formatted
+      as `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  hostUri = _messages.StringField(2)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
+  serverVersion = _messages.StringField(4)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 5)
+  sslCaCertificate = _messages.StringField(6)
+  webhookSecretSecretVersion = _messages.StringField(7)
+
+
 class Connection(_messages.Message):
   r"""Message describing Connection object
 
@@ -25,6 +87,10 @@ class Connection(_messages.Message):
   Fields:
     annotations: Optional. Allows clients to store small amounts of arbitrary
       data.
+    bitbucketCloudConfig: Configuration for connections to an instance of
+      Bitbucket Clouds.
+    bitbucketDataCenterConfig: Configuration for connections to an instance of
+      Bitbucket Data Center.
     createTime: Output only. [Output only] Create timestamp
     cryptoKeyConfig: Optional. The crypto key configuration. This field is
       used by the Customer-Managed Encryption Keys (CMEK) feature.
@@ -35,6 +101,9 @@ class Connection(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    gitProxyConfig: Optional. Configuration for the git proxy feature.
+      Enabling the git proxy allows clients to perform git operations on the
+      repositories linked in the connection.
     githubConfig: Configuration for connections to github.com.
     githubEnterpriseConfig: Configuration for connections to an instance of
       GitHub Enterprise.
@@ -101,21 +170,24 @@ class Connection(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 3)
-  deleteTime = _messages.StringField(4)
-  disabled = _messages.BooleanField(5)
-  etag = _messages.StringField(6)
-  githubConfig = _messages.MessageField('GitHubConfig', 7)
-  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 8)
-  gitlabConfig = _messages.MessageField('GitLabConfig', 9)
-  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 10)
-  installationState = _messages.MessageField('InstallationState', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  reconciling = _messages.BooleanField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  bitbucketCloudConfig = _messages.MessageField('BitbucketCloudConfig', 2)
+  bitbucketDataCenterConfig = _messages.MessageField('BitbucketDataCenterConfig', 3)
+  createTime = _messages.StringField(4)
+  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 5)
+  deleteTime = _messages.StringField(6)
+  disabled = _messages.BooleanField(7)
+  etag = _messages.StringField(8)
+  gitProxyConfig = _messages.MessageField('GitProxyConfig', 9)
+  githubConfig = _messages.MessageField('GitHubConfig', 10)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 11)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 12)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 13)
+  installationState = _messages.MessageField('InstallationState', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  reconciling = _messages.BooleanField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class CryptoKeyConfig(_messages.Message):
@@ -393,6 +465,37 @@ class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksListRequest(
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketCloudWebhookRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessB
+  itbucketCloudWebhookRequest object.
+
+  Fields:
+    name: Required. The GitRepositoryLink where the webhook will be received.
+      Format: `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+    processBitbucketCloudWebhookRequest: A ProcessBitbucketCloudWebhookRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  processBitbucketCloudWebhookRequest = _messages.MessageField('ProcessBitbucketCloudWebhookRequest', 2)
+
+
+class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketDataCenterWebhookRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessB
+  itbucketDataCenterWebhookRequest object.
+
+  Fields:
+    name: Required. The GitRepositoryLink where the webhook will be received.
+      Format: `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+    processBitbucketDataCenterWebhookRequest: A
+      ProcessBitbucketDataCenterWebhookRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  processBitbucketDataCenterWebhookRequest = _messages.MessageField('ProcessBitbucketDataCenterWebhookRequest', 2)
 
 
 class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessGitLabEnterpriseWebhookRequest(_messages.Message):
@@ -730,6 +833,18 @@ class GitLabEnterpriseConfig(_messages.Message):
   webhookSecretSecretVersion = _messages.StringField(7)
 
 
+class GitProxyConfig(_messages.Message):
+  r"""The git proxy configuration.
+
+  Fields:
+    enabled: Optional. Setting this to true allows the git proxy to be used
+      for performing git operations on the repositories linked in the
+      connection.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GitRepositoryLink(_messages.Message):
   r"""Message describing the GitRepositoryLink object
 
@@ -747,6 +862,9 @@ class GitRepositoryLink(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    gitProxyUri: Output only. URI to access the linked repository through the
+      Git Proxy. This field is only populated if the git proxy is enabled for
+      the connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. Resource name of the repository, in the format
       `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
@@ -813,12 +931,13 @@ class GitRepositoryLink(_messages.Message):
   createTime = _messages.StringField(3)
   deleteTime = _messages.StringField(4)
   etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  webhookId = _messages.StringField(11)
+  gitProxyUri = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  webhookId = _messages.StringField(12)
 
 
 class HttpBody(_messages.Message):
@@ -1127,6 +1246,28 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class ProcessBitbucketCloudWebhookRequest(_messages.Message):
+  r"""RPC request object accepted by the ProcessBitbucketCloudWebhook RPC
+  method.
+
+  Fields:
+    body: Required. HTTP request body.
+  """
+
+  body = _messages.MessageField('HttpBody', 1)
+
+
+class ProcessBitbucketDataCenterWebhookRequest(_messages.Message):
+  r"""RPC request object accepted by the ProcessBitbucketDataCenterWebhook RPC
+  method.
+
+  Fields:
+    body: Required. HTTP request body.
+  """
+
+  body = _messages.MessageField('HttpBody', 1)
 
 
 class ProcessGitHubEnterpriseWebhookRequest(_messages.Message):

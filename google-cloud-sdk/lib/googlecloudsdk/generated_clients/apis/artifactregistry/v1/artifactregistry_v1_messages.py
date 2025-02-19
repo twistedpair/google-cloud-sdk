@@ -3097,7 +3097,6 @@ class RemoteRepositoryConfig(_messages.Message):
     npmRepository: Specific settings for an Npm remote repository.
     pythonRepository: Specific settings for a Python remote repository.
     remoteType: A RemoteTypeValueValuesEnum attribute.
-    rubyRepository: Specific settings for a Ruby remote repository.
     serviceDirectoryConfig: A ServiceDirectoryConfig attribute.
     upstreamCredentials: Optional. The credentials used to access the remote
       repository.
@@ -3127,10 +3126,9 @@ class RemoteRepositoryConfig(_messages.Message):
   npmRepository = _messages.MessageField('NpmRepository', 9)
   pythonRepository = _messages.MessageField('PythonRepository', 10)
   remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 11)
-  rubyRepository = _messages.MessageField('RubyRepository', 12)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 13)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 14)
-  yumRepository = _messages.MessageField('YumRepository', 15)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 12)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 13)
+  yumRepository = _messages.MessageField('YumRepository', 14)
 
 
 class Repository(_messages.Message):
@@ -3331,30 +3329,6 @@ class Repository(_messages.Message):
   updateTime = _messages.StringField(20)
   virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 21)
   vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 22)
-
-
-class RubyRepository(_messages.Message):
-  r"""Configuration for a Ruby remote repository.
-
-  Enums:
-    PublicRepositoryValueValuesEnum: One of the publicly available Ruby
-      repositories.
-
-  Fields:
-    publicRepository: One of the publicly available Ruby repositories.
-  """
-
-  class PublicRepositoryValueValuesEnum(_messages.Enum):
-    r"""One of the publicly available Ruby repositories.
-
-    Values:
-      PUBLIC_REPOSITORY_UNSPECIFIED: Unspecified repository
-      RUBYGEMS: RubyGems.
-    """
-    PUBLIC_REPOSITORY_UNSPECIFIED = 0
-    RUBYGEMS = 1
-
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
 
 
 class SbomConfig(_messages.Message):

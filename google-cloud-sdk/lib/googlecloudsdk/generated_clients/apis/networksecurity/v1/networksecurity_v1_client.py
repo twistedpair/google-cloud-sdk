@@ -2493,7 +2493,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MirroringDeployment in a given project and location.
+      r"""Creates a deployment in a given project and location. See https://google.aip.dev/133.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringDeploymentsCreateRequest) input message
@@ -2520,7 +2520,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MirroringDeployment.
+      r"""Deletes a deployment. See https://google.aip.dev/135.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringDeploymentsDeleteRequest) input message
@@ -2547,7 +2547,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MirroringDeployment.
+      r"""Gets a specific deployment. See https://google.aip.dev/131.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringDeploymentsGetRequest) input message
@@ -2574,7 +2574,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MirroringDeployments in a given project and location.
+      r"""Lists deployments in a given project and location. See https://google.aip.dev/132.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringDeploymentsListRequest) input message
@@ -2601,7 +2601,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a single MirroringDeployment.
+      r"""Updates a deployment. See https://google.aip.dev/134.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest) input message
@@ -2638,7 +2638,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MirroringEndpointGroupAssociation in a given project and location.
+      r"""Creates an association in a given project and location. See https://google.aip.dev/133.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsCreateRequest) input message
@@ -2665,7 +2665,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MirroringEndpointGroupAssociation.
+      r"""Deletes a single association. See https://google.aip.dev/135.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsDeleteRequest) input message
@@ -2692,7 +2692,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MirroringEndpointGroupAssociation.
+      r"""Gets a specific association. See https://google.aip.dev/131.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsGetRequest) input message
@@ -2719,7 +2719,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MirroringEndpointGroupAssociations in a given project and location.
+      r"""Lists associations in a given project and location. See https://google.aip.dev/132.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsListRequest) input message
@@ -2746,7 +2746,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a single MirroringEndpointGroupAssociation.
+      r"""Updates an association. See https://google.aip.dev/134.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchRequest) input message
@@ -2783,7 +2783,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MirroringEndpointGroup in a given project and location.
+      r"""Creates an endpoint group in a given project and location. See https://google.aip.dev/133.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest) input message
@@ -2810,7 +2810,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MirroringEndpointGroup.
+      r"""Deletes an endpoint group. See https://google.aip.dev/135.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsDeleteRequest) input message
@@ -2837,7 +2837,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MirroringEndpointGroup.
+      r"""Gets a specific endpoint group. See https://google.aip.dev/131.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsGetRequest) input message
@@ -2864,7 +2864,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MirroringEndpointGroups in a given project and location.
+      r"""Lists endpoint groups in a given project and location. See https://google.aip.dev/132.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsListRequest) input message
@@ -2891,7 +2891,7 @@ class NetworksecurityV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a single MirroringEndpointGroup.
+      r"""Updates an endpoint group. See https://google.aip.dev/134.
 
       Args:
         request: (NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest) input message

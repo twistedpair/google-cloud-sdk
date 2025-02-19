@@ -96,6 +96,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SAAS = (
+      'projects.locations.saas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/saas/{saasId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SAASTYPES = (
       'projects.locations.saasTypes',
       '{+name}',
@@ -103,17 +113,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/saasTypes/'
               '{saasTypesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_SAASES = (
-      'projects.locations.saases',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/saases/'
-              '{saasesId}',
       },
       ['name'],
       True

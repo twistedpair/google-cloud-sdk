@@ -869,7 +869,9 @@ class Cluster(_messages.Message):
       disabled. Alpha enabled clusters are automatically deleted thirty days
       after creation.
     enableTpu: Enable the ability to use Cloud TPUs in this cluster. This
-      field is deprecated, use tpu_config.enabled instead.
+      field is deprecated, use tpu_config.enabled instead. This field is
+      deprecated due to the deprecation of 2VM TPU. The end of life date for
+      2VM TPU is 2025-04-25.
     endpoint: Output only. The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`. See the `masterAuth` property of
@@ -1042,10 +1044,14 @@ class Cluster(_messages.Message):
       [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
       the cluster is connected. On output this shows the subnetwork ID instead
       of the name.
-    tpuConfig: Configuration for Cloud TPU support;
+    tpuConfig: Configuration for Cloud TPU support; This field is deprecated
+      due to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
+      2025-04-25.
     tpuIpv4CidrBlock: Output only. The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
-      Domain_Routing) notation (e.g. `1.2.3.4/29`).
+      Domain_Routing) notation (e.g. `1.2.3.4/29`). This field is deprecated
+      due to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
+      2025-04-25.
     userManagedKeysConfig: The Custom keys configuration for the cluster.
     verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
@@ -1514,7 +1520,9 @@ class ClusterUpdate(_messages.Message):
     desiredStackType: The desired stack type of the cluster. If a stack type
       is provided and does not match the current stack type of the cluster,
       update will attempt to change the stack type to the new type.
-    desiredTpuConfig: The desired Cloud TPU configuration.
+    desiredTpuConfig: The desired Cloud TPU configuration. This field is
+      deprecated due to the deprecation of 2VM TPU. The end of life date for
+      2VM TPU is 2025-04-25.
     desiredUserManagedKeysConfig: The desired user managed keys config for the
       cluster.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
@@ -7815,7 +7823,7 @@ class StatusCondition(_messages.Message):
         system logic error.
       CLOUD_KMS_KEY_ERROR: Unable to perform an encrypt operation against the
         CloudKMS key used for etcd level encryption.
-      CA_EXPIRING: Cluster CA is expiring soon. More codes TBA
+      CA_EXPIRING: Cluster CA is expiring soon.
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
@@ -7879,7 +7887,8 @@ class TopologyManager(_messages.Message):
 
 
 class TpuConfig(_messages.Message):
-  r"""Configuration for Cloud TPU.
+  r"""Configuration for Cloud TPU. This message is deprecated due to the
+  deprecation of 2VM TPU. The end of life date for 2VM TPU is 2025-04-25.
 
   Fields:
     enabled: Whether Cloud TPU integration is enabled or not.
@@ -8260,9 +8269,13 @@ class UpgradeInfoEvent(_messages.Message):
       END_OF_SUPPORT: END_OF_SUPPORT indicates GKE version reaches end of
         support, check standard_support_end_time and extended_support_end_time
         for more details.
+      COS_MILESTONE_VERSION_UPDATE: COS_MILESTONE_VERSION_UPDATE indicates
+        that the COS node image will update COS milestone version for new
+        patch versions starting with the one in the description.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     END_OF_SUPPORT = 1
+    COS_MILESTONE_VERSION_UPDATE = 2
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
     r"""The resource type associated with the upgrade.

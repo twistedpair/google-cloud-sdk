@@ -816,10 +816,12 @@ workforce_pool_provider:
     api_field: workforcePoolProvider.extraAttributesOauth2Client.queryParameters.filter
     arg_name: extra-attributes-filter
     help_text: |-
-      The filter used to request specific records from IdP. In case of attributes type as
-      AZURE_AD_GROUPS_MAIL, it represents the filter used to request specific groups for users from
-      IdP. By default all the groups associated with the user are fetched. The groups that are used
-      should be mail enabled and security enabled. See
+      The filter used to request specific records from IdP. When used with the attributes type
+      azure-ad-groups-mail or azure-ad-groups-id, the filter requests specific groups associated
+      with a user from the IdP. By default all of the groups associated with the user are fetched.
+      When used with the attributes type azure-ad-groups-mail, the groups that are used should be
+      security and mail enabled. When used with the attributes type azure-ad-groups-id, the groups
+      that are used should be security enabled. See
       https://learn.microsoft.com/en-us/graph/search-query-parameter for more details.
 
   clear_extra_attributes_config: &clear_extra_attributes_config
@@ -830,9 +832,8 @@ workforce_pool_provider:
     help_text: |-
       Clear the extra attributes configuration
 
-  hidden_create_extra_attributes_group:
+  create_extra_attributes_group:
     group:
-      hidden: true
       params:
       - <<: *extra_attributes_issuer_uri
         required: true
@@ -853,9 +854,8 @@ workforce_pool_provider:
       - *extra_attributes_type
       - *extra_attributes_filter
 
-  hidden_clearable_extra_attributes_group:
+  clearable_extra_attributes_group:
     group:
-      hidden: true
       mutex: true
       params:
       - *clear_extra_attributes_config

@@ -37,10 +37,6 @@ class AutonomousDatabase(_messages.Message):
   r"""Details of the Autonomous Database resource. https://docs.oracle.com/en-
   us/iaas/api/#/en/database/20160918/AutonomousDatabase/
 
-  Enums:
-    NetworkAccessTypeValueValuesEnum: Required. The network access type of the
-      Autonomous Database.
-
   Messages:
     LabelsValue: Optional. The labels or tags associated with the Autonomous
       Database.
@@ -68,8 +64,6 @@ class AutonomousDatabase(_messages.Message):
     network: Required. The name of the VPC network used by the Autonomous
       Database in the following format:
       projects/{project}/global/networks/{network}
-    networkAccessType: Required. The network access type of the Autonomous
-      Database.
     peerAutonomousDatabases: Output only. The peer Autonomous Database names
       of the given Autonomous Database.
     properties: Optional. The properties of the Autonomous Database.
@@ -78,20 +72,6 @@ class AutonomousDatabase(_messages.Message):
       configured while creating the Peer Autonomous Database and can't be
       updated after creation.
   """
-
-  class NetworkAccessTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The network access type of the Autonomous Database.
-
-    Values:
-      NETWORK_ACCESS_TYPE_UNSPECIFIED: Default unspecified value.
-      EVERYWHERE: Public network access.
-      ALLOWED_IPS: Access from allowed IP addresses.
-      PRIVATE: Private network access.
-    """
-    NETWORK_ACCESS_TYPE_UNSPECIFIED = 0
-    EVERYWHERE = 1
-    ALLOWED_IPS = 2
-    PRIVATE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -127,10 +107,9 @@ class AutonomousDatabase(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
   network = _messages.StringField(10)
-  networkAccessType = _messages.EnumField('NetworkAccessTypeValueValuesEnum', 11)
-  peerAutonomousDatabases = _messages.StringField(12, repeated=True)
-  properties = _messages.MessageField('AutonomousDatabaseProperties', 13)
-  sourceConfig = _messages.MessageField('SourceConfig', 14)
+  peerAutonomousDatabases = _messages.StringField(11, repeated=True)
+  properties = _messages.MessageField('AutonomousDatabaseProperties', 12)
+  sourceConfig = _messages.MessageField('SourceConfig', 13)
 
 
 class AutonomousDatabaseApex(_messages.Message):
@@ -1764,12 +1743,15 @@ class Entitlement(_messages.Message):
       ACCOUNT_NOT_ACTIVE: Account is linked but not active.
       ACTIVE: Entitlement and Account are active.
       ACCOUNT_SUSPENDED: Account is suspended.
+      NOT_APPROVED_IN_PRIVATE_MARKETPLACE: Entitlement is not approved in
+        private marketplace.
     """
     STATE_UNSPECIFIED = 0
     ACCOUNT_NOT_LINKED = 1
     ACCOUNT_NOT_ACTIVE = 2
     ACTIVE = 3
     ACCOUNT_SUSPENDED = 4
+    NOT_APPROVED_IN_PRIVATE_MARKETPLACE = 5
 
   cloudAccountDetails = _messages.MessageField('CloudAccountDetails', 1)
   entitlementId = _messages.StringField(2)
@@ -1990,6 +1972,32 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListOdbNetworksResponse(_messages.Message):
+  r"""The response for `OdbNetwork.List`.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    odbNetworks: The list of ODB Networks.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  odbNetworks = _messages.MessageField('OdbNetwork', 2, repeated=True)
+
+
+class ListOdbSubnetsResponse(_messages.Message):
+  r"""The response for `OdbSubnet.List`.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    odbSubnets: The list of ODB Subnets.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  odbSubnets = _messages.MessageField('OdbSubnet', 2, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -2243,6 +2251,158 @@ class MaintenanceWindow(_messages.Message):
   patchingMode = _messages.EnumField('PatchingModeValueValuesEnum', 7)
   preference = _messages.EnumField('PreferenceValueValuesEnum', 8)
   weeksOfMonth = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
+
+
+class OdbNetwork(_messages.Message):
+  r"""Represents OdbNetwork resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the ODB Network.
+
+  Messages:
+    LabelsValue: Optional. Labels or tags associated with the resource.
+
+  Fields:
+    createTime: Output only. The date and time that the OdbNetwork was
+      created.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the OdbNetwork.
+    labels: Optional. Labels or tags associated with the resource.
+    name: Identifier. The name of the OdbNetwork resource in the following
+      format: projects/{project}/locations/{region}/odbNetworks/{odb_network}
+    network: Required. The name of the VPC network in the following format:
+      projects/{project}/global/networks/{network}
+    state: Output only. State of the ODB Network.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the ODB Network.
+
+    Values:
+      STATE_UNSPECIFIED: Default unspecified value.
+      PROVISIONING: Indicates that the resource is in provisioning state.
+      AVAILABLE: Indicates that the resource is in available state.
+      TERMINATING: Indicates that the resource is in terminating state.
+      FAILED: Indicates that the resource is in failed state.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    TERMINATING = 3
+    FAILED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels or tags associated with the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  entitlementId = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class OdbSubnet(_messages.Message):
+  r"""Represents OdbSubnet resource.
+
+  Enums:
+    PurposeValueValuesEnum: Required. Purpose of the subnet.
+    StateValueValuesEnum: Output only. State of the ODB Subnet.
+
+  Messages:
+    LabelsValue: Optional. Labels or tags associated with the resource.
+
+  Fields:
+    cidrRange: Required. The CIDR range of the subnet.
+    createTime: Output only. The date and time that the OdbNetwork was
+      created.
+    labels: Optional. Labels or tags associated with the resource.
+    name: Identifier. The name of the OdbSubnet resource in the following
+      format: projects/{project}/locations/{location}/odbNetworks/{odb_network
+      }/odbSubnets/{odb_subnet}
+    purpose: Required. Purpose of the subnet.
+    state: Output only. State of the ODB Subnet.
+  """
+
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""Required. Purpose of the subnet.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Default unspecified value.
+      CLIENT_SUBNET: Subnet to be used for client connections.
+      BACKUP_SUBNET: Subnet to be used for backup.
+    """
+    PURPOSE_UNSPECIFIED = 0
+    CLIENT_SUBNET = 1
+    BACKUP_SUBNET = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the ODB Subnet.
+
+    Values:
+      STATE_UNSPECIFIED: Default unspecified value.
+      PROVISIONING: Indicates that the resource is in provisioning state.
+      AVAILABLE: Indicates that the resource is in available state.
+      TERMINATING: Indicates that the resource is in terminating state.
+      FAILED: Indicates that the resource is in failed state.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    TERMINATING = 3
+    FAILED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels or tags associated with the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cidrRange = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class Operation(_messages.Message):
@@ -3068,6 +3228,169 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksCreateRequest object.
+
+  Fields:
+    odbNetwork: A OdbNetwork resource to be passed as the request body.
+    odbNetworkId: Required. The ID of the OdbNetwork to create. This value is
+      restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$) and must be a maximum
+      of 63 characters in length. The value must start with a letter and end
+      with a letter or a number.
+    parent: Required. The parent value for the OdbNetwork in the following
+      format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  odbNetwork = _messages.MessageField('OdbNetwork', 1)
+  odbNetworkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the resource in the following format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksGetRequest object.
+
+  Fields:
+    name: Required. The name of the OdbNetwork in the following format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 ODB Networks will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for the ODB Network in the following
+      format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsCreateRequest
+  object.
+
+  Fields:
+    odbSubnet: A OdbSubnet resource to be passed as the request body.
+    odbSubnetId: Required. The ID of the OdbSubnet to create. This value is
+      restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$) and must be a maximum
+      of 63 characters in length. The value must start with a letter and end
+      with a letter or a number.
+    parent: Required. The parent value for the OdbSubnet in the following
+      format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  odbSubnet = _messages.MessageField('OdbSubnet', 1)
+  odbSubnetId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the resource in the following format: projects
+      /{project}/locations/{region}/odbNetworks/{odb_network}/odbSubnets/{odb_
+      subnet}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsGetRequest object.
+
+  Fields:
+    name: Required. The name of the OdbSubnet in the following format: project
+      s/{project}/locations/{location}/odbNetworks/{odb_network}/odbSubnets/{o
+      db_subnet}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 ODB Networks will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for the OdbSubnet in the following
+      format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class OracledatabaseProjectsLocationsOperationsCancelRequest(_messages.Message):

@@ -257,6 +257,9 @@ def iam_map(
   final_map = collections.defaultdict(set)
   for role in _AR_ROLES:
     members = role_to_members[role]
+    # Don't return deleted members. They show up in the old policies but we
+    # can't copy them.
+    members = {m for m in members if not m.startswith("deleted:")}
     members.difference_update(upgraded_members)
     if not members:
       continue

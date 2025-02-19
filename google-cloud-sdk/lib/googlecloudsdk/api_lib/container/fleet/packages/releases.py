@@ -197,6 +197,12 @@ class ReleasesClient(object):
     # Create Draft Release, create nested Variant resources, then updates
     # release to have those variants. Publishes release at update step, if
     # necessary.
+    if not variants and lifecycle is None:
+      raise ValueError(
+          'No variants found in source directory. Please check the source'
+          ' directory and variants pattern, or create the release with'
+          ' --lifecycle=DRAFT.'
+      )
     labels = self.messages.Release.LabelsValue(
         additionalProperties=[
             self.messages.Release.LabelsValue.AdditionalProperty(

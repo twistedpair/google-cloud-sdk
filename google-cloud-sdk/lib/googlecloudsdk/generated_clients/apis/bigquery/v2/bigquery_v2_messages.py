@@ -38,7 +38,7 @@ class AggregateClassificationMetrics(_messages.Message):
       metric.
     threshold: Threshold at which the metrics are computed. For binary
       classification models this is the positive class threshold. For multi-
-      class classfication models this is the confidence threshold.
+      class classification models this is the confidence threshold.
   """
 
   accuracy = _messages.FloatField(1)
@@ -455,6 +455,20 @@ class AvroOptions(_messages.Message):
   useAvroLogicalTypes = _messages.BooleanField(1)
 
 
+class BatchDeleteRowAccessPoliciesRequest(_messages.Message):
+  r"""Request message for the BatchDeleteRowAccessPoliciesRequest method.
+
+  Fields:
+    force: If set to true, it deletes the row access policy even if it's the
+      last row access policy on the table and the deletion will widen the
+      access rather narrowing it.
+    policyIds: Required. Policy IDs of the row access policies.
+  """
+
+  force = _messages.BooleanField(1)
+  policyIds = _messages.StringField(2, repeated=True)
+
+
 class BiEngineReason(_messages.Message):
   r"""Reason why BI Engine didn't accelerate the query (or sub-query).
 
@@ -727,7 +741,7 @@ class BigqueryDatasetsListRequest(_messages.Message):
   Fields:
     all: Whether to list all datasets, including hidden ones
     filter: An expression for filtering the results of the request by label.
-      The syntax is `labels.[:]`. Multiple filters can be ANDed together by
+      The syntax is `labels.[:]`. Multiple filters can be AND-ed together by
       connecting with a space. Example: `labels.department:receiving
       labels.active`. See [Filtering datasets using
       labels](https://cloud.google.com/bigquery/docs/filtering-
@@ -1226,6 +1240,56 @@ class BigqueryRoutinesUpdateRequest(_messages.Message):
   routineId = _messages.StringField(4, required=True)
 
 
+class BigqueryRowAccessPoliciesBatchDeleteRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesBatchDeleteRequest object.
+
+  Fields:
+    batchDeleteRowAccessPoliciesRequest: A BatchDeleteRowAccessPoliciesRequest
+      resource to be passed as the request body.
+    datasetId: Required. Dataset ID of the table to delete the row access
+      policies.
+    projectId: Required. Project ID of the table to delete the row access
+      policies.
+    tableId: Required. Table ID of the table to delete the row access
+      policies.
+  """
+
+  batchDeleteRowAccessPoliciesRequest = _messages.MessageField('BatchDeleteRowAccessPoliciesRequest', 1)
+  datasetId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  tableId = _messages.StringField(4, required=True)
+
+
+class BigqueryRowAccessPoliciesBatchDeleteResponse(_messages.Message):
+  r"""An empty BigqueryRowAccessPoliciesBatchDelete response."""
+
+
+class BigqueryRowAccessPoliciesDeleteRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesDeleteRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the table to delete the row access
+      policy.
+    force: If set to true, it deletes the row access policy even if it's the
+      last row access policy on the table and the deletion will widen the
+      access rather narrowing it.
+    policyId: Required. Policy ID of the row access policy.
+    projectId: Required. Project ID of the table to delete the row access
+      policy.
+    tableId: Required. Table ID of the table to delete the row access policy.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(2)
+  policyId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+  tableId = _messages.StringField(5, required=True)
+
+
+class BigqueryRowAccessPoliciesDeleteResponse(_messages.Message):
+  r"""An empty BigqueryRowAccessPoliciesDelete response."""
+
+
 class BigqueryRowAccessPoliciesGetIamPolicyRequest(_messages.Message):
   r"""A BigqueryRowAccessPoliciesGetIamPolicyRequest object.
 
@@ -1240,6 +1304,39 @@ class BigqueryRowAccessPoliciesGetIamPolicyRequest(_messages.Message):
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class BigqueryRowAccessPoliciesGetRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesGetRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the table to get the row access policy.
+    policyId: Required. Policy ID of the row access policy.
+    projectId: Required. Project ID of the table to get the row access policy.
+    tableId: Required. Table ID of the table to get the row access policy.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  policyId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  tableId = _messages.StringField(4, required=True)
+
+
+class BigqueryRowAccessPoliciesInsertRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesInsertRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the table to get the row access policy.
+    projectId: Required. Project ID of the table to get the row access policy.
+    rowAccessPolicy: A RowAccessPolicy resource to be passed as the request
+      body.
+    tableId: Required. Table ID of the table to get the row access policy.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  rowAccessPolicy = _messages.MessageField('RowAccessPolicy', 3)
+  tableId = _messages.StringField(4, required=True)
 
 
 class BigqueryRowAccessPoliciesListRequest(_messages.Message):
@@ -1276,6 +1373,25 @@ class BigqueryRowAccessPoliciesTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class BigqueryRowAccessPoliciesUpdateRequest(_messages.Message):
+  r"""A BigqueryRowAccessPoliciesUpdateRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of the table to get the row access policy.
+    policyId: Required. Policy ID of the row access policy.
+    projectId: Required. Project ID of the table to get the row access policy.
+    rowAccessPolicy: A RowAccessPolicy resource to be passed as the request
+      body.
+    tableId: Required. Table ID of the table to get the row access policy.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  policyId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  rowAccessPolicy = _messages.MessageField('RowAccessPolicy', 4)
+  tableId = _messages.StringField(5, required=True)
 
 
 class BigqueryTabledataInsertAllRequest(_messages.Message):
@@ -3155,7 +3271,7 @@ class ExternalDataConfiguration(_messages.Message):
       (precision,scale) is: * (38,9) -> NUMERIC; * (39,9) -> BIGNUMERIC
       (NUMERIC cannot hold 30 integer digits); * (38,10) -> BIGNUMERIC
       (NUMERIC cannot hold 10 fractional digits); * (76,38) -> BIGNUMERIC; *
-      (77,38) -> BIGNUMERIC (error if value exeeds supported range). This
+      (77,38) -> BIGNUMERIC (error if value exceeds supported range). This
       field cannot contain duplicate types. The order of the types in this
       field is ignored. For example, ["BIGNUMERIC", "NUMERIC"] is the same as
       ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes precedence over
@@ -3263,8 +3379,8 @@ class ExternalDataConfiguration(_messages.Message):
 
     Values:
       JSON_EXTENSION_UNSPECIFIED: The default if provided value is not one
-        included in the enum, or the value is not specified. The source
-        formate is parsed without any modification.
+        included in the enum, or the value is not specified. The source format
+        is parsed without any modification.
       GEOJSON: Use GeoJSON variant of JSON. See
         https://tools.ietf.org/html/rfc7946.
     """
@@ -4181,7 +4297,7 @@ class JobConfigurationLoad(_messages.Message):
       (precision,scale) is: * (38,9) -> NUMERIC; * (39,9) -> BIGNUMERIC
       (NUMERIC cannot hold 30 integer digits); * (38,10) -> BIGNUMERIC
       (NUMERIC cannot hold 10 fractional digits); * (76,38) -> BIGNUMERIC; *
-      (77,38) -> BIGNUMERIC (error if value exeeds supported range). This
+      (77,38) -> BIGNUMERIC (error if value exceeds supported range). This
       field cannot contain duplicate types. The order of the types in this
       field is ignored. For example, ["BIGNUMERIC", "NUMERIC"] is the same as
       ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes precedence over
@@ -4397,8 +4513,8 @@ class JobConfigurationLoad(_messages.Message):
 
     Values:
       JSON_EXTENSION_UNSPECIFIED: The default if provided value is not one
-        included in the enum, or the value is not specified. The source
-        formate is parsed without any modification.
+        included in the enum, or the value is not specified. The source format
+        is parsed without any modification.
       GEOJSON: Use GeoJSON variant of JSON. See
         https://tools.ietf.org/html/rfc7946.
     """
@@ -4567,6 +4683,11 @@ class JobConfigurationQuery(_messages.Message):
       default value is WRITE_EMPTY. Each action is atomic and only occurs if
       BigQuery is able to complete the job successfully. Creation, truncation
       and append actions occur as one atomic update upon job completion.
+    writeIncrementalResults: Optional. This is only supported for a SELECT
+      query using a temporary table. If set, the query is allowed to write
+      results incrementally to the temporary result table. This may incur a
+      performance penalty. This option cannot be used with Legacy SQL. This
+      feature is not yet available.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4625,6 +4746,7 @@ class JobConfigurationQuery(_messages.Message):
   useQueryCache = _messages.BooleanField(25, default=True)
   userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 26, repeated=True)
   writeDisposition = _messages.StringField(27)
+  writeIncrementalResults = _messages.BooleanField(28)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -5599,7 +5721,7 @@ class MaterializedViewStatus(_messages.Message):
 
 
 class MetadataCacheStatistics(_messages.Message):
-  r"""Statistics for metadata caching in BigLake tables.
+  r"""Statistics for metadata caching in queried tables.
 
   Fields:
     tableMetadataCacheUsage: Set for the Metadata caching eligible tables
@@ -6398,6 +6520,8 @@ class QueryRequest(_messages.Message):
       assume for any unqualified table names in the query. If not set, all
       table names in the query string must be qualified in the format
       'datasetId.tableId'.
+    destinationEncryptionConfiguration: Optional. Custom encryption
+      configuration (e.g., Cloud KMS keys)
     dryRun: Optional. If set to true, BigQuery doesn't run the job. Instead,
       if the query is valid, BigQuery returns statistics about the job such as
       how many bytes would be processed. If the query is invalid, an error
@@ -6406,6 +6530,12 @@ class QueryRequest(_messages.Message):
     jobCreationMode: Optional. If not set, jobs are always required. If set,
       the query request will follow the behavior described JobCreationMode.
       [Preview](https://cloud.google.com/products/#product-launch-stages)
+    jobTimeoutMs: Optional. Job timeout in milliseconds. If this time limit is
+      exceeded, BigQuery will attempt to stop a longer job, but may not always
+      succeed in canceling it before the job completes. For example, a job
+      that takes more than 60 seconds to complete has a better chance of being
+      stopped than a job that takes 10 seconds to complete. This timeout
+      applies to the query even if a job does not need to be created.
     kind: The resource type of the request.
     labels: Optional. The labels associated with this query. Labels can be
       used to organize and group query jobs. Label keys and values can be no
@@ -6474,6 +6604,11 @@ class QueryRequest(_messages.Message):
     useQueryCache: Optional. Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. The default value is true.
+    writeIncrementalResults: Optional. This is only supported for SELECT
+      query. If set, the query is allowed to write results incrementally to
+      the temporary result table. This may incur a performance penalty. This
+      option cannot be used with Legacy SQL. This feature is not yet
+      available.
   """
 
   class JobCreationModeValueValuesEnum(_messages.Enum):
@@ -6528,22 +6663,25 @@ class QueryRequest(_messages.Message):
   continuous = _messages.BooleanField(2)
   createSession = _messages.BooleanField(3)
   defaultDataset = _messages.MessageField('DatasetReference', 4)
-  dryRun = _messages.BooleanField(5)
-  formatOptions = _messages.MessageField('DataFormatOptions', 6)
-  jobCreationMode = _messages.EnumField('JobCreationModeValueValuesEnum', 7)
-  kind = _messages.StringField(8, default='bigquery#queryRequest')
-  labels = _messages.MessageField('LabelsValue', 9)
-  location = _messages.StringField(10)
-  maxResults = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
-  maximumBytesBilled = _messages.IntegerField(12)
-  parameterMode = _messages.StringField(13)
-  preserveNulls = _messages.BooleanField(14)
-  query = _messages.StringField(15)
-  queryParameters = _messages.MessageField('QueryParameter', 16, repeated=True)
-  requestId = _messages.StringField(17)
-  timeoutMs = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(19, default=True)
-  useQueryCache = _messages.BooleanField(20, default=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
+  dryRun = _messages.BooleanField(6)
+  formatOptions = _messages.MessageField('DataFormatOptions', 7)
+  jobCreationMode = _messages.EnumField('JobCreationModeValueValuesEnum', 8)
+  jobTimeoutMs = _messages.IntegerField(9)
+  kind = _messages.StringField(10, default='bigquery#queryRequest')
+  labels = _messages.MessageField('LabelsValue', 11)
+  location = _messages.StringField(12)
+  maxResults = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
+  maximumBytesBilled = _messages.IntegerField(14)
+  parameterMode = _messages.StringField(15)
+  preserveNulls = _messages.BooleanField(16)
+  query = _messages.StringField(17)
+  queryParameters = _messages.MessageField('QueryParameter', 18, repeated=True)
+  requestId = _messages.StringField(19)
+  timeoutMs = _messages.IntegerField(20, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(21, default=True)
+  useQueryCache = _messages.BooleanField(22, default=True)
+  writeIncrementalResults = _messages.BooleanField(23)
 
 
 class QueryResponse(_messages.Message):
@@ -7129,6 +7267,25 @@ class RowAccessPolicy(_messages.Message):
       other tables, routines, and temporary functions are not supported.
       Examples: region="EU" date_field = CAST('2019-9-27' as DATE)
       nullable_field is not NULL numeric_field BETWEEN 1.0 AND 5.0
+    grantees: Optional. Input only. The optional list of iam_member users or
+      groups that specifies the initial members that the row-level access
+      policy should be created with. grantees types: -
+      "user:alice@example.com": An email address that represents a specific
+      Google account. - "serviceAccount:my-other-
+      app@appspot.gserviceaccount.com": An email address that represents a
+      service account. - "group:admins@example.com": An email address that
+      represents a Google group. - "domain:example.com":The Google Workspace
+      domain (primary) that represents all the users of that domain. -
+      "allAuthenticatedUsers": A special identifier that represents all
+      service accounts and all users on the internet who have authenticated
+      with a Google Account. This identifier includes accounts that aren't
+      connected to a Google Workspace or Cloud Identity domain, such as
+      personal Gmail accounts. Users who aren't authenticated, such as
+      anonymous visitors, aren't included. - "allUsers":A special identifier
+      that represents anyone who is on the internet, including authenticated
+      and unauthenticated users. Because BigQuery requires authentication
+      before a user can access the service, allUsers includes only
+      authenticated users.
     lastModifiedTime: Output only. The time when this row access policy was
       last modified, in milliseconds since the epoch.
     rowAccessPolicyReference: Required. Reference describing the ID of this
@@ -7138,8 +7295,9 @@ class RowAccessPolicy(_messages.Message):
   creationTime = _messages.StringField(1)
   etag = _messages.StringField(2)
   filterPredicate = _messages.StringField(3)
-  lastModifiedTime = _messages.StringField(4)
-  rowAccessPolicyReference = _messages.MessageField('RowAccessPolicyReference', 5)
+  grantees = _messages.StringField(4, repeated=True)
+  lastModifiedTime = _messages.StringField(5)
+  rowAccessPolicyReference = _messages.MessageField('RowAccessPolicyReference', 6)
 
 
 class RowAccessPolicyReference(_messages.Message):
@@ -7811,6 +7969,67 @@ class StorageDescriptor(_messages.Message):
   locationUri = _messages.StringField(2)
   outputFormat = _messages.StringField(3)
   serdeInfo = _messages.MessageField('SerDeInfo', 4)
+
+
+class StoredColumnsUnusedReason(_messages.Message):
+  r"""If the stored column was not used, explain why.
+
+  Enums:
+    CodeValueValuesEnum: Specifies the high-level reason for the unused
+      scenario, each reason must have a code associated.
+
+  Fields:
+    code: Specifies the high-level reason for the unused scenario, each reason
+      must have a code associated.
+    message: Specifies the detailed description for the scenario.
+    uncoveredColumns: Specifies which columns were not covered by the stored
+      columns for the specified code up to 20 columns. This is populated when
+      the code is STORED_COLUMNS_COVER_INSUFFICIENT and BASE_TABLE_HAS_CLS.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Specifies the high-level reason for the unused scenario, each reason
+    must have a code associated.
+
+    Values:
+      CODE_UNSPECIFIED: Default value.
+      STORED_COLUMNS_COVER_INSUFFICIENT: If stored columns do not fully cover
+        the columns.
+      BASE_TABLE_HAS_RLS: If the base table has RLS (Row Level Security).
+      BASE_TABLE_HAS_CLS: If the base table has CLS (Column Level Security).
+      UNSUPPORTED_PREFILTER: If the provided prefilter is not supported.
+      INTERNAL_ERROR: If an internal error is preventing stored columns from
+        being used.
+      OTHER_REASON: Indicates that the reason stored columns cannot be used in
+        the query is not covered by any of the other StoredColumnsUnusedReason
+        options.
+    """
+    CODE_UNSPECIFIED = 0
+    STORED_COLUMNS_COVER_INSUFFICIENT = 1
+    BASE_TABLE_HAS_RLS = 2
+    BASE_TABLE_HAS_CLS = 3
+    UNSUPPORTED_PREFILTER = 4
+    INTERNAL_ERROR = 5
+    OTHER_REASON = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  uncoveredColumns = _messages.StringField(3, repeated=True)
+
+
+class StoredColumnsUsage(_messages.Message):
+  r"""Indicates the stored columns usage in the query.
+
+  Fields:
+    baseTable: Specifies the base table.
+    isQueryAccelerated: Specifies whether the query was accelerated with
+      stored columns.
+    storedColumnsUnusedReasons: If stored columns were not used, explain why.
+  """
+
+  baseTable = _messages.MessageField('TableReference', 1)
+  isQueryAccelerated = _messages.BooleanField(2)
+  storedColumnsUnusedReasons = _messages.MessageField('StoredColumnsUnusedReason', 3, repeated=True)
 
 
 class Streamingbuffer(_messages.Message):
@@ -8623,7 +8842,7 @@ class TableList(_messages.Message):
       r"""Information about a logical view.
 
       Fields:
-        privacyPolicy: Specifices the privacy policy for the view.
+        privacyPolicy: Specifies the privacy policy for the view.
         useLegacySql: True if view is defined in legacy SQL dialect, false if
           in GoogleSQL.
       """
@@ -8940,6 +9159,11 @@ class TrainingOptions(_messages.Message):
       matrix factorization.
     fitIntercept: Whether the model should include intercept during model
       training.
+    forecastLimitLowerBound: The forecast limit lower bound that was used
+      during ARIMA model training with limits. To see more details of the
+      algorithm: https://otexts.com/fpp2/limits.html
+    forecastLimitUpperBound: The forecast limit upper bound that was used
+      during ARIMA model training with limits.
     hiddenUnits: Hidden units for dnn models.
     holidayRegion: The geographical region based on which the holidays are
       considered in time series modeling. If a valid value is specified, then
@@ -9262,7 +9486,7 @@ class TrainingOptions(_messages.Message):
       UA: Ukraine
       US: United States
       VE: Venezuela
-      VN: Viet Nam
+      VN: Vietnam
       ZA: South Africa
     """
     HOLIDAY_REGION_UNSPECIFIED = 0
@@ -9407,7 +9631,7 @@ class TrainingOptions(_messages.Message):
       UA: Ukraine
       US: United States
       VE: Venezuela
-      VN: Viet Nam
+      VN: Vietnam
       ZA: South Africa
     """
     HOLIDAY_REGION_UNSPECIFIED = 0
@@ -9506,7 +9730,7 @@ class TrainingOptions(_messages.Message):
         label. For multiclass this is a globally micro-averaged metric.
       F1_SCORE: The F1 score is an average of recall and precision. For
         multiclass this is a macro-averaged metric.
-      LOG_LOSS: Logorithmic Loss. For multiclass this is a macro-averaged
+      LOG_LOSS: Logarithmic Loss. For multiclass this is a macro-averaged
         metric.
       ROC_AUC: Area Under an ROC Curve. For multiclass this is a macro-
         averaged metric.
@@ -9687,65 +9911,67 @@ class TrainingOptions(_messages.Message):
   enableGlobalExplain = _messages.BooleanField(29)
   feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 30)
   fitIntercept = _messages.BooleanField(31)
-  hiddenUnits = _messages.IntegerField(32, repeated=True)
-  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 33)
-  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 34, repeated=True)
-  horizon = _messages.IntegerField(35)
-  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 36, repeated=True)
-  includeDrift = _messages.BooleanField(37)
-  initialLearnRate = _messages.FloatField(38)
-  inputLabelColumns = _messages.StringField(39, repeated=True)
-  instanceWeightColumn = _messages.StringField(40)
-  integratedGradientsNumSteps = _messages.IntegerField(41)
-  isTestColumn = _messages.StringField(42)
-  itemColumn = _messages.StringField(43)
-  kmeansInitializationColumn = _messages.StringField(44)
-  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 45)
-  l1RegActivation = _messages.FloatField(46)
-  l1Regularization = _messages.FloatField(47)
-  l2Regularization = _messages.FloatField(48)
-  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 49)
-  learnRate = _messages.FloatField(50)
-  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 51)
-  lossType = _messages.EnumField('LossTypeValueValuesEnum', 52)
-  maxIterations = _messages.IntegerField(53)
-  maxParallelTrials = _messages.IntegerField(54)
-  maxTimeSeriesLength = _messages.IntegerField(55)
-  maxTreeDepth = _messages.IntegerField(56)
-  minAprioriSupport = _messages.FloatField(57)
-  minRelativeProgress = _messages.FloatField(58)
-  minSplitLoss = _messages.FloatField(59)
-  minTimeSeriesLength = _messages.IntegerField(60)
-  minTreeChildWeight = _messages.IntegerField(61)
-  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 62)
-  modelUri = _messages.StringField(63)
-  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 64)
-  numClusters = _messages.IntegerField(65)
-  numFactors = _messages.IntegerField(66)
-  numParallelTree = _messages.IntegerField(67)
-  numPrincipalComponents = _messages.IntegerField(68)
-  numTrials = _messages.IntegerField(69)
-  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 70)
-  optimizer = _messages.StringField(71)
-  pcaExplainedVarianceRatio = _messages.FloatField(72)
-  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 73)
-  sampledShapleyNumPaths = _messages.IntegerField(74)
-  scaleFeatures = _messages.BooleanField(75)
-  standardizeFeatures = _messages.BooleanField(76)
-  subsample = _messages.FloatField(77)
-  tfVersion = _messages.StringField(78)
-  timeSeriesDataColumn = _messages.StringField(79)
-  timeSeriesIdColumn = _messages.StringField(80)
-  timeSeriesIdColumns = _messages.StringField(81, repeated=True)
-  timeSeriesLengthFraction = _messages.FloatField(82)
-  timeSeriesTimestampColumn = _messages.StringField(83)
-  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 84)
-  trendSmoothingWindowSize = _messages.IntegerField(85)
-  userColumn = _messages.StringField(86)
-  vertexAiModelVersionAliases = _messages.StringField(87, repeated=True)
-  walsAlpha = _messages.FloatField(88)
-  warmStart = _messages.BooleanField(89)
-  xgboostVersion = _messages.StringField(90)
+  forecastLimitLowerBound = _messages.FloatField(32)
+  forecastLimitUpperBound = _messages.FloatField(33)
+  hiddenUnits = _messages.IntegerField(34, repeated=True)
+  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 35)
+  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 36, repeated=True)
+  horizon = _messages.IntegerField(37)
+  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 38, repeated=True)
+  includeDrift = _messages.BooleanField(39)
+  initialLearnRate = _messages.FloatField(40)
+  inputLabelColumns = _messages.StringField(41, repeated=True)
+  instanceWeightColumn = _messages.StringField(42)
+  integratedGradientsNumSteps = _messages.IntegerField(43)
+  isTestColumn = _messages.StringField(44)
+  itemColumn = _messages.StringField(45)
+  kmeansInitializationColumn = _messages.StringField(46)
+  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 47)
+  l1RegActivation = _messages.FloatField(48)
+  l1Regularization = _messages.FloatField(49)
+  l2Regularization = _messages.FloatField(50)
+  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 51)
+  learnRate = _messages.FloatField(52)
+  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 53)
+  lossType = _messages.EnumField('LossTypeValueValuesEnum', 54)
+  maxIterations = _messages.IntegerField(55)
+  maxParallelTrials = _messages.IntegerField(56)
+  maxTimeSeriesLength = _messages.IntegerField(57)
+  maxTreeDepth = _messages.IntegerField(58)
+  minAprioriSupport = _messages.FloatField(59)
+  minRelativeProgress = _messages.FloatField(60)
+  minSplitLoss = _messages.FloatField(61)
+  minTimeSeriesLength = _messages.IntegerField(62)
+  minTreeChildWeight = _messages.IntegerField(63)
+  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 64)
+  modelUri = _messages.StringField(65)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 66)
+  numClusters = _messages.IntegerField(67)
+  numFactors = _messages.IntegerField(68)
+  numParallelTree = _messages.IntegerField(69)
+  numPrincipalComponents = _messages.IntegerField(70)
+  numTrials = _messages.IntegerField(71)
+  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 72)
+  optimizer = _messages.StringField(73)
+  pcaExplainedVarianceRatio = _messages.FloatField(74)
+  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 75)
+  sampledShapleyNumPaths = _messages.IntegerField(76)
+  scaleFeatures = _messages.BooleanField(77)
+  standardizeFeatures = _messages.BooleanField(78)
+  subsample = _messages.FloatField(79)
+  tfVersion = _messages.StringField(80)
+  timeSeriesDataColumn = _messages.StringField(81)
+  timeSeriesIdColumn = _messages.StringField(82)
+  timeSeriesIdColumns = _messages.StringField(83, repeated=True)
+  timeSeriesLengthFraction = _messages.FloatField(84)
+  timeSeriesTimestampColumn = _messages.StringField(85)
+  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 86)
+  trendSmoothingWindowSize = _messages.IntegerField(87)
+  userColumn = _messages.StringField(88)
+  vertexAiModelVersionAliases = _messages.StringField(89, repeated=True)
+  walsAlpha = _messages.FloatField(90)
+  warmStart = _messages.BooleanField(91)
+  xgboostVersion = _messages.StringField(92)
 
 
 class TrainingRun(_messages.Message):
@@ -9860,6 +10086,8 @@ class VectorSearchStatistics(_messages.Message):
       vector search query. If `indexUsageMode` is `FULLY_USED`, this field is
       not populated.
     indexUsageMode: Specifies the index usage mode for the query.
+    storedColumnsUsages: Specifies the usage of stored columns in the query
+      when stored columns are used in the query.
   """
 
   class IndexUsageModeValueValuesEnum(_messages.Enum):
@@ -9884,6 +10112,7 @@ class VectorSearchStatistics(_messages.Message):
 
   indexUnusedReasons = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
   indexUsageMode = _messages.EnumField('IndexUsageModeValueValuesEnum', 2)
+  storedColumnsUsages = _messages.MessageField('StoredColumnsUsage', 3, repeated=True)
 
 
 class ViewDefinition(_messages.Message):
@@ -9891,7 +10120,7 @@ class ViewDefinition(_messages.Message):
 
   Fields:
     foreignDefinitions: Optional. Foreign view representations.
-    privacyPolicy: Optional. Specifices the privacy policy for the view.
+    privacyPolicy: Optional. Specifies the privacy policy for the view.
     query: Required. A query that BigQuery executes when the view is
       referenced.
     useExplicitColumnNames: True if the column names are explicitly specified.

@@ -1227,6 +1227,10 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       DOCKER_PERMISSION_DENIED: Docker failed because of permission denied.
       NETWORK_PROXY_UPDATE_POLICY_ERROR: The bot failed to update the network
         proxy policy.
+      SERVICE_ACCOUNT_IMPERSONATION_DENIED: Failed to impersonate the service
+        account.
+      INVALID_FILENAME: Trying to write a file with a filename that is too
+        long.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1282,6 +1286,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_START_RUNTIME_PERMISSION_DENIED = 51
     DOCKER_PERMISSION_DENIED = 52
     NETWORK_PROXY_UPDATE_POLICY_ERROR = 53
+    SERVICE_ACCOUNT_IMPERSONATION_DENIED = 54
+    INVALID_FILENAME = 55
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

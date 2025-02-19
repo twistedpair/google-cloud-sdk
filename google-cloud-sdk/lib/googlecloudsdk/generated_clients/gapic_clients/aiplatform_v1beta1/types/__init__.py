@@ -28,6 +28,7 @@ from .content import (
     GroundingMetadata,
     GroundingSupport,
     LogprobsResult,
+    ModalityTokenCount,
     Part,
     PrebuiltVoiceConfig,
     RetrievalMetadata,
@@ -39,6 +40,7 @@ from .content import (
     VideoMetadata,
     VoiceConfig,
     HarmCategory,
+    Modality,
 )
 from .explanation import (
     Attribution,
@@ -152,6 +154,7 @@ __all__ = (
     'GroundingMetadata',
     'GroundingSupport',
     'LogprobsResult',
+    'ModalityTokenCount',
     'Part',
     'PrebuiltVoiceConfig',
     'RetrievalMetadata',
@@ -163,6 +166,7 @@ __all__ = (
     'VideoMetadata',
     'VoiceConfig',
     'HarmCategory',
+    'Modality',
     'Attribution',
     'BlurBaselineConfig',
     'Examples',

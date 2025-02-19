@@ -73,6 +73,50 @@ class AllowedKeyType(_messages.Message):
   rsa = _messages.MessageField('RsaKeyType', 2)
 
 
+class AttributeTypeAndValue(_messages.Message):
+  r"""AttributeTypeAndValue specifies an attribute type and value.
+
+  It can use either a OID or enum value to specify the attribute type.
+
+  Enums:
+    TypeValueValuesEnum: The attribute type of the attribute and value pair.
+
+  Fields:
+    objectId: Object ID for an attribute type of an attribute and value pair.
+    type: The attribute type of the attribute and value pair.
+    value: The value for the attribute type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The attribute type of the attribute and value pair.
+
+    Values:
+      ATTRIBUTE_TYPE_UNSPECIFIED: Attribute type is unspecified.
+      COMMON_NAME: The "common name" of the subject.
+      COUNTRY_CODE: The country code of the subject.
+      ORGANIZATION: The organization of the subject.
+      ORGANIZATIONAL_UNIT: The organizational unit of the subject.
+      LOCALITY: The locality or city of the subject.
+      PROVINCE: The province, territory, or regional state of the subject.
+      STREET_ADDRESS: The street address of the subject.
+      POSTAL_CODE: The postal code of the subject.
+    """
+
+    ATTRIBUTE_TYPE_UNSPECIFIED = 0
+    COMMON_NAME = 1
+    COUNTRY_CODE = 2
+    ORGANIZATION = 3
+    ORGANIZATIONAL_UNIT = 4
+    LOCALITY = 5
+    PROVINCE = 6
+    STREET_ADDRESS = 7
+    POSTAL_CODE = 8
+
+  objectId = _messages.MessageField('ObjectId', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -372,14 +416,23 @@ class Certificate(_messages.Message):
   """
 
   class SubjectModeValueValuesEnum(_messages.Enum):
-    r"""Immutable. Specifies how the Certificate's identity fields are to be
-    decided. If this is omitted, the `DEFAULT` subject mode will be used.
+    r"""Immutable.
+
+    Specifies how the Certificate's identity fields are to be decided. If this
+    is omitted, the `DEFAULT` subject mode will be used.
 
     Values:
       SUBJECT_REQUEST_MODE_UNSPECIFIED: Not specified.
       DEFAULT: The default mode used in most cases. Indicates that the
         certificate's Subject and/or SubjectAltNames are specified in the
         certificate request. This mode requires the caller to have the
+        `privateca.certificates.create` permission.
+      RDN_SEQUENCE: A mode used to get an accurate representation of the
+        Subject field's distinguished name. Indicates that the certificate's
+        Subject and/or SubjectAltNames are specified in the certificate
+        request. When parsing a PEM CSR this mode will maintain the sequence
+        of RDNs found in the CSR's subject field in the issued Certificate.
+        This mode requires the caller to have the
         `privateca.certificates.create` permission.
       REFLECTED_SPIFFE: A mode reserved for special cases. Indicates that the
         certificate should have one SPIFFE SubjectAltNames set by the service
@@ -390,7 +443,8 @@ class Certificate(_messages.Message):
     """
     SUBJECT_REQUEST_MODE_UNSPECIFIED = 0
     DEFAULT = 1
-    REFLECTED_SPIFFE = 2
+    RDN_SEQUENCE = 2
+    REFLECTED_SPIFFE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -999,7 +1053,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EnableCertificateAuthorityRequest(_messages.Message):
@@ -2801,6 +2854,19 @@ class ReconciliationOperationMetadata(_messages.Message):
   exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
 
 
+class RelativeDistinguishedName(_messages.Message):
+  r"""RelativeDistinguishedName specifies a relative distinguished name which
+
+  will be used to build a distinguished name.
+
+  Fields:
+    attributes: Attributes describes the attribute value assertions in the
+      RDN.
+  """
+
+  attributes = _messages.MessageField('AttributeTypeAndValue', 1, repeated=True)
+
+
 class RevocationDetails(_messages.Message):
   r"""Describes fields that are relavent to the revocation of a Certificate.
 
@@ -3106,6 +3172,7 @@ class Status(_messages.Message):
 
 class Subject(_messages.Message):
   r"""Subject describes parts of a distinguished name that, in turn, describes
+
   the subject of the certificate.
 
   Fields:
@@ -3116,6 +3183,7 @@ class Subject(_messages.Message):
     organizationalUnit: The organizational_unit of the subject.
     postalCode: The postal code of the subject.
     province: The province, territory, or regional state of the subject.
+    rdnSequence: This field can be used in place of the named subject fields.
     streetAddress: The street address of the subject.
   """
 
@@ -3126,7 +3194,10 @@ class Subject(_messages.Message):
   organizationalUnit = _messages.StringField(5)
   postalCode = _messages.StringField(6)
   province = _messages.StringField(7)
-  streetAddress = _messages.StringField(8)
+  rdnSequence = _messages.MessageField(
+      'RelativeDistinguishedName', 8, repeated=True
+  )
+  streetAddress = _messages.StringField(9)
 
 
 class SubjectAltNames(_messages.Message):

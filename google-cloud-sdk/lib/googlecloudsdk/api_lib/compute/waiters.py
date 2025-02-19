@@ -264,6 +264,13 @@ class OperationData(object):
     resource_params = self.resource_service.GetMethodConfig(
         'Get'
     ).ordered_params
+    # b/394563040 - Temporary fix for issue where InvalidUserInputError is
+    # printed after update operation completes for wireGroups
+    if (
+        'crossSiteNetwork' in resource_params
+        and 'global' not in resource_params
+    ):
+      resource_params.insert(1, 'global')
     name_field = resource_params[-1]
     if len(resource_params) == 4:
       # This is a nested resource, which means it has four params

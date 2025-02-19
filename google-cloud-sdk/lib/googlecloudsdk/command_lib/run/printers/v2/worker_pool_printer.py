@@ -18,11 +18,14 @@
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.run.printers.v2 import container_printer
+from googlecloudsdk.command_lib.run.printers.v2 import instance_split_printer
 from googlecloudsdk.command_lib.run.printers.v2 import printer_util
+from googlecloudsdk.command_lib.run.printers.v2 import volume_printer
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import vendor_settings
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as worker_pool_objects
+from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool_revision_template as revision_template_objects
 
 WORKER_POOL_PRINTER_FORMAT = 'workerpool'
 
@@ -44,14 +47,16 @@ class WorkerPoolPrinter(cp.CustomPrinterBase):
       )
     return console_attr.GetConsoleAttr().Emphasize(header)
 
-  def _TransformTemplate(self, record: worker_pool_objects.WorkerPool):
+  def _TransformTemplate(
+      self, record: revision_template_objects.WorkerPoolRevisionTemplate
+  ):
     labels = [('Service account', record.service_account)]
     labels.extend([
         # TODO(b/366115709): add SQL connections printer.
         ('VPC access', printer_util.GetVpcNetwork(record.vpc_access)),
         ('CMEK', printer_util.GetCMEK(record.encryption_key)),
         ('Session Affinity', 'True' if record.session_affinity else ''),
-        # TODO(b/366115709): add volumes printer.
+        ('Volumes', volume_printer.GetVolumes(record.volumes)),
     ])
     return cp.Lines([
         container_printer.GetContainers(record.containers),
@@ -128,7 +133,8 @@ class WorkerPoolPrinter(cp.CustomPrinterBase):
         printer_util.BuildHeader(record),
         k8s_util.GetLabels(record.labels),
         ' ',
-        # TODO(b/366115709): add instance split printer.
+        instance_split_printer.TransformWorkerPoolInstanceSplit(record),
+        ' ',
         worker_pool_settings,
         (' ' if worker_pool_settings.WillPrintOutput() else ''),
         cp.Labeled([(

@@ -143,27 +143,60 @@ class ApihubProjectsLocationsApisListRequest(_messages.Message):
       style attribute associated with the ApiResource. Allowed comparison
       operator is `:`. * `api_style.enum_values.values.display_name` - The
       allowed value display name of the api style attribute associated with
-      the ApiResource. Allowed comparison operator is `:`. Expressions are
-      combined with either `AND` logic operator or `OR` logical operator but
-      not both of them together i.e. only one of the `AND` or `OR` operator
-      can be used throughout the filter string and both the operators cannot
-      be used together. No other logical operators are supported. At most
-      three filter fields are allowed in the filter string and if provided
-      more than that then `INVALID_ARGUMENT` error is returned by the API.
-      Here are a few examples: * `owner.email = \"apihub@google.com\"` - - The
-      owner team email is _apihub@google.com_. * `owner.email =
-      \"apihub@google.com\" AND create_time < \"2021-08-15T14:50:00Z\" AND
-      create_time > \"2021-08-10T12:00:00Z\"` - The owner team email is
-      _apihub@google.com_ and the api was created before _2021-08-15 14:50:00
-      UTC_ and after _2021-08-10 12:00:00 UTC_. * `owner.email =
-      \"apihub@google.com\" OR team.enum_values.values.id: apihub-team-id` -
-      The filter string specifies the APIs where the owner team email is
-      _apihub@google.com_ or the id of the allowed value associated with the
-      team attribute is _apihub-team-id_. * `owner.email =
+      the ApiResource. Allowed comparison operator is `:`. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.enum_values.values.id` - The
+      allowed value id of the user defined enum attribute associated with the
+      Resource. Allowed comparison operator is `:`. Here user-defined-
+      attribute-enum-id is a placeholder that can be replaced with any user
+      defined enum attribute name. * `attributes.projects/test-project-
+      id/locations/test-location-id/ attributes/user-defined-attribute-
+      id.enum_values.values.display_name` - The allowed value display name of
+      the user defined enum attribute associated with the Resource. Allowed
+      comparison operator is `:`. Here user-defined-attribute-enum-display-
+      name is a placeholder that can be replaced with any user defined enum
+      attribute enum name. * `attributes.projects/test-project-
+      id/locations/test-location-id/ attributes/user-defined-attribute-
+      id.string_values.values` - The allowed value of the user defined string
+      attribute associated with the Resource. Allowed comparison operator is
+      `:`. Here user-defined-attribute-string is a placeholder that can be
+      replaced with any user defined string attribute name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.json_values.values` - The allowed
+      value of the user defined JSON attribute associated with the Resource.
+      Allowed comparison operator is `:`. Here user-defined-attribute-json is
+      a placeholder that can be replaced with any user defined JSON attribute
+      name. Expressions are combined with either `AND` logic operator or `OR`
+      logical operator but not both of them together i.e. only one of the
+      `AND` or `OR` operator can be used throughout the filter string and both
+      the operators cannot be used together. No other logical operators are
+      supported. At most three filter fields are allowed in the filter string
+      and if provided more than that then `INVALID_ARGUMENT` error is returned
+      by the API. Here are a few examples: * `owner.email =
+      \"apihub@google.com\"` - - The owner team email is _apihub@google.com_.
+      * `owner.email = \"apihub@google.com\" AND create_time <
+      \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
+      The owner team email is _apihub@google.com_ and the api was created
+      before _2021-08-15 14:50:00 UTC_ and after _2021-08-10 12:00:00 UTC_. *
+      `owner.email = \"apihub@google.com\" OR team.enum_values.values.id:
+      apihub-team-id` - The filter string specifies the APIs where the owner
+      team email is _apihub@google.com_ or the id of the allowed value
+      associated with the team attribute is _apihub-team-id_. * `owner.email =
       \"apihub@google.com\" OR team.enum_values.values.display_name: ApiHub
       Team` - The filter string specifies the APIs where the owner team email
       is _apihub@google.com_ or the display name of the allowed value
-      associated with the team attribute is `ApiHub Team`.
+      associated with the team attribute is `ApiHub Team`. * `owner.email =
+      \"apihub@google.com\" AND attributes.projects/test-project-
+      id/locations/test-location-id/
+      attributes/17650f90-4a29-4971-b3c0-d5532da3764b.enum_values.values.id:
+      test_enum_id AND attributes.projects/test-project-id/locations/test-
+      location-id/
+      attributes/1765\0f90-4a29-5431-b3d0-d5532da3764c.string_values.values:
+      test_string_value` - The filter string specifies the APIs where the
+      owner team email is _apihub@google.com_ and the id of the allowed value
+      associated with the user defined attribute of type enum is
+      _test_enum_id_ and the value of the user defined attribute of type
+      string is _test_..
     pageSize: Optional. The maximum number of API resources to return. The
       service may return fewer than this value. If unspecified, at most 50
       Apis will be returned. The maximum value is 1000; values above 1000 will
@@ -211,7 +244,10 @@ class ApihubProjectsLocationsApisVersionsCreateRequest(_messages.Message):
       optional. * If provided, the same will be used. The service will throw
       an error if the specified id is already used by another version in the
       API resource. * If not provided, a system generated id will be used.
-      This value should be 4-500 characters, and valid characters are
+      This value should be 4-500 characters, overall resource name which will
+      be of format
+      `projects/{project}/locations/{location}/apis/{api}/versions/{version}`,
+      its length is limited to 700 characters and valid characters are
       /a-z[0-9]-_/.
   """
 
@@ -286,13 +322,35 @@ class ApihubProjectsLocationsApisVersionsListRequest(_messages.Message):
       Version. Allowed comparison operators: `:`. *
       `accreditation.enum_values.values.display_name` - The allowed value
       display name of the accreditations attribute associated with the
-      Version. Allowed comparison operators: `:`. Expressions are combined
-      with either `AND` logic operator or `OR` logical operator but not both
-      of them together i.e. only one of the `AND` or `OR` operator can be used
-      throughout the filter string and both the operators cannot be used
-      together. No other logical operators are supported. At most three filter
-      fields are allowed in the filter string and if provided more than that
-      then `INVALID_ARGUMENT` error is returned by the API. Here are a few
+      Version. Allowed comparison operators: `:`. * `attributes.projects/test-
+      project-id/locations/test-location-id/ attributes/user-defined-
+      attribute-id.enum_values.values.id` - The allowed value id of the user
+      defined enum attribute associated with the Resource. Allowed comparison
+      operator is `:`. Here user-defined-attribute-enum-id is a placeholder
+      that can be replaced with any user defined enum attribute name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.enum_values.values.display_name` -
+      The allowed value display name of the user defined enum attribute
+      associated with the Resource. Allowed comparison operator is `:`. Here
+      user-defined-attribute-enum-display-name is a placeholder that can be
+      replaced with any user defined enum attribute enum name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.string_values.values` - The allowed
+      value of the user defined string attribute associated with the Resource.
+      Allowed comparison operator is `:`. Here user-defined-attribute-string
+      is a placeholder that can be replaced with any user defined string
+      attribute name. * `attributes.projects/test-project-id/locations/test-
+      location-id/ attributes/user-defined-attribute-id.json_values.values` -
+      The allowed value of the user defined JSON attribute associated with the
+      Resource. Allowed comparison operator is `:`. Here user-defined-
+      attribute-json is a placeholder that can be replaced with any user
+      defined JSON attribute name. Expressions are combined with either `AND`
+      logic operator or `OR` logical operator but not both of them together
+      i.e. only one of the `AND` or `OR` operator can be used throughout the
+      filter string and both the operators cannot be used together. No other
+      logical operators are supported. At most three filter fields are allowed
+      in the filter string and if provided more than that then
+      `INVALID_ARGUMENT` error is returned by the API. Here are a few
       examples: * `lifecycle.enum_values.values.id: preview-id` - The filter
       string specifies that the id of the allowed value associated with the
       lifecycle attribute of the Version is _preview-id_. *
@@ -307,7 +365,12 @@ class ApihubProjectsLocationsApisVersionsListRequest(_messages.Message):
       UTC_. * `compliance.enum_values.values.id: gdpr-id OR
       compliance.enum_values.values.id: pci-dss-id` - The id of the allowed
       value associated with the compliance attribute is _gdpr-id_ or _pci-dss-
-      id_.
+      id_. * `lifecycle.enum_values.values.id: preview-id AND
+      attributes.projects/test-project-id/locations/test-location-id/
+      attributes/17650f90-4a29-4971-b3c0-d5532da3764b.string_values.values:
+      test` - The filter string specifies that the id of the allowed value
+      associated with the lifecycle attribute of the Version is _preview-id_
+      and the value of the user defined attribute of type string is _test_.
     pageSize: Optional. The maximum number of versions to return. The service
       may return fewer than this value. If unspecified, at most 50 versions
       will be returned. The maximum value is 1000; values above 1000 will be
@@ -358,13 +421,35 @@ class ApihubProjectsLocationsApisVersionsOperationsListRequest(_messages.Message
       ApiOperation. Allowed comparison operators: `=`. * `create_time` - The
       time at which the ApiOperation was created. The value should be in the
       (RFC3339)[https://tools.ietf.org/html/rfc3339] format. Allowed
-      comparison operators: `>` and `<`. Expressions are combined with either
-      `AND` logic operator or `OR` logical operator but not both of them
-      together i.e. only one of the `AND` or `OR` operator can be used
-      throughout the filter string and both the operators cannot be used
-      together. No other logical operators are supported. At most three filter
-      fields are allowed in the filter string and if provided more than that
-      then `INVALID_ARGUMENT` error is returned by the API. Here are a few
+      comparison operators: `>` and `<`. * `attributes.projects/test-project-
+      id/locations/test-location-id/ attributes/user-defined-attribute-
+      id.enum_values.values.id` - The allowed value id of the user defined
+      enum attribute associated with the Resource. Allowed comparison operator
+      is `:`. Here user-defined-attribute-enum-id is a placeholder that can be
+      replaced with any user defined enum attribute name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.enum_values.values.display_name` -
+      The allowed value display name of the user defined enum attribute
+      associated with the Resource. Allowed comparison operator is `:`. Here
+      user-defined-attribute-enum-display-name is a placeholder that can be
+      replaced with any user defined enum attribute enum name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.string_values.values` - The allowed
+      value of the user defined string attribute associated with the Resource.
+      Allowed comparison operator is `:`. Here user-defined-attribute-string
+      is a placeholder that can be replaced with any user defined string
+      attribute name. * `attributes.projects/test-project-id/locations/test-
+      location-id/ attributes/user-defined-attribute-id.json_values.values` -
+      The allowed value of the user defined JSON attribute associated with the
+      Resource. Allowed comparison operator is `:`. Here user-defined-
+      attribute-json is a placeholder that can be replaced with any user
+      defined JSON attribute name. Expressions are combined with either `AND`
+      logic operator or `OR` logical operator but not both of them together
+      i.e. only one of the `AND` or `OR` operator can be used throughout the
+      filter string and both the operators cannot be used together. No other
+      logical operators are supported. At most three filter fields are allowed
+      in the filter string and if provided more than that then
+      `INVALID_ARGUMENT` error is returned by the API. Here are a few
       examples: * `details.deprecated = True` - The ApiOperation is
       deprecated. * `details.http_operation.method = GET AND create_time <
       \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
@@ -372,7 +457,11 @@ class ApihubProjectsLocationsApisVersionsOperationsListRequest(_messages.Message
       spec was created before _2021-08-15 14:50:00 UTC_ and after _2021-08-10
       12:00:00 UTC_. * `details.http_operation.method = GET OR
       details.http_operation.method = POST`. - The http operation of the
-      method of ApiOperation is _GET_ or _POST_.
+      method of ApiOperation is _GET_ or _POST_. * `details.deprecated = True
+      AND attributes.projects/test-project-id/locations/test-location-id/
+      attributes/17650f90-4a29-4971-b3c0-d5532da3764b.string_values.values:
+      test` - The filter string specifies that the ApiOperation is deprecated
+      and the value of the user defined attribute of type string is _test_.
     pageSize: Optional. The maximum number of operations to return. The
       service may return fewer than this value. If unspecified, at most 50
       operations will be returned. The maximum value is 1000; values above
@@ -421,7 +510,10 @@ class ApihubProjectsLocationsApisVersionsSpecsCreateRequest(_messages.Message):
       provided, the same will be used. The service will throw an error if the
       specified id is already used by another spec in the API resource. * If
       not provided, a system generated id will be used. This value should be
-      4-500 characters, and valid characters are /a-z[0-9]-_/.
+      4-500 characters, overall resource name which will be of format `project
+      s/{project}/locations/{location}/apis/{api}/versions/{version}/specs/{sp
+      ec}`, its length is limited to 1000 characters and valid characters are
+      /a-z[0-9]-_/.
   """
 
   googleCloudApihubV1Spec = _messages.MessageField('GoogleCloudApihubV1Spec', 1)
@@ -498,13 +590,35 @@ class ApihubProjectsLocationsApisVersionsSpecsListRequest(_messages.Message):
       comparison operators: `:`. * `lint_response.json_values.values` - The
       json value of the lint_response attribute associated with the Spec.
       Allowed comparison operators: `:`. * `mime_type` - The MIME type of the
-      Spec. Allowed comparison operators: `=`. Expressions are combined with
-      either `AND` logic operator or `OR` logical operator but not both of
-      them together i.e. only one of the `AND` or `OR` operator can be used
-      throughout the filter string and both the operators cannot be used
-      together. No other logical operators are supported. At most three filter
-      fields are allowed in the filter string and if provided more than that
-      then `INVALID_ARGUMENT` error is returned by the API. Here are a few
+      Spec. Allowed comparison operators: `=`. * `attributes.projects/test-
+      project-id/locations/test-location-id/ attributes/user-defined-
+      attribute-id.enum_values.values.id` - The allowed value id of the user
+      defined enum attribute associated with the Resource. Allowed comparison
+      operator is `:`. Here user-defined-attribute-enum-id is a placeholder
+      that can be replaced with any user defined enum attribute name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.enum_values.values.display_name` -
+      The allowed value display name of the user defined enum attribute
+      associated with the Resource. Allowed comparison operator is `:`. Here
+      user-defined-attribute-enum-display-name is a placeholder that can be
+      replaced with any user defined enum attribute enum name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.string_values.values` - The allowed
+      value of the user defined string attribute associated with the Resource.
+      Allowed comparison operator is `:`. Here user-defined-attribute-string
+      is a placeholder that can be replaced with any user defined string
+      attribute name. * `attributes.projects/test-project-id/locations/test-
+      location-id/ attributes/user-defined-attribute-id.json_values.values` -
+      The allowed value of the user defined JSON attribute associated with the
+      Resource. Allowed comparison operator is `:`. Here user-defined-
+      attribute-json is a placeholder that can be replaced with any user
+      defined JSON attribute name. Expressions are combined with either `AND`
+      logic operator or `OR` logical operator but not both of them together
+      i.e. only one of the `AND` or `OR` operator can be used throughout the
+      filter string and both the operators cannot be used together. No other
+      logical operators are supported. At most three filter fields are allowed
+      in the filter string and if provided more than that then
+      `INVALID_ARGUMENT` error is returned by the API. Here are a few
       examples: * `spec_type.enum_values.values.id: rest-id` - The filter
       string specifies that the id of the allowed value associated with the
       spec_type attribute is _rest-id_. *
@@ -518,7 +632,13 @@ class ApihubProjectsLocationsApisVersionsSpecsListRequest(_messages.Message):
       after _2021-08-10 12:00:00 UTC_. * `spec_type.enum_values.values.id:
       rest-id OR spec_type.enum_values.values.id: grpc-id` - The id of the
       allowed value associated with the spec_type attribute is _rest-id_ or
-      _grpc-id_.
+      _grpc-id_. * `spec_type.enum_values.values.id: rest-id AND
+      attributes.projects/test-project-id/locations/test-location-id/
+      attributes/17650f90-4a29-4971-b3c0-d5532da3764b.enum_values.values.id:
+      test` - The filter string specifies that the id of the allowed value
+      associated with the spec_type attribute is _rest-id_ and the id of the
+      allowed value associated with the user defined attribute of type enum is
+      _test_.
     pageSize: Optional. The maximum number of specs to return. The service may
       return fewer than this value. If unspecified, at most 50 specs will be
       returned. The maximum value is 1000; values above 1000 will be coerced
@@ -845,19 +965,41 @@ class ApihubProjectsLocationsDeploymentsListRequest(_messages.Message):
       environment attribute associated with the deployment. Allowed comparison
       operators: `:`. * `environment.enum_values.values.display_name` - The
       allowed value display name of the environment attribute associated with
-      the deployment. Allowed comparison operators: `:`. Expressions are
-      combined with either `AND` logic operator or `OR` logical operator but
-      not both of them together i.e. only one of the `AND` or `OR` operator
-      can be used throughout the filter string and both the operators cannot
-      be used together. No other logical operators are supported. At most
-      three filter fields are allowed in the filter string and if provided
-      more than that then `INVALID_ARGUMENT` error is returned by the API.
-      Here are a few examples: * `environment.enum_values.values.id: staging-
-      id` - The allowed value id of the environment attribute associated with
-      the Deployment is _staging-id_. *
-      `environment.enum_values.values.display_name: \"Staging Deployment\"` -
-      The allowed value display name of the environment attribute associated
-      with the Deployment is `Staging Deployment`. *
+      the deployment. Allowed comparison operators: `:`. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.enum_values.values.id` - The
+      allowed value id of the user defined enum attribute associated with the
+      Resource. Allowed comparison operator is `:`. Here user-defined-
+      attribute-enum-id is a placeholder that can be replaced with any user
+      defined enum attribute name. * `attributes.projects/test-project-
+      id/locations/test-location-id/ attributes/user-defined-attribute-
+      id.enum_values.values.display_name` - The allowed value display name of
+      the user defined enum attribute associated with the Resource. Allowed
+      comparison operator is `:`. Here user-defined-attribute-enum-display-
+      name is a placeholder that can be replaced with any user defined enum
+      attribute enum name. * `attributes.projects/test-project-
+      id/locations/test-location-id/ attributes/user-defined-attribute-
+      id.string_values.values` - The allowed value of the user defined string
+      attribute associated with the Resource. Allowed comparison operator is
+      `:`. Here user-defined-attribute-string is a placeholder that can be
+      replaced with any user defined string attribute name. *
+      `attributes.projects/test-project-id/locations/test-location-id/
+      attributes/user-defined-attribute-id.json_values.values` - The allowed
+      value of the user defined JSON attribute associated with the Resource.
+      Allowed comparison operator is `:`. Here user-defined-attribute-json is
+      a placeholder that can be replaced with any user defined JSON attribute
+      name. Expressions are combined with either `AND` logic operator or `OR`
+      logical operator but not both of them together i.e. only one of the
+      `AND` or `OR` operator can be used throughout the filter string and both
+      the operators cannot be used together. No other logical operators are
+      supported. At most three filter fields are allowed in the filter string
+      and if provided more than that then `INVALID_ARGUMENT` error is returned
+      by the API. Here are a few examples: *
+      `environment.enum_values.values.id: staging-id` - The allowed value id
+      of the environment attribute associated with the Deployment is _staging-
+      id_. * `environment.enum_values.values.display_name: \"Staging
+      Deployment\"` - The allowed value display name of the environment
+      attribute associated with the Deployment is `Staging Deployment`. *
       `environment.enum_values.values.id: production-id AND create_time <
       \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
       The allowed value id of the environment attribute associated with the
@@ -866,7 +1008,13 @@ class ApihubProjectsLocationsDeploymentsListRequest(_messages.Message):
       `environment.enum_values.values.id: production-id OR
       slo.string_values.values: \"99.99%\"` - The allowed value id of the
       environment attribute Deployment is _production-id_ or string value of
-      the slo attribute is _99.99%_.
+      the slo attribute is _99.99%_. * `environment.enum_values.values.id:
+      staging-id AND attributes.projects/test-project-id/locations/test-
+      location-id/
+      attributes/17650f90-4a29-4971-b3c0-d5532da3764b.string_values.values:
+      test` - The filter string specifies that the allowed value id of the
+      environment attribute associated with the Deployment is _staging-id_ and
+      the value of the user defined attribute of type string is _test_.
     pageSize: Optional. The maximum number of deployment resources to return.
       The service may return fewer than this value. If unspecified, at most 50
       deployments will be returned. The maximum value is 1000; values above
@@ -1592,7 +1740,10 @@ class GoogleCloudApihubV1ApiOperation(_messages.Message):
   operation is added/updated/deleted in an API version when a new spec is
   added or an existing spec is updated/deleted in a version. Currently, an
   operation will be created only corresponding to OpenAPI spec as parsing is
-  supported for OpenAPI spec.
+  supported for OpenAPI spec. Alternatively operations can be managed via
+  create,update and delete APIs, creation of apiOperation can be possible only
+  for version with no parsed operations and update/delete can be possible only
+  for operations created via create API.
 
   Messages:
     AttributesValue: Optional. The list of user defined attributes associated
@@ -1608,13 +1759,16 @@ class GoogleCloudApihubV1ApiOperation(_messages.Message):
       `projects/{project}/locations/{location}/attributes/{attribute}`. The
       value is the attribute values associated with the resource.
     createTime: Output only. The time at which the operation was created.
-    details: Output only. Operation details.
+    details: Optional. Operation details. Note: Even though this field is
+      optional, it is required for CreateApiOperation API and we will fail the
+      request if not provided.
     name: Identifier. The name of the operation. Format: `projects/{project}/l
       ocations/{location}/apis/{api}/versions/{version}/operations/{operation}
       `
-    spec: Output only. The name of the spec from where the operation was
-      parsed. Format is `projects/{project}/locations/{location}/apis/{api}/ve
-      rsions/{version}/specs/{spec}`
+    spec: Output only. The name of the spec will be of the format: `projects/{
+      project}/locations/{location}/apis/{api}/versions/{version}/specs/{spec}
+      ` Note:The name of the spec will be empty if the operation is created
+      via CreateApiOperation API.
     updateTime: Output only. The time at which the operation was last updated.
   """
 
@@ -2282,15 +2436,23 @@ class GoogleCloudApihubV1HttpOperation(_messages.Message):
   r"""The HTTP Operation.
 
   Enums:
-    MethodValueValuesEnum: Output only. Operation method
+    MethodValueValuesEnum: Optional. Operation method Note: Even though this
+      field is optional, it is required for CreateApiOperation API and we will
+      fail the request if not provided.
 
   Fields:
-    method: Output only. Operation method
-    path: Output only. The path details for the Operation.
+    method: Optional. Operation method Note: Even though this field is
+      optional, it is required for CreateApiOperation API and we will fail the
+      request if not provided.
+    path: Optional. The path details for the Operation. Note: Even though this
+      field is optional, it is required for CreateApiOperation API and we will
+      fail the request if not provided.
   """
 
   class MethodValueValuesEnum(_messages.Enum):
-    r"""Output only. Operation method
+    r"""Optional. Operation method Note: Even though this field is optional,
+    it is required for CreateApiOperation API and we will fail the request if
+    not provided.
 
     Values:
       METHOD_UNSPECIFIED: Method unspecified.
@@ -2600,12 +2762,12 @@ class GoogleCloudApihubV1OperationDetails(_messages.Message):
   r"""The operation details parsed from the spec.
 
   Fields:
-    deprecated: Output only. For OpenAPI spec, this will be set if
+    deprecated: Optional. For OpenAPI spec, this will be set if
       `operation.deprecated`is marked as `true` in the spec.
-    description: Output only. Description of the operation behavior. For
-      OpenAPI spec, this will map to `operation.description` in the spec, in
-      case description is empty, `operation.summary` will be used.
-    documentation: Output only. Additional external documentation for this
+    description: Optional. Description of the operation behavior. For OpenAPI
+      spec, this will map to `operation.description` in the spec, in case
+      description is empty, `operation.summary` will be used.
+    documentation: Optional. Additional external documentation for this
       operation. For OpenAPI spec, this will map to `operation.documentation`
       in the spec.
     httpOperation: The HTTP Operation.
@@ -2660,9 +2822,11 @@ class GoogleCloudApihubV1Path(_messages.Message):
   r"""The path details derived from the spec.
 
   Fields:
-    description: Output only. A short description for the path applicable to
-      all operations.
-    path: Output only. Complete path relative to server endpoint.
+    description: Optional. A short description for the path applicable to all
+      operations.
+    path: Optional. Complete path relative to server endpoint. Note: Even
+      though this field is optional, it is required for CreateApiOperation API
+      and we will fail the request if not provided.
   """
 
   description = _messages.StringField(1)

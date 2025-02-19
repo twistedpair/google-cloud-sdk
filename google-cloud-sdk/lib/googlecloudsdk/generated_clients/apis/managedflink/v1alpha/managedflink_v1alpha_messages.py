@@ -229,6 +229,9 @@ class Job(_messages.Message):
       RESTARTING: Job is restarting.
       SUSPENDED: Job has been suspended.
       RECONCILING: Job is reconciling.
+      DELETING: Job is getting deleted.
+      DELETION_FAILED: Job failed to be deleted.
+      CANCELATION_FAILED: Job failed to be cancelled.
     """
     STATE_UNSPECIFIED = 0
     PENDING_CREATION = 1
@@ -243,6 +246,9 @@ class Job(_messages.Message):
     RESTARTING = 10
     SUSPENDED = 11
     RECONCILING = 12
+    DELETING = 13
+    DELETION_FAILED = 14
+    CANCELATION_FAILED = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -295,6 +301,10 @@ class JobSpec(_messages.Message):
     managedKafkaConfig: Optional. The configuration for the Google Cloud
       Managed Service for Apache Kafka clusters to be used by the job.
     networkConfig: Optional. Network configuration for the job.
+    originalJobGraph: Optional. The original job graph in stringified json
+      format.
+    pipelineOptions: Optional. The pipeline options for the job in stringified
+      json format.
     secretsPaths: Optional. The list of secrets paths to be used by an on-
       demand deployment job.
     workloadIdentity: Optional. Workload identity service account for the job.
@@ -311,8 +321,10 @@ class JobSpec(_messages.Message):
   jobName = _messages.StringField(7)
   managedKafkaConfig = _messages.MessageField('ManagedKafkaConfig', 8)
   networkConfig = _messages.MessageField('NetworkConfig', 9)
-  secretsPaths = _messages.StringField(10, repeated=True)
-  workloadIdentity = _messages.StringField(11)
+  originalJobGraph = _messages.StringField(10)
+  pipelineOptions = _messages.StringField(11)
+  secretsPaths = _messages.StringField(12, repeated=True)
+  workloadIdentity = _messages.StringField(13)
 
 
 class Limits(_messages.Message):
@@ -942,10 +954,18 @@ class NetworkConfig(_messages.Message):
   for Apache Flink cluster.
 
   Fields:
-    subnetwork: Optional. The subnetwork of the resource.
+    subnetwork: Optional. The subnetwork of the resource. The format can be
+      one of the following: 1:
+      `projects/{project}/regions/{region}/subnetworks/{subnetwork_id}`. 2:
+      `{subnetwork_id}`. With option 1, the subnetwork should be in the same
+      region as the BigQuery Engine for Apache Flink Resource. With option 2,
+      the subnetwork is assumed to be in the same project as the BigQuery
+      Engine for Apache Flink Resource.
     vpc: Optional. The name of the VPC Network to associate the BigQuery
-      Engine for Apache Flink resources with, specified in the following
-      format: `projects/{project}/global/networks/{network_id}`.
+      Engine for Apache Flink resources with. The format can be one of the
+      following: 1: `projects/{project}/global/networks/{network_id}`. 2:
+      `{network_id}`. With option 2, the network is assumed to be in the same
+      project as the BigQuery Engine for Apache Flink Resource.
   """
 
   subnetwork = _messages.StringField(1)

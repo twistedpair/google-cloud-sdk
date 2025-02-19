@@ -17,6 +17,7 @@
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.run.printers.v2 import container_printer
 from googlecloudsdk.command_lib.run.printers.v2 import printer_util
+from googlecloudsdk.command_lib.run.printers.v2 import volume_printer
 from googlecloudsdk.core.resource import custom_printer_base as cp
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import revision
 
@@ -50,7 +51,7 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('VPC access', printer_util.GetVpcNetwork(record.vpc_access)),
         ('CMEK', printer_util.GetCMEK(record.encryption_key)),
         ('Session Affinity', 'True' if record.session_affinity else ''),
-        # TODO(b/366115709): add volumes printer.
+        ('Volumes', volume_printer.GetVolumes(record.volumes)),
     ])
     return cp.Lines(
         [container_printer.GetContainers(record.containers), cp.Labeled(labels)]

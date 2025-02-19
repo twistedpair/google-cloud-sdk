@@ -109,7 +109,7 @@ class Container(proto.Message):
             before this container.
         base_image_uri (str):
             Base image for this container. Only supported
-            for services. If set. it indicates that the
+            for services. If set, it indicates that the
             service is enrolled into automatic base image
             update.
         build_info (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BuildInfo):

@@ -521,7 +521,8 @@ class RegionsChangeAnnotationChange(NonTemplateConfigChanger):
 
   def Adjust(self, resource):
     annotation = (
-        resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] or None
+        resource.annotations.get(k8s_object.MULTI_REGION_REGIONS_ANNOTATION)
+        or None
     )
     existing = annotation.split(',') if annotation else []
     to_add = self.to_add.split(',') if self.to_add else []
@@ -2139,3 +2140,25 @@ class AddVolumeMountChange(ContainerConfigChanger):
         )
       container.volume_mounts[mount['mount-path']] = mount['volume']
     return container
+
+
+@dataclasses.dataclass(frozen=True)
+class SetServiceMeshChange(TemplateConfigChanger):
+  """Sets the service mesh annotation on the service template.
+
+  Attributes:
+    project: The project to use for the mesh when not specified in mesh_name.
+    mesh: Mesh resource name in the format of MESH_NAME or
+      projects/PROJECT/locations/global/meshes/MESH_NAME.
+  """
+
+  project: str
+  mesh_name: str
+
+  def Adjust(self, resource):
+    resource.template.annotations[revision.MESH_ANNOTATION] = (
+        self.mesh_name
+        if '/' in self.mesh_name
+        else f'projects/{self.project}/locations/global/meshes/{self.mesh_name}'
+    )
+    return resource

@@ -865,6 +865,10 @@ class SignatureInfo(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
+        signature algorithm, at security level 1. Randomized version.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -902,6 +906,8 @@ class SignatureInfo(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
+    PQ_SIGN_ML_DSA_65 = 36
+    PQ_SIGN_SLH_DSA_SHA2_128S = 37
 
   customerKmsKeyVersion = _messages.StringField(1)
   googleKeyAlgorithm = _messages.EnumField('GoogleKeyAlgorithmValueValuesEnum', 2)

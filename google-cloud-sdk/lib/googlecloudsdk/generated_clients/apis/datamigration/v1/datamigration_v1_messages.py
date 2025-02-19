@@ -1835,16 +1835,19 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
       DATABASE_ENTITY_VIEW_FULL: Return full entity details including
         mappings, ddl and issues.
       DATABASE_ENTITY_VIEW_ROOT_SUMMARY: Top-most (Database, Schema) nodes
-        which are returned contains summary details for their decendents such
+        which are returned contains summary details for their descendants such
         as the number of entities per type and issues rollups. When this view
         is used, only a single page of result is returned and the page_size
         property of the request is ignored. The returned page will only
         include the top-most node types.
+      DATABASE_ENTITY_VIEW_FULL_COMPACT: Returns full entity details except
+        for ddls and schema custom features.
     """
     DATABASE_ENTITY_VIEW_UNSPECIFIED = 0
     DATABASE_ENTITY_VIEW_BASIC = 1
     DATABASE_ENTITY_VIEW_FULL = 2
     DATABASE_ENTITY_VIEW_ROOT_SUMMARY = 3
+    DATABASE_ENTITY_VIEW_FULL_COMPACT = 4
 
   commitId = _messages.StringField(1)
   conversionWorkspace = _messages.StringField(2, required=True)
@@ -2900,16 +2903,59 @@ class EntityDdl(_messages.Message):
   r"""A single DDL statement for a specific entity
 
   Enums:
+    DdlKindValueValuesEnum: The DDL Kind selected for apply, or SOURCE if
+      getting the source tree.
+    EditedDdlKindValueValuesEnum: If ddl_kind is USER_EDIT, this holds the DDL
+      kind of the original content - DETERMINISTIC or AI. Otherwise, this is
+      DDL_KIND_UNSPECIFIED.
     EntityTypeValueValuesEnum: The entity type (if the DDL is for a sub
       entity).
 
   Fields:
     ddl: The actual ddl code.
+    ddlKind: The DDL Kind selected for apply, or SOURCE if getting the source
+      tree.
     ddlType: Type of DDL (Create, Alter).
+    editedDdlKind: If ddl_kind is USER_EDIT, this holds the DDL kind of the
+      original content - DETERMINISTIC or AI. Otherwise, this is
+      DDL_KIND_UNSPECIFIED.
     entity: The name of the database entity the ddl refers to.
     entityType: The entity type (if the DDL is for a sub entity).
     issueId: EntityIssues found for this ddl.
   """
+
+  class DdlKindValueValuesEnum(_messages.Enum):
+    r"""The DDL Kind selected for apply, or SOURCE if getting the source tree.
+
+    Values:
+      DDL_KIND_UNSPECIFIED: The kind of the DDL is unknown.
+      SOURCE: DDL of the source entity
+      DETERMINISTIC: Deterministic converted DDL
+      AI: Gemini AI converted DDL
+      USER_EDIT: User edited DDL
+    """
+    DDL_KIND_UNSPECIFIED = 0
+    SOURCE = 1
+    DETERMINISTIC = 2
+    AI = 3
+    USER_EDIT = 4
+
+  class EditedDdlKindValueValuesEnum(_messages.Enum):
+    r"""If ddl_kind is USER_EDIT, this holds the DDL kind of the original
+    content - DETERMINISTIC or AI. Otherwise, this is DDL_KIND_UNSPECIFIED.
+
+    Values:
+      DDL_KIND_UNSPECIFIED: The kind of the DDL is unknown.
+      SOURCE: DDL of the source entity
+      DETERMINISTIC: Deterministic converted DDL
+      AI: Gemini AI converted DDL
+      USER_EDIT: User edited DDL
+    """
+    DDL_KIND_UNSPECIFIED = 0
+    SOURCE = 1
+    DETERMINISTIC = 2
+    AI = 3
+    USER_EDIT = 4
 
   class EntityTypeValueValuesEnum(_messages.Enum):
     r"""The entity type (if the DDL is for a sub entity).
@@ -2950,10 +2996,12 @@ class EntityDdl(_messages.Message):
     DATABASE_ENTITY_TYPE_DATABASE = 15
 
   ddl = _messages.StringField(1)
-  ddlType = _messages.StringField(2)
-  entity = _messages.StringField(3)
-  entityType = _messages.EnumField('EntityTypeValueValuesEnum', 4)
-  issueId = _messages.StringField(5, repeated=True)
+  ddlKind = _messages.EnumField('DdlKindValueValuesEnum', 2)
+  ddlType = _messages.StringField(3)
+  editedDdlKind = _messages.EnumField('EditedDdlKindValueValuesEnum', 4)
+  entity = _messages.StringField(5)
+  entityType = _messages.EnumField('EntityTypeValueValuesEnum', 6)
+  issueId = _messages.StringField(7, repeated=True)
 
 
 class EntityIssue(_messages.Message):

@@ -988,9 +988,6 @@ def AddSchemaSettingsFlags(parser, is_update=False):
 def AddIngestionDatasourceFlags(
     parser,
     is_update=False,
-    include_ingestion_from_azure_event_hubs_flags=False,
-    include_ingestion_from_aws_msk_flags=False,
-    include_ingestion_from_confluent_cloud_flags=False,
 ):
   """Adds the flags for Datasource Ingestion.
 
@@ -998,12 +995,6 @@ def AddIngestionDatasourceFlags(
     parser: The argparse parser
     is_update: (bool) If true, add a wrapper group with
       clear-ingestion-data-source-settings as a mutually exclusive argument.
-    include_ingestion_from_azure_event_hubs_flags: whether to include ingestion
-      from Azure Event Hubs flags.
-    include_ingestion_from_aws_msk_flags: whether to include ingestion from AWS
-      MSK flags.
-    include_ingestion_from_confluent_cloud_flags: whether to include ingestion
-      from Confluent Cloud flags.
   """
   current_group = parser
 
@@ -1079,8 +1070,8 @@ def AddIngestionDatasourceFlags(
       '--kinesis-ingestion-service-account',
       default=None,
       help=(
-          'Service account to be used for Federated Identity authentication'
-          ' with Kinesis.'
+          'Google Cloud service account to be used for Federated Identity'
+          ' authentication with Kinesis.'
       ),
       required=True,
   )
@@ -1147,154 +1138,147 @@ def AddIngestionDatasourceFlags(
       required=False,
   )
 
-  if include_ingestion_from_azure_event_hubs_flags:
-    azure_event_hubs_group = ingestion_data_source_group.add_argument_group(
-        help=arg_parsers.UniverseHelpText(
-            default=(
-                'Flags that specify settings for an import topic from Azure'
-                ' Event Hubs'
-            )
-            + MustSpecifyAllHelpText('AzureEventHubs Source', is_update),
-            universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
-        ),
-        hidden=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-resource-group',
-        default=None,
-        help=(
-            'Azure event hub resource group from within an Azure subscription.'
-        ),
-        required=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-namespace',
-        default=None,
-        help='Azure event hub namespace from which to ingest data.',
-        required=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-event-hub',
-        default=None,
-        help='Azure event hub from which to ingest data.',
-        required=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-client-id',
-        default=None,
-        help='Azure event hub client ID to use for ingestion.',
-        required=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-tenant-id',
-        default=None,
-        help='Azure event hub tenant ID to use for ingestion.',
-        required=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-subscription-id',
-        default=None,
-        help='Azure event hub subscription ID to use for ingestion.',
-        required=True,
-    )
-    azure_event_hubs_group.add_argument(
-        '--azure-event-hubs-ingestion-service-account',
-        default=None,
-        help=(
-            'Azure event hub Google Cloud service account to use for ingestion.'
-        ),
-        required=True,
-    )
-  if include_ingestion_from_aws_msk_flags:
-    aws_msk_group = ingestion_data_source_group.add_argument_group(
-        help=arg_parsers.UniverseHelpText(
-            default=(
-                'Flags that specify settings for an import topic from Amazon'
-                ' Web Services (AWS) Managed Streaming for Apache Kafka (MSK)'
-            )
-            + MustSpecifyAllHelpText('AWS MSK Source', is_update),
-            universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
-        ),
-        hidden=True,
-    )
-    aws_msk_group.add_argument(
-        '--aws-msk-ingestion-cluster-arn',
-        default=None,
-        help='ARN that uniquely identifies the MSK cluster.',
-        required=True,
-    )
-    aws_msk_group.add_argument(
-        '--aws-msk-ingestion-topic',
-        default=None,
-        help='Name of the MSK topic that Pub/Sub will import from.',
-        required=True,
-    )
-    aws_msk_group.add_argument(
-        '--aws-msk-ingestion-aws-role-arn',
-        default=None,
-        help=(
-            'AWS role ARN to be used for Federated Identity authentication with'
-            ' MSK.'
-        ),
-        required=True,
-    )
-    aws_msk_group.add_argument(
-        '--aws-msk-ingestion-service-account',
-        default=None,
-        help=(
-            'Service account to be used for Federated Identity authentication'
-            ' with Kinesis.'
-        ),
-        required=True,
-    )
-  if include_ingestion_from_confluent_cloud_flags:
-    confluent_cloud_group = ingestion_data_source_group.add_argument_group(
-        help=arg_parsers.UniverseHelpText(
-            default=(
-                'Flags that specify settings for an import topic from'
-                ' Confluent Cloud'
-            )
-            + MustSpecifyAllHelpText('ConfluentCloud Source', is_update),
-            universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
-        ),
-        hidden=True,
-    )
-    confluent_cloud_group.add_argument(
-        '--confluent-cloud-ingestion-bootstrap-server',
-        default=None,
-        help='Confluent Cloud bootstrap server. The format is url:port.',
-        required=True,
-    )
-    confluent_cloud_group.add_argument(
-        '--confluent-cloud-ingestion-cluster-id',
-        default=None,
-        help='Confluent Cloud cluster ID.',
-        required=True,
-    )
-    confluent_cloud_group.add_argument(
-        '--confluent-cloud-ingestion-topic',
-        default=None,
-        help='Name of the Confluent Cloud topic that Pub/Sub will import from.',
-        required=True,
-    )
-    confluent_cloud_group.add_argument(
-        '--confluent-cloud-ingestion-identity-pool-id',
-        default=None,
-        help=(
-            'Identity pool ID to be used for Federated Identity'
-            ' authentication with Confluent Cloud.'
-        ),
-        required=True,
-    )
-    confluent_cloud_group.add_argument(
-        '--confluent-cloud-ingestion-service-account',
-        default=None,
-        help=(
-            'Service account to be used for Federated Identity authentication'
-            ' with Confluent Cloud.'
-        ),
-        required=True,
-    )
+  azure_event_hubs_group = ingestion_data_source_group.add_argument_group(
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Flags that specify settings for an import topic from Azure'
+              ' Event Hubs'
+          )
+          + MustSpecifyAllHelpText('AzureEventHubs Source', is_update),
+          universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+      ),
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-resource-group',
+      default=None,
+      help='Azure Event Hubs resource group from within an Azure subscription.',
+      required=True,
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-namespace',
+      default=None,
+      help='Azure Event Hubs namespace from which to ingest data.',
+      required=True,
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-event-hub',
+      default=None,
+      help='Azure event hub from which to ingest data.',
+      required=True,
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-client-id',
+      default=None,
+      help='Azure Event Hubs client ID to use for ingestion.',
+      required=True,
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-tenant-id',
+      default=None,
+      help='Azure Event Hubs tenant ID to use for ingestion.',
+      required=True,
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-subscription-id',
+      default=None,
+      help='Azure Event Hubs subscription ID to use for ingestion.',
+      required=True,
+  )
+  azure_event_hubs_group.add_argument(
+      '--azure-event-hubs-ingestion-service-account',
+      default=None,
+      help=(
+          'Google Cloud service account to be used for Federated Identity'
+          ' authentication with Azure Event Hubs.'
+      ),
+      required=True,
+  )
+  aws_msk_group = ingestion_data_source_group.add_argument_group(
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Flags that specify settings for an import topic from Amazon'
+              ' Web Services (AWS) Managed Streaming for Apache Kafka (MSK)'
+          )
+          + MustSpecifyAllHelpText('AWS MSK Source', is_update),
+          universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+      ),
+  )
+  aws_msk_group.add_argument(
+      '--aws-msk-ingestion-cluster-arn',
+      default=None,
+      help='ARN that uniquely identifies the MSK cluster.',
+      required=True,
+  )
+  aws_msk_group.add_argument(
+      '--aws-msk-ingestion-topic',
+      default=None,
+      help='Name of the MSK topic that Pub/Sub will import from.',
+      required=True,
+  )
+  aws_msk_group.add_argument(
+      '--aws-msk-ingestion-aws-role-arn',
+      default=None,
+      help=(
+          'AWS role ARN to be used for Federated Identity authentication with'
+          ' MSK.'
+      ),
+      required=True,
+  )
+  aws_msk_group.add_argument(
+      '--aws-msk-ingestion-service-account',
+      default=None,
+      help=(
+          'Google Cloud service account to be used for Federated Identity'
+          ' authentication with MSK.'
+      ),
+      required=True,
+  )
+  confluent_cloud_group = ingestion_data_source_group.add_argument_group(
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Flags that specify settings for an import topic from'
+              ' Confluent Cloud'
+          )
+          + MustSpecifyAllHelpText('ConfluentCloud Source', is_update),
+          universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+      ),
+  )
+  confluent_cloud_group.add_argument(
+      '--confluent-cloud-ingestion-bootstrap-server',
+      default=None,
+      help='Confluent Cloud bootstrap server. The format is url:port.',
+      required=True,
+  )
+  confluent_cloud_group.add_argument(
+      '--confluent-cloud-ingestion-cluster-id',
+      default=None,
+      help='Confluent Cloud cluster ID.',
+      required=True,
+  )
+  confluent_cloud_group.add_argument(
+      '--confluent-cloud-ingestion-topic',
+      default=None,
+      help='Name of the Confluent Cloud topic that Pub/Sub will import from.',
+      required=True,
+  )
+  confluent_cloud_group.add_argument(
+      '--confluent-cloud-ingestion-identity-pool-id',
+      default=None,
+      help=(
+          'Identity pool ID to be used for Federated Identity'
+          ' authentication with Confluent Cloud.'
+      ),
+      required=True,
+  )
+  confluent_cloud_group.add_argument(
+      '--confluent-cloud-ingestion-service-account',
+      default=None,
+      help=(
+          'Google Cloud service account to be used for Federated Identity'
+          ' authentication with Confluent Cloud.'
+      ),
+      required=True,
+  )
 
 
 def AddCommitSchemaFlags(parser):

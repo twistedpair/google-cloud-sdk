@@ -6716,13 +6716,18 @@ the Autopilot conversion during or after workload migration.
   )
 
 
-def AddSecretManagerEnableFlag(parser, hidden=False):
-  """Adds --enable-secret-manager flag to the given parser.
+def AddSecretManagerEnableFlagGroup(parser, hidden=False):
+  """Adds --enable-secret-manager, --enable-secret-manager-rotation, and --secret-manager-rotation-interval flags to the given parser.
 
   Args:
     parser: A given parser.
     hidden: hidden status.
   """
+  secret_manager_group = parser.add_group(
+      mutex=False,
+      help='Flags for Secret Manager configuration:',
+      hidden=hidden,
+  )
   help_text = """\
         Enables the Secret Manager CSI driver provider component. See
         https://secrets-store-csi-driver.sigs.k8s.io/introduction
@@ -6731,12 +6736,38 @@ def AddSecretManagerEnableFlag(parser, hidden=False):
         To disable in an existing cluster, explicitly set flag to
         --no-enable-secret-manager
     """
-  parser.add_argument(
+  secret_manager_group.add_argument(
       '--enable-secret-manager',
       action='store_true',
       default=None,
       help=help_text,
       hidden=hidden,
+  )
+
+  help_text = """\
+        Enables the rotation of secrets in the Secret Manager CSI driver
+        provider component.
+
+        To disable in an existing cluster, explicitly set flag to
+        --no-enable-secret-manager-rotation
+    """
+  secret_manager_group.add_argument(
+      '--enable-secret-manager-rotation',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=True,
+  )
+
+  help_text = """\
+        Set the rotation period for secrets in the Secret Manager CSI driver
+        provider component.
+    """
+  secret_manager_group.add_argument(
+      '--secret-manager-rotation-interval',
+      default=None,
+      help=help_text,
+      hidden=True,
   )
 
 

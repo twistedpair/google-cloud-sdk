@@ -312,7 +312,7 @@ class Service(proto.Message):
             populated as a response to a Delete request.
         expire_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. For a deleted resource, the time
-            after which it will be permamently deleted.
+            after which it will be permanently deleted.
         creator (str):
             Output only. Email address of the
             authenticated creator.
@@ -338,11 +338,9 @@ class Service(proto.Message):
             that stage. On read (or output), describes whether the
             resource uses preview features.
 
-            .. raw:: html
-
-                <p>
-                For example, if ALPHA is provided as input, but only BETA and GA-level
-                features are used, this field will be BETA on output.
+            For example, if ALPHA is provided as input, but only BETA
+            and GA-level features are used, this field will be BETA on
+            output.
         binary_authorization (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BinaryAuthorization):
             Optional. Settings for the Binary
             Authorization feature.
@@ -424,7 +422,7 @@ class Service(proto.Message):
             steps to bring the Service to the desired serving state.
             This process is called reconciliation. While reconciliation
             is in process, ``observed_generation``,
-            ``latest_ready_revison``, ``traffic_statuses``, and ``uri``
+            ``latest_ready_revision``, ``traffic_statuses``, and ``uri``
             will have transient values that might mismatch the intended
             state: Once reconciliation is over (and this field is
             false), there are two possible outcomes: reconciliation

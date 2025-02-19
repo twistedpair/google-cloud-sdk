@@ -1433,6 +1433,60 @@ class SpannerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AdaptMessage(self, request, global_params=None):
+      r"""Handles a single message from the client and returns the result as a stream. The server will interpret the message frame and respond with message frames to the client.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsAdaptMessageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdaptMessageResponse) The response message.
+      """
+      config = self.GetMethodConfig('AdaptMessage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AdaptMessage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:adaptMessage',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.adaptMessage',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:adaptMessage',
+        request_field='adaptMessageRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsAdaptMessageRequest',
+        response_type_name='AdaptMessageResponse',
+        supports_download=False,
+    )
+
+    def Adapter(self, request, global_params=None):
+      r"""Creates a new session to be used for requests made by the adapter. A session identifies a specific incarnation of a database resource and is meant to be reused across many `AdaptMessage` calls.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsAdapterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdapterSession) The response message.
+      """
+      config = self.GetMethodConfig('Adapter')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Adapter.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions:adapter',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.sessions.adapter',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/sessions:adapter',
+        request_field='adapterSession',
+        request_type_name='SpannerProjectsInstancesDatabasesSessionsAdapterRequest',
+        response_type_name='AdapterSession',
+        supports_download=False,
+    )
+
     def BatchCreate(self, request, global_params=None):
       r"""Creates multiple new sessions. This API can be used to initialize a session cache on the clients. See https://goo.gl/TgSFN2 for best practices on session cache management.
 

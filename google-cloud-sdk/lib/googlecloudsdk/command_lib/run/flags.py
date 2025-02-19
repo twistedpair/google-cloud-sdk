@@ -57,7 +57,8 @@ SERVICE_MESH_FLAG = base.Argument(
     help=(
         'Enables Cloud Service Mesh using the specified mesh resource name.'
         ' Mesh resource name must be in the format of'
-        ' projects/PROJECT/locations/global/meshes/MESH_NAME.'
+        ' projects/PROJECT/locations/global/meshes/MESH_NAME or MESH_NAME. Will'
+        ' default to the current project if only MESH_NAME is provided.'
     ),
 )
 
@@ -1002,9 +1003,8 @@ def GpuZonalRedundancyFlag(parser, hidden=True):
   """Add the --gpu-zonal-redundancy flag."""
   return parser.add_argument(
       '--gpu-zonal-redundancy',
-      metavar='GPU_ZONAL_REDUNDANCY',
+      action=arg_parsers.StoreTrueFalseAction,
       hidden=hidden,
-      default=True,
       help='Set GPU zonal redundancy.',
   )
 
@@ -1749,18 +1749,6 @@ def AddRemoveRegionsArg(parser):
   )
 
 
-def AddDomainArg(parser):
-  parser.add_argument(
-      '--domain',
-      hidden=True,
-      help=(
-          'Optional domain name to create a multi-regional load-balancer. This'
-          ' requires both the Serverless Integrations (RunApps) and Compute '
-          'APIs to be enabled.'
-      ),
-  )
-
-
 def AddClientNameAndVersionFlags(parser):
   """Add flags for specifying the client name and version annotations."""
   parser.add_argument(
@@ -2193,7 +2181,7 @@ def HasEnvChanges(args):
   return HasChanges(args, env_flags)
 
 
-def _HasCloudSQLChanges(args):
+def HasCloudSQLChanges(args):
   """True iff any of the cloudsql flags are set."""
   instances_flags = [
       'add_cloudsql_instances',
@@ -2204,7 +2192,7 @@ def _HasCloudSQLChanges(args):
   return HasChanges(args, instances_flags)
 
 
-def _EnabledCloudSqlApiRequired(args):
+def EnabledCloudSqlApiRequired(args):
   """True iff flags that add or set cloud sql instances are set."""
   instances_flags = (
       'add_cloudsql_instances',
@@ -2719,7 +2707,7 @@ _CLOUD_SQL_API_SERVICE_TOKEN = 'sql-component.googleapis.com'
 _CLOUD_SQL_ADMIN_API_SERVICE_TOKEN = 'sqladmin.googleapis.com'
 
 
-def _CheckCloudSQLApiEnablement():
+def CheckCloudSQLApiEnablement():
   if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
     return
   try:
@@ -2866,13 +2854,13 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
 
-  if _HasCloudSQLChanges(args):
+  if HasCloudSQLChanges(args):
     region = GetRegion(args)
     project = getattr(
         args, 'project', None
     ) or properties.VALUES.core.project.Get(required=True)
-    if _EnabledCloudSqlApiRequired(args):
-      _CheckCloudSQLApiEnablement()
+    if EnabledCloudSqlApiRequired(args):
+      CheckCloudSQLApiEnablement()
     changes.append(
         config_changes.CloudSQLChanges.FromArgs(
             project=project, region=region, args=args
@@ -3106,8 +3094,9 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if FlagIsExplicitlySet(args, 'mesh'):
     if args.mesh:
       changes.append(
-          config_changes.SetTemplateAnnotationChange(
-              revision.MESH_ANNOTATION, args.mesh
+          config_changes.SetServiceMeshChange(
+              project=properties.VALUES.core.project.Get(required=True),
+              mesh_name=args.mesh,
           )
       )
     else:
@@ -4741,8 +4730,8 @@ def BaseImageArg():
               ' updates. When deploying from source using the Google Cloud'
               ' buildpacks, this flag will also override the base image used'
               ' for the application image. See'
-              ' https://cloud.google.com/run/docs/deploying-source-code for'
-              ' more details.'
+              ' https://cloud.google.com/run/docs/configuring/services/automatic-base-image-updates'
+              ' for more details.'
           ),
       )
   )

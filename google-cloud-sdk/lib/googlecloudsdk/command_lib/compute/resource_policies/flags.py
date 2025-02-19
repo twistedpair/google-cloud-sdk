@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -157,7 +158,7 @@ def GetOnSourceDiskDeleteFlagMapper(messages):
       'source disk deletion.')
 
 
-def AddSnapshotScheduleArgs(parser, messages):
+def AddSnapshotScheduleArgs(parser, messages, support_snapshot_region=False):
   """Adds flags specific to snapshot schedule resource policies."""
   AddSnapshotMaxRetentionDaysArgs(parser)
   AddOnSourceDiskDeleteArgs(parser, messages)
@@ -168,7 +169,16 @@ def AddSnapshotScheduleArgs(parser, messages):
       action='store_true',
       help='Create an application consistent snapshot by informing the OS to '
            'prepare for the snapshot process.')
-  compute_flags.AddStorageLocationFlag(snapshot_properties_group, 'snapshot')
+  snapshot_location_group = snapshot_properties_group.add_group(
+      mutex=True,
+  )
+  compute_flags.AddStorageLocationFlag(snapshot_location_group, 'snapshot')
+  if support_snapshot_region:
+    snapshot_location_group.add_argument(
+        '--snapshot-region',
+        help='Region where the snapshot is scoped to.',
+        completer=compute_completers.RegionsCompleter,
+    )
 
 
 def AddInstanceScheduleArgs(parser):

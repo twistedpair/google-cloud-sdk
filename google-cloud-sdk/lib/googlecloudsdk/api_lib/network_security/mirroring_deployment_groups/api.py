@@ -30,6 +30,7 @@ from googlecloudsdk.core import resources
 _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1',
 }
 _API_NAME = 'networksecurity'
 
@@ -95,12 +96,8 @@ class Client:
     deployment_group = self.messages.MirroringDeploymentGroup(
         labels=labels,
         network=network,
+        description=description,
     )
-
-    # TODO(b/381836581): Remove this check once the field is available in BETA.
-    # BETA API doesn't have the new field yet, so don't assign it.
-    if hasattr(deployment_group, 'description'):
-      deployment_group.description = description
 
     create_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest(
         mirroringDeploymentGroup=deployment_group,
@@ -142,13 +139,8 @@ class Client:
     """
     dg = self.messages.MirroringDeploymentGroup(
         labels=update_fields.get('labels', None),
+        description=description,
     )
-
-    # TODO(b/381836581): Remove this check once the field is
-    # available in BETA and V1 (and b/381837549).
-    # BETA API doesn't have the new field yet, so don't assign it.
-    if hasattr(dg, 'description'):
-      dg.description = description
 
     update_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest(
         name=name,

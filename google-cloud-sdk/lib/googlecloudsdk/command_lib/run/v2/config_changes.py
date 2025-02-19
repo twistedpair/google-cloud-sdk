@@ -21,7 +21,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 import dataclasses
 from typing import TypedDict
 
@@ -37,7 +37,7 @@ from googlecloudsdk.command_lib.run.v2 import volumes as volumes_lib
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import instance_split
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import k8s_min
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import vendor_settings
-from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool
+from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as worker_pool_objects
 
 
 def WithChanges(resource, changes):
@@ -337,6 +337,193 @@ class ResourceLimitsChange(ContainerConfigChanger):
         container.resources.limits['nvidia.com/gpu'] = self.gpu
 
 
+def _GetCloudSQLVolume(resource):
+  """Returns the Cloud SQL volume for the given worker pool."""
+  for volume in resource.template.volumes:
+    if volume.name == 'cloudsql' and volume.cloud_sql_instance:
+      return volume
+  return None
+
+
+def _AugmentSQLInstance(
+    instance_str: str,
+    project: str | None,
+    region: str | None,
+) -> str:
+  """Validates and augments the given Cloud SQL instance with the project and region if needed."""
+  instance = instance_str.split(':')
+  # If the instance is already fully qualified, return it as is.
+  if len(instance) == 3:
+    return instance_str
+  # If the instance is not fully qualified, but the project and region are
+  # provided, return the fully qualified instance.
+  elif len(instance) == 1:
+    if not project:
+      raise exceptions.CloudSQLError(
+          'To specify a Cloud SQL instance by plain name, you must specify'
+          ' a project.'
+      )
+    if not region:
+      raise exceptions.CloudSQLError(
+          'To specify a Cloud SQL instance by plain name, you must specify'
+          ' a region.'
+      )
+    return f'{project}:{region}:{instance_str}'
+  else:
+    raise exceptions.CloudSQLError(
+        'Malformed CloudSQL instance string: {}'.format(instance_str)
+    )
+
+
+def _AugmentSQLInstances(
+    instances: Sequence[str],
+    project: str | None,
+    region: str | None,
+) -> Sequence[str]:
+  """Validates and augments the given Cloud SQL instances with the project and region if needed."""
+  return [
+      _AugmentSQLInstance(instance, project, region) for instance in instances
+  ]
+
+
+@dataclasses.dataclass(frozen=True)
+class AddCloudSQLChanges(config_changes.TemplateConfigChanger):
+  """Represents the intent to append the given Cloud SQL instances to the current list.
+
+  Attributes:
+      project: Project to use as the default project for Cloud SQL instances.
+      region: Region to use as the default region for Cloud SQL instances
+      add_cloudsql_instances: List of Cloud SQL instances to append.
+  """
+
+  project: str | None = None
+  region: str | None = None
+  add_cloudsql_instances: Sequence[str] = dataclasses.field(
+      default_factory=list
+  )
+
+  def Adjust(self, resource):
+    cloud_sql_volume = _GetCloudSQLVolume(resource)
+    # If the volume doesn't exist, create it.
+    if cloud_sql_volume is None:
+      cloud_sql_volume = k8s_min.Volume(
+          name='cloudsql',
+          cloud_sql_instance=k8s_min.CloudSqlInstance(
+              instances=_AugmentSQLInstances(
+                  self.add_cloudsql_instances, self.project, self.region
+              )
+          ),
+      )
+      resource.template.volumes.append(cloud_sql_volume)
+    else:
+      # If the cloud sql volume already exists, append the new instances.
+      cloud_sql_volume.cloud_sql_instance.instances.extend(
+          _AugmentSQLInstances(
+              self.add_cloudsql_instances, self.project, self.region
+          )
+      )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class RemoveCloudSQLChanges(config_changes.TemplateConfigChanger):
+  """Represents the intent to remove the given Cloud SQL instances from the current list.
+
+  Attributes:
+      project: Project to use as the default project for Cloud SQL instances.
+      region: Region to use as the default region for Cloud SQL instances
+      remove_cloudsql_instances: List of Cloud SQL instances to remove.
+  """
+
+  project: str | None = None
+  region: str | None = None
+  remove_cloudsql_instances: Sequence[str] = dataclasses.field(
+      default_factory=list
+  )
+
+  def Adjust(self, resource):
+    cloud_sql_volume = _GetCloudSQLVolume(resource)
+    # If the cloud sql volume already exists, remove the instances.
+    # Else, do nothing.
+    if cloud_sql_volume is not None:
+      instances_to_remove = set(
+          _AugmentSQLInstances(
+              self.remove_cloudsql_instances, self.project, self.region
+          )
+      )
+      cloud_sql_volume.cloud_sql_instance.instances = [
+          instance
+          for instance in cloud_sql_volume.cloud_sql_instance.instances
+          if instance not in instances_to_remove
+      ]
+      # In case the instance list is empty after removals, remove the volume.
+      if not cloud_sql_volume.cloud_sql_instance.instances:
+        resource.template.volumes = [
+            volume
+            for volume in resource.template.volumes
+            if volume.name != 'cloudsql'
+        ]
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class ClearCloudSQLChanges(config_changes.TemplateConfigChanger):
+  """Represents the intent to clear the current list of Cloud SQL instances.
+
+  Attributes:
+      project: Project to use as the default project for Cloud SQL instances.
+      region: Region to use as the default region for Cloud SQL instances
+      clear_cloudsql_instances: Whether to clear the Cloud SQL instances.
+  """
+
+  def Adjust(self, resource):
+    # If the cloud sql volume already exists, clear the instances.
+    # Else, do nothing.
+    resource.template.volumes = [
+        volume
+        for volume in resource.template.volumes
+        if volume.name != 'cloudsql'
+    ]
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class SetCloudSQLChanges(config_changes.TemplateConfigChanger):
+  """Represents the intent to replace the current list of Cloud SQL instances with the given list.
+
+  Attributes:
+      project: Project to use as the default project for Cloud SQL instances.
+      region: Region to use as the default region for Cloud SQL instances
+      set_cloudsql_instances: List of Cloud SQL instances to set.
+  """
+
+  project: str | None = None
+  region: str | None = None
+  set_cloudsql_instances: Sequence[str] = dataclasses.field(
+      default_factory=list
+  )
+
+  def Adjust(self, resource):
+    cloud_sql_volume = _GetCloudSQLVolume(resource)
+    # If the volume doesn't exist, create one with the given instances.
+    if cloud_sql_volume is None:
+      cloud_sql_volume = k8s_min.Volume(
+          name='cloudsql',
+          cloud_sql_instance=k8s_min.CloudSqlInstance(
+              instances=_AugmentSQLInstances(
+                  self.set_cloudsql_instances, self.project, self.region
+              )
+          ),
+      )
+      resource.template.volumes.append(cloud_sql_volume)
+    else:
+      # If the cloud sql volume already exists, replace the instances.
+      cloud_sql_volume.cloud_sql_instance.instances = _AugmentSQLInstances(
+          self.set_cloudsql_instances, self.project, self.region
+      )
+    return resource
+
+
 _MAX_RESOURCE_NAME_LENGTH = 63
 
 
@@ -371,14 +558,20 @@ class MeshChange(config_changes.TemplateConfigChanger):
   """Represents the user intent to enable/disable Cloud Service Mesh.
 
   Attributes:
-    mesh: Mesh resource name in the format of
+    project: The project to use for the mesh when not specified in mesh_name.
+    mesh_name: Mesh resource name in the format of MESH_NAME or
       projects/PROJECT/locations/global/meshes/MESH_NAME.
   """
 
-  mesh: str
+  project: str
+  mesh_name: str
 
   def Adjust(self, resource):
-    resource.template.service_mesh.mesh = self.mesh
+    resource.template.service_mesh.mesh = (
+        self.mesh_name
+        if not self.mesh_name or '/' in self.mesh_name
+        else f'projects/{self.project}/locations/global/meshes/{self.mesh_name}'
+    )
     return resource
 
 
@@ -1016,7 +1209,7 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
   max_surge: flags.MaxSurgeValue | None = None
   max_unavailable: flags.MaxUnavailableValue | None = None
 
-  def Adjust(self, worker_pool_resource: worker_pool.WorkerPool):
+  def Adjust(self, worker_pool_resource: worker_pool_objects.WorkerPool):
     """Adjusts worker pool scaling.
 
     Args:
@@ -1108,7 +1301,7 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
 class NoPromoteChange(config_changes.NonTemplateConfigChanger):
   """Represents the user intent to block instance assignment for a new worker revision."""
 
-  def Adjust(self, resource: worker_pool.WorkerPool):
+  def Adjust(self, resource: worker_pool_objects.WorkerPool):
     """Removes LATEST from the worker pools instance assignments and assign the percent to the latest ready revision."""
     if not resource.generation:
       raise exceptions.ConfigurationError(
@@ -1137,7 +1330,7 @@ class InstanceSplitChange(config_changes.NonTemplateConfigChanger):
   to_latest: bool = False
   to_revisions: dict[str, int] = dataclasses.field(default_factory=dict)
 
-  def Adjust(self, resource: worker_pool.WorkerPool):
+  def Adjust(self, resource: worker_pool_objects.WorkerPool):
     if self.to_latest:
       resource.instance_splits.clear()
       resource.instance_splits.append(

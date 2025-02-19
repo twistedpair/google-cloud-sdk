@@ -40,6 +40,8 @@ except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.Retry, object, None]  # type: ignore
 
 
+from google.iam.v1 import iam_policy_pb2  # type: ignore
+from google.iam.v1 import policy_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as gcr_worker_pool
 from google.longrunning import operations_pb2  # type: ignore
@@ -85,6 +87,14 @@ class WorkerPoolsRestInterceptor:
                 logging.log(f"Received response: {response}")
                 return response
 
+            def pre_get_iam_policy(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_get_iam_policy(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
             def pre_get_worker_pool(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -98,6 +108,22 @@ class WorkerPoolsRestInterceptor:
                 return request, metadata
 
             def post_list_worker_pools(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
+            def pre_set_iam_policy(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_set_iam_policy(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
+            def pre_test_iam_permissions(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_test_iam_permissions(self, response):
                 logging.log(f"Received response: {response}")
                 return response
 
@@ -146,6 +172,22 @@ class WorkerPoolsRestInterceptor:
         it is returned to user code.
         """
         return response
+    def pre_get_iam_policy(self, request: iam_policy_pb2.GetIamPolicyRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[iam_policy_pb2.GetIamPolicyRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for get_iam_policy
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the WorkerPools server.
+        """
+        return request, metadata
+
+    def post_get_iam_policy(self, response: policy_pb2.Policy) -> policy_pb2.Policy:
+        """Post-rpc interceptor for get_iam_policy
+
+        Override in a subclass to manipulate the response
+        after it is returned by the WorkerPools server but before
+        it is returned to user code.
+        """
+        return response
     def pre_get_worker_pool(self, request: worker_pool.GetWorkerPoolRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[worker_pool.GetWorkerPoolRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for get_worker_pool
 
@@ -172,6 +214,38 @@ class WorkerPoolsRestInterceptor:
 
     def post_list_worker_pools(self, response: worker_pool.ListWorkerPoolsResponse) -> worker_pool.ListWorkerPoolsResponse:
         """Post-rpc interceptor for list_worker_pools
+
+        Override in a subclass to manipulate the response
+        after it is returned by the WorkerPools server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_set_iam_policy(self, request: iam_policy_pb2.SetIamPolicyRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[iam_policy_pb2.SetIamPolicyRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for set_iam_policy
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the WorkerPools server.
+        """
+        return request, metadata
+
+    def post_set_iam_policy(self, response: policy_pb2.Policy) -> policy_pb2.Policy:
+        """Post-rpc interceptor for set_iam_policy
+
+        Override in a subclass to manipulate the response
+        after it is returned by the WorkerPools server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_test_iam_permissions(self, request: iam_policy_pb2.TestIamPermissionsRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[iam_policy_pb2.TestIamPermissionsRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for test_iam_permissions
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the WorkerPools server.
+        """
+        return request, metadata
+
+    def post_test_iam_permissions(self, response: iam_policy_pb2.TestIamPermissionsResponse) -> iam_policy_pb2.TestIamPermissionsResponse:
+        """Post-rpc interceptor for test_iam_permissions
 
         Override in a subclass to manipulate the response
         after it is returned by the WorkerPools server but before
@@ -483,6 +557,146 @@ class WorkerPoolsRestTransport(WorkerPoolsTransport):
             resp = self._interceptor.post_delete_worker_pool(resp)
             return resp
 
+    class _GetIamPolicy(WorkerPoolsRestStub):
+        def __hash__(self):
+            return hash("GetIamPolicy")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: iam_policy_pb2.GetIamPolicyRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> policy_pb2.Policy:
+            r"""Call the get iam policy method over HTTP.
+
+            Args:
+                request (~.iam_policy_pb2.GetIamPolicyRequest):
+                    The request object. Request message for ``GetIamPolicy`` method.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.policy_pb2.Policy:
+                    Defines an Identity and Access Management (IAM) policy.
+                It is used to specify access control policies for Cloud
+                Platform resources.
+
+                A ``Policy`` is a collection of ``bindings``. A
+                ``binding`` binds one or more ``members`` to a single
+                ``role``. Members can be user accounts, service
+                accounts, Google groups, and domains (such as G Suite).
+                A ``role`` is a named list of permissions (defined by
+                IAM or configured by users). A ``binding`` can
+                optionally specify a ``condition``, which is a logic
+                expression that further constrains the role binding
+                based on attributes about the request and/or target
+                resource.
+
+                **JSON Example**
+
+                ::
+
+                    {
+                      "bindings": [
+                        {
+                          "role": "roles/resourcemanager.organizationAdmin",
+                          "members": [
+                            "user:mike@example.com",
+                            "group:admins@example.com",
+                            "domain:google.com",
+                            "serviceAccount:my-project-id@appspot.gserviceaccount.com"
+                          ]
+                        },
+                        {
+                          "role": "roles/resourcemanager.organizationViewer",
+                          "members": ["user:eve@example.com"],
+                          "condition": {
+                            "title": "expirable access",
+                            "description": "Does not grant access after Sep 2020",
+                            "expression": "request.time <
+                            timestamp('2020-10-01T00:00:00.000Z')",
+                          }
+                        }
+                      ]
+                    }
+
+                **YAML Example**
+
+                ::
+
+                    bindings:
+                    - members:
+                      - user:mike@example.com
+                      - group:admins@example.com
+                      - domain:google.com
+                      - serviceAccount:my-project-id@appspot.gserviceaccount.com
+                      role: roles/resourcemanager.organizationAdmin
+                    - members:
+                      - user:eve@example.com
+                      role: roles/resourcemanager.organizationViewer
+                      condition:
+                        title: expirable access
+                        description: Does not grant access after Sep 2020
+                        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+
+                For a description of IAM and its features, see the `IAM
+                developer's
+                guide <https://cloud.google.com/iam/docs>`__.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'get',
+                'uri': '/v2/{resource=projects/*/locations/*/workerPools/*}:getIamPolicy',
+            },
+            ]
+            request, metadata = self._interceptor.pre_get_iam_policy(request, metadata)
+            pb_request = request
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = policy_pb2.Policy()
+            pb_resp = resp
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_get_iam_policy(resp)
+            return resp
+
     class _GetWorkerPool(WorkerPoolsRestStub):
         def __hash__(self):
             return hash("GetWorkerPool")
@@ -647,6 +861,237 @@ class WorkerPoolsRestTransport(WorkerPoolsTransport):
             resp = self._interceptor.post_list_worker_pools(resp)
             return resp
 
+    class _SetIamPolicy(WorkerPoolsRestStub):
+        def __hash__(self):
+            return hash("SetIamPolicy")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: iam_policy_pb2.SetIamPolicyRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> policy_pb2.Policy:
+            r"""Call the set iam policy method over HTTP.
+
+            Args:
+                request (~.iam_policy_pb2.SetIamPolicyRequest):
+                    The request object. Request message for ``SetIamPolicy`` method.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.policy_pb2.Policy:
+                    Defines an Identity and Access Management (IAM) policy.
+                It is used to specify access control policies for Cloud
+                Platform resources.
+
+                A ``Policy`` is a collection of ``bindings``. A
+                ``binding`` binds one or more ``members`` to a single
+                ``role``. Members can be user accounts, service
+                accounts, Google groups, and domains (such as G Suite).
+                A ``role`` is a named list of permissions (defined by
+                IAM or configured by users). A ``binding`` can
+                optionally specify a ``condition``, which is a logic
+                expression that further constrains the role binding
+                based on attributes about the request and/or target
+                resource.
+
+                **JSON Example**
+
+                ::
+
+                    {
+                      "bindings": [
+                        {
+                          "role": "roles/resourcemanager.organizationAdmin",
+                          "members": [
+                            "user:mike@example.com",
+                            "group:admins@example.com",
+                            "domain:google.com",
+                            "serviceAccount:my-project-id@appspot.gserviceaccount.com"
+                          ]
+                        },
+                        {
+                          "role": "roles/resourcemanager.organizationViewer",
+                          "members": ["user:eve@example.com"],
+                          "condition": {
+                            "title": "expirable access",
+                            "description": "Does not grant access after Sep 2020",
+                            "expression": "request.time <
+                            timestamp('2020-10-01T00:00:00.000Z')",
+                          }
+                        }
+                      ]
+                    }
+
+                **YAML Example**
+
+                ::
+
+                    bindings:
+                    - members:
+                      - user:mike@example.com
+                      - group:admins@example.com
+                      - domain:google.com
+                      - serviceAccount:my-project-id@appspot.gserviceaccount.com
+                      role: roles/resourcemanager.organizationAdmin
+                    - members:
+                      - user:eve@example.com
+                      role: roles/resourcemanager.organizationViewer
+                      condition:
+                        title: expirable access
+                        description: Does not grant access after Sep 2020
+                        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+
+                For a description of IAM and its features, see the `IAM
+                developer's
+                guide <https://cloud.google.com/iam/docs>`__.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v2/{resource=projects/*/locations/*/workerPools/*}:setIamPolicy',
+                'body': '*',
+            },
+            ]
+            request, metadata = self._interceptor.pre_set_iam_policy(request, metadata)
+            pb_request = request
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = policy_pb2.Policy()
+            pb_resp = resp
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_set_iam_policy(resp)
+            return resp
+
+    class _TestIamPermissions(WorkerPoolsRestStub):
+        def __hash__(self):
+            return hash("TestIamPermissions")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: iam_policy_pb2.TestIamPermissionsRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> iam_policy_pb2.TestIamPermissionsResponse:
+            r"""Call the test iam permissions method over HTTP.
+
+            Args:
+                request (~.iam_policy_pb2.TestIamPermissionsRequest):
+                    The request object. Request message for ``TestIamPermissions`` method.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.iam_policy_pb2.TestIamPermissionsResponse:
+                    Response message for ``TestIamPermissions`` method.
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v2/{resource=projects/*/locations/*/workerPools/*}:testIamPermissions',
+                'body': '*',
+            },
+            ]
+            request, metadata = self._interceptor.pre_test_iam_permissions(request, metadata)
+            pb_request = request
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = iam_policy_pb2.TestIamPermissionsResponse()
+            pb_resp = resp
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_test_iam_permissions(resp)
+            return resp
+
     class _UpdateWorkerPool(WorkerPoolsRestStub):
         def __hash__(self):
             return hash("UpdateWorkerPool")
@@ -749,6 +1194,14 @@ class WorkerPoolsRestTransport(WorkerPoolsTransport):
         return self._DeleteWorkerPool(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def get_iam_policy(self) -> Callable[
+            [iam_policy_pb2.GetIamPolicyRequest],
+            policy_pb2.Policy]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._GetIamPolicy(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def get_worker_pool(self) -> Callable[
             [worker_pool.GetWorkerPoolRequest],
             worker_pool.WorkerPool]:
@@ -763,6 +1216,22 @@ class WorkerPoolsRestTransport(WorkerPoolsTransport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._ListWorkerPools(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def set_iam_policy(self) -> Callable[
+            [iam_policy_pb2.SetIamPolicyRequest],
+            policy_pb2.Policy]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._SetIamPolicy(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def test_iam_permissions(self) -> Callable[
+            [iam_policy_pb2.TestIamPermissionsRequest],
+            iam_policy_pb2.TestIamPermissionsResponse]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._TestIamPermissions(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def update_worker_pool(self) -> Callable[

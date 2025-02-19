@@ -72,6 +72,18 @@ class Collections(enum.Enum):
       ['projectId', 'datasetId', 'routineId'],
       True
   )
+  ROWACCESSPOLICIES = (
+      'rowAccessPolicies',
+      'projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}/'
+      'rowAccessPolicies/{+policyId}',
+      {
+          '':
+              'projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/'
+              'rowAccessPolicies/{rowAccessPoliciesId}',
+      },
+      ['projectId', 'datasetId', 'tableId', 'policyId'],
+      True
+  )
   TABLEDATA = (
       'tabledata',
       'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',

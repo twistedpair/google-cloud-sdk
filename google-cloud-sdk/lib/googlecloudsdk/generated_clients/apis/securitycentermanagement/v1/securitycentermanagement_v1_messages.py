@@ -2698,7 +2698,7 @@ class SimulatedFinding(_messages.Message):
       ization_id}/sources/{source_id}/findings/{finding_id}` *
       `folders/{folder_id}/sources/{source_id}/findings/{finding_id}` *
       `projects/{project_id}/sources/{source_id}/findings/{finding_id}`
-    parent: The [relative resource name](https://google.aip.dev/122) of the
+    parent:  The [relative resource name](https://google.aip.dev/122) of the
       source the finding belongs to. For example,
       `organizations/{organization_id}/sources/{source_id}`. This field is
       immutable after creation time.

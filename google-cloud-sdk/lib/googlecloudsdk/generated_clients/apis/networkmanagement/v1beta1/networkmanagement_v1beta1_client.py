@@ -39,12 +39,218 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_global_operations = self.OrganizationsLocationsGlobalOperationsService(self)
+    self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_global_connectivityTests = self.ProjectsLocationsGlobalConnectivityTestsService(self)
     self.projects_locations_global_operations = self.ProjectsLocationsGlobalOperationsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_vpcFlowLogsConfigs = self.ProjectsLocationsVpcFlowLogsConfigsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsGlobalOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global_operations resource."""
+
+    _NAME = 'organizations_locations_global_operations'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1beta1.OrganizationsLocationsGlobalOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/global/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='networkmanagement.organizations.locations.global.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/global/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='networkmanagement.organizations.locations.global.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/global/operations/{operationsId}',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.global.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/global/operations',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.global.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global resource."""
+
+    _NAME = 'organizations_locations_global'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1beta1.OrganizationsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1beta1.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsGetRequest',
+        response_type_name='Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (NetworkmanagementOrganizationsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations',
+        http_method='GET',
+        method_id='networkmanagement.organizations.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/locations',
+        request_field='',
+        request_type_name='NetworkmanagementOrganizationsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1beta1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsGlobalConnectivityTestsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_connectivityTests resource."""
@@ -438,7 +644,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with state=DISABLED will fail. 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: - name - create_time - update_time - labels - description .
+      r"""Creates a new `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Creating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - creating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest) input message
@@ -546,7 +752,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with state=DISABLED will fail. 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: - name - create_time - update_time - labels - description .
+      r"""Updates an existing `VpcFlowLogsConfig`. If a configuration with the exact same settings already exists (even if the ID is different), the creation fails. Notes: 1. Updating a configuration with state=DISABLED will fail 2. The following fields are not considered as `settings` for the purpose of the check mentioned above, therefore - updating another configuration with the same fields but different values for the following fields will fail as well: * name * create_time * update_time * labels * description.
 
       Args:
         request: (NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest) input message

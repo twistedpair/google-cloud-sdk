@@ -687,7 +687,7 @@ class CloudkmsV1(base_api.BaseApiClient):
         method_id='cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.getPublicKey',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['publicKeyFormat'],
         relative_path='v1/{+name}/publicKey',
         request_field='',
         request_type_name='CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRequest',

@@ -1722,12 +1722,15 @@ class Entitlement(_messages.Message):
       ACCOUNT_NOT_ACTIVE: Account is linked but not active.
       ACTIVE: Entitlement and Account are active.
       ACCOUNT_SUSPENDED: Account is suspended.
+      NOT_APPROVED_IN_PRIVATE_MARKETPLACE: Entitlement is not approved in
+        private marketplace.
     """
     STATE_UNSPECIFIED = 0
     ACCOUNT_NOT_LINKED = 1
     ACCOUNT_NOT_ACTIVE = 2
     ACTIVE = 3
     ACCOUNT_SUSPENDED = 4
+    NOT_APPROVED_IN_PRIVATE_MARKETPLACE = 5
 
   cloudAccountDetails = _messages.MessageField('CloudAccountDetails', 1)
   entitlementId = _messages.StringField(2)

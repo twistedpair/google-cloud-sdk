@@ -159,10 +159,6 @@ class Artifacts(_messages.Message):
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
       objects fail to be pushed, the build is marked FAILURE.
-    testResults: Optional. Files in the workspace matching specified paths
-      globs will be uploaded to the specified Cloud Storage location using the
-      builder service account's credentials. Will also contain the format of
-      the test which by default will be JUnit
   """
 
   goModules = _messages.MessageField('GoModule', 1, repeated=True)
@@ -171,7 +167,6 @@ class Artifacts(_messages.Message):
   npmPackages = _messages.MessageField('NpmPackage', 4, repeated=True)
   objects = _messages.MessageField('ArtifactObjects', 5)
   pythonPackages = _messages.MessageField('PythonPackage', 6, repeated=True)
-  testResults = _messages.MessageField('TestResults', 7)
 
 
 class BatchCreateBitbucketServerConnectedRepositoriesRequest(_messages.Message):
@@ -444,6 +439,8 @@ class Build(_messages.Message):
       this build, if it was triggered automatically.
     createTime: Output only. Time at which the request to create the build was
       received.
+    dependencies: Optional. Dependencies that the Cloud Build worker will
+      fetch before executing user steps.
     failureInfo: Output only. Contains information about the build when
       status=FAILURE.
     finishTime: Output only. Time at which execution of the build was
@@ -588,31 +585,32 @@ class Build(_messages.Message):
   availableSecrets = _messages.MessageField('Secrets', 3)
   buildTriggerId = _messages.StringField(4)
   createTime = _messages.StringField(5)
-  failureInfo = _messages.MessageField('FailureInfo', 6)
-  finishTime = _messages.StringField(7)
-  gitConfig = _messages.MessageField('GitConfig', 8)
-  id = _messages.StringField(9)
-  images = _messages.StringField(10, repeated=True)
-  logUrl = _messages.StringField(11)
-  logsBucket = _messages.StringField(12)
-  name = _messages.StringField(13)
-  options = _messages.MessageField('BuildOptions', 14)
-  projectId = _messages.StringField(15)
-  queueTtl = _messages.StringField(16)
-  results = _messages.MessageField('Results', 17)
-  secrets = _messages.MessageField('Secret', 18, repeated=True)
-  serviceAccount = _messages.StringField(19)
-  source = _messages.MessageField('Source', 20)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 21)
-  startTime = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  statusDetail = _messages.StringField(24)
-  steps = _messages.MessageField('BuildStep', 25, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 26)
-  tags = _messages.StringField(27, repeated=True)
-  timeout = _messages.StringField(28)
-  timing = _messages.MessageField('TimingValue', 29)
-  warnings = _messages.MessageField('Warning', 30, repeated=True)
+  dependencies = _messages.MessageField('Dependency', 6, repeated=True)
+  failureInfo = _messages.MessageField('FailureInfo', 7)
+  finishTime = _messages.StringField(8)
+  gitConfig = _messages.MessageField('GitConfig', 9)
+  id = _messages.StringField(10)
+  images = _messages.StringField(11, repeated=True)
+  logUrl = _messages.StringField(12)
+  logsBucket = _messages.StringField(13)
+  name = _messages.StringField(14)
+  options = _messages.MessageField('BuildOptions', 15)
+  projectId = _messages.StringField(16)
+  queueTtl = _messages.StringField(17)
+  results = _messages.MessageField('Results', 18)
+  secrets = _messages.MessageField('Secret', 19, repeated=True)
+  serviceAccount = _messages.StringField(20)
+  source = _messages.MessageField('Source', 21)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 22)
+  startTime = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusDetail = _messages.StringField(25)
+  steps = _messages.MessageField('BuildStep', 26, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 27)
+  tags = _messages.StringField(28, repeated=True)
+  timeout = _messages.StringField(29)
+  timing = _messages.MessageField('TimingValue', 30)
+  warnings = _messages.MessageField('Warning', 31, repeated=True)
 
 
 class BuildApproval(_messages.Message):
@@ -2905,6 +2903,20 @@ class DeleteWorkerPoolOperationMetadata(_messages.Message):
   workerPool = _messages.StringField(3)
 
 
+class Dependency(_messages.Message):
+  r"""A dependency that the Cloud Build worker will fetch before executing
+  user steps.
+
+  Fields:
+    empty: If set to true disable all dependency fetching (ignoring the
+      default source as well).
+    gitSource: Represents a git repository as a build dependency.
+  """
+
+  empty = _messages.BooleanField(1)
+  gitSource = _messages.MessageField('GitSourceDependency', 2)
+
+
 class DeveloperConnectConfig(_messages.Message):
   r"""This config defines the location of a source through Developer Connect.
 
@@ -3459,6 +3471,40 @@ class GitSource(_messages.Message):
   dir = _messages.StringField(1)
   revision = _messages.StringField(2)
   url = _messages.StringField(3)
+
+
+class GitSourceDependency(_messages.Message):
+  r"""Represents a git repository as a build dependency.
+
+  Fields:
+    depth: Optional. How much history should be fetched for the build (default
+      1, -1 for all history).
+    destPath: Required. Where should the files be placed on the worker.
+    recurseSubmodules: Optional. True if submodules should be fetched too
+      (default false).
+    repository: Required. The kind of repo (url or dev connect).
+    revision: Required. The revision that we will fetch the repo at.
+  """
+
+  depth = _messages.IntegerField(1)
+  destPath = _messages.StringField(2)
+  recurseSubmodules = _messages.BooleanField(3)
+  repository = _messages.MessageField('GitSourceRepository', 4)
+  revision = _messages.StringField(5)
+
+
+class GitSourceRepository(_messages.Message):
+  r"""A repository for a git source.
+
+  Fields:
+    developerConnect: The Developer Connect Git repository link or the url
+      that matches a repository link in the current project, formatted as
+      `projects/*/locations/*/connections/*/gitRepositoryLink/*`
+    url: Location of the Git repository.
+  """
+
+  developerConnect = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class GoModule(_messages.Message):
@@ -5078,38 +5124,6 @@ class StorageSourceManifest(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
-
-
-class TestResults(_messages.Message):
-  r"""Files in the workspace to upload to Cloud Storage upon successful
-  completion of all build steps.
-
-  Enums:
-    FormatValueValuesEnum: Optional. Format of the test results.
-
-  Fields:
-    bucketUri: Optional. Cloud Storage bucket and optional object path, in the
-      form "gs://bucket/path/to/somewhere/". (see [Bucket Name
-      Requirements](https://cloud.google.com/storage/docs/bucket-
-      naming#requirements)). Files in the workspace matching any path pattern
-      will be uploaded to Cloud Storage with this location as a prefix.
-    format: Optional. Format of the test results.
-    paths: Optional. Path globs used to match files in the build's workspace.
-  """
-
-  class FormatValueValuesEnum(_messages.Enum):
-    r"""Optional. Format of the test results.
-
-    Values:
-      FORMAT_UNSPECIFIED: The default format is JUnit.
-      JUNIT: The test results are in JUnit format.
-    """
-    FORMAT_UNSPECIFIED = 0
-    JUNIT = 1
-
-  bucketUri = _messages.StringField(1)
-  format = _messages.EnumField('FormatValueValuesEnum', 2)
-  paths = _messages.StringField(3, repeated=True)
 
 
 class TimeSpan(_messages.Message):

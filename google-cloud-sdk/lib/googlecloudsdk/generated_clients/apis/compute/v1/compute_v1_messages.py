@@ -6192,6 +6192,80 @@ class BfdStatusPacketCounts(_messages.Message):
   numTx = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
 
 
+class BgpRoute(_messages.Message):
+  r"""A BgpRoute object.
+
+  Enums:
+    OriginValueValuesEnum: [Output only] BGP origin (EGP, IGP or INCOMPLETE)
+
+  Fields:
+    asPaths: [Output only] AS-PATH for the route
+    communities: [Output only] BGP communities in human-readable A:B format.
+    destination: [Output only] Destination IP range for the route, in human-
+      readable CIDR format
+    med: [Output only] BGP multi-exit discriminator
+    origin: [Output only] BGP origin (EGP, IGP or INCOMPLETE)
+  """
+
+  class OriginValueValuesEnum(_messages.Enum):
+    r"""[Output only] BGP origin (EGP, IGP or INCOMPLETE)
+
+    Values:
+      BGP_ORIGIN_EGP: <no description>
+      BGP_ORIGIN_IGP: <no description>
+      BGP_ORIGIN_INCOMPLETE: <no description>
+    """
+    BGP_ORIGIN_EGP = 0
+    BGP_ORIGIN_IGP = 1
+    BGP_ORIGIN_INCOMPLETE = 2
+
+  asPaths = _messages.MessageField('BgpRouteAsPath', 1, repeated=True)
+  communities = _messages.StringField(2, repeated=True)
+  destination = _messages.MessageField('BgpRouteNetworkLayerReachabilityInformation', 3)
+  med = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  origin = _messages.EnumField('OriginValueValuesEnum', 5)
+
+
+class BgpRouteAsPath(_messages.Message):
+  r"""A BgpRouteAsPath object.
+
+  Enums:
+    TypeValueValuesEnum: [Output only] Type of AS-PATH segment (SEQUENCE or
+      SET)
+
+  Fields:
+    asns: [Output only] ASNs in the path segment. When type is SEQUENCE, these
+      are ordered.
+    type: [Output only] Type of AS-PATH segment (SEQUENCE or SET)
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""[Output only] Type of AS-PATH segment (SEQUENCE or SET)
+
+    Values:
+      AS_PATH_TYPE_SEQUENCE: <no description>
+      AS_PATH_TYPE_SET: <no description>
+    """
+    AS_PATH_TYPE_SEQUENCE = 0
+    AS_PATH_TYPE_SET = 1
+
+  asns = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class BgpRouteNetworkLayerReachabilityInformation(_messages.Message):
+  r"""Network Layer Reachability Information (NLRI) for a route.
+
+  Fields:
+    pathId: If the BGP session supports multiple paths (RFC 7911), the path
+      identifier for this route.
+    prefix: Human readable CIDR notation for a prefix. E.g. 10.42.0.0/16.
+  """
+
+  pathId = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  prefix = _messages.StringField(2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -27481,6 +27555,33 @@ class ComputeRoutersDeleteRequest(_messages.Message):
   router = _messages.StringField(4, required=True)
 
 
+class ComputeRoutersDeleteRoutePolicyRequest(_messages.Message):
+  r"""A ComputeRoutersDeleteRoutePolicyRequest object.
+
+  Fields:
+    policy: The Policy name for this request. Name must conform to RFC1035
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    router: Name of the Router resource where Route Policy is defined.
+  """
+
+  policy = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  router = _messages.StringField(5, required=True)
+
+
 class ComputeRoutersGetNatIpInfoRequest(_messages.Message):
   r"""A ComputeRoutersGetNatIpInfoRequest object.
 
@@ -27592,6 +27693,23 @@ class ComputeRoutersGetRequest(_messages.Message):
   router = _messages.StringField(3, required=True)
 
 
+class ComputeRoutersGetRoutePolicyRequest(_messages.Message):
+  r"""A ComputeRoutersGetRoutePolicyRequest object.
+
+  Fields:
+    policy: The Policy name for this request. Name must conform to RFC1035
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query for the route policy. The
+      name should conform to RFC1035.
+  """
+
+  policy = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  router = _messages.StringField(4, required=True)
+
+
 class ComputeRoutersGetRouterStatusRequest(_messages.Message):
   r"""A ComputeRoutersGetRouterStatusRequest object.
 
@@ -27629,6 +27747,126 @@ class ComputeRoutersInsertRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   router = _messages.MessageField('Router', 4)
+
+
+class ComputeRoutersListBgpRoutesRequest(_messages.Message):
+  r"""A ComputeRoutersListBgpRoutesRequest object.
+
+  Enums:
+    AddressFamilyValueValuesEnum: (Required) limit results to this address
+      family (either IPv4 or IPv6)
+    RouteTypeValueValuesEnum: (Required) limit results to this type of route
+      (either LEARNED or ADVERTISED)
+
+  Fields:
+    addressFamily: (Required) limit results to this address family (either
+      IPv4 or IPv6)
+    destinationPrefix: Limit results to destinations that are subnets of this
+      CIDR range
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    peer: (Required) limit results to the BGP peer with the given name. Name
+      should conform to RFC1035.
+    policyApplied: When true, the method returns post-policy routes.
+      Otherwise, it returns pre-policy routes.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
+    routeType: (Required) limit results to this type of route (either LEARNED
+      or ADVERTISED)
+    router: Name or id of the resource for this request. Name should conform
+      to RFC1035.
+  """
+
+  class AddressFamilyValueValuesEnum(_messages.Enum):
+    r"""(Required) limit results to this address family (either IPv4 or IPv6)
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+      UNSPECIFIED_IP_VERSION: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+    UNSPECIFIED_IP_VERSION = 2
+
+  class RouteTypeValueValuesEnum(_messages.Enum):
+    r"""(Required) limit results to this type of route (either LEARNED or
+    ADVERTISED)
+
+    Values:
+      ADVERTISED: <no description>
+      LEARNED: <no description>
+      UNSPECIFIED_ROUTE_TYPE: <no description>
+    """
+    ADVERTISED = 0
+    LEARNED = 1
+    UNSPECIFIED_ROUTE_TYPE = 2
+
+  addressFamily = _messages.EnumField('AddressFamilyValueValuesEnum', 1, default='UNSPECIFIED_IP_VERSION')
+  destinationPrefix = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(5)
+  pageToken = _messages.StringField(6)
+  peer = _messages.StringField(7)
+  policyApplied = _messages.BooleanField(8, default=True)
+  project = _messages.StringField(9, required=True)
+  region = _messages.StringField(10, required=True)
+  returnPartialSuccess = _messages.BooleanField(11)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 12, default='UNSPECIFIED_ROUTE_TYPE')
+  router = _messages.StringField(13, required=True)
 
 
 class ComputeRoutersListRequest(_messages.Message):
@@ -27702,6 +27940,80 @@ class ComputeRoutersListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRoutersListRoutePoliciesRequest(_messages.Message):
+  r"""A ComputeRoutersListRoutePoliciesRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
+    router: Name or id of the resource for this request. Name should conform
+      to RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  router = _messages.StringField(8, required=True)
+
+
 class ComputeRoutersPatchRequest(_messages.Message):
   r"""A ComputeRoutersPatchRequest object.
 
@@ -27727,6 +28039,33 @@ class ComputeRoutersPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   router = _messages.StringField(4, required=True)
   routerResource = _messages.MessageField('Router', 5)
+
+
+class ComputeRoutersPatchRoutePolicyRequest(_messages.Message):
+  r"""A ComputeRoutersPatchRoutePolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    routePolicy: A RoutePolicy resource to be passed as the request body.
+    router: Name of the Router resource where Route Policy is defined.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  routePolicy = _messages.MessageField('RoutePolicy', 4)
+  router = _messages.StringField(5, required=True)
 
 
 class ComputeRoutersPreviewRequest(_messages.Message):
@@ -27770,6 +28109,33 @@ class ComputeRoutersUpdateRequest(_messages.Message):
   requestId = _messages.StringField(3)
   router = _messages.StringField(4, required=True)
   routerResource = _messages.MessageField('Router', 5)
+
+
+class ComputeRoutersUpdateRoutePolicyRequest(_messages.Message):
+  r"""A ComputeRoutersUpdateRoutePolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    routePolicy: A RoutePolicy resource to be passed as the request body.
+    router: Name of the Router resource where Route Policy is defined.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  routePolicy = _messages.MessageField('RoutePolicy', 4)
+  router = _messages.StringField(5, required=True)
 
 
 class ComputeRoutesDeleteRequest(_messages.Message):
@@ -66540,6 +66906,63 @@ class RouteList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RoutePolicy(_messages.Message):
+  r"""A RoutePolicy object.
+
+  Enums:
+    TypeValueValuesEnum:
+
+  Fields:
+    description: An optional description of route policy.
+    fingerprint: A fingerprint for the Route Policy being applied to this
+      Router, which is essentially a hash of the Route Policy used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update Route Policy.
+      You must always provide an up-to-date fingerprint hash in order to
+      update or change labels. To see the latest fingerprint, make a
+      getRoutePolicy() request to retrieve a Route Policy.
+    name: Route Policy name, which must be a resource ID segment and unique
+      within all the router's Route Policies. Name should conform to RFC1035.
+    terms: List of terms (the order in the list is not important, they are
+      evaluated in order of priority). Order of policies is not retained and
+      might change when getting policy later.
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      ROUTE_POLICY_TYPE_EXPORT: The Route Policy is an Export Policy.
+      ROUTE_POLICY_TYPE_IMPORT: The Route Policy is an Import Policy.
+    """
+    ROUTE_POLICY_TYPE_EXPORT = 0
+    ROUTE_POLICY_TYPE_IMPORT = 1
+
+  description = _messages.StringField(1)
+  fingerprint = _messages.BytesField(2)
+  name = _messages.StringField(3)
+  terms = _messages.MessageField('RoutePolicyPolicyTerm', 4, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class RoutePolicyPolicyTerm(_messages.Message):
+  r"""A RoutePolicyPolicyTerm object.
+
+  Fields:
+    actions: CEL expressions to evaluate to modify a route when this term
+      matches.
+    match: CEL expression evaluated against a route to determine if this term
+      applies. When not set, the term applies to all routes.
+    priority: The evaluation priority for this term, which must be between 0
+      (inclusive) and 2^31 (exclusive), and unique within the list.
+  """
+
+  actions = _messages.MessageField('Expr', 1, repeated=True)
+  match = _messages.MessageField('Expr', 2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Router(_messages.Message):
   r"""Represents a Cloud Router resource. For more information about Cloud
   Router, read the Cloud Router overview.
@@ -66926,14 +67349,10 @@ class RouterBgpPeer(_messages.Message):
       the peerIpAddress is version 6.
     exportPolicies: List of export policies applied to this peer, in the order
       they must be evaluated. The name must correspond to an existing policy
-      that has ROUTE_POLICY_TYPE_EXPORT type. Note that Route Policies are
-      currently available in preview. Please use Beta API to use Route
-      Policies.
+      that has ROUTE_POLICY_TYPE_EXPORT type.
     importPolicies: List of import policies applied to this peer, in the order
       they must be evaluated. The name must correspond to an existing policy
-      that has ROUTE_POLICY_TYPE_IMPORT type. Note that Route Policies are
-      currently available in preview. Please use Beta API to use Route
-      Policies.
+      that has ROUTE_POLICY_TYPE_IMPORT type.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform.
     ipv4NexthopAddress: IPv4 address of the interface inside Google Cloud
@@ -67933,6 +68352,356 @@ class RouterStatusResponse(_messages.Message):
 
   kind = _messages.StringField(1, default='compute#routerStatusResponse')
   result = _messages.MessageField('RouterStatus', 2)
+
+
+class RoutersGetRoutePolicyResponse(_messages.Message):
+  r"""A RoutersGetRoutePolicyResponse object.
+
+  Fields:
+    resource: A RoutePolicy attribute.
+  """
+
+  resource = _messages.MessageField('RoutePolicy', 1)
+
+
+class RoutersListBgpRoutes(_messages.Message):
+  r"""A RoutersListBgpRoutes object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of resource. Always compute#routersListBgpRoutes
+      for lists of bgp routes.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    result: [Output Only] A list of bgp routes.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      LIST_OVERHEAD_QUOTA_EXCEED = 10
+      MISSING_TYPE_DEPENDENCY = 11
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
+      NEXT_HOP_CANNOT_IP_FORWARD = 13
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
+      NEXT_HOP_INSTANCE_NOT_FOUND = 15
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
+      NEXT_HOP_NOT_RUNNING = 17
+      NOT_CRITICAL_ERROR = 18
+      NO_RESULTS_ON_PAGE = 19
+      PARTIAL_SUCCESS = 20
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  kind = _messages.StringField(3, default='compute#routersListBgpRoutes')
+  nextPageToken = _messages.StringField(4)
+  result = _messages.MessageField('BgpRoute', 5, repeated=True)
+  selfLink = _messages.StringField(6)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
+
+
+class RoutersListRoutePolicies(_messages.Message):
+  r"""A RoutersListRoutePolicies object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of resource. Always
+      compute#routersListRoutePolicies for lists of route policies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    result: [Output Only] A list of route policies.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      LIST_OVERHEAD_QUOTA_EXCEED = 10
+      MISSING_TYPE_DEPENDENCY = 11
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
+      NEXT_HOP_CANNOT_IP_FORWARD = 13
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
+      NEXT_HOP_INSTANCE_NOT_FOUND = 15
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
+      NEXT_HOP_NOT_RUNNING = 17
+      NOT_CRITICAL_ERROR = 18
+      NO_RESULTS_ON_PAGE = 19
+      PARTIAL_SUCCESS = 20
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  kind = _messages.StringField(3, default='compute#routersListRoutePolicies')
+  nextPageToken = _messages.StringField(4)
+  result = _messages.MessageField('RoutePolicy', 5, repeated=True)
+  selfLink = _messages.StringField(6)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
 
 
 class RoutersPreviewResponse(_messages.Message):
@@ -69343,10 +70112,12 @@ class SecurityPolicyDdosProtectionConfig(_messages.Message):
 
     Values:
       ADVANCED: <no description>
+      ADVANCED_PREVIEW: <no description>
       STANDARD: <no description>
     """
     ADVANCED = 0
-    STANDARD = 1
+    ADVANCED_PREVIEW = 1
+    STANDARD = 2
 
   ddosProtection = _messages.EnumField('DdosProtectionValueValuesEnum', 1)
 
@@ -71394,11 +72165,10 @@ class Snapshot(_messages.Message):
       creating Snapshot from Instant Snapshot.
     sourceInstantSnapshotId: [Output Only] The unique ID of the instant
       snapshot used to create this snapshot. This value identifies the exact
-      instant snapshot that was used to create this persistent disk. For
-      example, if you created the persistent disk from an instant snapshot
-      that was later deleted and recreated under the same name, the source
-      instant snapshot ID would identify the exact instant snapshot that was
-      used.
+      instant snapshot that was used to create this snapshot. For example, if
+      you created the snapshot from an instant snapshot that was later deleted
+      and recreated under the same name, the source instant snapshot ID would
+      identify the exact instant snapshot that was used.
     sourceSnapshotSchedulePolicy: [Output Only] URL of the resource policy
       which created this scheduled snapshot.
     sourceSnapshotSchedulePolicyId: [Output Only] ID of the resource policy
@@ -75292,17 +76062,19 @@ class Subnetwork(_messages.Message):
       patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
       either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
-      PEER_MIGRATION or PRIVATE_SERVICE_CONNECT. PRIVATE is the default
-      purpose for user-created subnets or subnets that are automatically
-      created in auto mode networks. Subnets with purpose set to
+      PEER_MIGRATION, PRIVATE_SERVICE_CONNECT or PRIVATE_NAT. PRIVATE is the
+      default purpose for user-created subnets or subnets that are
+      automatically created in auto mode networks. Subnets with purpose set to
       GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
       subnetworks that are reserved for Envoy-based load balancers. A subnet
       with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
       using Private Service Connect. A subnet with purpose set to
       PEER_MIGRATION is used for subnet migration from one peered VPC to
-      another. If unspecified, the subnet purpose defaults to PRIVATE. The
-      enableFlowLogs field isn't supported if the subnet purpose field is set
-      to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+      another. A subnet with purpose set to PRIVATE_NAT is used for Private
+      NAT IP address by Private NAT Gateway. If unspecified, the subnet
+      purpose defaults to PRIVATE. The enableFlowLogs field isn't supported if
+      the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose is set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or BACKUP. An
@@ -75380,18 +76152,19 @@ class Subnetwork(_messages.Message):
     privateIpv6GoogleAccess: This field is for internal use. This field can be
       both set at resource creation time and updated using patch.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
-      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
-      subnets or subnets that are automatically created in auto mode networks.
-      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION,
+      PRIVATE_SERVICE_CONNECT or PRIVATE_NAT. PRIVATE is the default purpose
+      for user-created subnets or subnets that are automatically created in
+      auto mode networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
       for Envoy-based load balancers. A subnet with purpose set to
       PRIVATE_SERVICE_CONNECT is used to publish services using Private
       Service Connect. A subnet with purpose set to PEER_MIGRATION is used for
-      subnet migration from one peered VPC to another. If unspecified, the
-      subnet purpose defaults to PRIVATE. The enableFlowLogs field isn't
-      supported if the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
-      REGIONAL_MANAGED_PROXY.
+      subnet migration from one peered VPC to another. A subnet with purpose
+      set to PRIVATE_NAT is used for Private NAT IP address by Private NAT
+      Gateway. If unspecified, the subnet purpose defaults to PRIVATE. The
+      enableFlowLogs field isn't supported if the subnet purpose field is set
+      to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     reservedInternalRange: The URL of the reserved internal range.
@@ -75452,16 +76225,18 @@ class Subnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
-    PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
-    subnets or subnets that are automatically created in auto mode networks.
-    Subnets with purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY
-    are user-created subnetworks that are reserved for Envoy-based load
-    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
-    publish services using Private Service Connect. A subnet with purpose set
-    to PEER_MIGRATION is used for subnet migration from one peered VPC to
-    another. If unspecified, the subnet purpose defaults to PRIVATE. The
-    enableFlowLogs field isn't supported if the subnet purpose field is set to
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION,
+    PRIVATE_SERVICE_CONNECT or PRIVATE_NAT. PRIVATE is the default purpose for
+    user-created subnets or subnets that are automatically created in auto
+    mode networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+    REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved for
+    Envoy-based load balancers. A subnet with purpose set to
+    PRIVATE_SERVICE_CONNECT is used to publish services using Private Service
+    Connect. A subnet with purpose set to PEER_MIGRATION is used for subnet
+    migration from one peered VPC to another. A subnet with purpose set to
+    PRIVATE_NAT is used for Private NAT IP address by Private NAT Gateway. If
+    unspecified, the subnet purpose defaults to PRIVATE. The enableFlowLogs
+    field isn't supported if the subnet purpose field is set to
     GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
 
     Values:
@@ -81656,17 +82431,19 @@ class UsableSubnetwork(_messages.Message):
       first time the subnet is updated into IPV4_IPV6 dual stack.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
       either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
-      PEER_MIGRATION or PRIVATE_SERVICE_CONNECT. PRIVATE is the default
-      purpose for user-created subnets or subnets that are automatically
-      created in auto mode networks. Subnets with purpose set to
+      PEER_MIGRATION, PRIVATE_SERVICE_CONNECT or PRIVATE_NAT. PRIVATE is the
+      default purpose for user-created subnets or subnets that are
+      automatically created in auto mode networks. Subnets with purpose set to
       GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
       subnetworks that are reserved for Envoy-based load balancers. A subnet
       with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
       using Private Service Connect. A subnet with purpose set to
       PEER_MIGRATION is used for subnet migration from one peered VPC to
-      another. If unspecified, the subnet purpose defaults to PRIVATE. The
-      enableFlowLogs field isn't supported if the subnet purpose field is set
-      to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+      another. A subnet with purpose set to PRIVATE_NAT is used for Private
+      NAT IP address by Private NAT Gateway. If unspecified, the subnet
+      purpose defaults to PRIVATE. The enableFlowLogs field isn't supported if
+      the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose is set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or BACKUP. An
@@ -81692,18 +82469,19 @@ class UsableSubnetwork(_messages.Message):
       the subnet is updated into IPV4_IPV6 dual stack.
     network: Network URL.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
-      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
-      subnets or subnets that are automatically created in auto mode networks.
-      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION,
+      PRIVATE_SERVICE_CONNECT or PRIVATE_NAT. PRIVATE is the default purpose
+      for user-created subnets or subnets that are automatically created in
+      auto mode networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
       for Envoy-based load balancers. A subnet with purpose set to
       PRIVATE_SERVICE_CONNECT is used to publish services using Private
       Service Connect. A subnet with purpose set to PEER_MIGRATION is used for
-      subnet migration from one peered VPC to another. If unspecified, the
-      subnet purpose defaults to PRIVATE. The enableFlowLogs field isn't
-      supported if the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
-      REGIONAL_MANAGED_PROXY.
+      subnet migration from one peered VPC to another. A subnet with purpose
+      set to PRIVATE_NAT is used for Private NAT IP address by Private NAT
+      Gateway. If unspecified, the subnet purpose defaults to PRIVATE. The
+      enableFlowLogs field isn't supported if the subnet purpose field is set
+      to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     role: The role of subnetwork. Currently, this field is only used when
       purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
       value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that
@@ -81735,16 +82513,18 @@ class UsableSubnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
-    PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
-    subnets or subnets that are automatically created in auto mode networks.
-    Subnets with purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY
-    are user-created subnetworks that are reserved for Envoy-based load
-    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
-    publish services using Private Service Connect. A subnet with purpose set
-    to PEER_MIGRATION is used for subnet migration from one peered VPC to
-    another. If unspecified, the subnet purpose defaults to PRIVATE. The
-    enableFlowLogs field isn't supported if the subnet purpose field is set to
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION,
+    PRIVATE_SERVICE_CONNECT or PRIVATE_NAT. PRIVATE is the default purpose for
+    user-created subnets or subnets that are automatically created in auto
+    mode networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+    REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved for
+    Envoy-based load balancers. A subnet with purpose set to
+    PRIVATE_SERVICE_CONNECT is used to publish services using Private Service
+    Connect. A subnet with purpose set to PEER_MIGRATION is used for subnet
+    migration from one peered VPC to another. A subnet with purpose set to
+    PRIVATE_NAT is used for Private NAT IP address by Private NAT Gateway. If
+    unspecified, the subnet purpose defaults to PRIVATE. The enableFlowLogs
+    field isn't supported if the subnet purpose field is set to
     GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
 
     Values:

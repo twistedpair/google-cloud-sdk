@@ -506,6 +506,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'healthCheck'],
       True
   )
+  REGIONHEALTHSOURCES = (
+      'regionHealthSources',
+      'projects/{project}/regions/{region}/healthSources/{healthSource}',
+      {},
+      ['project', 'region', 'healthSource'],
+      True
+  )
   REGIONINSTANCEGROUPMANAGERRESIZEREQUESTS = (
       'regionInstanceGroupManagerResizeRequests',
       'projects/{project}/regions/{region}/instanceGroupManagers/'

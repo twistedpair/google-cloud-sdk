@@ -33,6 +33,7 @@ from .types.content import GroundingChunk
 from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
 from .types.content import LogprobsResult
+from .types.content import ModalityTokenCount
 from .types.content import Part
 from .types.content import PrebuiltVoiceConfig
 from .types.content import RetrievalMetadata
@@ -44,6 +45,7 @@ from .types.content import SpeechConfig
 from .types.content import VideoMetadata
 from .types.content import VoiceConfig
 from .types.content import HarmCategory
+from .types.content import Modality
 from .types.explanation import Attribution
 from .types.explanation import BlurBaselineConfig
 from .types.explanation import Examples
@@ -104,7 +106,9 @@ from .types.prediction_service import StreamingPredictResponse
 from .types.prediction_service import StreamingRawPredictRequest
 from .types.prediction_service import StreamingRawPredictResponse
 from .types.prediction_service import StreamRawPredictRequest
+from .types.tool import CodeExecutionResult
 from .types.tool import DynamicRetrievalConfig
+from .types.tool import ExecutableCode
 from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
@@ -112,6 +116,7 @@ from .types.tool import FunctionResponse
 from .types.tool import GoogleSearchRetrieval
 from .types.tool import RagRetrievalConfig
 from .types.tool import Retrieval
+from .types.tool import RetrievalConfig
 from .types.tool import Tool
 from .types.tool import ToolConfig
 from .types.tool import VertexAISearch
@@ -136,6 +141,7 @@ __all__ = (
 'ChatCompletionsRequest',
 'Citation',
 'CitationMetadata',
+'CodeExecutionResult',
 'ContainerRegistryDestination',
 'Content',
 'CountTokensRequest',
@@ -152,6 +158,7 @@ __all__ = (
 'Examples',
 'ExamplesOverride',
 'ExamplesRestrictionsNamespace',
+'ExecutableCode',
 'ExplainRequest',
 'ExplainResponse',
 'Explanation',
@@ -182,6 +189,8 @@ __all__ = (
 'IntegratedGradientsAttribution',
 'JiraSource',
 'LogprobsResult',
+'Modality',
+'ModalityTokenCount',
 'ModelExplanation',
 'Neighbor',
 'Part',
@@ -194,6 +203,7 @@ __all__ = (
 'RagRetrievalConfig',
 'RawPredictRequest',
 'Retrieval',
+'RetrievalConfig',
 'RetrievalMetadata',
 'SafetyRating',
 'SafetySetting',

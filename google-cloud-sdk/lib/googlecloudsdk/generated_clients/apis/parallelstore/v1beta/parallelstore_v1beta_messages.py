@@ -113,21 +113,22 @@ class Instance(_messages.Message):
   r"""A Parallelstore instance.
 
   Enums:
-    DeploymentTypeValueValuesEnum: Optional. The deployment type of the
-      instance. Allowed values are: * `SCRATCH`: the instance is a scratch
+    DeploymentTypeValueValuesEnum: Optional. Immutable. The deployment type of
+      the instance. Allowed values are: * `SCRATCH`: the instance is a scratch
       instance. * `PERSISTENT`: the instance is a persistent instance.
-    DirectoryStripeLevelValueValuesEnum: Optional. Stripe level for
+    DirectoryStripeLevelValueValuesEnum: Optional. Immutable. Stripe level for
       directories. Allowed values are: * `DIRECTORY_STRIPE_LEVEL_MIN`:
       recommended when directories contain a small number of files. *
       `DIRECTORY_STRIPE_LEVEL_BALANCED`: balances performance for workloads
       involving a mix of small and large directories. *
       `DIRECTORY_STRIPE_LEVEL_MAX`: recommended for directories with a large
       number of files.
-    FileStripeLevelValueValuesEnum: Optional. Stripe level for files. Allowed
-      values are: * `FILE_STRIPE_LEVEL_MIN`: offers the best performance for
-      small size files. * `FILE_STRIPE_LEVEL_BALANCED`: balances performance
-      for workloads involving a mix of small and large files. *
-      `FILE_STRIPE_LEVEL_MAX`: higher throughput performance for larger files.
+    FileStripeLevelValueValuesEnum: Optional. Immutable. Stripe level for
+      files. Allowed values are: * `FILE_STRIPE_LEVEL_MIN`: offers the best
+      performance for small size files. * `FILE_STRIPE_LEVEL_BALANCED`:
+      balances performance for workloads involving a mix of small and large
+      files. * `FILE_STRIPE_LEVEL_MAX`: higher throughput performance for
+      larger files.
     StateValueValuesEnum: Output only. The instance state.
 
   Messages:
@@ -144,24 +145,25 @@ class Instance(_messages.Message):
       Gibibytes (GiB). Allowed values are between 12000 and 100000, in
       multiples of 4000; e.g., 12000, 16000, 20000, ...
     createTime: Output only. The time when the instance was created.
-    deploymentType: Optional. The deployment type of the instance. Allowed
-      values are: * `SCRATCH`: the instance is a scratch instance. *
+    deploymentType: Optional. Immutable. The deployment type of the instance.
+      Allowed values are: * `SCRATCH`: the instance is a scratch instance. *
       `PERSISTENT`: the instance is a persistent instance.
     description: Optional. The description of the instance. 2048 characters or
       less.
-    directoryStripeLevel: Optional. Stripe level for directories. Allowed
-      values are: * `DIRECTORY_STRIPE_LEVEL_MIN`: recommended when directories
-      contain a small number of files. * `DIRECTORY_STRIPE_LEVEL_BALANCED`:
-      balances performance for workloads involving a mix of small and large
-      directories. * `DIRECTORY_STRIPE_LEVEL_MAX`: recommended for directories
-      with a large number of files.
+    directoryStripeLevel: Optional. Immutable. Stripe level for directories.
+      Allowed values are: * `DIRECTORY_STRIPE_LEVEL_MIN`: recommended when
+      directories contain a small number of files. *
+      `DIRECTORY_STRIPE_LEVEL_BALANCED`: balances performance for workloads
+      involving a mix of small and large directories. *
+      `DIRECTORY_STRIPE_LEVEL_MAX`: recommended for directories with a large
+      number of files.
     effectiveReservedIpRange: Output only. Immutable. The ID of the IP address
       range being used by the instance's VPC network. This field is populated
       by the service and contains the value currently used by the service.
-    fileStripeLevel: Optional. Stripe level for files. Allowed values are: *
-      `FILE_STRIPE_LEVEL_MIN`: offers the best performance for small size
-      files. * `FILE_STRIPE_LEVEL_BALANCED`: balances performance for
-      workloads involving a mix of small and large files. *
+    fileStripeLevel: Optional. Immutable. Stripe level for files. Allowed
+      values are: * `FILE_STRIPE_LEVEL_MIN`: offers the best performance for
+      small size files. * `FILE_STRIPE_LEVEL_BALANCED`: balances performance
+      for workloads involving a mix of small and large files. *
       `FILE_STRIPE_LEVEL_MAX`: higher throughput performance for larger files.
     labels: Optional. Cloud Labels are a flexible and lightweight mechanism
       for organizing cloud resources into groups that reflect a customer's
@@ -182,9 +184,9 @@ class Instance(_messages.Message):
   """
 
   class DeploymentTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The deployment type of the instance. Allowed values are: *
-    `SCRATCH`: the instance is a scratch instance. * `PERSISTENT`: the
-    instance is a persistent instance.
+    r"""Optional. Immutable. The deployment type of the instance. Allowed
+    values are: * `SCRATCH`: the instance is a scratch instance. *
+    `PERSISTENT`: the instance is a persistent instance.
 
     Values:
       DEPLOYMENT_TYPE_UNSPECIFIED: Default Deployment Type It is equivalent to
@@ -197,11 +199,11 @@ class Instance(_messages.Message):
     PERSISTENT = 2
 
   class DirectoryStripeLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Stripe level for directories. Allowed values are: *
-    `DIRECTORY_STRIPE_LEVEL_MIN`: recommended when directories contain a small
-    number of files. * `DIRECTORY_STRIPE_LEVEL_BALANCED`: balances performance
-    for workloads involving a mix of small and large directories. *
-    `DIRECTORY_STRIPE_LEVEL_MAX`: recommended for directories with a large
+    r"""Optional. Immutable. Stripe level for directories. Allowed values are:
+    * `DIRECTORY_STRIPE_LEVEL_MIN`: recommended when directories contain a
+    small number of files. * `DIRECTORY_STRIPE_LEVEL_BALANCED`: balances
+    performance for workloads involving a mix of small and large directories.
+    * `DIRECTORY_STRIPE_LEVEL_MAX`: recommended for directories with a large
     number of files.
 
     Values:
@@ -217,7 +219,7 @@ class Instance(_messages.Message):
     DIRECTORY_STRIPE_LEVEL_MAX = 3
 
   class FileStripeLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Stripe level for files. Allowed values are: *
+    r"""Optional. Immutable. Stripe level for files. Allowed values are: *
     `FILE_STRIPE_LEVEL_MIN`: offers the best performance for small size files.
     * `FILE_STRIPE_LEVEL_BALANCED`: balances performance for workloads
     involving a mix of small and large files. * `FILE_STRIPE_LEVEL_MAX`:

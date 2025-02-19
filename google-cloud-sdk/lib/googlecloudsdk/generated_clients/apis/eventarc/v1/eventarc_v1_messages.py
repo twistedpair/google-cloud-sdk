@@ -2211,7 +2211,7 @@ class GoogleCloudEventarcV1PipelineDestinationHttpEndpoint(_messages.Message):
       Pipeline expects that the message it receives adheres to the standard
       CloudEvent format. If it doesn't then the outgoing message request may
       fail with a persistent error.
-    uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
+    uri: Required. The URI of the HTTP endpoint. The value must be a RFC2396
       URI string. Examples: `https://svc.us-central1.p.local:8080/route`. Only
       the HTTPS protocol is supported.
   """
@@ -2539,7 +2539,7 @@ class HttpEndpoint(_messages.Message):
   r"""Represents a HTTP endpoint destination.
 
   Fields:
-    uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
+    uri: Required. The URI of the HTTP endpoint. The value must be a RFC2396
       URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
       central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
       The host can be either a static IP addressable from the VPC specified by

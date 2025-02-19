@@ -61,12 +61,24 @@ class Kubeconfig(object):
     self.clusters = {}
     self.users = {}
     self.contexts = {}
-    for cluster in self._data['clusters']:
-      self.clusters[cluster['name']] = cluster
-    for user in self._data['users']:
-      self.users[user['name']] = user
-    for context in self._data['contexts']:
-      self.contexts[context['name']] = context
+
+    entry = None
+    try:
+      for cluster in self._data['clusters']:
+        entry = cluster
+        self.clusters[cluster['name']] = cluster
+      for user in self._data['users']:
+        entry = user
+        self.users[user['name']] = user
+      for context in self._data['contexts']:
+        entry = context
+        self.contexts[context['name']] = context
+    except KeyError as error:
+      raise Error(
+          'expected key {0} not found for entry {1}'.format(error, entry)
+      )
+      # WARNING: this will clear the ~/.kube/config and re-create it
+      # with only one entry for current context.
 
   @property
   def current_context(self):

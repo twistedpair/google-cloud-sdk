@@ -24,13 +24,6 @@ DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      ['projectsId'],
-      True
-  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
@@ -45,6 +38,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'batchPredictionJobs/{batchPredictionJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CACHEDCONTENTS = (
+      'projects.locations.cachedContents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/cachedContents/'
+              '{cachedContentsId}',
       },
       ['name'],
       True
@@ -477,6 +481,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
               '{ragCorporaId}/ragFiles/{ragFilesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES = (
+      'projects.locations.reasoningEngines',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}',
       },
       ['name'],
       True

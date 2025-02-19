@@ -1308,7 +1308,12 @@ class Workstation(_messages.Message):
     annotations: Optional. Client-specified annotations.
     boostConfigs: Output only. List of available boost configuration IDs that
       this workstation can be boosted up to.
+    conditions: Output only. Status conditions describing the workstation's
+      current state.
     createTime: Output only. Time when this workstation was created.
+    degraded: Output only. Whether this workstation is in degraded mode, in
+      which case it may require user action to restore full functionality.
+      Details can be found in conditions.
     deleteTime: Output only. Time when this workstation was soft-deleted.
     displayName: Optional. Human-readable name for this workstation.
     env: Optional. Environment variables passed to the workstation container's
@@ -1443,24 +1448,26 @@ class Workstation(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   boostConfigs = _messages.MessageField('WorkstationBoostConfig', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  env = _messages.MessageField('EnvValue', 6)
-  etag = _messages.StringField(7)
-  host = _messages.StringField(8)
-  kmsKey = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  reconciling = _messages.BooleanField(12)
-  runtimeHost = _messages.MessageField('RuntimeHost', 13)
-  satisfiesPzi = _messages.BooleanField(14)
-  satisfiesPzs = _messages.BooleanField(15)
-  sourceWorkstation = _messages.StringField(16)
-  startTime = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  conditions = _messages.MessageField('Status', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  degraded = _messages.BooleanField(5)
+  deleteTime = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  env = _messages.MessageField('EnvValue', 8)
+  etag = _messages.StringField(9)
+  host = _messages.StringField(10)
+  kmsKey = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  runtimeHost = _messages.MessageField('RuntimeHost', 15)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  sourceWorkstation = _messages.StringField(18)
+  startTime = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class WorkstationBoostConfig(_messages.Message):

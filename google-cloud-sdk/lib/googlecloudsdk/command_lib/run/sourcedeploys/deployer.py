@@ -22,7 +22,6 @@ from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import exceptions
@@ -40,6 +39,8 @@ _DEFAULT_IMAGE_REPOSITORY_NAME = '/cloud-run-source-deploy'
 
 
 # TODO(b/383160656): Bundle these "build_" variables into an object
+# pylint:disable=unused-argument - release_track is piped through everywhere.
+# It shouldn't be removed just because there are no pre-GA features in progress.
 def CreateImage(
     tracker,
     build_image,
@@ -71,63 +72,50 @@ def CreateImage(
   base_image_from_build = None
   source = None
 
-  if release_track != base.ReleaseTrack.GA:
-    # In the alpha and beta track we separately
-    # upload the source code then call the new
-    # builds API.
-    tracker.StartStage(stages.UPLOAD_SOURCE)
-    if kms_key and release_track != base.ReleaseTrack.GA:
-      tracker.UpdateHeaderMessage('Using the source from the specified bucket.')
-      _ValidateCmekDeployment(
-          build_source, build_image, kms_key, release_track
-      )
-      source = sources.GetGcsObject(build_source)
-    else:
-      tracker.UpdateHeaderMessage('Uploading sources.')
-      source = sources.Upload(build_source, region, resource_ref, source_bucket)
-    tracker.CompleteStage(stages.UPLOAD_SOURCE)
-    submit_build_request = _PrepareSubmitBuildRequest(
-        build_image,
-        build_pack,
-        region,
-        base_image,
-        source,
-        resource_ref,
-        service_account,
-        build_worker_pool,
-        build_env_vars,
-        enable_automatic_updates,
+  tracker.StartStage(stages.UPLOAD_SOURCE)
+  if kms_key:
+    tracker.UpdateHeaderMessage('Using the source from the specified bucket.')
+    _ValidateCmekDeployment(
+        build_source, build_image, kms_key
     )
-    try:
-      response_dict, build_log_url, base_image_from_build = _SubmitBuild(
-          tracker,
-          submit_build_request,
-      )
-    except apitools_exceptions.HttpNotFoundError as e:
-      # This happens if user didn't have permission to access the builds API.
-      if base_image or delegate_builds:
-        # If the customer enabled automatic base image updates or set the
-        # --delegate-builds falling back is not possible.
-        raise e
-
-      # If the user didn't explicity opt-in to the API, we can fall back to
-      # the old client orchestrated builds functionality.
-      response_dict, build_log_url = _CreateImageWithoutSubmitBuild(
-          tracker,
-          build_image,
-          build_source,
-          build_pack,
-          already_activated_services,
-          remote_source=source,
-      )
+    source = sources.GetGcsObject(build_source)
   else:
+    tracker.UpdateHeaderMessage('Uploading sources.')
+    source = sources.Upload(build_source, region, resource_ref, source_bucket)
+  tracker.CompleteStage(stages.UPLOAD_SOURCE)
+  submit_build_request = _PrepareSubmitBuildRequest(
+      build_image,
+      build_pack,
+      region,
+      base_image,
+      source,
+      resource_ref,
+      service_account,
+      build_worker_pool,
+      build_env_vars,
+      enable_automatic_updates,
+  )
+  try:
+    response_dict, build_log_url, base_image_from_build = _SubmitBuild(
+        tracker,
+        submit_build_request,
+    )
+  except apitools_exceptions.HttpNotFoundError as e:
+    # This happens if user didn't have permission to access the builds API.
+    if base_image or delegate_builds:
+      # If the customer enabled automatic base image updates or set the
+      # --delegate-builds falling back is not possible.
+      raise e
+
+    # If the user didn't explicitly opt-in to the API, we can fall back to
+    # the old client orchestrated builds functionality.
     response_dict, build_log_url = _CreateImageWithoutSubmitBuild(
         tracker,
         build_image,
         build_source,
         build_pack,
         already_activated_services,
-        remote_source=None,
+        remote_source=source,
     )
 
   if response_dict and response_dict['status'] != 'SUCCESS':
@@ -274,10 +262,10 @@ def _PrepareBuildConfig(
 
 
 def _ValidateCmekDeployment(
-    source: str, image_repository: str, kms_key: str, release_track
+    source: str, image_repository: str, kms_key: str
 ) -> None:
   """Validate the CMEK parameters of the deployment."""
-  if not kms_key or release_track == base.ReleaseTrack.GA:
+  if not kms_key:
     return
 
   if not sources.IsGcsObject(source):

@@ -368,7 +368,6 @@ def AddEnableFinalBackup(parser):
       required=False,
       action='store_true',
       default=False,
-      hidden=True,
       help=(
           'Enables the final backup to be taken at the time of instance'
           ' deletion.'
@@ -386,7 +385,6 @@ def AddFinalbackupRetentionDays(parser):
       type=arg_parsers.BoundedInt(1, 365, unlimited=False),
       required=False,
       help=help_text,
-      hidden=True,
   )
 
 
@@ -401,7 +399,6 @@ def AddBackupTtlDays(parser):
       required=False,
       type=arg_parsers.BoundedInt(1, 365, unlimited=False),
       default=None,
-      hidden=True,
       help=(
           ' Specifies the number of days to retain the final backup.'
           ' The valid range is between 1 and 365. The Default value is 30 days.'
@@ -414,7 +411,6 @@ def AddFinalbackupDescription(parser):
   parser.add_argument(
       '--final-backup-description',
       required=False,
-      hidden=True,
       help='Provides description for the final backup going to be taken.',
   )
 
@@ -423,7 +419,6 @@ def AddBackupDescription(parser):
   parser.add_argument(
       '--backup-description',
       required=False,
-      hidden=True,
       help='Provides description for the backup going to be taken.',
   )
 
@@ -433,7 +428,6 @@ def AddFinalBackupExpiryTimeArgument(parser):
       '--final-backup-expiry-time',
       type=arg_parsers.Datetime.Parse,
       required=False,
-      hidden=True,
       help=(
           'Specifies the time at which the final backup will expire. Maximum'
           ' time allowed is 365 days from now. Format: YYYY-MM-DDTHH:MM:SS.'
@@ -452,7 +446,6 @@ def AddBackupExpiryTime(parser):
       required=False,
       type=arg_parsers.Datetime.Parse,
       default=None,
-      hidden=True,
       help=(
           'Specifies when the final backup expires. The Maximum'
           ' time allowed is 365 days from now. Format: YYYY-MM-DDTHH:MM:SS.'
@@ -522,7 +515,7 @@ def AddDatabaseFlags(parser, update=False, hidden=False):
   )
 
 
-def AddTags(parser):
+def AddTags(parser, hidden=False):
   """Adds the `--tags` flag."""
   help_ = (
       'Comma-separated list of tags to set on the instance. Use an equals sign'
@@ -534,7 +527,7 @@ def AddTags(parser):
       metavar='TAG=VALUE',
       required=False,
       help=help_,
-      hidden=True,
+      hidden=hidden,
   )
 
 
@@ -595,7 +588,6 @@ def AddDatabaseVersion(
         ' Apart from listed major versions, DATABASE_VERSION also accepts'
         ' supported minor versions.'
     )
-
   if additional_help_text:
     help_text += additional_help_text
 
@@ -1908,8 +1900,10 @@ def AddBackupRunId(parser):
 def AddBackupId(
     parser,
     help_text=(
-        'The ID of the backup run. To find the ID, run the following command: '
-        '$ gcloud sql backups list -i {instance}.'
+        'The ID of the backup run. To find the ID, run the following command: $'
+        ' gcloud sql backups list -i {instance}.Or, the NAME of the backup. To'
+        ' find the NAME, run the following command: '
+        ' $ gcloud sql backups list --filter=instance:{instance}'
     ),
 ):
   """Add the flag for the ID of the backup run.
@@ -1934,7 +1928,7 @@ def AddBackupName(parser):
       'name',
       help=(
           'The NAME of the backup. To find the NAME, run the following command:'
-          ' $ gcloud sql backups list.'
+          ' $ gcloud sql backups list  --filter=type:FINAL instance:{instance}.'
       ),
   )
 

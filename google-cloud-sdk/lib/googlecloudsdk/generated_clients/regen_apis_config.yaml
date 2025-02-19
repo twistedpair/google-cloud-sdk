@@ -95,6 +95,8 @@ apis:
       discovery_doc: aiplatform_v1.json
       gcloud_gapic_library: google/cloud/aiplatform/v1:aiplatform_v1_py
       resources:
+        projects.locations:
+          path: projects/{projectsId}/locations/{locationsId}
         projects.locations.models.operations:
           path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
         projects.locations.indexes.operations:
@@ -1671,6 +1673,7 @@ apis:
   bigquerymigration:
     v2:
       discovery_doc: bigquerymigration_v2.json
+      default: true
   websecurityscanner:
     v1beta:
       discovery_doc: websecurityscanner_v1beta.json
@@ -1932,6 +1935,7 @@ canonical_surfaces:
     hidden: true
   bigquerymigration:
     name: bigquerymigration
+    command: bq
     hidden: true
   bigtableadmin:
     name: bigtableadmin

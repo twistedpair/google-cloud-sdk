@@ -4760,6 +4760,49 @@ class GoogleCloudDataplexV1AssetStatus(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class GoogleCloudDataplexV1BusinessGlossaryEvent(_messages.Message):
+  r"""Payload associated with Business Glossary related log events.
+
+  Enums:
+    EventTypeValueValuesEnum: The type of the event.
+
+  Fields:
+    eventType: The type of the event.
+    message: The log message.
+    resource: Name of the resource.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: An unspecified event type.
+      GLOSSARY_CREATE: Glossary create event.
+      GLOSSARY_UPDATE: Glossary update event.
+      GLOSSARY_DELETE: Glossary delete event.
+      GLOSSARY_CATEGORY_CREATE: Glossary category create event.
+      GLOSSARY_CATEGORY_UPDATE: Glossary category update event.
+      GLOSSARY_CATEGORY_DELETE: Glossary category delete event.
+      GLOSSARY_TERM_CREATE: Glossary term create event.
+      GLOSSARY_TERM_UPDATE: Glossary term update event.
+      GLOSSARY_TERM_DELETE: Glossary term delete event.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    GLOSSARY_CREATE = 1
+    GLOSSARY_UPDATE = 2
+    GLOSSARY_DELETE = 3
+    GLOSSARY_CATEGORY_CREATE = 4
+    GLOSSARY_CATEGORY_UPDATE = 5
+    GLOSSARY_CATEGORY_DELETE = 6
+    GLOSSARY_TERM_CREATE = 7
+    GLOSSARY_TERM_UPDATE = 8
+    GLOSSARY_TERM_DELETE = 9
+
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  resource = _messages.StringField(3)
+
+
 class GoogleCloudDataplexV1CancelJobRequest(_messages.Message):
   r"""Cancel task jobs."""
 
@@ -5706,15 +5749,15 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
       is only valid for row-level type rules.Evaluated count can be configured
       to either include all rows (default) - with null rows automatically
       failing rule evaluation, or exclude null rows from the evaluated_count,
-      by setting ignore_nulls = true.
+      by setting ignore_nulls = true.This field is not set for rule
+      SqlAssertion.
     failingRowsQuery: The query to find rows that did not pass this rule.This
       field is only valid for row-level type rules.
     nullCount: The number of rows with null values in the specified column.
     passRatio: The ratio of passed_count / evaluated_count.This field is only
       valid for row-level type rules.
     passed: Whether the rule passed or failed.
-    passedCount: The number of rows which passed a rule evaluation.This field
-      is only valid for row-level type rules.
+    passedCount: This field is not set for rule SqlAssertion.
     rule: The rule specified in the DataQualitySpec, as is.
   """
 
@@ -8097,14 +8140,14 @@ class GoogleCloudDataplexV1ImportItem(_messages.Message):
       {aspect_type_reference}: matches aspects that belong to the specified
       aspect type and are attached directly to the entry.
       {aspect_type_reference}@{path}: matches aspects that belong to the
-      specified aspect type and path. @* : matches aspects of the given type
-      for all paths. *@path : matches aspects of all types on the given path.
-      Replace {aspect_type_reference} with a reference to the aspect type, in
-      the format {project_id_or_number}.{location_id}.{aspect_type_id}.If you
-      leave this field empty, it is treated as specifying exactly those
-      aspects that are present within the specified entry.In FULL entry sync
-      mode, Dataplex implicitly adds the keys for all of the required aspects
-      of an entry.
+      specified aspect type and path. {aspect_type_reference}@* : matches
+      aspects of the given type for all paths. *@path : matches aspects of all
+      types on the given path.Replace {aspect_type_reference} with a reference
+      to the aspect type, in the format
+      {project_id_or_number}.{location_id}.{aspect_type_id}.In FULL entry sync
+      mode, if you leave this field empty, it is treated as specifying exactly
+      those aspects that are present within the specified entry. Dataplex
+      implicitly adds the keys for all of the required aspects of an entry.
     entry: Information about an entry and its attached aspects.
     updateMask: The fields to update, in paths that are relative to the Entry
       resource. Separate each field with a comma.In FULL entry sync mode,
@@ -8114,10 +8157,11 @@ class GoogleCloudDataplexV1ImportItem(_messages.Message):
       modifiable fields are updated, regardless of the fields that are listed
       in the update mask, and regardless of whether a field is present in the
       entry object.The update_mask field is ignored when an entry is created
-      or re-created.Dataplex also determines which entries and aspects to
-      modify by comparing the values and timestamps that you provide in the
-      metadata import file with the values and timestamps that exist in your
-      project. For more information, see Comparison logic
+      or re-created.In an aspect-only metadata job (when entry sync mode is
+      NONE), set this value to aspects.Dataplex also determines which entries
+      and aspects to modify by comparing the values and timestamps that you
+      provide in the metadata import file with the values and timestamps that
+      exist in your project. For more information, see Comparison logic
       (https://cloud.google.com/dataplex/docs/import-metadata#data-
       modification-logic).
   """
@@ -8929,18 +8973,16 @@ class GoogleCloudDataplexV1MetadataJobImportJobResult(_messages.Message):
 
 
 class GoogleCloudDataplexV1MetadataJobImportJobSpec(_messages.Message):
-  r"""Job specification for a metadata import job
+  r"""Job specification for a metadata import job.You can run the following
+  kinds of metadata import jobs: Full sync of entries with incremental import
+  of their aspects. Supported for custom entries. Incremental import of
+  aspects only. Supported for aspects that belong to custom entries and system
+  entries. For custom entries, you can modify both optional aspects and
+  required aspects. For system entries, you can modify optional aspects.
 
   Enums:
-    AspectSyncModeValueValuesEnum: Required. The sync mode for aspects. Only
-      INCREMENTAL mode is supported for aspects. An aspect is modified only if
-      the metadata import file includes a reference to the aspect in the
-      update_mask field and the aspect_keys field.
-    EntrySyncModeValueValuesEnum: Required. The sync mode for entries. Only
-      FULL mode is supported for entries. All entries in the job's scope are
-      modified. If an entry exists in Dataplex but isn't included in the
-      metadata import file, the entry is deleted when you run the metadata
-      job.
+    AspectSyncModeValueValuesEnum: Required. The sync mode for aspects.
+    EntrySyncModeValueValuesEnum: Required. The sync mode for entries.
     LogLevelValueValuesEnum: Optional. The level of logs to write to Cloud
       Logging for this job.Debug-level logs provide highly-detailed
       information for troubleshooting, but their increased verbosity could
@@ -8948,14 +8990,8 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpec(_messages.Message):
       that might not be merited for all jobs.If unspecified, defaults to INFO.
 
   Fields:
-    aspectSyncMode: Required. The sync mode for aspects. Only INCREMENTAL mode
-      is supported for aspects. An aspect is modified only if the metadata
-      import file includes a reference to the aspect in the update_mask field
-      and the aspect_keys field.
-    entrySyncMode: Required. The sync mode for entries. Only FULL mode is
-      supported for entries. All entries in the job's scope are modified. If
-      an entry exists in Dataplex but isn't included in the metadata import
-      file, the entry is deleted when you run the metadata job.
+    aspectSyncMode: Required. The sync mode for aspects.
+    entrySyncMode: Required. The sync mode for entries.
     logLevel: Optional. The level of logs to write to Cloud Logging for this
       job.Debug-level logs provide highly-detailed information for
       troubleshooting, but their increased verbosity could incur additional
@@ -8982,44 +9018,50 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpec(_messages.Message):
   """
 
   class AspectSyncModeValueValuesEnum(_messages.Enum):
-    r"""Required. The sync mode for aspects. Only INCREMENTAL mode is
-    supported for aspects. An aspect is modified only if the metadata import
-    file includes a reference to the aspect in the update_mask field and the
-    aspect_keys field.
+    r"""Required. The sync mode for aspects.
 
     Values:
       SYNC_MODE_UNSPECIFIED: Sync mode unspecified.
       FULL: All resources in the job's scope are modified. If a resource
         exists in Dataplex but isn't included in the metadata import file, the
         resource is deleted when you run the metadata job. Use this mode to
-        perform a full sync of the set of entries in the job scope.
-      INCREMENTAL: Only the entries and aspects that are explicitly included
-        in the metadata import file are modified. Use this mode to modify a
-        subset of resources while leaving unreferenced resources unchanged.
+        perform a full sync of the set of entries in the job scope.This sync
+        mode is supported for entries.
+      INCREMENTAL: Only the resources that are explicitly included in the
+        metadata import file are modified. Use this mode to modify a subset of
+        resources while leaving unreferenced resources unchanged.This sync
+        mode is supported for aspects.
+      NONE: If entry sync mode is NONE, then aspects are modified according to
+        the aspect sync mode. Other metadata that belongs to entries in the
+        job's scope isn't modified.This sync mode is supported for entries.
     """
     SYNC_MODE_UNSPECIFIED = 0
     FULL = 1
     INCREMENTAL = 2
+    NONE = 3
 
   class EntrySyncModeValueValuesEnum(_messages.Enum):
-    r"""Required. The sync mode for entries. Only FULL mode is supported for
-    entries. All entries in the job's scope are modified. If an entry exists
-    in Dataplex but isn't included in the metadata import file, the entry is
-    deleted when you run the metadata job.
+    r"""Required. The sync mode for entries.
 
     Values:
       SYNC_MODE_UNSPECIFIED: Sync mode unspecified.
       FULL: All resources in the job's scope are modified. If a resource
         exists in Dataplex but isn't included in the metadata import file, the
         resource is deleted when you run the metadata job. Use this mode to
-        perform a full sync of the set of entries in the job scope.
-      INCREMENTAL: Only the entries and aspects that are explicitly included
-        in the metadata import file are modified. Use this mode to modify a
-        subset of resources while leaving unreferenced resources unchanged.
+        perform a full sync of the set of entries in the job scope.This sync
+        mode is supported for entries.
+      INCREMENTAL: Only the resources that are explicitly included in the
+        metadata import file are modified. Use this mode to modify a subset of
+        resources while leaving unreferenced resources unchanged.This sync
+        mode is supported for aspects.
+      NONE: If entry sync mode is NONE, then aspects are modified according to
+        the aspect sync mode. Other metadata that belongs to entries in the
+        job's scope isn't modified.This sync mode is supported for entries.
     """
     SYNC_MODE_UNSPECIFIED = 0
     FULL = 1
     INCREMENTAL = 2
+    NONE = 3
 
   class LogLevelValueValuesEnum(_messages.Enum):
     r"""Optional. The level of logs to write to Cloud Logging for this
@@ -9062,25 +9104,26 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(_messages.Mess
     aspectTypes: Optional. The aspect types that are in scope for the import
       job, specified as relative resource names in the format projects/{projec
       t_number_or_id}/locations/{location_id}/aspectTypes/{aspect_type_id}.
-      The job modifies only the aspects that belong to these aspect types.If
-      the metadata import file attempts to modify an aspect whose type isn't
+      The job modifies only the aspects that belong to these aspect types.This
+      field is required when creating an aspect-only import job.If the
+      metadata import file attempts to modify an aspect whose type isn't
       included in this list, the import job is halted before modifying any
       entries or aspects.The location of an aspect type must either match the
       location of the job, or the aspect type must be global.
     entryGroups: Required. The entry group that is in scope for the import
       job, specified as a relative resource name in the format projects/{proje
       ct_number_or_id}/locations/{location_id}/entryGroups/{entry_group_id}.
-      Only entries that belong to the specified entry group are affected by
-      the job.Must contain exactly one element. The entry group and the job
-      must be in the same location.
+      Only entries and aspects that belong to the specified entry group are
+      affected by the job.Must contain exactly one element. The entry group
+      and the job must be in the same location.
     entryTypes: Required. The entry types that are in scope for the import
       job, specified as relative resource names in the format projects/{projec
       t_number_or_id}/locations/{location_id}/entryTypes/{entry_type_id}. The
-      job modifies only the entries that belong to these entry types.If the
-      metadata import file attempts to modify an entry whose type isn't
-      included in this list, the import job is halted before modifying any
-      entries or aspects.The location of an entry type must either match the
-      location of the job, or the entry type must be global.
+      job modifies only the entries and aspects that belong to these entry
+      types.If the metadata import file attempts to modify an entry whose type
+      isn't included in this list, the import job is halted before modifying
+      any entries or aspects.The location of an entry type must either match
+      the location of the job, or the entry type must be global.
   """
 
   aspectTypes = _messages.StringField(1, repeated=True)

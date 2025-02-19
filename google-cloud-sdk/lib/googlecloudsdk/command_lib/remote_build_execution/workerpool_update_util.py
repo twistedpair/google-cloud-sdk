@@ -59,6 +59,15 @@ def RemoveAutoscale(ref, args, request):
   return request
 
 
+def RemoveNetworkAllowlist(ref, args, request):
+  del ref
+  if args.IsSpecified('clear_network_allowlist'):
+    request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest.workerPool.workerConfig.networkAllowlist = ''
+    req = request.googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest
+    AddFieldToMask('workerConfig.networkAllowlist', req)
+  return request
+
+
 def AddLabelsFlags():
   remove_group = base.ArgumentGroup(mutex=True)
   remove_group.AddArgument(labels_util.GetClearLabelsFlag())

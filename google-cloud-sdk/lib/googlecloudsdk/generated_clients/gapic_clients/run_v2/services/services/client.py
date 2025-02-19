@@ -180,6 +180,17 @@ class ServicesClient(metaclass=ServicesClientMeta):
         return self._transport
 
     @staticmethod
+    def build_path(project: str,location: str,build: str,) -> str:
+        """Returns a fully-qualified build string."""
+        return "projects/{project}/locations/{location}/builds/{build}".format(project=project, location=location, build=build, )
+
+    @staticmethod
+    def parse_build_path(path: str) -> Dict[str,str]:
+        """Parses a build path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/builds/(?P<build>.+?)$", path)
+        return m.groupdict() if m else {}
+
+    @staticmethod
     def connector_path(project: str,location: str,connector: str,) -> str:
         """Returns a fully-qualified connector string."""
         return "projects/{project}/locations/{location}/connectors/{connector}".format(project=project, location=location, connector=connector, )

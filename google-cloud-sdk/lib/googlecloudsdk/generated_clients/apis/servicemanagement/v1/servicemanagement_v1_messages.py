@@ -88,6 +88,52 @@ class Api(_messages.Message):
   version = _messages.StringField(7)
 
 
+class Aspect(_messages.Message):
+  r"""Aspect represents Generic aspect. It is used to configure an aspect
+  without making direct changes to service.proto
+
+  Messages:
+    SpecValue: Content of the configuration. The underlying schema should be
+      defined by Aspect owners as protobuf message under
+      `apiserving/configaspects/proto`.
+
+  Fields:
+    kind: The type of this aspect configuration.
+    spec: Content of the configuration. The underlying schema should be
+      defined by Aspect owners as protobuf message under
+      `apiserving/configaspects/proto`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SpecValue(_messages.Message):
+    r"""Content of the configuration. The underlying schema should be defined
+    by Aspect owners as protobuf message under
+    `apiserving/configaspects/proto`.
+
+    Messages:
+      AdditionalProperty: An additional property for a SpecValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SpecValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  kind = _messages.StringField(1)
+  spec = _messages.MessageField('SpecValue', 2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -315,6 +361,11 @@ class BackendRule(_messages.Message):
     jwtAudience: The JWT audience is used when generating a JWT ID token for
       the backend. This ID token will be added in the HTTP "authorization"
       header, and sent to the backend.
+    loadBalancingPolicy: The load balancing policy used for connection to the
+      application backend. Defined as an arbitrary string to accomondate
+      custom load balancing policies supported by the underlying channel, but
+      suggest most users use one of the standard policies, such as the
+      default, "RoundRobin".
     minDeadline: Deprecated, do not use.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
@@ -398,12 +449,13 @@ class BackendRule(_messages.Message):
   deadline = _messages.FloatField(2)
   disableAuth = _messages.BooleanField(3)
   jwtAudience = _messages.StringField(4)
-  minDeadline = _messages.FloatField(5)
-  operationDeadline = _messages.FloatField(6)
-  overridesByRequestProtocol = _messages.MessageField('OverridesByRequestProtocolValue', 7)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 8)
-  protocol = _messages.StringField(9)
-  selector = _messages.StringField(10)
+  loadBalancingPolicy = _messages.StringField(5)
+  minDeadline = _messages.FloatField(6)
+  operationDeadline = _messages.FloatField(7)
+  overridesByRequestProtocol = _messages.MessageField('OverridesByRequestProtocolValue', 8)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 9)
+  protocol = _messages.StringField(10)
+  selector = _messages.StringField(11)
 
 
 class Billing(_messages.Message):
@@ -1497,10 +1549,15 @@ class ExperimentalFeatures(_messages.Message):
       `rest` transport is enabled. By default, asynchronous REST clients will
       not be generated. This feature will be enabled by default 1 month after
       launching the feature in preview packages.
+    unversionedPackageDisabled: Disables generation of an unversioned Python
+      package for this client library. This means that the module names will
+      need to be versioned in import statements. For example `import
+      google.cloud.library_v2` instead of `import google.cloud.library`.
   """
 
   protobufPythonicTypesEnabled = _messages.BooleanField(1)
   restAsyncIoEnabled = _messages.BooleanField(2)
+  unversionedPackageDisabled = _messages.BooleanField(3)
 
 
 class Expr(_messages.Message):
@@ -3215,9 +3272,9 @@ class Page(_messages.Message):
   represent nested documentation set structure.
 
   Fields:
-    content: The Markdown content of the page. You can use (== include {path}
-      ==) to include content from a Markdown file. The content can be used to
-      produce the documentation page such as HTML format page.
+    content: The Markdown content of the page. You can use ```(== include
+      {path} ==)``` to include content from a Markdown file. The content can
+      be used to produce the documentation page such as HTML format page.
     name: The name of the page. It will be used as an identity of the page to
       generate URI of the page, text of the link to this page in navigation,
       etc. The full page name (start from the root page name to this page
@@ -4087,11 +4144,19 @@ class SelectiveGapicGeneration(_messages.Message):
   in a service for client libraries.
 
   Fields:
+    generateOmittedAsInternal: Setting this to true indicates to the client
+      generators that methods that would be excluded from the generation
+      should instead be generated in a way that indicates these methods should
+      not be consumed by end users. How this is expressed is up to individual
+      language implementations to decide. Some examples may be: added
+      annotations, obfuscated identifiers, or other language idiomatic
+      patterns.
     methods: An allowlist of the fully qualified names of RPCs that should be
       included on public client surfaces.
   """
 
-  methods = _messages.StringField(1, repeated=True)
+  generateOmittedAsInternal = _messages.BooleanField(1)
+  methods = _messages.StringField(2, repeated=True)
 
 
 class Service(_messages.Message):
@@ -4117,6 +4182,11 @@ class Service(_messages.Message):
       IDL during the normalization process. It is an error to specify an API
       interface here which cannot be resolved against the associated IDL
       files.
+    aspects: Configuration aspects. This is a repeated field to allow multiple
+      aspects to be configured. The kind field in each ConfigAspect specifies
+      the type of aspect. The spec field contains the configuration for that
+      aspect. The schema for the spec field is defined by the backend service
+      owners.
     authentication: Auth configuration.
     backend: API backend configuration.
     billing: Billing configuration.
@@ -4175,33 +4245,34 @@ class Service(_messages.Message):
   """
 
   apis = _messages.MessageField('Api', 1, repeated=True)
-  authentication = _messages.MessageField('Authentication', 2)
-  backend = _messages.MessageField('Backend', 3)
-  billing = _messages.MessageField('Billing', 4)
-  configVersion = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  context = _messages.MessageField('Context', 6)
-  control = _messages.MessageField('Control', 7)
-  customError = _messages.MessageField('CustomError', 8)
-  documentation = _messages.MessageField('Documentation', 9)
-  endpoints = _messages.MessageField('Endpoint', 10, repeated=True)
-  enums = _messages.MessageField('Enum', 11, repeated=True)
-  http = _messages.MessageField('Http', 12)
-  id = _messages.StringField(13)
-  logging = _messages.MessageField('Logging', 14)
-  logs = _messages.MessageField('LogDescriptor', 15, repeated=True)
-  metrics = _messages.MessageField('MetricDescriptor', 16, repeated=True)
-  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 17, repeated=True)
-  monitoring = _messages.MessageField('Monitoring', 18)
-  name = _messages.StringField(19)
-  producerProjectId = _messages.StringField(20)
-  publishing = _messages.MessageField('Publishing', 21)
-  quota = _messages.MessageField('Quota', 22)
-  sourceInfo = _messages.MessageField('SourceInfo', 23)
-  systemParameters = _messages.MessageField('SystemParameters', 24)
-  systemTypes = _messages.MessageField('Type', 25, repeated=True)
-  title = _messages.StringField(26)
-  types = _messages.MessageField('Type', 27, repeated=True)
-  usage = _messages.MessageField('Usage', 28)
+  aspects = _messages.MessageField('Aspect', 2, repeated=True)
+  authentication = _messages.MessageField('Authentication', 3)
+  backend = _messages.MessageField('Backend', 4)
+  billing = _messages.MessageField('Billing', 5)
+  configVersion = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  context = _messages.MessageField('Context', 7)
+  control = _messages.MessageField('Control', 8)
+  customError = _messages.MessageField('CustomError', 9)
+  documentation = _messages.MessageField('Documentation', 10)
+  endpoints = _messages.MessageField('Endpoint', 11, repeated=True)
+  enums = _messages.MessageField('Enum', 12, repeated=True)
+  http = _messages.MessageField('Http', 13)
+  id = _messages.StringField(14)
+  logging = _messages.MessageField('Logging', 15)
+  logs = _messages.MessageField('LogDescriptor', 16, repeated=True)
+  metrics = _messages.MessageField('MetricDescriptor', 17, repeated=True)
+  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 18, repeated=True)
+  monitoring = _messages.MessageField('Monitoring', 19)
+  name = _messages.StringField(20)
+  producerProjectId = _messages.StringField(21)
+  publishing = _messages.MessageField('Publishing', 22)
+  quota = _messages.MessageField('Quota', 23)
+  sourceInfo = _messages.MessageField('SourceInfo', 24)
+  systemParameters = _messages.MessageField('SystemParameters', 25)
+  systemTypes = _messages.MessageField('Type', 26, repeated=True)
+  title = _messages.StringField(27)
+  types = _messages.MessageField('Type', 28, repeated=True)
+  usage = _messages.MessageField('Usage', 29)
 
 
 class ServicemanagementOperationsGetRequest(_messages.Message):

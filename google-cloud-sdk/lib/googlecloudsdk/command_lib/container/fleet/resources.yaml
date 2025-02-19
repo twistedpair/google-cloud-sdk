@@ -21,6 +21,18 @@ location:
     - hook: googlecloudsdk.command_lib.container.fleet.util:DefaultToGlobal
       hint: "global is the only supported location"
 
+locationDefaultToAll:
+  name: location
+  collection: gkehub.projects.locations
+  attributes:
+  - &locationDefaultToAll
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.container.fleet.util:DefaultToAllLocations
+      hint: "By default, all the locations are listed"
+
 membership:
   name: membership
   collection: gkehub.projects.locations.memberships

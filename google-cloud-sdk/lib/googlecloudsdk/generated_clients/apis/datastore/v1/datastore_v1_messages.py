@@ -1417,14 +1417,14 @@ class GoogleDatastoreAdminV1RedirectWritesStepDetails(_messages.Message):
   r"""Details for the `REDIRECT_WRITES` step.
 
   Enums:
-    ConcurrencyModeValueValuesEnum: Ths concurrency mode for this database.
+    ConcurrencyModeValueValuesEnum: The concurrency mode for this database.
 
   Fields:
-    concurrencyMode: Ths concurrency mode for this database.
+    concurrencyMode: The concurrency mode for this database.
   """
 
   class ConcurrencyModeValueValuesEnum(_messages.Enum):
-    r"""Ths concurrency mode for this database.
+    r"""The concurrency mode for this database.
 
     Values:
       CONCURRENCY_MODE_UNSPECIFIED: Unspecified.
@@ -2624,7 +2624,9 @@ class RunQueryResponse(_messages.Message):
   r"""The response for Datastore.RunQuery.
 
   Fields:
-    batch: A batch of query results (always present).
+    batch: A batch of query results. This is always present unless running a
+      query under explain-only mode: RunQueryRequest.explain_options was
+      provided and ExplainOptions.analyze was set to false.
     explainMetrics: Query explain metrics. This is only present when the
       RunQueryRequest.explain_options is provided, and it is sent only once
       with the last response in the stream.

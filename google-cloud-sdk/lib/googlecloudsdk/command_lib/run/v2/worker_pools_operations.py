@@ -105,6 +105,7 @@ class WorkerPoolsOperations(object):
       build_from_source_container_name=None,
       repo_to_create=None,
       already_activated_services=False,
+      force_new_revision=False,
   ):
     """Stubbed method for worker pool deploy surface.
 
@@ -129,6 +130,7 @@ class WorkerPoolsOperations(object):
         repository to be created.
       already_activated_services: bool. If true, skip activation prompts for
         services
+      force_new_revision: bool to force a new revision to be created.
 
     Returns:
       A WorkerPool object.
@@ -194,6 +196,7 @@ class WorkerPoolsOperations(object):
     upsert_request = self._client.types.UpdateWorkerPoolRequest(
         worker_pool=worker_pool,
         allow_missing=True,
+        force_new_revision=force_new_revision,
     )
     with metrics.RecordDuration(metric_name):
       return worker_pools.update_worker_pool(upsert_request)

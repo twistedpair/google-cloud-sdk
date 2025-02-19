@@ -86,8 +86,8 @@ class ConnectionDetail(_messages.Message):
   r"""Information of each PSC connection.
 
   Fields:
-    pscAutoConnection: Detailed information of a PSC connection that is
-      created through service connectivity automation.
+    pscAutoConnection: Immutable. Detailed information of a PSC connection
+      that is created through service connectivity automation.
     pscConnection: Detailed information of a PSC connection that is created by
       the user.
   """
@@ -1085,6 +1085,10 @@ class Instance(_messages.Message):
     LabelsValue: Optional. Labels to represent user-provided metadata.
 
   Fields:
+    asyncInstanceEndpointsDeletionEnabled: Optional. If true, instance
+      endpoints that are created and registered by customers can be deleted
+      asynchronously. That is, such an instance endpoint can be de-registered
+      before the forwarding rules in the instance endpoint are deleted.
     authorizationMode: Optional. Immutable. Authorization mode of the
       instance.
     createTime: Output only. Creation timestamp of the instance.
@@ -1105,7 +1109,9 @@ class Instance(_messages.Message):
     nodeType: Optional. Immutable. Machine type for individual nodes of the
       instance.
     persistenceConfig: Optional. Persistence configuration of the instance.
-    pscAutoConnections: Required. Immutable. User inputs and resource details
+    pscAttachmentDetails: Output only. Service attachment details to configure
+      PSC connections.
+    pscAutoConnections: Optional. Immutable. User inputs and resource details
       of the auto-created PSC connections.
     replicaCount: Optional. Number of replica nodes per shard. If omitted the
       default is 0 replicas.
@@ -1242,28 +1248,30 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  deletionProtectionEnabled = _messages.BooleanField(3)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 4, repeated=True)
-  endpoints = _messages.MessageField('InstanceEndpoint', 5, repeated=True)
-  engineConfigs = _messages.MessageField('EngineConfigsValue', 6)
-  engineVersion = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  mode = _messages.EnumField('ModeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  nodeConfig = _messages.MessageField('NodeConfig', 11)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 12)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 13)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 14, repeated=True)
-  replicaCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateInfo = _messages.MessageField('StateInfo', 18)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 22)
+  asyncInstanceEndpointsDeletionEnabled = _messages.BooleanField(1)
+  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  deletionProtectionEnabled = _messages.BooleanField(4)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 5, repeated=True)
+  endpoints = _messages.MessageField('InstanceEndpoint', 6, repeated=True)
+  engineConfigs = _messages.MessageField('EngineConfigsValue', 7)
+  engineVersion = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  mode = _messages.EnumField('ModeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  nodeConfig = _messages.MessageField('NodeConfig', 12)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 13)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 14)
+  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 15, repeated=True)
+  pscAutoConnections = _messages.MessageField('PscAutoConnection', 16, repeated=True)
+  replicaCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateInfo = _messages.MessageField('StateInfo', 20)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 24)
 
 
 class InstanceEndpoint(_messages.Message):
@@ -1818,6 +1826,40 @@ class PersistenceConfig(_messages.Message):
   rdbConfig = _messages.MessageField('RDBConfig', 3)
 
 
+class PscAttachmentDetail(_messages.Message):
+  r"""Configuration of a service attachment of the cluster, for creating PSC
+  connections.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Output only. Type of Psc endpoint.
+
+  Fields:
+    connectionType: Output only. Type of Psc endpoint.
+    serviceAttachment: Output only. Service attachment URI which your self-
+      created PscConnection should use as target.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of Psc endpoint.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Connection Type is not set
+      CONNECTION_TYPE_DISCOVERY: Connection that will be used for topology
+        discovery.
+      CONNECTION_TYPE_PRIMARY: Connection that will be used as primary
+        endpoint to access primary.
+      CONNECTION_TYPE_READER: Connection that will be used as reader endpoint
+        to access replicas.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    CONNECTION_TYPE_DISCOVERY = 1
+    CONNECTION_TYPE_PRIMARY = 2
+    CONNECTION_TYPE_READER = 3
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  serviceAttachment = _messages.StringField(2)
+
+
 class PscAutoConnection(_messages.Message):
   r"""Details of consumer resources in a PSC connection.
 
@@ -1918,7 +1960,7 @@ class PscConnection(_messages.Message):
       the form of projects/{project_id}/global/networks/{network_id}.
     projectId: Output only. The consumer project_id where the forwarding rule
       is created from.
-    pscConnectionId: Output only. The PSC connection id of the forwarding rule
+    pscConnectionId: Required. The PSC connection id of the forwarding rule
       connected to the service attachment.
     pscConnectionStatus: Output only. The status of the PSC connection:
       whether a connection exists and ACTIVE or it no longer exists. Please
@@ -2133,14 +2175,38 @@ class Status(_messages.Message):
 class UpdateInfo(_messages.Message):
   r"""Represents information about instance with state UPDATING.
 
+  Enums:
+    TargetNodeTypeValueValuesEnum: Output only. Target node type for the
+      instance.
+
   Fields:
+    targetEngineVersion: Output only. Target engine version for the instance.
+    targetNodeType: Output only. Target node type for the instance.
     targetReplicaCount: Output only. Target number of replica nodes per shard
       for the instance.
     targetShardCount: Output only. Target number of shards for the instance.
   """
 
-  targetReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  targetShardCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  class TargetNodeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Target node type for the instance.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: Not set.
+      SHARED_CORE_NANO: Shared core nano.
+      HIGHMEM_MEDIUM: High memory medium.
+      HIGHMEM_XLARGE: High memory extra large.
+      STANDARD_SMALL: Standard small.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    SHARED_CORE_NANO = 1
+    HIGHMEM_MEDIUM = 2
+    HIGHMEM_XLARGE = 3
+    STANDARD_SMALL = 4
+
+  targetEngineVersion = _messages.StringField(1)
+  targetNodeType = _messages.EnumField('TargetNodeTypeValueValuesEnum', 2)
+  targetReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  targetShardCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ZoneDistributionConfig(_messages.Message):

@@ -270,20 +270,6 @@ def AddAdvancedOptions(parser, required=False, enable_large_body_size=False):
       """)
 
 
-def AddDdosProtectionConfig(parser, required=False):
-  """Adds the cloud armor DDoS protection config arguments to the argparse."""
-  parser.add_argument(
-      '--network-ddos-protection',
-      choices=['STANDARD', 'ADVANCED'],
-      type=lambda x: x.upper(),
-      required=required,
-      help=(
-          'The DDoS protection level for network load balancing and instances '
-          'with external IPs'
-      ),
-  )
-
-
 def AddDdosProtectionConfigWithAdvancedPreview(parser, required=False):
   """Adds the cloud armor DDoS protection config arguments to the argparse."""
   parser.add_argument(

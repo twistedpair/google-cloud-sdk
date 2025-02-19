@@ -37,6 +37,7 @@ from google.api import httpbody_pb2  # type: ignore
 from google.longrunning import operations_pb2  # type: ignore
 from cloudsdk.google.protobuf import any_pb2  # type: ignore
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
+from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from google.rpc import status_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import content
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import explanation

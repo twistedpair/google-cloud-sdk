@@ -508,6 +508,37 @@ class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksListRequest(
   parent = _messages.StringField(5, required=True)
 
 
+class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketCloudWebhookRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessB
+  itbucketCloudWebhookRequest object.
+
+  Fields:
+    name: Required. The GitRepositoryLink where the webhook will be received.
+      Format: `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+    processBitbucketCloudWebhookRequest: A ProcessBitbucketCloudWebhookRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  processBitbucketCloudWebhookRequest = _messages.MessageField('ProcessBitbucketCloudWebhookRequest', 2)
+
+
+class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessBitbucketDataCenterWebhookRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessB
+  itbucketDataCenterWebhookRequest object.
+
+  Fields:
+    name: Required. The GitRepositoryLink where the webhook will be received.
+      Format: `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+    processBitbucketDataCenterWebhookRequest: A
+      ProcessBitbucketDataCenterWebhookRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  processBitbucketDataCenterWebhookRequest = _messages.MessageField('ProcessBitbucketDataCenterWebhookRequest', 2)
+
+
 class DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessGitLabEnterpriseWebhookRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessG
   itLabEnterpriseWebhookRequest object.
@@ -705,6 +736,47 @@ class DeveloperconnectProjectsLocationsInsightsConfigsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the insightsConfig is not
+      found a new insightsConfig will be created. In this situation
+      `update_mask` is ignored. The creation will succeed only if the input
+      insightsConfig has all the necessary information (e.g a github_config
+      with both user_oauth_token and installation_id properties).
+    insightsConfig: A InsightsConfig resource to be passed as the request
+      body.
+    name: Identifier. The name of the InsightsConfig. Format:
+      projects/{project}/locations/{location}/insightsConfigs/{insightsConfig}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the InsightsConfig resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  insightsConfig = _messages.MessageField('InsightsConfig', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class DeveloperconnectProjectsLocationsListRequest(_messages.Message):
@@ -1704,6 +1776,28 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class ProcessBitbucketCloudWebhookRequest(_messages.Message):
+  r"""RPC request object accepted by the ProcessBitbucketCloudWebhook RPC
+  method.
+
+  Fields:
+    body: Required. HTTP request body.
+  """
+
+  body = _messages.MessageField('HttpBody', 1)
+
+
+class ProcessBitbucketDataCenterWebhookRequest(_messages.Message):
+  r"""RPC request object accepted by the ProcessBitbucketDataCenterWebhook RPC
+  method.
+
+  Fields:
+    body: Required. HTTP request body.
+  """
+
+  body = _messages.MessageField('HttpBody', 1)
 
 
 class ProcessGitHubEnterpriseWebhookRequest(_messages.Message):

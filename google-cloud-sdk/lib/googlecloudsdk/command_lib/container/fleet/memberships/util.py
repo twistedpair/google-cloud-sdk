@@ -51,8 +51,16 @@ def SetParentCollection(ref, args, request):
   Returns:
     modified request
   """
-  del ref, args  # Unused.
-  request.parent = request.parent + '/locations/-'
+  del ref  # Unused.
+  # Find the last '/' in request.parent.
+  index = request.parent.rfind('/')
+  if index == -1:
+    raise ValueError('Invalid parent collection: %s' % request.parent)
+
+  if args.IsKnownAndSpecified('location'):
+    request.parent = request.parent[:index] + '/' + args.location
+  else:
+    request.parent = request.parent[:index] + '/-'
   return request
 
 

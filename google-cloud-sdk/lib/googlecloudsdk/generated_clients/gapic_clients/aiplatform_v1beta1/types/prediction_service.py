@@ -21,6 +21,7 @@ import proto  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
+from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import content
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import explanation
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import tool
@@ -892,6 +893,9 @@ class CountTokensResponse(proto.Message):
         total_billable_characters (int):
             The total number of billable characters
             counted across all instances from the request.
+        prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
+            Output only. List of modalities that were
+            processed in the request input.
     """
 
     total_tokens: int = proto.Field(
@@ -901,6 +905,11 @@ class CountTokensResponse(proto.Message):
     total_billable_characters: int = proto.Field(
         proto.INT32,
         number=2,
+    )
+    prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=3,
+        message=content.ModalityTokenCount,
     )
 
 
@@ -1023,6 +1032,12 @@ class GenerateContentResponse(proto.Message):
         model_version (str):
             Output only. The model version used to
             generate the response.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. Timestamp when the request is
+            made to the server.
+        response_id (str):
+            Output only. response_id is used to identify each response.
+            It is the encoding of the event_id.
         prompt_feedback (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse.PromptFeedback):
             Output only. Content filter results for a
             prompt sent in the request. Note: Sent only in
@@ -1097,6 +1112,15 @@ class GenerateContentResponse(proto.Message):
             cached_content_token_count (int):
                 Output only. Number of tokens in the cached
                 part in the input (the cached content).
+            prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
+                Output only. List of modalities that were
+                processed in the request input.
+            cache_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
+                Output only. List of modalities of the cached
+                content in the request input.
+            candidates_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
+                Output only. List of modalities that were
+                returned in the response.
         """
 
         prompt_token_count: int = proto.Field(
@@ -1115,6 +1139,21 @@ class GenerateContentResponse(proto.Message):
             proto.INT32,
             number=5,
         )
+        prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=9,
+            message=content.ModalityTokenCount,
+        )
+        cache_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=10,
+            message=content.ModalityTokenCount,
+        )
+        candidates_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=11,
+            message=content.ModalityTokenCount,
+        )
 
     candidates: MutableSequence[content.Candidate] = proto.RepeatedField(
         proto.MESSAGE,
@@ -1124,6 +1163,15 @@ class GenerateContentResponse(proto.Message):
     model_version: str = proto.Field(
         proto.STRING,
         number=11,
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=12,
+        message=timestamp_pb2.Timestamp,
+    )
+    response_id: str = proto.Field(
+        proto.STRING,
+        number=13,
     )
     prompt_feedback: PromptFeedback = proto.Field(
         proto.MESSAGE,
@@ -1203,7 +1251,51 @@ class GenerateVideoResponse(proto.Message):
             This field is a member of `oneof`_ ``_rai_media_filtered_count``.
         rai_media_filtered_reasons (MutableSequence[str]):
             Returns rai failure reasons if any.
+        videos (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateVideoResponse.Video]):
+            List of video bytes or Cloud Storage URIs of
+            the generated videos.
     """
+
+    class Video(proto.Message):
+        r"""A generated video.
+
+        This message has `oneof`_ fields (mutually exclusive fields).
+        For each oneof, at most one member field can be set at the same time.
+        Setting any member of the oneof automatically clears all other
+        members.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            gcs_uri (str):
+                Cloud Storage URI where the generated video
+                is written.
+
+                This field is a member of `oneof`_ ``data``.
+            bytes_base64_encoded (str):
+                Base64 encoded bytes string representing the
+                video.
+
+                This field is a member of `oneof`_ ``data``.
+            mime_type (str):
+                The MIME type of the content of the video.
+                - video/mp4
+        """
+
+        gcs_uri: str = proto.Field(
+            proto.STRING,
+            number=1,
+            oneof='data',
+        )
+        bytes_base64_encoded: str = proto.Field(
+            proto.STRING,
+            number=2,
+            oneof='data',
+        )
+        mime_type: str = proto.Field(
+            proto.STRING,
+            number=3,
+        )
 
     generated_samples: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
@@ -1217,6 +1309,11 @@ class GenerateVideoResponse(proto.Message):
     rai_media_filtered_reasons: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=3,
+    )
+    videos: MutableSequence[Video] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=4,
+        message=Video,
     )
 
 

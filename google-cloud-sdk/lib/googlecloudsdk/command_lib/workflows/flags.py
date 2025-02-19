@@ -202,7 +202,6 @@ def AddExecutionHistoryLevelArg(parser):
       },
       help_str='Level of execution history to apply during execution.',
       default='none',
-      hidden=True,
   )
   execution_history_level.AddToParser(parser)
 
@@ -296,15 +295,15 @@ def AddWorkflowExecutionHistoryLevelArg(parser):
       choices={
           'none': 'No execution history level specified.',
           'execution-history-basic': (
-              'Enable execution history basic feature.'
+              'Enable basic execution history.'
           ),
           'execution-history-detailed': (
-              'Enable execution history detailed feature.'
+              'Enable detailed execution history, including expected'
+              ' iterations and in-scope variable values.'
           ),
       },
       help_str='Level of execution history to apply for the workflow.',
       default='none',
-      hidden=True,
   )
   execution_history_level.AddToParser(parser)
 

@@ -316,6 +316,10 @@ class RevisionsRestTransport(RevisionsTransport):
                 'method': 'delete',
                 'uri': '/v2/{name=projects/*/locations/*/services/*/revisions/*}',
             },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=projects/*/locations/*/workerPools/*/revisions/*}',
+            },
             ]
             request, metadata = self._interceptor.pre_delete_revision(request, metadata)
             pb_request = revision.DeleteRevisionRequest.pb(request)
@@ -395,6 +399,10 @@ class RevisionsRestTransport(RevisionsTransport):
                 'method': 'get',
                 'uri': '/v2/{name=projects/*/locations/*/services/*/revisions/*}',
             },
+{
+                'method': 'get',
+                'uri': '/v2/{name=projects/*/locations/*/workerPools/*/revisions/*}',
+            },
             ]
             request, metadata = self._interceptor.pre_get_revision(request, metadata)
             pb_request = revision.GetRevisionRequest.pb(request)
@@ -472,6 +480,10 @@ class RevisionsRestTransport(RevisionsTransport):
             http_options: List[Dict[str, str]] = [{
                 'method': 'get',
                 'uri': '/v2/{parent=projects/*/locations/*/services/*}/revisions',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=projects/*/locations/*/workerPools/*}/revisions',
             },
             ]
             request, metadata = self._interceptor.pre_list_revisions(request, metadata)

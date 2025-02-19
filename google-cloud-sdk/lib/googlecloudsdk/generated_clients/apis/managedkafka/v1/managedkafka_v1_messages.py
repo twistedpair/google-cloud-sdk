@@ -755,8 +755,7 @@ class NetworkConfig(_messages.Message):
       projects/{project}/regions/{region}/subnetworks/{subnet_id} The subnet
       must be located in the same region as the Kafka cluster. The project may
       differ. Multiple subnets from the same parent network must not be
-      specified. The CIDR range of the subnet must be within the IPv4 address
-      ranges for private networks, as specified in RFC 1918.
+      specified.
   """
 
   subnet = _messages.StringField(1)

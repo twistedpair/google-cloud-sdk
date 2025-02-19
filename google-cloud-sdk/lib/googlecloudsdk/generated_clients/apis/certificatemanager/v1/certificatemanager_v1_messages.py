@@ -119,6 +119,7 @@ class Certificate(_messages.Message):
     scope: Optional. Immutable. The scope of the certificate.
     selfManaged: If set, defines data of a self-managed certificate.
     updateTime: Output only. The last update timestamp of a Certificate.
+    usedBy: Output only. The list of resources that use this Certificate.
   """
 
   class ScopeValueValuesEnum(_messages.Enum):
@@ -135,10 +136,13 @@ class Certificate(_messages.Message):
         certificate with cross-region internal Application Load Balancer. The
         certificates are served from all Google Cloud regions. See
         https://cloud.google.com/compute/docs/regions-zones.
+      CLIENT_AUTH: Associated with certificates used as client certificates in
+        Backend mTLS.
     """
     DEFAULT = 0
     EDGE_CACHE = 1
     ALL_REGIONS = 2
+    CLIENT_AUTH = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -175,6 +179,7 @@ class Certificate(_messages.Message):
   scope = _messages.EnumField('ScopeValueValuesEnum', 9)
   selfManaged = _messages.MessageField('SelfManagedCertificate', 10)
   updateTime = _messages.StringField(11)
+  usedBy = _messages.MessageField('UsedBy', 12, repeated=True)
 
 
 class CertificateAuthorityConfig(_messages.Message):
@@ -1838,6 +1843,20 @@ class TrustStore(_messages.Message):
 
   intermediateCas = _messages.MessageField('IntermediateCA', 1, repeated=True)
   trustAnchors = _messages.MessageField('TrustAnchor', 2, repeated=True)
+
+
+class UsedBy(_messages.Message):
+  r"""Defines a resource that uses the certificate.
+
+  Fields:
+    name: Output only. Full name of the resource
+      https://google.aip.dev/122#full-resource-names, e.g. `//certificatemanag
+      er.googleapis.com/projects/*/locations/*/certificateMaps/*/certificateMa
+      pEntries/*` or
+      `//compute.googleapis.com/projects/*/locations/*/targetHttpsProxies/*`.
+  """
+
+  name = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -36,9 +36,28 @@ class AWSInfo(_messages.Message):
       (https://docs.aws.amazon.com/service-authorization/latest/reference/list
       _awsaccountmanagement.html#awsaccountmanagement-resources-for-iam-
       policies)
+    organization: The ARN of the AWS Organization this asset belongs to, empty
+      if no AWS organization exists. (https://docs.aws.amazon.com/cli/latest/r
+      eference/organizations/describe-organization.html) E.g.: "Organization":
+      "arn:aws:organizations::111111111111:organization/o-exampleorgid"
+    organizationalUnit: The AWS Organizational Units (OUs) this asset belongs
+      to, starting from closest OU to furthest OU, empty if no OUs exist.
+      (https://docs.aws.amazon.com/cli/latest/reference/organizations/list-
+      organizational-units-for-parent.html) E.g.: "OrganizationalUnits": [
+      "arn:aws:organizations::o-exampleorgid:ou/r-examplerootid111/ou-
+      examplerootid111-exampleouid111"
+      "arn:aws:organizations::o-exampleorgid:ou/r-examplerootid111/ou-
+      examplerootid111-exampleouid222" ]
+    root: The AWS Root this asset belongs to, empty if no root exists.
+      (https://docs.aws.amazon.com/cli/latest/reference/organizations/list-
+      roots.html) E.g.: "Root": "arn:aws:organizations::111111111111:root/o-
+      exampleorgid/r-examplerootid111"
   """
 
   awsAccount = _messages.StringField(1)
+  organization = _messages.StringField(2)
+  organizationalUnit = _messages.StringField(3, repeated=True)
+  root = _messages.StringField(4)
 
 
 class AccessSelector(_messages.Message):

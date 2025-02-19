@@ -904,7 +904,9 @@ class Cluster(_messages.Message):
       are disabled. Alpha enabled clusters are automatically deleted thirty
       days after creation.
     enableTpu: Enable the ability to use Cloud TPUs in this cluster. This
-      field is deprecated, use tpu_config.enabled instead.
+      field is deprecated, use tpu_config.enabled instead. This field is
+      deprecated due to the deprecation of 2VM TPU. The end of life date for
+      2VM TPU is 2025-04-25.
     endpoint: Output only. The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`. See the `masterAuth` property of
@@ -1080,10 +1082,14 @@ class Cluster(_messages.Message):
       [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
       the cluster is connected. On output this shows the subnetwork ID instead
       of the name.
-    tpuConfig: Configuration for Cloud TPU support;
+    tpuConfig: Configuration for Cloud TPU support; This field is deprecated
+      due to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
+      2025-04-25.
     tpuIpv4CidrBlock: Output only. The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
-      Domain_Routing) notation (e.g. `1.2.3.4/29`).
+      Domain_Routing) notation (e.g. `1.2.3.4/29`). This field is deprecated
+      due to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
+      2025-04-25.
     userManagedKeysConfig: The Custom keys configuration for the cluster.
     verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
@@ -1581,7 +1587,9 @@ class ClusterUpdate(_messages.Message):
     desiredStackType: The desired stack type of the cluster. If a stack type
       is provided and does not match the current stack type of the cluster,
       update will attempt to change the stack type to the new type.
-    desiredTpuConfig: The desired Cloud TPU configuration.
+    desiredTpuConfig: The desired Cloud TPU configuration. This field is
+      deprecated due to the deprecation of 2VM TPU. The end of life date for
+      2VM TPU is 2025-04-25.
     desiredUserManagedKeysConfig: The desired user managed keys config for the
       cluster.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
@@ -3668,12 +3676,16 @@ class IPAllocationPolicy(_messages.Message):
       Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
       networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
       a specific range to use. This field is deprecated, use
-      cluster.tpu_config.ipv4_cidr_block instead.
+      cluster.tpu_config.ipv4_cidr_block instead. This field is deprecated due
+      to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
+      2025-04-25.
     tpuUseServiceNetworking: Enable Cloud TPU's Service Networking mode. In
       this mode, the CIDR blocks used by the Cloud TPUs will be allocated and
       managed by Service Networking, instead of GKE. This field must be
       `false` when `tpu_ipv4_cidr_block` is specified. This field is
-      deprecated, use cluster.tpu_config.use_service_networking instead.
+      deprecated, use cluster.tpu_config.use_service_networking instead. This
+      field is deprecated due to the deprecation of 2VM TPU. The end of life
+      date for 2VM TPU is 2025-04-25.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
       This is used in conjunction with use_routes. It cannot be true if
       use_routes is true. If both use_ip_aliases and use_routes are false,
@@ -7992,7 +8004,8 @@ class TopologyManager(_messages.Message):
 
 
 class TpuConfig(_messages.Message):
-  r"""Configuration for Cloud TPU.
+  r"""Configuration for Cloud TPU. This message is deprecated due to the
+  deprecation of 2VM TPU. The end of life date for 2VM TPU is 2025-04-25.
 
   Fields:
     enabled: Whether Cloud TPU integration is enabled or not.

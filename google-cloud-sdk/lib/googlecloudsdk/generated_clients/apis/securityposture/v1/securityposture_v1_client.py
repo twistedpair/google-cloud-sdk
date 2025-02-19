@@ -787,7 +787,7 @@ class SecuritypostureV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single RemediationIntent resource. To prevent concurrent updates from overwriting each other, always follow the read-modify-write pattern when you update a remediation intent: 1. Call GetRemediationIntent to get the current version of the remediation intent. 2. Update the fields in the remediation intent as needed. 3. Call UpdateRemediationIntent to update the remediation intent. Ensure that your request includes the `etag` value from the GetRemediationIntent response. **Important:** If you omit the `etag` when you call UpdateRemediationIntent, then the updated remediation intent unconditionally overwrites the existin.
+      r"""Updates the parameters of a single RemediationIntent resource. To prevent concurrent updates from overwriting each other, always follow the read-modify-write pattern when you update a remediation intent: 1. Call GetRemediationIntent to get the current version of the remediation intent. 2. Update the fields in the remediation intent as needed. 3. Call UpdateRemediationIntent to update the remediation intent. Ensure that your request includes the `etag` value from the GetRemediationIntent response. **Important:** If you omit the `etag` when you call UpdateRemediationIntent, then the updated remediation intent unconditionally overwrites the existing remediation intent.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsRemediationIntentsPatchRequest) input message

@@ -450,6 +450,28 @@ class CertificateChains(_messages.Message):
   googlePartitionCerts = _messages.StringField(3, repeated=True)
 
 
+class ChecksummedData(_messages.Message):
+  r"""Data with integrity verification field.
+
+  Fields:
+    crc32cChecksum: Integrity verification field. A CRC32C checksum of the
+      returned ChecksummedData.data. An integrity check of
+      ChecksummedData.data can be performed by computing the CRC32C checksum
+      of ChecksummedData.data and comparing your results to this field.
+      Discard the response in case of non-matching checksum values, and
+      perform a limited number of retries. A persistent mismatch may indicate
+      an issue in your computation of the CRC32C checksum. Note: This field is
+      defined as int64 for reasons of compatibility across different
+      languages. However, it is a non-negative integer, which will never
+      exceed 2^32-1, and can be safely downconverted to uint32 in languages
+      that support this type.
+    data: Raw Data.
+  """
+
+  crc32cChecksum = _messages.IntegerField(1)
+  data = _messages.BytesField(2)
+
+
 class CloudkmsFoldersGetAutokeyConfigRequest(_messages.Message):
   r"""A CloudkmsFoldersGetAutokeyConfigRequest object.
 
@@ -860,11 +882,50 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRe
   r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicK
   eyRequest object.
 
+  Enums:
+    PublicKeyFormatValueValuesEnum: Optional. The PublicKey format specified
+      by the user. This field is required for PQC algorithms. If specified,
+      the public key will be exported through the public_key field in the
+      requested format. Otherwise, the pem field will be populated for non-PQC
+      algorithms, and an error will be returned for PQC algorithms.
+
   Fields:
     name: Required. The name of the CryptoKeyVersion public key to get.
+    publicKeyFormat: Optional. The PublicKey format specified by the user.
+      This field is required for PQC algorithms. If specified, the public key
+      will be exported through the public_key field in the requested format.
+      Otherwise, the pem field will be populated for non-PQC algorithms, and
+      an error will be returned for PQC algorithms.
   """
 
+  class PublicKeyFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The PublicKey format specified by the user. This field is
+    required for PQC algorithms. If specified, the public key will be exported
+    through the public_key field in the requested format. Otherwise, the pem
+    field will be populated for non-PQC algorithms, and an error will be
+    returned for PQC algorithms.
+
+    Values:
+      PUBLIC_KEY_FORMAT_UNSPECIFIED: If the public_key_format field is not
+        specified: - For PQC algorithms, an error will be returned. - For non-
+        PQC algorithms, the default format is PEM, and the field pem will be
+        populated. Otherwise, the public key will be exported through the
+        public_key field in the requested format.
+      PEM: The returned public key will be encoded in PEM format. See the
+        [RFC7468](https://tools.ietf.org/html/rfc7468) sections for [General
+        Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
+        [Textual Encoding of Subject Public Key Info]
+        (https://tools.ietf.org/html/rfc7468#section-13) for more information.
+      NIST_PQC: This is supported only for PQC algorithms. The key material is
+        returned in the format defined by NIST PQC standards (FIPS 203, FIPS
+        204, and FIPS 205).
+    """
+    PUBLIC_KEY_FORMAT_UNSPECIFIED = 0
+    PEM = 1
+    NIST_PQC = 2
+
   name = _messages.StringField(1, required=True)
+  publicKeyFormat = _messages.EnumField('PublicKeyFormatValueValuesEnum', 2)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest(_messages.Message):
@@ -1726,6 +1787,10 @@ class CryptoKeyVersion(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
+        signature algorithm, at security level 1. Randomized version.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1763,6 +1828,8 @@ class CryptoKeyVersion(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
+    PQ_SIGN_ML_DSA_65 = 36
+    PQ_SIGN_SLH_DSA_SHA2_128S = 37
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1939,6 +2006,10 @@ class CryptoKeyVersionTemplate(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
+        signature algorithm, at security level 1. Randomized version.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1976,6 +2047,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
+    PQ_SIGN_ML_DSA_65 = 36
+    PQ_SIGN_SLH_DSA_SHA2_128S = 37
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2527,6 +2600,10 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
+        signature algorithm, at security level 1. Randomized version.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -2564,6 +2641,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
+    PQ_SIGN_ML_DSA_65 = 36
+    PQ_SIGN_SLH_DSA_SHA2_128S = 37
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -3450,6 +3529,8 @@ class PublicKey(_messages.Message):
     AlgorithmValueValuesEnum: The Algorithm associated with this key.
     ProtectionLevelValueValuesEnum: The ProtectionLevel of the
       CryptoKeyVersion public key.
+    PublicKeyFormatValueValuesEnum: The PublicKey format specified by the
+      customer through the public_key_format field.
 
   Fields:
     algorithm: The Algorithm associated with this key.
@@ -3472,6 +3553,10 @@ class PublicKey(_messages.Message):
       to uint32 in languages that support this type. NOTE: This field is in
       Beta.
     protectionLevel: The ProtectionLevel of the CryptoKeyVersion public key.
+    publicKey: This field contains the public key (with integrity
+      verification), formatted according to the public_key_format field.
+    publicKeyFormat: The PublicKey format specified by the customer through
+      the public_key_format field.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -3536,6 +3621,10 @@ class PublicKey(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
+        Signature Algorithm, at security level 3. Randomized version.
+      PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
+        signature algorithm, at security level 1. Randomized version.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -3573,6 +3662,8 @@ class PublicKey(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
+    PQ_SIGN_ML_DSA_65 = 36
+    PQ_SIGN_SLH_DSA_SHA2_128S = 37
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.
@@ -3591,11 +3682,36 @@ class PublicKey(_messages.Message):
     EXTERNAL = 3
     EXTERNAL_VPC = 4
 
+  class PublicKeyFormatValueValuesEnum(_messages.Enum):
+    r"""The PublicKey format specified by the customer through the
+    public_key_format field.
+
+    Values:
+      PUBLIC_KEY_FORMAT_UNSPECIFIED: If the public_key_format field is not
+        specified: - For PQC algorithms, an error will be returned. - For non-
+        PQC algorithms, the default format is PEM, and the field pem will be
+        populated. Otherwise, the public key will be exported through the
+        public_key field in the requested format.
+      PEM: The returned public key will be encoded in PEM format. See the
+        [RFC7468](https://tools.ietf.org/html/rfc7468) sections for [General
+        Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
+        [Textual Encoding of Subject Public Key Info]
+        (https://tools.ietf.org/html/rfc7468#section-13) for more information.
+      NIST_PQC: This is supported only for PQC algorithms. The key material is
+        returned in the format defined by NIST PQC standards (FIPS 203, FIPS
+        204, and FIPS 205).
+    """
+    PUBLIC_KEY_FORMAT_UNSPECIFIED = 0
+    PEM = 1
+    NIST_PQC = 2
+
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   name = _messages.StringField(2)
   pem = _messages.StringField(3)
   pemCrc32c = _messages.IntegerField(4)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 5)
+  publicKey = _messages.MessageField('ChecksummedData', 6)
+  publicKeyFormat = _messages.EnumField('PublicKeyFormatValueValuesEnum', 7)
 
 
 class RawDecryptRequest(_messages.Message):

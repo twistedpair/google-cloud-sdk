@@ -1023,18 +1023,17 @@ class _BaseInstances(object):
       )
       instance_resource.diskEncryptionConfiguration = config
 
-    if IsBetaOrNewer(release_track):
-      tags = getattr(args, 'tags')
-      if tags is not None:
-        instance_resource.tags = sql_messages.DatabaseInstance.TagsValue(
-            additionalProperties=[
-                sql_messages.DatabaseInstance.TagsValue.AdditionalProperty(
-                    key=tag,
-                    value=value,
-                )
-                for tag, value in six.iteritems(tags)
-            ]
-        )
+    tags = getattr(args, 'tags')
+    if tags is not None:
+      instance_resource.tags = sql_messages.DatabaseInstance.TagsValue(
+          additionalProperties=[
+              sql_messages.DatabaseInstance.TagsValue.AdditionalProperty(
+                  key=tag,
+                  value=value,
+              )
+              for tag, value in six.iteritems(tags)
+          ]
+      )
 
     return instance_resource
 

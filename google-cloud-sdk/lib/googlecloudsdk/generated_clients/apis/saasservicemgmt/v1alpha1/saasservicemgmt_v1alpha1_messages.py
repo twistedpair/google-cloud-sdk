@@ -78,6 +78,26 @@ class Activity(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
+class Artifact(_messages.Message):
+  r"""Artifacts are OCI Images that contain all of the artifacts needed to
+  provision a unit. Metadata such as, type of the engine used to actuate the
+  artifact (e.g. terraform, helm etc) and version will come from the image
+  manifest. If the hostname is omitted, it will be assumed to be the regional
+  path to Artifact Registry (eg. us-east1-docker.pkg.dev).
+
+  Fields:
+    engine: Output only. Type of the engine used to actuate the artifact. e.g.
+      terraform, helm etc.
+    package: Required. Immutable. URI to an artifact used by the Unit
+      (required unless unitKind is set).
+    version: Output only. Version metadata if present on the artifact.
+  """
+
+  engine = _messages.StringField(1)
+  package = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
 class Blueprint(_messages.Message):
   r"""Blueprints are OCI Images that contain all of the artifacts needed to
   provision a unit. Metadata such as, type of the engine used to actuate the
@@ -131,6 +151,22 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class ErrorBudget(_messages.Message):
+  r"""The configuration for error budget. If the number of failed units
+  exceeds max(allowed_count, allowed_ratio * total_units), the rollout will be
+  paused.
+
+  Fields:
+    allowedCount: Optional. The maximum number of failed units allowed in a
+      location without pausing the rollout.
+    allowedPercentage: Optional. The maximum percentage of units allowed to
+      fail (0, 100] within a location without pausing the rollout.
+  """
+
+  allowedCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  allowedPercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class FromMapping(_messages.Message):
@@ -316,6 +352,22 @@ class ListRolloutsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListSaasResponse(_messages.Message):
+  r"""The response structure for the ListSaas method.
+
+  Fields:
+    nextPageToken: If present, the next page token can be provided to a
+      subsequent ListSaas call to list the next page. If empty, there are no
+      more pages.
+    saas: The resulting saas.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  saas = _messages.MessageField('Saas', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSaasTypesResponse(_messages.Message):
   r"""The response structure for the ListSaasTypes method.
 
@@ -329,22 +381,6 @@ class ListSaasTypesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   saasTypes = _messages.MessageField('SaasType', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListSaasesResponse(_messages.Message):
-  r"""The response structure for the ListSaases method.
-
-  Fields:
-    nextPageToken: If present, the next page token can be provided to a
-      subsequent ListSaases call to list the next page. If empty, there are no
-      more pages.
-    saases: The resulting saases.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  saases = _messages.MessageField('Saas', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -627,6 +663,8 @@ class Release(_messages.Message):
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
+    artifact: Immutable. Artifact is an OCI Image that contains all of the
+      artifacts needed to provision a unit.
     blueprint: Optional. Blueprints are OCI Images that contain all of the
       artifacts needed to provision a unit.
     createTime: Output only. The timestamp when the resource was created.
@@ -712,18 +750,19 @@ class Release(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  blueprint = _messages.MessageField('Blueprint', 2)
-  createTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  inputVariableDefaults = _messages.MessageField('UnitVariable', 5, repeated=True)
-  inputVariables = _messages.MessageField('UnitVariable', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  outputVariables = _messages.MessageField('UnitVariable', 9, repeated=True)
-  releaseRequirements = _messages.MessageField('ReleaseRequirements', 10)
-  uid = _messages.StringField(11)
-  unitKind = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  artifact = _messages.MessageField('Artifact', 2)
+  blueprint = _messages.MessageField('Blueprint', 3)
+  createTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  inputVariableDefaults = _messages.MessageField('UnitVariable', 6, repeated=True)
+  inputVariables = _messages.MessageField('UnitVariable', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  outputVariables = _messages.MessageField('UnitVariable', 10, repeated=True)
+  releaseRequirements = _messages.MessageField('ReleaseRequirements', 11)
+  uid = _messages.StringField(12)
+  unitKind = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class ReleaseRequirements(_messages.Message):
@@ -818,6 +857,7 @@ class Rollout(_messages.Message):
       execution or not.
     release: Optional. Immutable. Name of the Release that gets rolled out to
       target Units. Required if no other type of release is specified.
+    result: Optional. Output only. The current progress result of the rollout.
     results: Output only. Information about progress of rollouts such as
       number of units identified, upgraded, pending etc. Note: this can be
       expanded to include finer-grain per-scope (e.g. per location) results as
@@ -826,10 +866,15 @@ class Rollout(_messages.Message):
       will only be used when user wants to resume a paused rollout, to decide
       whether to retry the failed units. If not set, the default behavior is
       to retry all failed units.
+    rolloutKind: Optional. Immutable. Name of the RolloutKind this rollout is
+      stemming from and adhering to.
+    rolloutOrchestrationStrategy: Optional. The strategy to use for executing
+      this rollout. If not provided, the strategy from Rollout Type will be
+      used.
     rolloutStrategy: Optional. The strategy to use for executing this rollout.
       By default, the strategy from Rollout Type will be used, If not provided
       at creation time of the rollout. (immutable once created)
-    rolloutType: Required. Immutable. Name of the RolloutType this rollout is
+    rolloutType: Optional. Immutable. Name of the RolloutType this rollout is
       stemming from and adhering to.
     rootRollout: Optional. Output only. The root rollout that this rollout is
       stemming from. The resource name (full URI of the resource) following
@@ -842,8 +887,6 @@ class Rollout(_messages.Message):
       the last state transition.
     stateTransitionTime: Optional. Output only. The time when the rollout
       transitioned into its current state.
-    strategy: Optional. The strategy to use for executing this rollout. If not
-      provided, the strategy from Rollout Type will be used.
     targetState: Optional. Specifies the state that the users want the rollout
       to be in. The state field will finally be reconciled by the system to be
       the same as the target_state.
@@ -982,20 +1025,22 @@ class Rollout(_messages.Message):
   parentRollout = _messages.StringField(10)
   pause = _messages.BooleanField(11)
   release = _messages.StringField(12)
-  results = _messages.MessageField('RolloutResults', 13)
-  retryPolicy = _messages.MessageField('RetryPolicy', 14)
-  rolloutStrategy = _messages.MessageField('RolloutStrategy', 15)
-  rolloutType = _messages.StringField(16)
-  rootRollout = _messages.StringField(17)
-  startTime = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateMessage = _messages.StringField(20)
-  stateTransitionTime = _messages.StringField(21)
-  strategy = _messages.StringField(22)
-  targetState = _messages.EnumField('TargetStateValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  unitFilter = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
+  result = _messages.MessageField('RolloutResult', 13)
+  results = _messages.MessageField('RolloutResults', 14)
+  retryPolicy = _messages.MessageField('RetryPolicy', 15)
+  rolloutKind = _messages.StringField(16)
+  rolloutOrchestrationStrategy = _messages.StringField(17)
+  rolloutStrategy = _messages.MessageField('RolloutStrategy', 18)
+  rolloutType = _messages.StringField(19)
+  rootRollout = _messages.StringField(20)
+  startTime = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  stateMessage = _messages.StringField(23)
+  stateTransitionTime = _messages.StringField(24)
+  targetState = _messages.EnumField('TargetStateValueValuesEnum', 25)
+  uid = _messages.StringField(26)
+  unitFilter = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
 
 
 class RolloutKind(_messages.Message):
@@ -1024,6 +1069,10 @@ class RolloutKind(_messages.Message):
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
     createTime: Output only. The timestamp when the resource was created.
+    errorBudget: Optional. The configuration for error budget. If the number
+      of failed units exceeds max(allowed_count, allowed_ratio * total_units),
+      the rollout will be paused. If not set, all units will be attempted to
+      be updated regardless of the number of failures encountered.
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
@@ -1034,7 +1083,8 @@ class RolloutKind(_messages.Message):
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
       "projects/{project}/locations/{location}/rolloutKinds/{rollout_kind_id}"
-    rolloutStrategy: Optional. The strategy to use for executing rollouts.
+    rolloutOrchestrationStrategy: Optional. The strategy to use for executing
+      rollouts.
     uid: Output only. The unique identifier of the resource. UID is unique in
       the time and space for this resource within the scope of the service. It
       is typically generated by the server on successful creation of a
@@ -1137,16 +1187,27 @@ class RolloutKind(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  maintenancePolicyEnforcement = _messages.EnumField('MaintenancePolicyEnforcementValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  rolloutStrategy = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  unitFilter = _messages.StringField(9)
-  unitKind = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  updateUnitKindStrategy = _messages.EnumField('UpdateUnitKindStrategyValueValuesEnum', 12)
+  errorBudget = _messages.MessageField('ErrorBudget', 3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  maintenancePolicyEnforcement = _messages.EnumField('MaintenancePolicyEnforcementValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  rolloutOrchestrationStrategy = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  unitFilter = _messages.StringField(10)
+  unitKind = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  updateUnitKindStrategy = _messages.EnumField('UpdateUnitKindStrategyValueValuesEnum', 13)
+
+
+class RolloutResult(_messages.Message):
+  r"""RolloutResult contains the statistics of a rollout's managed components.
+
+  Fields:
+    stats: The statistics of a rollout's managed components.
+  """
+
+  stats = _messages.MessageField('RolloutStatistic', 1, repeated=True)
 
 
 class RolloutResults(_messages.Message):
@@ -1177,6 +1238,38 @@ class RolloutResults(_messages.Message):
   totalUnits = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   updatedLocations = _messages.StringField(8, repeated=True)
   updatedUnits = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+
+
+class RolloutStatistic(_messages.Message):
+  r"""The statistics of a rollout's managed components, currently it only
+  counts for unit operations.
+
+  Enums:
+    CategoryValueValuesEnum: The category of the statistics.
+
+  Fields:
+    category: The category of the statistics.
+    count: The number of the category.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""The category of the statistics.
+
+    Values:
+      CATEGORY_UNSPECIFIED: Unspecified category.
+      CATEGORY_RUNNING: Running category.
+      CATEGORY_SUCCEEDED: Succeeded category.
+      CATEGORY_FAILED: Failed category.
+      CATEGORY_CANCELLED: Cancelled category.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    CATEGORY_RUNNING = 1
+    CATEGORY_SUCCEEDED = 2
+    CATEGORY_FAILED = 3
+    CATEGORY_CANCELLED = 4
+
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class RolloutStrategy(_messages.Message):
@@ -1257,11 +1350,12 @@ class RolloutType(_messages.Message):
       "projects/{project}/locations/{location}/rolloutTypes/{rollout_type_id}"
     ongoingRollouts: Optional. Output only. List of ongoing rollouts under
       this rollout type. For MVP, only one live rollout is allowed.
+    rolloutOrchestrationStrategy: Optional. The strategy to use for executing
+      rollouts.
     rolloutStrategy: Optional. The strategy to use for executing rollouts
       (initially a small set of predefined strategies are used but possible to
       expand on settings and introduction of custom defined strategies in
       future).
-    strategy: Optional. The strategy to use for executing rollouts.
     uid: Output only. The unique identifier of the resource. UID is unique in
       the time and space for this resource within the scope of the service. It
       is typically generated by the server on successful creation of a
@@ -1369,8 +1463,8 @@ class RolloutType(_messages.Message):
   maintenancePolicyEnforcement = _messages.EnumField('MaintenancePolicyEnforcementValueValuesEnum', 5)
   name = _messages.StringField(6)
   ongoingRollouts = _messages.StringField(7, repeated=True)
-  rolloutStrategy = _messages.MessageField('RolloutStrategy', 8)
-  strategy = _messages.StringField(9)
+  rolloutOrchestrationStrategy = _messages.StringField(8)
+  rolloutStrategy = _messages.MessageField('RolloutStrategy', 9)
   uid = _messages.StringField(10)
   unitFilter = _messages.StringField(11)
   unitKind = _messages.StringField(12)
@@ -1397,17 +1491,16 @@ class Saas(_messages.Message):
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
     createTime: Output only. The timestamp when the resource was created.
-    description: Optional. A user-friendly description that shares more
-      information about the purpose of the saas offering.
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
+    locations: Optional. Immutable. List of locations that the service is
+      available in. Rollout refers to the list to generate a rollout plan.
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
-      "projects/{project}/locations/{location}/saases/{saas}"
-    title: Optional. A user-friendly name to display for the saas offering.
+      "projects/{project}/locations/{location}/saas/{saas}"
     uid: Output only. The unique identifier of the resource. UID is unique in
       the time and space for this resource within the scope of the service. It
       is typically generated by the server on successful creation of a
@@ -1473,13 +1566,12 @@ class Saas(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  locations = _messages.MessageField('Location', 5, repeated=True)
   name = _messages.StringField(6)
-  title = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class SaasType(_messages.Message):
@@ -1495,15 +1587,12 @@ class SaasType(_messages.Message):
       categorization. similar to Kubernetes resource labels.
 
   Fields:
-    alias: Optional. A user friendly name to display for the Saas offering.
     annotations: Optional. Annotations is an unstructured key-value map stored
       with a resource that may be set by external tools to store and retrieve
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
     createTime: Output only. The timestamp when the resource was created.
-    description: Optional. A user friendly description that shares more
-      information about the purpose of the saas offering.
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
@@ -1577,16 +1666,14 @@ class SaasType(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  alias = _messages.StringField(1)
-  annotations = _messages.MessageField('AnnotationsValue', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  locations = _messages.MessageField('Location', 7, repeated=True)
-  name = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  locations = _messages.MessageField('Location', 5, repeated=True)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class SaasservicemgmtProjectsLocationsGetRequest(_messages.Message):
@@ -2216,6 +2303,143 @@ class SaasservicemgmtProjectsLocationsRolloutsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
+class SaasservicemgmtProjectsLocationsSaasCreateRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsSaasCreateRequest object.
+
+  Fields:
+    parent: Required. The parent of the saas.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    saas: A Saas resource to be passed as the request body.
+    saasId: Required. The ID value for the new saas.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  saas = _messages.MessageField('Saas', 3)
+  saasId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class SaasservicemgmtProjectsLocationsSaasDeleteRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsSaasDeleteRequest object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the saas.
+      This is used with state-changing methods to prevent accidental
+      overwrites when multiple user agents might be acting in parallel on the
+      same resource. An etag wildcard provide optimistic concurrency based on
+      the expected existence of the saas. The Any wildcard (`*`) requires that
+      the resource must already exists, and the Not Any wildcard (`!*`)
+      requires that it must not.
+    name: Required. The resource name of the resource within a service.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SaasservicemgmtProjectsLocationsSaasGetRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsSaasGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the resource within a service.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SaasservicemgmtProjectsLocationsSaasListRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsSaasListRequest object.
+
+  Fields:
+    filter: Filter the list as specified in https://google.aip.dev/160.
+    orderBy: Order results as specified in https://google.aip.dev/132.
+    pageSize: The maximum number of saas to send per page.
+    pageToken: The page token: If the next_page_token from a previous response
+      is provided, this request will send the subsequent page.
+    parent: Required. The parent of the saas.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class SaasservicemgmtProjectsLocationsSaasPatchRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsSaasPatchRequest object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the saas.
+      This is used with state-changing methods to prevent accidental
+      overwrites when multiple user agents might be acting in parallel on the
+      same resource. An etag wildcard provide optimistic concurrency based on
+      the expected existence of the saas. The Any wildcard (`*`) requires that
+      the resource must already exists, and the Not Any wildcard (`!*`)
+      requires that it must not.
+    name: Identifier. The resource name (full URI of the resource) following
+      the standard naming scheme:
+      "projects/{project}/locations/{location}/saas/{saas}"
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    saas: A Saas resource to be passed as the request body.
+    updateMask: Field mask is used to specify the fields to be overwritten in
+      the Saas resource by the update. The fields specified in the update_mask
+      are relative to the resource, not the full request. A field will be
+      overwritten if it is in the mask. If the user does not provide a mask
+      then all fields in the Saas will be overwritten.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  saas = _messages.MessageField('Saas', 4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class SaasservicemgmtProjectsLocationsSaasTypesCreateRequest(_messages.Message):
   r"""A SaasservicemgmtProjectsLocationsSaasTypesCreateRequest object.
 
@@ -2349,143 +2573,6 @@ class SaasservicemgmtProjectsLocationsSaasTypesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   saasType = _messages.MessageField('SaasType', 4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
-
-
-class SaasservicemgmtProjectsLocationsSaasesCreateRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsSaasesCreateRequest object.
-
-  Fields:
-    parent: Required. The parent of the saas.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    saas: A Saas resource to be passed as the request body.
-    saasId: Required. The ID value for the new saas.
-    validateOnly: If "validate_only" is set to true, the service will try to
-      validate that this request would succeed, but will not actually make
-      changes.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  saas = _messages.MessageField('Saas', 3)
-  saasId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
-
-
-class SaasservicemgmtProjectsLocationsSaasesDeleteRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsSaasesDeleteRequest object.
-
-  Fields:
-    etag: The etag known to the client for the expected state of the saas.
-      This is used with state-changing methods to prevent accidental
-      overwrites when multiple user agents might be acting in parallel on the
-      same resource. An etag wildcard provide optimistic concurrency based on
-      the expected existence of the saas. The Any wildcard (`*`) requires that
-      the resource must already exists, and the Not Any wildcard (`!*`)
-      requires that it must not.
-    name: Required. The resource name of the resource within a service.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    validateOnly: If "validate_only" is set to true, the service will try to
-      validate that this request would succeed, but will not actually make
-      changes.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
-
-
-class SaasservicemgmtProjectsLocationsSaasesGetRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsSaasesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the resource within a service.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SaasservicemgmtProjectsLocationsSaasesListRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsSaasesListRequest object.
-
-  Fields:
-    filter: Filter the list as specified in https://google.aip.dev/160.
-    orderBy: Order results as specified in https://google.aip.dev/132.
-    pageSize: The maximum number of saases to send per page.
-    pageToken: The page token: If the next_page_token from a previous response
-      is provided, this request will send the subsequent page.
-    parent: Required. The parent of the saas.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class SaasservicemgmtProjectsLocationsSaasesPatchRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsSaasesPatchRequest object.
-
-  Fields:
-    etag: The etag known to the client for the expected state of the saas.
-      This is used with state-changing methods to prevent accidental
-      overwrites when multiple user agents might be acting in parallel on the
-      same resource. An etag wildcard provide optimistic concurrency based on
-      the expected existence of the saas. The Any wildcard (`*`) requires that
-      the resource must already exists, and the Not Any wildcard (`!*`)
-      requires that it must not.
-    name: Identifier. The resource name (full URI of the resource) following
-      the standard naming scheme:
-      "projects/{project}/locations/{location}/saases/{saas}"
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    saas: A Saas resource to be passed as the request body.
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the Saas resource by the update. The fields specified in the update_mask
-      are relative to the resource, not the full request. A field will be
-      overwritten if it is in the mask. If the user does not provide a mask
-      then all fields in the Saas will be overwritten.
-    validateOnly: If "validate_only" is set to true, the service will try to
-      validate that this request would succeed, but will not actually make
-      changes.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  saas = _messages.MessageField('Saas', 4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
 

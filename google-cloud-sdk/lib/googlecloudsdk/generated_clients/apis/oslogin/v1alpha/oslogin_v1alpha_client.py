@@ -39,11 +39,60 @@ class OsloginV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects = self.ProjectsService(self)
     self.users_projects_locations = self.UsersProjectsLocationsService(self)
     self.users_projects_zones = self.UsersProjectsZonesService(self)
     self.users_projects = self.UsersProjectsService(self)
     self.users_sshPublicKeys = self.UsersSshPublicKeysService(self)
     self.users = self.UsersService(self)
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(OsloginV1alpha.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SignSshPublicKey(self, request, global_params=None):
+      r"""Signs an SSH public key for a user to authenticate to a virtual machine on Google Compute Engine.
+
+      Args:
+        request: (OsloginProjectsLocationsSignSshPublicKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyResponse) The response message.
+      """
+      config = self.GetMethodConfig('SignSshPublicKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SignSshPublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:signSshPublicKey',
+        http_method='POST',
+        method_id='oslogin.projects.locations.signSshPublicKey',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:signSshPublicKey',
+        request_field='googleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest',
+        request_type_name='OsloginProjectsLocationsSignSshPublicKeyRequest',
+        response_type_name='GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyResponse',
+        supports_download=False,
+    )
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = 'projects'
+
+    def __init__(self, client):
+      super(OsloginV1alpha.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class UsersProjectsLocationsService(base_api.BaseApiService):
     """Service class for the users_projects_locations resource."""

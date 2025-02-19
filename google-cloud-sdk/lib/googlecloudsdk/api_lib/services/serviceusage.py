@@ -141,7 +141,7 @@ def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
   """Make API call to get a effective policy.
 
   Args:
-    name: The name of the effective policy.Currently supported format
+    name: The name of the effective policy. Currently supported format
       '{resource_type}/{resource_name}/effectivePolicy'. For example,
       'projects/100/effectivePolicy'.
     view: The view of the effective policy to use. The default view is 'BASIC'.
@@ -506,19 +506,20 @@ def AddEnableRule(
       except apitools_exceptions.HttpNotFoundError:
         continue
     if policy.enableRules:
-      policy.enableRules[0].services.extend(list(services_to_enabled))
+      # Check if services to add is not already present in the policy.
+      enabled_services = policy.enableRules[0].services
+      for service in list(services_to_enabled):
+        if service not in enabled_services:
+          policy.enableRules[0].services.append(service)
     else:
       policy.enableRules.append(
           messages.GoogleApiServiceusageV2alphaEnableRule(
               services=list(services_to_enabled)
           )
       )
-
-    if validate_only:
-      _GetServices(policy, policy_name, force=False, validate_only=True)
-      return
-    else:
-      return UpdateConsumerPolicyV2Alpha(policy, policy_name)
+    return UpdateConsumerPolicyV2Alpha(
+        policy, policy_name, validateonly=validate_only
+    )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -617,15 +618,12 @@ def RemoveEnableRule(
       if rule.services:
         updated_consumer_poicy.enableRules.append(rule)
 
-    if validate_only:
-      _GetServices(
-          updated_consumer_poicy, policy_name, force=force, validate_only=True
-      )
-      return
-    else:
-      return UpdateConsumerPolicyV2Alpha(
-          updated_consumer_poicy, policy_name, force=force
-      )
+    return UpdateConsumerPolicyV2Alpha(
+        updated_consumer_poicy,
+        policy_name,
+        force=force,
+        validateonly=validate_only,
+    )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -901,8 +899,8 @@ def ListServices(project, enabled, page_size, limit):
                             exceptions.EnableServicePermissionDeniedException)
 
 
-def GetOperation(name):
-  """Make API call to get an operation.
+def GetOperation(name: str):
+  """Make API call to get an operation using serviceusageV1 api.
 
   Args:
     name: The name of operation.
@@ -921,6 +919,32 @@ def GetOperation(name):
     return client.operations.Get(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e, exceptions.OperationErrorException)
+
+
+def GetOperationV2Alpha(name: str):
+  """Make API call to get an operation using serviceusageV2alpha api.
+
+  Args:
+    name: The name of the operation resource. Format
+      'operations/<operation_id>'.
+
+  Raises:
+    exceptions.OperationErrorException: when the getting operation API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The message.Operation object with response and error.
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+  request = messages.ServiceusageOperationsGetRequest(name=name)
+  try:
+    return client.operations.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 
@@ -1162,25 +1186,3 @@ def _GetClientInstance(version='v1'):
       enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(
       'serviceusage', version, http_client=http_client)
-
-
-def _GetServices(
-    policy: str, policy_name: str, force: bool, validate_only: bool
-):
-  """Get list of services from operation response."""
-  operation = UpdateConsumerPolicyV2Alpha(
-      policy, policy_name, force, validate_only
-  )
-  services = set()
-  if operation.response:
-    reposonse_dict = encoding.MessageToPyValue(operation.response)
-    if 'enableRules' in reposonse_dict.keys():
-      enable_rules = reposonse_dict['enableRules']
-      keys = list(set().union(*(d.keys() for d in enable_rules)))
-      if 'services' in keys:
-        services_enabled = enable_rules[keys.index('services')]
-        for service in services_enabled['services']:
-          services.add(service)
-    log.status.Print("Consumer policy '" + policy_name + "' (validate-only):")
-    for service in services:
-      log.status.Print(service)

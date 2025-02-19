@@ -47,6 +47,31 @@ class AcceptHubSpokeResponse(_messages.Message):
   spoke = _messages.MessageField('Spoke', 1)
 
 
+class AcceptSpokeUpdateRequest(_messages.Message):
+  r"""The request for HubService.AcceptSpokeUpdate.
+
+  Fields:
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    spokeEtag: Required. The etag of the spoke to accept update.
+    spokeUri: Required. The URI of the spoke to accept update.
+  """
+
+  requestId = _messages.StringField(1)
+  spokeEtag = _messages.StringField(2)
+  spokeUri = _messages.StringField(3)
+
+
 class ActivateSpokeRequest(_messages.Message):
   r"""The request for HubService.ActivateSpoke.
 
@@ -700,23 +725,15 @@ class Gateway(_messages.Message):
     Values:
       GATEWAY_CAPACITY_UNSPECIFIED: The gateway capacity is unspecified.
       CAPACITY_1_GBPS: The gateway has 1 Gbps of aggregate processing capacity
-      CAPACITY_5_GBPS: The gateway has 5 Gbps of aggregate processing capacity
       CAPACITY_10_GBPS: The gateway has 10 Gbps of aggregate processing
-        capacity
-      CAPACITY_25_GBPS: The gateway has 25 Gbps of aggregate processing
-        capacity
-      CAPACITY_50_GBPS: The gateway has 50 Gbps of aggregate processing
         capacity
       CAPACITY_100_GBPS: The gateway has 100 Gbps of aggregate processing
         capacity
     """
     GATEWAY_CAPACITY_UNSPECIFIED = 0
     CAPACITY_1_GBPS = 1
-    CAPACITY_5_GBPS = 2
-    CAPACITY_10_GBPS = 3
-    CAPACITY_25_GBPS = 4
-    CAPACITY_50_GBPS = 5
-    CAPACITY_100_GBPS = 6
+    CAPACITY_10_GBPS = 2
+    CAPACITY_100_GBPS = 3
 
   capacity = _messages.EnumField('CapacityValueValuesEnum', 1)
   ipRangeReservations = _messages.MessageField('IpRangeReservation', 2, repeated=True)
@@ -1029,6 +1046,9 @@ class Group(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1041,6 +1061,7 @@ class Group(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1203,6 +1224,9 @@ class Hub(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1215,6 +1239,7 @@ class Hub(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1538,6 +1563,8 @@ class LinkedProducerVpcNetwork(_messages.Message):
       Consumer VPC and the Producer VPC (defined in the Tenant project) which
       is added to the NCC hub. This peering must be in ACTIVE state.
     producerNetwork: Output only. The URI of the Producer VPC.
+    proposedIncludeExportRanges: Optional. The proposed include export IP
+      ranges waiting for hub administration's approval.
     serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
   """
 
@@ -1546,7 +1573,8 @@ class LinkedProducerVpcNetwork(_messages.Message):
   network = _messages.StringField(3)
   peering = _messages.StringField(4)
   producerNetwork = _messages.StringField(5)
-  serviceConsumerVpcSpoke = _messages.StringField(6)
+  proposedIncludeExportRanges = _messages.StringField(6, repeated=True)
+  serviceConsumerVpcSpoke = _messages.StringField(7)
 
 
 class LinkedRouterApplianceInstances(_messages.Message):
@@ -1589,13 +1617,16 @@ class LinkedVpcNetwork(_messages.Message):
       filters do not apply between the service consumer VPC spoke and any of
       its producer VPC spokes. This VPC spoke cannot be deleted as long as any
       of these producer VPC spokes are connected to the NCC Hub.
+    proposedIncludeExportRanges: Optional. The proposed include export IP
+      ranges waiting for hub administration's approval.
     uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
   producerVpcSpokes = _messages.StringField(3, repeated=True)
-  uri = _messages.StringField(4)
+  proposedIncludeExportRanges = _messages.StringField(4, repeated=True)
+  uri = _messages.StringField(5)
 
 
 class LinkedVpnTunnels(_messages.Message):
@@ -1996,6 +2027,20 @@ class NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest(_messages
   name = _messages.StringField(2, required=True)
 
 
+class NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeUpdateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeUpdateRequest
+  object.
+
+  Fields:
+    acceptSpokeUpdateRequest: A AcceptSpokeUpdateRequest resource to be passed
+      as the request body.
+    name: Required. The name of the hub to accept spoke update.
+  """
+
+  acceptSpokeUpdateRequest = _messages.MessageField('AcceptSpokeUpdateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest object.
 
@@ -2367,6 +2412,20 @@ class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(_messages
   rejectHubSpokeRequest = _messages.MessageField('RejectHubSpokeRequest', 2)
 
 
+class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeUpdateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeUpdateRequest
+  object.
+
+  Fields:
+    name: Required. The name of the hub to reject spoke update.
+    rejectSpokeUpdateRequest: A RejectSpokeUpdateRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rejectSpokeUpdateRequest = _messages.MessageField('RejectSpokeUpdateRequest', 2)
+
+
 class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest
   object.
@@ -2474,7 +2533,13 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_
     policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
       body.
     policyBasedRouteId: Required. Unique id for the policy-based route to
-      create.
+      create. Provided by the client when the resource is created. The name
+      must comply with https://google.aip.dev/122#resource-id-segments.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([a-z0-9-]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       knows to ignore the request if it has already been completed. The server
@@ -4416,6 +4481,34 @@ class RejectHubSpokeResponse(_messages.Message):
   spoke = _messages.MessageField('Spoke', 1)
 
 
+class RejectSpokeUpdateRequest(_messages.Message):
+  r"""The request for HubService.RejectSpokeUpdate.
+
+  Fields:
+    details: Optional. Additional information provided by the hub
+      administrator.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    spokeEtag: Required. The etag of the spoke to reject update.
+    spokeUri: Required. The URI of the spoke to reject update.
+  """
+
+  details = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  spokeEtag = _messages.StringField(3)
+  spokeUri = _messages.StringField(4)
+
+
 class Route(_messages.Message):
   r"""A route defines a path from VM instances within a spoke to a specific
   destination resource. Only VPC spokes have routes.
@@ -4485,6 +4578,9 @@ class Route(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -4497,6 +4593,7 @@ class Route(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The route's type. Its type is determined by the
@@ -4608,6 +4705,9 @@ class RouteTable(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -4620,6 +4720,7 @@ class RouteTable(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5020,6 +5121,11 @@ class Spoke(_messages.Message):
   Fields:
     createTime: Output only. The time the spoke was created.
     description: Optional. An optional description of the spoke.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    fieldPathsPendingUpdate: Optional. The list of fields waiting for hub
+      administration's approval.
     gateway: Optional. This is a gateway that can apply specialized processing
       to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
@@ -5084,6 +5190,9 @@ class Spoke(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -5096,6 +5205,7 @@ class Spoke(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5125,21 +5235,23 @@ class Spoke(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateway = _messages.MessageField('Gateway', 3)
-  group = _messages.StringField(4)
-  hub = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 7)
-  linkedProducerVpcNetwork = _messages.MessageField('LinkedProducerVpcNetwork', 8)
-  linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 9)
-  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 10)
-  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 11)
-  name = _messages.StringField(12)
-  reasons = _messages.MessageField('StateReason', 13, repeated=True)
-  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  uniqueId = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  etag = _messages.StringField(3)
+  fieldPathsPendingUpdate = _messages.StringField(4, repeated=True)
+  gateway = _messages.MessageField('Gateway', 5)
+  group = _messages.StringField(6)
+  hub = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 9)
+  linkedProducerVpcNetwork = _messages.MessageField('LinkedProducerVpcNetwork', 10)
+  linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 11)
+  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 12)
+  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 13)
+  name = _messages.StringField(14)
+  reasons = _messages.MessageField('StateReason', 15, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uniqueId = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class SpokeStateCount(_messages.Message):
@@ -5171,6 +5283,9 @@ class SpokeStateCount(_messages.Message):
       INACTIVE: The resource is inactive.
       OBSOLETE: The hub associated with this spoke resource has been deleted.
         This state applies to spoke resources only.
+      FAILED: The resource is in an undefined state due to resource creation
+        or deletion failure. You can try to delete the resource later or
+        contact support for help.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -5183,6 +5298,7 @@ class SpokeStateCount(_messages.Message):
     UPDATING = 8
     INACTIVE = 9
     OBSOLETE = 10
+    FAILED = 11
 
   count = _messages.IntegerField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)

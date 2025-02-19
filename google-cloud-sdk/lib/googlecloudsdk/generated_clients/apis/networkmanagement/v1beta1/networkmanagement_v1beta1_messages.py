@@ -114,6 +114,9 @@ class AbortInfo(_messages.Message):
         in the Google-managed project.
       UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG: Aborted due to an unsupported
         configuration of the Google-managed project.
+      NO_SERVERLESS_IP_RANGES: Aborted because the source endpoint is a Cloud
+        Run revision with direct VPC access enabled, but there are no reserved
+        serverless IP ranges.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -151,6 +154,7 @@ class AbortInfo(_messages.Message):
     NON_ROUTABLE_IP_ADDRESS = 33
     UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 34
     UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 35
+    NO_SERVERLESS_IP_RANGES = 36
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -1855,6 +1859,89 @@ class NetworkInfo(_messages.Message):
   uri = _messages.StringField(5)
 
 
+class NetworkmanagementOrganizationsLocationsGetRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsGlobalOperationsCancelRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsGlobalOperationsCancelRequest
+  object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsGlobalOperationsDeleteRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsGlobalOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsGlobalOperationsGetRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsGlobalOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class NetworkmanagementOrganizationsLocationsListRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class NetworkmanagementProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsGetRequest object.
 
@@ -2115,6 +2202,7 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest(_message
   Fields:
     parent: Required. The parent resource of the VPC Flow Logs configuration
       to create: `projects/{project_id}/locations/global`
+      `organizations/{organization_id}/locations/global`
     vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
       request body.
     vpcFlowLogsConfigId: Required. ID of the `VpcFlowLogsConfig`.
@@ -2130,9 +2218,10 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsDeleteRequest(_message
   object.
 
   Fields:
-    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
-      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
-      }`
+    name: Required. `VpcFlowLogsConfig` resource name using one of the form: `
+      projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs
+      _config}` `organizations/{organization_id}/locations/global/vpcFlowLogsC
+      onfigs/{vpc_flow_logs_config}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2144,7 +2233,8 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest(_messages.M
   Fields:
     name: Required. `VpcFlowLogsConfig` resource name using the form: `project
       s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
-      }`
+      }` `organizations/{organization_id}/locations/global/vpcFlowLogsConfigs/
+      {vpc_flow_logs_config}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2165,6 +2255,7 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsListRequest(_messages.
       `next_page_token`.
     parent: Required. The parent resource of the VpcFlowLogsConfig:
       `projects/{project_id}/locations/global`
+      `organizations/{organization_id}/locations/global`
   """
 
   filter = _messages.StringField(1)
@@ -2179,9 +2270,10 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest(_messages
   object.
 
   Fields:
-    name: Identifier. Unique name of the configuration using the form: `projec
-      ts/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_confi
-      g_id}`
+    name: Identifier. Unique name of the configuration using one of the forms:
+      `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
+      s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
+      ogsConfigs/{vpc_flow_logs_config_id}`
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
     vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
@@ -3244,9 +3336,10 @@ class VpcFlowLogsConfig(_messages.Message):
     metadataFields: Optional. Custom metadata fields to include in the
       reported VPC flow logs. Can only be specified if "metadata" was set to
       CUSTOM_METADATA.
-    name: Identifier. Unique name of the configuration using the form: `projec
-      ts/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_confi
-      g_id}`
+    name: Identifier. Unique name of the configuration using one of the forms:
+      `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
+      s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
+      ogsConfigs/{vpc_flow_logs_config_id}`
     state: Optional. The state of the VPC Flow Log configuration. Default
       value is ENABLED. When creating a new configuration, it must be enabled.
     targetResourceState: Output only. A diagnostic bit - describes the state

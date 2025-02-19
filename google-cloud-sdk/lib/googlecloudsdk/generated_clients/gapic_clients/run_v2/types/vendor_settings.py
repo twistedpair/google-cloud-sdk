@@ -493,9 +493,9 @@ class BuildConfig(proto.Message):
             should be used to build the Cloud Run function. The format
             of this field is
             ``projects/{project}/locations/{region}/workerPools/{workerPool}``
-            where {project} and {region} are the project id and region
-            respectively where the worker pool is defined and
-            {workerPool} is the short name of the worker pool.
+            where ``{project}`` and ``{region}`` are the project id and
+            region respectively where the worker pool is defined and
+            ``{workerPool}`` is the short name of the worker pool.
         environment_variables (MutableMapping[str, str]):
             Optional. User-provided build-time
             environment variables for the function

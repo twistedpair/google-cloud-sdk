@@ -547,11 +547,15 @@ class AppengineAppsServicesDeleteRequest(_messages.Message):
   r"""A AppengineAppsServicesDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any versions of this service will also be
+      deleted. (Otherwise, the request will only succeed if the service has no
+      versions.)
     name: Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class AppengineAppsServicesGetRequest(_messages.Message):
@@ -861,11 +865,15 @@ class AppengineProjectsLocationsApplicationsServicesDeleteRequest(_messages.Mess
   r"""A AppengineProjectsLocationsApplicationsServicesDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any versions of this service will also be
+      deleted. (Otherwise, the request will only succeed if the service has no
+      versions.)
     name: Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest(_messages.Message):
@@ -3426,7 +3434,7 @@ class StandardSchedulerSettings(_messages.Message):
 
   Fields:
     maxInstances: Maximum number of instances to run for this version. Set to
-      zero to disable max_instances configuration.
+      2147483647 to disable max_instances configuration.
     minInstances: Minimum number of instances to run for this version. Set to
       zero to disable min_instances configuration.
     targetCpuUtilization: Target CPU utilization ratio to maintain when

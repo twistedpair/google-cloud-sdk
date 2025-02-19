@@ -585,7 +585,7 @@ def AddBackupRule(parser, required=True):
               'backup-window-start': arg_parsers.BoundedInt(0, 23),
               'backup-window-end': arg_parsers.BoundedInt(1, 24),
               'time-zone': str,
-              'hourly-frequency': arg_parsers.BoundedInt(6, 23),
+              'hourly-frequency': arg_parsers.BoundedInt(4, 23),
               'days-of-week': ArgListParser(
                   util.OptionsMapValidator(day_options).Parse
               ),
@@ -647,7 +647,7 @@ def AddBackupRule(parser, required=True):
           *hourly-frequency*::: Frequency for hourly backups. An hourly
           frequency of 2 means backup jobs will run every 2 hours from start
           time till the end time defined. The hourly frequency must be between
-          6 and 23. The value is needed only if recurrence type is HOURLY.
+          4 and 23. The value is needed only if recurrence type is HOURLY.
 
           *days-of-week*::: Days of the week when the backup job should be
           executed. The value is needed if recurrence type is WEEKLY.

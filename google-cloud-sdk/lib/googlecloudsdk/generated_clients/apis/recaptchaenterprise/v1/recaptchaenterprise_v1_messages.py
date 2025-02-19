@@ -202,7 +202,7 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     r"""ReasonsValueListEntryValuesEnum enum type.
 
     Values:
-      REASON_UNSPECIFIED: Default unspecified reason.
+      REASON_UNSPECIFIED: Unspecified reason. Do not use.
       CHARGEBACK: Indicates that the transaction had a chargeback issued with
         no other details. When possible, specify the type by using
         CHARGEBACK_FRAUD or CHARGEBACK_DISPUTE instead.
@@ -415,7 +415,10 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       Unique stable hashed user identifier for the request. The identifier
       must be hashed using hmac-sha256 with stable secret.
     headers: Optional. HTTP header information about the request.
-    ja3: Optional. JA3 fingerprint for SSL clients.
+    ja3: Optional. JA3 fingerprint for SSL clients. To learn how to compute
+      this fingerprint, please refer to https://github.com/salesforce/ja3.
+    ja4: Optional. JA4 fingerprint for SSL clients. To learn how to compute
+      this fingerprint, please refer to https://github.com/FoxIO-LLC/ja4.
     requestedUri: Optional. The URI resource the user requested that triggered
       an assessment.
     siteKey: Optional. The site key that was used to invoke reCAPTCHA
@@ -449,7 +452,7 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       ENABLED: Enable Fraud Prevention for this assessment, if Fraud
         Prevention is enabled in the Google Cloud console.
       DISABLED: Disable Fraud Prevention for this assessment, regardless of
-        Google Cloud console settings.
+        the Google Cloud console settings.
     """
     FRAUD_PREVENTION_UNSPECIFIED = 0
     ENABLED = 1
@@ -462,14 +465,15 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   hashedAccountId = _messages.BytesField(5)
   headers = _messages.StringField(6, repeated=True)
   ja3 = _messages.StringField(7)
-  requestedUri = _messages.StringField(8)
-  siteKey = _messages.StringField(9)
-  token = _messages.StringField(10)
-  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 11)
-  userAgent = _messages.StringField(12)
-  userInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1UserInfo', 13)
-  userIpAddress = _messages.StringField(14)
-  wafTokenAssessment = _messages.BooleanField(15)
+  ja4 = _messages.StringField(8)
+  requestedUri = _messages.StringField(9)
+  siteKey = _messages.StringField(10)
+  token = _messages.StringField(11)
+  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 12)
+  userAgent = _messages.StringField(13)
+  userInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1UserInfo', 14)
+  userIpAddress = _messages.StringField(15)
+  wafTokenAssessment = _messages.BooleanField(16)
 
 
 class GoogleCloudRecaptchaenterpriseV1ExpressKeySettings(_messages.Message):
@@ -919,7 +923,8 @@ class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
       `projects/{project}/keys/{key}/metrics`.
     scoreMetrics: Metrics are continuous and in order by dates, and in the
       granularity of day. All Key types should have score-based data.
-    startTime: Inclusive start time aligned to a day (UTC).
+    startTime: Inclusive start time aligned to a day in the
+      America/Los_Angeles (Pacific) timezone.
   """
 
   challengeMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeMetrics', 1, repeated=True)

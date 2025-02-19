@@ -1384,7 +1384,7 @@ class SecretEnvVar(_messages.Message):
 
   Fields:
     key: Name of the environment variable.
-    projectId: Project identifier (preferrably project number but can also be
+    projectId: Project identifier (preferably project number but can also be
       the project ID) of the project that contains the secret. If not set, it
       will be populated with the function's project assuming that the secret
       exists in the same project as of the function.

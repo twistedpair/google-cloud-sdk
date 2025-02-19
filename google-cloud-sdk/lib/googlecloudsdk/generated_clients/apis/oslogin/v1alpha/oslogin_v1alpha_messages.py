@@ -22,6 +22,42 @@ class Empty(_messages.Message):
 
 
 
+class GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest(_messages.Message):
+  r"""A request message for signing an SSH public key.
+
+  Fields:
+    appEngineInstance: The App Engine instance to sign the SSH public key for.
+      Expected format:
+      services/{service}/versions/{version}/instances/{instance}
+    computeInstance: The compute instance to sign the SSH public key for.
+      Expected format:
+      projects/{project}/zones/{zone}/instances/{numeric_instance_id}
+    serviceAccount: Optional. The service account for the Compute instance. If
+      the instance in question does not have a service account, this field
+      should be left empty. If the wrong service account is provided, this
+      operation will return a signed certificate that will not be accepted by
+      the VM. During rollout of the new regionalized SignSshPublicKey API,
+      this field will be required for all requests, but the VM will not
+      initially carry out the
+    sshPublicKey: Required. The SSH public key to sign.
+  """
+
+  appEngineInstance = _messages.StringField(1)
+  computeInstance = _messages.StringField(2)
+  serviceAccount = _messages.StringField(3)
+  sshPublicKey = _messages.StringField(4)
+
+
+class GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyResponse(_messages.Message):
+  r"""The response message for signing an SSH public key.
+
+  Fields:
+    signedSshPublicKey: The signed SSH public key to use in the SSH handshake.
+  """
+
+  signedSshPublicKey = _messages.StringField(1)
+
+
 class ImportSshPublicKeyResponse(_messages.Message):
   r"""A response message for importing an SSH public key.
 
@@ -79,6 +115,21 @@ class LoginProfile(_messages.Message):
   posixAccounts = _messages.MessageField('PosixAccount', 2, repeated=True)
   securityKeys = _messages.MessageField('SecurityKey', 3, repeated=True)
   sshPublicKeys = _messages.MessageField('SshPublicKeysValue', 4)
+
+
+class OsloginProjectsLocationsSignSshPublicKeyRequest(_messages.Message):
+  r"""A OsloginProjectsLocationsSignSshPublicKeyRequest object.
+
+  Fields:
+    googleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest: A
+      GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest
+      resource to be passed as the request body.
+    parent: Required. The parent for the signing request. Format:
+      projects/{project}/locations/{location}
+  """
+
+  googleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest = _messages.MessageField('GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class OsloginUsersGetLoginProfileRequest(_messages.Message):

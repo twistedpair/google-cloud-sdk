@@ -64,6 +64,8 @@ class ServicesAsyncClient:
     _DEFAULT_ENDPOINT_TEMPLATE = ServicesClient._DEFAULT_ENDPOINT_TEMPLATE
     _DEFAULT_UNIVERSE = ServicesClient._DEFAULT_UNIVERSE
 
+    build_path = staticmethod(ServicesClient.build_path)
+    parse_build_path = staticmethod(ServicesClient.parse_build_path)
     connector_path = staticmethod(ServicesClient.connector_path)
     parse_connector_path = staticmethod(ServicesClient.parse_connector_path)
     crypto_key_path = staticmethod(ServicesClient.crypto_key_path)

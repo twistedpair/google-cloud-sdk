@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'pubsub'
@@ -765,6 +766,20 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FailedMessage(_messages.Message):
+  r"""Pub/Sub message that failed to be transformed.
+
+  Fields:
+    error: Required. Error status of the failed transform.
+  """
+
+  error = _messages.MessageField('Status', 1)
+
+
+class FilteredMessage(_messages.Message):
+  r"""Filtered Pub/Sub message."""
+
+
 class IngestionDataSourceSettings(_messages.Message):
   r"""Settings for an ingestion data source on a topic.
 
@@ -792,16 +807,17 @@ class JavaScriptUDF(_messages.Message):
 
   Fields:
     code: Required. JavaScript code that contains a function `function_name`
-      with the below signature: /** * Transforms a Pub/Sub message. * @return
-      {(Object)>|null)} - To * filter a message, return `null`. To transform a
-      message return a map * with the following keys: * - (required) 'data' :
-      {string} * - (optional) 'attributes' : {Object} * Returning empty
-      `attributes` will remove all attributes from the * message. * * @param
-      {(Object)>} Pub/Sub * message. Keys: * - (required) 'data' : {string} *
-      - (required) 'attributes' : {Object} * * @param {Object} metadata -
-      Pub/Sub message metadata. * Keys: * - (required) 'message_id' : {string}
-      * - (optional) 'publish_time': {string} YYYY-MM-DDTHH:MM:SSZ format * -
-      (optional) 'ordering_key': {string} */ function (message, metadata) { }
+      with the below signature: ``` /** * Transforms a Pub/Sub message. *
+      @return {(Object)>|null)} - To * filter a message, return `null`. To
+      transform a message return a map * with the following keys: * -
+      (required) 'data' : {string} * - (optional) 'attributes' : {Object} *
+      Returning empty `attributes` will remove all attributes from the *
+      message. * * @param {(Object)>} Pub/Sub * message. Keys: * - (required)
+      'data' : {string} * - (required) 'attributes' : {Object} * * @param
+      {Object} metadata - Pub/Sub message metadata. * Keys: * - (required)
+      'message_id' : {string} * - (optional) 'publish_time': {string} YYYY-MM-
+      DDTHH:MM:SSZ format * - (optional) 'ordering_key': {string} */ function
+      (message, metadata) { } ```
     functionName: Required. Name of the JavasScript function that should
       applied to Pub/Sub messages.
   """
@@ -943,6 +959,16 @@ class MessageTransform(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   javascriptUdf = _messages.MessageField('JavaScriptUDF', 2)
+
+
+class MessageTransforms(_messages.Message):
+  r"""List of MessageTransforms
+
+  Fields:
+    messageTransforms: Required. List of MessageTransforms
+  """
+
+  messageTransforms = _messages.MessageField('MessageTransform', 1, repeated=True)
 
 
 class ModifyAckDeadlineRequest(_messages.Message):
@@ -1926,6 +1952,20 @@ class PubsubProjectsSubscriptionsTestIamPermissionsRequest(_messages.Message):
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class PubsubProjectsTestMessageTransformsRequest(_messages.Message):
+  r"""A PubsubProjectsTestMessageTransformsRequest object.
+
+  Fields:
+    project: Required. The name of the project in which to test the
+      MessageTransforms. Format is `projects/{project-id}`.
+    testMessageTransformsRequest: A TestMessageTransformsRequest resource to
+      be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  testMessageTransformsRequest = _messages.MessageField('TestMessageTransformsRequest', 2)
+
+
 class PubsubProjectsTopicsDeleteRequest(_messages.Message):
   r"""A PubsubProjectsTopicsDeleteRequest object.
 
@@ -2089,6 +2129,20 @@ class PubsubProjectsTopicsTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class PubsubProjectsValidateMessageTransformRequest(_messages.Message):
+  r"""A PubsubProjectsValidateMessageTransformRequest object.
+
+  Fields:
+    project: Required. The name of the project in which to validate the
+      MessageTransform. Format is `projects/{project-id}`.
+    validateMessageTransformRequest: A ValidateMessageTransformRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  validateMessageTransformRequest = _messages.MessageField('ValidateMessageTransformRequest', 2)
 
 
 class PubsubWrapper(_messages.Message):
@@ -2525,6 +2579,57 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class Subscription(_messages.Message):
   r"""A subscription resource. If none of `push_config`, `bigquery_config`, or
   `cloud_storage_config` is set, then the subscriber will pull and ack
@@ -2737,6 +2842,38 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TestMessageTransformsRequest(_messages.Message):
+  r"""Request for `TestMessageTransforms` method.
+
+  Fields:
+    message: Required. The message to transform.
+    messageTransforms: Optional. Ad-hoc MessageTransforms to test against.
+    subscription: Optional. If specified, test against the subscription's
+      MessageTransforms. Format is
+      `projects/{project}/subscriptions/{subscription}`.
+    topic: Optional. If specified, test against the topic's MessageTransforms.
+      Format is `projects/{project}/topics/{topic}`.
+  """
+
+  message = _messages.MessageField('PubsubMessage', 1)
+  messageTransforms = _messages.MessageField('MessageTransforms', 2)
+  subscription = _messages.StringField(3)
+  topic = _messages.StringField(4)
+
+
+class TestMessageTransformsResponse(_messages.Message):
+  r"""Response for `TestMessageTransforms` method.
+
+  Fields:
+    transformedMessages: Optional. The state of the Pub/Sub message after
+      applying each MessageTransform incrementally. If the message is filtered
+      or fails transform at any point, subsequent transforms will not be
+      applied.
+  """
+
+  transformedMessages = _messages.MessageField('TransformedMessage', 1, repeated=True)
+
+
 class TextConfig(_messages.Message):
   r"""Configuration for writing message data in text format. Message payloads
   will be written to files as raw text, separated by a newline.
@@ -2855,6 +2992,20 @@ class Topic(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
+class TransformedMessage(_messages.Message):
+  r"""Result of applying a MessageTransform to a Pub/Sub message.
+
+  Fields:
+    failedMessage: Optional. Pub/Sub message that failed to be transformed.
+    filteredMessage: Optional. Filtered Pub/Sub message.
+    transformedMessage: Optional. Transformed Pub/Sub message.
+  """
+
+  failedMessage = _messages.MessageField('FailedMessage', 1)
+  filteredMessage = _messages.MessageField('FilteredMessage', 2)
+  transformedMessage = _messages.MessageField('PubsubMessage', 3)
+
+
 class UpdateSnapshotRequest(_messages.Message):
   r"""Request for the UpdateSnapshot method.
 
@@ -2933,6 +3084,20 @@ class ValidateMessageRequest(_messages.Message):
 
 class ValidateMessageResponse(_messages.Message):
   r"""Response for the `ValidateMessage` method. Empty for now."""
+
+
+class ValidateMessageTransformRequest(_messages.Message):
+  r"""Request for `ValidateMessageTransform` method.
+
+  Fields:
+    messageTransform: Required. MessageTransform to validate.
+  """
+
+  messageTransform = _messages.MessageField('MessageTransform', 1)
+
+
+class ValidateMessageTransformResponse(_messages.Message):
+  r"""Response for `ValidateMessageTransform` method."""
 
 
 class ValidateSchemaRequest(_messages.Message):

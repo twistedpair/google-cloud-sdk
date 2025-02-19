@@ -464,7 +464,7 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
     filter: The filter for Functions that match the filter expression,
       following the syntax outlined in https://google.aip.dev/160.
     orderBy: The sorting order of the resources returned. Value should be a
-      comma separated list of fields. The default sorting oder is ascending.
+      comma separated list of fields. The default sorting order is ascending.
       See https://google.aip.dev/132#ordering.
     pageSize: Maximum number of functions to return per call. The largest
       allowed page_size is 1,000, if the page_size is omitted or specified as
@@ -831,6 +831,7 @@ class Function(_messages.Message):
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     serviceConfig: Describes the Service being deployed. Currently deploys
       services to Cloud Run (fully managed).
@@ -865,6 +866,8 @@ class Function(_messages.Message):
       UNKNOWN: Function deployment failed and the function serving state is
         undefined. The function should be updated or deleted to move it out of
         this state.
+      DETACHING: Function is being detached.
+      DETACH_FAILED: Function detach failed and the function is still serving.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -872,6 +875,8 @@ class Function(_messages.Message):
     DEPLOYING = 3
     DELETING = 4
     UNKNOWN = 5
+    DETACHING = 6
+    DETACH_FAILED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -906,13 +911,14 @@ class Function(_messages.Message):
   kmsKeyName = _messages.StringField(7)
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
-  satisfiesPzs = _messages.BooleanField(10)
-  serviceConfig = _messages.MessageField('ServiceConfig', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2StateMessage', 13, repeated=True)
-  updateTime = _messages.StringField(14)
-  upgradeInfo = _messages.MessageField('UpgradeInfo', 15)
-  url = _messages.StringField(16)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  serviceConfig = _messages.MessageField('ServiceConfig', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2StateMessage', 14, repeated=True)
+  updateTime = _messages.StringField(15)
+  upgradeInfo = _messages.MessageField('UpgradeInfo', 16)
+  url = _messages.StringField(17)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -1137,7 +1143,7 @@ class GoogleCloudFunctionsV2Stage(_messages.Message):
 
     Values:
       NAME_UNSPECIFIED: Not specified. Invalid name.
-      ARTIFACT_REGISTRY: Artifact Regsitry Stage
+      ARTIFACT_REGISTRY: Artifact Registry Stage
       BUILD: Build Stage
       SERVICE: Service Stage
       TRIGGER: Trigger Stage
@@ -2180,8 +2186,8 @@ class TestIamPermissionsResponse(_messages.Message):
 
 class UpgradeInfo(_messages.Message):
   r"""Information related to: * A function's eligibility for 1st Gen to 2nd
-  Gen migration and 2nd Gen to CRf detach. * Current state of migration for
-  function undergoing migration/detach.
+  Gen migration. * Current state of migration for function undergoing
+  migration.
 
   Enums:
     UpgradeStateValueValuesEnum: UpgradeState of the function
@@ -2222,8 +2228,6 @@ class UpgradeInfo(_messages.Message):
         API was un-successful.
       COMMIT_FUNCTION_UPGRADE_ERROR: CommitFunctionUpgrade API was un-
         successful.
-      DETACH_IN_PROGRESS: Function is requested to be detached from 2nd Gen to
-        CRf.
     """
     UPGRADE_STATE_UNSPECIFIED = 0
     ELIGIBLE_FOR_2ND_GEN_UPGRADE = 1
@@ -2235,7 +2239,6 @@ class UpgradeInfo(_messages.Message):
     REDIRECT_FUNCTION_UPGRADE_TRAFFIC_ERROR = 7
     ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
     COMMIT_FUNCTION_UPGRADE_ERROR = 9
-    DETACH_IN_PROGRESS = 10
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   eventTrigger = _messages.MessageField('EventTrigger', 2)

@@ -30,24 +30,24 @@ class ExportDataRequest(_messages.Message):
   r"""Message for exporting data from Lustre.
 
   Fields:
-    gcsBucket: Cloud Storage destination.
+    gcsPath: Cloud Storage destination.
     lustrePath: Lustre path source.
     requestId: Optional. Optional uuid to identify requests.
     serviceAccount: Optional. User-specified service account used to perform
       the transfer. If unspecified, the default Lustre P4SA will be used.
   """
 
-  gcsBucket = _messages.MessageField('GcsBucket', 1)
+  gcsPath = _messages.MessageField('GcsPath', 1)
   lustrePath = _messages.MessageField('LustrePath', 2)
   requestId = _messages.StringField(3)
   serviceAccount = _messages.StringField(4)
 
 
-class GcsBucket(_messages.Message):
+class GcsPath(_messages.Message):
   r"""Cloud Storage as the source of a data transfer.
 
   Fields:
-    uri: Required. URI to a Cloud Storage bucket in the format: `gs://`.
+    uri: Required. URI to a Cloud Storage path in the format: `gs://`.
   """
 
   uri = _messages.StringField(1)
@@ -57,8 +57,8 @@ class ImportDataRequest(_messages.Message):
   r"""Message for importing data to Lustre.
 
   Fields:
-    gcsBucket: The Cloud Storage source bucket and, optionally, path inside
-      the bucket.
+    gcsPath: The Cloud Storage source bucket and, optionally, path inside the
+      bucket.
     lustrePath: Lustre path destination.
     requestId: Optional. Optional uuid to identify requests.
     serviceAccount: Optional. User-specified service account used to perform
@@ -66,7 +66,7 @@ class ImportDataRequest(_messages.Message):
       be used.
   """
 
-  gcsBucket = _messages.MessageField('GcsBucket', 1)
+  gcsPath = _messages.MessageField('GcsPath', 1)
   lustrePath = _messages.MessageField('LustrePath', 2)
   requestId = _messages.StringField(3)
   serviceAccount = _messages.StringField(4)
@@ -94,6 +94,8 @@ class Instance(_messages.Message):
     network: Required. Immutable. VPC Network full name. Must be in a form
       'projects/{project}/global/networks/{network}'. {project} is a project
       number, as in '12345' {network} is network name.
+    perUnitStorageThroughput: Optional. The throughput of the instance in
+      MB/s/TiB. Valid values are 250, 500, 1000. Default value is 1000.
     state: Output only. State of the instance
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -150,8 +152,9 @@ class Instance(_messages.Message):
   mountPoint = _messages.StringField(6)
   name = _messages.StringField(7)
   network = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  perUnitStorageThroughput = _messages.IntegerField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ListInstancesResponse(_messages.Message):

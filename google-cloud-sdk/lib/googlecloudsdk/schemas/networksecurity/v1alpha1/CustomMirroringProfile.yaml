@@ -29,6 +29,7 @@ properties:
       type: string
   mirroringEndpointGroup:
     description: |-
-      The MirroringEndpointGroup to which traffic associated with the SP should
-      be mirrored.
+      The target MirroringEndpointGroup. When a mirroring rule with this
+      security profile attached matches a packet, a replica will be mirrored to
+      the location-local target in this group.
     type: string

@@ -106,6 +106,7 @@ class ConversionWorkspacesEntitiesClient(
             uncommitted=uncommitted,
             tree_type=tree_type or 'DRAFT',
             filter_expr=filter_expr,
+            include_ddls=True,
         ),
         method='DescribeDatabaseEntities',
         batch_size_attribute='pageSize',
@@ -169,6 +170,7 @@ class ConversionWorkspacesEntitiesClient(
       uncommitted: bool,
       tree_type: str,
       filter_expr: str,
+      include_ddls: bool = False,
   ):
     """Returns request to describe database entities in a conversion workspace.
 
@@ -178,16 +180,24 @@ class ConversionWorkspacesEntitiesClient(
       uncommitted: Whether to describe issues for uncommitted changes.
       tree_type: The tree type to describe issues for.
       filter_expr: The filter expression to use.
+      include_ddls: Whether to include DDLs in the response.
 
     Returns:
       The request to describe database entities in a conversion workspace.
     """
+
+    view = (
+        self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL
+        if include_ddls
+        else self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL_COMPACT
+    )
+
     return self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest(
         commitId=commit_id,
         conversionWorkspace=conversion_workspace_ref,
         uncommitted=uncommitted,
         tree=self._GetTreeType(tree_type=tree_type),
-        view=self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL,
+        view=view,
         filter=filter_expr,
     )
 

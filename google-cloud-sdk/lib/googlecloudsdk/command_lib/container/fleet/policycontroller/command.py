@@ -188,6 +188,14 @@ class PocoCommand:
     )
 
     if not use_default_cfg:
+      try:
+        self.GetFeature()
+      except gcloud_exceptions.Error as e:
+        fne = self.FeatureNotEnabledError()
+        if six.text_type(e) == six.text_type(fne):
+          # Enable the feature if it is not enabled.
+          self.Enable(feature)
+
       for spec in feature.membershipSpecs.additionalProperties:
         membership_path = spec.key
         v1_spec = spec.value

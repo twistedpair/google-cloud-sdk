@@ -29,6 +29,7 @@ properties:
       type: string
   interceptEndpointGroup:
     description: |-
-      The InterceptEndpointGroup to which traffic associated with the SP should
-      be mirrored.
+      The target InterceptEndpointGroup. When a firewall rule with this security
+      profile attached matches a packet, the packet will be intercepted to the
+      location-local target in this group.
     type: string

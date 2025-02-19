@@ -29,6 +29,7 @@ __protobuf__ = proto.module(
     package='google.cloud.aiplatform.v1beta1',
     manifest={
         'HarmCategory',
+        'Modality',
         'Content',
         'Part',
         'Blob',
@@ -50,6 +51,7 @@ __protobuf__ = proto.module(
         'GroundingMetadata',
         'SearchEntryPoint',
         'RetrievalMetadata',
+        'ModalityTokenCount',
     },
 )
 
@@ -78,6 +80,31 @@ class HarmCategory(proto.Enum):
     HARM_CATEGORY_HARASSMENT = 3
     HARM_CATEGORY_SEXUALLY_EXPLICIT = 4
     HARM_CATEGORY_CIVIC_INTEGRITY = 5
+
+
+class Modality(proto.Enum):
+    r"""Content Part modality
+
+    Values:
+        MODALITY_UNSPECIFIED (0):
+            Unspecified modality.
+        TEXT (1):
+            Plain text.
+        IMAGE (2):
+            Image.
+        VIDEO (3):
+            Video.
+        AUDIO (4):
+            Audio.
+        DOCUMENT (5):
+            Document, e.g. PDF.
+    """
+    MODALITY_UNSPECIFIED = 0
+    TEXT = 1
+    IMAGE = 2
+    VIDEO = 3
+    AUDIO = 4
+    DOCUMENT = 5
 
 
 class Content(proto.Message):
@@ -239,6 +266,15 @@ class Blob(proto.Message):
             source data.
         data (bytes):
             Required. Raw bytes.
+        display_name (str):
+            Optional. Display name of the blob.
+
+            Used to provide a label or filename to
+            distinguish blobs.
+
+            This field is only returned in PromptMessage for
+            prompt management. It is not currently used in
+            the Gemini GenerateContent calls.
     """
 
     mime_type: str = proto.Field(
@@ -248,6 +284,10 @@ class Blob(proto.Message):
     data: bytes = proto.Field(
         proto.BYTES,
         number=2,
+    )
+    display_name: str = proto.Field(
+        proto.STRING,
+        number=4,
     )
 
 
@@ -260,6 +300,15 @@ class FileData(proto.Message):
             source data.
         file_uri (str):
             Required. URI.
+        display_name (str):
+            Optional. Display name of the file data.
+
+            Used to provide a label or filename to
+            distinguish file datas.
+
+            This field is only returned in PromptMessage for
+            prompt management. It is not currently used in
+            the Gemini GenerateContent calls.
     """
 
     mime_type: str = proto.Field(
@@ -269,6 +318,10 @@ class FileData(proto.Message):
     file_uri: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+    display_name: str = proto.Field(
+        proto.STRING,
+        number=3,
     )
 
 
@@ -1375,6 +1428,28 @@ class RetrievalMetadata(proto.Message):
 
     google_search_dynamic_retrieval_score: float = proto.Field(
         proto.FLOAT,
+        number=2,
+    )
+
+
+class ModalityTokenCount(proto.Message):
+    r"""Represents token counting info for a single modality.
+
+    Attributes:
+        modality (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Modality):
+            The modality associated with this token
+            count.
+        token_count (int):
+            Number of tokens.
+    """
+
+    modality: 'Modality' = proto.Field(
+        proto.ENUM,
+        number=1,
+        enum='Modality',
+    )
+    token_count: int = proto.Field(
+        proto.INT32,
         number=2,
     )
 

@@ -83,12 +83,11 @@ class Execution(_messages.Message):
   Enums:
     CallLogLevelValueValuesEnum: The call logging level associated to this
       execution.
-    ExecutionHistoryLevelValueValuesEnum: Optional. Describes the level of the
-      execution history feature to apply to this execution. If not specified,
-      the level of the execution history feature will be determined by its
-      workflow's execution history level. If the value is different from its
-      workflow's value, it will override the workflow's execution history
-      level for this exeuction.
+    ExecutionHistoryLevelValueValuesEnum: Optional. Describes the execution
+      history level to apply to this execution. If not specified, the
+      execution history level is determined by its workflow's execution
+      history level. If the levels are different, the executionHistoryLevel
+      overrides the workflow's execution history level for this execution.
     StateValueValuesEnum: Output only. Current state of the execution.
 
   Messages:
@@ -116,12 +115,11 @@ class Execution(_messages.Message):
     error: Output only. The error which caused the execution to finish
       prematurely. The value is only present if the execution's state is
       `FAILED` or `CANCELLED`.
-    executionHistoryLevel: Optional. Describes the level of the execution
-      history feature to apply to this execution. If not specified, the level
-      of the execution history feature will be determined by its workflow's
-      execution history level. If the value is different from its workflow's
-      value, it will override the workflow's execution history level for this
-      exeuction.
+    executionHistoryLevel: Optional. Describes the execution history level to
+      apply to this execution. If not specified, the execution history level
+      is determined by its workflow's execution history level. If the levels
+      are different, the executionHistoryLevel overrides the workflow's
+      execution history level for this execution.
     labels: Labels associated with this execution. Labels can contain at most
       64 entries. Keys and values can be no longer than 63 characters and can
       only contain lowercase letters, numeric characters, underscores, and
@@ -161,11 +159,11 @@ class Execution(_messages.Message):
     LOG_NONE = 3
 
   class ExecutionHistoryLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Describes the level of the execution history feature to
-    apply to this execution. If not specified, the level of the execution
-    history feature will be determined by its workflow's execution history
-    level. If the value is different from its workflow's value, it will
-    override the workflow's execution history level for this exeuction.
+    r"""Optional. Describes the execution history level to apply to this
+    execution. If not specified, the execution history level is determined by
+    its workflow's execution history level. If the levels are different, the
+    executionHistoryLevel overrides the workflow's execution history level for
+    this execution.
 
     Values:
       EXECUTION_HISTORY_LEVEL_UNSPECIFIED: The default/unset value.
@@ -571,17 +569,17 @@ class StepEntry(_messages.Message):
       counter. Step entry names have the format: `projects/{project}/locations
       /{location}/workflows/{workflow}/executions/{execution}/stepEntries/{ste
       p_entry}`.
-    navigationInfo: Output only. The NavigationInfo associated to this step.
+    navigationInfo: Output only. The NavigationInfo associated with this step.
     routine: Output only. The name of the routine this step entry belongs to.
       A routine name is the subworkflow name defined in the YAML source code.
       The top level routine name is `main`.
     state: Output only. The state of the step entry.
     step: Output only. The name of the step this step entry belongs to.
-    stepEntryMetadata: Output only. The StepEntryMetadata associated to this
+    stepEntryMetadata: Output only. The StepEntryMetadata associated with this
       step.
     stepType: Output only. The type of the step this step entry belongs to.
     updateTime: Output only. The most recently updated time of the step entry.
-    variableData: Output only. The VariableData associated to this step.
+    variableData: Output only. The VariableData associated with this step.
   """
 
   class StateValueValuesEnum(_messages.Enum):

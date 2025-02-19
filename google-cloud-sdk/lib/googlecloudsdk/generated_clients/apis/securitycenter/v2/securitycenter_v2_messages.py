@@ -6061,7 +6061,7 @@ class GoogleCloudSecuritycenterV2OrgPolicy(_messages.Message):
   r"""Contains information about the org policies associated with the finding.
 
   Fields:
-    name: The resource name of the org policy. Example:
+    name: Identifier. The resource name of the org policy. Example:
       "organizations/{organization_id}/policies/{constraint_name}"
   """
 

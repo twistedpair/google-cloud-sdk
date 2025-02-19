@@ -1358,3 +1358,57 @@ class PubsubV1(base_api.BaseApiClient):
       super(PubsubV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def TestMessageTransforms(self, request, global_params=None):
+      r"""Tests applying MessageTransforms to a Pub/Sub message.
+
+      Args:
+        request: (PubsubProjectsTestMessageTransformsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestMessageTransformsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestMessageTransforms')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestMessageTransforms.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:testMessageTransforms',
+        http_method='POST',
+        method_id='pubsub.projects.testMessageTransforms',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1/{+project}:testMessageTransforms',
+        request_field='testMessageTransformsRequest',
+        request_type_name='PubsubProjectsTestMessageTransformsRequest',
+        response_type_name='TestMessageTransformsResponse',
+        supports_download=False,
+    )
+
+    def ValidateMessageTransform(self, request, global_params=None):
+      r"""Validates a MessageTransform.
+
+      Args:
+        request: (PubsubProjectsValidateMessageTransformRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateMessageTransformResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateMessageTransform')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateMessageTransform.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:validateMessageTransform',
+        http_method='POST',
+        method_id='pubsub.projects.validateMessageTransform',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1/{+project}:validateMessageTransform',
+        request_field='validateMessageTransformRequest',
+        request_type_name='PubsubProjectsValidateMessageTransformRequest',
+        response_type_name='ValidateMessageTransformResponse',
+        supports_download=False,
+    )

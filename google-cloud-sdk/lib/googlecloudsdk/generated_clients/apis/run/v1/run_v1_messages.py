@@ -748,12 +748,11 @@ class ExecutionSpec(_messages.Message):
 
   Fields:
     parallelism: Optional. Specifies the maximum desired number of tasks the
-      execution should run at given time. Must be <= task_count. When the job
-      is run, if this field is 0 or unset, the maximum possible value will be
-      used for that execution. The actual number of tasks running in steady
-      state will be less than this number when there are fewer tasks waiting
-      to be completed, i.e. when the work left to do is less than max
-      parallelism.
+      execution should run at given time. When the job is run, if this field
+      is 0 or unset, the maximum possible value will be used for that
+      execution. The actual number of tasks running in steady state will be
+      less than this number when there are fewer tasks waiting to be
+      completed, i.e. when the work left to do is less than max parallelism.
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
       success of that task signals the success of the execution. Defaults to
@@ -1070,6 +1069,8 @@ class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
       this build, if it was triggered automatically.
     createTime: Output only. Time at which the request to create the build was
       received.
+    dependencies: Optional. Dependencies that the Cloud Build worker will
+      fetch before executing user steps.
     failureInfo: Output only. Contains information about the build when
       status=FAILURE.
     finishTime: Output only. Time at which execution of the build was
@@ -1214,31 +1215,32 @@ class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
   availableSecrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secrets', 3)
   buildTriggerId = _messages.StringField(4)
   createTime = _messages.StringField(5)
-  failureInfo = _messages.MessageField('GoogleDevtoolsCloudbuildV1FailureInfo', 6)
-  finishTime = _messages.StringField(7)
-  gitConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1GitConfig', 8)
-  id = _messages.StringField(9)
-  images = _messages.StringField(10, repeated=True)
-  logUrl = _messages.StringField(11)
-  logsBucket = _messages.StringField(12)
-  name = _messages.StringField(13)
-  options = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptions', 14)
-  projectId = _messages.StringField(15)
-  queueTtl = _messages.StringField(16)
-  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1Results', 17)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secret', 18, repeated=True)
-  serviceAccount = _messages.StringField(19)
-  source = _messages.MessageField('GoogleDevtoolsCloudbuildV1Source', 20)
-  sourceProvenance = _messages.MessageField('GoogleDevtoolsCloudbuildV1SourceProvenance', 21)
-  startTime = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  statusDetail = _messages.StringField(24)
-  steps = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildStep', 25, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 26)
-  tags = _messages.StringField(27, repeated=True)
-  timeout = _messages.StringField(28)
-  timing = _messages.MessageField('TimingValue', 29)
-  warnings = _messages.MessageField('GoogleDevtoolsCloudbuildV1Warning', 30, repeated=True)
+  dependencies = _messages.MessageField('GoogleDevtoolsCloudbuildV1Dependency', 6, repeated=True)
+  failureInfo = _messages.MessageField('GoogleDevtoolsCloudbuildV1FailureInfo', 7)
+  finishTime = _messages.StringField(8)
+  gitConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1GitConfig', 9)
+  id = _messages.StringField(10)
+  images = _messages.StringField(11, repeated=True)
+  logUrl = _messages.StringField(12)
+  logsBucket = _messages.StringField(13)
+  name = _messages.StringField(14)
+  options = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptions', 15)
+  projectId = _messages.StringField(16)
+  queueTtl = _messages.StringField(17)
+  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1Results', 18)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV1Secret', 19, repeated=True)
+  serviceAccount = _messages.StringField(20)
+  source = _messages.MessageField('GoogleDevtoolsCloudbuildV1Source', 21)
+  sourceProvenance = _messages.MessageField('GoogleDevtoolsCloudbuildV1SourceProvenance', 22)
+  startTime = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusDetail = _messages.StringField(25)
+  steps = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildStep', 26, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 27)
+  tags = _messages.StringField(28, repeated=True)
+  timeout = _messages.StringField(29)
+  timing = _messages.MessageField('TimingValue', 30)
+  warnings = _messages.MessageField('GoogleDevtoolsCloudbuildV1Warning', 31, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1BuildApproval(_messages.Message):
@@ -1653,6 +1655,20 @@ class GoogleDevtoolsCloudbuildV1ConnectedRepository(_messages.Message):
   revision = _messages.StringField(3)
 
 
+class GoogleDevtoolsCloudbuildV1Dependency(_messages.Message):
+  r"""A dependency that the Cloud Build worker will fetch before executing
+  user steps.
+
+  Fields:
+    empty: If set to true disable all dependency fetching (ignoring the
+      default source as well).
+    gitSource: Represents a git repository as a build dependency.
+  """
+
+  empty = _messages.BooleanField(1)
+  gitSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1GitSourceDependency', 2)
+
+
 class GoogleDevtoolsCloudbuildV1DeveloperConnectConfig(_messages.Message):
   r"""This config defines the location of a source through Developer Connect.
 
@@ -1747,6 +1763,40 @@ class GoogleDevtoolsCloudbuildV1GitSource(_messages.Message):
   dir = _messages.StringField(1)
   revision = _messages.StringField(2)
   url = _messages.StringField(3)
+
+
+class GoogleDevtoolsCloudbuildV1GitSourceDependency(_messages.Message):
+  r"""Represents a git repository as a build dependency.
+
+  Fields:
+    depth: Optional. How much history should be fetched for the build (default
+      1, -1 for all history).
+    destPath: Required. Where should the files be placed on the worker.
+    recurseSubmodules: Optional. True if submodules should be fetched too
+      (default false).
+    repository: Required. The kind of repo (url or dev connect).
+    revision: Required. The revision that we will fetch the repo at.
+  """
+
+  depth = _messages.IntegerField(1)
+  destPath = _messages.StringField(2)
+  recurseSubmodules = _messages.BooleanField(3)
+  repository = _messages.MessageField('GoogleDevtoolsCloudbuildV1GitSourceRepository', 4)
+  revision = _messages.StringField(5)
+
+
+class GoogleDevtoolsCloudbuildV1GitSourceRepository(_messages.Message):
+  r"""A repository for a git source.
+
+  Fields:
+    developerConnect: The Developer Connect Git repository link or the url
+      that matches a repository link in the current project, formatted as
+      `projects/*/locations/*/connections/*/gitRepositoryLink/*`
+    url: Location of the Git repository.
+  """
+
+  developerConnect = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class GoogleDevtoolsCloudbuildV1GoModule(_messages.Message):

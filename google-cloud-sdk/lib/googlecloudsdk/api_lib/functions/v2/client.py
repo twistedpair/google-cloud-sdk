@@ -169,18 +169,24 @@ class FunctionsClient(object):
     )
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def SetupFunctionUpgradeConfig(self, name: str) -> types.Operation:
+  def SetupFunctionUpgradeConfig(
+      self, name: str, trigger_service_account: str
+  ) -> types.Operation:
     """Sets up the function upgrade config for the given function.
 
     Args:
       name: str, GCFv2 function resource relative name.
+      trigger_service_account: str, The service account to use for the trigger.
 
     Returns:
       A long-running operation.
     """
     return self.client.projects_locations_functions.SetupFunctionUpgradeConfig(
         self.messages.CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest(
-            name=name
+            name=name,
+            setupFunctionUpgradeConfigRequest=self.messages.SetupFunctionUpgradeConfigRequest(
+                triggerServiceAccount=trigger_service_account
+            ),
         )
     )
 

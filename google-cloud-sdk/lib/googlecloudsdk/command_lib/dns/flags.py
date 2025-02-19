@@ -18,32 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-
-import ipaddr
-
-
-def IsIPv4(ip: str):
-  """Returns True if ip is an IPv4."""
-  try:
-    ipaddr.IPv4Address(ip)
-    return True
-  except ValueError:
-    return False
-
-
-def IsIPv6(ip: str):
-  """Returns True if ip is an IPv6."""
-  try:
-    ipaddr.IPv6Address(ip)
-    return True
-  except ValueError:
-    return False
 
 
 class BetaKeyCompleter(completers.ListCommandCompleter):
@@ -403,7 +384,7 @@ def GetResourceRecordSetsRrdatasArg(required=False):
 
 
 def GetResourceRecordSetsRrdatasArgGroup(
-    use_deprecated_names=False, enable_internet_health_checks=False
+    use_deprecated_names=False
 ):
   """Returns arg group for rrdatas flags.
 
@@ -414,49 +395,91 @@ def GetResourceRecordSetsRrdatasArgGroup(
       mutex=True, meaning that exactly one of these two arg configurations must
       be specified: --rrdatas --routing-policy-type AND --routing-policy-data
   """
-  # Group containing the primary backup config
+  # Group containing the primary backup config.
+  routing_policy_backup_data_group = base.ArgumentGroup(
+      mutex=True,
+      required=True,
+      help=(
+          'Routing policy backup data arguments for the primary backup routing'
+          ' policy. Specify either --routing-policy-backup-data or'
+          ' --routing-policy-backup-item, but not both.'
+      ),
+  )
+  routing_policy_backup_data_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyBackupDataArg()
+  )
+  routing_policy_backup_data_group.AddArgument(
+      GetRoutingPolicyBackupItemArg()
+  )
+
   primary_backup_data_group = base.ArgumentGroup(
       help='Configuration for primary backup routing policy')
   primary_backup_data_group.AddArgument(
       GetResourceRecordSetsRoutingPolicyPrimaryDataArg(required=True))
-  primary_backup_data_group.AddArgument(
-      GetResourceRecordSetsRoutingPolicyBackupDataArg(required=True))
+  primary_backup_data_group.AddArgument(routing_policy_backup_data_group)
   primary_backup_data_group.AddArgument(
       GetResourceRecordSetsRoutingPolicyBackupDataTypeArg(required=True))
   primary_backup_data_group.AddArgument(
       GetResourceRecordSetsBackupDataTrickleRatio(required=False))
+
   # This group dictates that we should either have a primary backup config,
   # or, a wrr or geo config
   policy_data_group = base.ArgumentGroup(
       required=True,
       mutex=True,
-      help='Routing policy data arguments. Combines routing-policy-data, routing-policy-primary-data, routing-policy-backup-data.'
+      help=(
+          'Routing policy data arguments. Allows setting one of'
+          ' [routing-policy-data, routing-policy-item,'
+          ' [routing-policy-primary-data, [routing-policy-backup-data,'
+          ' routing-policy-backup-item]]]'
+      ),
   )
   policy_data_group.AddArgument(
       GetResourceRecordSetsRoutingPolicyDataArg(
           deprecated_name=use_deprecated_names))
   policy_data_group.AddArgument(primary_backup_data_group)
+  policy_data_group.AddArgument(GetRoutingPolicyItemArg())
   # Declare optional routing policy group. If group specified, must contain
   # both routing-policy-type and routing-policy-data args.
   policy_group = base.ArgumentGroup(
       required=False,
-      help='Routing policy arguments. If you specify one of --routing-policy-data or --routing-policy-type, you must specify both.'
+      help=(
+          'Routing policy arguments. --routing-policy-type should be specified'
+          ' exactly when one of --routing-policy-data, --routing-policy-item,'
+          ' or --routing-policy-primary-data is set.'
+      ),
   )
+  health_checking_group = base.ArgumentGroup(
+      required=False,
+      mutex=True,
+      help=(
+          'Health checking arguments. You can specify one of --health-check or'
+          ' --enable-health-checking, but not both.'
+      ),
+  )
+  health_checking_group.AddArgument(
+      GetResourceRecordSetsEnableHealthChecking(required=False)
+  )
+  health_checking_group.AddArgument(GetHealthCheckArg(required=False))
+
   policy_group.AddArgument(
       GetResourceRecordSetsRoutingPolicyTypeArg(
-          required=True, deprecated_name=use_deprecated_names))
+          required=True, deprecated_name=use_deprecated_names
+      )
+  )
   policy_group.AddArgument(
-      GetResourceRecordSetsEnableFencingArg(required=False))
-  policy_group.AddArgument(
-      GetResourceRecordSetsEnableHealthChecking(required=False))
-  if enable_internet_health_checks:
-    policy_group.AddArgument(GetHealthCheckArg(required=False))
+      GetResourceRecordSetsEnableFencingArg(required=False)
+  )
+  policy_group.AddArgument(health_checking_group)
   policy_group.AddArgument(policy_data_group)
 
   rrdatas_group = base.ArgumentGroup(
       required=True,
       mutex=True,
-      help='Resource record sets arguments. Can specify either --rrdatas or both --routing-policy-data and --routing-policy-type.'
+      help=(
+          'Resource record sets arguments. Can specify either --rrdatas or both'
+          ' --routing-policy-data and --routing-policy-type.'
+      ),
   )
   rrdatas_group.AddArgument(GetResourceRecordSetsRrdatasArg(required=False))
   rrdatas_group.AddArgument(policy_group)
@@ -568,15 +591,11 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
     [
         {
           'key': <location1>,
-          'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>,
-          'external_endpoints': <List of external endpoints> (empty for now)
+          'values': <list of forwarding configs and rrdatas>,
         },
         {
           'key': <location2>,
-          'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>,
-          'external_endpoints': <List of external endpoints> (empty for now)
+          'values': <list of forwarding configs and rrdatas>,
         },
         ...
     ]
@@ -597,36 +616,32 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
       key = key_value_split[0]
       value = key_value_split[1]
 
-      ips = []
-      forwarding_configs = []
-      for val in value.split(','):
-        if len(val.split('@')) == 2:
-          forwarding_configs.append(val)
-        elif len(val.split('@')) == 1 and (IsIPv4(val) or IsIPv6(val)):
-          ips.append(val)
-        elif len(val.split('@')) == 1:
-          forwarding_configs.append(val)
-        else:
-          raise arg_parsers.ArgumentTypeError(
-              'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
-          )
       backup_data.append({
           'key': key,
-          'rrdatas': ips,
-          'forwarding_configs': forwarding_configs,
-          'external_endpoints': [],
+          'values': value
       })
 
     return backup_data
 
   return base.Argument(
       '--routing-policy-backup-data',
+      action=actions.DeprecationAction(
+          '--routing-policy-backup-data',
+          warn=(
+              'The `--routing-policy-backup-data` flag is deprecated. Use'
+              ' --routing-policy-backup-item instead.'
+          ),
+      ),
       metavar='ROUTING_POLICY_BACKUP_DATA',
       required=required,
       type=RoutingPolicyBackupDataArg,
-      help='The backup configuration for a primary backup routing policy. This '
-      'configuration has the same format as the routing-policy-data argument '
-      'because it is just another geo-locations policy.')
+      help=(
+          'Specify the backup configuration for a primary backup routing'
+          ' policy. This backup configuration uses the same format as the'
+          ' routing-policy-data argument because it functions as another'
+          ' geolocation routing policy.'
+      ),
+  )
 
 
 def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
@@ -646,15 +661,11 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
     [
         {
           'key': <routing_policy_data_key1>,
-          'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>,
-          'external_endpoints': <List of external endpoints> (empty for now)
+          'values': <list of configs and rrdatas>,
         },
         {
           'key': <routing_policy_data_key2>,
-          'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>,
-          'external_endpoints': <List of external endpoints> (empty for now)
+          'values': <list of configs and rrdatas>,
         },
         ...
     ]
@@ -681,30 +692,24 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       key = key_value_split[0]
       value = key_value_split[1]
 
-      ips = []
-      forwarding_configs = []
-      for val in value.split(','):
-        if len(val.split('@')) == 2:
-          forwarding_configs.append(val)
-        elif len(val.split('@')) == 1 and (IsIPv4(val) or IsIPv6(val)):
-          ips.append(val)
-        elif len(val.split('@')) == 1:
-          forwarding_configs.append(val)
-        else:
-          raise arg_parsers.ArgumentTypeError(
-              'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
-          )
       routing_policy_data.append({
           'key': key,
-          'rrdatas': ips,
-          'forwarding_configs': forwarding_configs,
-          'external_endpoints': [],
+          'values': value,
       })
     return routing_policy_data
 
-  flag_name = '--routing_policy_data' if deprecated_name else '--routing-policy-data'
+  flag_name = (
+      '--routing_policy_data' if deprecated_name else '--routing-policy-data'
+  )
   return base.Argument(
       flag_name,
+      action=actions.DeprecationAction(
+          flag_name,
+          warn=(
+              f'The `{flag_name}` flag is deprecated. Use'
+              ' --routing-policy-item instead.'
+          ),
+      ),
       metavar='ROUTING_POLICY_DATA',
       required=required,
       type=RoutingPolicyDataArgType,
@@ -953,3 +958,72 @@ def GetHealthCheckArg(required=False):
           ' provided.'
       ),
   )
+
+
+def GetRoutingPolicyItemArg(required: bool = False) -> base.Argument:
+  return base.Argument(
+      '--routing-policy-item',
+      type=arg_parsers.ArgDict(
+          spec={
+              'weight': float,
+              'location': str,
+              'rrdatas': str,
+              'external_endpoints': str,
+              'internal_load_balancers': str,
+          }
+      ),
+      required=required,
+      metavar='ROUTING_POLICY_ITEM',
+      action='append',
+      help="""\
+    Specify this argument multiple times for a weighted round robin (WRR)
+    or geolocation routing policy. Use this repeated argument for only one
+    routing policy type (WRR or geolocation), not both. Similarly, use it
+    only for health checking either internal load balancers or external IP
+    addresses, not both.
+
+    (e.g. --routing-policy-item=weight=1,rrdatas=1.2.3.4;2.3.4.5,external_endpoints=3.4.5.6;4.5.6.7
+    --routing-policy-item=weight=1,rrdatas=10.0.0.1;10.0.0.2,external_endpoints=10.0.0.4)
+
+    *weight*::: The weight of the item. This is specified only for WRR routing policy items.
+
+    *location*::: The location corresponding to the item. This is specified only for GEO routing policy items.
+
+    *rrdatas*::: The list of rrdatas, split by ";".
+
+    *external_endpoints*::: The list of health checked ips, split by ";".
+
+    *internal_load_balancers*::: The list of health checked internal load balancers, split by ";".
+    """,
+  )
+
+
+def GetRoutingPolicyBackupItemArg(required: bool = False) -> base.Argument:
+  return base.Argument(
+      '--routing-policy-backup-item',
+      type=arg_parsers.ArgDict(
+          spec={
+              'location': str,
+              'rrdatas': str,
+              'external_endpoints': str,
+              'internal_load_balancers': str,
+          }
+      ),
+      required=required,
+      metavar='ROUTING_POLICY_BACKUP_ITEM',
+      action='append',
+      help="""\
+    Specify this argument multiple times to define multiple items
+    for a primary backup routing policy.
+
+    (e.g. --routing-policy-backup-item=location=us-east1-a,rrdatas=1.2.3.4;2.3.4.5,external_endpoints=3.4.5.6;4.5.6.7
+    --routing-policy-backup-item=location=us-east1-b,rrdatas=10.0.0.1;10.0.0.2,external_endpoints=10.0.0.4)
+
+    *location*::: The location corresponding to the item.
+
+    *rrdatas*::: The list of rrdatas, split by ";".
+
+    *external_endpoints*::: The list of health checked ips, split by ";".
+
+    *internal_load_balancers*::: The list of health checked internal load balancers, split by ";".
+    """)

@@ -30,6 +30,7 @@ from googlecloudsdk.core import resources
 _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1',
 }
 _API_NAME = 'networksecurity'
 
@@ -74,7 +75,6 @@ class Client:
 
   def CreateDeployment(
       self,
-      release_track,
       parent,
       forwarding_rule,
       mirroring_deployment_group,
@@ -85,7 +85,6 @@ class Client:
     """Calls the CreateMirroringDeployment API.
 
     Args:
-      release_track: The release track of the API.
       parent: The parent of the deployment, e.g.
         "projects/myproj/locations/us-central1"
       forwarding_rule: The forwarding rule of the deployment, e.g.
@@ -104,13 +103,8 @@ class Client:
         forwardingRule=forwarding_rule,
         mirroringDeploymentGroup=mirroring_deployment_group,
         labels=labels,
+        description=description,
     )
-
-    # TODO(b/381836581): Remove this check once the field is
-    # available in BETA and V1 (and b/381837549).
-    # BETA API doesn't have the new field yet, so don't assign it.
-    if release_track == base.ReleaseTrack.ALPHA:
-      deployment.description = description
 
     create_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentsCreateRequest(
         mirroringDeployment=deployment,
@@ -129,7 +123,6 @@ class Client:
   def UpdateDeployment(
       self,
       name,
-      release_track,
       description,
       update_fields,
   ):
@@ -137,7 +130,6 @@ class Client:
 
     Args:
       name: The name of the deployment.
-      release_track: The release track of the API.
       description: The description of the deployment.
       update_fields: A dictionary of the fields to update mapped to their new
         values.
@@ -147,13 +139,8 @@ class Client:
     """
     deployment = self.messages.MirroringDeployment(
         labels=update_fields.get('labels', None),
+        description=description,
     )
-
-    # TODO(b/381836581): Remove this check once the field is
-    # available in BETA and V1 (and b/381837549).
-    # BETA API doesn't have the new field yet, so don't assign it.
-    if release_track == base.ReleaseTrack.ALPHA:
-      deployment.description = description
 
     update_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest(
         name=name,

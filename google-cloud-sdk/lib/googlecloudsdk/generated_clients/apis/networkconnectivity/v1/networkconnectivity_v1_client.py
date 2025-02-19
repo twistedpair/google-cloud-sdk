@@ -393,6 +393,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AcceptSpokeUpdate(self, request, global_params=None):
+      r"""Accepts a proposal to update a Network Connectivity Center spoke in a hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('AcceptSpokeUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AcceptSpokeUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}:acceptSpokeUpdate',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.acceptSpokeUpdate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:acceptSpokeUpdate',
+        request_field='acceptSpokeUpdateRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeUpdateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Network Connectivity Center hub in the specified project.
 
@@ -632,6 +659,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:rejectSpoke',
         request_field='rejectHubSpokeRequest',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def RejectSpokeUpdate(self, request, global_params=None):
+      r"""Rejects a proposal to update a Network Connectivity Center spoke in a hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('RejectSpokeUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RejectSpokeUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}:rejectSpokeUpdate',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.rejectSpokeUpdate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rejectSpokeUpdate',
+        request_field='rejectSpokeUpdateRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeUpdateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

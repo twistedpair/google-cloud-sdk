@@ -400,11 +400,15 @@ class CloudbuildProjectsLocationsConnectionsListRequest(_messages.Message):
     pageToken: Page start.
     parent: Required. The parent, which owns this collection of Connections.
       Format: `projects/*/locations/*`.
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable. If set to false, the
+      response will fail if any region is unreachable.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class CloudbuildProjectsLocationsConnectionsPatchRequest(_messages.Message):
@@ -439,7 +443,7 @@ class CloudbuildProjectsLocationsConnectionsProcessWebhookRequest(_messages.Mess
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. Project and location where the webhook will be received.
       Format: `projects/*/locations/*`.
-    webhookKey: Arbitrary additional key to find the maching repository for a
+    webhookKey: Arbitrary additional key to find the matching repository for a
       webhook event if needed.
   """
 
@@ -591,12 +595,16 @@ class CloudbuildProjectsLocationsConnectionsRepositoriesListRequest(_messages.Me
     pageToken: Page start.
     parent: Required. The parent, which owns this collection of Repositories.
       Format: `projects/*/locations/*/connections/*`.
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable. If set to false, the
+      response will fail if any region is unreachable.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class CloudbuildProjectsLocationsConnectionsSetIamPolicyRequest(_messages.Message):
@@ -1768,10 +1776,12 @@ class ListConnectionsResponse(_messages.Message):
     connections: The list of Connections.
     nextPageToken: A token identifying a page of results the server should
       return.
+    unreachable: Locations that could not be reached.
   """
 
   connections = _messages.MessageField('Connection', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1820,10 +1830,12 @@ class ListRepositoriesResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     repositories: The list of Repositories.
+    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   repositories = _messages.MessageField('Repository', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListResultsResponse(_messages.Message):
