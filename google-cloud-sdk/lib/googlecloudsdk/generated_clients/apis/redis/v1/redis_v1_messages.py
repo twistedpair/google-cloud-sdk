@@ -380,7 +380,7 @@ class Cluster(_messages.Message):
     backupCollection: Optional. Output only. The backup collection full
       resource name. Example:
       projects/{project}/locations/{location}/backupCollections/{collection}
-    clusterEndpoints: Optional. A list of cluster enpoints.
+    clusterEndpoints: Optional. A list of cluster endpoints.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
     crossClusterReplicationConfig: Optional. Cross cluster replication config.
@@ -589,7 +589,7 @@ class ClusterMaintenancePolicy(_messages.Message):
 
 
 class ClusterMaintenanceSchedule(_messages.Message):
-  r"""Upcoming maitenance schedule.
+  r"""Upcoming maintenance schedule.
 
   Fields:
     endTime: Output only. The end time of any upcoming scheduled maintenance
@@ -1139,6 +1139,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1227,6 +1229,7 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1798,6 +1801,8 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1886,6 +1891,7 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -2148,7 +2154,7 @@ class GcsBackupSource(_messages.Message):
   to be the same region as the clusters.
 
   Fields:
-    uris: Optional. URIs of the GCS objects to import. Example:
+    uris: Optional. URIs of the Cloud Storage objects to import. Example:
       gs://bucket1/object1, gs://bucket2/folder2/object2
   """
 
@@ -3525,6 +3531,7 @@ class PscConnection(_messages.Message):
       east1/forwardingRules/{resourceId}.
     network: Required. The consumer network where the IP address resides, in
       the form of projects/{project_id}/global/networks/{network_id}.
+    port: Output only. The port number of the exposed discovery endpoint.
     projectId: Optional. Project ID of the consumer project where the
       forwarding rule is created in.
     pscConnectionId: Required. The PSC connection id of the forwarding rule
@@ -3575,10 +3582,11 @@ class PscConnection(_messages.Message):
   connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
   forwardingRule = _messages.StringField(3)
   network = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  pscConnectionId = _messages.StringField(6)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 7)
-  serviceAttachment = _messages.StringField(8)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(6)
+  pscConnectionId = _messages.StringField(7)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 8)
+  serviceAttachment = _messages.StringField(9)
 
 
 class PscServiceAttachment(_messages.Message):
@@ -3807,7 +3815,7 @@ class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
     parent: Required. The resource name of the cluster location using the
       form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
-    requestId: Idempotent request UUID.
+    requestId: Optional. Idempotent request UUID.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -3823,7 +3831,7 @@ class RedisProjectsLocationsClustersDeleteRequest(_messages.Message):
     name: Required. Redis cluster resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
       where `location_id` refers to a GCP region.
-    requestId: Idempotent request UUID.
+    requestId: Optional. Idempotent request UUID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3883,7 +3891,7 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
     name: Required. Identifier. Unique name of the resource in this scope
       including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-    requestId: Idempotent request UUID.
+    requestId: Optional. Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields from Cluster: * `size_gb` * `replica_count` *

@@ -898,6 +898,33 @@ class AlloydbV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RestoreFromCloudSQL(self, request, global_params=None):
+      r"""Restores an AlloyDB cluster from a CloudSQL resource.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RestoreFromCloudSQL')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RestoreFromCloudSQL.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters:restoreFromCloudSQL',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.restoreFromCloudSQL',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/clusters:restoreFromCloudSQL',
+        request_field='restoreFromCloudSQLRequest',
+        request_type_name='AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Switchover(self, request, global_params=None):
       r"""Switches the roles of PRIMARY and SECONDARY clusters without any data loss. This promotes the SECONDARY cluster to PRIMARY and sets up the original PRIMARY cluster to replicate from this newly promoted cluster.
 
@@ -1099,7 +1126,7 @@ class AlloydbV1(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.supportedDatabaseFlags.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'scope'],
         relative_path='v1/{+parent}/supportedDatabaseFlags',
         request_field='',
         request_type_name='AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest',

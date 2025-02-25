@@ -1106,9 +1106,12 @@ class GenerateContentResponse(proto.Message):
                 this includes the number of tokens in the cached content.
             candidates_token_count (int):
                 Number of tokens in the response(s).
+            tool_use_prompt_token_count (int):
+                Output only. Number of tokens present in
+                tool-use prompt(s).
             total_token_count (int):
-                Total token count for prompt and response
-                candidates.
+                Total token count for prompt, response
+                candidates, and tool-use prompts (if present).
             cached_content_token_count (int):
                 Output only. Number of tokens in the cached
                 part in the input (the cached content).
@@ -1121,6 +1124,9 @@ class GenerateContentResponse(proto.Message):
             candidates_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
                 Output only. List of modalities that were
                 returned in the response.
+            tool_use_prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
+                Output only. List of modalities that were
+                processed for tool-use request inputs.
         """
 
         prompt_token_count: int = proto.Field(
@@ -1130,6 +1136,10 @@ class GenerateContentResponse(proto.Message):
         candidates_token_count: int = proto.Field(
             proto.INT32,
             number=2,
+        )
+        tool_use_prompt_token_count: int = proto.Field(
+            proto.INT32,
+            number=13,
         )
         total_token_count: int = proto.Field(
             proto.INT32,
@@ -1152,6 +1162,11 @@ class GenerateContentResponse(proto.Message):
         candidates_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
             proto.MESSAGE,
             number=11,
+            message=content.ModalityTokenCount,
+        )
+        tool_use_prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=12,
             message=content.ModalityTokenCount,
         )
 

@@ -3857,7 +3857,7 @@ class ListReleasesResponse(_messages.Message):
 
 
 class ListRolloutsResponse(_messages.Message):
-  r"""ListRolloutsResponse is the response object reutrned by `ListRollouts`.
+  r"""ListRolloutsResponse is the response object returned by `ListRollouts`.
 
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the

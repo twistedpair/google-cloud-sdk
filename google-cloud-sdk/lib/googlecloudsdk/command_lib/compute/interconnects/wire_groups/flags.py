@@ -18,25 +18,42 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 _BANDWIDTH_ALLOCATION_CHOICES = {
-    'ALLOCATE_PER_WIRE': 'Allocate per wire.',
-    'SHARED_WITH_WIRE_GROUP': 'Shared with wire group.'
+    'ALLOCATE_PER_WIRE': (
+        'Configures a separate unmetered bandwidth allocation (and associated'
+        ' charges) for each wire in the group.'
+    ),
+    'SHARED_WITH_WIRE_GROUP': (
+        'Configures one unmetered bandwidth allocation for the wire group. The'
+        ' unmetered bandwidth is divided equally across each wire in the group,'
+        ' but dynamic throttling reallocates unused unmetered bandwidth from'
+        ' unused or underused wires to other wires in the group. For example,'
+        ' with a four-wire box-and-cross group, when one Interconnect'
+        ' connection is down, the unmetered bandwidth of the two down wires is'
+        ' reallocated to the remaining up wires.'
+    ),
 }
 
 _NETWORK_SERVICE_CLASS_CHOICES = {
-    'BRONZE': 'Bronze.',
-    'GOLD': 'Gold.'
+    'BRONZE': 'The lowest service class.',
+    'GOLD': 'The highest service class.',
 }
 
 _WIRE_GROUP_TYPE = {
-    'WIRE': 'Wire',
-    'REDUNDANT': 'Redundant',
-    'BOX_AND_CROSS': 'Box and cross',
+    'WIRE': 'Single wire type wire groups must have only one VLAN tag.',
+    'REDUNDANT': 'Redundant type wire groups must have only one VLAN tag.',
+    'BOX_AND_CROSS': (
+        'Box and cross type wire groups must have two VLAN tags. The first is'
+        ' for the same-zone pseudowire, and the second is for the cross-zone'
+        ' pseudowire.'
+    ),
 }
 
 
@@ -85,7 +102,7 @@ def AddType(parser, required=True):
       '--type',
       required=required,
       choices=_WIRE_GROUP_TYPE,
-      help='The type for the wire group.',
+      help=textwrap.dedent('The type for the wire group.')
   )
 
 
@@ -117,11 +134,26 @@ def AddFaultResponse(parser):
   )
 
 
-def AddAdminEnabled(parser):
+def AddAdminEnabled(parser, update=False):
   """Adds admin-enabled flag to the argparse.ArgumentParser."""
+  if update:
+    help_text = textwrap.dedent("""\
+      Administrative status of the wire group. When this is enabled, the wire
+      group is operational and will carry traffic. Use --no-admin-enabled to
+      disable it.
+      """)
+  else:
+    help_text = textwrap.dedent("""\
+      Administrative status of the wire group. If not provided on creation,
+      defaults to enabled. When this is enabled, the wire group is
+      operational and will carry traffic. Use --no-admin-enabled to disable
+      it.
+      """)
   parser.add_argument(
       '--admin-enabled',
-      help='Set admin-enabled on the wire group.',
+      action='store_true',
+      default=None,
+      help=help_text,
   )
 
 
@@ -130,7 +162,7 @@ def AddNetworkServiceClass(parser):
   parser.add_argument(
       '--network-service-class',
       choices=_NETWORK_SERVICE_CLASS_CHOICES,
-      help='The network service class for the wire group.',
+      help=textwrap.dedent('The network service class for the wire group.')
   )
 
 
@@ -145,9 +177,14 @@ def AddBandwidthAllocation(parser):
 
 def AddValidateOnly(parser):
   """Adds validate-only flag to the argparse.ArgumentParser."""
+  help_text = textwrap.dedent("""\
+    Validate the new configuration, but don't update it.
+    """)
   parser.add_argument(
       '--validate-only',
-      help='Only validates the configuration, but does not create it.',
+      action='store_true',
+      default=None,
+      help=help_text,
   )
 
 
@@ -169,15 +206,6 @@ def AddInterconnectLabel(parser, required=True):
   )
 
 
-def AddInterconnect(parser, required=True):
-  """Adds interconnect flag to the argparse.ArgumentParser."""
-  parser.add_argument(
-      '--interconnect',
-      required=required,
-      help='The interconnect for the wire group endpoint.',
-  )
-
-
 def AddVlanTags(parser, required=True):
   """Adds vlan-tags flag to the argparse.ArgumentParser."""
   parser.add_argument(
@@ -185,4 +213,3 @@ def AddVlanTags(parser, required=True):
       required=required,
       help='The vlan tags for the interconnect on the wire group endpoint.',
   )
-

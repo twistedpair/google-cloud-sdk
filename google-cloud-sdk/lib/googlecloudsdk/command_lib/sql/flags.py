@@ -603,11 +603,15 @@ def AddDatabaseVersion(
   )
 
 
-def AddIncludeReplicasForMajorVersionUpgrade(parser, hidden=True):
+def AddIncludeReplicasForMajorVersionUpgrade(parser, hidden=False):
   """Adds `--include-replicas-for-major-version-upgrade` to the parser with boolean choice."""
-  help_text = """ Boolean determining whether an in-place major version upgrade
-                of replicas happens when an in-place major version upgrade
-                of a primary instance is initiated."""
+  help_text = (
+      'Enable the major version upgrade of replicas when the in-place '
+      'major version upgrade of a primary instance is initated with '
+      '`--database-version`. Use '
+      '`--include-replicas-for-major-version-upgrade`  to enable and '
+      '`--no-include-replicas-for-major--version-upgrade` to disable.'
+  )
   parser.add_argument(
       '--include-replicas-for-major-version-upgrade',
       action=arg_parsers.StoreTrueFalseAction,
@@ -1843,7 +1847,6 @@ def AddBakImportKeepEncryptedArgument(parser):
       action='store_true',
       required=False,
       default=False,
-      hidden=True,
       help='Whether or not to decrypt the imported encrypted BAK file.',
   )
 

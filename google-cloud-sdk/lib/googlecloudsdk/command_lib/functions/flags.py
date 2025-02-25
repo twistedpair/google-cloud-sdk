@@ -993,11 +993,14 @@ def AddDockerRegistryFlags(parser):
       help_str="""\
         Docker Registry to use for storing the function's Docker images.
         The option `artifact-registry` is used by default.
-
-        Warning: Artifact Registry and Container Registry have different image
-        storage costs. For more details, please see
-        https://cloud.google.com/functions/pricing#deployment_costs
       """,
+      action=actions.DeprecationAction('--docker-registry', warn="""\
+        With the general transition from Container Registry to
+        Artifact Registry, the option to specify docker registry is deprecated.
+        All container image storage and management will automatically
+        transition to Artifact Registry.
+        For more information, see
+        https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr""")
   )
   docker_registry_arg.AddToParser(parser)
 

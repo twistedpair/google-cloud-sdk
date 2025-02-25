@@ -578,34 +578,55 @@ class Keys(object):
           log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
-def CertFileFromRegion(region):
+def CertFileFromInstance(project_id, zone, instance_id):
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
-  return os.path.join(cert_dir, '{}-cert.pub'.format(region))
+  return os.path.join(
+      cert_dir, '{}_{}_{}-cert.pub'.format(project_id, zone, instance_id)
+  )
 
 
-def WriteCertificate(region, cert):
+def WriteCertificate(cert, project_id, zone, instance_id):
   """Writes a certificate associated with the key pair.
 
   Args:
-    region: string, The region where the SSH certificate may be used.
     cert: string, The SSH certificate data.
+    project_id: string, The project ID of the instance.
+    zone: string, The zone of the instance.
+    instance_id: string, The instance ID.
   """
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
   files.MakeDir(cert_dir, mode=0o700)
 
-  filepath = CertFileFromRegion(region)
+  filepath = CertFileFromInstance(project_id, zone, instance_id)
   try:
     files.WriteFileContents(filepath, cert)
   except files.Error as e:
     log.debug('Failed to update the certificate {}: [{}]'.format(filepath, e))
 
 
-def ValidateCertificate(oslogin_state, region):
-  """Checks if the certificate is currently valid.
+def DeleteCertificateFile(project_id, zone, instance_id):
+  """Deletes an OS Login certificate file.
+
+  Args:
+    project_id: string, The project ID of the instance.
+    zone: string, The zone of the instance.
+    instance_id: string, The instance ID.
+  """
+  filepath = CertFileFromInstance(project_id, zone, instance_id)
+  if os.path.exists(filepath):
+    os.remove(filepath)
+
+
+def ValidateCertificate(
+    oslogin_state, project_id, zone, instance_id
+):
+  """Checks if the certificate is currently valid for a given instance.
 
   Args:
     oslogin_state: An OsloginState object.
-    region: string, The region where the SSH certificate may be used.
+    project_id: string, The project ID of the instance.
+    zone: string, The zone of the instance.
+    instance_id: string, The instance ID.
   """
   def IsCertValid(cert):
     time_format = '%Y-%m-%dT%H:%M:%S'
@@ -616,16 +637,13 @@ def ValidateCertificate(oslogin_state, region):
     end = datetime.datetime.strptime(match[1], time_format)
     now = datetime.datetime.now()
     oslogin_state.signed_ssh_key = now > start and now < end
-
-  cmd = KeygenCommand(CertFileFromRegion(region), print_cert=True)
+  cert_file = CertFileFromInstance(project_id, zone, instance_id)
+  cmd = KeygenCommand(cert_file, print_cert=True)
   try:
-    cmd.Run(out_func=IsCertValid)
+    if os.path.exists(cert_file):
+      cmd.Run(out_func=IsCertValid)
   except CommandError as e:
-    log.debug(
-        'Cert File [{0}] could not be opened: {1}'.format(
-            CertFileFromRegion(region), e
-        )
-    )
+    log.debug('Cert File [{0}] could not be opened: {1}'.format(cert_file, e))
 
 
 def WriteSecurityKeys(oslogin_state):
@@ -1157,6 +1175,7 @@ def GetOsloginState(
     # Inclusively trim suffix from last '-' to convert a zone into a region.
     region = zone[: zone.rindex('-')]
   else:
+    zone = None
     region = None
 
   if (
@@ -1169,15 +1188,25 @@ def GetOsloginState(
       or oslogin_state.require_certificates
   ):
     user_email = quote(user_email, safe=':@')
-    ValidateCertificate(oslogin_state, region)
+    ValidateCertificate(oslogin_state, project.name, zone, instance.id)
+    # TODO: b/395159475 - Conditionally call ProvisionPosixAccount based on if
+    # a regional GetLoginProfile call returns NOT_FOUND.
+    oslogin.ProvisionPosixAccount(user_email, project.name, region)
     if not oslogin_state.signed_ssh_key:
-      sign_response = oslogin.SignSshPublicKey(
-          user_email,
+      sign_response = oslogin.SignSshPublicKeyForInstance(
           public_key,
           project.name,
           region,
+          service_account=instance.serviceAccounts[0].email
+          if instance.serviceAccounts
+          else '',
+          compute_instance=(
+              f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
+          ),
       )
-      WriteCertificate(region, sign_response.signedSshPublicKey)
+      WriteCertificate(
+          sign_response.signedSshPublicKey, project.name, zone, instance.id
+      )
     login_profile = oslogin.GetLoginProfile(
         user_email,
         project.name,

@@ -455,7 +455,7 @@ class CloudSqlSettings(_messages.Message):
       in that zone affect data availability. * `REGIONAL`: The instance can
       serve data from more than one zone in a region (it is highly available).
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
-      `PD_HDD`.
+      `PD_HDD` or `HYPERDISK_BALANCED`.
     DatabaseVersionValueValuesEnum: The database engine type and version.
       Deprecated. Use database_version_name instead.
     EditionValueValuesEnum: Optional. The edition of the given Cloud SQL
@@ -493,9 +493,16 @@ class CloudSqlSettings(_messages.Message):
       on data cache, see [Data cache
       overview](https://cloud.google.com/sql/help/mysql-data-cache) in Cloud
       SQL documentation.
+    dataDiskProvisionedIops: Optional. Provisioned number of I/O operations
+      per second for the data disk. This field is only used for hyperdisk-
+      balanced disk types.
+    dataDiskProvisionedThroughput: Optional. Provisioned throughput measured
+      in MiB per second for the data disk. This field is only used for
+      hyperdisk-balanced disk types.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
       minimum (and default) size is 10GB.
-    dataDiskType: The type of storage: `PD_SSD` (default) or `PD_HDD`.
+    dataDiskType: The type of storage: `PD_SSD` (default) or `PD_HDD` or
+      `HYPERDISK_BALANCED`.
     databaseFlags: The database flags passed to the Cloud SQL instance at
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
@@ -562,16 +569,19 @@ class CloudSqlSettings(_messages.Message):
     REGIONAL = 2
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
-    r"""The type of storage: `PD_SSD` (default) or `PD_HDD`.
+    r"""The type of storage: `PD_SSD` (default) or `PD_HDD` or
+    `HYPERDISK_BALANCED`.
 
     Values:
       SQL_DATA_DISK_TYPE_UNSPECIFIED: Unspecified.
       PD_SSD: SSD disk.
       PD_HDD: HDD disk.
+      HYPERDISK_BALANCED: A Hyperdisk Balanced data disk.
     """
     SQL_DATA_DISK_TYPE_UNSPECIFIED = 0
     PD_SSD = 1
     PD_HDD = 2
+    HYPERDISK_BALANCED = 3
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
     r"""The database engine type and version. Deprecated. Use
@@ -714,21 +724,23 @@ class CloudSqlSettings(_messages.Message):
   cmekKeyName = _messages.StringField(4)
   collation = _messages.StringField(5)
   dataCacheConfig = _messages.MessageField('DataCacheConfig', 6)
-  dataDiskSizeGb = _messages.IntegerField(7)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 9)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 10)
-  databaseVersionName = _messages.StringField(11)
-  edition = _messages.EnumField('EditionValueValuesEnum', 12)
-  ipConfig = _messages.MessageField('SqlIpConfig', 13)
-  rootPassword = _messages.StringField(14)
-  rootPasswordSet = _messages.BooleanField(15)
-  secondaryZone = _messages.StringField(16)
-  sourceId = _messages.StringField(17)
-  storageAutoResizeLimit = _messages.IntegerField(18)
-  tier = _messages.StringField(19)
-  userLabels = _messages.MessageField('UserLabelsValue', 20)
-  zone = _messages.StringField(21)
+  dataDiskProvisionedIops = _messages.IntegerField(7)
+  dataDiskProvisionedThroughput = _messages.IntegerField(8)
+  dataDiskSizeGb = _messages.IntegerField(9)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 10)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 11)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 12)
+  databaseVersionName = _messages.StringField(13)
+  edition = _messages.EnumField('EditionValueValuesEnum', 14)
+  ipConfig = _messages.MessageField('SqlIpConfig', 15)
+  rootPassword = _messages.StringField(16)
+  rootPasswordSet = _messages.BooleanField(17)
+  secondaryZone = _messages.StringField(18)
+  sourceId = _messages.StringField(19)
+  storageAutoResizeLimit = _messages.IntegerField(20)
+  tier = _messages.StringField(21)
+  userLabels = _messages.MessageField('UserLabelsValue', 22)
+  zone = _messages.StringField(23)
 
 
 class ColumnEntity(_messages.Message):

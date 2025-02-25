@@ -15024,6 +15024,34 @@ class ComputeInstancesRemoveResourcePoliciesRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesReportHostAsFaultyRequest(_messages.Message):
+  r"""A ComputeInstancesReportHostAsFaultyRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesReportHostAsFaultyRequest: A InstancesReportHostAsFaultyRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesReportHostAsFaultyRequest = _messages.MessageField('InstancesReportHostAsFaultyRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesResetRequest(_messages.Message):
   r"""A ComputeInstancesResetRequest object.
 
@@ -47082,6 +47110,64 @@ class InstancesRemoveResourcePoliciesRequest(_messages.Message):
   resourcePolicies = _messages.StringField(1, repeated=True)
 
 
+class InstancesReportHostAsFaultyRequest(_messages.Message):
+  r"""A InstancesReportHostAsFaultyRequest object.
+
+  Enums:
+    DisruptionScheduleValueValuesEnum: The disruption schedule for the VM.
+      Default to IMMEDIATE.
+
+  Fields:
+    disruptionSchedule: The disruption schedule for the VM. Default to
+      IMMEDIATE.
+    faultReasons: A InstancesReportHostAsFaultyRequestFaultReason attribute.
+  """
+
+  class DisruptionScheduleValueValuesEnum(_messages.Enum):
+    r"""The disruption schedule for the VM. Default to IMMEDIATE.
+
+    Values:
+      DISRUPTION_SCHEDULE_UNSPECIFIED: Not used. Required as per aip/126.
+      FUTURE: Delay disruption for caller control. Will be default soon.
+      IMMEDIATE: Default value. Disrupt the VM immediately.
+    """
+    DISRUPTION_SCHEDULE_UNSPECIFIED = 0
+    FUTURE = 1
+    IMMEDIATE = 2
+
+  disruptionSchedule = _messages.EnumField('DisruptionScheduleValueValuesEnum', 1)
+  faultReasons = _messages.MessageField('InstancesReportHostAsFaultyRequestFaultReason', 2, repeated=True)
+
+
+class InstancesReportHostAsFaultyRequestFaultReason(_messages.Message):
+  r"""A InstancesReportHostAsFaultyRequestFaultReason object.
+
+  Enums:
+    BehaviorValueValuesEnum:
+
+  Fields:
+    behavior: A BehaviorValueValuesEnum attribute.
+    description: A string attribute.
+  """
+
+  class BehaviorValueValuesEnum(_messages.Enum):
+    r"""BehaviorValueValuesEnum enum type.
+
+    Values:
+      BEHAVIOR_UNSPECIFIED: Public reportable behaviors
+      PERFORMANCE: <no description>
+      SILENT_DATA_CORRUPTION: <no description>
+      UNRECOVERABLE_GPU_ERROR: <no description>
+    """
+    BEHAVIOR_UNSPECIFIED = 0
+    PERFORMANCE = 1
+    SILENT_DATA_CORRUPTION = 2
+    UNRECOVERABLE_GPU_ERROR = 3
+
+  behavior = _messages.EnumField('BehaviorValueValuesEnum', 1)
+  description = _messages.StringField(2)
+
+
 class InstancesScopedList(_messages.Message):
   r"""A InstancesScopedList object.
 
@@ -64564,6 +64650,8 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
     name: [Output Only] The name of the firewall policy.
     packetMirroringRules: [Output only] The packet mirroring rules that apply
       to the network.
+    priority: [Output only] Priority of firewall policy association. Not
+      applicable for type=HIERARCHY.
     rules: [Output only] The rules that apply to the network.
     type: [Output Only] The type of the firewall policy. Can be one of
       HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
@@ -64577,18 +64665,23 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
       HIERARCHY: <no description>
       NETWORK: <no description>
       NETWORK_REGIONAL: <no description>
+      SYSTEM_GLOBAL: <no description>
+      SYSTEM_REGIONAL: <no description>
       UNSPECIFIED: <no description>
     """
     HIERARCHY = 0
     NETWORK = 1
     NETWORK_REGIONAL = 2
-    UNSPECIFIED = 3
+    SYSTEM_GLOBAL = 3
+    SYSTEM_REGIONAL = 4
+    UNSPECIFIED = 5
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
   packetMirroringRules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
-  rules = _messages.MessageField('FirewallPolicyRule', 4, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 5, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class RegionSetLabelsRequest(_messages.Message):

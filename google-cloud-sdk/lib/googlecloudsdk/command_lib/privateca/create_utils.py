@@ -127,6 +127,8 @@ def CreateCAFromArgs(args, is_subordinate):
   )
   if args.IsSpecified('subject'):
     subject_config.subject = flags.ParseSubject(args)
+  elif args.IsKnownAndSpecified('subject_file'):
+    subject_config.subject = flags.ParseSubjectFile(args)
   elif source_ca:
     subject_config.subject = source_ca.config.subjectConfig.subject
 
@@ -154,6 +156,9 @@ def CreateCAFromArgs(args, is_subordinate):
 
   ski = flags.ParseSubjectKeyId(args, messages)
 
+  # Parse user defined access URLs
+  user_defined_access_urls = flags.ParseUserDefinedAccessUrls(args, messages)
+
   new_ca = messages.CertificateAuthority(
       type=messages.CertificateAuthority.TypeValueValuesEnum.SUBORDINATE
       if is_subordinate
@@ -166,6 +171,7 @@ def CreateCAFromArgs(args, is_subordinate):
       ),
       keySpec=keyspec,
       gcsBucket=None,
+      userDefinedAccessUrls=user_defined_access_urls,
       labels=labels,
   )
 

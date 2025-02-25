@@ -48,6 +48,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_materializedViews = self.ProjectsInstancesMaterializedViewsService(self)
     self.projects_instances_tables_authorizedViews = self.ProjectsInstancesTablesAuthorizedViewsService(self)
+    self.projects_instances_tables_protoBundles = self.ProjectsInstancesTablesProtoBundlesService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1058,6 +1059,151 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesTablesProtoBundlesService(base_api.BaseApiService):
+    """Service class for the projects_instances_tables_protoBundles resource."""
+
+    _NAME = 'projects_instances_tables_protoBundles'
+
+    def __init__(self, client):
+      super(BigtableadminV2.ProjectsInstancesTablesProtoBundlesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new proto bundle in the specified table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.protoBundles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['protoBundleId'],
+        relative_path='v2/{+parent}/protoBundles',
+        request_field='protoBundle',
+        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a proto bundle in the specified table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles/{protoBundlesId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.tables.protoBundles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets metadata information about the specified proto bundle.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesProtoBundlesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProtoBundle) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles/{protoBundlesId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.protoBundles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesGetRequest',
+        response_type_name='ProtoBundle',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all proto bundles associated with the specified table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesProtoBundlesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProtoBundlesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.protoBundles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/protoBundles',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesListRequest',
+        response_type_name='ListProtoBundlesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a proto bundle in the specified table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles/{protoBundlesId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.tables.protoBundles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='protoBundle',
+        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

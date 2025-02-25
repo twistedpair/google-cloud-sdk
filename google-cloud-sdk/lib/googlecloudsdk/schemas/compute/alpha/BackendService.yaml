@@ -111,6 +111,13 @@ properties:
       An optional description of this resource. Provide this
       property when you create the resource.
     type: string
+  dynamicForwarding:
+    description: |-
+      Dynamic forwarding configuration. This field is used to
+      configure the backend service with dynamic forwarding
+      feature which together with Service Extension allows
+      customized and complex routing logic.
+    $ref: BackendServiceDynamicForwarding.yaml
   edgeSecurityPolicy:
     description: |-
       [Output Only] The resource URL for the edge security
@@ -424,8 +431,8 @@ properties:
     type: string
     enum:
     - ALL
-    - H2C
     - GRPC
+    - H2C
     - HTTP
     - HTTP2
     - HTTPS

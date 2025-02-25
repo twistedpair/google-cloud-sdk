@@ -3653,7 +3653,14 @@ class GoogleIamV2DenyRule(_messages.Message):
       attribute_name}/{attribute_value}`: All identities in a workload
       identity pool with a certain attribute. * `principalSet://iam.googleapis
       .com/projects/{project_number}/locations/global/workloadIdentityPools/{p
-      ool_id}/*`: All identities in a workload identity pool. *
+      ool_id}/*`: All identities in a workload identity pool. * `principalSet:
+      //cloudresourcemanager.googleapis.com/[projects|folders|organizations]/{
+      project_number|folder_number|org_number}/type/ServiceAccount`: All
+      service accounts grouped under a resource (project, folder, or
+      organization). * `principalSet://cloudresourcemanager.googleapis.com/[pr
+      ojects|folders|organizations]/{project_number|folder_number|org_number}/
+      type/ServiceAgent`: All service agents grouped under a resource
+      (project, folder, or organization). *
       `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
       Google Account that was deleted recently. For example,
       `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
@@ -3797,7 +3804,7 @@ class GoogleIamV2PolicyRule(_messages.Message):
 
 
 class GoogleIamV3PolicyBinding(_messages.Message):
-  r"""IAM policy binding
+  r"""IAM policy binding resource.
 
   Enums:
     PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
@@ -3923,17 +3930,22 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
 
   Fields:
     principalSet: Immutable. Full Resource Name used for principal access
-      boundary policy bindings Examples: * Organization:
+      boundary policy bindings. The principal set must be directly parented by
+      the policy binding's parent or same as the parent if the target is a
+      project/folder/organization. Examples: * For binding's parented by an
+      organization: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
-      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
-      Project: *
+      Workforce Identity:
+      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
+      * Workspace Identity:
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` * For
+      binding's parented by a folder: * Folder:
+      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` * For
+      binding's parented by a project: * Project: *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
-      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` * Workforce Identity:
-      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
-      * Workspace Identity:
-      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
     resource: Immutable. Full Resource Name used for access policy bindings
       Examples: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
@@ -4337,12 +4349,10 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource(_me
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
-    resource: A Google Cloud resource that you want to allow to egress the
-      perimeter. These resources can access data outside the perimeter. This
-      field only supports projects. The project format is
-      `projects/{project_number}`. The resource can be in any Google Cloud
-      organization, not just the organization where the perimeter is defined.
-      You can't use `*` in this field to allow all Google Cloud resources.
+    resource: A Google Cloud resource from the service perimeter that you want
+      to allow to access data outside the perimeter. This field supports only
+      projects. The project format is `projects/{project_number}`. You can't
+      use `*` in this field to allow all Google Cloud resources.
   """
 
   accessLevel = _messages.StringField(1)

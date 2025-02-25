@@ -2616,10 +2616,12 @@ class SettingBinding(_messages.Message):
       PRODUCT_UNSPECIFIED: Unspecified product.
       GEMINI_CLOUD_ASSIST: Gemini Cloud Assist.
       GEMINI_CODE_ASSIST: Gemini Code Assist.
+      GEMINI_IN_BIGQUERY: Gemini in BigQuery.
     """
     PRODUCT_UNSPECIFIED = 0
     GEMINI_CLOUD_ASSIST = 1
     GEMINI_CODE_ASSIST = 2
+    GEMINI_IN_BIGQUERY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

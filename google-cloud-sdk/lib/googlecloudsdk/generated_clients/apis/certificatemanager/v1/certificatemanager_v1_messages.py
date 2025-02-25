@@ -99,6 +99,9 @@ class Certificate(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with a Certificate.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     createTime: Output only. The creation timestamp of a Certificate.
@@ -118,6 +121,9 @@ class Certificate(_messages.Message):
       with a value of the managed.domains field.
     scope: Optional. Immutable. The scope of the certificate.
     selfManaged: If set, defines data of a self-managed certificate.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     updateTime: Output only. The last update timestamp of a Certificate.
     usedBy: Output only. The list of resources that use this Certificate.
   """
@@ -168,6 +174,32 @@ class Certificate(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   expireTime = _messages.StringField(3)
@@ -178,8 +210,9 @@ class Certificate(_messages.Message):
   sanDnsnames = _messages.StringField(8, repeated=True)
   scope = _messages.EnumField('ScopeValueValuesEnum', 9)
   selfManaged = _messages.MessageField('SelfManagedCertificate', 10)
-  updateTime = _messages.StringField(11)
-  usedBy = _messages.MessageField('UsedBy', 12, repeated=True)
+  tags = _messages.MessageField('TagsValue', 11)
+  updateTime = _messages.StringField(12)
+  usedBy = _messages.MessageField('UsedBy', 13, repeated=True)
 
 
 class CertificateAuthorityConfig(_messages.Message):
@@ -217,6 +250,9 @@ class CertificateIssuanceConfig(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with a
       CertificateIssuanceConfig.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     certificateAuthorityConfig: Required. The CA that issues the workload
@@ -237,6 +273,9 @@ class CertificateIssuanceConfig(_messages.Message):
     rotationWindowPercentage: Required. Specifies the percentage of elapsed
       time of the certificate lifetime to wait before renewing the
       certificate. Must be a number between 1-99, inclusive.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     updateTime: Output only. The last update timestamp of a
       CertificateIssuanceConfig.
   """
@@ -277,6 +316,32 @@ class CertificateIssuanceConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   certificateAuthorityConfig = _messages.MessageField('CertificateAuthorityConfig', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
@@ -285,7 +350,8 @@ class CertificateIssuanceConfig(_messages.Message):
   lifetime = _messages.StringField(6)
   name = _messages.StringField(7)
   rotationWindowPercentage = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(9)
+  tags = _messages.MessageField('TagsValue', 9)
+  updateTime = _messages.StringField(10)
 
 
 class CertificateMap(_messages.Message):
@@ -293,6 +359,9 @@ class CertificateMap(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with a Certificate Map.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     createTime: Output only. The creation timestamp of a Certificate Map.
@@ -305,6 +374,9 @@ class CertificateMap(_messages.Message):
     name: Identifier. A user-defined name of the Certificate Map. Certificate
       Map names must be unique globally and match pattern
       `projects/*/locations/*/certificateMaps/*`.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     updateTime: Output only. The update timestamp of a Certificate Map.
   """
 
@@ -332,12 +404,39 @@ class CertificateMap(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   gclbTargets = _messages.MessageField('GclbTarget', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  tags = _messages.MessageField('TagsValue', 6)
+  updateTime = _messages.StringField(7)
 
 
 class CertificateMapEntry(_messages.Message):
@@ -1054,6 +1153,9 @@ class DnsAuthorization(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with a DnsAuthorization.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     createTime: Output only. The creation timestamp of a DnsAuthorization.
@@ -1069,6 +1171,9 @@ class DnsAuthorization(_messages.Message):
     name: Identifier. A user-defined name of the dns authorization.
       DnsAuthorization names must be unique globally and match pattern
       `projects/*/locations/*/dnsAuthorizations/*`.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     type: Optional. Immutable. Type of DnsAuthorization. If unset during
       resource creation the following default will be used: - in location
       `global`: FIXED_RECORD, - in other locations: PER_PROJECT_RECORD.
@@ -1116,14 +1221,41 @@ class DnsAuthorization(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   dnsResourceRecord = _messages.MessageField('DnsResourceRecord', 3)
   domain = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  tags = _messages.MessageField('TagsValue', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class DnsResourceRecord(_messages.Message):
@@ -1773,6 +1905,9 @@ class TrustConfig(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with a TrustConfig.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     allowlistedCertificates: Optional. A certificate matching an allowlisted
@@ -1789,6 +1924,9 @@ class TrustConfig(_messages.Message):
     name: Identifier. A user-defined name of the trust config. TrustConfig
       names must be unique globally and match pattern
       `projects/*/locations/*/trustConfigs/*`.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     trustStores: Optional. Set of trust stores to perform validation against.
       This field is supported when TrustConfig is configured with Load
       Balancers, currently not supported for SPIFFE certificate validation.
@@ -1820,14 +1958,41 @@ class TrustConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allowlistedCertificates = _messages.MessageField('AllowlistedCertificate', 1, repeated=True)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   etag = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  trustStores = _messages.MessageField('TrustStore', 7, repeated=True)
-  updateTime = _messages.StringField(8)
+  tags = _messages.MessageField('TagsValue', 7)
+  trustStores = _messages.MessageField('TrustStore', 8, repeated=True)
+  updateTime = _messages.StringField(9)
 
 
 class TrustStore(_messages.Message):

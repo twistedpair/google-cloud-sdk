@@ -95,6 +95,10 @@ class InterconnectAttachment(object):
       customer_router_ipv6_interface_id,
       subnet_length,
       multicast_enabled,
+      candidate_cloud_router_ip_address,
+      candidate_customer_router_ip_address,
+      candidate_cloud_router_ipv6_address,
+      candidate_customer_router_ipv6_address,
   ):
     """Make an interconnect attachment insert request."""
     interconnect_self_link = None
@@ -139,6 +143,22 @@ class InterconnectAttachment(object):
       attachment.subnetLength = subnet_length
     if multicast_enabled is not None:
       attachment.multicastEnabled = multicast_enabled
+    if candidate_cloud_router_ip_address is not None:
+      attachment.candidateCloudRouterIpAddress = (
+          candidate_cloud_router_ip_address
+      )
+    if candidate_customer_router_ip_address is not None:
+      attachment.candidateCustomerRouterIpAddress = (
+          candidate_customer_router_ip_address
+      )
+    if candidate_cloud_router_ipv6_address is not None:
+      attachment.candidateCloudRouterIpv6Address = (
+          candidate_cloud_router_ipv6_address
+      )
+    if candidate_customer_router_ipv6_address is not None:
+      attachment.candidateCustomerRouterIpv6Address = (
+          candidate_customer_router_ipv6_address
+      )
 
     if validate_only is not None:
       return (self._client.interconnectAttachments, 'Insert',
@@ -247,6 +267,10 @@ class InterconnectAttachment(object):
       multicast_enabled=None,
       only_generate_request=False,
       validate_only=None,
+      candidate_cloud_router_ip_address=None,
+      candidate_customer_router_ip_address=None,
+      candidate_cloud_router_ipv6_address=None,
+      candidate_customer_router_ipv6_address=None,
   ):
     """Create an interconnectAttachment."""
     if edge_availability_domain is not None:
@@ -297,6 +321,10 @@ class InterconnectAttachment(object):
             customer_router_ipv6_interface_id,
             subnet_length,
             multicast_enabled,
+            candidate_cloud_router_ip_address,
+            candidate_customer_router_ip_address,
+            candidate_cloud_router_ipv6_address,
+            candidate_customer_router_ipv6_address,
         )
     ]
     if not only_generate_request:

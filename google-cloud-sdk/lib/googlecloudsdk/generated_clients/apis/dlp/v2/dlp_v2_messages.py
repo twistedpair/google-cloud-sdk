@@ -5973,6 +5973,9 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
       test-project/locations/global/discoveryConfigs/53234423`.
     orgConfig: Only set when the parent is an org.
     otherCloudStartingLocation: Must be set only when scanning other clouds.
+    processingLocation: Optional. Processing location configuration. Vertex AI
+      dataset scanning will set processing_location.image_fallback_type to
+      MultiRegionProcessing by default.
     status: Required. A status for this configuration.
     targets: Target to match against for determining what to scan and how
       frequently.
@@ -6000,9 +6003,10 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
   name = _messages.StringField(7)
   orgConfig = _messages.MessageField('GooglePrivacyDlpV2OrgConfig', 8)
   otherCloudStartingLocation = _messages.MessageField('GooglePrivacyDlpV2OtherCloudDiscoveryStartingLocation', 9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  targets = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTarget', 11, repeated=True)
-  updateTime = _messages.StringField(12)
+  processingLocation = _messages.MessageField('GooglePrivacyDlpV2ProcessingLocation', 10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  targets = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTarget', 12, repeated=True)
+  updateTime = _messages.StringField(13)
 
 
 class GooglePrivacyDlpV2DiscoveryFileStoreConditions(_messages.Message):
@@ -6306,6 +6310,15 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
     secretsTarget: Discovery target that looks for credentials and secrets
       stored in cloud resource metadata and reports them as vulnerabilities to
       Security Command Center. Only one target of this type is allowed.
+    vertexDatasetTarget: Vertex AI dataset target for Discovery. The first
+      target to match a dataset will be the one applied. Note that discovery
+      for Vertex AI can incur Cloud Storage Class B operation charges for
+      storage.objects.get operations and retrieval fees. For more information,
+      see [Cloud Storage
+      pricing](https://cloud.google.com/storage/pricing#price-tables). Note
+      that discovery for Vertex AI dataset will not be able to scan images
+      unless DiscoveryConfig.processing_location.image_fallback_location has
+      multi_region_processing or global_processing configured.
   """
 
   bigQueryTarget = _messages.MessageField('GooglePrivacyDlpV2BigQueryDiscoveryTarget', 1)
@@ -6313,6 +6326,85 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
   cloudStorageTarget = _messages.MessageField('GooglePrivacyDlpV2CloudStorageDiscoveryTarget', 3)
   otherCloudTarget = _messages.MessageField('GooglePrivacyDlpV2OtherCloudDiscoveryTarget', 4)
   secretsTarget = _messages.MessageField('GooglePrivacyDlpV2SecretsDiscoveryTarget', 5)
+  vertexDatasetTarget = _messages.MessageField('GooglePrivacyDlpV2VertexDatasetDiscoveryTarget', 6)
+
+
+class GooglePrivacyDlpV2DiscoveryVertexDatasetConditions(_messages.Message):
+  r"""Requirements that must be true before a dataset is profiled for the
+  first time.
+
+  Fields:
+    createdAfter: Vertex AI dataset must have been created after this date.
+      Used to avoid backfilling.
+    minAge: Minimum age a Vertex AI dataset must have. If set, the value must
+      be 1 hour or greater.
+  """
+
+  createdAfter = _messages.StringField(1)
+  minAge = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2DiscoveryVertexDatasetFilter(_messages.Message):
+  r"""Determines what datasets will have profiles generated within an
+  organization or project. Includes the ability to filter by regular
+  expression patterns on project ID or dataset regex.
+
+  Fields:
+    collection: A specific set of Vertex AI datasets for this filter to apply
+      to.
+    others: Catch-all. This should always be the last target in the list
+      because anything above it will apply first. Should only appear once in a
+      configuration. If none is specified, a default one will be added
+      automatically.
+    vertexDatasetResourceReference: The dataset resource to scan. Targets
+      including this can only include one target (the target with this dataset
+      resource reference).
+  """
+
+  collection = _messages.MessageField('GooglePrivacyDlpV2VertexDatasetCollection', 1)
+  others = _messages.MessageField('GooglePrivacyDlpV2AllOtherResources', 2)
+  vertexDatasetResourceReference = _messages.MessageField('GooglePrivacyDlpV2VertexDatasetResourceReference', 3)
+
+
+class GooglePrivacyDlpV2DiscoveryVertexDatasetGenerationCadence(_messages.Message):
+  r"""How often existing datasets should have their profiles refreshed. New
+  datasets are scanned as quickly as possible depending on system capacity.
+
+  Enums:
+    RefreshFrequencyValueValuesEnum: If you set this field, profiles are
+      refreshed at this frequency regardless of whether the underlying
+      datasets have changed. Defaults to never.
+
+  Fields:
+    inspectTemplateModifiedCadence: Governs when to update data profiles when
+      the inspection rules defined by the `InspectTemplate` change. If not
+      set, changing the template will not cause a data profile to be updated.
+    refreshFrequency: If you set this field, profiles are refreshed at this
+      frequency regardless of whether the underlying datasets have changed.
+      Defaults to never.
+  """
+
+  class RefreshFrequencyValueValuesEnum(_messages.Enum):
+    r"""If you set this field, profiles are refreshed at this frequency
+    regardless of whether the underlying datasets have changed. Defaults to
+    never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  inspectTemplateModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence', 1)
+  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 2)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
@@ -6781,7 +6873,8 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
       https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-
       endpoints
     fileStorePath: The file store path. * Cloud Storage: `gs://{bucket}` *
-      Amazon S3: `s3://{bucket}`
+      Amazon S3: `s3://{bucket}` * Vertex AI dataset:
+      `projects/{project_number}/locations/{location}/datasets/{dataset_id}`
     fullResource: The resource name of the resource profiled.
       https://cloud.google.com/apis/design/resource_names#full_resource_name
       Example format of an S3 bucket full resource name: `//cloudasset.googlea
@@ -6800,6 +6893,7 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
       file store.
     projectId: The Google Cloud project ID that owns the resource. For Amazon
       S3 buckets, this is the AWS Account Id.
+    relatedResources: Resources related to this profile.
     resourceAttributes: Attributes of the resource being profiled. Currently
       used attributes: * customer_managed_encryption: boolean - true: the
       resource is encrypted with a customer-managed key. - false: the resource
@@ -6914,11 +7008,12 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
   profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 16)
   projectDataProfile = _messages.StringField(17)
   projectId = _messages.StringField(18)
-  resourceAttributes = _messages.MessageField('ResourceAttributesValue', 19)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 20)
-  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 21)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
+  relatedResources = _messages.MessageField('GooglePrivacyDlpV2RelatedResource', 19, repeated=True)
+  resourceAttributes = _messages.MessageField('ResourceAttributesValue', 20)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 21)
+  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 22)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
 
 
 class GooglePrivacyDlpV2FileStoreInfoTypeSummary(_messages.Message):
@@ -7133,6 +7228,10 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   bucketSize = _messages.FloatField(1)
   lowerBound = _messages.MessageField('GooglePrivacyDlpV2Value', 2)
   upperBound = _messages.MessageField('GooglePrivacyDlpV2Value', 3)
+
+
+class GooglePrivacyDlpV2GlobalProcessing(_messages.Message):
+  r"""Processing will happen in the global region."""
 
 
 class GooglePrivacyDlpV2HotwordRule(_messages.Message):
@@ -7369,6 +7468,20 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   requiredFindingLabelKeys = _messages.StringField(3, repeated=True)
   tableOptions = _messages.MessageField('GooglePrivacyDlpV2TableOptions', 4)
+
+
+class GooglePrivacyDlpV2ImageFallbackLocation(_messages.Message):
+  r"""Configure image processing to fall back to the configured processing
+  option below if unavailable in the request location.
+
+  Fields:
+    globalProcessing: Processing will happen in the global region.
+    multiRegionProcessing: Processing will happen in a multi-region that
+      contains the current region if available.
+  """
+
+  globalProcessing = _messages.MessageField('GooglePrivacyDlpV2GlobalProcessing', 1)
+  multiRegionProcessing = _messages.MessageField('GooglePrivacyDlpV2MultiRegionProcessing', 2)
 
 
 class GooglePrivacyDlpV2ImageLocation(_messages.Message):
@@ -7613,6 +7726,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       CONTEXTUAL_INFORMATION: Information that is not sensitive on its own,
         but provides details about the circumstances surrounding an entity or
         an event.
+      CUSTOM: Category for `CustomInfoType` types.
     """
     TYPE_UNSPECIFIED = 0
     PII = 1
@@ -7622,6 +7736,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     GOVERNMENT_ID = 5
     DOCUMENT = 6
     CONTEXTUAL_INFORMATION = 7
+    CUSTOM = 8
 
   industryCategory = _messages.EnumField('IndustryCategoryValueValuesEnum', 1)
   locationCategory = _messages.EnumField('LocationCategoryValueValuesEnum', 2)
@@ -8643,6 +8758,13 @@ class GooglePrivacyDlpV2MetadataLocation(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class GooglePrivacyDlpV2MultiRegionProcessing(_messages.Message):
+  r"""Processing will happen in a multi-region that contains the current
+  region if available.
+  """
+
+
+
 class GooglePrivacyDlpV2NumericalStatsConfig(_messages.Message):
   r"""Compute numerical stats over an individual column, including min, max,
   and quantiles.
@@ -8959,6 +9081,19 @@ class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
   kMapEstimationConfig = _messages.MessageField('GooglePrivacyDlpV2KMapEstimationConfig', 4)
   lDiversityConfig = _messages.MessageField('GooglePrivacyDlpV2LDiversityConfig', 5)
   numericalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2NumericalStatsConfig', 6)
+
+
+class GooglePrivacyDlpV2ProcessingLocation(_messages.Message):
+  r"""Configure processing location for discovery and inspection. For example,
+  image OCR is only provided in limited regions but configuring
+  ProcessingLocation will redirect OCR to a location where OCR is provided.
+
+  Fields:
+    imageFallbackLocation: Image processing will fall back using this
+      configuration.
+  """
+
+  imageFallbackLocation = _messages.MessageField('GooglePrivacyDlpV2ImageFallbackLocation', 1)
 
 
 class GooglePrivacyDlpV2ProfileStatus(_messages.Message):
@@ -9496,6 +9631,17 @@ class GooglePrivacyDlpV2ReidentifyContentResponse(_messages.Message):
 
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 1)
   overview = _messages.MessageField('GooglePrivacyDlpV2TransformationOverview', 2)
+
+
+class GooglePrivacyDlpV2RelatedResource(_messages.Message):
+  r"""A related resource. Examples: * The source BigQuery table for a Vertex
+  AI dataset. * The source Cloud Storage bucket for a Vertex AI dataset.
+
+  Fields:
+    fullResource: The full resource name of the related resource.
+  """
+
+  fullResource = _messages.StringField(1)
 
 
 class GooglePrivacyDlpV2ReplaceDictionaryConfig(_messages.Message):
@@ -10054,6 +10200,7 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
       generated.
     projectDataProfile: The resource name of the project data profile for this
       table.
+    relatedResources: Resources related to this profile.
     resourceLabels: The labels applied to the resource at the time the profile
       was generated.
     resourceVisibility: How broadly a resource has been shared.
@@ -10153,14 +10300,15 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
   profileLastGenerated = _messages.StringField(16)
   profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 17)
   projectDataProfile = _messages.StringField(18)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 19)
-  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 20)
-  rowCount = _messages.IntegerField(21)
-  scannedColumnCount = _messages.IntegerField(22)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  tableId = _messages.StringField(25)
-  tableSizeBytes = _messages.IntegerField(26)
+  relatedResources = _messages.MessageField('GooglePrivacyDlpV2RelatedResource', 19, repeated=True)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 20)
+  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 21)
+  rowCount = _messages.IntegerField(22)
+  scannedColumnCount = _messages.IntegerField(23)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  tableId = _messages.StringField(26)
+  tableSizeBytes = _messages.IntegerField(27)
 
 
 class GooglePrivacyDlpV2TableLocation(_messages.Message):
@@ -10873,6 +11021,72 @@ class GooglePrivacyDlpV2VersionDescription(_messages.Message):
 
   description = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2VertexDatasetCollection(_messages.Message):
+  r"""Match dataset resources using regex filters.
+
+  Fields:
+    vertexDatasetRegexes: The regex used to filter dataset resources.
+  """
+
+  vertexDatasetRegexes = _messages.MessageField('GooglePrivacyDlpV2VertexDatasetRegexes', 1)
+
+
+class GooglePrivacyDlpV2VertexDatasetDiscoveryTarget(_messages.Message):
+  r"""Target used to match against for discovery with Vertex AI datasets.
+
+  Fields:
+    conditions: In addition to matching the filter, these conditions must be
+      true before a profile is generated.
+    disabled: Disable profiling for datasets that match this filter.
+    filter: Required. The datasets the discovery cadence applies to. The first
+      target with a matching filter will be the one to apply to a dataset.
+    generationCadence: How often and when to update profiles. New datasets
+      that match both the filter and conditions are scanned as quickly as
+      possible depending on system capacity.
+  """
+
+  conditions = _messages.MessageField('GooglePrivacyDlpV2DiscoveryVertexDatasetConditions', 1)
+  disabled = _messages.MessageField('GooglePrivacyDlpV2Disabled', 2)
+  filter = _messages.MessageField('GooglePrivacyDlpV2DiscoveryVertexDatasetFilter', 3)
+  generationCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryVertexDatasetGenerationCadence', 4)
+
+
+class GooglePrivacyDlpV2VertexDatasetRegex(_messages.Message):
+  r"""A pattern to match against one or more dataset resources.
+
+  Fields:
+    projectIdRegex: For organizations, if unset, will match all projects. Has
+      no effect for configurations created within a project.
+  """
+
+  projectIdRegex = _messages.StringField(1)
+
+
+class GooglePrivacyDlpV2VertexDatasetRegexes(_messages.Message):
+  r"""A collection of regular expressions to determine what datasets to match
+  against.
+
+  Fields:
+    patterns: Required. The group of regular expression patterns to match
+      against one or more datasets. Maximum of 100 entries. The sum of the
+      lengths of all regular expressions can't exceed 10 KiB.
+  """
+
+  patterns = _messages.MessageField('GooglePrivacyDlpV2VertexDatasetRegex', 1, repeated=True)
+
+
+class GooglePrivacyDlpV2VertexDatasetResourceReference(_messages.Message):
+  r"""Identifies a single Vertex AI dataset.
+
+  Fields:
+    datasetResourceName: Required. The name of the dataset resource. If set
+      within a project-level configuration, the specified resource must be
+      within the project.
+  """
+
+  datasetResourceName = _messages.StringField(1)
 
 
 class GooglePrivacyDlpV2WordList(_messages.Message):

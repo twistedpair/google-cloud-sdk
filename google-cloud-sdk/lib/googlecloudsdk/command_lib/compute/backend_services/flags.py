@@ -1263,3 +1263,16 @@ def AddBackendServiceCustomMetrics(parser, add_clear_argument=False):
         default=None,
         help='Clears current list of CUSTOM_METRICS.',
     )
+
+
+def AddIpPortDynamicForwarding(parser):
+  """Adds the logging optional argument to the argparse."""
+  parser.add_argument(
+      '--ip-port-dynamic-forwarding',
+      required=False,
+      action='store_true',
+      default=None,
+      help="""\
+      Enables Dynamic Forwarding in IpPort selection mode.
+      """,
+  )

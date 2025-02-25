@@ -1922,19 +1922,19 @@ class NetworkingConfig(_messages.Message):
 
   Enums:
     ConnectionTypeValueValuesEnum: Optional. Indicates the user requested
-      specifc connection type between Tenant and Customer projects. You cannot
-      set networking connection type in public IP environment.
+      specific connection type between Tenant and Customer projects. You
+      cannot set networking connection type in public IP environment.
 
   Fields:
-    connectionType: Optional. Indicates the user requested specifc connection
+    connectionType: Optional. Indicates the user requested specific connection
       type between Tenant and Customer projects. You cannot set networking
       connection type in public IP environment.
   """
 
   class ConnectionTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Indicates the user requested specifc connection type between
-    Tenant and Customer projects. You cannot set networking connection type in
-    public IP environment.
+    r"""Optional. Indicates the user requested specific connection type
+    between Tenant and Customer projects. You cannot set networking connection
+    type in public IP environment.
 
     Values:
       CONNECTION_TYPE_UNSPECIFIED: No specific connection type was requested,

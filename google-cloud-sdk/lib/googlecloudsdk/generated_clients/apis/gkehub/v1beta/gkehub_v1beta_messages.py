@@ -13,35 +13,6 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
-class AnthosObservabilityFeatureSpec(_messages.Message):
-  r"""**Anthos Observability**: Spec
-
-  Fields:
-    defaultMembershipSpec: Default membership spec for unconfigured
-      memberships
-  """
-
-  defaultMembershipSpec = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
-
-
-class AnthosObservabilityMembershipSpec(_messages.Message):
-  r"""**Anthosobservability**: Per-Membership Feature spec.
-
-  Fields:
-    doNotOptimizeMetrics: Use full of metrics rather than optimized metrics.
-      See https://cloud.google.com/anthos/clusters/docs/on-
-      prem/1.8/concepts/logging-and-
-      monitoring#optimized_metrics_default_metrics
-    enableStackdriverOnApplications: Enable collecting and reporting metrics
-      and logs from user apps.
-    version: the version of stackdriver operator used by this feature
-  """
-
-  doNotOptimizeMetrics = _messages.BooleanField(1)
-  enableStackdriverOnApplications = _messages.BooleanField(2)
-  version = _messages.StringField(3)
-
-
 class AppDevExperienceFeatureSpec(_messages.Message):
   r"""Spec for App Dev Experience Feature."""
 
@@ -689,7 +660,6 @@ class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Fleet-wide configuration information
 
   Fields:
-    anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     clusterupgrade: ClusterUpgrade (fleet-based) feature spec.
     dataplanev2: DataplaneV2 feature spec.
@@ -699,14 +669,13 @@ class CommonFeatureSpec(_messages.Message):
     workloadmigration: The specification for WorkloadMigration feature.
   """
 
-  anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
-  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 3)
-  dataplanev2 = _messages.MessageField('DataplaneV2FeatureSpec', 4)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 5)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 6)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 7)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 8)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 2)
+  dataplanev2 = _messages.MessageField('DataplaneV2FeatureSpec', 3)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 7)
 
 
 class CommonFeatureState(_messages.Message):
@@ -970,9 +939,6 @@ class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
-    allowVerticalScale: Optional. Set to true to allow the vertical scaling.
-      Defaults to false which disallows vertical scaling. This field is
-      deprecated.
     deploymentOverrides: Optional. Configuration for deployment overrides.
     enabled: Optional. Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
@@ -1001,15 +967,14 @@ class ConfigManagementConfigSync(_messages.Message):
       cluster. Default to false.
   """
 
-  allowVerticalScale = _messages.BooleanField(1)
-  deploymentOverrides = _messages.MessageField('ConfigManagementDeploymentOverride', 2, repeated=True)
-  enabled = _messages.BooleanField(3)
-  git = _messages.MessageField('ConfigManagementGitConfig', 4)
-  metricsGcpServiceAccountEmail = _messages.StringField(5)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
-  preventDrift = _messages.BooleanField(7)
-  sourceFormat = _messages.StringField(8)
-  stopSyncing = _messages.BooleanField(9)
+  deploymentOverrides = _messages.MessageField('ConfigManagementDeploymentOverride', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
+  git = _messages.MessageField('ConfigManagementGitConfig', 3)
+  metricsGcpServiceAccountEmail = _messages.StringField(4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -2104,12 +2069,15 @@ class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
   Fields:
+    clusterVersion: Output only. The product version of the Edge Cluster, e.g.
+      "1.8.0".
     resourceLink: Immutable. Self-link of the Google Cloud resource for the
       Edge Cluster. For example: //edgecontainer.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster
   """
 
-  resourceLink = _messages.StringField(1)
+  clusterVersion = _messages.StringField(1)
+  resourceLink = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -5310,7 +5278,6 @@ class MembershipFeatureSpec(_messages.Message):
   Membership.
 
   Fields:
-    anthosobservability: Anthos Observability-specific spec
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
     fleetobservability: Fleet observability membership spec
@@ -5324,15 +5291,14 @@ class MembershipFeatureSpec(_messages.Message):
     policycontroller: Policy Controller spec.
   """
 
-  anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
-  cloudbuild = _messages.MessageField('MembershipSpec', 2)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
-  origin = _messages.MessageField('Origin', 8)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
+  cloudbuild = _messages.MessageField('MembershipSpec', 1)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 5)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 6)
+  origin = _messages.MessageField('Origin', 7)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 8)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -6954,7 +6920,8 @@ class SecurityPostureConfig(_messages.Message):
 
 
 class ServiceMeshCondition(_messages.Message):
-  r"""Condition being reported.
+  r"""Condition being reported. TODO b/395151419: Remove this message once the
+  membership-level conditions field uses the common Condition message.
 
   Enums:
     CodeValueValuesEnum: Unique identifier of the condition which describes
@@ -6985,6 +6952,7 @@ class ServiceMeshCondition(_messages.Message):
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       CLUSTER_HAS_ZERO_NODES: Cluster has zero node code
+      CANONICAL_SERVICE_ERROR: Failure to reconcile CanonicalServices
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
@@ -7025,6 +6993,8 @@ class ServiceMeshCondition(_messages.Message):
       MODERNIZATION_IN_PROGRESS: Modernization is in progress for a cluster.
       MODERNIZATION_COMPLETED: Modernization is completed for a cluster.
       MODERNIZATION_ABORTED: Modernization is aborted for a cluster.
+      MODERNIZATION_WILL_BE_SCHEDULED: Modernization will be scheduled for a
+        fleet.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -7035,32 +7005,34 @@ class ServiceMeshCondition(_messages.Message):
     CNI_INSTALLATION_FAILED = 6
     CNI_POD_UNSCHEDULABLE = 7
     CLUSTER_HAS_ZERO_NODES = 8
-    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 9
-    VPCSC_GA_SUPPORTED = 10
-    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT = 11
-    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT_SAFE = 12
-    CONFIG_APPLY_INTERNAL_ERROR = 13
-    CONFIG_VALIDATION_ERROR = 14
-    CONFIG_VALIDATION_WARNING = 15
-    QUOTA_EXCEEDED_BACKEND_SERVICES = 16
-    QUOTA_EXCEEDED_HEALTH_CHECKS = 17
-    QUOTA_EXCEEDED_HTTP_ROUTES = 18
-    QUOTA_EXCEEDED_TCP_ROUTES = 19
-    QUOTA_EXCEEDED_TLS_ROUTES = 20
-    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 21
-    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 22
-    QUOTA_EXCEEDED_GATEWAYS = 23
-    QUOTA_EXCEEDED_MESHES = 24
-    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 25
-    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 26
-    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 27
-    QUOTA_EXCEEDED_HTTP_FILTERS = 28
-    QUOTA_EXCEEDED_TCP_FILTERS = 29
-    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 30
-    MODERNIZATION_SCHEDULED = 31
-    MODERNIZATION_IN_PROGRESS = 32
-    MODERNIZATION_COMPLETED = 33
-    MODERNIZATION_ABORTED = 34
+    CANONICAL_SERVICE_ERROR = 9
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 10
+    VPCSC_GA_SUPPORTED = 11
+    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT = 12
+    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT_SAFE = 13
+    CONFIG_APPLY_INTERNAL_ERROR = 14
+    CONFIG_VALIDATION_ERROR = 15
+    CONFIG_VALIDATION_WARNING = 16
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 17
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 18
+    QUOTA_EXCEEDED_HTTP_ROUTES = 19
+    QUOTA_EXCEEDED_TCP_ROUTES = 20
+    QUOTA_EXCEEDED_TLS_ROUTES = 21
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 22
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 23
+    QUOTA_EXCEEDED_GATEWAYS = 24
+    QUOTA_EXCEEDED_MESHES = 25
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 26
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 27
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 28
+    QUOTA_EXCEEDED_HTTP_FILTERS = 29
+    QUOTA_EXCEEDED_TCP_FILTERS = 30
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 31
+    MODERNIZATION_SCHEDULED = 32
+    MODERNIZATION_IN_PROGRESS = 33
+    MODERNIZATION_COMPLETED = 34
+    MODERNIZATION_ABORTED = 35
+    MODERNIZATION_WILL_BE_SCHEDULED = 36
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -7260,6 +7232,7 @@ class ServiceMeshMembershipState(_messages.Message):
 
   Fields:
     conditions: Output only. List of conditions reported for this membership.
+      TODO b/395151419: Use the common Condition message.
     controlPlaneManagement: Output only. Status of control plane management
     dataPlaneManagement: Output only. Status of data plane management.
   """

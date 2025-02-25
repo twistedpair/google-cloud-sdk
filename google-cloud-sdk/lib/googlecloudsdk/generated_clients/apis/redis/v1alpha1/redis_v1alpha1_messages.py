@@ -410,10 +410,12 @@ class Cluster(_messages.Message):
       If not provided, auth feature is disabled for the cluster.
     automatedBackupConfig: Optional. The automated backup config for the
       cluster.
+    availableMaintenanceVersions: Output only. This field is used to determine
+      the available maintenance versions for the self service update.
     backupCollection: Optional. Output only. The backup collection full
       resource name. Example:
       projects/{project}/locations/{location}/backupCollections/{collection}
-    clusterEndpoints: Optional. A list of cluster enpoints.
+    clusterEndpoints: Optional. A list of cluster endpoints.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
     crossClusterReplicationConfig: Optional. Cross cluster replication config.
@@ -422,6 +424,8 @@ class Cluster(_messages.Message):
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
+    effectiveMaintenanceVersion: Output only. This field represents the actual
+      maintenance version of the cluster.
     encryptionInfo: Output only. Encryption information of the data at rest of
       the cluster.
     gcsSource: Optional. Backups stored in Cloud Storage buckets. The Cloud
@@ -434,6 +438,10 @@ class Cluster(_messages.Message):
       allow or deny updates.
     maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
       Published maintenance schedule.
+    maintenanceVersion: Optional. This field can be used to trigger self
+      service update to indicate the desired maintenance version. The input to
+      this field can be determined by the available_maintenance_versions
+      field.
     managedBackupSource: Optional. Backups generated and managed by
       memorystore service.
     name: Required. Identifier. Unique name of the resource in this scope
@@ -567,38 +575,41 @@ class Cluster(_messages.Message):
   asyncClusterEndpointsDeletionEnabled = _messages.BooleanField(1)
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
   automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 3)
-  backupCollection = _messages.StringField(4)
-  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 5, repeated=True)
-  createTime = _messages.StringField(6)
-  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 7)
-  deletionProtectionEnabled = _messages.BooleanField(8)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 9, repeated=True)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
-  gcsSource = _messages.MessageField('GcsBackupSource', 11)
-  kmsKey = _messages.StringField(12)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 13)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 14)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 15)
-  name = _messages.StringField(16)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 17)
-  ondemandMaintenance = _messages.BooleanField(18)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 19)
-  preciseSizeGb = _messages.FloatField(20)
-  pscConfigs = _messages.MessageField('PscConfig', 21, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 22, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 23, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 24)
-  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  shardCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  simulateMaintenanceEvent = _messages.BooleanField(29)
-  sizeGb = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  stateInfo = _messages.MessageField('StateInfo', 32)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 33)
-  uid = _messages.StringField(34)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 35)
+  availableMaintenanceVersions = _messages.StringField(4, repeated=True)
+  backupCollection = _messages.StringField(5)
+  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 6, repeated=True)
+  createTime = _messages.StringField(7)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 8)
+  deletionProtectionEnabled = _messages.BooleanField(9)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 10, repeated=True)
+  effectiveMaintenanceVersion = _messages.StringField(11)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 12)
+  gcsSource = _messages.MessageField('GcsBackupSource', 13)
+  kmsKey = _messages.StringField(14)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 15)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 16)
+  maintenanceVersion = _messages.StringField(17)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 18)
+  name = _messages.StringField(19)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 20)
+  ondemandMaintenance = _messages.BooleanField(21)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 22)
+  preciseSizeGb = _messages.FloatField(23)
+  pscConfigs = _messages.MessageField('PscConfig', 24, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 25, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 26, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 27)
+  replicaCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  shardCount = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(32)
+  sizeGb = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  stateInfo = _messages.MessageField('StateInfo', 35)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 36)
+  uid = _messages.StringField(37)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 38)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -657,7 +668,7 @@ class ClusterMaintenancePolicy(_messages.Message):
 
 
 class ClusterMaintenanceSchedule(_messages.Message):
-  r"""Upcoming maitenance schedule.
+  r"""Upcoming maintenance schedule.
 
   Fields:
     endTime: Output only. The end time of any upcoming scheduled maintenance
@@ -1207,6 +1218,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1295,6 +1308,7 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1866,6 +1880,8 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1954,6 +1970,7 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -2242,7 +2259,7 @@ class GcsBackupSource(_messages.Message):
   to be the same region as the clusters.
 
   Fields:
-    uris: Optional. URIs of the GCS objects to import. Example:
+    uris: Optional. URIs of the Cloud Storage objects to import. Example:
       gs://bucket1/object1, gs://bucket2/folder2/object2
   """
 
@@ -3676,6 +3693,7 @@ class PscConnection(_messages.Message):
       east1/forwardingRules/{resourceId}.
     network: Required. The consumer network where the IP address resides, in
       the form of projects/{project_id}/global/networks/{network_id}.
+    port: Output only. The port number of the exposed discovery endpoint.
     projectId: Optional. Project ID of the consumer project where the
       forwarding rule is created in.
     pscConnectionId: Required. The PSC connection id of the forwarding rule
@@ -3726,10 +3744,11 @@ class PscConnection(_messages.Message):
   connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
   forwardingRule = _messages.StringField(3)
   network = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  pscConnectionId = _messages.StringField(6)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 7)
-  serviceAttachment = _messages.StringField(8)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(6)
+  pscConnectionId = _messages.StringField(7)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 8)
+  serviceAttachment = _messages.StringField(9)
 
 
 class PscServiceAttachment(_messages.Message):
@@ -3958,7 +3977,7 @@ class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
     parent: Required. The resource name of the cluster location using the
       form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
-    requestId: Idempotent request UUID.
+    requestId: Optional. Idempotent request UUID.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -3974,7 +3993,7 @@ class RedisProjectsLocationsClustersDeleteRequest(_messages.Message):
     name: Required. Redis cluster resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
       where `location_id` refers to a GCP region.
-    requestId: Idempotent request UUID.
+    requestId: Optional. Idempotent request UUID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4034,7 +4053,7 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
     name: Required. Identifier. Unique name of the resource in this scope
       including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-    requestId: Idempotent request UUID.
+    requestId: Optional. Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields from Cluster: * `size_gb` * `replica_count` *

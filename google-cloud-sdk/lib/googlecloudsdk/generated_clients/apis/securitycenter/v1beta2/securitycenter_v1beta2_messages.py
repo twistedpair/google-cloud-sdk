@@ -121,6 +121,16 @@ class AdaptiveProtection(_messages.Message):
   confidence = _messages.FloatField(1)
 
 
+class Allowed(_messages.Message):
+  r"""Allowed IP rule.
+
+  Fields:
+    ipRules: Optional. Optional list of allowed IP rules.
+  """
+
+  ipRules = _messages.MessageField('IpRule', 1, repeated=True)
+
+
 class Application(_messages.Message):
   r"""Represents an application associated with a finding.
 
@@ -1251,6 +1261,16 @@ class Database(_messages.Message):
   version = _messages.StringField(6)
 
 
+class Denied(_messages.Message):
+  r"""Denied IP rule.
+
+  Fields:
+    ipRules: Optional. Optional list of denied IP rules.
+  """
+
+  ipRules = _messages.MessageField('IpRule', 1, repeated=True)
+
+
 class Details(_messages.Message):
   r"""Details of a subscription.
 
@@ -1632,6 +1652,8 @@ class Finding(_messages.Message):
       a network or in an operating system that, with high confidence,
       indicates a computer intrusion. For more information, see [Indicator of
       compromise](https://en.wikipedia.org/wiki/Indicator_of_compromise).
+    ipRules: IP rules associated with the finding.
+    job: Job associated with the finding.
     kernelRootkit: Signature of the kernel rootkit.
     kubernetes: Kubernetes resources associated with the finding.
     loadBalancers: The load balancers associated with the finding.
@@ -1656,6 +1678,7 @@ class Finding(_messages.Message):
       ions/{organization_id}/sources/{source_id}/findings/{finding_id}",
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
+    networks: Represents the VPC networks that the resource is attached to.
     nextSteps: Steps to address the finding.
     notebook: Notebook associated with the finding.
     orgPolicies: Contains information about the org policies associated with
@@ -1920,31 +1943,34 @@ class Finding(_messages.Message):
   groupMemberships = _messages.MessageField('GroupMembership', 27, repeated=True)
   iamBindings = _messages.MessageField('IamBinding', 28, repeated=True)
   indicator = _messages.MessageField('Indicator', 29)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 30)
-  kubernetes = _messages.MessageField('Kubernetes', 31)
-  loadBalancers = _messages.MessageField('LoadBalancer', 32, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 33, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 34)
-  moduleName = _messages.StringField(35)
-  mute = _messages.EnumField('MuteValueValuesEnum', 36)
-  muteInfo = _messages.MessageField('MuteInfo', 37)
-  muteInitiator = _messages.StringField(38)
-  muteUpdateTime = _messages.StringField(39)
-  name = _messages.StringField(40)
-  nextSteps = _messages.StringField(41)
-  notebook = _messages.MessageField('Notebook', 42)
-  orgPolicies = _messages.MessageField('OrgPolicy', 43, repeated=True)
-  parent = _messages.StringField(44)
-  parentDisplayName = _messages.StringField(45)
-  processes = _messages.MessageField('Process', 46, repeated=True)
-  resourceName = _messages.StringField(47)
-  securityMarks = _messages.MessageField('SecurityMarks', 48)
-  securityPosture = _messages.MessageField('SecurityPosture', 49)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 50)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 51)
-  state = _messages.EnumField('StateValueValuesEnum', 52)
-  toxicCombination = _messages.MessageField('ToxicCombination', 53)
-  vulnerability = _messages.MessageField('Vulnerability', 54)
+  ipRules = _messages.MessageField('IpRules', 30)
+  job = _messages.MessageField('Job', 31)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 32)
+  kubernetes = _messages.MessageField('Kubernetes', 33)
+  loadBalancers = _messages.MessageField('LoadBalancer', 34, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 35, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 36)
+  moduleName = _messages.StringField(37)
+  mute = _messages.EnumField('MuteValueValuesEnum', 38)
+  muteInfo = _messages.MessageField('MuteInfo', 39)
+  muteInitiator = _messages.StringField(40)
+  muteUpdateTime = _messages.StringField(41)
+  name = _messages.StringField(42)
+  networks = _messages.MessageField('Network', 43, repeated=True)
+  nextSteps = _messages.StringField(44)
+  notebook = _messages.MessageField('Notebook', 45)
+  orgPolicies = _messages.MessageField('OrgPolicy', 46, repeated=True)
+  parent = _messages.StringField(47)
+  parentDisplayName = _messages.StringField(48)
+  processes = _messages.MessageField('Process', 49, repeated=True)
+  resourceName = _messages.StringField(50)
+  securityMarks = _messages.MessageField('SecurityMarks', 51)
+  securityPosture = _messages.MessageField('SecurityPosture', 52)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 53)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 54)
+  state = _messages.EnumField('StateValueValuesEnum', 55)
+  toxicCombination = _messages.MessageField('ToxicCombination', 56)
+  vulnerability = _messages.MessageField('Vulnerability', 57)
 
 
 class Folder(_messages.Message):
@@ -3151,6 +3177,16 @@ class GoogleCloudSecuritycenterV2AdaptiveProtection(_messages.Message):
   confidence = _messages.FloatField(1)
 
 
+class GoogleCloudSecuritycenterV2Allowed(_messages.Message):
+  r"""Allowed IP rule.
+
+  Fields:
+    ipRules: Optional. Optional list of allowed IP rules.
+  """
+
+  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRule', 1, repeated=True)
+
+
 class GoogleCloudSecuritycenterV2Application(_messages.Message):
   r"""Represents an application associated with a finding.
 
@@ -4164,6 +4200,16 @@ class GoogleCloudSecuritycenterV2Database(_messages.Message):
   version = _messages.StringField(6)
 
 
+class GoogleCloudSecuritycenterV2Denied(_messages.Message):
+  r"""Denied IP rule.
+
+  Fields:
+    ipRules: Optional. Optional list of denied IP rules.
+  """
+
+  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRule', 1, repeated=True)
+
+
 class GoogleCloudSecuritycenterV2Detection(_messages.Message):
   r"""Memory hash detection contributing to the binary family match.
 
@@ -4452,6 +4498,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       a network or in an operating system that, with high confidence,
       indicates a computer intrusion. For more information, see [Indicator of
       compromise](https://en.wikipedia.org/wiki/Indicator_of_compromise).
+    ipRules: IP rules associated with the finding.
+    job: Job associated with the finding.
     kernelRootkit: Signature of the kernel rootkit.
     kubernetes: Kubernetes resources associated with the finding.
     loadBalancers: The load balancers associated with the finding.
@@ -4482,6 +4530,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       `projects/{project_id}/sources/{source_id}/findings/{finding_id}` + `pro
       jects/{project_id}/sources/{source_id}/locations/{location_id}/findings/
       {finding_id}`
+    networks: Represents the VPC networks that the resource is attached to.
     nextSteps: Steps to address the finding.
     notebook: Notebook associated with the finding.
     orgPolicies: Contains information about the org policies associated with
@@ -4749,31 +4798,34 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 27, repeated=True)
   iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 28, repeated=True)
   indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 29)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 30)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 31)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 32, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 33, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 34)
-  moduleName = _messages.StringField(35)
-  mute = _messages.EnumField('MuteValueValuesEnum', 36)
-  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 37)
-  muteInitiator = _messages.StringField(38)
-  muteUpdateTime = _messages.StringField(39)
-  name = _messages.StringField(40)
-  nextSteps = _messages.StringField(41)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 42)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 43, repeated=True)
-  parent = _messages.StringField(44)
-  parentDisplayName = _messages.StringField(45)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 46, repeated=True)
-  resourceName = _messages.StringField(47)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 48)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 49)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 50)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 51)
-  state = _messages.EnumField('StateValueValuesEnum', 52)
-  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 53)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 54)
+  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRules', 30)
+  job = _messages.MessageField('GoogleCloudSecuritycenterV2Job', 31)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 32)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 33)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 34, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 35, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 36)
+  moduleName = _messages.StringField(37)
+  mute = _messages.EnumField('MuteValueValuesEnum', 38)
+  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 39)
+  muteInitiator = _messages.StringField(40)
+  muteUpdateTime = _messages.StringField(41)
+  name = _messages.StringField(42)
+  networks = _messages.MessageField('GoogleCloudSecuritycenterV2Network', 43, repeated=True)
+  nextSteps = _messages.StringField(44)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 45)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 46, repeated=True)
+  parent = _messages.StringField(47)
+  parentDisplayName = _messages.StringField(48)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 49, repeated=True)
+  resourceName = _messages.StringField(50)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 51)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 52)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 53)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 54)
+  state = _messages.EnumField('StateValueValuesEnum', 55)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 56)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 57)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -4878,6 +4930,69 @@ class GoogleCloudSecuritycenterV2Indicator(_messages.Message):
   ipAddresses = _messages.StringField(2, repeated=True)
   signatures = _messages.MessageField('GoogleCloudSecuritycenterV2ProcessSignature', 3, repeated=True)
   uris = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2IpRule(_messages.Message):
+  r"""IP rule information.
+
+  Fields:
+    portRanges: Optional. An optional list of ports to which this rule
+      applies. This field is only applicable for the UDP or (S)TCP protocols.
+      Each entry must be either an integer or a range including a min and max
+      port number.
+    protocol: The IP protocol this rule applies to. This value can either be
+      one of the following well known protocol strings (TCP, UDP, ICMP, ESP,
+      AH, IPIP, SCTP) or a string representation of the integer value.
+  """
+
+  portRanges = _messages.MessageField('GoogleCloudSecuritycenterV2PortRange', 1, repeated=True)
+  protocol = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2IpRules(_messages.Message):
+  r"""IP rules associated with the finding.
+
+  Enums:
+    DirectionValueValuesEnum: The direction that the rule is applicable to,
+      one of ingress or egress.
+
+  Fields:
+    allowed: Tuple with allowed rules.
+    denied: Tuple with denied rules.
+    destinationIpRanges: If destination IP ranges are specified, the firewall
+      rule applies only to traffic that has a destination IP address in these
+      ranges. These ranges must be expressed in CIDR format. Only supports
+      IPv4.
+    direction: The direction that the rule is applicable to, one of ingress or
+      egress.
+    exposedServices: Name of the network protocol service, such as FTP, that
+      is exposed by the open port. Follows the naming convention available at:
+      https://www.iana.org/assignments/service-names-port-numbers/service-
+      names-port-numbers.xhtml.
+    sourceIpRanges: If source IP ranges are specified, the firewall rule
+      applies only to traffic that has a source IP address in these ranges.
+      These ranges must be expressed in CIDR format. Only supports IPv4.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction that the rule is applicable to, one of ingress or
+    egress.
+
+    Values:
+      DIRECTION_UNSPECIFIED: Unspecified direction value.
+      INGRESS: Ingress direction value.
+      EGRESS: Egress direction value.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    INGRESS = 1
+    EGRESS = 2
+
+  allowed = _messages.MessageField('GoogleCloudSecuritycenterV2Allowed', 1)
+  denied = _messages.MessageField('GoogleCloudSecuritycenterV2Denied', 2)
+  destinationIpRanges = _messages.StringField(3, repeated=True)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 4)
+  exposedServices = _messages.StringField(5, repeated=True)
+  sourceIpRanges = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudSecuritycenterV2Issue(_messages.Message):
@@ -5205,6 +5320,45 @@ class GoogleCloudSecuritycenterV2IssueSecurityContextContext(_messages.Message):
 
   type = _messages.StringField(1)
   values = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2Job(_messages.Message):
+  r"""Describes a job
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the job, such as `RUNNING` or
+      `PENDING`.
+
+  Fields:
+    errorCode: Optional. If the job did not complete successfully, this field
+      describes why.
+    location: Optional. Gives the location where the job ran, such as `US` or
+      `europe-west1`
+    name: The fully-qualified name for a job. e.g. `projects//jobs/`
+    state: Output only. State of the job, such as `RUNNING` or `PENDING`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the job, such as `RUNNING` or `PENDING`.
+
+    Values:
+      JOB_STATE_UNSPECIFIED: Unspecified represents an unknown state and
+        should not be used.
+      PENDING: Job is scheduled and pending for run
+      RUNNING: Job in progress
+      SUCCEEDED: Job has completed with success
+      FAILED: Job has completed but with failure
+    """
+    JOB_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+
+  errorCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  location = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class GoogleCloudSecuritycenterV2KernelRootkit(_messages.Message):
@@ -5808,6 +5962,18 @@ class GoogleCloudSecuritycenterV2MuteInfo(_messages.Message):
   staticMute = _messages.MessageField('GoogleCloudSecuritycenterV2StaticMute', 2)
 
 
+class GoogleCloudSecuritycenterV2Network(_messages.Message):
+  r"""Contains information about a VPC network associated with the finding.
+
+  Fields:
+    name: The name of the VPC network resource, for example,
+      `//compute.googleapis.com/projects/my-project/global/networks/my-
+      network`.
+  """
+
+  name = _messages.StringField(1)
+
+
 class GoogleCloudSecuritycenterV2Node(_messages.Message):
   r"""Kubernetes nodes associated with the finding.
 
@@ -5949,6 +6115,20 @@ class GoogleCloudSecuritycenterV2PolicyDriftDetails(_messages.Message):
   detectedValue = _messages.StringField(1)
   expectedValue = _messages.StringField(2)
   field = _messages.StringField(3)
+
+
+class GoogleCloudSecuritycenterV2PortRange(_messages.Message):
+  r"""A port range which is inclusive of the min and max values. Values are
+  between 0 and 2^16-1. The max can be equal / must be not smaller than the
+  min value. If min and max are equal this indicates that it is a single port.
+
+  Fields:
+    max: Maximum port value.
+    min: Minimum port value.
+  """
+
+  max = _messages.IntegerField(1)
+  min = _messages.IntegerField(2)
 
 
 class GoogleCloudSecuritycenterV2Process(_messages.Message):
@@ -6752,6 +6932,108 @@ class Indicator(_messages.Message):
   uris = _messages.StringField(4, repeated=True)
 
 
+class IpRule(_messages.Message):
+  r"""IP rule information.
+
+  Fields:
+    portRanges: Optional. An optional list of ports to which this rule
+      applies. This field is only applicable for the UDP or (S)TCP protocols.
+      Each entry must be either an integer or a range including a min and max
+      port number.
+    protocol: The IP protocol this rule applies to. This value can either be
+      one of the following well known protocol strings (TCP, UDP, ICMP, ESP,
+      AH, IPIP, SCTP) or a string representation of the integer value.
+  """
+
+  portRanges = _messages.MessageField('PortRange', 1, repeated=True)
+  protocol = _messages.StringField(2)
+
+
+class IpRules(_messages.Message):
+  r"""IP rules associated with the finding.
+
+  Enums:
+    DirectionValueValuesEnum: The direction that the rule is applicable to,
+      one of ingress or egress.
+
+  Fields:
+    allowed: Tuple with allowed rules.
+    denied: Tuple with denied rules.
+    destinationIpRanges: If destination IP ranges are specified, the firewall
+      rule applies only to traffic that has a destination IP address in these
+      ranges. These ranges must be expressed in CIDR format. Only supports
+      IPv4.
+    direction: The direction that the rule is applicable to, one of ingress or
+      egress.
+    exposedServices: Name of the network protocol service, such as FTP, that
+      is exposed by the open port. Follows the naming convention available at:
+      https://www.iana.org/assignments/service-names-port-numbers/service-
+      names-port-numbers.xhtml.
+    sourceIpRanges: If source IP ranges are specified, the firewall rule
+      applies only to traffic that has a source IP address in these ranges.
+      These ranges must be expressed in CIDR format. Only supports IPv4.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction that the rule is applicable to, one of ingress or
+    egress.
+
+    Values:
+      DIRECTION_UNSPECIFIED: Unspecified direction value.
+      INGRESS: Ingress direction value.
+      EGRESS: Egress direction value.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    INGRESS = 1
+    EGRESS = 2
+
+  allowed = _messages.MessageField('Allowed', 1)
+  denied = _messages.MessageField('Denied', 2)
+  destinationIpRanges = _messages.StringField(3, repeated=True)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 4)
+  exposedServices = _messages.StringField(5, repeated=True)
+  sourceIpRanges = _messages.StringField(6, repeated=True)
+
+
+class Job(_messages.Message):
+  r"""Describes a job
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the job, such as `RUNNING` or
+      `PENDING`.
+
+  Fields:
+    errorCode: Optional. If the job did not complete successfully, this field
+      describes why.
+    location: Optional. Gives the location where the job ran, such as `US` or
+      `europe-west1`
+    name: The fully-qualified name for a job. e.g. `projects//jobs/`
+    state: Output only. State of the job, such as `RUNNING` or `PENDING`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the job, such as `RUNNING` or `PENDING`.
+
+    Values:
+      JOB_STATE_UNSPECIFIED: Unspecified represents an unknown state and
+        should not be used.
+      PENDING: Job is scheduled and pending for run
+      RUNNING: Job in progress
+      SUCCEEDED: Job has completed with success
+      FAILED: Job has completed but with failure
+    """
+    JOB_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+
+  errorCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  location = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class KernelRootkit(_messages.Message):
   r"""Kernel mode rootkit signatures.
 
@@ -7276,6 +7558,18 @@ class MuteInfo(_messages.Message):
   staticMute = _messages.MessageField('StaticMute', 2)
 
 
+class Network(_messages.Message):
+  r"""Contains information about a VPC network associated with the finding.
+
+  Fields:
+    name: The name of the VPC network resource, for example,
+      `//compute.googleapis.com/projects/my-project/global/networks/my-
+      network`.
+  """
+
+  name = _messages.StringField(1)
+
+
 class Node(_messages.Message):
   r"""Kubernetes nodes associated with the finding.
 
@@ -7401,6 +7695,20 @@ class PolicyDriftDetails(_messages.Message):
   detectedValue = _messages.StringField(1)
   expectedValue = _messages.StringField(2)
   field = _messages.StringField(3)
+
+
+class PortRange(_messages.Message):
+  r"""A port range which is inclusive of the min and max values. Values are
+  between 0 and 2^16-1. The max can be equal / must be not smaller than the
+  min value. If min and max are equal this indicates that it is a single port.
+
+  Fields:
+    max: Maximum port value.
+    min: Minimum port value.
+  """
+
+  max = _messages.IntegerField(1)
+  min = _messages.IntegerField(2)
 
 
 class Process(_messages.Message):

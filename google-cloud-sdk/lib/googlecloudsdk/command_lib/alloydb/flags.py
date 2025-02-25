@@ -399,25 +399,25 @@ def AddAllowedPSCProjects(parser):
   )
 
 
-def AddPSCNetworkAttachmentUrl(parser):
-  """Adds the `--psc-network-attachment-url` flag to the parser."""
+def AddPSCNetworkAttachmentUri(parser):
+  """Adds the `--psc-network-attachment-uri` flag to the parser."""
   parser.add_argument(
-      '--psc-network-attachment-url',
+      '--psc-network-attachment-uri',
       required=False,
       type=str,
       help=(
-          'Full URL of the network attachment that is configured to '
+          'Full URI of the network attachment that is configured to '
           'support outbound connectivity from an AlloyDB instance which '
           'uses Private Service Connect (PSC). '
           'For example, this would be of the form:'
-          '`psc-network-attachment-url=projects/test-project/regions/us-central1/networkAttachments/my-na`'
+          '`psc-network-attachment-uri=projects/test-project/regions/us-central1/networkAttachments/my-na`'
       ),
   )
 
 
-def ClearPSCNetworkAttachmentUrl(parser):
+def ClearPSCNetworkAttachmentUri(parser):
   parser.add_argument(
-      '--clear-psc-network-attachment-url',
+      '--clear-psc-network-attachment-uri',
       action='store_true',
       help="""Disable outbound connectivity from an AlloyDB instance which uses Private Service Connect (PSC).""",
   )

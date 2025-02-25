@@ -778,6 +778,9 @@ def DetermineBuildRegion(build_config, desired_region=None):
   """
   # If the build is configured to run in a worker pool, use the worker
   # pool's resource ID to determine which regional GCB service to send it to.
+  if desired_region is None:
+    desired_region = properties.VALUES.builds.region.Get()
+
   wp_options = build_config.options
   if not wp_options:
     return desired_region

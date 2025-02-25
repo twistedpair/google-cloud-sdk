@@ -657,6 +657,20 @@ class AlloydbProjectsLocationsClustersPromoteRequest(_messages.Message):
   promoteClusterRequest = _messages.MessageField('PromoteClusterRequest', 2)
 
 
+class AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest object.
+
+  Fields:
+    parent: Required. The location of the new cluster. For the required
+      format, see the comment on Cluster.name field.
+    restoreFromCloudSQLRequest: A RestoreFromCloudSQLRequest resource to be
+      passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  restoreFromCloudSQLRequest = _messages.MessageField('RestoreFromCloudSQLRequest', 2)
+
+
 class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersRestoreRequest object.
 
@@ -902,6 +916,10 @@ class AlloydbProjectsLocationsOperationsListRequest(_messages.Message):
 class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest object.
 
+  Enums:
+    ScopeValueValuesEnum: Optional. The scope for which supported flags are
+      requested. If not specified, default is DATABASE.
+
   Fields:
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
@@ -911,11 +929,28 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
       specified here, as long it is contains a valid project and location, the
       service will return a static list of supported flags resources. Note
       that we do not yet support region-specific flags.
+    scope: Optional. The scope for which supported flags are requested. If not
+      specified, default is DATABASE.
   """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. The scope for which supported flags are requested. If not
+    specified, default is DATABASE.
+
+    Values:
+      SCOPE_UNSPECIFIED: The scope of the flag is not specified. Default is
+        DATABASE.
+      DATABASE: The flag is a database flag.
+      CONNECTION_POOL: The flag is a connection pool flag.
+    """
+    SCOPE_UNSPECIFIED = 0
+    DATABASE = 1
+    CONNECTION_POOL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 4)
 
 
 class AuthorizedNetwork(_messages.Message):
@@ -1719,8 +1754,7 @@ class ContinuousBackupConfig(_messages.Message):
     enabled: Whether ContinuousBackup is enabled.
     encryptionConfig: The encryption config can be specified to encrypt the
       backups with a customer-managed encryption key (CMEK). When this field
-      is not specified, the backup will then use default encryption scheme to
-      protect the user data.
+      is not specified, the backup will use the cluster's encryption config.
     recoveryWindowDays: The number of days that are eligible to restore from
       using PITR. To support the entire recovery window, backups and logs are
       retained for one day more than the recovery window. If not set, defaults
@@ -2750,7 +2784,7 @@ class NetworkConfig(_messages.Message):
 
 class Node(_messages.Message):
   r"""Details of a single node in the instance. Nodes in an AlloyDB instance
-  are ephemereal, they can change during update, failover, autohealing and
+  are ephemeral, they can change during update, failover, autohealing and
   resize operations.
 
   Fields:
@@ -3126,6 +3160,20 @@ class RestoreClusterRequest(_messages.Message):
   continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 4)
   requestId = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
+
+
+class RestoreFromCloudSQLRequest(_messages.Message):
+  r"""Message for registering Restoring from CloudSQL resource.
+
+  Fields:
+    cloudsqlBackupRunSource: Cluster created from CloudSQL backup run.
+    cluster: Required. The resource being created
+    clusterId: Required. ID of the requesting object.
+  """
+
+  cloudsqlBackupRunSource = _messages.MessageField('CloudSQLBackupRunSource', 1)
+  cluster = _messages.MessageField('Cluster', 2)
+  clusterId = _messages.StringField(3)
 
 
 class SecondaryConfig(_messages.Message):
@@ -3904,6 +3952,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -3992,6 +4042,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4563,6 +4614,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4651,6 +4704,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -5163,6 +5217,7 @@ class SupportedDatabaseFlag(_messages.Message):
   field.
 
   Enums:
+    ScopeValueValuesEnum: The scope of the flag.
     SupportedDbVersionsValueListEntryValuesEnum:
     ValueTypeValueValuesEnum:
 
@@ -5175,15 +5230,31 @@ class SupportedDatabaseFlag(_messages.Message):
     name: The name of the flag resource, following Google Cloud conventions,
       e.g.: * projects/{project}/locations/{location}/flags/{flag} This field
       currently has no semantic meaning.
+    recommendedIntegerValue: The recommended value for an INTEGER flag.
+    recommendedStringValue: The recommended value for a STRING flag.
     requiresDbRestart: Whether setting or updating this flag on an Instance
       requires a database restart. If a flag that requires database restart is
       set, the backend will automatically restart the database (making sure to
       satisfy any availability SLO's).
+    scope: The scope of the flag.
     stringRestrictions: Restriction on STRING type value.
     supportedDbVersions: Major database engine versions for which this flag is
       supported.
     valueType: A ValueTypeValueValuesEnum attribute.
   """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""The scope of the flag.
+
+    Values:
+      SCOPE_UNSPECIFIED: The scope of the flag is not specified. Default is
+        DATABASE.
+      DATABASE: The flag is a database flag.
+      CONNECTION_POOL: The flag is a connection pool flag.
+    """
+    SCOPE_UNSPECIFIED = 0
+    DATABASE = 1
+    CONNECTION_POOL = 2
 
   class SupportedDbVersionsValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedDbVersionsValueListEntryValuesEnum enum type.
@@ -5221,10 +5292,13 @@ class SupportedDatabaseFlag(_messages.Message):
   flagName = _messages.StringField(2)
   integerRestrictions = _messages.MessageField('IntegerRestrictions', 3)
   name = _messages.StringField(4)
-  requiresDbRestart = _messages.BooleanField(5)
-  stringRestrictions = _messages.MessageField('StringRestrictions', 6)
-  supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 7, repeated=True)
-  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
+  recommendedIntegerValue = _messages.IntegerField(5)
+  recommendedStringValue = _messages.StringField(6)
+  requiresDbRestart = _messages.BooleanField(7)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 8)
+  stringRestrictions = _messages.MessageField('StringRestrictions', 9)
+  supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 10, repeated=True)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 11)
 
 
 class SwitchoverClusterRequest(_messages.Message):

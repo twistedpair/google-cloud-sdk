@@ -490,6 +490,8 @@ def DeployPublisherModel(
         machine_type=machine_spec.machineType,
         endpoint_display_name=endpoint_name,
         hugging_face_access_token=args.hugging_face_access_token,
+        spot=args.spot,
+        reservation_affinity=args.reservation_affinity,
     )
   except apitools_exceptions.HttpError as e:
     # Keep prompting for HF token if the error is due to missing HF token.

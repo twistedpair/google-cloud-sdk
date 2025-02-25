@@ -15,7 +15,7 @@ class DataformV1beta1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://dataform.mtls.googleapis.com/'
 
   _PACKAGE = 'dataform'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = ['https://www.googleapis.com/auth/bigquery', 'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1beta1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'
@@ -473,7 +473,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkflowInvocationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (CancelWorkflowInvocationResponse) The response message.
       """
       config = self.GetMethodConfig('Cancel')
       return self._RunMethod(
@@ -489,7 +489,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:cancel',
         request_field='cancelWorkflowInvocationRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkflowInvocationsCancelRequest',
-        response_type_name='Empty',
+        response_type_name='CancelWorkflowInvocationResponse',
         supports_download=False,
     )
 
@@ -645,7 +645,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkspacesCommitRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (CommitWorkspaceChangesResponse) The response message.
       """
       config = self.GetMethodConfig('Commit')
       return self._RunMethod(
@@ -661,7 +661,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:commit',
         request_field='commitWorkspaceChangesRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkspacesCommitRequest',
-        response_type_name='Empty',
+        response_type_name='CommitWorkspaceChangesResponse',
         supports_download=False,
     )
 
@@ -996,7 +996,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkspacesPullRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (PullGitCommitsResponse) The response message.
       """
       config = self.GetMethodConfig('Pull')
       return self._RunMethod(
@@ -1012,7 +1012,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:pull',
         request_field='pullGitCommitsRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkspacesPullRequest',
-        response_type_name='Empty',
+        response_type_name='PullGitCommitsResponse',
         supports_download=False,
     )
 
@@ -1023,7 +1023,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkspacesPushRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (PushGitCommitsResponse) The response message.
       """
       config = self.GetMethodConfig('Push')
       return self._RunMethod(
@@ -1039,7 +1039,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:push',
         request_field='pushGitCommitsRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkspacesPushRequest',
-        response_type_name='Empty',
+        response_type_name='PushGitCommitsResponse',
         supports_download=False,
     )
 
@@ -1104,7 +1104,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkspacesRemoveDirectoryRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (RemoveDirectoryResponse) The response message.
       """
       config = self.GetMethodConfig('RemoveDirectory')
       return self._RunMethod(
@@ -1120,7 +1120,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+workspace}:removeDirectory',
         request_field='removeDirectoryRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkspacesRemoveDirectoryRequest',
-        response_type_name='Empty',
+        response_type_name='RemoveDirectoryResponse',
         supports_download=False,
     )
 
@@ -1131,7 +1131,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkspacesRemoveFileRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (RemoveFileResponse) The response message.
       """
       config = self.GetMethodConfig('RemoveFile')
       return self._RunMethod(
@@ -1147,7 +1147,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+workspace}:removeFile',
         request_field='removeFileRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkspacesRemoveFileRequest',
-        response_type_name='Empty',
+        response_type_name='RemoveFileResponse',
         supports_download=False,
     )
 
@@ -1158,7 +1158,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         request: (DataformProjectsLocationsRepositoriesWorkspacesResetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (ResetWorkspaceChangesResponse) The response message.
       """
       config = self.GetMethodConfig('Reset')
       return self._RunMethod(
@@ -1174,7 +1174,7 @@ class DataformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:reset',
         request_field='resetWorkspaceChangesRequest',
         request_type_name='DataformProjectsLocationsRepositoriesWorkspacesResetRequest',
-        response_type_name='Empty',
+        response_type_name='ResetWorkspaceChangesResponse',
         supports_download=False,
     )
 

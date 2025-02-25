@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
-
+from googlecloudsdk.command_lib.ai import flags
 
 _HF_WILDCARD_FILTER = 'is_hf_wildcard(true)'
 _NATIVE_MODEL_FILTER = 'is_hf_wildcard(false)'
@@ -69,6 +69,8 @@ class ModelGardenClient(object):
       machine_type,
       endpoint_display_name,
       hugging_face_access_token,
+      spot,
+      reservation_affinity,
   ):
     """Deploy an open source publisher model.
 
@@ -82,6 +84,8 @@ class ModelGardenClient(object):
       machine_type: The type of machine to use.
       endpoint_display_name: The display name of the endpoint.
       hugging_face_access_token: The Hugging Face access token.
+      spot: Whether to deploy the model on Spot VMs.
+      reservation_affinity: The reservation affinity to use.
 
     Returns:
       The deploy long-running operation.
@@ -96,8 +100,12 @@ class ModelGardenClient(object):
                 machineType=machine_type,
                 acceleratorType=accelerator_type,
                 acceleratorCount=accelerator_count,
+                reservationAffinity=flags.ParseReservationAffinityFlag(
+                    reservation_affinity, constants.BETA_VERSION
+                ),
             ),
             minReplicaCount=1,
+            spot=spot,
         ),
     )
     request = self._messages.AiplatformProjectsLocationsDeployRequest(

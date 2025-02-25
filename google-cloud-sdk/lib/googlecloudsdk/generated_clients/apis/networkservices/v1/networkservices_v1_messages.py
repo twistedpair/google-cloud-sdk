@@ -3429,10 +3429,14 @@ class ListMeshesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      `return_partial_success` and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   meshes = _messages.MessageField('Mesh', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMulticastConsumerAssociationsResponse(_messages.Message):
@@ -5897,11 +5901,15 @@ class NetworkservicesProjectsLocationsMeshesListRequest(_messages.Message):
       system should return the next page of data.
     parent: Required. The project and location from which the Meshes should be
       listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):

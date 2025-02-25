@@ -803,6 +803,26 @@ def ApplyCustomMetrics(args, backend_service):
     backend_service.customMetrics = args.custom_metrics_file
 
 
+def IpPortDynamicForwarding(client, args, backend_service):
+  """Enables the Ip Port Dynamic Forwarding in the backend service.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+
+  if args.ip_port_dynamic_forwarding:
+    dynamic_forwarding_config = (
+        client.messages.BackendServiceDynamicForwarding()
+    )
+    dynamic_forwarding_config.ipPortSelection = (
+        client.messages.BackendServiceDynamicForwardingIpPortSelection()
+    )
+    dynamic_forwarding_config.ipPortSelection.enabled = True
+    backend_service.dynamicForwarding = dynamic_forwarding_config
+
+
 def SendGetRequest(client, backend_service_ref):
   """Send Backend Services get request."""
   if backend_service_ref.Collection() == 'compute.regionBackendServices':

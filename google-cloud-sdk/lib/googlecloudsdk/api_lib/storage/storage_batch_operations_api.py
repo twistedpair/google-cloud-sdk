@@ -173,6 +173,29 @@ class StorageBatchOperationsApi:
       put_metadata.customMetadata = custom_metadata_value
     job.putMetadata = put_metadata
 
+  def _modify_job_logging_config(self, job, log_actions, log_action_states):
+    """Modifies a job to create logging config."""
+    logging_config = self.messages.LoggingConfig()
+    actions = []
+    for action in log_actions:
+      actions.append(
+          getattr(
+              logging_config.LogActionsValueListEntryValuesEnum, action.upper()
+          )
+      )
+    logging_config.logActions = actions
+
+    action_states = []
+    for action_state in log_action_states:
+      action_states.append(
+          getattr(
+              logging_config.LogActionStatesValueListEntryValuesEnum,
+              action_state.upper(),
+          )
+      )
+    logging_config.logActionStates = action_states
+    job.loggingConfig = logging_config
+
   def create_batch_job(self, args, batch_job_name):
     """Creates a batch job based on command arguments."""
     job = self._instantiate_job_with_source(
@@ -199,6 +222,16 @@ class StorageBatchOperationsApi:
     else:
       raise errors.StorageBatchOperationsApiError(
           "Exactly one transformaiton must be specified."
+      )
+
+    if args.log_actions and args.log_action_states:
+      self._modify_job_logging_config(
+          job, args.log_actions, args.log_action_states
+      )
+    elif args.log_actions or args.log_action_states:
+      raise errors.StorageBatchOperationsApiError(
+          "Both --log-actions and --log-action-states are required for a"
+          " complete log config."
       )
     return self._create_job(batch_job_name, job)
 

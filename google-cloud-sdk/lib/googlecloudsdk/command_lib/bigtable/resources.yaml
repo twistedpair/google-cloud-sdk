@@ -89,3 +89,17 @@ authorized_view:
     attribute_name: authorized_view
     help: Name of the Cloud Bigtable authorized view.
   disable_auto_completers: false
+
+proto_bundle:
+  name: proto-bundle
+  collection: bigtableadmin.projects.instances.tables.protoBundles
+  request_id_field: protoBundleId
+  attributes:
+  - *project
+  - *instance
+  - *table
+  - &protoBundle
+    parameter_name: protoBundlesId
+    attribute_name: proto_bundle
+    help: Name of the Bigtable proto bundle.
+  disable_auto_completers: false

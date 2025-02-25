@@ -69,6 +69,15 @@ class RetentionMode(enum.Enum):
   UNLOCKED = 'Unlocked'
 
 
+class LogAction(enum.Enum):
+  TRANSFORM = 'transform'
+
+
+class LogActionState(enum.Enum):
+  SUCCEEDED = 'succeeded'
+  FAILED = 'failed'
+
+
 def get_object_state_from_flags(flag_args):
   """Returns object version to query based on user flags."""
   if getattr(flag_args, 'soft_deleted', False):
@@ -1017,4 +1026,37 @@ def add_batch_jobs_flags(parser):
       '--description',
       help='Description for the batch job.',
       type=str,
+  )
+  logging_config = parser.add_group(
+      category='LOGGING_CONFIG',
+      help=(
+          'LOGGING CONFIG\n\nConfigure which transfer actions and action states'
+          ' are reported when logs are generated for this job. Logs can be'
+          ' viewed by running the following command:\ngcloud logging read'
+          ' "resource.type=storagebatchoperations.googleapis.com/Job"'
+      ),
+      sort_args=False,
+  )
+  logging_config.add_argument(
+      '--log-actions',
+      type=arg_parsers.ArgList(
+          choices=sorted([option.value for option in LogAction])
+      ),
+      metavar='LOG_ACTIONS',
+      help=(
+          'Define the batch job actions to report in logs.'
+          ' (e.g., --log-actions=transform).'
+      ),
+  )
+  logging_config.add_argument(
+      '--log-action-states',
+      type=arg_parsers.ArgList(
+          choices=sorted([option.value for option in LogActionState])
+      ),
+      metavar='LOG_ACTION_STATES',
+      help=(
+          'The states in which the actions specified in --log-actions are'
+          ' logged. Separate multiple states with a comma, omitting the space'
+          ' after the comma (e.g., --log-action-states=succeeded,failed).'
+      ),
   )

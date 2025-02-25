@@ -510,3 +510,13 @@ def AddZoneStorageKMSKey(parser):
       If not provided, a Google-managed key will be used by default.
       """,
   )
+
+
+def AddContainerDefaultRuntimeClass(parser):
+  parser.add_argument(
+      '--container-default-runtime-class',
+      help="""
+      Name of the default runtime class for containers. It supports two values
+      RUNC and GVISOR.
+      """,
+  )

@@ -79,6 +79,33 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BillingMetadata(_messages.Message):
+  r"""Response message for SecurityCenterManagement.GetBillingMetadata.
+
+  Enums:
+    BillingTierValueValuesEnum: The billing tier of the resource.
+
+  Fields:
+    billingTier: The billing tier of the resource.
+  """
+
+  class BillingTierValueValuesEnum(_messages.Enum):
+    r"""The billing tier of the resource.
+
+    Values:
+      BILLING_TIER_UNSPECIFIED: Default value. This value is unused.
+      STANDARD: Standard free tier.
+      PREMIUM: Security Command Center Premium.
+      ENTERPRISE: Security Command Center Enterprise.
+    """
+    BILLING_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    PREMIUM = 2
+    ENTERPRISE = 3
+
+  billingTier = _messages.EnumField('BillingTierValueValuesEnum', 1)
+
+
 class CelPolicySpec(_messages.Message):
   r"""YAML-based rule that uses CEL, which supports the declaration of
   variables and a filtering predicate. A vulnerable resource is emitted if the
@@ -1880,6 +1907,21 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
   validateEventThreatDetectionCustomModuleRequest = _messages.MessageField('ValidateEventThreatDetectionCustomModuleRequest', 2)
 
 
+class SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest
+  object.
+
+  Fields:
+    name: Required. The resource to look up the billing tier for, in the
+      format
+      `organizations/{organization}/locations/{location}/billingMetadata` or
+      `projects/{project}/locations/{location}/billingMetadata`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetRequest(_messages.Message):
   r"""A SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGe
   tRequest object.
@@ -2362,6 +2404,20 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
 
   parent = _messages.StringField(1, required=True)
   validateEventThreatDetectionCustomModuleRequest = _messages.MessageField('ValidateEventThreatDetectionCustomModuleRequest', 2)
+
+
+class SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest(_messages.Message):
+  r"""A SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest
+  object.
+
+  Fields:
+    name: Required. The resource to look up the billing tier for, in the
+      format
+      `organizations/{organization}/locations/{location}/billingMetadata` or
+      `projects/{project}/locations/{location}/billingMetadata`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SecuritycentermanagementProjectsLocationsGetRequest(_messages.Message):

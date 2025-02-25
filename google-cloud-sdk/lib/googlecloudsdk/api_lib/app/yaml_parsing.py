@@ -85,6 +85,30 @@ FLEX_PY34_WARNING = (
     'about this deprecation, visit  {}.'
 ).format('https://cloud.google.com/appengine/docs/deprecations/python34')
 
+DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_ZERO_WARNING = (
+    'You might have set automatic_scaling.max_instances to 0. Starting from'
+    ' March, 2025, App Engine sets the automatic scaling maximum'
+    ' instances default for standard environment deployments to 20. This change'
+    " doesn't impact existing apps. To disable the maximum instances default"
+    ' configuration setting, specify the maximum permitted value 2147483647.'
+    ' For more information, see {}. \n'
+).format(
+    'https://cloud.google.com/appengine/docs/standard/reference/app-yaml.md#scaling_elements'
+)
+
+DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING = (
+    'You might be using automatic scaling for a standard environment'
+    ' deployment, without providing a value for'
+    ' automatic_scaling.max_instances. Starting from March, 2025, App'
+    ' Engine sets the automatic scaling maximum instances default for standard'
+    " environment deployments to 20. This change doesn't impact existing apps."
+    ' To override the default, specify the new max_instances value in your'
+    ' app.yaml file, and deploy a new version or redeploy over an existing'
+    ' version. For details on max_instances, see {}. \n'
+).format(
+    'https://cloud.google.com/appengine/docs/standard/reference/app-yaml.md#scaling_elements'
+)
+
 # This is the equivalent of the following in app.yaml:
 # skip_files:
 # - ^(.*/)?#.*#$
@@ -373,6 +397,36 @@ class ServiceYamlInfo(_YamlInfo):
       log.warning('[runtime: {}] is deprecated.  Please use [runtime: python] '
                   'instead.  See {} for more info.'
                   .format(vm_runtime, UPGRADE_FLEX_PYTHON_URL))
+
+    # TODO: b/388712720 - Cleanup warning once backend experiments are cleaned
+    # Raise warning about default max instances forward change for GAE Standard
+    # when the user has selected AutomaticScaling without providing a
+    # max_instances value or will use AutomaticScaling by default.
+    if (
+        self.env is not env.FLEX
+        and not self.parsed.basic_scaling
+        and not self.parsed.manual_scaling
+        and (
+            not self.parsed.automatic_scaling
+            or (
+                self.parsed.automatic_scaling
+                and not self.parsed.automatic_scaling.max_instances
+                and self.parsed.automatic_scaling.max_instances != 0
+            )
+        )
+    ):
+      log.warning(DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING)
+
+    # TODO: b/388712720 - Cleanup warning once backend experiments are cleaned
+    # Raise warning about default max instances forward change for GAE Standard
+    # when the user has selected AutomaticScaling and explicitly provided a
+    # value of zero for max_instances.
+    if (
+        self.env is not env.FLEX
+        and self.parsed.automatic_scaling
+        and self.parsed.automatic_scaling.max_instances == 0
+    ):
+      log.warning(DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_ZERO_WARNING)
 
     for warn_text in self.parsed.GetWarnings():
       log.warning('In file [{0}]: {1}'.format(self.file, warn_text))

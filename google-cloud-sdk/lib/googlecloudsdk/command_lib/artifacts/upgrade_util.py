@@ -449,7 +449,8 @@ def analyze_iam_policy(permissions, resource, scope):
     )
   except ResourceExhausted:
     raise ar_exceptions.ArtifactRegistryError(
-        "Insufficient quota for AnalyzeIamPolicy"
+        "Insufficient quota for AnalyzeIamPolicy. Use --no-use-analyze-iam to"
+        " generate IAM policies without using AnalyzeIamPolicy."
     )
 
 

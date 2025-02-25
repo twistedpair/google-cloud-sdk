@@ -628,6 +628,12 @@ class HybridPeeringDetails(_messages.Message):
 class HybridReplicationParameters(_messages.Message):
   r"""The Hybrid Replication parameters for the volume.
 
+  Enums:
+    HybridReplicationTypeValueValuesEnum: Optional. Type of the hybrid
+      replication.
+    ReplicationScheduleValueValuesEnum: Optional. Replication Schedule for the
+      replication created.
+
   Messages:
     LabelsValue: Optional. Labels to be added to the replication as the key
       value pairs.
@@ -637,8 +643,11 @@ class HybridReplicationParameters(_messages.Message):
       the Hybrid replication. This is a free-form field for the display
       purpose only.
     description: Optional. Description of the replication.
+    hybridReplicationType: Optional. Type of the hybrid replication.
     labels: Optional. Labels to be added to the replication as the key value
       pairs.
+    largeVolumeConstituentCount: Optional. Constituent volume count for large
+      volume.
     peerClusterName: Required. Name of the user's local source cluster to be
       peered with the destination cluster.
     peerIpAddresses: Required. List of node ip addresses to be peered with.
@@ -647,7 +656,44 @@ class HybridReplicationParameters(_messages.Message):
     peerVolumeName: Required. Name of the user's local source volume to be
       peered with the destination volume.
     replication: Required. Desired name for the replication of this volume.
+    replicationSchedule: Optional. Replication Schedule for the replication
+      created.
   """
+
+  class HybridReplicationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the hybrid replication.
+
+    Values:
+      VOLUME_HYBRID_REPLICATION_TYPE_UNSPECIFIED: Unspecified hybrid
+        replication type.
+      MIGRATION: Hybrid replication type for migration.
+      CONTINUOUS_REPLICATION: Hybrid replication type for continuous
+        replication.
+      ONPREM_REPLICATION: New field for reversible OnPrem replication, to be
+        used for data protection.
+      REVERSE_ONPREM_REPLICATION: New field for reversible OnPrem replication,
+        to be used for data protection.
+    """
+    VOLUME_HYBRID_REPLICATION_TYPE_UNSPECIFIED = 0
+    MIGRATION = 1
+    CONTINUOUS_REPLICATION = 2
+    ONPREM_REPLICATION = 3
+    REVERSE_ONPREM_REPLICATION = 4
+
+  class ReplicationScheduleValueValuesEnum(_messages.Enum):
+    r"""Optional. Replication Schedule for the replication created.
+
+    Values:
+      HYBRID_REPLICATION_SCHEDULE_UNSPECIFIED: Unspecified
+        HybridReplicationSchedule
+      EVERY_10_MINUTES: Replication happens once every 10 minutes.
+      HOURLY: Replication happens once every hour.
+      DAILY: Replication happens once every day.
+    """
+    HYBRID_REPLICATION_SCHEDULE_UNSPECIFIED = 0
+    EVERY_10_MINUTES = 1
+    HOURLY = 2
+    DAILY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -676,12 +722,15 @@ class HybridReplicationParameters(_messages.Message):
 
   clusterLocation = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  peerClusterName = _messages.StringField(4)
-  peerIpAddresses = _messages.StringField(5, repeated=True)
-  peerSvmName = _messages.StringField(6)
-  peerVolumeName = _messages.StringField(7)
-  replication = _messages.StringField(8)
+  hybridReplicationType = _messages.EnumField('HybridReplicationTypeValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  largeVolumeConstituentCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  peerClusterName = _messages.StringField(6)
+  peerIpAddresses = _messages.StringField(7, repeated=True)
+  peerSvmName = _messages.StringField(8)
+  peerVolumeName = _messages.StringField(9)
+  replication = _messages.StringField(10)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 11)
 
 
 class KmsConfig(_messages.Message):
@@ -2059,6 +2108,20 @@ class NetappProjectsLocationsVolumesReplicationsSyncRequest(_messages.Message):
   syncReplicationRequest = _messages.MessageField('SyncReplicationRequest', 2)
 
 
+class NetappProjectsLocationsVolumesRestoreRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesRestoreRequest object.
+
+  Fields:
+    name: Required. The volume resource name, in the format
+      `projects/{project_id}/locations/{location}/volumes/{volume_id}`
+    restoreBackupFilesRequest: A RestoreBackupFilesRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreBackupFilesRequest = _messages.MessageField('RestoreBackupFilesRequest', 2)
+
+
 class NetappProjectsLocationsVolumesRevertRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesRevertRequest object.
 
@@ -2438,10 +2501,17 @@ class Replication(_messages.Message):
       MIGRATION: Hybrid replication type for migration.
       CONTINUOUS_REPLICATION: Hybrid replication type for continuous
         replication.
+      ONPREM_REPLICATION: New field for reversible OnPrem replication, to be
+        used for data protection.
+      REVERSE_ONPREM_REPLICATION: Hybrid replication type for incremental
+        Transfer in the reverse direction (GCNV is source and Onprem is
+        destination)
     """
     HYBRID_REPLICATION_TYPE_UNSPECIFIED = 0
     MIGRATION = 1
     CONTINUOUS_REPLICATION = 2
+    ONPREM_REPLICATION = 3
+    REVERSE_ONPREM_REPLICATION = 4
 
   class MirrorStateValueValuesEnum(_messages.Enum):
     r"""Output only. Indicates the state of mirroring.
@@ -2504,6 +2574,10 @@ class Replication(_messages.Message):
         be established.
       PENDING_SVM_PEERING: Replication is waiting for SVM peering to be
         established.
+      PENDING_REVERSE_RESYNC_FROM_ONPREM_ONTAP: Replication is waiting for
+        Commands to be executed on Onprem ONTAP.
+      EXTERNALLY_MANAGED_FROM_ONPREM_ONTAP: Onprem ONTAP is destination and
+        Replication can only be managed from Onprem.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2513,6 +2587,8 @@ class Replication(_messages.Message):
     ERROR = 5
     PENDING_CLUSTER_PEERING = 6
     PENDING_SVM_PEERING = 7
+    PENDING_REVERSE_RESYNC_FROM_ONPREM_ONTAP = 8
+    EXTERNALLY_MANAGED_FROM_ONPREM_ONTAP = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2555,6 +2631,24 @@ class Replication(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 15)
   stateDetails = _messages.StringField(16)
   transferStats = _messages.MessageField('TransferStats', 17)
+
+
+class RestoreBackupFilesRequest(_messages.Message):
+  r"""RestoreBackupFilesRequest restores files from a backup to a volume.
+
+  Fields:
+    backup: Required. The backup resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{back
+      up_id}`
+    fileList: Required. List of files to be restored in the form of their
+      absolute path as in source volume.
+    restoreDestinationPath: Required. Absolute directory path in the
+      destination volume.
+  """
+
+  backup = _messages.StringField(1)
+  fileList = _messages.StringField(2, repeated=True)
+  restoreDestinationPath = _messages.StringField(3)
 
 
 class RestoreParameters(_messages.Message):

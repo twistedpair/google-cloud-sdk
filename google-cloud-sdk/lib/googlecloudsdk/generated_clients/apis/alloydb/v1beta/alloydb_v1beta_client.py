@@ -1126,7 +1126,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.supportedDatabaseFlags.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'scope'],
         relative_path='v1beta/{+parent}/supportedDatabaseFlags',
         request_field='',
         request_type_name='AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest',

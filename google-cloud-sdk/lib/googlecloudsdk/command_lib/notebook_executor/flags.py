@@ -18,6 +18,7 @@ from googlecloudsdk.api_lib.notebook_executor import executions as executions_ut
 from googlecloudsdk.api_lib.notebook_executor import schedules as schedules_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.colab_enterprise import flags as colab_flags
@@ -390,29 +391,43 @@ def AddResumeScheduleFlags(parser):
   )
 
 
-def AddListSchedulesFlags(parser):
-  """Construct groups and arguments specific to listing schedules."""
-  _AddRegionResourceArg(parser, 'for which to list all schedules')
+def AddListSchedulesFlags(
+    parser: parser_arguments.ArgumentInterceptor, for_workbench: bool = False
+):
+  """Construct groups and arguments specific to listing schedules.
+
+  Args:
+    parser: argparse parser for the command.
+    for_workbench: whether the flags are for listing workbench schedules.
+  """
+  _AddRegionResourceArg(
+      parser, 'for which to list all schedules', for_workbench
+  )
   parser.display_info.AddUriFunc(schedules_util.GetScheduleUri)
 
 
-def AddCreateOrUpdateScheduleFlags(parser, is_update):
+def AddCreateOrUpdateScheduleFlags(
+    parser: parser_arguments.ArgumentInterceptor,
+    is_update: bool = False,
+    for_workbench: bool = False,
+):
   """Adds flags for creating or updating a schedule to the parser.
 
   Args:
     parser: argparse parser for the command.
-    is_update: Whether the flags are for updating a schedule.
+    is_update: whether the flags are for updating a schedule.
+    for_workbench: whether the flags are for a workbench schedule.
   """
   schedule_group = parser.add_group(
       help='Configuration of the schedule.',
       required=True,
   )
   if not is_update:
-    _AddRegionResourceArg(parser, 'to create')
+    _AddRegionResourceArg(parser, 'to create', for_workbench=for_workbench)
     # TODO: b/369896947 - Add support for updating execution once schedules API
     # supports partial updates to NotebookExecutionJobCreateRequest.
     AddCreateExecutionFlags(
-        schedule_group, is_schedule=True
+        schedule_group, is_schedule=True, for_workbench=for_workbench
     )
   else:
     AddScheduleResourceArg(parser, 'to update')

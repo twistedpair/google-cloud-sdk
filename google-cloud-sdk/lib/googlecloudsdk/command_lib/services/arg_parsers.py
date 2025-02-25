@@ -29,12 +29,3 @@ def GetServiceNameFromArg(service):
       service,
       collection='servicemanagement.services')
   return service_ref.serviceName
-
-
-def GetOperationIdFromArg(operation):
-  if not operation:
-    return None
-  operation_ref = resources.REGISTRY.Parse(
-      operation,
-      collection='servicemanagement.operations')
-  return operation_ref.operationsId

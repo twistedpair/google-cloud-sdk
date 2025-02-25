@@ -1325,6 +1325,33 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetBillingMetadata(self, request, global_params=None):
+      r"""Retrieve the billing metadata explicitly set on a specific Resource.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingMetadata) The response message.
+      """
+      config = self.GetMethodConfig('GetBillingMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBillingMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/billingMetadata',
+        http_method='GET',
+        method_id='securitycentermanagement.organizations.locations.getBillingMetadata',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest',
+        response_type_name='BillingMetadata',
+        supports_download=False,
+    )
+
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
@@ -1986,6 +2013,33 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycentermanagementProjectsLocationsGetRequest',
         response_type_name='GoogleCloudLocationLocation',
+        supports_download=False,
+    )
+
+    def GetBillingMetadata(self, request, global_params=None):
+      r"""Retrieve the billing metadata explicitly set on a specific Resource.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingMetadata) The response message.
+      """
+      config = self.GetMethodConfig('GetBillingMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBillingMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/billingMetadata',
+        http_method='GET',
+        method_id='securitycentermanagement.projects.locations.getBillingMetadata',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest',
+        response_type_name='BillingMetadata',
         supports_download=False,
     )
 

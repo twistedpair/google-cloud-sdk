@@ -89,6 +89,7 @@ class LogAction(enum.Enum):
 class LogActionState(enum.Enum):
   FAILED = 'failed'
   SUCCEEDED = 'succeeded'
+  SKIPPED = 'skipped'
 
 
 class PreserveMetadataField(enum.Enum):

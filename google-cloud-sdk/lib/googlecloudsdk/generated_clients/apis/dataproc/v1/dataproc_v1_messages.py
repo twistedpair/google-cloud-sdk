@@ -6954,6 +6954,14 @@ class LifecycleConfig(_messages.Message):
       will be auto-deleted at the end of this period. Minimum value is 10
       minutes; maximum value is 14 days (see JSON representation of Duration
       (https://developers.google.com/protocol-buffers/docs/proto3#json)).
+    autoStopTime: Optional. The time when cluster will be auto-stopped (see
+      JSON representation of Timestamp
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
+    autoStopTtl: Optional. The lifetime duration of the cluster. The cluster
+      will be auto-stopped at the end of this period calculated from the
+      cluster creation time. Minimum value is 10 minutes; maximum value is 14
+      days (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     idleDeleteTtl: Optional. The duration to keep the cluster alive while
       idling (when no jobs are running). Passing this threshold will cause the
       cluster to be deleted. Minimum value is 5 minutes; maximum value is 14
@@ -6963,12 +6971,20 @@ class LifecycleConfig(_messages.Message):
       job finished) and became eligible for deletion due to idleness (see JSON
       representation of Timestamp (https://developers.google.com/protocol-
       buffers/docs/proto3#json)).
+    idleStopTtl: Optional. The duration to keep the cluster started while
+      idling (when no jobs are running). Passing this threshold will cause the
+      cluster to be stopped. Minimum value is 5 minutes; maximum value is 14
+      days (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
   """
 
   autoDeleteTime = _messages.StringField(1)
   autoDeleteTtl = _messages.StringField(2)
-  idleDeleteTtl = _messages.StringField(3)
-  idleStartTime = _messages.StringField(4)
+  autoStopTime = _messages.StringField(3)
+  autoStopTtl = _messages.StringField(4)
+  idleDeleteTtl = _messages.StringField(5)
+  idleStartTime = _messages.StringField(6)
+  idleStopTtl = _messages.StringField(7)
 
 
 class ListAutoscalingPoliciesResponse(_messages.Message):
@@ -7320,7 +7336,7 @@ class Metric(_messages.Message):
       one or more spark:executive metrics are listed as metric overrides,
       other SPARK metrics are not collected. The collection of the metrics for
       other enabled custom metric sources is unaffected. For example, if both
-      SPARK andd YARN metric sources are enabled, and overrides are provided
+      SPARK and YARN metric sources are enabled, and overrides are provided
       for Spark metrics only, all YARN metrics are collected.
     metricSource: Required. A standard set of metrics is collected unless
       metricOverrides are specified for the metric source (see Custom metrics

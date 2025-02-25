@@ -1803,8 +1803,7 @@ class CreateViewRequest(proto.Message):
         view_id (str):
             Required. A client-assigned identifier such as
             ``"my-view"``. Identifiers are limited to 100 characters and
-            can include only letters, digits, underscores, hyphens, and
-            periods.
+            can include only letters, digits, underscores, and hyphens.
         view (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogView):
             Required. The new view.
     """

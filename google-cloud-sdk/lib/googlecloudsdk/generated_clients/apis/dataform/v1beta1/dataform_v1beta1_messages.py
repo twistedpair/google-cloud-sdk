@@ -144,6 +144,10 @@ class CancelWorkflowInvocationRequest(_messages.Message):
   r"""`CancelWorkflowInvocation` request message."""
 
 
+class CancelWorkflowInvocationResponse(_messages.Message):
+  r"""`CancelWorkflowInvocation` response message."""
+
+
 class CodeCompilationConfig(_messages.Message):
   r"""Configures various aspects of Dataform code compilation.
 
@@ -335,6 +339,10 @@ class CommitWorkspaceChangesRequest(_messages.Message):
   author = _messages.MessageField('CommitAuthor', 1)
   commitMessage = _messages.StringField(2)
   paths = _messages.StringField(3, repeated=True)
+
+
+class CommitWorkspaceChangesResponse(_messages.Message):
+  r"""`CommitWorkspaceChanges` response message."""
 
 
 class CompilationError(_messages.Message):
@@ -2201,6 +2209,10 @@ class PullGitCommitsRequest(_messages.Message):
   remoteBranch = _messages.StringField(2)
 
 
+class PullGitCommitsResponse(_messages.Message):
+  r"""`PullGitCommits` response message."""
+
+
 class PushGitCommitsRequest(_messages.Message):
   r"""`PushGitCommits` request message.
 
@@ -2211,6 +2223,10 @@ class PushGitCommitsRequest(_messages.Message):
   """
 
   remoteBranch = _messages.StringField(1)
+
+
+class PushGitCommitsResponse(_messages.Message):
+  r"""`PushGitCommits` response message."""
 
 
 class QueryCompilationResultActionsResponse(_messages.Message):
@@ -2483,6 +2499,10 @@ class RemoveDirectoryRequest(_messages.Message):
   path = _messages.StringField(1)
 
 
+class RemoveDirectoryResponse(_messages.Message):
+  r"""`RemoveDirectory` response message."""
+
+
 class RemoveFileRequest(_messages.Message):
   r"""`RemoveFile` request message.
 
@@ -2492,6 +2512,10 @@ class RemoveFileRequest(_messages.Message):
   """
 
   path = _messages.StringField(1)
+
+
+class RemoveFileResponse(_messages.Message):
+  r"""`RemoveFile` response message."""
 
 
 class Repository(_messages.Message):
@@ -2587,6 +2611,10 @@ class ResetWorkspaceChangesRequest(_messages.Message):
 
   clean = _messages.BooleanField(1)
   paths = _messages.StringField(2, repeated=True)
+
+
+class ResetWorkspaceChangesResponse(_messages.Message):
+  r"""`ResetWorkspaceChanges` response message."""
 
 
 class ScheduledExecutionRecord(_messages.Message):

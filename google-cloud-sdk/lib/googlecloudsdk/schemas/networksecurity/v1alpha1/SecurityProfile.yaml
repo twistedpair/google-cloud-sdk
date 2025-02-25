@@ -36,9 +36,6 @@ properties:
     description: |-
       An optional description of the profile. Max length 512 characters.
     type: string
-  domainFilteringProfile:
-    description: A DomainFilteringProfile attribute.
-    $ref: DomainFilteringProfile.yaml
   labels:
     description: Labels as key value pairs.
     $ref: LabelsValue.yaml
@@ -59,7 +56,6 @@ properties:
     enum:
     - CUSTOM_INTERCEPT
     - CUSTOM_MIRRORING
-    - DOMAIN_FILTERING
     - PROFILE_TYPE_UNSPECIFIED
     - THREAT_PREVENTION
     - URL_FILTERING

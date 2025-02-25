@@ -146,6 +146,14 @@ def AddSpokeFlag(parser, help_text):
       help=help_text)
 
 
+def AddSpokeEtagFlag(parser, help_text):
+  """Adds the --spoke-etag flag to the given parser."""
+  parser.add_argument(
+      '--spoke-etag',
+      required=True,
+      help=help_text)
+
+
 def AddGroupFlag(parser, required=False):
   """Adds the --group argument to the given parser."""
   # TODO(b/233653552) Parse this with a resouce argument.

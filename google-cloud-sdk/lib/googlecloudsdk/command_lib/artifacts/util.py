@@ -41,6 +41,7 @@ from containerregistry.client.v2_2 import docker_image
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.artifacts import filter_rewriter
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.container.images import util
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
@@ -1480,6 +1481,16 @@ def MigrateToArtifactRegistry(unused_ref, args):
     base.DisableUserProjectQuota()
   else:
     projects = [args.project or properties.VALUES.core.project.GetOrFail()]
+  project_ids = []
+  for project in projects:
+    if project.isnumeric():
+      project_ids.append(
+          projects_api.Get(project_util.ParseProject(project)).projectId
+      )
+    else:
+      project_ids.append(project)
+  projects = project_ids
+
   recent_images = args.recent_images
   last_uploaded_versions = args.last_uploaded_versions
   from_gcr = args.from_gcr
@@ -1523,7 +1534,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
   if canary_reads is not None and (canary_reads < 0 or canary_reads > 100):
     log.status.Print("--canary-reads must be between 0 and 100 inclusive")
     sys.exit(1)
-  if args.projects and (from_gcr or to_pkg_dev):
+  if (args.projects or args.project) and (from_gcr or to_pkg_dev):
     log.status.Print(
         "Projects argument may not be used when providing --from-gcr and"
         " --to-pkg-dev"

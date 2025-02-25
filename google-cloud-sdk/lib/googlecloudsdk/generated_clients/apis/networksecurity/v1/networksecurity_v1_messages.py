@@ -432,11 +432,14 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
   Fields:
     principals: Optional. A list of identities derived from the client's
       certificate. This field will not match on a request unless mutual TLS is
-      enabled for the Forwarding rule or Gateway. Each identity is a string
-      whose value is matched against the URI SAN, or DNS SAN or the subject
-      field in the client's certificate. The match can be exact, prefix,
-      suffix or a substring match. One of exact, prefix, suffix or contains
-      must be specified. Limited to 5 principals.
+      enabled for the forwarding rule or Gateway. For Application Load
+      Balancers, each identity is a string whose value is matched against the
+      URI SAN, or DNS SAN, or SPIFFE ID, or the subject field in the client's
+      certificate. For Cloud Service Mesh, each identity is a string whose
+      value is matched against the URI SAN, or DNS SAN, or the subject field
+      in the client's certificate. The match can be exact, prefix, suffix, or
+      a substring match. One of exact, prefix, suffix, or contains must be
+      specified. Limited to 5 principals.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 5 resources.
   """
@@ -1484,10 +1487,12 @@ class ListAddressGroupsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Locations that could not be reached.
   """
 
   addressGroups = _messages.MessageField('AddressGroup', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListAuthorizationPoliciesResponse(_messages.Message):
@@ -1613,12 +1618,14 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListMirroringDeploymentGroupsResponse(_messages.Message):
-  r"""Message for response to listing MirroringDeploymentGroups
+  r"""Response message for ListMirroringDeploymentGroups.
 
   Fields:
-    mirroringDeploymentGroups: The list of MirroringDeploymentGroup
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    mirroringDeploymentGroups: The deployment groups from the specified
+      parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
   """
 
   mirroringDeploymentGroups = _messages.MessageField('MirroringDeploymentGroup', 1, repeated=True)
@@ -1626,12 +1633,13 @@ class ListMirroringDeploymentGroupsResponse(_messages.Message):
 
 
 class ListMirroringDeploymentsResponse(_messages.Message):
-  r"""Message for response to listing MirroringDeployments
+  r"""Response message for ListMirroringDeployments.
 
   Fields:
-    mirroringDeployments: The list of MirroringDeployment
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    mirroringDeployments: The deployments from the specified parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
     unreachable: Locations that could not be reached.
   """
 
@@ -1641,12 +1649,14 @@ class ListMirroringDeploymentsResponse(_messages.Message):
 
 
 class ListMirroringEndpointGroupAssociationsResponse(_messages.Message):
-  r"""Response message for listing associations.
+  r"""Response message for ListMirroringEndpointGroupAssociations.
 
   Fields:
-    mirroringEndpointGroupAssociations: The list of associations returned.
-    nextPageToken: A token identifying a page of results the server should
-      return. See https://google.aip.dev/158.
+    mirroringEndpointGroupAssociations: The associations from the specified
+      parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
   """
 
   mirroringEndpointGroupAssociations = _messages.MessageField('MirroringEndpointGroupAssociation', 1, repeated=True)
@@ -1654,12 +1664,13 @@ class ListMirroringEndpointGroupAssociationsResponse(_messages.Message):
 
 
 class ListMirroringEndpointGroupsResponse(_messages.Message):
-  r"""Message for response to listing MirroringEndpointGroups
+  r"""Response message for ListMirroringEndpointGroups.
 
   Fields:
-    mirroringEndpointGroups: The list of MirroringEndpointGroup
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    mirroringEndpointGroups: The endpoint groups from the specified parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
   """
 
   mirroringEndpointGroups = _messages.MessageField('MirroringEndpointGroup', 1, repeated=True)
@@ -2260,9 +2271,10 @@ class MirroringEndpointGroupAssociation(_messages.Message):
       STATE_UNSPECIFIED: Not set.
       ACTIVE: The association is ready and in sync with the linked endpoint
         group.
-      CREATING: Being created.
-      DELETING: Being deleted.
-      CLOSED: Mirroring is disabled due to an operation on another resource.
+      CREATING: The association is being created.
+      DELETING: The association is being deleted.
+      CLOSED: The association is disabled due to a breaking change in another
+        resource.
       OUT_OF_SYNC: The association is out of sync with the linked endpoint
         group. In most cases, this is a result of a transient issue within the
         system (e.g. an inaccessible location) and the system is expected to
@@ -2341,9 +2353,10 @@ class MirroringEndpointGroupAssociationDetails(_messages.Message):
       STATE_UNSPECIFIED: Not set.
       ACTIVE: The association is ready and in sync with the linked endpoint
         group.
-      CREATING: Being created.
-      DELETING: Being deleted.
-      CLOSED: Mirroring is disabled due to an operation on another resource.
+      CREATING: The association is being created.
+      DELETING: The association is being deleted.
+      CLOSED: The association is disabled due to a breaking change in another
+        resource.
       OUT_OF_SYNC: The association is out of sync with the linked endpoint
         group. In most cases, this is a result of a transient issue within the
         system (e.g. an inaccessible location) and the system is expected to
@@ -2532,11 +2545,14 @@ class NetworksecurityOrganizationsLocationsAddressGroupsListRequest(_messages.Me
     parent: Required. The project and location from which the AddressGroups
       should be listed, specified in the format
       `projects/*/locations/{location}`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest(_messages.Message):
@@ -3085,11 +3101,14 @@ class NetworksecurityProjectsLocationsAddressGroupsListRequest(_messages.Message
     parent: Required. The project and location from which the AddressGroups
       should be listed, specified in the format
       `projects/*/locations/{location}`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Message):
@@ -3990,21 +4009,14 @@ class NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest(_me
   Fields:
     mirroringDeploymentGroup: A MirroringDeploymentGroup resource to be passed
       as the request body.
-    mirroringDeploymentGroupId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      mirroring_deployment_group_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    mirroringDeploymentGroupId: Required. The ID to use for the new deployment
+      group, which will become the final component of the deployment group's
+      resource name.
+    parent: Required. The parent resource where this deployment group will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   mirroringDeploymentGroup = _messages.MessageField('MirroringDeploymentGroup', 1)
@@ -4018,18 +4030,10 @@ class NetworksecurityProjectsLocationsMirroringDeploymentGroupsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    name: Required. The deployment group to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4041,7 +4045,9 @@ class NetworksecurityProjectsLocationsMirroringDeploymentGroupsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The name of the deployment group to retrieve. Format: proj
+      ects/{project}/locations/{location}/mirroringDeploymentGroups/{mirroring
+      _deployment_group}
   """
 
   name = _messages.StringField(1, required=True)
@@ -4052,13 +4058,21 @@ class NetworksecurityProjectsLocationsMirroringDeploymentGroupsListRequest(_mess
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListMirroringDeploymentGroupsRequest
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListMirroringDeploymentGroups` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListMirroringDeploymentGroups` must match the call that provided the
+      page token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of deployment
+      groups. Example: `projects/123456789/locations/global`. See
+      https://google.aip.dev/132 for more details.
   """
 
   filter = _messages.StringField(1)
@@ -4079,22 +4093,13 @@ class NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest(_mes
       for example:
       `projects/123456789/locations/global/mirroringDeploymentGroups/my-dg`.
       See https://google.aip.dev/122 for more details.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MirroringDeploymentGroup resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the deployment group (e.g. `description`; *not*
+      `mirroring_deployment_group.description`). See
+      https://google.aip.dev/161 for more details.
   """
 
   mirroringDeploymentGroup = _messages.MessageField('MirroringDeploymentGroup', 1)
@@ -4110,21 +4115,13 @@ class NetworksecurityProjectsLocationsMirroringDeploymentsCreateRequest(_message
   Fields:
     mirroringDeployment: A MirroringDeployment resource to be passed as the
       request body.
-    mirroringDeploymentId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and mirroring_deployment_id
-      from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    mirroringDeploymentId: Required. The ID to use for the new deployment,
+      which will become the final component of the deployment's resource name.
+    parent: Required. The parent resource where this deployment will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   mirroringDeployment = _messages.MessageField('MirroringDeployment', 1)
@@ -4139,17 +4136,9 @@ class NetworksecurityProjectsLocationsMirroringDeploymentsDeleteRequest(_message
 
   Fields:
     name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4160,7 +4149,9 @@ class NetworksecurityProjectsLocationsMirroringDeploymentsGetRequest(_messages.M
   r"""A NetworksecurityProjectsLocationsMirroringDeploymentsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The name of the deployment to retrieve. Format: projects/{
+      project}/locations/{location}/mirroringDeployments/{mirroring_deployment
+      }
   """
 
   name = _messages.StringField(1, required=True)
@@ -4171,13 +4162,21 @@ class NetworksecurityProjectsLocationsMirroringDeploymentsListRequest(_messages.
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListMirroringDeploymentsRequest
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListMirroringDeployments` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListMirroringDeployments` must match the call that provided the page
+      token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of deployments.
+      Example: `projects/123456789/locations/us-central1-a`. See
+      https://google.aip.dev/132 for more details.
   """
 
   filter = _messages.StringField(1)
@@ -4198,22 +4197,13 @@ class NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest(_messages
       example: `projects/123456789/locations/us-
       central1-a/mirroringDeployments/my-dep`. See https://google.aip.dev/122
       for more details.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MirroringDeployment resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the deployment (e.g. `description`; *not*
+      `mirroring_deployment.description`). See https://google.aip.dev/161 for
+      more details.
   """
 
   mirroringDeployment = _messages.MessageField('MirroringDeployment', 1)
@@ -4229,26 +4219,15 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsCreateRe
   Fields:
     mirroringEndpointGroupAssociation: A MirroringEndpointGroupAssociation
       resource to be passed as the request body.
-    mirroringEndpointGroupAssociationId: Optional. ID for the new association.
-      If not provided, the server will generate a unique ID. The ID must be a
-      valid RFC 1035 resource name. The ID must be 1-63 characters long and
-      match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first
-      character must be a lowercase letter, and all following characters
-      (except for the last character) must be a dash, lowercase letter, or
-      digit. The last character must be a
-    parent: Required. Container (project and location) where the association
-      will be created, e.g. `projects/123456789/locations/global`.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    mirroringEndpointGroupAssociationId: Optional. The ID to use for the new
+      association, which will become the final component of the endpoint
+      group's resource name. If not provided, the server will generate a
+      unique ID.
+    parent: Required. The parent resource where this association will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   mirroringEndpointGroupAssociation = _messages.MessageField('MirroringEndpointGroupAssociation', 1)
@@ -4262,20 +4241,10 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsDeleteRe
   teRequest object.
 
   Fields:
-    name: Required. Full resource name of the association to delete, e.g.
-      projects/123456789/locations/global/mirroringEndpointGroupAssociations/m
-      y-eg-association.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    name: Required. The association to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4288,9 +4257,9 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsGetReque
   object.
 
   Fields:
-    name: Required. Full resource name of the association to get, e.g.
-      projects/123456789/locations/global/mirroringEndpointGroupAssociations/m
-      y-eg-association.
+    name: Required. The name of the association to retrieve. Format: projects/
+      {project}/locations/{location}/mirroringEndpointGroupAssociations/{mirro
+      ring_endpoint_group_association}
   """
 
   name = _messages.StringField(1, required=True)
@@ -4301,16 +4270,21 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsListRequ
   Request object.
 
   Fields:
-    filter: Optional. A filter expression that filters the results listed in
-      the response. See https://google.aip.dev/160.
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-      See https://google.aip.dev/158.
-    pageToken: Optional. A token identifying a page of results the server
-      should return. See https://google.aip.dev/158.
-    parent: Required. Parent container (project and location) of the
-      associations to list, e.g. `projects/123456789/locations/global`.
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListMirroringEndpointGroups` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListMirroringEndpointGroups` must match the call that provided the page
+      token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of associations.
+      Example: `projects/123456789/locations/global`. See
+      https://google.aip.dev/132 for more details.
   """
 
   filter = _messages.StringField(1)
@@ -4331,20 +4305,13 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchReq
       association, for example: `projects/123456789/locations/global/mirroring
       EndpointGroupAssociations/my-eg-association`. See
       https://google.aip.dev/122 for more details.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the association by the update. See
-      https://google.aip.dev/161.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the association (e.g. `description`; *not*
+      `mirroring_endpoint_group_association.description`). See
+      https://google.aip.dev/161 for more details.
   """
 
   mirroringEndpointGroupAssociation = _messages.MessageField('MirroringEndpointGroupAssociation', 1)
@@ -4360,21 +4327,14 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest(_mess
   Fields:
     mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
       the request body.
-    mirroringEndpointGroupId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      mirroring_endpoint_group_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    mirroringEndpointGroupId: Required. The ID to use for the endpoint group,
+      which will become the final component of the endpoint group's resource
+      name.
+    parent: Required. The parent resource where this endpoint group will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)
@@ -4388,18 +4348,10 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsDeleteRequest(_mess
   object.
 
   Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    name: Required. The endpoint group to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4411,7 +4363,9 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsGetRequest(_message
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The name of the endpoint group to retrieve. Format: projec
+      ts/{project}/locations/{location}/mirroringEndpointGroups/{mirroring_end
+      point_group}
   """
 
   name = _messages.StringField(1, required=True)
@@ -4422,13 +4376,21 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsListRequest(_messag
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListMirroringEndpointGroupsRequest
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListMirroringEndpointGroups` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListMirroringEndpointGroups` must match the call that provided the page
+      token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of endpoint
+      groups. Example: `projects/123456789/locations/global`. See
+      https://google.aip.dev/132 for more details.
   """
 
   filter = _messages.StringField(1)
@@ -4449,22 +4411,13 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(_messa
       example:
       `projects/123456789/locations/global/mirroringEndpointGroups/my-eg`. See
       https://google.aip.dev/122 for more details.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MirroringEndpointGroup resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the endpoint group (e.g. `description`; *not*
+      `mirroring_endpoint_group.description`). See https://google.aip.dev/161
+      for more details.
   """
 
   mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)

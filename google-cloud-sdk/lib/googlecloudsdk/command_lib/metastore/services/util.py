@@ -44,8 +44,40 @@ def LoadHiveMetatsoreConfigsFromXmlFile(file_arg):
   return hive_metastore_configs
 
 
-def UpdateAutoscalingScalingConfig(unused_ref, args, req):
-  """Sets autoscalingEnabled to true if the service specified a min scaling factor, max scaling factor, or both.
+def UpdateScalingConfig(unused_ref, args, req):
+  """Updates the Service scaling config.
+
+  Sets autoscalingEnabled to true if the service specified a min scaling factor,
+  max scaling factor, or both. Sets the scaling config to None if tier is
+  specified. If no scaling configs are specified, the scaling config is set to
+  None.
+
+  Args:
+    args: The request arguments.
+    req: A request with `service` field.
+
+  Returns:
+    The same request object with a modified scaling config.
+    1. Scaling config with autoscaling enabled if min or max scaling factors are
+    specified.
+    2. Scaling config is set to None if tier is specified. Do note if tier and
+    scaling configs are specified, the SDK will throw a 400. The scaling config
+    is set to an empty dictionary by default that fails on the server side.
+  """
+  if args.min_scaling_factor or args.max_scaling_factor:
+    req.service.scalingConfig.autoscalingConfig.autoscalingEnabled = True
+  elif args.tier:
+    req.service.scalingConfig = None
+  return req
+
+
+def UpdateScalingConfigForCreate(unused_ref, args, req):
+  """Updates the Service scaling config.
+
+  Sets autoscalingEnabled to true if the service specified a min scaling factor,
+  max scaling factor, or both. Sets the scaling config to None if tier is
+  specified. If no scaling configs are specified, the scaling config is set to
+  None.
 
   Args:
     args: The request arguments.
@@ -54,8 +86,14 @@ def UpdateAutoscalingScalingConfig(unused_ref, args, req):
   Returns:
     A request with a modified scaling config.
   """
-  if args.min_scaling_factor or args.max_scaling_factor:
-    req.service.scalingConfig.autoscalingConfig.autoscalingEnabled = True
+  req = UpdateScalingConfig(unused_ref, args, req)
+  if not (
+      args.min_scaling_factor
+      or args.max_scaling_factor
+      or args.instance_size
+      or args.scaling_factor
+  ):
+    req.service.scalingConfig = None
   return req
 
 

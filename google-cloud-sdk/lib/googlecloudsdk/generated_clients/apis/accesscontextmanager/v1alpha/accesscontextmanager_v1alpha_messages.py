@@ -1346,12 +1346,10 @@ class EgressSource(_messages.Message):
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
-    resource: A Google Cloud resource that you want to allow to egress the
-      perimeter. These resources can access data outside the perimeter. This
-      field only supports projects. The project format is
-      `projects/{project_number}`. The resource can be in any Google Cloud
-      organization, not just the organization where the perimeter is defined.
-      You can't use `*` in this field to allow all Google Cloud resources.
+    resource: A Google Cloud resource from the service perimeter that you want
+      to allow to access data outside the perimeter. This field supports only
+      projects. The project format is `projects/{project_number}`. You can't
+      use `*` in this field to allow all Google Cloud resources.
   """
 
   accessLevel = _messages.StringField(1)

@@ -30,9 +30,10 @@ import random
 import string
 import tempfile
 import time
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage.diagnose import utils
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -229,42 +230,6 @@ class Diagnostic(abc.ABC):
     """
     os.environ[variable_name] = str(variable_value)
 
-  def _run_gcloud(self, args: List[str], in_str=None) -> Tuple[str, str]:
-    """Runs a gcloud command.
-
-    Args:
-      args: The arguments to pass to the gcloud command.
-      in_str: The input to pass to the gcloud command.
-
-    Returns:
-      A tuple containing the stdout and stderr of the command.
-    """
-    command = execution_utils.ArgsForGcloud()
-    command.extend(args)
-    out = io.StringIO()
-    err = io.StringIO()
-
-    returncode = execution_utils.Exec(
-        command,
-        no_exit=True,
-        out_func=out.write,
-        err_func=err.write,
-        in_str=in_str,
-    )
-
-    stdout = out.getvalue()
-    stderr = err.getvalue()
-
-    log.debug('stdout: %s', stdout)
-    log.debug('stderr: %s', stderr)
-
-    if returncode != 0 and not stderr:
-      stderr = f'gcloud exited with return code {returncode}'
-    return (
-        stdout if returncode == 0 else None,
-        stderr if returncode != 0 else None,
-    )
-
   def _run_cp(self, source_url: str, destination_url: str, in_str=None):
     """Runs the gcloud cp command.
 
@@ -283,7 +248,7 @@ class Diagnostic(abc.ABC):
         destination_url,
         '--verbosity=debug',
     ]
-    _, err = self._run_gcloud(args, in_str=in_str)
+    _, err = utils.run_gcloud(args, in_str=in_str)
     if err:
       raise DiagnosticIgnorableError(
           'Failed to copy objects from source {} to {} : {}'.format(
@@ -298,7 +263,7 @@ class Diagnostic(abc.ABC):
         'rm',
         f'{bucket_url}{object_prefix}*',
     ]
-    _, err = self._run_gcloud(args)
+    _, err = utils.run_gcloud(args)
     if err:
       log.warning(
           f'Failed to clean up objects in {bucket_url} with prefix'

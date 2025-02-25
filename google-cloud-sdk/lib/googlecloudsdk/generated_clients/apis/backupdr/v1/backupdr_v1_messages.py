@@ -912,6 +912,8 @@ class BackupPlanAssociation(_messages.Message):
     backupPlan: Required. Resource name of backup plan which needs to be
       applied on workload. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
+    cloudSqlInstanceBackupPlanAssociationProperties: Cloud SQL instance's
+      backup plan association properties.
     createTime: Output only. The time when the instance was created.
     dataSource: Output only. Resource name of data source which will be used
       as storage location for backups taken. Format : projects/{project}/locat
@@ -946,14 +948,15 @@ class BackupPlanAssociation(_messages.Message):
     UPDATING = 5
 
   backupPlan = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  dataSource = _messages.StringField(3)
-  name = _messages.StringField(4)
-  resource = _messages.StringField(5)
-  resourceType = _messages.StringField(6)
-  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 7, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  cloudSqlInstanceBackupPlanAssociationProperties = _messages.MessageField('CloudSqlInstanceBackupPlanAssociationProperties', 2)
+  createTime = _messages.StringField(3)
+  dataSource = _messages.StringField(4)
+  name = _messages.StringField(5)
+  resource = _messages.StringField(6)
+  resourceType = _messages.StringField(7)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class BackupRule(_messages.Message):
@@ -1963,6 +1966,53 @@ class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.M
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class BackupdrProjectsLocationsDataSourceReferencesFetchForResourceTypeRequest(_messages.Message):
+  r"""A
+  BackupdrProjectsLocationsDataSourceReferencesFetchForResourceTypeRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the results fetched in
+      the response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering.
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields: * data_source * data_source_gcp_resource_info.gcp_resourcename
+    pageSize: Optional. The maximum number of DataSourceReferences to return.
+      The service may return fewer than this value. If unspecified, at most 50
+      DataSourceReferences will be returned. The maximum value is 100; values
+      above 100 will be coerced to 100.
+    pageToken: Optional. A page token, received from a previous call of
+      `FetchDataSourceReferencesForResourceType`. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `FetchDataSourceReferencesForResourceType` must match the call that
+      provided the page token.
+    parent: Required. The parent resource name. Format:
+      projects/{project}/locations/{location}
+    resourceType: Required. The type of the GCP resource. Ex:
+      sql.googleapis.com/Instance
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  resourceType = _messages.StringField(6)
+
+
+class BackupdrProjectsLocationsDataSourceReferencesGetRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsDataSourceReferencesGetRequest object.
+
+  Fields:
+    name: Required. The name of the DataSourceReference to retrieve. Format: p
+      rojects/{project}/locations/{location}/dataSourceReferences/{data_source
+      _reference}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BackupdrProjectsLocationsGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsGetRequest object.
 
@@ -2351,7 +2401,36 @@ class CloudSQLInstanceDataSourceProperties(_messages.Message):
   databaseInstalledVersion = _messages.StringField(1)
   instanceCreateTime = _messages.StringField(2)
   name = _messages.StringField(3)
-  pitrWindows = _messages.MessageField('PiTRWindow', 4, repeated=True)
+  pitrWindows = _messages.MessageField('PitrWindow', 4, repeated=True)
+
+
+class CloudSQLInstanceDataSourceReferenceProperties(_messages.Message):
+  r"""CloudSQLInstanceDataSourceReferenceProperties represents the properties
+  of a Cloud SQL resource that are stored in the DataSourceReference. .
+
+  Fields:
+    databaseInstalledVersion: The installed database version of the Cloud SQL
+      instance.
+    instanceCreateTime: The instance creation timestamp.
+    name: Name of the Cloud SQL instance backed up by the datasource.
+    pitrWindows: Point in time recovery windows. This is not intended to be
+      exposed to the customers yet.
+  """
+
+  databaseInstalledVersion = _messages.StringField(1)
+  instanceCreateTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pitrWindows = _messages.MessageField('PitrWindow', 4, repeated=True)
+
+
+class CloudSqlInstanceBackupPlanAssociationProperties(_messages.Message):
+  r"""Cloud SQL instance's BPA properties.
+
+  Fields:
+    instanceCreateTime: Output only. The time when the instance was created.
+  """
+
+  instanceCreateTime = _messages.StringField(1)
 
 
 class ComputeInstanceBackupProperties(_messages.Message):
@@ -2825,6 +2904,41 @@ class DataSourceBackupApplianceApplication(_messages.Message):
   type = _messages.StringField(7)
 
 
+class DataSourceBackupConfigInfo(_messages.Message):
+  r"""Information of backup configuration on the DataSource.
+
+  Enums:
+    LastBackupStateValueValuesEnum: Output only. The status of the last backup
+      in this DataSource
+
+  Fields:
+    lastBackupState: Output only. The status of the last backup in this
+      DataSource
+    lastSuccessfulBackupConsistencyTime: Output only. Timestamp of the last
+      successful backup to this DataSource.
+  """
+
+  class LastBackupStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of the last backup in this DataSource
+
+    Values:
+      LAST_BACKUP_STATE_UNSPECIFIED: Status not set.
+      FIRST_BACKUP_PENDING: The first backup has not yet completed
+      SUCCEEDED: The most recent backup was successful
+      FAILED: The most recent backup failed
+      PERMISSION_DENIED: The most recent backup could not be run/failed
+        because of the lack of permissions
+    """
+    LAST_BACKUP_STATE_UNSPECIFIED = 0
+    FIRST_BACKUP_PENDING = 1
+    SUCCEEDED = 2
+    FAILED = 3
+    PERMISSION_DENIED = 4
+
+  lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 1)
+  lastSuccessfulBackupConsistencyTime = _messages.StringField(2)
+
+
 class DataSourceGcpResource(_messages.Message):
   r"""DataSourceGcpResource is used for protected resources that are Google
   Cloud Resources. This name is easeier to understand than
@@ -2849,6 +2963,75 @@ class DataSourceGcpResource(_messages.Message):
   gcpResourcename = _messages.StringField(3)
   location = _messages.StringField(4)
   type = _messages.StringField(5)
+
+
+class DataSourceGcpResourceInfo(_messages.Message):
+  r"""The GCP resource that the DataSource is associated with.
+
+  Fields:
+    cloudSqlInstanceProperties: Output only. The properties of the Cloud SQL
+      instance.
+    gcpResourcename: Output only. The resource name of the GCP resource. Ex:
+      projects/{project}/zones/{zone}/instances/{instance}
+    location: Output only. The location of the GCP resource. Ex:
+      //"global"/"unspecified"
+    type: Output only. The type of the GCP resource. Ex:
+      compute.googleapis.com/Instance
+  """
+
+  cloudSqlInstanceProperties = _messages.MessageField('CloudSQLInstanceDataSourceReferenceProperties', 1)
+  gcpResourcename = _messages.StringField(2)
+  location = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
+class DataSourceReference(_messages.Message):
+  r"""DataSourceReference is a reference to a DataSource resource.
+
+  Enums:
+    DataSourceBackupConfigStateValueValuesEnum: Output only. The backup
+      configuration state of the DataSource.
+
+  Fields:
+    createTime: Output only. The time when the DataSourceReference was
+      created.
+    dataSource: Required. The resource name of the DataSource. Format: project
+      s/{project}/locations/{location}/backupVaults/{backupVault}/dataSources/
+      {dataSource}
+    dataSourceBackupConfigInfo: Output only. Information of backup
+      configuration on the DataSource.
+    dataSourceBackupConfigState: Output only. The backup configuration state
+      of the DataSource.
+    dataSourceBackupCount: Output only. Number of backups in the DataSource.
+    dataSourceGcpResourceInfo: Output only. The GCP resource that the
+      DataSource is associated with.
+    name: Identifier. The resource name of the DataSourceReference. Format: pr
+      ojects/{project}/locations/{location}/dataSourceReferences/{data_source_
+      reference}
+  """
+
+  class DataSourceBackupConfigStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The backup configuration state of the DataSource.
+
+    Values:
+      BACKUP_CONFIG_STATE_UNSPECIFIED: The possible states of backup
+        configuration. Status not set.
+      ACTIVE: The data source is actively protected (i.e. there is a
+        BackupPlanAssociation or Appliance SLA pointing to it)
+      PASSIVE: The data source is no longer protected (but may have backups
+        under it)
+    """
+    BACKUP_CONFIG_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PASSIVE = 2
+
+  createTime = _messages.StringField(1)
+  dataSource = _messages.StringField(2)
+  dataSourceBackupConfigInfo = _messages.MessageField('DataSourceBackupConfigInfo', 3)
+  dataSourceBackupConfigState = _messages.EnumField('DataSourceBackupConfigStateValueValuesEnum', 4)
+  dataSourceBackupCount = _messages.IntegerField(5)
+  dataSourceGcpResourceInfo = _messages.MessageField('DataSourceGcpResourceInfo', 6)
+  name = _messages.StringField(7)
 
 
 class DisplayDevice(_messages.Message):
@@ -2945,6 +3128,21 @@ class FetchAccessTokenResponse(_messages.Message):
   readLocation = _messages.StringField(2)
   token = _messages.StringField(3)
   writeLocation = _messages.StringField(4)
+
+
+class FetchDataSourceReferencesForResourceTypeResponse(_messages.Message):
+  r"""Response for the FetchDataSourceReferencesForResourceType method.
+
+  Fields:
+    dataSourceReferences: Output only. The DataSourceReferences from the
+      specified parent.
+    nextPageToken: Output only. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+  """
+
+  dataSourceReferences = _messages.MessageField('DataSourceReference', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class FetchUsableBackupVaultsResponse(_messages.Message):
@@ -3984,7 +4182,17 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
-class PiTRWindow(_messages.Message):
+class PitrSettings(_messages.Message):
+  r"""Point in time recovery settings of the backup configuration resource.
+
+  Fields:
+    retentionDays: Output only. Number of days to retain the backup.
+  """
+
+  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class PitrWindow(_messages.Message):
   r"""Point in time recovery window for a Cloud SQL instance.
 
   Fields:
@@ -3996,16 +4204,6 @@ class PiTRWindow(_messages.Message):
   endTime = _messages.StringField(1)
   logRetentionDays = _messages.IntegerField(2)
   startTime = _messages.StringField(3)
-
-
-class PitrSettings(_messages.Message):
-  r"""Point in time recovery settings of the backup configuration resource.
-
-  Fields:
-    retentionDays: Output only. Number of days to retain the backup.
-  """
-
-  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class Policy(_messages.Message):

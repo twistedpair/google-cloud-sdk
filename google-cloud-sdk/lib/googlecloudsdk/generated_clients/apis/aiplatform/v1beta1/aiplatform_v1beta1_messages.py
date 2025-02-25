@@ -11437,11 +11437,27 @@ class CloudAiLargeModelsVisionGenerateVideoResponse(_messages.Message):
     raiMediaFilteredCount: Returns if any videos were filtered due to RAI
       policies.
     raiMediaFilteredReasons: Returns rai failure reasons if any.
+    videos: List of videos, used to align naming with the external response.
   """
 
   generatedSamples = _messages.MessageField('CloudAiLargeModelsVisionMedia', 1, repeated=True)
   raiMediaFilteredCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   raiMediaFilteredReasons = _messages.StringField(3, repeated=True)
+  videos = _messages.MessageField('CloudAiLargeModelsVisionGenerateVideoResponseVideo', 4, repeated=True)
+
+
+class CloudAiLargeModelsVisionGenerateVideoResponseVideo(_messages.Message):
+  r"""A CloudAiLargeModelsVisionGenerateVideoResponseVideo object.
+
+  Fields:
+    bytesBase64Encoded: Base64 encoded bytes string representing the video.
+    gcsUri: Cloud Storage URI where the generated video is written.
+    mimeType: The MIME type of the content of the video. - video/mp4
+  """
+
+  bytesBase64Encoded = _messages.StringField(1)
+  gcsUri = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
 
 
 class CloudAiLargeModelsVisionImage(_messages.Message):
@@ -11626,14 +11642,16 @@ class CloudAiLargeModelsVisionVideo(_messages.Message):
   Fields:
     encodedVideo: Base 64 encoded video bytes.
     encoding: Video encoding, for example "video/mp4".
+    text: Text/Expanded text input for Help Me Write.
     uri: Path to another storage (typically Google Cloud Storage).
     video: Raw bytes.
   """
 
   encodedVideo = _messages.StringField(1)
   encoding = _messages.StringField(2)
-  uri = _messages.StringField(3)
-  video = _messages.BytesField(4)
+  text = _messages.StringField(3)
+  uri = _messages.StringField(4)
+  video = _messages.BytesField(5)
 
 
 class CloudAiPlatformCommonCreatePipelineJobApiErrorDetail(_messages.Message):
@@ -15723,6 +15741,90 @@ class GoogleCloudAiplatformV1beta1DeployPublisherModelRequest(_messages.Message)
   modelDisplayName = _messages.StringField(6)
 
 
+class GoogleCloudAiplatformV1beta1DeployRequest(_messages.Message):
+  r"""Request message for ModelGardenService.Deploy.
+
+  Fields:
+    deployConfig: Optional. The deploy config to use for the deployment. If
+      not specified, the default deploy config will be used.
+    endpointConfig: Optional. The endpoint config to use for the deployment.
+      If not specified, the default endpoint config will be used.
+    huggingFaceModelId: The Hugging Face model to deploy. Format: Hugging Face
+      model ID like `google/gemma-2-2b-it`.
+    modelConfig: Optional. The model config to use for the deployment. If not
+      specified, the default model config will be used.
+    publisherModelName: The Model Garden model to deploy. Format:
+      `publishers/{publisher}/models/{publisher_model}@{version_id}`, or
+      `publishers/hf-{hugging-face-author}/models/{hugging-face-model-
+      name}@001`.
+  """
+
+  deployConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployRequestDeployConfig', 1)
+  endpointConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployRequestEndpointConfig', 2)
+  huggingFaceModelId = _messages.StringField(3)
+  modelConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployRequestModelConfig', 4)
+  publisherModelName = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1beta1DeployRequestDeployConfig(_messages.Message):
+  r"""The deploy config to use for the deployment.
+
+  Fields:
+    dedicatedResources: Optional. The dedicated resources to use for the
+      endpoint. If not set, the default resources will be used.
+    fastTryoutEnabled: Optional. If true, enable the QMT fast tryout feature
+      for this model if possible.
+  """
+
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 1)
+  fastTryoutEnabled = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1DeployRequestEndpointConfig(_messages.Message):
+  r"""The endpoint config to use for the deployment.
+
+  Fields:
+    dedicatedEndpointEnabled: Optional. If true, the endpoint will be exposed
+      through a dedicated DNS [Endpoint.dedicated_endpoint_dns]. Your request
+      to the dedicated DNS will be isolated from other users' traffic and will
+      have better performance and reliability. Note: Once you enabled
+      dedicated endpoint, you won't be able to send request to the shared DNS
+      {region}-aiplatform.googleapis.com. The limitations will be removed
+      soon.
+    endpointDisplayName: Optional. The user-specified display name of the
+      endpoint. If not set, a default name will be used.
+  """
+
+  dedicatedEndpointEnabled = _messages.BooleanField(1)
+  endpointDisplayName = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1DeployRequestModelConfig(_messages.Message):
+  r"""The model config to use for the deployment.
+
+  Fields:
+    acceptEula: Optional. Whether the user accepts the End User License
+      Agreement (EULA) for the model.
+    containerSpec: Optional. The specification of the container that is to be
+      used when deploying. If not set, the default container spec will be
+      used.
+    huggingFaceAccessToken: Optional. The Hugging Face read access token used
+      to access the model artifacts of gated models.
+    huggingFaceCacheEnabled: Optional. If true, the model will deploy with a
+      cached version instead of directly downloading the model artifacts from
+      Hugging Face. This is suitable for VPC-SC users with limited internet
+      access.
+    modelDisplayName: Optional. The user-specified display name of the
+      uploaded model. If not set, a default name will be used.
+  """
+
+  acceptEula = _messages.BooleanField(1)
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelContainerSpec', 2)
+  huggingFaceAccessToken = _messages.StringField(3)
+  huggingFaceCacheEnabled = _messages.BooleanField(4)
+  modelDisplayName = _messages.StringField(5)
+
+
 class GoogleCloudAiplatformV1beta1DeploySolverOperationMetadata(_messages.Message):
   r"""Runtime operation information for SolverService.DeploySolver.
 
@@ -16172,6 +16274,7 @@ class GoogleCloudAiplatformV1beta1DistillationHyperParameters(_messages.Message)
     Values:
       ADAPTER_SIZE_UNSPECIFIED: Adapter size is unspecified.
       ADAPTER_SIZE_ONE: Adapter size 1.
+      ADAPTER_SIZE_TWO: Adapter size 2.
       ADAPTER_SIZE_FOUR: Adapter size 4.
       ADAPTER_SIZE_EIGHT: Adapter size 8.
       ADAPTER_SIZE_SIXTEEN: Adapter size 16.
@@ -16179,10 +16282,11 @@ class GoogleCloudAiplatformV1beta1DistillationHyperParameters(_messages.Message)
     """
     ADAPTER_SIZE_UNSPECIFIED = 0
     ADAPTER_SIZE_ONE = 1
-    ADAPTER_SIZE_FOUR = 2
-    ADAPTER_SIZE_EIGHT = 3
-    ADAPTER_SIZE_SIXTEEN = 4
-    ADAPTER_SIZE_THIRTY_TWO = 5
+    ADAPTER_SIZE_TWO = 2
+    ADAPTER_SIZE_FOUR = 3
+    ADAPTER_SIZE_EIGHT = 4
+    ADAPTER_SIZE_SIXTEEN = 5
+    ADAPTER_SIZE_THIRTY_TWO = 6
 
   adapterSize = _messages.EnumField('AdapterSizeValueValuesEnum', 1)
   epochCount = _messages.IntegerField(2)
@@ -38666,6 +38770,7 @@ class GoogleCloudAiplatformV1beta1SupervisedHyperParameters(_messages.Message):
     Values:
       ADAPTER_SIZE_UNSPECIFIED: Adapter size is unspecified.
       ADAPTER_SIZE_ONE: Adapter size 1.
+      ADAPTER_SIZE_TWO: Adapter size 2.
       ADAPTER_SIZE_FOUR: Adapter size 4.
       ADAPTER_SIZE_EIGHT: Adapter size 8.
       ADAPTER_SIZE_SIXTEEN: Adapter size 16.
@@ -38673,10 +38778,11 @@ class GoogleCloudAiplatformV1beta1SupervisedHyperParameters(_messages.Message):
     """
     ADAPTER_SIZE_UNSPECIFIED = 0
     ADAPTER_SIZE_ONE = 1
-    ADAPTER_SIZE_FOUR = 2
-    ADAPTER_SIZE_EIGHT = 3
-    ADAPTER_SIZE_SIXTEEN = 4
-    ADAPTER_SIZE_THIRTY_TWO = 5
+    ADAPTER_SIZE_TWO = 2
+    ADAPTER_SIZE_FOUR = 3
+    ADAPTER_SIZE_EIGHT = 4
+    ADAPTER_SIZE_SIXTEEN = 5
+    ADAPTER_SIZE_THIRTY_TWO = 6
 
   adapterSize = _messages.EnumField('AdapterSizeValueValuesEnum', 1)
   epochCount = _messages.IntegerField(2)
@@ -39436,8 +39542,7 @@ class GoogleCloudAiplatformV1beta1Tool(_messages.Message):
 
   Fields:
     codeExecution: Optional. CodeExecution tool type. Enables the model to
-      execute code as part of generation. This field is only used by the
-      Gemini Developer API services.
+      execute code as part of generation.
     functionDeclarations: Optional. Function tool type. One or more function
       declarations to be passed to the model along with the current user
       query. Model may decide to call a subset of these functions by

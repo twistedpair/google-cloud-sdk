@@ -993,8 +993,8 @@ def GpuFlag(hidden=True):
       hidden=hidden,
       help=(
           'Cloud Run supports values 0 or 1.'
-          '  1 gpu also requires a minimum 4 `--cpu` value'
-          '  1 gpu also requires a minimum 8Gi `--memory` value.'
+          '  1 gpu also requires a minimum 4 `--cpu` value and'
+          '  a minimum 8Gi `--memory` value.'
       ),
   )
 

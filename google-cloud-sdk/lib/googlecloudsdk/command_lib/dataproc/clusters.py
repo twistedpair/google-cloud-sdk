@@ -93,6 +93,17 @@ def ArgsForClusterRef(
       ),
       metavar='KEY=VALUE',
   )
+  gce_platform_group.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(min_length=1),
+      action='append',
+      default=None,
+      help=(
+          'Specifies a list of resource manager tags to apply to each cluster'
+          ' node (master and worker nodes). '
+      ),
+      metavar='KEY=VALUE',
+  )
 
   # Either allow creating a single node cluster (--single-node), or specifying
   # the number of workers in the multi-node cluster (--num-workers and
@@ -1281,6 +1292,18 @@ def GetClusterConfig(
 
   if args.tags:
     gce_cluster_config.tags = args.tags
+
+  if args.resource_manager_tags:
+    flat_tags = collections.OrderedDict()
+    for entry in args.resource_manager_tags:
+      for k, v in entry.items():
+        flat_tags[k] = v
+    gce_cluster_config.resourceManagerTags = (
+        encoding.DictToAdditionalPropertyMessage(
+            flat_tags,
+            dataproc.messages.GceClusterConfig.ResourceManagerTagsValue,
+        )
+    )
 
   if args.metadata:
     flat_metadata = collections.OrderedDict()

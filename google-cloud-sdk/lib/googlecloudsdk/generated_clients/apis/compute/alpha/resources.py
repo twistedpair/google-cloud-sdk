@@ -470,6 +470,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'commitment'],
       True
   )
+  REGIONCOMPOSITEHEALTHCHECKS = (
+      'regionCompositeHealthChecks',
+      'projects/{project}/regions/{region}/compositeHealthChecks/'
+      '{compositeHealthCheck}',
+      {},
+      ['project', 'region', 'compositeHealthCheck'],
+      True
+  )
   REGIONDISKSETTINGS = (
       'regionDiskSettings',
       'projects/{project}/regions/{region}/diskSettings',
@@ -489,6 +497,14 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/disks/{disk}',
       {},
       ['project', 'region', 'disk'],
+      True
+  )
+  REGIONHEALTHAGGREGATIONPOLICIES = (
+      'regionHealthAggregationPolicies',
+      'projects/{project}/regions/{region}/healthAggregationPolicies/'
+      '{healthAggregationPolicy}',
+      {},
+      ['project', 'region', 'healthAggregationPolicy'],
       True
   )
   REGIONHEALTHCHECKSERVICES = (

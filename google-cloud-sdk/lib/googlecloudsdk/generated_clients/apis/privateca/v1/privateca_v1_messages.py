@@ -548,10 +548,9 @@ class CertificateAuthority(_messages.Message):
     type: Required. Immutable. The Type of this CertificateAuthority.
     updateTime: Output only. The time at which this CertificateAuthority was
       last updated.
-    userDefinedAccessUrls: Optional. User-defined URLs for accessing content
-      published by this CertificateAuthority, including the CA certificate and
-      the PEM-encoded CRLs. The service does not publish content to these
-      URLs. It is up to the user to mirror content to these URLs.
+    userDefinedAccessUrls: Optional. User-defined URLs for CA certificate and
+      CRLs. The service does not publish content to these URLs. It is up to
+      the user to mirror content to these URLs.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1206,6 +1205,13 @@ class IssuancePolicy(_messages.Message):
     allowedKeyTypes: Optional. If any AllowedKeyType is specified, then the
       certificate request's public key must match one of the key types listed
       here. Otherwise, any key may be used.
+    backdateDuration: Optional. The duration to backdate all certificates
+      issued from this CaPool. If not set, the certificates will be issued
+      with a not_before_time of the issuance time (i.e. the current time). If
+      set, the certificates will be issued with a not_before_time of the
+      issuance time minus the backdate_duration. The not_after_time will be
+      adjusted to preserve the requested lifetime. The backdate_duration must
+      be less than or equal to 48 hours.
     baselineValues: Optional. A set of X.509 values that will be applied to
       all certificates issued through this CaPool. If a certificate request
       includes conflicting values for the same properties, they will be
@@ -1233,10 +1239,11 @@ class IssuancePolicy(_messages.Message):
 
   allowedIssuanceModes = _messages.MessageField('IssuanceModes', 1)
   allowedKeyTypes = _messages.MessageField('AllowedKeyType', 2, repeated=True)
-  baselineValues = _messages.MessageField('X509Parameters', 3)
-  identityConstraints = _messages.MessageField('CertificateIdentityConstraints', 4)
-  maximumLifetime = _messages.StringField(5)
-  passthroughExtensions = _messages.MessageField('CertificateExtensionConstraints', 6)
+  backdateDuration = _messages.StringField(3)
+  baselineValues = _messages.MessageField('X509Parameters', 4)
+  identityConstraints = _messages.MessageField('CertificateIdentityConstraints', 5)
+  maximumLifetime = _messages.StringField(6)
+  passthroughExtensions = _messages.MessageField('CertificateExtensionConstraints', 7)
 
 
 class KeyId(_messages.Message):
@@ -3344,10 +3351,12 @@ class UserDefinedAccessUrls(_messages.Message):
   Fields:
     aiaIssuingCertificateUrls: Optional. A list of URLs where the issuer CA
       certificate may be downloaded, which appears in the "Authority
-      Information Access" extension in the certificate.
+      Information Access" extension in the certificate. If specified, the
+      default GCS URLs will be omitted.
     crlAccessUrls: Optional. A list of URLs where to obtain CRL information,
       i.e. the DistributionPoint.fullName described by
-      https://tools.ietf.org/html/rfc5280#section-4.2.1.13
+      https://tools.ietf.org/html/rfc5280#section-4.2.1.13. If specified, the
+      default GCS URLs will be omitted.
   """
 
   aiaIssuingCertificateUrls = _messages.StringField(1, repeated=True)

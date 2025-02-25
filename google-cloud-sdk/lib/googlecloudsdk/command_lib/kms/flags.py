@@ -522,6 +522,14 @@ def AddRemoveKeyAccessJustificationsPolicyFlag(parser):
   )
 
 
+def AddPublicKeyFormatFlag(parser):
+  parser.add_argument(
+      '--public-key-format',
+      default=None,
+      help='The format in which the public key will be returned.',
+  )
+
+
 # Arguments
 def AddKeyRingArgument(parser, help_action):
   parser.add_argument(

@@ -25,6 +25,7 @@ import uuid
 from googlecloudsdk.command_lib import info_holder
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
+from googlecloudsdk.command_lib.storage.diagnose import utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 
@@ -107,11 +108,20 @@ def export_diagnostic_bundle(
           diagnostic_result_file_name, arcname='storage_diagnostic_results.txt'
       )
 
-      # Add gcloud info anonymized.
+      # Add gcloud info anonymized and diagnostic results.
       info_content = str(
           info_holder.InfoHolder(anonymizer=info_holder.Anonymizer())
       )
+
+      stdout, stderr = utils.run_gcloud(['info', '--run-diagnostics'])
+
+      if stdout:
+        info_content += stdout
+      if stderr:
+        info_content += stderr
+
       info_file_name = _generate_temp_file(info_content)
+
       tar.add(info_file_name, arcname='gcloud_info.txt')
 
   except (

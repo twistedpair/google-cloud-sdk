@@ -6557,6 +6557,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReportHostAsFaulty(self, request, global_params=None):
+      r"""Mark the host as faulty and try to restart the instance on a new host.
+
+      Args:
+        request: (ComputeInstancesReportHostAsFaultyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReportHostAsFaulty')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportHostAsFaulty.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.reportHostAsFaulty',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/reportHostAsFaulty',
+        request_field='instancesReportHostAsFaultyRequest',
+        request_type_name='ComputeInstancesReportHostAsFaultyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Reset(self, request, global_params=None):
       r"""Performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.
 

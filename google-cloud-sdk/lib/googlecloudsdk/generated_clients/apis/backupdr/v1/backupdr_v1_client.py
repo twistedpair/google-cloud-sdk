@@ -44,6 +44,7 @@ class BackupdrV1(base_api.BaseApiClient):
     self.projects_locations_backupVaults_dataSources_backups = self.ProjectsLocationsBackupVaultsDataSourcesBackupsService(self)
     self.projects_locations_backupVaults_dataSources = self.ProjectsLocationsBackupVaultsDataSourcesService(self)
     self.projects_locations_backupVaults = self.ProjectsLocationsBackupVaultsService(self)
+    self.projects_locations_dataSourceReferences = self.ProjectsLocationsDataSourceReferencesService(self)
     self.projects_locations_managementServers = self.ProjectsLocationsManagementServersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_resourceBackupConfigs = self.ProjectsLocationsResourceBackupConfigsService(self)
@@ -935,6 +936,70 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDataSourceReferencesService(base_api.BaseApiService):
+    """Service class for the projects_locations_dataSourceReferences resource."""
+
+    _NAME = 'projects_locations_dataSourceReferences'
+
+    def __init__(self, client):
+      super(BackupdrV1.ProjectsLocationsDataSourceReferencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def FetchForResourceType(self, request, global_params=None):
+      r"""Fetch DataSourceReferences for a given project, location and resource type.
+
+      Args:
+        request: (BackupdrProjectsLocationsDataSourceReferencesFetchForResourceTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchDataSourceReferencesForResourceTypeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchForResourceType')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchForResourceType.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSourceReferences:fetchForResourceType',
+        http_method='GET',
+        method_id='backupdr.projects.locations.dataSourceReferences.fetchForResourceType',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'resourceType'],
+        relative_path='v1/{+parent}/dataSourceReferences:fetchForResourceType',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsDataSourceReferencesFetchForResourceTypeRequest',
+        response_type_name='FetchDataSourceReferencesForResourceTypeResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single DataSourceReference.
+
+      Args:
+        request: (BackupdrProjectsLocationsDataSourceReferencesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DataSourceReference) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSourceReferences/{dataSourceReferencesId}',
+        http_method='GET',
+        method_id='backupdr.projects.locations.dataSourceReferences.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsDataSourceReferencesGetRequest',
+        response_type_name='DataSourceReference',
         supports_download=False,
     )
 

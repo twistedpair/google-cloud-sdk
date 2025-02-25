@@ -14,10 +14,6 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import collections
 
 from googlecloudsdk.calliope import arg_parsers
@@ -504,4 +500,64 @@ def AddEnableMulticast(parser, update=False):
       default=None,
       action='store_true',
       help=help_text,
+  )
+
+
+def AddCandidateCloudRouterIpAddress(parser):
+  """Adds candidate cloud router ip address flag to the ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--candidate-cloud-router-ip-address',
+      help="""\
+      Single IPv4 address + prefix length to be configured on the cloud
+      router interface for this interconnect attachment
+      """,
+  )
+
+
+def AddCandidateCustomerRouterIpAddress(parser):
+  """Adds candidate customer router ip address flag to the ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--candidate-customer-router-ip-address',
+      help="""\
+      Single IPv4 address + prefix length to be configured on the customer
+      router interface for this interconnect attachment
+      """,
+  )
+
+
+def AddCandidateCloudRouterIpv6Address(parser):
+  """Adds candidate cloud router ipv6 address flag to the ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--candidate-cloud-router-ipv6-address',
+      help="""\
+      Single IPv6 address + prefix length to be configured on the cloud
+      router interface for this interconnect attachment
+      """,
+  )
+
+
+def AddCandidateCustomerRouterIpv6Address(parser):
+  """Adds candidate customer router ipv6 address flag to the ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--candidate-customer-router-ipv6-address',
+      help="""\
+      Single IPv6 address + prefix length to be configured on the customer
+      router interface for this interconnect attachment
+      """,
   )

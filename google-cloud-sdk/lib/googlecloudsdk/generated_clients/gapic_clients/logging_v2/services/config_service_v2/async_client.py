@@ -1556,8 +1556,8 @@ class ConfigServiceV2AsyncClient:
             view_id (:class:`str`):
                 Required. A client-assigned identifier such as
                 ``"my-view"``. Identifiers are limited to 100 characters
-                and can include only letters, digits, underscores,
-                hyphens, and periods.
+                and can include only letters, digits, underscores, and
+                hyphens.
 
                 This corresponds to the ``view_id`` field
                 on the ``request`` instance; if ``request`` is provided, this

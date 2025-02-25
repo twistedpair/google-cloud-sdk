@@ -16,17 +16,12 @@
 import re
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
-from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.iam import util as iam_api_util
 from googlecloudsdk.command_lib.iam import iam_util
-from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.core import log
 
-_RUN_BUILDER_ROLE = 'roles/run.builder'
-_EDITOR_ROLE = 'roles/editor'
 
-_GCE_SA_FORMAT = r'^\d+-compute@developer\.gserviceaccount\.com$'
 _LEGACY_BUILD_SA_FORMAT = r'^\d+@cloudbuild\.gserviceaccount\.com$'
 
 
@@ -111,53 +106,3 @@ def ValidateBuildServiceAccountAndPromptWarning(
     raise serverless_exceptions.ServiceAccountError(
         f'Build service account {build_service_account} does not exist.'
     )
-
-  if re.match(_GCE_SA_FORMAT, service_account_email):
-    try:
-      iam_policy = projects_api.GetIamPolicy(
-          project_util.ParseProject(project_id)
-      )
-    except apitools_exceptions.HttpForbiddenError:
-      log.warning(
-          (
-              'Your account does not have permission to check or bind IAM'
-              ' policies to project [%s]. If the deployment fails, ensure [%s]'
-              ' has the role [%s] before retrying.'
-          ),
-          project_id,
-          build_service_account,
-          _RUN_BUILDER_ROLE,
-      )
-      return
-
-    account_string = f'serviceAccount:{service_account_email}'
-    contained_roles = [
-        binding.role
-        for binding in iam_policy.bindings
-        if account_string in binding.members
-    ]
-    if (
-        _RUN_BUILDER_ROLE not in contained_roles
-        and _EDITOR_ROLE not in contained_roles
-    ):
-      missing_builder_role_message = (
-          f'\nThe default build service account [{build_service_account}] is'
-          ' missing'
-          f' the [{_RUN_BUILDER_ROLE}] role. This will cause issues when'
-          ' deploying a Cloud Run function. You could fix it by running the'
-          ' command: \ngcloud projects add-iam-policy-binding'
-          f' {project_id} \\\n'
-          f' --member={account_string}'
-          ' \\\n --role=roles/run.builder \n Or provid a new build'
-          ' serrvice account with [--build-service-account] flag. \nIf'
-          ' this is'
-          ' your first time deploying, it may take a few minutes for the'
-          ' permissions to propagate. You could try again later. \nFor more'
-          ' information, please refer to:'
-          ' https://cloud.google.com/functions/docs/troubleshooting#build-service-account.\n'
-      )
-      log.warning(missing_builder_role_message)
-      raise serverless_exceptions.ServiceAccountError(
-          'Missing required permissions for default build service account:'
-          f' {build_service_account}.'
-      )

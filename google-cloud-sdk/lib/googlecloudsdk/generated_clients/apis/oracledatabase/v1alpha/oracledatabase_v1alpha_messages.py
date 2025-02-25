@@ -43,7 +43,7 @@ class AutonomousDatabase(_messages.Message):
 
   Fields:
     adminPassword: Optional. The password for the default ADMIN user.
-    cidr: Required. The subnet CIDR range for the Autonmous Database.
+    cidr: Optional. The subnet CIDR range for the Autonmous Database.
     createTime: Output only. The date and time that the Autonomous Database
       was created.
     database: Optional. The name of the Autonomous Database. The database name
@@ -61,7 +61,7 @@ class AutonomousDatabase(_messages.Message):
     name: Identifier. The name of the Autonomous Database resource in the
       following format: projects/{project}/locations/{region}/autonomousDataba
       ses/{autonomous_database}
-    network: Required. The name of the VPC network used by the Autonomous
+    network: Optional. The name of the VPC network used by the Autonomous
       Database in the following format:
       projects/{project}/global/networks/{network}
     peerAutonomousDatabases: Output only. The peer Autonomous Database names
@@ -805,7 +805,7 @@ class AutonomousDatabaseProperties(_messages.Message):
 
   actualUsedDataStorageSizeTb = _messages.FloatField(1)
   allocatedStorageSizeTb = _messages.FloatField(2)
-  allowlistedIps = _messages.StringField(3)
+  allowlistedIps = _messages.StringField(3, repeated=True)
   apexDetails = _messages.MessageField('AutonomousDatabaseApex', 4)
   arePrimaryAllowlistedIpsUsed = _messages.BooleanField(5)
   autonomousContainerDatabaseId = _messages.StringField(6)

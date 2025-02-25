@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 @base.UniverseCompatible
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class CrossSiteNetworksCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):

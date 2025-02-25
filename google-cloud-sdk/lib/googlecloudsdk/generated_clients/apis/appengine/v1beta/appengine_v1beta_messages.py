@@ -3356,7 +3356,7 @@ class SslSettings(_messages.Message):
         mapped SSL certificate will be automatically renewed.
       MANUAL: SSL support for this domain is configured manually by the user.
         Either the domain has no SSL support or a user-obtained SSL
-        certificate has been explictly mapped to this domain.
+        certificate has been explicitly mapped to this domain.
     """
     AUTOMATIC = 0
     MANUAL = 1

@@ -202,6 +202,7 @@ def PopulateClusterAlphaMessage(req, args):
     )
   resource_args.SetSystemAddonsConfig(args, req)
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
+  SetContainerRuntimeConfig(req, args)
 
 
 def IsLCPCluster(args):
@@ -216,8 +217,10 @@ def IsLCPCluster(args):
   if (
       flags.FlagIsExplicitlySet(args, 'control_plane_node_location')
       and flags.FlagIsExplicitlySet(args, 'control_plane_node_count')
-      and (flags.FlagIsExplicitlySet(args, 'external_lb_ipv4_address_pools')
-           or flags.FlagIsExplicitlySet(args, 'external_lb_address_pools'))
+      and (
+          flags.FlagIsExplicitlySet(args, 'external_lb_ipv4_address_pools')
+          or flags.FlagIsExplicitlySet(args, 'external_lb_address_pools')
+      )
   ):
     return True
   return False
@@ -273,3 +276,28 @@ def ValidateClusterCreateRequest(req, release_track):
         ' specification of version'
     )
   return None
+
+
+def SetContainerRuntimeConfig(req, args):
+  """Set container runtime config in the cluster request message.
+
+  Args:
+    req: Create cluster request message.
+    args: Command line arguments.
+  """
+  messages = util.GetMessagesModule(base.ReleaseTrack.ALPHA)
+  if flags.FlagIsExplicitlySet(args, 'container_default_runtime_class'):
+    req.cluster.containerRuntimeConfig = messages.ContainerRuntimeConfig()
+    if args.container_default_runtime_class.upper() == 'GVISOR':
+      req.cluster.containerRuntimeConfig.defaultContainerRuntime = (
+          messages.ContainerRuntimeConfig.DefaultContainerRuntimeValueValuesEnum.GVISOR
+      )
+    elif args.container_default_runtime_class.upper() == 'RUNC':
+      req.cluster.containerRuntimeConfig.defaultContainerRuntime = (
+          messages.ContainerRuntimeConfig.DefaultContainerRuntimeValueValuesEnum.RUNC
+      )
+    else:
+      raise ValueError(
+          'Unsupported --container_default_runtime_class value: '
+          + args.container_default_runtime_class
+      )

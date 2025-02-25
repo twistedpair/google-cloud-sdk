@@ -100,7 +100,7 @@ class GoogleIamV3betaOperationMetadata(_messages.Message):
 
 
 class GoogleIamV3betaPolicyBinding(_messages.Message):
-  r"""IAM policy binding
+  r"""IAM policy binding resource.
 
   Enums:
     PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
@@ -226,17 +226,22 @@ class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
 
   Fields:
     principalSet: Immutable. Full Resource Name used for principal access
-      boundary policy bindings Examples: * Organization:
+      boundary policy bindings. The principal set must be directly parented by
+      the policy binding's parent or same as the parent if the target is a
+      project/folder/organization. Examples: * For binding's parented by an
+      organization: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
-      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
-      Project: *
+      Workforce Identity:
+      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
+      * Workspace Identity:
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` * For
+      binding's parented by a folder: * Folder:
+      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` * For
+      binding's parented by a project: * Project: *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
-      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` * Workforce Identity:
-      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
-      * Workspace Identity:
-      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
     resource: Immutable. Full Resource Name used for access policy bindings
       Examples: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *

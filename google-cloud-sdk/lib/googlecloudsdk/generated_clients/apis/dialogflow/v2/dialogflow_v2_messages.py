@@ -4582,7 +4582,7 @@ class GoogleCloudDialogflowCxV3AdvancedSettingsSpeechSettings(_messages.Message)
       models).
     noSpeechTimeout: Timeout before detecting no speech.
     useTimeoutBasedEndpointing: Use timeout based endpointing, interpreting
-      endpointer sensitivy as seconds of timeout value.
+      endpointer sensitivity as seconds of timeout value.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5908,7 +5908,7 @@ class GoogleCloudDialogflowCxV3Page(_messages.Message):
     transitionRoutes: A list of transitions for the transition rules of this
       page. They route the conversation to another page in the same flow, or
       another flow. When we are in a certain page, the TransitionRoutes are
-      evalauted in the following order: * TransitionRoutes defined in the page
+      evaluated in the following order: * TransitionRoutes defined in the page
       with intent specified. * TransitionRoutes defined in the transition
       route groups with intent specified. * TransitionRoutes defined in flow
       with intent specified. * TransitionRoutes defined in the transition
@@ -7304,7 +7304,7 @@ class GoogleCloudDialogflowCxV3beta1AdvancedSettingsSpeechSettings(_messages.Mes
       models).
     noSpeechTimeout: Timeout before detecting no speech.
     useTimeoutBasedEndpointing: Use timeout based endpointing, interpreting
-      endpointer sensitivy as seconds of timeout value.
+      endpointer sensitivity as seconds of timeout value.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -8630,7 +8630,7 @@ class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
     transitionRoutes: A list of transitions for the transition rules of this
       page. They route the conversation to another page in the same flow, or
       another flow. When we are in a certain page, the TransitionRoutes are
-      evalauted in the following order: * TransitionRoutes defined in the page
+      evaluated in the following order: * TransitionRoutes defined in the page
       with intent specified. * TransitionRoutes defined in the transition
       route groups with intent specified. * TransitionRoutes defined in flow
       with intent specified. * TransitionRoutes defined in the transition
@@ -10151,7 +10151,7 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
       return the package in 2 days once received?" * Suggested document says:
       "Items must be returned/exchanged within 60 days of the purchase date."
       * Ground truth: "No return or exchange is allowed." *
-      [document_correctness]: INCORRECT
+      document_correctness: INCORRECT
     DocumentEfficiencyValueValuesEnum: Optional. Whether or not the suggested
       document is efficient. For example, if the document is poorly written,
       hard to understand, hard to use or too long to find useful information,
@@ -10167,7 +10167,7 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
       document is correct. For example: * Query: "Can I return the package in
       2 days once received?" * Suggested document says: "Items must be
       returned/exchanged within 60 days of the purchase date." * Ground truth:
-      "No return or exchange is allowed." * [document_correctness]: INCORRECT
+      "No return or exchange is allowed." * document_correctness: INCORRECT
     documentEfficiency: Optional. Whether or not the suggested document is
       efficient. For example, if the document is poorly written, hard to
       understand, hard to use or too long to find useful information,
@@ -10197,7 +10197,7 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
     For example: * Query: "Can I return the package in 2 days once received?"
     * Suggested document says: "Items must be returned/exchanged within 60
     days of the purchase date." * Ground truth: "No return or exchange is
-    allowed." * [document_correctness]: INCORRECT
+    allowed." * document_correctness: INCORRECT
 
     Values:
       DOCUMENT_CORRECTNESS_UNSPECIFIED: Document correctness unspecified.
@@ -11419,7 +11419,7 @@ class GoogleCloudDialogflowV2ConversationModelEvaluation(_messages.Message):
     name: The resource name of the evaluation. Format:
       `projects//conversationModels//evaluations/`
     rawHumanEvalTemplateCsv: Output only. Human eval template in csv format.
-      It tooks real-world conversations provided through input dataset,
+      It takes real-world conversations provided through input dataset,
       generates example suggestions for customer to verify quality of the
       model. For Smart Reply, the generated csv file contains columns of
       Context, (Suggestions,Q1,Q2)*3, Actual reply. Context contains at most
@@ -12156,8 +12156,8 @@ class GoogleCloudDialogflowV2EvaluationConfig(_messages.Message):
 
   Fields:
     datasets: Required. Datasets used for evaluation.
-    smartComposeConfig: Configuration for smart compose model evalution.
-    smartReplyConfig: Configuration for smart reply model evalution.
+    smartComposeConfig: Configuration for smart compose model evaluation.
+    smartReplyConfig: Configuration for smart reply model evaluation.
   """
 
   datasets = _messages.MessageField('GoogleCloudDialogflowV2InputDataset', 1, repeated=True)
@@ -15829,7 +15829,7 @@ class GoogleCloudDialogflowV2SearchKnowledgeRequestSearchConfigBoostSpecsBoostSp
 
   Fields:
     conditionBoostSpecs: Optional. Condition boost specifications. If a
-      document matches multiple conditions in the specifictions, boost scores
+      document matches multiple conditions in the specifications, boost scores
       from these specifications are all applied and combined in a non-linear
       way. Maximum number of specifications is 20.
   """
@@ -16350,7 +16350,7 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       specified and an enhanced version of the specified model for the
       language does not exist, then it would emit an error.
     useTimeoutBasedEndpointing: Use timeout based endpointing, interpreting
-      endpointer sensitivy as seconds of timeout value.
+      endpointer sensitivity as seconds of timeout value.
   """
 
   class AudioEncodingValueValuesEnum(_messages.Enum):
@@ -16725,8 +16725,8 @@ class GoogleCloudDialogflowV2SuggestKnowledgeAssistRequest(_messages.Message):
       conversation. Format: `projects//locations//conversations//messages/`.
     previousSuggestedQuery: Optional. The previously suggested query for the
       given conversation. This helps identify whether the next suggestion we
-      generate is resonably different from the previous one. This is useful to
-      avoid similar suggestions within the conversation.
+      generate is reasonably different from the previous one. This is useful
+      to avoid similar suggestions within the conversation.
   """
 
   contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -19840,9 +19840,10 @@ class GoogleCloudDialogflowV2beta1ResponseMessageLiveAgentHandoff(_messages.Mess
   Dialogflow only uses this to determine which conversations were handed off
   to a human agent for measurement purposes. What else to do with this signal
   is up to you and your handoff procedures. You may set this, for example: *
-  In the entry fulfillment of a CX Page if entering the page indicates
-  something went extremely wrong in the conversation. * In a webhook response
-  when you determine that the customer issue can only be handled by a human.
+  In the entry fulfillment of a Dialogflow CX Page if entering the page
+  indicates something went extremely wrong in the conversation. * In a webhook
+  response when you determine that the customer issue can only be handled by a
+  human.
 
   Messages:
     MetadataValue: Custom metadata for your handoff procedure. Dialogflow

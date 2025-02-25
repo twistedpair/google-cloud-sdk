@@ -41,6 +41,38 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FLAGRELEASES = (
+      'projects.locations.flagReleases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flagReleases/'
+              '{flagReleasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FLAGREVISIONS = (
+      'projects.locations.flagRevisions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flagRevisions/'
+              '{flagRevisionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FLAGS = (
+      'projects.locations.flags',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flags/{flagsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

@@ -13,74 +13,6 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
-class AnthosObservabilityFeatureSpec(_messages.Message):
-  r"""Spec for Anthos Observability. This is required since Feature proto
-  requires a spec.
-
-  Messages:
-    MembershipSpecsValue: Per-membership spec that determines the spec in
-      Stackdriver CR
-
-  Fields:
-    defaultMembershipSpec: Default membership spec when nothing is specified.
-    membershipSpecs: Per-membership spec that determines the spec in
-      Stackdriver CR
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MembershipSpecsValue(_messages.Message):
-    r"""Per-membership spec that determines the spec in Stackdriver CR
-
-    Messages:
-      AdditionalProperty: An additional property for a MembershipSpecsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type MembershipSpecsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MembershipSpecsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A AnthosObservabilityMembershipSpec attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('AnthosObservabilityMembershipSpec', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  defaultMembershipSpec = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 2)
-
-
-class AnthosObservabilityFeatureState(_messages.Message):
-  r"""An empty state for Anthos Observability. This is required since
-  FeatureStateDetails requires a state.
-  """
-
-
-
-class AnthosObservabilityMembershipSpec(_messages.Message):
-  r"""**Anthosobservability**: Per-Membership Feature spec.
-
-  Fields:
-    doNotOptimizeMetrics: Use full of metrics rather than optimized metrics.
-      See https://cloud.google.com/anthos/clusters/docs/on-
-      prem/1.8/concepts/logging-and-
-      monitoring#optimized_metrics_default_metrics
-    enableStackdriverOnApplications: Enable collecting and reporting metrics
-      and logs from user apps.
-    version: the version of stackdriver operator used by this feature
-  """
-
-  doNotOptimizeMetrics = _messages.BooleanField(1)
-  enableStackdriverOnApplications = _messages.BooleanField(2)
-  version = _messages.StringField(3)
-
-
 class AppDevExperienceFeatureSpec(_messages.Message):
   r"""Spec for App Dev Experience Feature."""
 
@@ -600,6 +532,7 @@ class Condition(_messages.Message):
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       CLUSTER_HAS_ZERO_NODES: Cluster has zero node code
+      CANONICAL_SERVICE_ERROR: Failure to reconcile CanonicalServices
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
@@ -640,6 +573,8 @@ class Condition(_messages.Message):
       MODERNIZATION_IN_PROGRESS: Modernization is in progress for a cluster.
       MODERNIZATION_COMPLETED: Modernization is completed for a cluster.
       MODERNIZATION_ABORTED: Modernization is aborted for a cluster.
+      MODERNIZATION_WILL_BE_SCHEDULED: Modernization will be scheduled for a
+        fleet.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -650,32 +585,34 @@ class Condition(_messages.Message):
     CNI_INSTALLATION_FAILED = 6
     CNI_POD_UNSCHEDULABLE = 7
     CLUSTER_HAS_ZERO_NODES = 8
-    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 9
-    VPCSC_GA_SUPPORTED = 10
-    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT = 11
-    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT_SAFE = 12
-    CONFIG_APPLY_INTERNAL_ERROR = 13
-    CONFIG_VALIDATION_ERROR = 14
-    CONFIG_VALIDATION_WARNING = 15
-    QUOTA_EXCEEDED_BACKEND_SERVICES = 16
-    QUOTA_EXCEEDED_HEALTH_CHECKS = 17
-    QUOTA_EXCEEDED_HTTP_ROUTES = 18
-    QUOTA_EXCEEDED_TCP_ROUTES = 19
-    QUOTA_EXCEEDED_TLS_ROUTES = 20
-    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 21
-    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 22
-    QUOTA_EXCEEDED_GATEWAYS = 23
-    QUOTA_EXCEEDED_MESHES = 24
-    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 25
-    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 26
-    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 27
-    QUOTA_EXCEEDED_HTTP_FILTERS = 28
-    QUOTA_EXCEEDED_TCP_FILTERS = 29
-    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 30
-    MODERNIZATION_SCHEDULED = 31
-    MODERNIZATION_IN_PROGRESS = 32
-    MODERNIZATION_COMPLETED = 33
-    MODERNIZATION_ABORTED = 34
+    CANONICAL_SERVICE_ERROR = 9
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 10
+    VPCSC_GA_SUPPORTED = 11
+    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT = 12
+    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT_SAFE = 13
+    CONFIG_APPLY_INTERNAL_ERROR = 14
+    CONFIG_VALIDATION_ERROR = 15
+    CONFIG_VALIDATION_WARNING = 16
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 17
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 18
+    QUOTA_EXCEEDED_HTTP_ROUTES = 19
+    QUOTA_EXCEEDED_TCP_ROUTES = 20
+    QUOTA_EXCEEDED_TLS_ROUTES = 21
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 22
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 23
+    QUOTA_EXCEEDED_GATEWAYS = 24
+    QUOTA_EXCEEDED_MESHES = 25
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 26
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 27
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 28
+    QUOTA_EXCEEDED_HTTP_FILTERS = 29
+    QUOTA_EXCEEDED_TCP_FILTERS = 30
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 31
+    MODERNIZATION_SCHEDULED = 32
+    MODERNIZATION_IN_PROGRESS = 33
+    MODERNIZATION_COMPLETED = 34
+    MODERNIZATION_ABORTED = 35
+    MODERNIZATION_WILL_BE_SCHEDULED = 36
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -768,8 +705,6 @@ class ConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
-    allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
-      false which disallows vertical scaling. This field is deprecated.
     deploymentOverrides: Optional. Configuration for deployment overrides.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
@@ -798,15 +733,14 @@ class ConfigSync(_messages.Message):
       Default to false.
   """
 
-  allowVerticalScale = _messages.BooleanField(1)
-  deploymentOverrides = _messages.MessageField('DeploymentOverride', 2, repeated=True)
-  enabled = _messages.BooleanField(3)
-  git = _messages.MessageField('GitConfig', 4)
-  metricsGcpServiceAccountEmail = _messages.StringField(5)
-  oci = _messages.MessageField('OciConfig', 6)
-  preventDrift = _messages.BooleanField(7)
-  sourceFormat = _messages.StringField(8)
-  stopSyncing = _messages.BooleanField(9)
+  deploymentOverrides = _messages.MessageField('DeploymentOverride', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
+  git = _messages.MessageField('GitConfig', 3)
+  metricsGcpServiceAccountEmail = _messages.StringField(4)
+  oci = _messages.MessageField('OciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -1580,8 +1514,6 @@ class Feature(_messages.Message):
     LabelsValue: Labels for this feature.
 
   Fields:
-    anthosobservabilityFeatureSpec: The specification for Anthos
-      Observability.
     appdevexperienceFeatureSpec: The specification for App Dev Experience.
     authorizerFeatureSpec: The specification for the Authorizer Feature.
     cloudauditloggingFeatureSpec: The specification for Anthos Cloud Audit
@@ -1646,34 +1578,33 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  anthosobservabilityFeatureSpec = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
-  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
-  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 3)
-  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 4)
-  cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 5)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 6)
-  createTime = _messages.StringField(7)
-  dataplanev2FeatureSpec = _messages.MessageField('DataplaneV2FeatureSpec', 8)
-  deleteTime = _messages.StringField(9)
-  description = _messages.StringField(10)
-  featureState = _messages.MessageField('FeatureState', 11)
-  fleetDefaultMemberConfig = _messages.MessageField('FleetDefaultMemberConfig', 12)
-  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 13)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 14)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 17)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 18)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 19)
-  name = _messages.StringField(20)
-  namespaceactuationFeatureSpec = _messages.MessageField('NamespaceActuationFeatureSpec', 21)
-  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 22)
-  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 23)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 24)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 25)
-  unreachable = _messages.StringField(26, repeated=True)
-  updateTime = _messages.StringField(27)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 28)
+  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
+  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 2)
+  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
+  cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 4)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 5)
+  createTime = _messages.StringField(6)
+  dataplanev2FeatureSpec = _messages.MessageField('DataplaneV2FeatureSpec', 7)
+  deleteTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  featureState = _messages.MessageField('FeatureState', 10)
+  fleetDefaultMemberConfig = _messages.MessageField('FleetDefaultMemberConfig', 11)
+  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 12)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 13)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 16)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 17)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 18)
+  name = _messages.StringField(19)
+  namespaceactuationFeatureSpec = _messages.MessageField('NamespaceActuationFeatureSpec', 20)
+  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 21)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 22)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 23)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 24)
+  unreachable = _messages.StringField(25, repeated=True)
+  updateTime = _messages.StringField(26)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 27)
 
 
 class FeatureError(_messages.Message):
@@ -1866,8 +1797,6 @@ class FeatureStateDetails(_messages.Message):
       return the Feature to `OK`.
 
   Fields:
-    anthosobservabilityFeatureState: State for the Anthos Observability
-      Feature
     appdevexperienceFeatureState: State for the AppDevExperience Feature.
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
@@ -1918,27 +1847,26 @@ class FeatureStateDetails(_messages.Message):
     FAILED = 2
     WARNING = 3
 
-  anthosobservabilityFeatureState = _messages.MessageField('AnthosObservabilityFeatureState', 1)
-  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 2)
-  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 3)
-  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 4)
-  code = _messages.EnumField('CodeValueValuesEnum', 5)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 6)
-  dataplanev2FeatureState = _messages.MessageField('DataplaneV2FeatureState', 7)
-  description = _messages.StringField(8)
-  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 9)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 10)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 11)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 12)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
-  namespaceactuationFeatureState = _messages.MessageField('NamespaceActuationFeatureState', 15)
-  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 16)
-  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 17)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 18)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 19)
-  updateTime = _messages.StringField(20)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 21)
+  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 1)
+  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 2)
+  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 3)
+  code = _messages.EnumField('CodeValueValuesEnum', 4)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 5)
+  dataplanev2FeatureState = _messages.MessageField('DataplaneV2FeatureState', 6)
+  description = _messages.StringField(7)
+  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 8)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 9)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 10)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 11)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 12)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 13)
+  namespaceactuationFeatureState = _messages.MessageField('NamespaceActuationFeatureState', 14)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 15)
+  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 16)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 17)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 18)
+  updateTime = _messages.StringField(19)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 20)
 
 
 class FleetDefaultMemberConfig(_messages.Message):

@@ -4850,12 +4850,18 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
       billingAccounts/123456-123456-123456 Required if Subscription is of Paid
       type.
     createTime: Output only. Create time of the subscription.
-    endTime: Output only. End time of the subscription.
+    csgCustomer: Optional. Whether the subscription is being created as part
+      of the Citrix flow. If this field is set to true, the subscription
+      should have both the start_time and end_time set in the request and the
+      billing account used will be the Citrix master billing account
+      regardless of what its set to in the request. This field can only be set
+      to true in create requests.
+    endTime: Optional. End time of the subscription.
     name: Identifier. Unique resource name of the Subscription. The name is
       ignored when creating a subscription.
     seatCount: Optional. Number of seats in the subscription.
     sku: Required. SKU of subscription.
-    startTime: Output only. Start time of the subscription.
+    startTime: Optional. Start time of the subscription.
     state: Output only. The current state of the subscription.
     subscriberType: Output only. Type of subscriber.
     type: Required. Type of subscription.
@@ -4914,14 +4920,15 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
   autoRenewEnabled = _messages.BooleanField(1)
   billingAccount = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  seatCount = _messages.IntegerField(6)
-  sku = _messages.EnumField('SkuValueValuesEnum', 7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  subscriberType = _messages.EnumField('SubscriberTypeValueValuesEnum', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  csgCustomer = _messages.BooleanField(4)
+  endTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  seatCount = _messages.IntegerField(7)
+  sku = _messages.EnumField('SkuValueValuesEnum', 8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  subscriberType = _messages.EnumField('SubscriberTypeValueValuesEnum', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGatewayOperationMetadata(_messages.Message):

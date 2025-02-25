@@ -167,7 +167,7 @@ class Binding(_messages.Message):
 
 class BranchRule(_messages.Message):
   r"""Metadata of a BranchRule. BranchRule is the protection rule to enforce
-  pre-defined rules on desginated branches within a repository.
+  pre-defined rules on designated branches within a repository.
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be

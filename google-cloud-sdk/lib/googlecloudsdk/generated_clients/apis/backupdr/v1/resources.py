@@ -97,6 +97,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASOURCEREFERENCES = (
+      'projects.locations.dataSourceReferences',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dataSourceReferences/{dataSourceReferencesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MANAGEMENTSERVERS = (
       'projects.locations.managementServers',
       '{+name}',

@@ -3027,7 +3027,7 @@ class Restore(_messages.Message):
     filter: Optional. Immutable. Filters resources for `Restore`. If not
       specified, the scope of the restore will remain the same as defined in
       the `RestorePlan`. If this is specified and no resources are matched by
-      the `inclusion_filters` or everyting is excluded by the
+      the `inclusion_filters` or everything is excluded by the
       `exclusion_filters`, nothing will be restored. This filter can only be
       specified if the value of namespaced_resource_restore_mode is set to
       `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
@@ -4056,6 +4056,8 @@ class VolumeBackup(_messages.Message):
       FAILED: The volume backup operation has failed.
       DELETING: This VolumeBackup resource (and its associated artifacts) is
         in the process of being deleted.
+      CLEANED_UP: The underlying artifacts of a volume backup (eg: persistent
+        disk snapshots) are deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -4064,6 +4066,7 @@ class VolumeBackup(_messages.Message):
     SUCCEEDED = 4
     FAILED = 5
     DELETING = 6
+    CLEANED_UP = 7
 
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)

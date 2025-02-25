@@ -114,7 +114,6 @@ def _ToV2ConfigManagementConfigSync(
     return None
 
   v2_configsync = self.messages_v2.ConfigManagementConfigSync()
-  v2_configsync.allowVerticalScale = v1_configsync.allowVerticalScale
   v2_configsync.enabled = v1_configsync.enabled
   v2_configsync.git = _ToV2ConfigManagementGitConfig(self, v1_configsync.git)
   v2_configsync.metricsGcpServiceAccountEmail = (

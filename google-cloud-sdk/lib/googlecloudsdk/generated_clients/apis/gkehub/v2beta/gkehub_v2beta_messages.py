@@ -432,9 +432,6 @@ class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
-    allowVerticalScale: Optional. Set to true to allow the vertical scaling.
-      Defaults to false which disallows vertical scaling. This field is
-      deprecated.
     deploymentOverrides: Optional. Configuration for deployment overrides.
     enabled: Optional. Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
@@ -463,15 +460,14 @@ class ConfigManagementConfigSync(_messages.Message):
       cluster. Default to false.
   """
 
-  allowVerticalScale = _messages.BooleanField(1)
-  deploymentOverrides = _messages.MessageField('ConfigManagementDeploymentOverride', 2, repeated=True)
-  enabled = _messages.BooleanField(3)
-  git = _messages.MessageField('ConfigManagementGitConfig', 4)
-  metricsGcpServiceAccountEmail = _messages.StringField(5)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
-  preventDrift = _messages.BooleanField(7)
-  sourceFormat = _messages.StringField(8)
-  stopSyncing = _messages.BooleanField(9)
+  deploymentOverrides = _messages.MessageField('ConfigManagementDeploymentOverride', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
+  git = _messages.MessageField('ConfigManagementGitConfig', 3)
+  metricsGcpServiceAccountEmail = _messages.StringField(4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1575,6 +1571,7 @@ class FeatureState(_messages.Message):
     rbacrolebindingactuation: RBAC Role Binding Actuation state
     servicemesh: Service mesh state
     state: The high-level state of this MembershipFeature.
+    workloadidentity: Workload Identity state
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceState', 1)
@@ -1589,6 +1586,7 @@ class FeatureState(_messages.Message):
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationState', 10)
   servicemesh = _messages.MessageField('ServiceMeshState', 11)
   state = _messages.MessageField('State', 12)
+  workloadidentity = _messages.MessageField('WorkloadIdentityState', 13)
 
 
 class GetReferenceRequest(_messages.Message):
@@ -3375,26 +3373,64 @@ class PolicyControllerToleration(_messages.Message):
   value = _messages.StringField(4)
 
 
+class RBACRoleBindingActuationRBACRoleBindingState(_messages.Message):
+  r"""RBACRoleBindingState is the status of an RBACRoleBinding which exists on
+  a membership.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the RBACRoleBinding.
+
+  Fields:
+    description: The reason for the failure.
+    state: Output only. The state of the RBACRoleBinding.
+    updateTime: The time the RBACRoleBinding status was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the RBACRoleBinding.
+
+    Values:
+      ROLE_BINDING_STATE_UNSPECIFIED: Unspecified state.
+      OK: RBACRoleBinding is created properly on the cluster.
+      CUSTOM_ROLE_MISSING_FROM_CLUSTER: The RBACRoleBinding was created on the
+        cluster but the specified custom role does not exist on the cluster,
+        hence the RBACRoleBinding has no effect.
+    """
+    ROLE_BINDING_STATE_UNSPECIFIED = 0
+    OK = 1
+    CUSTOM_ROLE_MISSING_FROM_CLUSTER = 2
+
+  description = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
+
+
 class RBACRoleBindingActuationSpec(_messages.Message):
   r"""**RBAC RoleBinding Actuation**: The membership-specific input for
   RBACRoleBindingActuation feature.
-
-  Fields:
-    actuationDisabled: A boolean attribute.
   """
 
-  actuationDisabled = _messages.BooleanField(1)
 
 
 class RBACRoleBindingActuationState(_messages.Message):
-  r"""**RBAC RoleBinding Actuation**: An empty state left as an example
-  membership-specific Feature state.
+  r"""**RBAC RoleBinding Actuation**: A membership-specific Feature state for
+  the RBACRoleBindingActuation fleet feature.
 
   Enums:
     LifecycleStateValueValuesEnum:
 
+  Messages:
+    RbacrolebindingStatesValue: Output only. The state of RBACRoleBindings
+      using custom roles that exist on the cluster, keyed by RBACRoleBinding
+      resource name with format: projects/{project}/locations/{location}/scope
+      s/{scope}/rbacrolebindings/{rbacrolebinding}.
+
   Fields:
     lifecycleState: A LifecycleStateValueValuesEnum attribute.
+    rbacrolebindingStates: Output only. The state of RBACRoleBindings using
+      custom roles that exist on the cluster, keyed by RBACRoleBinding
+      resource name with format: projects/{project}/locations/{location}/scope
+      s/{scope}/rbacrolebindings/{rbacrolebinding}.
     stateDetails: A string attribute.
   """
 
@@ -3410,8 +3446,38 @@ class RBACRoleBindingActuationState(_messages.Message):
     ACTIVE = 1
     ERROR = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RbacrolebindingStatesValue(_messages.Message):
+    r"""Output only. The state of RBACRoleBindings using custom roles that
+    exist on the cluster, keyed by RBACRoleBinding resource name with format:
+    projects/{project}/locations/{location}/scopes/{scope}/rbacrolebindings/{r
+    bacrolebinding}.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        RbacrolebindingStatesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RbacrolebindingStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RbacrolebindingStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RBACRoleBindingActuationRBACRoleBindingState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RBACRoleBindingActuationRBACRoleBindingState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 1)
-  stateDetails = _messages.StringField(2)
+  rbacrolebindingStates = _messages.MessageField('RbacrolebindingStatesValue', 2)
+  stateDetails = _messages.StringField(3)
 
 
 class Reference(_messages.Message):
@@ -3595,6 +3661,7 @@ class ServiceMeshCondition(_messages.Message):
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       CLUSTER_HAS_ZERO_NODES: Cluster has zero node code
+      CANONICAL_SERVICE_ERROR: Failure to reconcile CanonicalServices
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
@@ -3635,6 +3702,8 @@ class ServiceMeshCondition(_messages.Message):
       MODERNIZATION_IN_PROGRESS: Modernization is in progress for a cluster.
       MODERNIZATION_COMPLETED: Modernization is completed for a cluster.
       MODERNIZATION_ABORTED: Modernization is aborted for a cluster.
+      MODERNIZATION_WILL_BE_SCHEDULED: Modernization will be scheduled for a
+        fleet.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -3645,32 +3714,34 @@ class ServiceMeshCondition(_messages.Message):
     CNI_INSTALLATION_FAILED = 6
     CNI_POD_UNSCHEDULABLE = 7
     CLUSTER_HAS_ZERO_NODES = 8
-    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 9
-    VPCSC_GA_SUPPORTED = 10
-    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT = 11
-    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT_SAFE = 12
-    CONFIG_APPLY_INTERNAL_ERROR = 13
-    CONFIG_VALIDATION_ERROR = 14
-    CONFIG_VALIDATION_WARNING = 15
-    QUOTA_EXCEEDED_BACKEND_SERVICES = 16
-    QUOTA_EXCEEDED_HEALTH_CHECKS = 17
-    QUOTA_EXCEEDED_HTTP_ROUTES = 18
-    QUOTA_EXCEEDED_TCP_ROUTES = 19
-    QUOTA_EXCEEDED_TLS_ROUTES = 20
-    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 21
-    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 22
-    QUOTA_EXCEEDED_GATEWAYS = 23
-    QUOTA_EXCEEDED_MESHES = 24
-    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 25
-    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 26
-    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 27
-    QUOTA_EXCEEDED_HTTP_FILTERS = 28
-    QUOTA_EXCEEDED_TCP_FILTERS = 29
-    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 30
-    MODERNIZATION_SCHEDULED = 31
-    MODERNIZATION_IN_PROGRESS = 32
-    MODERNIZATION_COMPLETED = 33
-    MODERNIZATION_ABORTED = 34
+    CANONICAL_SERVICE_ERROR = 9
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 10
+    VPCSC_GA_SUPPORTED = 11
+    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT = 12
+    DEPRECATED_SPEC_CONTROL_PLANE_MANAGEMENT_SAFE = 13
+    CONFIG_APPLY_INTERNAL_ERROR = 14
+    CONFIG_VALIDATION_ERROR = 15
+    CONFIG_VALIDATION_WARNING = 16
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 17
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 18
+    QUOTA_EXCEEDED_HTTP_ROUTES = 19
+    QUOTA_EXCEEDED_TCP_ROUTES = 20
+    QUOTA_EXCEEDED_TLS_ROUTES = 21
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 22
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 23
+    QUOTA_EXCEEDED_GATEWAYS = 24
+    QUOTA_EXCEEDED_MESHES = 25
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 26
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 27
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 28
+    QUOTA_EXCEEDED_HTTP_FILTERS = 29
+    QUOTA_EXCEEDED_TCP_FILTERS = 30
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 31
+    MODERNIZATION_SCHEDULED = 32
+    MODERNIZATION_IN_PROGRESS = 33
+    MODERNIZATION_COMPLETED = 34
+    MODERNIZATION_ABORTED = 35
+    MODERNIZATION_WILL_BE_SCHEDULED = 36
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -4256,6 +4327,18 @@ class WorkloadCertificateSpec(_messages.Message):
     ENABLED = 2
 
   certificateManagement = _messages.EnumField('CertificateManagementValueValuesEnum', 1)
+
+
+class WorkloadIdentityState(_messages.Message):
+  r"""**WorkloadIdentity**: The membership-specific state for WorkloadIdentity
+  feature.
+
+  Fields:
+    description: A human-readable description of the current state or returned
+      error.
+  """
+
+  description = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

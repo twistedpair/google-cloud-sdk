@@ -47,15 +47,15 @@ class WireGroup(object):
 
   def _MakeCreateRequestTuple(
       self,
-      description,
-      wire_group_type,
-      bandwidth_unmetered,
-      bandwidth_metered,
-      fault_response,
-      admin_enabled,
-      network_service_class,
-      bandwidth_allocation,
-      validate_only,
+      description=None,
+      wire_group_type=None,
+      bandwidth_unmetered=None,
+      bandwidth_metered=None,
+      fault_response=None,
+      admin_enabled=None,
+      network_service_class=None,
+      bandwidth_allocation=None,
+      validate_only=None,
   ):
     """Make a tuple for wire group insert request.
 
@@ -70,39 +70,52 @@ class WireGroup(object):
       network_service_class: the network service class of the wire group.
       bandwidth_allocation: the bandwidth allocation for the wire group.
       validate_only: only validates the configuration, but doesn't create it.
+
     Returns:
     Insert wire group tuple that can be used in a request.
     """
     messages = self._messages
+
+    wire_group = messages.WireGroup(
+        name=self.ref.Name(),
+        description=description,
+        wireGroupProperties=messages.WireGroupProperties(
+            type=messages.WireGroupProperties.TypeValueValuesEnum(
+                wire_group_type
+            ) if wire_group_type else None,
+        ),
+        wireProperties=messages.WireProperties(
+            bandwidthUnmetered=bandwidth_unmetered,
+            faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
+                fault_response
+            ) if fault_response else None,
+        ),
+        adminEnabled=admin_enabled,
+    )
+
+    # The following attributes are only available in ALPHA.
+    if bandwidth_metered:
+      wire_group.wireProperties.bandwidthMetered = bandwidth_metered
+    if network_service_class:
+      wire_group.wireProperties.networkServiceClass = (
+          messages.WireProperties.NetworkServiceClassValueValuesEnum(
+              network_service_class
+          )
+      )
+    if bandwidth_allocation:
+      wire_group.wireProperties.bandwidthAllocation = (
+          messages.WireProperties.BandwidthAllocationValueValuesEnum(
+              bandwidth_allocation
+          )
+      )
+
     return (
         self._client.wireGroups,
         'Insert',
         messages.ComputeWireGroupsInsertRequest(
             project=self.project,
             crossSiteNetwork=self.cross_site_network,
-            wireGroup=messages.WireGroup(
-                name=self.ref.Name(),
-                description=description,
-                wireGroupProperties=messages.WireGroupProperties(
-                    type=messages.WireGroupProperties.TypeValueValuesEnum(
-                        wire_group_type
-                    ),
-                ),
-                wireProperties=messages.WireProperties(
-                    bandwidthUnmetered=bandwidth_unmetered,
-                    bandwidthMetered=bandwidth_metered,
-                    networkServiceClass=messages.WireProperties.NetworkServiceClassValueValuesEnum(
-                        network_service_class
-                    ) if network_service_class else None,
-                    bandwidthAllocation=messages.WireProperties.BandwidthAllocationValueValuesEnum(
-                        bandwidth_allocation
-                    ) if bandwidth_allocation else None,
-                    faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
-                        fault_response
-                    ) if fault_response else None,
-                ),
-                adminEnabled=admin_enabled,
-            ),
+            wireGroup=wire_group,
             validateOnly=validate_only,
         ),
     )
@@ -118,7 +131,7 @@ class WireGroup(object):
       network_service_class=None,
       bandwidth_allocation=None,
       endpoints=None,
-      validate_only=False,
+      validate_only=None,
       update_mask=None,
   ):
     """Make a tuple for wire group patch request."""
@@ -127,24 +140,57 @@ class WireGroup(object):
     if update_mask is None:
       update_mask = []
 
-    if description:
+    if description is not None:
       update_mask.append('description')
-    if wire_group_type:
+    if wire_group_type is not None:
       update_mask.append('wireGroupProperties.type')
-    if bandwidth_unmetered:
+    if bandwidth_unmetered is not None:
       update_mask.append('wireProperties.bandwidthUnmetered')
-    if bandwidth_metered:
+    if bandwidth_metered is not None:
       update_mask.append('wireProperties.bandwidthMetered')
-    if network_service_class:
+    if network_service_class is not None:
       update_mask.append('wireProperties.networkServiceClass')
-    if bandwidth_allocation:
+    if bandwidth_allocation is not None:
       update_mask.append('wireProperties.bandwidthAllocation')
-    if fault_response:
+    if fault_response is not None:
       update_mask.append('wireProperties.faultResponse')
-    if admin_enabled:
+    if admin_enabled is not None:
       update_mask.append('adminEnabled')
-    if endpoints:
+    if endpoints is not None:
       update_mask.append('endpoints')
+
+    wire_group = messages.WireGroup(
+        description=description,
+        wireGroupProperties=messages.WireGroupProperties(
+            type=messages.WireGroupProperties.TypeValueValuesEnum(
+                wire_group_type
+            ) if wire_group_type else None,
+        ),
+        wireProperties=messages.WireProperties(
+            bandwidthUnmetered=bandwidth_unmetered,
+            faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
+                fault_response
+            ) if fault_response else None,
+        ),
+        adminEnabled=admin_enabled,
+        endpoints=endpoints,
+    )
+
+    # The following attributes are only available in ALPHA.
+    if bandwidth_metered:
+      wire_group.wireProperties.bandwidthMetered = bandwidth_metered
+    if network_service_class:
+      wire_group.wireProperties.networkServiceClass = (
+          messages.WireProperties.NetworkServiceClassValueValuesEnum(
+              network_service_class
+          )
+      )
+    if bandwidth_allocation:
+      wire_group.wireProperties.bandwidthAllocation = (
+          messages.WireProperties.BandwidthAllocationValueValuesEnum(
+              bandwidth_allocation
+          )
+      )
 
     return (
         self._client.wireGroups,
@@ -153,30 +199,8 @@ class WireGroup(object):
             project=self.project,
             crossSiteNetwork=self.cross_site_network,
             wireGroup=self.ref.Name(),
-            wireGroupResource=messages.WireGroup(
-                description=description,
-                wireGroupProperties=messages.WireGroupProperties(
-                    type=messages.WireGroupProperties.TypeValueValuesEnum(
-                        wire_group_type
-                    ) if wire_group_type else None,
-                ),
-                wireProperties=messages.WireProperties(
-                    bandwidthUnmetered=bandwidth_unmetered,
-                    bandwidthMetered=bandwidth_metered,
-                    networkServiceClass=messages.WireProperties.NetworkServiceClassValueValuesEnum(
-                        network_service_class
-                    ) if network_service_class else None,
-                    bandwidthAllocation=messages.WireProperties.BandwidthAllocationValueValuesEnum(
-                        bandwidth_allocation
-                    ) if bandwidth_allocation else None,
-                    faultResponse=messages.WireProperties.FaultResponseValueValuesEnum(
-                        fault_response
-                    ) if fault_response else None,
-                ),
-                adminEnabled=admin_enabled,
-                endpoints=endpoints or None,
-            ),
-            validateOnly=validate_only if validate_only else None,
+            wireGroupResource=wire_group,
+            validateOnly=validate_only,
             updateMask=','.join(update_mask),
         ),
     )
@@ -213,7 +237,7 @@ class WireGroup(object):
       admin_enabled=None,
       network_service_class=None,
       bandwidth_allocation=None,
-      validate_only=False,
+      validate_only=None,
       only_generate_request=False,
   ):
     """Create a wire group."""

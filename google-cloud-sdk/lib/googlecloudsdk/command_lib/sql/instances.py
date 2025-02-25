@@ -1093,11 +1093,10 @@ class _BaseInstances(object):
       if instance_resource.replicationCluster is not None:
         instance_resource.replicationCluster.ClearFailoverDrReplicaName()
 
-    if IsBetaOrNewer(release_track):
-      if args.IsKnownAndSpecified('include_replicas_for_major_version_upgrade'):
-        instance_resource.includeReplicasForMajorVersionUpgrade = (
-            args.include_replicas_for_major_version_upgrade
-        )
+    if args.IsKnownAndSpecified('include_replicas_for_major_version_upgrade'):
+      instance_resource.includeReplicasForMajorVersionUpgrade = (
+          args.include_replicas_for_major_version_upgrade
+      )
 
     return instance_resource
 

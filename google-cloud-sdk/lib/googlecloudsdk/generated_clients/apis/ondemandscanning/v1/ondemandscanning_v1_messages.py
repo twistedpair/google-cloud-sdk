@@ -177,13 +177,13 @@ class BaseImage(_messages.Message):
   r"""BaseImage describes a base image of a container image.
 
   Fields:
+    layerCount: The number of layers that the base image is composed of.
     name: The name of the base image.
-    numLayers: The number of layers that the base image is composed of.
     repository: The repository name in which the base image is from.
   """
 
-  name = _messages.StringField(1)
-  numLayers = _messages.StringField(2)
+  layerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2)
   repository = _messages.StringField(3)
 
 
@@ -871,9 +871,11 @@ class FileLocation(_messages.Message):
   Fields:
     filePath: For jars that are contained inside .war files, this filepath can
       indicate the path to war file combined with the path to jar file.
+    layerDetails: A LayerDetails attribute.
   """
 
   filePath = _messages.StringField(1)
+  layerDetails = _messages.MessageField('LayerDetails', 2)
 
 
 class Fingerprint(_messages.Message):
@@ -925,15 +927,51 @@ class GitSourceContext(_messages.Message):
   url = _messages.StringField(2)
 
 
+class GrafeasV1BaseImage(_messages.Message):
+  r"""BaseImage describes a base image of a container image.
+
+  Fields:
+    layerCount: The number of layers that the base image is composed of.
+    name: The name of the base image.
+    repository: The repository name in which the base image is from.
+  """
+
+  layerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2)
+  repository = _messages.StringField(3)
+
+
 class GrafeasV1FileLocation(_messages.Message):
   r"""Indicates the location at which a package was found.
 
   Fields:
     filePath: For jars that are contained inside .war files, this filepath can
       indicate the path to war file combined with the path to jar file.
+    layerDetails: Each package found in a file should have its own layer
+      metadata (that is, information from the origin layer of the package).
   """
 
   filePath = _messages.StringField(1)
+  layerDetails = _messages.MessageField('GrafeasV1LayerDetails', 2)
+
+
+class GrafeasV1LayerDetails(_messages.Message):
+  r"""Details about the layer a package was found in.
+
+  Fields:
+    baseImages: The base images the layer is found within.
+    command: The layer build command that was used to build the layer. This
+      may not be found in all layers depending on how the container image is
+      built.
+    diffId: The diff ID (typically a sha256 hash) of the layer in the
+      container image.
+    index: The index of the layer in the container image.
+  """
+
+  baseImages = _messages.MessageField('GrafeasV1BaseImage', 1, repeated=True)
+  command = _messages.StringField(2)
+  diffId = _messages.StringField(3)
+  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GrafeasV1SlsaProvenanceZeroTwoSlsaBuilder(_messages.Message):

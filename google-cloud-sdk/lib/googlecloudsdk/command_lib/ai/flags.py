@@ -453,10 +453,7 @@ or exclusively from on-demand capacity.
       default=False,
       required=False,
       help="""\
-If true, online prediction access logs are sent to Cloud Logging.
-
-These logs are standard server access logs, containing information like
-timestamp and latency for each prediction request.
+If true, schedule the deployment workload on Spot VMs.
 """,
   ).AddToParser(parser)
 

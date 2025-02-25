@@ -504,7 +504,7 @@ class CloudStorageConfig(_messages.Message):
       the limit.
     maxDuration: Optional. The maximum duration that can elapse before a new
       Cloud Storage file is created. Min 1 minute, max 10 minutes, default 5
-      minutes. May not exceed the subscription's acknowledgement deadline.
+      minutes. May not exceed the subscription's acknowledgment deadline.
     maxMessages: Optional. The maximum number of messages that can be written
       to a Cloud Storage file before a new file is created. Min 1000 messages.
     serviceAccountEmail: Optional. The service account to use to write to
@@ -690,7 +690,7 @@ class DeadLetterPolicy(_messages.Message):
     maxDeliveryAttempts: Optional. The maximum number of delivery attempts for
       any message. The value must be between 5 and 100. The number of delivery
       attempts is defined as 1 + (the sum of number of NACKs and number of
-      times the acknowledgement deadline has been exceeded for the message). A
+      times the acknowledgment deadline has been exceeded for the message). A
       NACK is any call to ModifyAckDeadline with a 0 deadline. Note that
       client libraries may automatically extend ack_deadlines. This field will
       be honored on a best effort basis. If this parameter is 0, a default
@@ -2308,7 +2308,7 @@ class RetryPolicy(_messages.Message):
   r"""A policy that specifies how Pub/Sub retries message delivery. Retry
   delay will be exponential based on provided minimum and maximum backoffs.
   https://en.wikipedia.org/wiki/Exponential_backoff. RetryPolicy will be
-  triggered on NACKs or acknowledgement deadline exceeded events for a given
+  triggered on NACKs or acknowledgment deadline exceeded events for a given
   message. Retry Policy is implemented on a best effort basis. At times, the
   delay between consecutive deliveries may not match the configuration. That
   is, delay can be more or less than configured backoff.
@@ -2681,12 +2681,12 @@ class Subscription(_messages.Message):
     enableExactlyOnceDelivery: Optional. If true, Pub/Sub provides the
       following guarantees for the delivery of a message with a given value of
       `message_id` on this subscription: * The message sent to a subscriber is
-      guaranteed not to be resent before the message's acknowledgement
-      deadline expires. * An acknowledged message will not be resent to a
-      subscriber. Note that subscribers may still receive multiple copies of a
-      message when `enable_exactly_once_delivery` is true if the message was
-      published multiple times by a publisher client. These copies are
-      considered distinct by Pub/Sub and have distinct `message_id` values.
+      guaranteed not to be resent before the message's acknowledgment deadline
+      expires. * An acknowledged message will not be resent to a subscriber.
+      Note that subscribers may still receive multiple copies of a message
+      when `enable_exactly_once_delivery` is true if the message was published
+      multiple times by a publisher client. These copies are considered
+      distinct by Pub/Sub and have distinct `message_id` values.
     enableMessageOrdering: Optional. If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
       in the order in which they are received by the Pub/Sub system.
@@ -2738,7 +2738,7 @@ class Subscription(_messages.Message):
       delivery for this subscription. If not set, the default retry policy is
       applied. This generally implies that messages will be retried as soon as
       possible for healthy subscribers. RetryPolicy will be triggered on NACKs
-      or acknowledgement deadline exceeded events for a given message.
+      or acknowledgment deadline exceeded events for a given message.
     state: Output only. An output-only field indicating whether or not the
       subscription can receive messages.
     topic: Required. The name of the topic from which this subscription is

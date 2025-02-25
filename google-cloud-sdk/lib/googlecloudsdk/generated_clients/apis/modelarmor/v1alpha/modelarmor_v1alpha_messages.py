@@ -1242,6 +1242,8 @@ class SdpDeidentifyResult(_messages.Message):
     data: De-identified data.
     executionState: Output only. Reports whether Sensitive Data Protection
       deidentification was successfully executed or not.
+    infoTypes: List of Sensitive Data Protection info-types that were de-
+      identified.
     matchState: Output only. Match state for Sensitive Data Protection
       Deidentification. Value is MATCH_FOUND if content is de-identified.
     messageItems: Optional messages corresponding to the result. A message can
@@ -1280,9 +1282,10 @@ class SdpDeidentifyResult(_messages.Message):
 
   data = _messages.MessageField('DataItem', 1)
   executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 2)
-  matchState = _messages.EnumField('MatchStateValueValuesEnum', 3)
-  messageItems = _messages.MessageField('MessageItem', 4, repeated=True)
-  transformedBytes = _messages.IntegerField(5)
+  infoTypes = _messages.StringField(3, repeated=True)
+  matchState = _messages.EnumField('MatchStateValueValuesEnum', 4)
+  messageItems = _messages.MessageField('MessageItem', 5, repeated=True)
+  transformedBytes = _messages.IntegerField(6)
 
 
 class SdpFilterResult(_messages.Message):

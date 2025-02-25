@@ -5,6 +5,101 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 512.0.0 (2025-02-25)
+
+### Breaking Changes
+
+*   **(Cloud Dataflow)** Removed `gcloud dataflow sql` command group. See [Beam YAML](https://beam.apache.org/documentation/sdks/yaml/) and [Beam notebooks](https://cloud.google.com/dataflow/docs/guides/notebook-advanced#beam-sql) for alternatives.
+*   **(Harbourbridge)** Removed deprecated `harbourbridge` component. Use
+    `spanner-migration-tool` instead.
+
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.33 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.33>.
+
+### Artifact Registry
+
+* Allowed using project numbers instead of ids for `gcloud artifacts docker upgrade migrate`.
+
+### Certificate Authority Service
+
+* Added `--custom-aia-urls` flag to `gcloud privateca roots create` and
+`gcloud privateca subordinates create` commands.
+* Added `--custom-cdp-urls` flag to `gcloud privateca roots create` and
+`gcloud privateca subordinates create` commands.
+
+### Cloud Bigtable
+
+*   Added support for Data Boost in `gcloud bigtable app-profiles`.
+
+### Cloud Build
+
+* Added support for specifying source manifest JSON file as argument for source
+in `gcloud builds submit` command.
+* Fixed bug in which source is not displayed in builds list if source is a
+Git repo, 2nd-gen Cloud Build repo, or Developer Connect GitRepositoryLink.
+* Fixed bug in which `gcloud builds` commands ignore the default region set
+via `builds/region` config.
+
+### Cloud Identity-Aware Proxy
+
+* Promote `Forwarding-rule` resource-type support for IAP CLI to GA.
+
+### Cloud Interconnect
+
+*   Promoted interconnects related commands to beta.
+*   Promoted additional interconnects related commands to beta.
+
+### Cloud Key Management Service
+
+*   Added a new field `public_key_format` to specify the format the public key
+is going to be exported.
+*   Added support for two post-quantum asymmetric signing algorithms
+`ML-DSA-65` and `SLH-DSA-SHA2-128s`.
+
+### Cloud On Demand Scanning
+
+* Monthly release of local-extract with updated package dependencies (2025-02).
+
+### Cloud Run
+
+* Removed `roles/run.builder` IAM Role check for default Cloud Build Service Account when users are doing `gcloud run deploy --source`.
+
+### Cloud SQL
+
+* Added `tde` file type option to `gcloud sql import` and `gcloud sql export`
+commands to allow importing and exporting Transparent Data Encryption (TDE)
+certificates in Cloud SQL for SQL Server.
+* Added `--keep-encrypted` flag to `gcloud sql import bak` command to allow
+an imported database to remain encrypted in Cloud SQL for SQL Server.
+* Added `--include-replicas-for-major-version-upgrade`
+flag to `gcloud sql instances patch` command.
+This flag can be used with `database-version` flag to specify that replicas
+need to be upgraded with the primary.
+
+### Network Security
+
+* Promoted `gcloud network-security security-profile custom-mirroring` to GA track.
+* Promoted `gcloud network-security security-profile-groups create --custom-mirroring-profile` flag to GA track.
+* Added `--antivirus` flag to `gcloud beta network-security security-profiles threat-prevention add-override|update-override|delete-override` commands.
+
+### Workbench
+
+* Added `gcloud beta workbench schedules create`.
+* Added `gcloud beta workbench schedules pause`.
+* Added `gcloud beta workbench schedules resume`.
+* Added `gcloud beta workbench schedules describe`.
+* Added `gcloud beta workbench schedules update`.
+* Added `gcloud beta workbench schedules delete`.
+* Added `gcloud beta workbench schedules list`.
+* Added `gcloud beta workbench executions` command group.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 511.0.0 (2025-02-19)
 
 ### Breaking Changes

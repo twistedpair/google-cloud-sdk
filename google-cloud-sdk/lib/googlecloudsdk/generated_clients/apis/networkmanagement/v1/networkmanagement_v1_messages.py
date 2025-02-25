@@ -597,6 +597,26 @@ class DeliverInfo(_messages.Message):
   target = _messages.EnumField('TargetValueValuesEnum', 5)
 
 
+class DirectVpcEgressConnectionInfo(_messages.Message):
+  r"""For display only. Metadata associated with a serverless direct VPC
+  egress connection.
+
+  Fields:
+    networkUri: URI of direct access network.
+    region: Region in which the Direct VPC egress is deployed.
+    selectedIpAddress: Selected starting IP address, from the selected IP
+      range.
+    selectedIpRange: Selected IP range.
+    subnetworkUri: URI of direct access subnetwork.
+  """
+
+  networkUri = _messages.StringField(1)
+  region = _messages.StringField(2)
+  selectedIpAddress = _messages.StringField(3)
+  selectedIpRange = _messages.StringField(4)
+  subnetworkUri = _messages.StringField(5)
+
+
 class DropInfo(_messages.Message):
   r"""Details of the final state "drop" and associated resource.
 
@@ -2784,6 +2804,18 @@ class RouteInfo(_messages.Message):
   uri = _messages.StringField(24)
 
 
+class ServerlessExternalConnectionInfo(_messages.Message):
+  r"""For display only. Metadata associated with a serverless public
+  connection.
+
+  Fields:
+    selectedIpAddress: Selected starting IP address, from the Google dynamic
+      address pool.
+  """
+
+  selectedIpAddress = _messages.StringField(1)
+
+
 class ServerlessNegInfo(_messages.Message):
   r"""For display only. Metadata associated with the serverless network
   endpoint group backend.
@@ -2943,6 +2975,8 @@ class Step(_messages.Message):
     deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
       state.
+    directVpcEgressConnection: Display information of a serverless direct VPC
+      egress connection.
     drop: Display information of the final state "drop" and reason.
     endpoint: Display information of the source and destination under
       analysis. The endpoint information in an intermediate state may differ
@@ -2967,6 +3001,8 @@ class Step(_messages.Message):
     redisCluster: Display information of a Redis Cluster.
     redisInstance: Display information of a Redis Instance.
     route: Display information of a Compute Engine route.
+    serverlessExternalConnection: Display information of a serverless public
+      (external) connection.
     serverlessNeg: Display information of a Serverless network endpoint group
       backend. Used only for return traces.
     state: Each step is in one of the pre-defined states.
@@ -3043,6 +3079,11 @@ class Step(_messages.Message):
         gateway.
       ARRIVE_AT_VPN_TUNNEL: Forwarding state: arriving at a Cloud VPN tunnel.
       ARRIVE_AT_VPC_CONNECTOR: Forwarding state: arriving at a VPC connector.
+      DIRECT_VPC_EGRESS_CONNECTION: Forwarding state: for packets originating
+        from a serverless endpoint forwarded through Direct VPC egress.
+      SERVERLESS_EXTERNAL_CONNECTION: Forwarding state: for packets
+        originating from a serverless endpoint forwarded through public
+        (external) connectivity.
       NAT: Transition state: packet header translated.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
@@ -3081,13 +3122,15 @@ class Step(_messages.Message):
     ARRIVE_AT_VPN_GATEWAY = 24
     ARRIVE_AT_VPN_TUNNEL = 25
     ARRIVE_AT_VPC_CONNECTOR = 26
-    NAT = 27
-    PROXY_CONNECTION = 28
-    DELIVER = 29
-    DROP = 30
-    FORWARD = 31
-    ABORT = 32
-    VIEWER_PERMISSION_MISSING = 33
+    DIRECT_VPC_EGRESS_CONNECTION = 27
+    SERVERLESS_EXTERNAL_CONNECTION = 28
+    NAT = 29
+    PROXY_CONNECTION = 30
+    DELIVER = 31
+    DROP = 32
+    FORWARD = 33
+    ABORT = 34
+    VIEWER_PERMISSION_MISSING = 35
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -3097,29 +3140,31 @@ class Step(_messages.Message):
   cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 6)
   deliver = _messages.MessageField('DeliverInfo', 7)
   description = _messages.StringField(8)
-  drop = _messages.MessageField('DropInfo', 9)
-  endpoint = _messages.MessageField('EndpointInfo', 10)
-  firewall = _messages.MessageField('FirewallInfo', 11)
-  forward = _messages.MessageField('ForwardInfo', 12)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 13)
-  gkeMaster = _messages.MessageField('GKEMasterInfo', 14)
-  googleService = _messages.MessageField('GoogleServiceInfo', 15)
-  instance = _messages.MessageField('InstanceInfo', 16)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 17)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 18)
-  nat = _messages.MessageField('NatInfo', 19)
-  network = _messages.MessageField('NetworkInfo', 20)
-  projectId = _messages.StringField(21)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 22)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 23)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 24)
-  route = _messages.MessageField('RouteInfo', 25)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 28)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 29)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 30)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 31)
+  directVpcEgressConnection = _messages.MessageField('DirectVpcEgressConnectionInfo', 9)
+  drop = _messages.MessageField('DropInfo', 10)
+  endpoint = _messages.MessageField('EndpointInfo', 11)
+  firewall = _messages.MessageField('FirewallInfo', 12)
+  forward = _messages.MessageField('ForwardInfo', 13)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 14)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 15)
+  googleService = _messages.MessageField('GoogleServiceInfo', 16)
+  instance = _messages.MessageField('InstanceInfo', 17)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 18)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 19)
+  nat = _messages.MessageField('NatInfo', 20)
+  network = _messages.MessageField('NetworkInfo', 21)
+  projectId = _messages.StringField(22)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 23)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 24)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 25)
+  route = _messages.MessageField('RouteInfo', 26)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 27)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 30)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 31)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 32)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 33)
 
 
 class StorageBucketInfo(_messages.Message):

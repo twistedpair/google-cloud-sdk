@@ -30,6 +30,14 @@ Creating an App Engine application for a project is irreversible and the region
 cannot be changed. More information about regions is at
 <https://cloud.google.com/appengine/docs/locations>.
 """
+DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING = """\
+Starting from March, 2025, App Engine sets the automatic scaling maximum instances
+default for standard environment deployments to 20. This change doesn't impact
+existing apps. To override the default, specify the new max_instances value in your
+app.yaml file, and deploy a new version or redeploy over an existing version.
+For more details on max_instances, see
+<https://cloud.google.com/appengine/docs/standard/reference/app-yaml.md#scaling_elements>.
+"""
 
 
 class UnspecifiedRegionError(exceptions.Error):
@@ -138,6 +146,8 @@ def CreateApp(
           )
       )
     log.warning(APP_CREATE_WARNING)
+    # TODO: b/388712720 - Cleanup warning once backend experiments are cleaned
+    log.warning(DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING)
   try:
     api_client.CreateApp(
         region, service_account=service_account, ssl_policy=ssl_policy_enum
@@ -188,6 +198,8 @@ def CreateAppInteractively(
   """
   log.status.Print('You are creating an app for project [{}].'.format(project))
   log.warning(APP_CREATE_WARNING)
+  # TODO: b/388712720 - Cleanup warning once backend experiments are cleaned
+  log.warning(DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING)
 
   regions = regions or sorted(set(api_client.ListRegions()), key=str)
   if extra_warning:

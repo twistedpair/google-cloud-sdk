@@ -916,6 +916,10 @@ class AlloydbProjectsLocationsOperationsListRequest(_messages.Message):
 class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest object.
 
+  Enums:
+    ScopeValueValuesEnum: Optional. The scope for which supported flags are
+      requested. If not specified, default is DATABASE.
+
   Fields:
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
@@ -925,11 +929,28 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
       specified here, as long it is contains a valid project and location, the
       service will return a static list of supported flags resources. Note
       that we do not yet support region-specific flags.
+    scope: Optional. The scope for which supported flags are requested. If not
+      specified, default is DATABASE.
   """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. The scope for which supported flags are requested. If not
+    specified, default is DATABASE.
+
+    Values:
+      SCOPE_UNSPECIFIED: The scope of the flag is not specified. Default is
+        DATABASE.
+      DATABASE: The flag is a database flag.
+      CONNECTION_POOL: The flag is a connection pool flag.
+    """
+    SCOPE_UNSPECIFIED = 0
+    DATABASE = 1
+    CONNECTION_POOL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 4)
 
 
 class AuthorizedNetwork(_messages.Message):
@@ -1749,33 +1770,48 @@ class ConnectionPoolConfig(_messages.Message):
   r"""Configuration for Managed Connection Pool (MCP).
 
   Enums:
-    PoolModeValueValuesEnum: Optional. The pool mode. Defaults to
-      `POOL_MODE_TRANSACTION`.
+    PoolModeValueValuesEnum: Optional. Deprecated. Use 'flags' instead. The
+      pool mode. Defaults to `POOL_MODE_TRANSACTION`.
+
+  Messages:
+    FlagsValue: Optional. Connection Pool flags, as a list of "key": "value"
+      pairs.
 
   Fields:
-    defaultPoolSize: Optional. The default pool size. Defaults to 20.
+    defaultPoolSize: Optional. Deprecated. Use 'flags' instead. The default
+      pool size. Defaults to 20.
     enable: Optional. Whether to enable Managed Connection Pool (MCP).
-    ignoreStartupParameters: Optional. The list of startup parameters to
-      ignore. Defaults to ["extra_float_digits"]
-    maxClientConn: Optional. The maximum number of client connections allowed.
-    maxPreparedStatements: Optional. The maximum number of prepared statements
-      allowed. MCP makes sure that any statement prepared by a client, up to
-      this limit, is available on the backing server connection in transaction
-      and statement pooling mode. Even if the statement was originally
-      prepared on another server connection. Defaults to 0.
-    minPoolSize: Optional. The minimum pool size. Defaults to 0.
-    poolMode: Optional. The pool mode. Defaults to `POOL_MODE_TRANSACTION`.
-    queryWaitTimeout: Optional. The maximum number of seconds queries are
-      allowed to spend waiting for execution. If the query is not assigned to
-      a server during that time, the client is disconnected. 0 disables.
-    serverIdleTimeout: Optional. The maximum number of seconds a server is
-      allowed to be idle before it is disconnected. 0 disables.
-    statsUsers: Optional. The list of users that are allowed to connect to the
-      MCP stats console. The users must exist in the database.
+      TODO(b/394996708) rename to 'enabled'
+    flags: Optional. Connection Pool flags, as a list of "key": "value" pairs.
+    ignoreStartupParameters: Optional. Deprecated. Use 'flags' instead. The
+      list of startup parameters to ignore. Defaults to ["extra_float_digits"]
+    maxClientConn: Optional. Deprecated. Use 'flags' instead. The maximum
+      number of client connections allowed.
+    maxPreparedStatements: Optional. Deprecated. Use 'flags' instead. The
+      maximum number of prepared statements allowed. MCP makes sure that any
+      statement prepared by a client, up to this limit, is available on the
+      backing server connection in transaction and statement pooling mode.
+      Even if the statement was originally prepared on another server
+      connection. Defaults to 0.
+    minPoolSize: Optional. Deprecated. Use 'flags' instead. The minimum pool
+      size. Defaults to 0.
+    poolMode: Optional. Deprecated. Use 'flags' instead. The pool mode.
+      Defaults to `POOL_MODE_TRANSACTION`.
+    queryWaitTimeout: Optional. Deprecated. Use 'flags' instead. The maximum
+      number of seconds queries are allowed to spend waiting for execution. If
+      the query is not assigned to a server during that time, the client is
+      disconnected. 0 disables.
+    serverIdleTimeout: Optional. Deprecated. Use 'flags' instead. The maximum
+      number of seconds a server is allowed to be idle before it is
+      disconnected. 0 disables.
+    statsUsers: Optional. Deprecated. Use 'flags' instead. The list of users
+      that are allowed to connect to the MCP stats console. The users must
+      exist in the database.
   """
 
   class PoolModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The pool mode. Defaults to `POOL_MODE_TRANSACTION`.
+    r"""Optional. Deprecated. Use 'flags' instead. The pool mode. Defaults to
+    `POOL_MODE_TRANSACTION`.
 
     Values:
       POOL_MODE_UNSPECIFIED: The pool mode is not specified. Defaults to
@@ -1789,16 +1825,41 @@ class ConnectionPoolConfig(_messages.Message):
     POOL_MODE_SESSION = 1
     POOL_MODE_TRANSACTION = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FlagsValue(_messages.Message):
+    r"""Optional. Connection Pool flags, as a list of "key": "value" pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a FlagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type FlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   defaultPoolSize = _messages.StringField(1)
   enable = _messages.BooleanField(2)
-  ignoreStartupParameters = _messages.StringField(3, repeated=True)
-  maxClientConn = _messages.StringField(4)
-  maxPreparedStatements = _messages.StringField(5)
-  minPoolSize = _messages.StringField(6)
-  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 7)
-  queryWaitTimeout = _messages.StringField(8)
-  serverIdleTimeout = _messages.StringField(9)
-  statsUsers = _messages.StringField(10, repeated=True)
+  flags = _messages.MessageField('FlagsValue', 3)
+  ignoreStartupParameters = _messages.StringField(4, repeated=True)
+  maxClientConn = _messages.StringField(5)
+  maxPreparedStatements = _messages.StringField(6)
+  minPoolSize = _messages.StringField(7)
+  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 8)
+  queryWaitTimeout = _messages.StringField(9)
+  serverIdleTimeout = _messages.StringField(10)
+  statsUsers = _messages.StringField(11, repeated=True)
 
 
 class ContinuousBackupConfig(_messages.Message):
@@ -1809,8 +1870,7 @@ class ContinuousBackupConfig(_messages.Message):
     enabled: Whether ContinuousBackup is enabled.
     encryptionConfig: The encryption config can be specified to encrypt the
       backups with a customer-managed encryption key (CMEK). When this field
-      is not specified, the backup will then use default encryption scheme to
-      protect the user data.
+      is not specified, the backup will use the cluster's encryption config.
     enforcedRetention: If true, backups created by this config would have
       `enforced_retention` set and cannot be deleted unless they expire (or as
       part of project deletion).
@@ -2412,7 +2472,6 @@ class Instance(_messages.Message):
     observabilityConfig: Configuration for observability.
     outboundPublicIpAddresses: Output only. All outbound public IP addresses
       configured for the instance.
-    pgbouncerConfig: Optional. The configuration for managed PgBouncer.
     pscInstanceConfig: Optional. The configuration for Private Service Connect
       (PSC) for the instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
@@ -2615,19 +2674,18 @@ class Instance(_messages.Message):
   nodes = _messages.MessageField('Node', 19, repeated=True)
   observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 20)
   outboundPublicIpAddresses = _messages.StringField(21, repeated=True)
-  pgbouncerConfig = _messages.MessageField('PgBouncerConfig', 22)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 23)
-  publicIpAddress = _messages.StringField(24)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 25)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 26)
-  reconciling = _messages.BooleanField(27)
-  satisfiesPzi = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  uid = _messages.StringField(31)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 32)
-  updateTime = _messages.StringField(33)
-  writableNode = _messages.MessageField('Node', 34)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 22)
+  publicIpAddress = _messages.StringField(23)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 24)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 25)
+  reconciling = _messages.BooleanField(26)
+  satisfiesPzi = _messages.BooleanField(27)
+  satisfiesPzs = _messages.BooleanField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  uid = _messages.StringField(30)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 31)
+  updateTime = _messages.StringField(32)
+  writableNode = _messages.MessageField('Node', 33)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2935,7 +2993,7 @@ class NetworkConfig(_messages.Message):
 
 class Node(_messages.Message):
   r"""Details of a single node in the instance. Nodes in an AlloyDB instance
-  are ephemereal, they can change during update, failover, autohealing and
+  are ephemeral, they can change during update, failover, autohealing and
   resize operations.
 
   Fields:
@@ -3128,66 +3186,6 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class PgBouncerConfig(_messages.Message):
-  r"""Configuration for managed PgBouncer.
-
-  Enums:
-    PoolModeValueValuesEnum: Optional. The pool mode. Defaults to
-      `POOL_MODE_SESSION`.
-
-  Fields:
-    defaultPoolSize: Optional. The default pool size. Defaults to 20.
-    enablePgbouncer: Optional. Whether to enable managed PgBouncer.
-    ignoreStartupParameters: Optional. The list of startup parameters to
-      ignore. By default, pgbouncer only allows client_encoding, datestyle,
-      timezone and standard_conforming_strings. Defaults to empty list.
-    maxClientConn: Optional. The maximum number of client connections allowed.
-      Defaults to 100.
-    maxPreparedStatements: Optional. The maximum number of prepared statements
-      allowed. PgBouncer makes sure that any statement prepared by a client,
-      up to this limit, is available on the backing server connection in
-      transaction and statement pooling mode. Even if the statement was
-      originally prepared on another server connection. Defaults to 0.
-    minPoolSize: Optional. The minimum pool size. Defaults to 0.
-    poolMode: Optional. The pool mode. Defaults to `POOL_MODE_SESSION`.
-    queryWaitTimeout: Optional. The maximum number of seconds queries are
-      allowed to spend waiting for execution. If the query is not assigned to
-      a server during that time, the client is disconnected. 0 disables.
-      Defaults to 120.
-    serverIdleTimeout: Optional. The maximum number of seconds a server is
-      allowed to be idle before it is disconnected. 0 disables. Defaults to
-      600.
-    statsUsers: Optional. The list of users that are allowed to connect to the
-      stats "pgbouncer" database. The users must exist in the database.
-  """
-
-  class PoolModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The pool mode. Defaults to `POOL_MODE_SESSION`.
-
-    Values:
-      POOL_MODE_UNSPECIFIED: The pool mode is not specified. Defaults to
-        `POOL_MODE_SESSION`.
-      POOL_MODE_SESSION: Server is released back to pool after a client
-        disconnects.
-      POOL_MODE_TRANSACTION: Server is released back to pool after a
-        transaction finishes.
-    """
-    POOL_MODE_UNSPECIFIED = 0
-    POOL_MODE_SESSION = 1
-    POOL_MODE_TRANSACTION = 2
-
-  defaultPoolSize = _messages.StringField(1)
-  enablePgbouncer = _messages.BooleanField(2)
-  ignoreStartupParameters = _messages.StringField(3, repeated=True)
-  maxClientConn = _messages.StringField(4)
-  maxPreparedStatements = _messages.StringField(5)
-  minPoolSize = _messages.StringField(6)
-  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 7)
-  queryWaitTimeout = _messages.StringField(8)
-  serverIdleTimeout = _messages.StringField(9)
-  statsUsers = _messages.StringField(10, repeated=True)
 
 
 class PrimaryConfig(_messages.Message):
@@ -4229,6 +4227,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4317,6 +4317,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4888,6 +4889,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         instance does not have a maintenance policy configured.
       SIGNAL_TYPE_NO_DELETION_PROTECTION: Deletion Protection Disabled for the
         resource
+      SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
+        inefficient queries detected.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4976,6 +4979,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_EXPENSIVE_COMMANDS = 84
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
+    SIGNAL_TYPE_INEFFICIENT_QUERY = 87
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -5488,6 +5492,7 @@ class SupportedDatabaseFlag(_messages.Message):
   field.
 
   Enums:
+    ScopeValueValuesEnum: The scope of the flag.
     SupportedDbVersionsValueListEntryValuesEnum:
     ValueTypeValueValuesEnum:
 
@@ -5500,15 +5505,31 @@ class SupportedDatabaseFlag(_messages.Message):
     name: The name of the flag resource, following Google Cloud conventions,
       e.g.: * projects/{project}/locations/{location}/flags/{flag} This field
       currently has no semantic meaning.
+    recommendedIntegerValue: The recommended value for an INTEGER flag.
+    recommendedStringValue: The recommended value for a STRING flag.
     requiresDbRestart: Whether setting or updating this flag on an Instance
       requires a database restart. If a flag that requires database restart is
       set, the backend will automatically restart the database (making sure to
       satisfy any availability SLO's).
+    scope: The scope of the flag.
     stringRestrictions: Restriction on STRING type value.
     supportedDbVersions: Major database engine versions for which this flag is
       supported.
     valueType: A ValueTypeValueValuesEnum attribute.
   """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""The scope of the flag.
+
+    Values:
+      SCOPE_UNSPECIFIED: The scope of the flag is not specified. Default is
+        DATABASE.
+      DATABASE: The flag is a database flag.
+      CONNECTION_POOL: The flag is a connection pool flag.
+    """
+    SCOPE_UNSPECIFIED = 0
+    DATABASE = 1
+    CONNECTION_POOL = 2
 
   class SupportedDbVersionsValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedDbVersionsValueListEntryValuesEnum enum type.
@@ -5546,10 +5567,13 @@ class SupportedDatabaseFlag(_messages.Message):
   flagName = _messages.StringField(2)
   integerRestrictions = _messages.MessageField('IntegerRestrictions', 3)
   name = _messages.StringField(4)
-  requiresDbRestart = _messages.BooleanField(5)
-  stringRestrictions = _messages.MessageField('StringRestrictions', 6)
-  supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 7, repeated=True)
-  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
+  recommendedIntegerValue = _messages.IntegerField(5)
+  recommendedStringValue = _messages.StringField(6)
+  requiresDbRestart = _messages.BooleanField(7)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 8)
+  stringRestrictions = _messages.MessageField('StringRestrictions', 9)
+  supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 10, repeated=True)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 11)
 
 
 class SwitchoverClusterRequest(_messages.Message):

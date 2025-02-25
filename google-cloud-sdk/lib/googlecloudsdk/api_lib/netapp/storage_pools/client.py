@@ -93,6 +93,9 @@ class StoragePoolsClient(object):
                              allow_auto_tiering=None,
                              zone=None,
                              replica_zone=None,
+                             custom_performance_enabled=None,
+                             total_throughput=None,
+                             total_iops=None,
                              labels=None):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
@@ -107,6 +110,9 @@ class StoragePoolsClient(object):
         allow_auto_tiering=allow_auto_tiering,
         zone=zone,
         replica_zone=replica_zone,
+        custom_performance_enabled=custom_performance_enabled,
+        total_throughput=total_throughput,
+        total_iops=total_iops,
         labels=labels
     )
 
@@ -162,6 +168,8 @@ class StoragePoolsClient(object):
                                     allow_auto_tiering=None,
                                     zone=None,
                                     replica_zone=None,
+                                    total_throughput=None,
+                                    total_iops=None,
                                     labels=None):
     """Parses updates into a storage pool config.
 
@@ -173,6 +181,8 @@ class StoragePoolsClient(object):
       allow_auto_tiering: bool indicate whether pool supports auto-tiering
       zone: str, zone for storage pool
       replica_zone: str, replica zone for storage pool
+      total_throughput: int, total throughput of the storage pool
+      total_iops: int, total IOPS of the storage pool
       labels: LabelsValue message, the new labels value, if any.
 
     Returns:
@@ -186,6 +196,8 @@ class StoragePoolsClient(object):
         allow_auto_tiering=allow_auto_tiering,
         zone=zone,
         replica_zone=replica_zone,
+        total_throughput=total_throughput,
+        total_iops=total_iops,
         labels=labels
     )
     return storage_pool
@@ -280,6 +292,9 @@ class StoragePoolsAdapter(object):
       allow_auto_tiering,
       zone,
       replica_zone,
+      custom_performance_enabled,
+      total_throughput,
+      total_iops,
       labels,
   ):
     """Parses the command line arguments for Create Storage Pool into a config.
@@ -296,6 +311,9 @@ class StoragePoolsAdapter(object):
       allow_auto_tiering: Bool on whether Storage Pool supports auto tiering
       zone: zone of the Storage Pool
       replica_zone: Replica zone for the Storage Pool
+      custom_performance_enabled: Bool on whether custom performance is enabled
+      total_throughput: Total throughput of the Storage Pool
+      total_iops: Total IOPS of the Storage Pool
       labels: the parsed labels value
 
     Returns:
@@ -319,6 +337,12 @@ class StoragePoolsAdapter(object):
       storage_pool.zone = zone
     if replica_zone is not None:
       storage_pool.replicaZone = replica_zone
+    if custom_performance_enabled is not None:
+      storage_pool.customPerformanceEnabled = custom_performance_enabled
+    if total_throughput is not None:
+      storage_pool.totalThroughputMibps = total_throughput
+    if total_iops is not None:
+      storage_pool.totalIops = total_iops
     storage_pool.labels = labels
     return storage_pool
 
@@ -332,6 +356,8 @@ class StoragePoolsAdapter(object):
       allow_auto_tiering=None,
       zone=None,
       replica_zone=None,
+      total_throughput=None,
+      total_iops=None,
   ):
     """Parse update information into an updated Storage Pool message."""
     if capacity is not None:
@@ -346,6 +372,10 @@ class StoragePoolsAdapter(object):
       storagepool_config.zone = zone
     if replica_zone is not None:
       storagepool_config.replicaZone = replica_zone
+    if total_throughput is not None:
+      storagepool_config.totalThroughputMibps = total_throughput
+    if total_iops is not None:
+      storagepool_config.totalIops = total_iops
     if labels is not None:
       storagepool_config.labels = labels
     return storagepool_config

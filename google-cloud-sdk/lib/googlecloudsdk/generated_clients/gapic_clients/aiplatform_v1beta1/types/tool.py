@@ -86,8 +86,7 @@ class Tool(proto.Message):
         code_execution (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.CodeExecution):
             Optional. CodeExecution tool type.
             Enables the model to execute code as part of
-            generation. This field is only used by the
-            Gemini Developer API services.
+            generation.
     """
 
     class GoogleSearch(proto.Message):

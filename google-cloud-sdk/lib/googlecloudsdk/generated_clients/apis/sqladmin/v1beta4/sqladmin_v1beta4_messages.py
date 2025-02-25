@@ -817,6 +817,7 @@ class ConnectionPoolConfig(_messages.Message):
     clientConnectionIdleTimeout: Client idle timeout.
     connPoolSize: Managed connection pool size.
     connectionPoolingEnabled: Whether managed connection pooling is enabled.
+    flags: Optional. List of connection pool configuration flags
     maxClientConnections: Maximum number of client connections in connection
       pool.
     poolMode: The managed connection pool mode for the instance.
@@ -840,10 +841,26 @@ class ConnectionPoolConfig(_messages.Message):
   clientConnectionIdleTimeout = _messages.StringField(1)
   connPoolSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   connectionPoolingEnabled = _messages.BooleanField(3)
-  maxClientConnections = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 5)
-  queryWaitTimeout = _messages.StringField(6)
-  serverConnectionIdleTimeout = _messages.StringField(7)
+  flags = _messages.MessageField('ConnectionPoolFlags', 4, repeated=True)
+  maxClientConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 6)
+  queryWaitTimeout = _messages.StringField(7)
+  serverConnectionIdleTimeout = _messages.StringField(8)
+
+
+class ConnectionPoolFlags(_messages.Message):
+  r"""Connection pool flags for Cloud SQL instances managed connection pool
+  configuration.
+
+  Fields:
+    name: Required. The name of the flag.
+    value: Required. The value of the flag. Boolean flags are set to `on` for
+      true and `off` for false. This field must be omitted if the flag doesn't
+      take a value.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class DataCacheConfig(_messages.Message):
@@ -3631,8 +3648,8 @@ class Settings(_messages.Message):
       availability).
     backupConfiguration: The daily backup configuration for the instance.
     collation: The name of server Instance collation.
-    connectionPoolConfig: The managed connection pooling configuration for the
-      instance.
+    connectionPoolConfig: Optional. The managed connection pooling
+      configuration for the instance.
     connectorEnforcement: Specifies if connections must use Cloud SQL
       connectors. Option values include the following: `NOT_REQUIRED` (Cloud
       SQL instances can be connected without Cloud SQL Connectors) and

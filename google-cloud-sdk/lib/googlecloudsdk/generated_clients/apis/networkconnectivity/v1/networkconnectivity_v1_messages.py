@@ -1133,10 +1133,10 @@ class Hub(_messages.Message):
     exchangePupi: Optional. Whether Privately Used Public IP (PUPI) exchange
       is enabled for the hub. If true, PUPI exchange will be allowed in VPC
       spokes attached to the hub. The default value is false.
-    exportPsc: Optional. Whether Private Service Connect transitivity is
-      enabled for the hub. If true, Private Service Connect endpoints in VPC
-      spokes attached to the hub are made accessible to other VPC spokes
-      attached to the hub. The default value is false.
+    exportPsc: Optional. Whether Private Service Connect connection
+      propagation is enabled for the hub. If true, Private Service Connect
+      endpoints in VPC spokes attached to the hub are made accessible to other
+      VPC spokes attached to the hub. The default value is false.
     labels: Optional labels in key-value pair format. For more information
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-

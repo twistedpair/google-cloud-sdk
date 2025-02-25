@@ -1278,7 +1278,7 @@ class GoogleCloudAssuredworkloadsV1WorkloadWorkloadOptions(_messages.Message):
     Values:
       KAJ_ENROLLMENT_TYPE_UNSPECIFIED: KAJ Enrollment type is unspecified
       KEY_ACCESS_TRANSPARENCY_OFF: KAT sets External, Hardware, and Software
-        key feature logging only to TRUE. (no enforcement)
+        key feature logging only to TRUE.
     """
     KAJ_ENROLLMENT_TYPE_UNSPECIFIED = 0
     KEY_ACCESS_TRANSPARENCY_OFF = 1

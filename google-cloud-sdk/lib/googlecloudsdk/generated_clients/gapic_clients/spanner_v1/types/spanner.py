@@ -171,8 +171,8 @@ class Session(proto.Message):
             multiplexed session for multiple, concurrent read-only
             operations. Don't use them for read-write transactions,
             partitioned reads, or partitioned queries. Use
-            [CreateSession][google.spanner.v1.Spanner.CreateSession] to
-            create multiplexed sessions. Don't use
+            [``sessions.create``][google.spanner.v1.Spanner.CreateSession]
+            to create multiplexed sessions. Don't use
             [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions]
             to create a multiplexed session. You can't delete or list
             multiplexed sessions.

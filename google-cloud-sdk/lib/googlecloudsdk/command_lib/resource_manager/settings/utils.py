@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import json
 
 from apitools.base.py import encoding
-from googlecloudsdk.command_lib.resource_settings import exceptions
+from googlecloudsdk.command_lib.resource_manager.settings import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 

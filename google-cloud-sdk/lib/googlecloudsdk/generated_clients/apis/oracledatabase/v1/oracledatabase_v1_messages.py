@@ -43,7 +43,7 @@ class AutonomousDatabase(_messages.Message):
 
   Fields:
     adminPassword: Optional. The password for the default ADMIN user.
-    cidr: Required. The subnet CIDR range for the Autonmous Database.
+    cidr: Optional. The subnet CIDR range for the Autonmous Database.
     createTime: Output only. The date and time that the Autonomous Database
       was created.
     database: Optional. The name of the Autonomous Database. The database name
@@ -58,7 +58,7 @@ class AutonomousDatabase(_messages.Message):
     name: Identifier. The name of the Autonomous Database resource in the
       following format: projects/{project}/locations/{region}/autonomousDataba
       ses/{autonomous_database}
-    network: Required. The name of the VPC network used by the Autonomous
+    network: Optional. The name of the VPC network used by the Autonomous
       Database in the following format:
       projects/{project}/global/networks/{network}
     properties: Optional. The properties of the Autonomous Database.

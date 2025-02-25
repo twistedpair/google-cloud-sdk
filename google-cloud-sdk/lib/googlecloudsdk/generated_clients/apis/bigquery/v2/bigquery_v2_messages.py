@@ -3258,6 +3258,10 @@ class ExternalDataConfiguration(_messages.Message):
       ocations/{location_id}/connections/{connection_id}`.
     csvOptions: Optional. Additional properties to set if sourceFormat is set
       to CSV.
+    dateFormat: Optional. Format used to parse DATE values. Supports C-style
+      and SQL-style values.
+    datetimeFormat: Optional. Format used to parse DATETIME values. Supports
+      C-style and SQL-style values.
     decimalTargetTypes: Defines the list of possible SQL data types to which
       the source decimal values are converted. This list and the precision and
       the scale parameters of the decimal field determine the target type. In
@@ -3338,6 +3342,13 @@ class ExternalDataConfiguration(_messages.Message):
       fully specified and valid HTTPS URL for a Google Cloud Bigtable table.
       For Google Cloud Datastore backups, exactly one URI can be specified.
       Also, the '*' wildcard character is not allowed.
+    timeFormat: Optional. Format used to parse TIME values. Supports C-style
+      and SQL-style values.
+    timeZone: Optional. Time zone used when parsing timestamp values that do
+      not have specific time zone information (e.g. 2024-04-20 12:34:56). The
+      expected format is a IANA timezone string (e.g. America/Los_Angeles).
+    timestampFormat: Optional. Format used to parse TIMESTAMP values. Supports
+      C-style and SQL-style values.
   """
 
   class DecimalTargetTypesValueListEntryValuesEnum(_messages.Enum):
@@ -3426,21 +3437,26 @@ class ExternalDataConfiguration(_messages.Message):
   compression = _messages.StringField(4)
   connectionId = _messages.StringField(5)
   csvOptions = _messages.MessageField('CsvOptions', 6)
-  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 7, repeated=True)
-  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 8)
-  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 9)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 10)
-  ignoreUnknownValues = _messages.BooleanField(11)
-  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 12)
-  jsonOptions = _messages.MessageField('JsonOptions', 13)
-  maxBadRecords = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  metadataCacheMode = _messages.EnumField('MetadataCacheModeValueValuesEnum', 15)
-  objectMetadata = _messages.EnumField('ObjectMetadataValueValuesEnum', 16)
-  parquetOptions = _messages.MessageField('ParquetOptions', 17)
-  referenceFileSchemaUri = _messages.StringField(18)
-  schema = _messages.MessageField('TableSchema', 19)
-  sourceFormat = _messages.StringField(20)
-  sourceUris = _messages.StringField(21, repeated=True)
+  dateFormat = _messages.StringField(7)
+  datetimeFormat = _messages.StringField(8)
+  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 9, repeated=True)
+  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 10)
+  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 11)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 12)
+  ignoreUnknownValues = _messages.BooleanField(13)
+  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 14)
+  jsonOptions = _messages.MessageField('JsonOptions', 15)
+  maxBadRecords = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  metadataCacheMode = _messages.EnumField('MetadataCacheModeValueValuesEnum', 17)
+  objectMetadata = _messages.EnumField('ObjectMetadataValueValuesEnum', 18)
+  parquetOptions = _messages.MessageField('ParquetOptions', 19)
+  referenceFileSchemaUri = _messages.StringField(20)
+  schema = _messages.MessageField('TableSchema', 21)
+  sourceFormat = _messages.StringField(22)
+  sourceUris = _messages.StringField(23, repeated=True)
+  timeFormat = _messages.StringField(24)
+  timeZone = _messages.StringField(25)
+  timestampFormat = _messages.StringField(26)
 
 
 class ExternalDatasetReference(_messages.Message):
@@ -4284,6 +4300,8 @@ class JobConfigurationLoad(_messages.Message):
       statistics. The new session's location will be set to
       `Job.JobReference.location` if it is present, otherwise it's set to the
       default location based on existing routing logic.
+    dateFormat: Optional. Date format used for parsing DATE values.
+    datetimeFormat: Optional. Date format used for parsing DATETIME values.
     decimalTargetTypes: Defines the list of possible SQL data types to which
       the source decimal values are converted. This list and the precision and
       the scale parameters of the decimal field determine the target type. In
@@ -4435,9 +4453,13 @@ class JobConfigurationLoad(_messages.Message):
       fully specified and valid HTTPS URL for a Google Cloud Bigtable table.
       For Google Cloud Datastore backups: Exactly one URI can be specified.
       Also, the '*' wildcard character is not allowed.
+    timeFormat: Optional. Date format used for parsing TIME values.
     timePartitioning: Time-based partitioning specification for the
       destination table. Only one of timePartitioning and rangePartitioning
       should be specified.
+    timeZone: Optional. [Experimental] Default time zone that will apply when
+      parsing timestamp values that have no specific time zone.
+    timestampFormat: Optional. Date format used for parsing TIMESTAMP values.
     useAvroLogicalTypes: Optional. If sourceFormat is set to "AVRO", indicates
       whether to interpret logical types as the corresponding BigQuery data
       type (for example, TIMESTAMP), instead of using the raw type (for
@@ -4530,34 +4552,39 @@ class JobConfigurationLoad(_messages.Message):
   copyFilesOnly = _messages.BooleanField(7)
   createDisposition = _messages.StringField(8)
   createSession = _messages.BooleanField(9)
-  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 10, repeated=True)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 11)
-  destinationTable = _messages.MessageField('TableReference', 12)
-  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 13)
-  encoding = _messages.StringField(14)
-  fieldDelimiter = _messages.StringField(15)
-  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 16)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 17)
-  ignoreUnknownValues = _messages.BooleanField(18)
-  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 19)
-  maxBadRecords = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(21)
-  parquetOptions = _messages.MessageField('ParquetOptions', 22)
-  preserveAsciiControlCharacters = _messages.BooleanField(23)
-  projectionFields = _messages.StringField(24, repeated=True)
-  quote = _messages.StringField(25, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 26)
-  referenceFileSchemaUri = _messages.StringField(27)
-  schema = _messages.MessageField('TableSchema', 28)
-  schemaInline = _messages.StringField(29)
-  schemaInlineFormat = _messages.StringField(30)
-  schemaUpdateOptions = _messages.StringField(31, repeated=True)
-  skipLeadingRows = _messages.IntegerField(32, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(33)
-  sourceUris = _messages.StringField(34, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 35)
-  useAvroLogicalTypes = _messages.BooleanField(36)
-  writeDisposition = _messages.StringField(37)
+  dateFormat = _messages.StringField(10)
+  datetimeFormat = _messages.StringField(11)
+  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 12, repeated=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 13)
+  destinationTable = _messages.MessageField('TableReference', 14)
+  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 15)
+  encoding = _messages.StringField(16)
+  fieldDelimiter = _messages.StringField(17)
+  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 18)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 19)
+  ignoreUnknownValues = _messages.BooleanField(20)
+  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 21)
+  maxBadRecords = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(23)
+  parquetOptions = _messages.MessageField('ParquetOptions', 24)
+  preserveAsciiControlCharacters = _messages.BooleanField(25)
+  projectionFields = _messages.StringField(26, repeated=True)
+  quote = _messages.StringField(27, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 28)
+  referenceFileSchemaUri = _messages.StringField(29)
+  schema = _messages.MessageField('TableSchema', 30)
+  schemaInline = _messages.StringField(31)
+  schemaInlineFormat = _messages.StringField(32)
+  schemaUpdateOptions = _messages.StringField(33, repeated=True)
+  skipLeadingRows = _messages.IntegerField(34, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(35)
+  sourceUris = _messages.StringField(36, repeated=True)
+  timeFormat = _messages.StringField(37)
+  timePartitioning = _messages.MessageField('TimePartitioning', 38)
+  timeZone = _messages.StringField(39)
+  timestampFormat = _messages.StringField(40)
+  useAvroLogicalTypes = _messages.BooleanField(41)
+  writeDisposition = _messages.StringField(42)
 
 
 class JobConfigurationQuery(_messages.Message):

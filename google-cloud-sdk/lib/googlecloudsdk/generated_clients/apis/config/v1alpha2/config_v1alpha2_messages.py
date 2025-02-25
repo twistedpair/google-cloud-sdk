@@ -1714,14 +1714,14 @@ class Preview(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. Arbitrary key-value metadata storage e.g. to
-      help client tools identifiy preview during automation. See
+      help client tools identify preview during automation. See
       https://google.aip.dev/148#annotations for details on format and size
       limitations.
     LabelsValue: Optional. User-defined labels for the preview.
 
   Fields:
     annotations: Optional. Arbitrary key-value metadata storage e.g. to help
-      client tools identifiy preview during automation. See
+      client tools identify preview during automation. See
       https://google.aip.dev/148#annotations for details on format and size
       limitations.
     artifactsGcsBucket: Optional. User-defined location of Cloud Build logs,
@@ -1840,7 +1840,7 @@ class Preview(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. Arbitrary key-value metadata storage e.g. to help client
-    tools identifiy preview during automation. See
+    tools identify preview during automation. See
     https://google.aip.dev/148#annotations for details on format and size
     limitations.
 

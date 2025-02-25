@@ -1615,7 +1615,14 @@ class GoogleCloudPolicysimulatorV1betaDenyRule(_messages.Message):
       attribute_name}/{attribute_value}`: All identities in a workload
       identity pool with a certain attribute. * `principalSet://iam.googleapis
       .com/projects/{project_number}/locations/global/workloadIdentityPools/{p
-      ool_id}/*`: All identities in a workload identity pool. *
+      ool_id}/*`: All identities in a workload identity pool. * `principalSet:
+      //cloudresourcemanager.googleapis.com/[projects|folders|organizations]/{
+      project_number|folder_number|org_number}/type/ServiceAccount`: All
+      service accounts grouped under a resource (project, folder, or
+      organization). * `principalSet://cloudresourcemanager.googleapis.com/[pr
+      ojects|folders|organizations]/{project_number|folder_number|org_number}/
+      type/ServiceAgent`: All service agents grouped under a resource
+      (project, folder, or organization). *
       `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
       Google Account that was deleted recently. For example,
       `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
@@ -2341,38 +2348,38 @@ class GoogleCloudPolicysimulatorV1betaPolicyBinding(_messages.Message):
 
   Enums:
     PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
-      this binding. This field must be one of the following: * Left empty
-      (will be automatically set to the policy kind) * The input policy kind
+      this binding. This field must be one of the following: - Left empty
+      (will be automatically set to the policy kind) - The input policy kind
 
   Messages:
-    AnnotationsValue: Optional. User defined annotations. See
+    AnnotationsValue: Optional. User-defined annotations. See
       https://google.aip.dev/148#annotations for more details such as format
       and size limitations
 
   Fields:
-    annotations: Optional. User defined annotations. See
+    annotations: Optional. User-defined annotations. See
       https://google.aip.dev/148#annotations for more details such as format
       and size limitations
-    condition: Optional. Condition can either be a principal condition or a
-      resource condition. It depends on the type of target, the policy it is
-      attached to, and/or the expression itself. When set, the `expression`
-      field in the `Expr` must include from 1 to 10 subexpressions, joined by
-      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators
-      and cannot contain more than 250 characters. Allowed operations for
-      principal.subject: * `principal.subject == ` * `principal.subject != ` *
-      `principal.subject in []` * `principal.subject.startsWith()` *
-      `principal.subject.endsWith()` Allowed operations for principal.type: *
-      `principal.type == ` * `principal.type != ` * `principal.type in []`
+    condition: Optional. The condition to apply to the policy binding. When
+      set, the `expression` field in the `Expr` must include from 1 to 10
+      subexpressions, joined by the "||"(Logical OR), "&&"(Logical AND) or
+      "!"(Logical NOT) operators and cannot contain more than 250 characters.
+      The condition is currently only supported when bound to policies of kind
+      principal access boundary. When the bound policy is a principal access
+      boundary policy, the only supported attributes in any subexpression are
+      `principal.type` and `principal.subject`. An example expression is:
+      "principal.type == 'iam.googleapis.com/ServiceAccount'" or
+      "principal.subject == 'bob@example.com'". Allowed operations for
+      `principal.subject`: - `principal.subject == ` - `principal.subject != `
+      - `principal.subject in []` - `principal.subject.startsWith()` -
+      `principal.subject.endsWith()` Allowed operations for `principal.type`:
+      - `principal.type == ` - `principal.type != ` - `principal.type in []`
       Supported principal types are Workspace, Workforce Pool, Workload Pool
-      and Service Account. Allowed string must be one of: *
-      iam.googleapis.com/WorkspaceIdentity *
-      iam.googleapis.com/WorkforcePoolIdentity *
-      iam.googleapis.com/WorkloadPoolIdentity *
-      iam.googleapis.com/ServiceAccount When the bound policy is a principal
-      access boundary policy, the only supported attributes in any
-      subexpression are `principal.type` and `principal.subject`. An example
-      expression is: "principal.type == 'iam.googleapis.com/ServiceAccount'"
-      or "principal.subject == 'bob@example.com'".
+      and Service Account. Allowed string must be one of: -
+      iam.googleapis.com/WorkspaceIdentity -
+      iam.googleapis.com/WorkforcePoolIdentity -
+      iam.googleapis.com/WorkloadPoolIdentity -
+      iam.googleapis.com/ServiceAccount
     createTime: Output only. The time when the policy binding was created.
     displayName: Optional. The description of the policy binding. Must be less
       than or equal to 63 characters.
@@ -2380,19 +2387,18 @@ class GoogleCloudPolicysimulatorV1betaPolicyBinding(_messages.Message):
       update, it must match the server's etag.
     name: Identifier. The name of the policy binding, in the format
       `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
-      `. The binding parent is the closest Resource Manager resource (i.e.,
-      Project, Folder or Organization) to the binding target. Format: * `proje
-      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}`
+      `. The binding parent is the closest Resource Manager resource (project,
+      folder, or organization) to the binding target. Format: * `projects/{pro
+      ject_id}/locations/{location}/policyBindings/{policy_binding_id}` * `pro
+      jects/{project_number}/locations/{location}/policyBindings/{policy_bindi
+      ng_id}` * `folders/{folder_id}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `organizations/{organization_id}/locations/{location}/
+      policyBindings/{policy_binding_id}`
     policy: Required. Immutable. The resource name of the policy to be bound.
-      The binding parent and policy must belong to the same Organization (or
-      Project).
+      The binding parent and policy must belong to the same organization.
     policyKind: Immutable. The kind of the policy to attach in this binding.
-      This field must be one of the following: * Left empty (will be
-      automatically set to the policy kind) * The input policy kind
+      This field must be one of the following: - Left empty (will be
+      automatically set to the policy kind) - The input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
     target: Required. Immutable. Target is the full resource name of the
       resource to which the policy will be bound. Immutable once set.
@@ -2404,8 +2410,8 @@ class GoogleCloudPolicysimulatorV1betaPolicyBinding(_messages.Message):
 
   class PolicyKindValueValuesEnum(_messages.Enum):
     r"""Immutable. The kind of the policy to attach in this binding. This
-    field must be one of the following: * Left empty (will be automatically
-    set to the policy kind) * The input policy kind
+    field must be one of the following: - Left empty (will be automatically
+    set to the policy kind) - The input policy kind
 
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
@@ -2419,7 +2425,7 @@ class GoogleCloudPolicysimulatorV1betaPolicyBinding(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Optional. User defined annotations. See
+    r"""Optional. User-defined annotations. See
     https://google.aip.dev/148#annotations for more details such as format and
     size limitations
 
@@ -2464,17 +2470,22 @@ class GoogleCloudPolicysimulatorV1betaPolicyBindingTarget(_messages.Message):
 
   Fields:
     principalSet: Immutable. Full Resource Name used for principal access
-      boundary policy bindings Examples: * Organization:
+      boundary policy bindings. The principal set must be directly parented by
+      the policy binding's parent or same as the parent if the target is a
+      project/folder/organization. Examples: * For binding's parented by an
+      organization: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
-      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
-      Project: *
+      Workforce Identity:
+      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
+      * Workspace Identity:
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` * For
+      binding's parented by a folder: * Folder:
+      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` * For
+      binding's parented by a project: * Project: *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
-      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` * Workforce Identity:
-      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
-      * Workspace Identity:
-      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID`
     resource: Immutable. Full Resource Name used for access policy bindings
       Examples: * Organization:
       `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
@@ -2557,11 +2568,10 @@ class GoogleCloudPolicysimulatorV1betaPrincipalAccessBoundaryPolicyDetails(_mess
   r"""Principal access boundary policy details
 
   Fields:
-    enforcementVersion: Optional. The version number that indicates which
-      Google Cloud services are included in the enforcement (e.g. "latest",
-      "1", ...). If empty, the PAB policy version will be set to the current
-      latest version, and this version won't get updated when new versions are
-      released.
+    enforcementVersion: Optional. The version number (for example, `1` or
+      `latest`) that indicates which permissions are able to be blocked by the
+      policy. If empty, the PAB policy version will be set to the most recent
+      version number at the time of the policy's creation.
     rules: Required. A list of principal access boundary policy rules. The
       number of rules in a policy is limited to 500.
   """
@@ -2583,10 +2593,11 @@ class GoogleCloudPolicysimulatorV1betaPrincipalAccessBoundaryPolicyRule(_message
       policy rule. Must be less than or equal to 256 characters.
     effect: Required. The access relationship of principals to the resources
       in this rule.
-    resources: Required. A list of Cloud Resource Manager resources. The
-      resource and all the descendants are included. The number of resources
-      in a policy is limited to 500 across all rules. The following resource
-      types are supported: * Organizations, such as
+    resources: Required. A list of Resource Manager resources. If a resource
+      is listed in the rule, then the rule applies for that resource and its
+      descendants. The number of resources in a policy is limited to 500
+      across all rules in the policy. The following resource types are
+      supported: * Organizations, such as
       `//cloudresourcemanager.googleapis.com/organizations/123`. * Folders,
       such as `//cloudresourcemanager.googleapis.com/folders/123`. * Projects,
       such as `//cloudresourcemanager.googleapis.com/projects/123` or

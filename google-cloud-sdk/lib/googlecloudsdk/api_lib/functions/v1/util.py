@@ -648,9 +648,11 @@ def IsGcrRepository(function):
 def _AddGcrDeprecationWarning():
   """Adds warning on deprecation of Container Registry."""
   log.warning(
-      'Effective May 15, 2023, Container Registry is deprecated. After March'
-      ' 18, 2025, Container Registry will no longer be available. Please switch'
-      ' to Artifact Registry by adding the flag'
-      ' `--docker-registry=artifact-registry`. For more information, see'
+      'Due to the general transition from Container Registry to Artifact'
+      ' Registry, `--docker-registry=container-registry` will no longer be'
+      ' available as an option when deploying a function.'
+      ' All container image storage and management will automatically'
+      ' transition to Artifact Registry.'
+      ' For more information, please visit:'
       ' https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr'
   )

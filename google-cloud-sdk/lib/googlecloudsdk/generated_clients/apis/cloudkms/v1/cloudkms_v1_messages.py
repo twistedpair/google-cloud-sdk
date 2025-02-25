@@ -463,7 +463,7 @@ class ChecksummedData(_messages.Message):
       an issue in your computation of the CRC32C checksum. Note: This field is
       defined as int64 for reasons of compatibility across different
       languages. However, it is a non-negative integer, which will never
-      exceed 2^32-1, and can be safely downconverted to uint32 in languages
+      exceed `2^32-1`, and can be safely downconverted to uint32 in languages
       that support this type.
     data: Raw Data.
   """
@@ -3549,9 +3549,9 @@ class PublicKey(_messages.Message):
       mismatch may indicate an issue in your computation of the CRC32C
       checksum. Note: This field is defined as int64 for reasons of
       compatibility across different languages. However, it is a non-negative
-      integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type. NOTE: This field is in
-      Beta.
+      integer, which will never exceed `2^32-1`, and can be safely
+      downconverted to uint32 in languages that support this type. NOTE: This
+      field is in Beta.
     protectionLevel: The ProtectionLevel of the CryptoKeyVersion public key.
     publicKey: This field contains the public key (with integrity
       verification), formatted according to the public_key_format field.

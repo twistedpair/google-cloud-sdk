@@ -1521,6 +1521,8 @@ class Dataset(_messages.Message):
       key.
     name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
+    satisfiesPzi: Output only. For future use.
+    satisfiesPzs: Output only. For future use.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
       defaults to UTC. This is used for parsing times in resources, such as
@@ -1529,7 +1531,9 @@ class Dataset(_messages.Message):
 
   encryptionSpec = _messages.MessageField('EncryptionSpec', 1)
   name = _messages.StringField(2)
-  timeZone = _messages.StringField(3)
+  satisfiesPzi = _messages.BooleanField(3)
+  satisfiesPzs = _messages.BooleanField(4)
+  timeZone = _messages.StringField(5)
 
 
 class DateShiftConfig(_messages.Message):

@@ -856,7 +856,7 @@ class CloudassetAnalyzeMoveRequest(_messages.Message):
     destinationParent: Required. Name of the Google Cloud folder or
       organization to reparent the target resource. The analysis will be
       performed against hypothetically moving the resource to this specified
-      desitination parent. This can only be a folder number (such as
+      destination parent. This can only be a folder number (such as
       "folders/123") or an organization number (such as "organizations/123").
     resource: Required. Name of the resource to perform the analysis against.
       Only Google Cloud projects are supported as of today. Hence, this can
@@ -2630,7 +2630,7 @@ class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
       PARTITION_KEY_UNSPECIFIED: Unspecified partition key. Tables won't be
         partitioned using this option.
       REQUEST_TIME: The time when the request is received. If specified as
-        partition key, the result table(s) is partitoned by the RequestTime
+        partition key, the result table(s) is partitioned by the RequestTime
         column, an additional timestamp column representing when the request
         was received.
     """
@@ -3520,7 +3520,14 @@ class GoogleIamV2DenyRule(_messages.Message):
       attribute_name}/{attribute_value}`: All identities in a workload
       identity pool with a certain attribute. * `principalSet://iam.googleapis
       .com/projects/{project_number}/locations/global/workloadIdentityPools/{p
-      ool_id}/*`: All identities in a workload identity pool. *
+      ool_id}/*`: All identities in a workload identity pool. * `principalSet:
+      //cloudresourcemanager.googleapis.com/[projects|folders|organizations]/{
+      project_number|folder_number|org_number}/type/ServiceAccount`: All
+      service accounts grouped under a resource (project, folder, or
+      organization). * `principalSet://cloudresourcemanager.googleapis.com/[pr
+      ojects|folders|organizations]/{project_number|folder_number|org_number}/
+      type/ServiceAgent`: All service agents grouped under a resource
+      (project, folder, or organization). *
       `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
       Google Account that was deleted recently. For example,
       `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
@@ -3939,12 +3946,10 @@ class GoogleIdentityAccesscontextmanagerV1EgressSource(_messages.Message):
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
-    resource: A Google Cloud resource that you want to allow to egress the
-      perimeter. These resources can access data outside the perimeter. This
-      field only supports projects. The project format is
-      `projects/{project_number}`. The resource can be in any Google Cloud
-      organization, not just the organization where the perimeter is defined.
-      You can't use `*` in this field to allow all Google Cloud resources.
+    resource: A Google Cloud resource from the service perimeter that you want
+      to allow to access data outside the perimeter. This field supports only
+      projects. The project format is `projects/{project_number}`. You can't
+      use `*` in this field to allow all Google Cloud resources.
   """
 
   accessLevel = _messages.StringField(1)
@@ -4606,7 +4611,7 @@ class IamPolicySearchResult(_messages.Message):
       in the form of projects/{PROJECT_NUMBER}. If an IAM policy is set on a
       resource (like VM instance, Cloud Storage bucket), the project field
       will indicate the project that contains the resource. If an IAM policy
-      is set on a folder or orgnization, this field will be empty. To search
+      is set on a folder or organization, this field will be empty. To search
       against the `project`: * specify the `scope` field as this project in
       your search request.
     resource: The full resource name of the resource associated with this IAM
@@ -5451,14 +5456,14 @@ class PartitionSpec(_messages.Message):
       PARTITION_KEY_UNSPECIFIED: Unspecified partition key. If used, it means
         using non-partitioned table.
       READ_TIME: The time when the snapshot is taken. If specified as
-        partition key, the result table(s) is partitoned by the additional
+        partition key, the result table(s) is partitioned by the additional
         timestamp column, readTime. If [read_time] in ExportAssetsRequest is
         specified, the readTime column's value will be the same as it.
         Otherwise, its value will be the current time that is used to take the
         snapshot.
       REQUEST_TIME: The time when the request is received and started to be
         processed. If specified as partition key, the result table(s) is
-        partitoned by the requestTime column, an additional timestamp column
+        partitioned by the requestTime column, an additional timestamp column
         representing when the request was received.
     """
     PARTITION_KEY_UNSPECIFIED = 0

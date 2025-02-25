@@ -1299,6 +1299,89 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this proto bundle will be
+      created. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+    protoBundle: A ProtoBundle resource to be passed as the request body.
+    protoBundleId: Required. The unique ID to use for the proto bundle, which
+      will become the final component of the proto bundle's resource name.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  protoBundle = _messages.MessageField('ProtoBundle', 2)
+  protoBundleId = _messages.StringField(3)
+
+
+class BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag of the proto bundle. If this is provided, it must
+      match the server's etag. The server returns an ABORTED error on a
+      mismatched etag.
+    name: Required. The unique name of the proto bundle to delete. Values are
+      of the form `projects/{project}/instances/{instance}/tables/{table}/prot
+      oBundles/{proto_bundle}`
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesTablesProtoBundlesGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesProtoBundlesGetRequest object.
+
+  Fields:
+    name: Required. The unique name of the proto bundle to retrieve. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      protoBundles/{proto_bundle}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BigtableadminProjectsInstancesTablesProtoBundlesListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesProtoBundlesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of proto bundles to return. If the value is
+      positive, the server may return at most this value. If unspecified, or
+      the value is non-positive, the server will return the maximum allowed
+      page size.
+    pageToken: A page token, received from a previous `ListProtoBundles` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListProtoBundles` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns this collection of proto bundles.
+      Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest object.
+
+  Fields:
+    name: Identifier. The unique name identifying this proto bundle. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      protoBundles/{proto_bundle}`
+    protoBundle: A ProtoBundle resource to be passed as the request body.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  protoBundle = _messages.MessageField('ProtoBundle', 2)
+  updateMask = _messages.StringField(3)
+
+
 class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesRestoreRequest object.
 
@@ -1996,6 +2079,23 @@ class CreateInstanceRequest(_messages.Message):
   instance = _messages.MessageField('Instance', 2)
   instanceId = _messages.StringField(3)
   parent = _messages.StringField(4)
+
+
+class CreateProtoBundleMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by CreateProtoBundle.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      canceled.
+    name: The unique name identifying this proto bundle. Values are of the
+      form `projects/{project}/instances/{instance}/tables/{table}/protoBundle
+      s/{proto_bundle}`
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class CreateTableRequest(_messages.Message):
@@ -2836,6 +2936,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListProtoBundlesResponse(_messages.Message):
+  r"""The response for ListProtoBundles.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    protoBundles: The proto bundles from the specified table.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  protoBundles = _messages.MessageField('ProtoBundle', 2, repeated=True)
+
+
 class ListTablesResponse(_messages.Message):
   r"""Response message for
   google.bigtable.admin.v2.BigtableTableAdmin.ListTables
@@ -3310,6 +3423,36 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ProtoBundle(_messages.Message):
+  r"""A representation of a proto bundle, which includes a unique name and a
+  serialized google.protobuf.FileDescriptorSet.
+
+  Fields:
+    etag: Optional. The etag for this proto bundle. This may be sent on update
+      and delete requests to ensure the client has an up-to-date value before
+      proceeding. The server returns an ABORTED error on a mismatched etag.
+    name: Identifier. The unique name identifying this proto bundle. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      protoBundles/{proto_bundle}`
+    protoDescriptors: Required. Contains a protobuf-serialized [google.protobu
+      f.FileDescriptorSet](https://github.com/protocolbuffers/protobuf/blob/ma
+      in/src/google/protobuf/descriptor.proto), which could include multiple
+      proto files. To generate it, [install](https://grpc.io/docs/protoc-
+      installation/) and run `protoc` with `--include_imports` and
+      `--descriptor_set_out`. For example, to generate for
+      moon/shot/app.proto, run ``` $protoc --proto_path=/app_path
+      --proto_path=/lib_path \ --include_imports \
+      --descriptor_set_out=descriptors.pb \ moon/shot/app.proto ``` For more
+      details, see protobuffer [self
+      description](https://developers.google.com/protocol-
+      buffers/docs/techniques#self-description).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  protoDescriptors = _messages.BytesField(3)
 
 
 class RestoreInfo(_messages.Message):
@@ -3984,6 +4127,23 @@ class UpdateInstanceMetadata(_messages.Message):
   finishTime = _messages.StringField(1)
   originalRequest = _messages.MessageField('PartialUpdateInstanceRequest', 2)
   requestTime = _messages.StringField(3)
+
+
+class UpdateProtoBundleMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by UpdateProtoBundle.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      canceled.
+    name: The unique name identifying this proto bundle. Values are of the
+      form `projects/{project}/instances/{instance}/tables/{table}/protoBundle
+      s/{proto_bundle}`
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class UpdateTableMetadata(_messages.Message):

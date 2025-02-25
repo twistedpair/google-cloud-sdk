@@ -923,13 +923,16 @@ class ExistingSeedPhraseReference(_messages.Message):
       at, used as part of a derivation path. The derivation path is built from
       this as "m/12381/3600//0/0" See also
       https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
+    launchpadDepositData: Output only. Immutable. The deposit data for the
+      validator, in JSON format as expected by the Launchpad API.
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
   """
 
   depositTxData = _messages.StringField(1)
   derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  seedPhraseSecret = _messages.StringField(3)
+  launchpadDepositData = _messages.StringField(3)
+  seedPhraseSecret = _messages.StringField(4)
 
 
 class ExistingSeedPhraseReferenceTemplate(_messages.Message):
@@ -1310,6 +1313,8 @@ class SeedPhraseReference(_messages.Message):
       https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
     exportSeedPhrase: Optional. Immutable. True to export the seed phrase to
       Secret Manager.
+    launchpadDepositData: Output only. Immutable. The deposit data for the
+      validator, in JSON format as expected by the Launchpad API.
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
   """
@@ -1317,7 +1322,8 @@ class SeedPhraseReference(_messages.Message):
   depositTxData = _messages.StringField(1)
   derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   exportSeedPhrase = _messages.BooleanField(3)
-  seedPhraseSecret = _messages.StringField(4)
+  launchpadDepositData = _messages.StringField(4)
+  seedPhraseSecret = _messages.StringField(5)
 
 
 class SeedPhraseReferenceTemplate(_messages.Message):

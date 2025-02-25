@@ -223,6 +223,43 @@ def AddStoragePoolDirectoryServiceTypeArg(parser):
       help="""String indicating directory service type for the Storage Pool""",
   )
 
+
+def AddStoragePoolCustomPerformanceEnabledArg(parser):
+  """Adds the Custom Performance Enabled arg to the arg parser."""
+  parser.add_argument(
+      '--custom-performance-enabled',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Storage Pool is a custom performance Storage Pool or not""",
+      hidden=True,
+  )
+
+
+def AddStoragePoolTotalThroughputArg(parser):
+  """Adds the Total Throughput arg to the arg parser."""
+  parser.add_argument(
+      '--total-throughput',
+      type=arg_parsers.BinarySize(
+          default_unit='MiB/s',
+          suggested_binary_size_scales=['MiB/s', 'GiB/s'],
+          type_abbr='B/s',
+      ),
+      help="""The total throughput of the Storage Pool in MiB/s or GiB/s units.
+              If no throughput unit is specified, MiB/s is assumed.""",
+      hidden=True,
+  )
+
+
+def AddStoragePoolTotalIopsArg(parser):
+  """Adds the Total IOPS arg to the arg parser."""
+  parser.add_argument(
+      '--total-iops',
+      type=int,
+      help="""Integer indicating total IOPS of the Storage Pool""",
+      hidden=True,
+  )
+
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 
 
@@ -246,6 +283,11 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolZoneArg(parser)
   AddStoragePoolReplicaZoneArg(parser)
   AddStoragePoolAllowAutoTieringArg(parser)
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
+    AddStoragePoolCustomPerformanceEnabledArg(parser)
+    AddStoragePoolTotalThroughputArg(parser)
+    AddStoragePoolTotalIopsArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -256,7 +298,7 @@ def AddStoragePoolDeleteArgs(parser):
   flags.AddResourceAsyncFlag(parser)
 
 
-def AddStoragePoolUpdateArgs(parser):
+def AddStoragePoolUpdateArgs(parser, release_track):
   """Add args for updating a Storage Pool."""
   concept_parsers.ConceptParser([
       flags.GetStoragePoolPresentationSpec('The Storage Pool to update.')
@@ -269,6 +311,10 @@ def AddStoragePoolUpdateArgs(parser):
   AddStoragePoolZoneArg(parser)
   AddStoragePoolReplicaZoneArg(parser)
   AddStoragePoolAllowAutoTieringArg(parser)
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
+    AddStoragePoolTotalThroughputArg(parser)
+    AddStoragePoolTotalIopsArg(parser)
 
 
 def AddStoragePoolSwitchArg(parser):

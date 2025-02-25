@@ -577,12 +577,15 @@ class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
   Fields:
+    clusterVersion: Output only. The product version of the Edge Cluster, e.g.
+      "1.8.0".
     resourceLink: Immutable. Self-link of the GCP resource for the Edge
       Cluster. For example: //edgecontainer.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster
   """
 
-  resourceLink = _messages.StringField(1)
+  clusterVersion = _messages.StringField(1)
+  resourceLink = _messages.StringField(2)
 
 
 class Empty(_messages.Message):

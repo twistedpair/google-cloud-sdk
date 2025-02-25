@@ -5466,7 +5466,9 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
     postScanActions: Optional. Actions to take upon job completion..
     rowFilter: Optional. A filter applied to all rows in a single DataScan
       job. The filter needs to be a valid SQL expression for a WHERE clause in
-      BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
+      GoogleSQL syntax
+      (https://cloud.google.com/bigquery/docs/reference/standard-sql/query-
+      syntax#where_clause).Example: col1 >= 0 AND col2 < 10
     samplingPercent: Optional. The percentage of the records to be selected
       from the dataset for DataScan. Value can range between 0.0 and 100.0
       with up to 3 significant decimal digits. Sampling is not applied if
@@ -5773,8 +5775,10 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
 
 class GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation(_messages.Message):
   r"""Evaluates whether each row passes the specified condition.The SQL
-  expression needs to use BigQuery standard SQL syntax and should produce a
-  boolean value per row as the result.Example: col1 >= 0 AND col2 < 10
+  expression needs to use GoogleSQL syntax
+  (https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
+  and should produce a boolean value per row as the result.Example: col1 >= 0
+  AND col2 < 10
 
   Fields:
     sqlExpression: Optional. The SQL expression.
@@ -5796,13 +5800,15 @@ class GoogleCloudDataplexV1DataQualityRuleSetExpectation(_messages.Message):
 class GoogleCloudDataplexV1DataQualityRuleSqlAssertion(_messages.Message):
   r"""A SQL statement that is evaluated to return rows that match an invalid
   state. If any rows are are returned, this rule fails.The SQL statement must
-  use BigQuery standard SQL syntax, and must not contain any semicolons.You
-  can use the data reference parameter ${data()} to reference the source table
-  with all of its precondition filters applied. Examples of precondition
-  filters include row filters, incremental data filters, and sampling. For
-  more information, see Data reference parameter
-  (https://cloud.google.com/dataplex/docs/auto-data-quality-overview#data-
-  reference-parameter).Example: SELECT * FROM ${data()} WHERE price < 0
+  use GoogleSQL syntax
+  (https://cloud.google.com/bigquery/docs/reference/standard-sql/query-
+  syntax), and must not contain any semicolons.You can use the data reference
+  parameter ${data()} to reference the source table with all of its
+  precondition filters applied. Examples of precondition filters include row
+  filters, incremental data filters, and sampling. For more information, see
+  Data reference parameter (https://cloud.google.com/dataplex/docs/auto-data-
+  quality-overview#data-reference-parameter).Example: SELECT * FROM ${data()}
+  WHERE price < 0
 
   Fields:
     sqlStatement: Optional. The SQL statement.
@@ -5857,8 +5863,9 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
 
 class GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation(_messages.Message):
   r"""Evaluates whether the provided expression is true.The SQL expression
-  needs to use BigQuery standard SQL syntax and should produce a scalar
-  boolean result.Example: MIN(col1) >= 0
+  needs to use GoogleSQL syntax
+  (https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
+  and should produce a scalar boolean result.Example: MIN(col1) >= 0
 
   Fields:
     sqlExpression: Optional. The SQL expression.
@@ -5975,7 +5982,9 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
     postScanActions: Optional. Actions to take upon job completion.
     rowFilter: Optional. A filter applied to all rows in a single DataScan
       job. The filter needs to be a valid SQL expression for a WHERE clause in
-      BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
+      GoogleSQL syntax
+      (https://cloud.google.com/bigquery/docs/reference/standard-sql/query-
+      syntax#where_clause).Example: col1 >= 0 AND col2 < 10
     rules: Required. The list of rules to evaluate against a data source. At
       least one rule is required.
     samplingPercent: Optional. The percentage of the records to be selected

@@ -37,9 +37,6 @@ properties:
     description: |-
       An optional description of the profile group. Max length 2048 characters.
     type: string
-  domainFilteringProfile:
-    description: ''
-    type: string
   labels:
     description: Labels as key value pairs.
     $ref: LabelsValue.yaml
