@@ -847,17 +847,19 @@ class StorageClient(metaclass=StorageClientMeta):
             request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateBucketRequest, dict]):
                 The request object. Request message for CreateBucket.
             parent (str):
-                Required. The project to which this
-                bucket will belong.
+                Required. The project to which this bucket will belong.
+                This field must either be empty or ``projects/_``. The
+                project ID that owns this bucket should be specified in
+                the ``bucket.project`` field.
 
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             bucket (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket):
-                Properties of the new bucket being inserted. The name of
-                the bucket is specified in the ``bucket_id`` field.
-                Populating ``bucket.name`` field will result in an
-                error. The project of the bucket must be specified in
+                Required. Properties of the new bucket being inserted.
+                The name of the bucket is specified in the ``bucket_id``
+                field. Populating ``bucket.name`` field will result in
+                an error. The project of the bucket must be specified in
                 the ``bucket.project`` field. This field must be in
                 ``projects/{projectIdentifier}`` format,
                 {projectIdentifier} can be the project ID or project
@@ -1773,7 +1775,11 @@ class StorageClient(metaclass=StorageClientMeta):
                 client = storage_v2.StorageClient()
 
                 # Initialize request argument(s)
+                source_objects = storage_v2.SourceObject()
+                source_objects.name = "name_value"
+
                 request = storage_v2.ComposeObjectRequest(
+                    source_objects=source_objects,
                 )
 
                 # Make the request
@@ -1908,10 +1914,10 @@ class StorageClient(metaclass=StorageClientMeta):
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             generation (int):
-                If present, permanently deletes a
-                specific revision of this object (as
-                opposed to the latest version, the
-                default).
+                Optional. If present, permanently
+                deletes a specific revision of this
+                object (as opposed to the latest
+                version, the default).
 
                 This corresponds to the ``generation`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -2274,9 +2280,10 @@ class StorageClient(metaclass=StorageClientMeta):
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             generation (int):
-                If present, selects a specific
-                revision of this object (as opposed to
-                the latest version, the default).
+                Optional. If present, selects a
+                specific revision of this object (as
+                opposed to the latest version, the
+                default).
 
                 This corresponds to the ``generation`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -2406,9 +2413,10 @@ class StorageClient(metaclass=StorageClientMeta):
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             generation (int):
-                If present, selects a specific
-                revision of this object (as opposed to
-                the latest version, the default).
+                Optional. If present, selects a
+                specific revision of this object (as
+                opposed to the latest version, the
+                default).
 
                 This corresponds to the ``generation`` field
                 on the ``request`` instance; if ``request`` is provided, this

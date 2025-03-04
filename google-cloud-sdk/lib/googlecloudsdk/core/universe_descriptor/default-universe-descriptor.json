@@ -6,5 +6,6 @@
   "cloudWebDomain": "cloud.google.com",
   "documentationDomain": "cloud.google.com",
   "version": "1.0.0",
-  "state": "primary"
+  "state": "primary",
+  "artifactRegistryDomain": "pkg.dev"
 }

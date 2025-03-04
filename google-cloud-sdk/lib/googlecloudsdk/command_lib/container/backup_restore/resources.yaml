@@ -87,6 +87,30 @@ default_backup_plan:
     property: gkebackup/backup_plan
     help: Backup Plan name.
 
+positional_backup_channel:
+  name: backup channel
+  collection: gkebackup.projects.locations.backupChannels
+  request_id_field: backupChannelId
+  attributes:
+  - *default_project
+  - *default_location
+  - &positional_backup_channel
+    parameter_name: backupChannelsId
+    attribute_name: backup_channel
+    help: Backup Channel name.
+
+backup_channel:
+  name: backup channel
+  collection: gkebackup.projects.locations.backupChannels
+  request_id_field: backupChannelId
+  attributes:
+  - *default_project
+  - *default_location
+  - &backup_channel
+    parameter_name: backupChannelsId
+    attribute_name: backup-channel
+    help: Backup Channel name.
+
 backup:
   name: backup
   collection: gkebackup.projects.locations.backupPlans.backups
@@ -165,6 +189,30 @@ default_restore_plan:
     attribute_name: restore-plan
     property: gkebackup/restore_plan
     help: Restore Plan name.
+
+positional_restore_channel:
+  name: restore channel
+  collection: gkebackup.projects.locations.restoreChannels
+  request_id_field: restoreChannelId
+  attributes:
+  - *default_project
+  - *default_location
+  - &positional_restore_channel
+    parameter_name: restoreChannelsId
+    attribute_name: restore_channel
+    help: Restore Channel name.
+
+restore_channel:
+  name: restore channel
+  collection: gkebackup.projects.locations.restoreChannels
+  request_id_field: restoreChannelId
+  attributes:
+  - *default_project
+  - *default_location
+  - &restore_channel
+    parameter_name: restoreChannelsId
+    attribute_name: restore-channel
+    help: Restore Channel name.
 
 restore:
   name: restore

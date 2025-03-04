@@ -114,3 +114,9 @@ properties:
       RFC3339 text format. If specified, the instance termination action
       will be performed at the termination time.
     type: string
+  hostErrorTimeoutSeconds:
+    description: |-
+      The timeout in seconds for host error detection. The value must be
+      within the range of [90, 330] in increments of 30. If unset, the
+      default behavior of host error recovery will be used.
+    type: integer

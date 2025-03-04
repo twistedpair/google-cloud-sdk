@@ -52,6 +52,7 @@ _ENTRYPOINT_JOB_FILE_ARGS = base.Argument(
 _ARCHIVE_URIS = base.Argument(
     '--archive-uris',
     metavar='ARG',
+    hidden=True,
     type=arg_parsers.ArgList(),
     action=arg_parsers.UpdateAction,
     help=(
@@ -91,6 +92,16 @@ _RESOURCE_SPEC = base.Argument(
       """),
 )
 
+_SERVERLESS_RAY_JOB_SERVICE_ACCOUNT = base.Argument(
+    '--service-account',
+    metavar='SERVICE_ACCOUNT',
+    hidden=True,
+    help=(
+        'The service account to use for the Ray job. If not specified, the'
+        ' default service account is used.'
+    ),
+)
+
 
 def AddCreateServerlessRayJobFlags(parser):
   """Adds flags related to create a serverless ray job."""
@@ -101,11 +112,11 @@ def AddCreateServerlessRayJobFlags(parser):
           constants.SUPPORTED_TRAINING_REGIONS
       ),
   )
-  shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
   shared_flags.GetDisplayNameArg('serverless ray job').AddToParser(parser)
 
   labels_util.AddCreateLabelsFlags(parser)
 
+  _SERVERLESS_RAY_JOB_SERVICE_ACCOUNT.AddToParser(parser)
   _ENTRYPOINT_FILE_URI.AddToParser(parser)
   _RESOURCE_SPEC.AddToParser(parser)
   _ARCHIVE_URIS.AddToParser(parser)

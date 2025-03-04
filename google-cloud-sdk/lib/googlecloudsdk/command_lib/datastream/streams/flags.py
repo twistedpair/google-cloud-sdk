@@ -26,22 +26,21 @@ _MYSQL_EXCLUDED_OBJECTS_HELP_TEXT = """\
 
   ```
     {
-        "mysqlDatabases": [
+      "mysqlDatabases": [
+        {
+          "database":"sample_database",
+          "mysqlTables": [
             {
-              "database":"sample_database",
-              "mysqlTables": [
+              "table": "sample_table",
+              "mysqlColumns": [
                 {
-                  "table": "sample_table",
-                  "mysqlColumns": [
-                    {
-                      "column": "sample_column",
-                    }
-                   ]
+                  "column": "sample_column",
                 }
-              ]
+                ]
             }
           ]
         }
+      ]
     }
   ```
 """
@@ -53,22 +52,21 @@ _ORACLE_EXCLUDED_OBJECTS_HELP_TEXT = """\
 
   ```
     {
-        "oracleSchemas": [
-          {
-            "schema": "SAMPLE",
-            "oracleTables": [
-              {
-                "table": "SAMPLE_TABLE",
-                "oracleColumns": [
-                  {
-                    "column": "COL",
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "oracleSchemas": [
+        {
+          "schema": "SAMPLE",
+          "oracleTables": [
+            {
+              "table": "SAMPLE_TABLE",
+              "oracleColumns": [
+                {
+                  "column": "COL",
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ```
 """
@@ -80,22 +78,21 @@ _POSTGRESQL_EXCLUDED_OBJECTS_HELP_TEXT = """\
 
   ```
     {
-        "postgresqlSchemas": [
-          {
-            "schema": "SAMPLE",
-            "postgresqlTables": [
-              {
-                "table": "SAMPLE_TABLE",
-                "postgresqlColumns": [
-                  {
-                    "column": "COL",
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "postgresqlSchemas": [
+        {
+          "schema": "SAMPLE",
+          "postgresqlTables": [
+            {
+              "table": "SAMPLE_TABLE",
+              "postgresqlColumns": [
+                {
+                  "column": "COL",
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ```
 """
@@ -107,22 +104,40 @@ _SQLSERVER_EXCLUDED_OBJECTS_HELP_TEXT = """\
 
   ```
     {
-        "schemas": [
-          {
-            "schema": "SAMPLE",
-            "tables": [
-              {
-                "table": "SAMPLE_TABLE",
-                "columns": [
-                  {
-                    "column": "COL",
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "schemas": [
+        {
+          "schema": "SAMPLE",
+          "tables": [
+            {
+              "table": "SAMPLE_TABLE",
+              "columns": [
+                {
+                  "column": "COL",
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ```
+"""
+
+_SALESFORCE_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the Salesforce data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+      "objects": [
+        {
+          "objectName": "SAMPLE",
+        },
+        {
+          "objectName": "SAMPLE2",
+        }
+      ]
     }
   ```
 """
@@ -193,4 +208,8 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_all_excluded_objects.add_argument(
       '--sqlserver-excluded-objects',
       help=_SQLSERVER_EXCLUDED_OBJECTS_HELP_TEXT,
+  )
+  backfill_all_excluded_objects.add_argument(
+      '--salesforce-excluded-objects',
+      help=_SALESFORCE_EXCLUDED_OBJECTS_HELP_TEXT,
   )

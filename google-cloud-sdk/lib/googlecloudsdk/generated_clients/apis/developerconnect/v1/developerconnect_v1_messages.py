@@ -1334,18 +1334,15 @@ class InsightsConfig(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: No state specified.
-      PENDING_APPLICATION_DISCOVERY: The InsightsConfig is pending application
-        discovery.
-      PENDING_RUNTIME_DISCOVERY: The InsightsConfig is pending runtime
+      PENDING: The InsightsConfig is pending application discovery/runtime
         discovery.
       COMPLETE: The initial discovery process is complete.
       ERROR: The InsightsConfig is in an error state.
     """
     STATE_UNSPECIFIED = 0
-    PENDING_APPLICATION_DISCOVERY = 1
-    PENDING_RUNTIME_DISCOVERY = 2
-    COMPLETE = 3
-    ERROR = 4
+    PENDING = 1
+    COMPLETE = 2
+    ERROR = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

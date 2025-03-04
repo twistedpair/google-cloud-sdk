@@ -219,10 +219,14 @@ def MakeAggregateReservationPropertiesMessage(
           tpu_version_to_vm_family[tpu_version]
       ),
       reservedResources=reserved_resources,
-      workloadType=messages.AllocationAggregateReservation.WorkloadTypeValueValuesEnum(
-          workload_type
-      ),
   )
+
+  if workload_type:
+    aggregate_reservation_properties.workloadType = (
+        messages.AllocationAggregateReservation.WorkloadTypeValueValuesEnum(
+            workload_type
+        )
+    )
   return aggregate_reservation_properties
 
 
@@ -266,6 +270,8 @@ def MakePlanningStatus(messages, planning_status):
   if planning_status:
     if planning_status == 'SUBMITTED':
       return messages.FutureReservation.PlanningStatusValueValuesEnum.SUBMITTED
+    if planning_status == 'DRAFT':
+      return messages.FutureReservation.PlanningStatusValueValuesEnum.DRAFT
   return None
 
 

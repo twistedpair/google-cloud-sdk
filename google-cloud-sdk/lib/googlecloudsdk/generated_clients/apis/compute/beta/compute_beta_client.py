@@ -46,6 +46,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
     self.crossSiteNetworks = self.CrossSiteNetworksService(self)
+    self.diskSettings = self.DiskSettingsService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.externalVpnGateways = self.ExternalVpnGatewaysService(self)
@@ -96,6 +97,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionCommitments = self.RegionCommitmentsService(self)
+    self.regionDiskSettings = self.RegionDiskSettingsService(self)
     self.regionDiskTypes = self.RegionDiskTypesService(self)
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
@@ -901,6 +903,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListUsable(self, request, global_params=None):
+      r"""Retrieves a list of all usable backend buckets in the specified project.
+
+      Args:
+        request: (ComputeBackendBucketsListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendBucketListUsable) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.backendBuckets.listUsable',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/backendBuckets/listUsable',
+        request_field='',
+        request_type_name='ComputeBackendBucketsListUsableRequest',
+        response_type_name='BackendBucketListUsable',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
@@ -1619,6 +1647,68 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
         request_field='crossSiteNetworkResource',
         request_type_name='ComputeCrossSiteNetworksPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class DiskSettingsService(base_api.BaseApiService):
+    """Service class for the diskSettings resource."""
+
+    _NAME = 'diskSettings'
+
+    def __init__(self, client):
+      super(ComputeBeta.DiskSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Zonal Disk Settings.
+
+      Args:
+        request: (ComputeDiskSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiskSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.diskSettings.get',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/diskSettings',
+        request_field='',
+        request_type_name='ComputeDiskSettingsGetRequest',
+        response_type_name='DiskSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Zonal Disk Settings.
+
+      Args:
+        request: (ComputeDiskSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.diskSettings.patch',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/diskSettings',
+        request_field='diskSettings',
+        request_type_name='ComputeDiskSettingsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -6933,6 +7023,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AddNetworkInterface(self, request, global_params=None):
+      r"""Adds one dynamic network interface to an active instance.
+
+      Args:
+        request: (ComputeInstancesAddNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.addNetworkInterface',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/addNetworkInterface',
+        request_field='networkInterface',
+        request_type_name='ComputeInstancesAddNetworkInterfaceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AddResourcePolicies(self, request, global_params=None):
       r"""Adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
 
@@ -7085,6 +7201,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteAccessConfig',
         request_field='',
         request_type_name='ComputeInstancesDeleteAccessConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DeleteNetworkInterface(self, request, global_params=None):
+      r"""Deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;.
+
+      Args:
+        request: (ComputeInstancesDeleteNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.deleteNetworkInterface',
+        ordered_params=['project', 'zone', 'instance', 'networkInterfaceName'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterfaceName', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteNetworkInterface',
+        request_field='',
+        request_type_name='ComputeInstancesDeleteNetworkInterfaceRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -11960,7 +12102,7 @@ class ComputeBeta(base_api.BaseApiClient):
           }
 
     def AddAssociation(self, request, global_params=None):
-      r"""Inserts an association for the specified security policy.
+      r"""Inserts an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -12012,7 +12154,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def CopyRules(self, request, global_params=None):
-      r"""Copies rules to the specified security policy.
+      r"""Copies rules to the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.copyRules instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
@@ -12038,7 +12180,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified policy.
+      r"""Deletes the specified policy. Use of this API to remove firewall policies is deprecated. Use firewallPolicies.delete instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
@@ -12064,7 +12206,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""List all of the ordered rules present in a single specified policy.
+      r"""List all of the ordered rules present in a single specified policy. Use of this API to read firewall policies is deprecated. Use firewallPolicies.get instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
@@ -12090,7 +12232,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def GetAssociation(self, request, global_params=None):
-      r"""Gets an association with the specified name.
+      r"""Gets an association with the specified name. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
@@ -12116,7 +12258,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def GetRule(self, request, global_params=None):
-      r"""Gets a rule at the specified priority.
+      r"""Gets a rule at the specified priority. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
@@ -12142,7 +12284,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request.
+      r"""Creates a new policy in the specified project using the data included in the request. Use of this API to insert firewall policies is deprecated. Use firewallPolicies.insert instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
@@ -12168,7 +12310,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all the policies that have been configured for the specified project.
+      r"""List all the policies that have been configured for the specified project. Use of this API to read firewall policies is deprecated. Use firewallPolicies.list instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListRequest) input message
@@ -12194,7 +12336,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def ListAssociations(self, request, global_params=None):
-      r"""Lists associations of a specified target, i.e., organization or folder.
+      r"""Lists associations of a specified target, i.e., organization or folder. Use of this API to read firewall policies is deprecated. Use firewallPolicies.listAssociations instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
@@ -12246,7 +12388,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves the specified security policy.
+      r"""Moves the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.move instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
@@ -12272,7 +12414,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request.
+      r"""Patches the specified policy with the data included in the request. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patch instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
@@ -12298,7 +12440,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority.
+      r"""Patches a rule at the specified priority. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patchRule instead.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
@@ -12324,7 +12466,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def RemoveAssociation(self, request, global_params=None):
-      r"""Removes an association for the specified security policy.
+      r"""Removes an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.removeAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
@@ -14079,6 +14221,68 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/commitments/{commitment}/updateReservations',
         request_field='regionCommitmentsUpdateReservationsRequest',
         request_type_name='ComputeRegionCommitmentsUpdateReservationsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionDiskSettingsService(base_api.BaseApiService):
+    """Service class for the regionDiskSettings resource."""
+
+    _NAME = 'regionDiskSettings'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionDiskSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Regional Disk Settings.
+
+      Args:
+        request: (ComputeRegionDiskSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiskSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionDiskSettings.get',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/diskSettings',
+        request_field='',
+        request_type_name='ComputeRegionDiskSettingsGetRequest',
+        response_type_name='DiskSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Regional Disk Settings.
+
+      Args:
+        request: (ComputeRegionDiskSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionDiskSettings.patch',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/diskSettings',
+        request_field='diskSettings',
+        request_type_name='ComputeRegionDiskSettingsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -20704,6 +20908,32 @@ class ComputeBeta(base_api.BaseApiClient):
       super(ComputeBeta.SnapshotsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of all of the snapshots in your project across all regions and global scope. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeSnapshotsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshots.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/snapshots',
+        request_field='',
+        request_type_name='ComputeSnapshotsAggregatedListRequest',
+        response_type_name='SnapshotAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.

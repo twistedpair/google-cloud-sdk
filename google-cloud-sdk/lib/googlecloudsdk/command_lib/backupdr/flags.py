@@ -170,6 +170,38 @@ def AddCreateBackupPlanAssociationFlags(parser):
   AddResourceType(parser)
 
 
+def AddUpdateBackupPlanAssociationFlags(parser):
+  """Adds flags required to update a backup plan association."""
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'BACKUP_PLAN_ASSOCIATION',
+              GetBackupPlanAssociationResourceSpec(),
+              'Backup plan association to be updated. To update'
+              " backup plan associations in a project that's different from the"
+              ' backup plan, use the --workload-project flag.',
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--backup-plan',
+              GetBackupPlanResourceSpec(),
+              'Name of the specific backup plan to be applied to the backup'
+              ' plan association. E.g.,'
+              ' projects/sample-project/locations/us-central1/backupPlans/'
+              'sample-backup-plan',
+              # This hides the location flag for backup plan.
+              flag_name_overrides={
+                  'location': '',
+              },
+              required=True,
+          ),
+      ],
+      command_level_fallthroughs={
+          '--backup-plan.location': ['BACKUP_PLAN_ASSOCIATION.location'],
+      },
+  ).AddToParser(parser)
+
+
 def AddTriggerBackupFlags(parser):
   """Adds flags required to create a backup plan association."""
   concept_parsers.ConceptParser(

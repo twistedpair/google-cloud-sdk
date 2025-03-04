@@ -28,6 +28,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -250,7 +251,7 @@ project. Create a subscription for the topic specified to receive notification
 messages. See https://cloud.google.com/pubsub/docs/admin on how to manage
 Pub/Sub topics and subscriptions. You can also use the filter option to
 specify which event types you'd like to receive from the following options:
-SecurityBulletinEvent, UpgradeEvent, UpgradeAvailableEvent.
+SecurityBulletinEvent, UpgradeEvent, UpgradeInfoEvent, UpgradeAvailableEvent.
 
 Examples:
 
@@ -1532,7 +1533,7 @@ def AddMonitoringFlag(parser, autopilot=False):
 Set the components that have monitoring enabled. Valid component values are:
 `SYSTEM`, `WORKLOAD` (Deprecated), `NONE`, `API_SERVER`, `CONTROLLER_MANAGER`,
 `SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`,
-`CADVISOR`, `KUBELET`, `DCGM`
+`CADVISOR`, `KUBELET`, `DCGM`, `JOBSET`
 
 For more information, see
 https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics#available-metrics
@@ -1548,7 +1549,7 @@ Examples:
 Set the components that have monitoring enabled. Valid component values are:
 `SYSTEM`, `WORKLOAD` (Deprecated), `NONE`, `API_SERVER`, `CONTROLLER_MANAGER`,
 `SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`,
-`CADVISOR`, `KUBELET`, `DCGM`
+`CADVISOR`, `KUBELET`, `DCGM`, `JOBSET`
 
 For more information, see
 https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics#available-metrics
@@ -2836,9 +2837,16 @@ datetimes for information on time formats.
       hidden=hidden_for_create,
       metavar='TIME_STAMP',
       help="""\
-End time of the first window (can occur in the past). Must take place after the
-start time. The difference in start and end time specifies the length of each
-recurrence. See $ gcloud topic datetimes for information on time formats.
+The end time for calculating the duration of the maintenance window,
+as expressed by the amount of time after the START_TIME, in the
+same format. The value for END_TIME must be in the future, relative
+to START_TIME. This only calculates the duration of the window,
+and doesn't set when the maintenance window stops recurring.
+Maintenance windows only stop recurring when they're removed. See
+$ gcloud topic datetimes for information on time formats.
+
+This flag argument must be specified if any of the other arguments
+in this group are specified.
 """,
   )
 
@@ -4760,6 +4768,7 @@ def ValidateNotificationConfigFlag(args):
     if 'filter' in args.notification_config:
       known_event_types = [
           'UpgradeEvent',
+          'UpgradeInfoEvent',
           'UpgradeAvailableEvent',
           'SecurityBulletinEvent',
       ]
@@ -6716,17 +6725,20 @@ the Autopilot conversion during or after workload migration.
   )
 
 
-def AddSecretManagerEnableFlagGroup(parser, hidden=False):
+def AddSecretManagerEnableFlagGroup(
+    parser: parser_arguments.ArgumentInterceptor,
+    release_track: base.ReleaseTrack = None,
+) -> None:
   """Adds --enable-secret-manager, --enable-secret-manager-rotation, and --secret-manager-rotation-interval flags to the given parser.
 
   Args:
     parser: A given parser.
-    hidden: hidden status.
+    release_track: Release track of the command.
   """
   secret_manager_group = parser.add_group(
       mutex=False,
       help='Flags for Secret Manager configuration:',
-      hidden=hidden,
+      hidden=False,
   )
   help_text = """\
         Enables the Secret Manager CSI driver provider component. See
@@ -6741,34 +6753,34 @@ def AddSecretManagerEnableFlagGroup(parser, hidden=False):
       action='store_true',
       default=None,
       help=help_text,
-      hidden=hidden,
+      hidden=False,
   )
-
-  help_text = """\
+  if release_track != base.ReleaseTrack.GA:
+    help_text = textwrap.dedent("""\
         Enables the rotation of secrets in the Secret Manager CSI driver
         provider component.
 
         To disable in an existing cluster, explicitly set flag to
         --no-enable-secret-manager-rotation
-    """
-  secret_manager_group.add_argument(
-      '--enable-secret-manager-rotation',
-      action='store_true',
-      default=None,
-      help=help_text,
-      hidden=True,
-  )
+    """)
+    secret_manager_group.add_argument(
+        '--enable-secret-manager-rotation',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=True,
+    )
 
-  help_text = """\
+    help_text = textwrap.dedent("""\
         Set the rotation period for secrets in the Secret Manager CSI driver
         provider component.
-    """
-  secret_manager_group.add_argument(
-      '--secret-manager-rotation-interval',
-      default=None,
-      help=help_text,
-      hidden=True,
-  )
+    """)
+    secret_manager_group.add_argument(
+        '--secret-manager-rotation-interval',
+        default=None,
+        help=help_text,
+        hidden=True,
+    )
 
 
 def AddComplianceFlags(parser, hidden=True):
@@ -7079,19 +7091,61 @@ traffic reaching cluster's control plane via private IP.
   )
 
 
-def AddEnableAutopilotCompatibilityAuditingFlag(parser, hidden=True):
+def AddEnableAutopilotCompatibilityAuditingFlag(parser, hidden=False):
   help_text = """\
         Enables the Autopilot Compatibility Auditing Feature. See
         https://cloud.google.com/sdk/gcloud/reference/container/clusters/check-autopilot-compatibility.
-
-        To disable in an existing cluster, explicitly set flag to
-        --no-enable-autopilot-compatibility-auditing.
+        Only applicable to clusters with version >= 1.32.
     """
 
   parser.add_argument(
       '--enable-autopilot-compatibility-auditing',
-      action='store_true',
-      default=None,
+      action=arg_parsers.StoreTrueFalseAction,
       help=help_text,
       hidden=hidden,
   )
+
+
+def AddServiceAccountSigningKeysFlag(parser):
+  help_text = """\
+        the resource path of the Cloud KMS asymmetric signing cryptoKeyVersion
+        that will be used to sign service account tokens.
+
+        only one key version can be specified.
+    """
+
+  parser.add_argument(
+      '--service-account-signing-keys',
+      default=None,
+      help=help_text,
+      required=False,
+      hidden=True,
+      type=arg_parsers.ArgList(
+          element_type=str,
+          max_length=1,
+      ),
+      metavar='KEY_VERSION',
+  )
+
+
+def AddServiceAccountVerificationKeysFlag(parser):
+  help_text = """\
+        the resource path of the Cloud KMS asymmetric signing cryptoKeyVersion
+        that shall be used to verify service account tokens.
+
+        at most 2 key versions can be specified.
+    """
+
+  parser.add_argument(
+      '--service-account-verification-keys',
+      default=None,
+      help=help_text,
+      required=False,
+      hidden=True,
+      type=arg_parsers.ArgList(
+          element_type=str,
+          max_length=2,
+      ),
+      metavar='KEY_VERSION',
+  )
+

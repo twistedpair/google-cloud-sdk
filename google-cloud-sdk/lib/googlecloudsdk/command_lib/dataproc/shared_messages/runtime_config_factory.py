@@ -104,16 +104,9 @@ class RuntimeConfigFactory(object):
         kwargs['autotuningConfig'] = autotuning_config
 
     if self.include_cohort:
-      cohort_id = args.cohort or args.autotuning_cohort
+      cohort_id = args.cohort
       if cohort_id:
         kwargs['cohort'] = cohort_id
-        # Here we also set AutotuningConfig
-        if 'autotuningConfig' not in kwargs:
-          kwargs['autotuningConfig'] = self.dataproc.messages.AutotuningConfig(
-              cohort=cohort_id
-          )
-        else:
-          kwargs['autotuningConfig'].cohort = cohort_id
 
     if not kwargs:
       return None

@@ -168,6 +168,13 @@ def ParseSqlServerRdbmsFile(messages, sqlserver_rdbms_file):
   )
 
 
+def ParseSalesforceOrgFile(messages, salesforce_org_file):
+  """Parses a salesforce_org_file into the SalesforceOrg message."""
+  return ParseMessageAndValidateSchema(
+      salesforce_org_file, 'SalesforceOrg', messages.SalesforceOrg
+  )
+
+
 def CreateMessageWithCamelCaseConversion(
     message_type, parsed_yaml, schema_path=None
 ):

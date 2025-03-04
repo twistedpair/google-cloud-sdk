@@ -44,6 +44,7 @@ class VmmigrationV1(base_api.BaseApiClient):
     self.projects_locations_imageImports = self.ProjectsLocationsImageImportsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sources_datacenterConnectors = self.ProjectsLocationsSourcesDatacenterConnectorsService(self)
+    self.projects_locations_sources_diskMigrationJobs = self.ProjectsLocationsSourcesDiskMigrationJobsService(self)
     self.projects_locations_sources_migratingVms_cloneJobs = self.ProjectsLocationsSourcesMigratingVmsCloneJobsService(self)
     self.projects_locations_sources_migratingVms_cutoverJobs = self.ProjectsLocationsSourcesMigratingVmsCutoverJobsService(self)
     self.projects_locations_sources_migratingVms_replicationCycles = self.ProjectsLocationsSourcesMigratingVmsReplicationCyclesService(self)
@@ -721,6 +722,205 @@ class VmmigrationV1(base_api.BaseApiClient):
         relative_path='v1/{+datacenterConnector}:upgradeAppliance',
         request_field='upgradeApplianceRequest',
         request_type_name='VmmigrationProjectsLocationsSourcesDatacenterConnectorsUpgradeApplianceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSourcesDiskMigrationJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sources_diskMigrationJobs resource."""
+
+    _NAME = 'projects_locations_sources_diskMigrationJobs'
+
+    def __init__(self, client):
+      super(VmmigrationV1.ProjectsLocationsSourcesDiskMigrationJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels the disk migration job.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}:cancel',
+        http_method='POST',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelDiskMigrationJobRequest',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new disk migration job in a given Source.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs',
+        http_method='POST',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['diskMigrationJobId', 'requestId'],
+        relative_path='v1/{+parent}/diskMigrationJobs',
+        request_field='diskMigrationJob',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single DiskMigrationJob.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}',
+        http_method='DELETE',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single DiskMigrationJob.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiskMigrationJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}',
+        http_method='GET',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsGetRequest',
+        response_type_name='DiskMigrationJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists DiskMigrationJobs in a given Source.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDiskMigrationJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs',
+        http_method='GET',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/diskMigrationJobs',
+        request_field='',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsListRequest',
+        response_type_name='ListDiskMigrationJobsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single DiskMigrationJob.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}',
+        http_method='PATCH',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='diskMigrationJob',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Runs the disk migration job.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}:run',
+        http_method='POST',
+        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:run',
+        request_field='runDiskMigrationJobRequest',
+        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -1484,6 +1684,33 @@ class VmmigrationV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmmigrationProjectsLocationsSourcesFetchInventoryRequest',
         response_type_name='FetchInventoryResponse',
+        supports_download=False,
+    )
+
+    def FetchStorageInventory(self, request, global_params=None):
+      r"""List remote source's inventory of storage resources. The remote source is another cloud vendor (e.g. AWS, Azure). The inventory describes the list of existing storage resources in that source. Note that this operation lists the resources on the remote source, as opposed to listing the MigratingVms resources in the vmmigration service.
+
+      Args:
+        request: (VmmigrationProjectsLocationsSourcesFetchStorageInventoryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchStorageInventoryResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchStorageInventory')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchStorageInventory.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}:fetchStorageInventory',
+        http_method='GET',
+        method_id='vmmigration.projects.locations.sources.fetchStorageInventory',
+        ordered_params=['source'],
+        path_params=['source'],
+        query_params=['forceRefresh', 'pageSize', 'pageToken', 'type'],
+        relative_path='v1/{+source}:fetchStorageInventory',
+        request_field='',
+        request_type_name='VmmigrationProjectsLocationsSourcesFetchStorageInventoryRequest',
+        response_type_name='FetchStorageInventoryResponse',
         supports_download=False,
     )
 

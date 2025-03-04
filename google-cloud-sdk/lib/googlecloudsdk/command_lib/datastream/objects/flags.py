@@ -67,3 +67,13 @@ def AddSqlServerObjectIdentifier(parser):
       help="""SQL Server table for the object.""",
       required=True,
   )
+
+
+def AddSalesforceObjectIdentifier(parser):
+  """Adds a --salesforce-object-name flag to the given parser."""
+  salesforce_object_parser = parser.add_group()
+  salesforce_object_parser.add_argument(
+      '--salesforce-object-name',
+      help="""Salesforce object name.""",
+      required=True,
+  )

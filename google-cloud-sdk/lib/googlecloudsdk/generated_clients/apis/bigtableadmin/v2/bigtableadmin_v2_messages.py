@@ -784,6 +784,133 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesLogicalViewsCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsCreateRequest object.
+
+  Fields:
+    logicalView: A LogicalView resource to be passed as the request body.
+    logicalViewId: Required. The ID to use for the logical view, which will
+      become the final component of the logical view's resource name.
+    parent: Required. The parent instance where this logical view will be
+      created. Format: `projects/{project}/instances/{instance}`.
+  """
+
+  logicalView = _messages.MessageField('LogicalView', 1)
+  logicalViewId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesLogicalViewsDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsDeleteRequest object.
+
+  Fields:
+    etag: Optional. The current etag of the logical view. If an etag is
+      provided and does not match the current etag of the logical view,
+      deletion will be blocked and an ABORTED error will be returned.
+    name: Required. The unique name of the logical view to be deleted. Format:
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesLogicalViewsGetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesLogicalViewsGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsGetRequest object.
+
+  Fields:
+    name: Required. The unique name of the requested logical view. Values are
+      of the form
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BigtableadminProjectsInstancesLogicalViewsListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of logical views to return. The
+      service may return fewer than this value
+    pageToken: Optional. A page token, received from a previous
+      `ListLogicalViews` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListLogicalViews`
+      must match the call that provided the page token.
+    parent: Required. The unique name of the instance for which the list of
+      logical views is requested. Values are of the form
+      `projects/{project}/instances/{instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesLogicalViewsPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsPatchRequest object.
+
+  Fields:
+    logicalView: A LogicalView resource to be passed as the request body.
+    name: Identifier. The unique name of the logical view. Format:
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}
+    updateMask: Optional. The list of fields to update.
+  """
+
+  logicalView = _messages.MessageField('LogicalView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class BigtableadminProjectsInstancesLogicalViewsSetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigtableadminProjectsInstancesLogicalViewsTestIamPermissionsRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesLogicalViewsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest
   object.
@@ -2081,6 +2208,38 @@ class CreateInstanceRequest(_messages.Message):
   parent = _messages.StringField(4)
 
 
+class CreateLogicalViewMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by CreateLogicalView.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      canceled.
+    originalRequest: The request that prompted the initiation of this
+      CreateLogicalView operation.
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('CreateLogicalViewRequest', 2)
+  startTime = _messages.StringField(3)
+
+
+class CreateLogicalViewRequest(_messages.Message):
+  r"""Request message for BigtableInstanceAdmin.CreateLogicalView.
+
+  Fields:
+    logicalView: Required. The logical view to create.
+    logicalViewId: Required. The ID to use for the logical view, which will
+      become the final component of the logical view's resource name.
+    parent: Required. The parent instance where this logical view will be
+      created. Format: `projects/{project}/instances/{instance}`.
+  """
+
+  logicalView = _messages.MessageField('LogicalView', 1)
+  logicalViewId = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
 class CreateProtoBundleMetadata(_messages.Message):
   r"""The metadata for the Operation returned by CreateProtoBundle.
 
@@ -2923,6 +3082,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLogicalViewsResponse(_messages.Message):
+  r"""Response message for BigtableInstanceAdmin.ListLogicalViews.
+
+  Fields:
+    logicalViews: The list of requested logical views.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  logicalViews = _messages.MessageField('LogicalView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -3042,6 +3214,23 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LogicalView(_messages.Message):
+  r"""A SQL logical view object that can be referenced in SQL queries.
+
+  Fields:
+    etag: Optional. The etag for this logical view. This may be sent on update
+      requests to ensure that the client has an up-to-date value before
+      proceeding. The server returns an ABORTED error on a mismatched etag.
+    name: Identifier. The unique name of the logical view. Format:
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}
+    query: Required. The logical view's select query.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  query = _messages.StringField(3)
 
 
 class Modification(_messages.Message):
@@ -4127,6 +4316,36 @@ class UpdateInstanceMetadata(_messages.Message):
   finishTime = _messages.StringField(1)
   originalRequest = _messages.MessageField('PartialUpdateInstanceRequest', 2)
   requestTime = _messages.StringField(3)
+
+
+class UpdateLogicalViewMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by UpdateLogicalView.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      canceled.
+    originalRequest: The request that prompted the initiation of this
+      UpdateLogicalView operation.
+    startTime: The time at which this operation was started.
+  """
+
+  endTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('UpdateLogicalViewRequest', 2)
+  startTime = _messages.StringField(3)
+
+
+class UpdateLogicalViewRequest(_messages.Message):
+  r"""Request message for BigtableInstanceAdmin.UpdateLogicalView.
+
+  Fields:
+    logicalView: Required. The logical view to update. The logical view's
+      `name` field is used to identify the view to update. Format:
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}`.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  logicalView = _messages.MessageField('LogicalView', 1)
+  updateMask = _messages.StringField(2)
 
 
 class UpdateProtoBundleMetadata(_messages.Message):

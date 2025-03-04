@@ -33,7 +33,7 @@ class ConversionWorkspacesEntitiesClient(
       name: str,
       commit_id: str,
       uncommitted: bool,
-      tree_type: Optional[str],
+      tree_type: str,
       filter_expr: str,
       page_size: int,
   ):
@@ -50,11 +50,6 @@ class ConversionWorkspacesEntitiesClient(
     Yields:
       Described entities for the conversion worksapce.
     """
-    filter_expr = self._CombineFilters(
-        filter_expr,
-        self._GetGlobalFilter(name=name),
-    )
-
     yield from list_pager.YieldFromList(
         service=self.cw_service,
         request=self._BuildDescribeEntitiesRequest(
@@ -76,7 +71,7 @@ class ConversionWorkspacesEntitiesClient(
       name: str,
       commit_id: str,
       uncommitted: bool,
-      tree_type: Optional[str],
+      tree_type: str,
       filter_expr: str,
       page_size: int,
   ):
@@ -93,11 +88,6 @@ class ConversionWorkspacesEntitiesClient(
     Yields:
       DDLs for the entities of the conversion worksapce.
     """
-    filter_expr = self._CombineFilters(
-        filter_expr,
-        self._GetGlobalFilter(name=name),
-    )
-
     yield from list_pager.YieldFromList(
         service=self.cw_service,
         request=self._BuildDescribeEntitiesRequest(
@@ -135,11 +125,6 @@ class ConversionWorkspacesEntitiesClient(
     Yields:
       Issues found for the database entities of the conversion worksapce.
     """
-    filter_expr = self._CombineFilters(
-        filter_expr,
-        self._GetGlobalFilter(name=name),
-    )
-
     for tree_type in ('SOURCE', 'DRAFT'):
       yield from list_pager.YieldFromList(
           service=self.cw_service,
@@ -192,11 +177,22 @@ class ConversionWorkspacesEntitiesClient(
         else self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL_COMPACT
     )
 
+    tree = self._GetTreeType(tree_type=tree_type)
+
+    if (
+        tree
+        == self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.SOURCE_TREE
+    ):
+      filter_expr = self._CombineFilters(
+          filter_expr,
+          self._GetGlobalFilter(name=conversion_workspace_ref),
+      )
+
     return self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest(
         commitId=commit_id,
         conversionWorkspace=conversion_workspace_ref,
         uncommitted=uncommitted,
-        tree=self._GetTreeType(tree_type=tree_type),
+        tree=tree,
         view=view,
         filter=filter_expr,
     )

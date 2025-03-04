@@ -95,3 +95,28 @@ project_location_instance:
     attribute_name: instance
     help: The instance id of the {resource} resource.
   disable_auto_completers: false
+project_location_backup_collection:
+  name: backupCollection
+  plural_name: backupCollections
+  collection: memorystore.projects.locations.backupCollections
+  attributes:
+  - *project
+  - *location
+  - &backupCollection
+    parameter_name: backupCollectionsId
+    attribute_name: backup_collection
+    help: The backupCollection id of the {resource} resource.
+  disable_auto_completers: false
+project_location_backup_collection_backup:
+  name: backup
+  plural_name: backups
+  collection: memorystore.projects.locations.backupCollections.backups
+  attributes:
+  - *project
+  - *location
+  - *backupCollection
+  - &backup
+    parameter_name: backupsId
+    attribute_name: backup
+    help: The backup id of the {resource} resource.
+  disable_auto_completers: false

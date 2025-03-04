@@ -54,6 +54,9 @@ properties:
   privateConnectivity:
     description: Private connectivity.
     $ref: PrivateConnectivity.yaml
+  salesforceProfile:
+    description: Salesforce Connection Profile configuration.
+    $ref: SalesforceProfile.yaml
   sqlServerProfile:
     description: SQLServer Connection Profile configuration.
     $ref: SqlServerProfile.yaml

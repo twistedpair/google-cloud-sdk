@@ -14,10 +14,6 @@
 # limitations under the License.
 """Interconnect Attachment."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.core import log
 
 
@@ -187,6 +183,8 @@ class InterconnectAttachment(object):
       labels=None,
       label_fingerprint=None,
       multicast_enabled=None,
+      candidate_cloud_router_ipv6_address=None,
+      candidate_customer_router_ipv6_address=None,
   ):
     """Make an interconnect attachment patch request."""
     interconnect_attachment = self._messages.InterconnectAttachment(
@@ -219,6 +217,14 @@ class InterconnectAttachment(object):
       )
     if multicast_enabled is not None:
       interconnect_attachment.multicastEnabled = multicast_enabled
+    if candidate_cloud_router_ipv6_address is not None:
+      interconnect_attachment.candidateCloudRouterIpv6Address = (
+          candidate_cloud_router_ipv6_address
+      )
+    if candidate_customer_router_ipv6_address is not None:
+      interconnect_attachment.candidateCustomerRouterIpv6Address = (
+          candidate_customer_router_ipv6_address
+      )
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
@@ -351,6 +357,8 @@ class InterconnectAttachment(object):
       only_generate_request=False,
       mtu=None,
       multicast_enabled=None,
+      candidate_cloud_router_ipv6_address=None,
+      candidate_customer_router_ipv6_address=None,
   ):
     """Patch an interconnectAttachment."""
     if bandwidth:
@@ -379,6 +387,8 @@ class InterconnectAttachment(object):
             labels,
             label_fingerprint,
             multicast_enabled,
+            candidate_cloud_router_ipv6_address,
+            candidate_customer_router_ipv6_address,
         )
     ]
     if not only_generate_request:

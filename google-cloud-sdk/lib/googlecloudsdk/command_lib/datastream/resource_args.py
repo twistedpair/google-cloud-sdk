@@ -230,7 +230,7 @@ _SQLSERVER_CREATE_SOURCE_CONFIG_HELP_TEXT = """
 """
 
 _SQLSERVER_UPDATE_SOURCE_CONFIG_HELP_TEXT = """
-  Path to a YAML (or JSON) file containing the configuration for PostgreSQL Source Config.
+  Path to a YAML (or JSON) file containing the configuration for SQL Server Source Config.
 
   The JSON file is formatted as follows, with camelCase field naming:
 
@@ -257,6 +257,56 @@ _SQLSERVER_UPDATE_SOURCE_CONFIG_HELP_TEXT = """
       "maxConcurrentCdcTasks": 2,
       "maxConcurrentBackfillTasks": 10,
       "transactionLogs": {}  # Or changeTables
+    }
+  ```
+"""
+
+_SALESFORCE_CREATE_SOURCE_CONFIG_HELP_TEXT = """
+  Path to a YAML (or JSON) file containing the configuration for Salesforce Source Config.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+      "pollingInterval": "3000s",
+      "includeObjects": {},
+      "excludeObjects": {
+        "objects": [
+          {
+            "objectName": "SAMPLE",
+            "fields": [
+              {
+                "fieldName": "SAMPLE_FIELD",
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+
+_SALESFORCE_UPDATE_SOURCE_CONFIG_HELP_TEXT = """
+  Path to a YAML (or JSON) file containing the configuration for Salesforce Source Config.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+      "pollingInterval": "3000s",
+      "includeObjects": {},
+      "excludeObjects": {
+        "objects": [
+          {
+            "objectName": "SAMPLE",
+            "fields": [
+              {
+                "fieldName": "SAMPLE_FIELD",
+              }
+            ]
+          }
+        ]
+      }
     }
   ```
 """
@@ -553,6 +603,12 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       help=_SQLSERVER_UPDATE_SOURCE_CONFIG_HELP_TEXT
       if verb == 'update'
       else _SQLSERVER_CREATE_SOURCE_CONFIG_HELP_TEXT,
+  )
+  source_config_parser_group.add_argument(
+      '--salesforce-source-config',
+      help=_SALESFORCE_UPDATE_SOURCE_CONFIG_HELP_TEXT
+      if verb == 'update'
+      else _SALESFORCE_CREATE_SOURCE_CONFIG_HELP_TEXT,
   )
 
   destination_parser = parser.add_group(required=required)

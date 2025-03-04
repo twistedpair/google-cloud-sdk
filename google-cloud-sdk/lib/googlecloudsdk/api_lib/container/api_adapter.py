@@ -1238,6 +1238,8 @@ class UpdateClusterOptions(object):
       enable_ip_access=None,
       enable_authorized_networks_on_private_endpoint=None,
       enable_autopilot_compatibility_auditing=None,
+      service_account_signing_keys=None,
+      service_account_verification_keys=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1431,6 +1433,8 @@ class UpdateClusterOptions(object):
     self.enable_autopilot_compatibility_auditing = (
         enable_autopilot_compatibility_auditing
     )
+    self.service_account_verification_keys = service_account_verification_keys
+    self.service_account_signing_keys = service_account_signing_keys
 
 
 class SetMasterAuthOptions(object):
@@ -4561,6 +4565,18 @@ class APIAdapter(object):
           desiredAutopilotWorkloadPolicyConfig=workload_policies
       )
 
+    if options.service_account_verification_keys is not None:
+      update = self.messages.ClusterUpdate(
+          userManagedKeysConfig=self.messages.UserManagedKeysConfig(
+              serviceAccountVerificationKeys=options.service_account_verification_keys
+          )
+      )
+    if options.service_account_signing_keys is not None:
+      update = self.messages.ClusterUpdate(
+          userManagedKeysConfig=self.messages.UserManagedKeysConfig(
+              serviceAccountSigningKeys=options.service_account_signing_keys
+          )
+      )
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -7773,14 +7789,18 @@ def _GetFilterFromArg(filter_arg, messages):
   if not filter_arg:
     return None
   flag_event_types_to_enum = {
-      'upgradeevent':
-          messages.Filter.EventTypeValueListEntryValuesEnum.UPGRADE_EVENT,
-      'upgradeavailableevent':
-          messages.Filter.EventTypeValueListEntryValuesEnum
-          .UPGRADE_AVAILABLE_EVENT,
-      'securitybulletinevent':
-          messages.Filter.EventTypeValueListEntryValuesEnum
-          .SECURITY_BULLETIN_EVENT
+      'upgradeevent': (
+          messages.Filter.EventTypeValueListEntryValuesEnum.UPGRADE_EVENT
+      ),
+      'upgradeinfoevent': (
+          messages.Filter.EventTypeValueListEntryValuesEnum.UPGRADE_INFO_EVENT
+      ),
+      'upgradeavailableevent': (
+          messages.Filter.EventTypeValueListEntryValuesEnum.UPGRADE_AVAILABLE_EVENT
+      ),
+      'securitybulletinevent': (
+          messages.Filter.EventTypeValueListEntryValuesEnum.SECURITY_BULLETIN_EVENT
+      ),
   }
   to_return = messages.Filter()
   for event_type in filter_arg.split('|'):

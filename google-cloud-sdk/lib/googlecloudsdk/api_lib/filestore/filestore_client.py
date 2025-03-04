@@ -351,6 +351,13 @@ class FilestoreClient(object):
         network_config.reservedIpRange = network['reserved-ip-range']
       connect_mode = network.get('connect-mode', 'DIRECT_PEERING')
       self._adapter.ParseConnectMode(network_config, connect_mode)
+      # 'instance.PscConfig' is a member of 'instance' structure only in
+      # Beta, V1 APIs.
+      psc_endpoint_project = network.get('psc-endpoint-project')
+      if psc_endpoint_project:
+        self._adapter.ParsePscEndpointProject(
+            psc_endpoint_project, network_config
+        )
       instance.networks.append(network_config)
 
     if deletion_protection_enabled is not None:
@@ -811,6 +818,12 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
         managedActiveDirectory=self.messages.ManagedActiveDirectoryConfig(
             domain=domain, computer=computer
         )
+    )
+
+  def ParsePscEndpointProject(self, psc_endpoint_project, network_config):
+    """Parse and match the supplied PSC config."""
+    network_config.pscConfig = self.messages.PscConfig(
+        endpointProject=psc_endpoint_project
     )
 
   def ParseSourceInstanceIntoInstance(self, instance, source_instance):

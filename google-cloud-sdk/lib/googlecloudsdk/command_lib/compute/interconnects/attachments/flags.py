@@ -513,7 +513,8 @@ def AddCandidateCloudRouterIpAddress(parser):
       '--candidate-cloud-router-ip-address',
       help="""\
       Single IPv4 address + prefix length to be configured on the cloud
-      router interface for this interconnect attachment
+      router interface for this interconnect attachment. Example:
+      74.133.16.1/30
       """,
   )
 
@@ -528,7 +529,8 @@ def AddCandidateCustomerRouterIpAddress(parser):
       '--candidate-customer-router-ip-address',
       help="""\
       Single IPv4 address + prefix length to be configured on the customer
-      router interface for this interconnect attachment
+      router interface for this interconnect attachment. Example:
+      74.133.16.2/30
       """,
   )
 
@@ -543,7 +545,8 @@ def AddCandidateCloudRouterIpv6Address(parser):
       '--candidate-cloud-router-ipv6-address',
       help="""\
       Single IPv6 address + prefix length to be configured on the cloud
-      router interface for this interconnect attachment
+      router interface for this interconnect attachment. Example:
+      2fff:eec0:3201:0:0:0:0:1/125
       """,
   )
 
@@ -558,6 +561,7 @@ def AddCandidateCustomerRouterIpv6Address(parser):
       '--candidate-customer-router-ipv6-address',
       help="""\
       Single IPv6 address + prefix length to be configured on the customer
-      router interface for this interconnect attachment
+      router interface for this interconnect attachment. Example:
+      2fff:eec0:3201:0:0:0:0:2/125
       """,
   )

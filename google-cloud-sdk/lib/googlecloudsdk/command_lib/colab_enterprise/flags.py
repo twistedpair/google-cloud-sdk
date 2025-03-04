@@ -35,6 +35,12 @@ _accelerator_choices = [
     'NVIDIA_L4',
 ]
 _disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED', 'PD_EXTREME']
+_post_startup_script_behavior_choices = [
+    'POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED',
+    'RUN_ONCE',
+    'RUN_EVERY_START',
+    'DOWNLOAD_AND_RUN_EVERY_START',
+]
 
 
 def GetRegionAttributeConfig():
@@ -349,6 +355,45 @@ def AddCustomEnvSpecFlags(parser, workbench_execution=False):
   )
 
 
+def AddRuntimeTemplateSoftwareConfigFlags(parser):
+  """Adds Resource arg for runtime template to the parser."""
+
+  software_config_group = parser.add_group(
+      help='The software configuration of the runtime template.',
+  )
+  software_config_group.add_argument(
+      '--post-startup-script',
+      required=False,
+      help='Post startup script in raw string to execute on the runtime.',
+  )
+  software_config_group.add_argument(
+      '--post-startup-script-url',
+      required=False,
+      help=(
+          'Post startup script URL to execute on the runtime. This can be a'
+          ' public or private Google Cloud Storage object. In the form of'
+          ' gs://bucket/object or'
+          ' https://storage.googleapis.com/bucket/object.'
+      ),
+  )
+  software_config_group.add_argument(
+      '--post-startup-script-behavior',
+      required=False,
+      help=(
+          'The behavior of the post startup script. The default if passing a'
+          ' post-startup-script-url is RUN_ONCE.'
+      ),
+      choices=_post_startup_script_behavior_choices,
+  )
+  software_config_group.add_argument(
+      '--set-env-vars',
+      required=False,
+      help='Set environment variables used by the runtime.',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+  )
+
+
 def AddCreateRuntimeTemplateFlags(parser):
   """Construct groups and arguments specific to runtime template creation."""
 
@@ -373,6 +418,7 @@ def AddCreateRuntimeTemplateFlags(parser):
       help='The description of the runtime template.',
   )
   AddCustomEnvSpecFlags(runtime_template_group)
+  AddRuntimeTemplateSoftwareConfigFlags(runtime_template_group)
   runtime_template_group.add_argument(
       '--labels',
       help='Add labels to identify and group the runtime template.',

@@ -73,18 +73,31 @@ class StreamObjectsClient:
     """
     object_identifier = self._messages.SourceObjectIdentifier()
     if args.oracle_schema:
-      object_identifier.oracleIdentifier = self._messages.OracleObjectIdentifier(
-          schema=args.oracle_schema, table=args.oracle_table)
+      object_identifier.oracleIdentifier = (
+          self._messages.OracleObjectIdentifier(
+              schema=args.oracle_schema, table=args.oracle_table
+          )
+      )
     elif args.mysql_database:
       object_identifier.mysqlIdentifier = self._messages.MysqlObjectIdentifier(
-          database=args.mysql_database, table=args.mysql_table)
+          database=args.mysql_database, table=args.mysql_table
+      )
     elif args.postgresql_schema:
-      object_identifier.postgresqlIdentifier = self._messages.PostgresqlObjectIdentifier(
-          schema=args.postgresql_schema, table=args.postgresql_table)
+      object_identifier.postgresqlIdentifier = (
+          self._messages.PostgresqlObjectIdentifier(
+              schema=args.postgresql_schema, table=args.postgresql_table
+          )
+      )
     elif args.sqlserver_schema:
       object_identifier.sqlServerIdentifier = (
           self._messages.SqlServerObjectIdentifier(
               schema=args.sqlserver_schema, table=args.sqlserver_table
+          )
+      )
+    elif args.salesforce_object_name:
+      object_identifier.salesforceIdentifier = (
+          self._messages.SalesforceObjectIdentifier(
+              objectName=args.salesforce_object_name
           )
       )
 
@@ -92,13 +105,18 @@ class StreamObjectsClient:
         'datastream.projects.locations.streams',
         projectsId=project_id,
         streamsId=stream_id,
-        locationsId=args.location)
+        locationsId=args.location,
+    )
 
-    lookup_req_type = self._messages.DatastreamProjectsLocationsStreamsObjectsLookupRequest
+    lookup_req_type = (
+        self._messages.DatastreamProjectsLocationsStreamsObjectsLookupRequest
+    )
     lookup_req = lookup_req_type(
         lookupStreamObjectRequest=self._messages.LookupStreamObjectRequest(
-            sourceObjectIdentifier=object_identifier),
-        parent=stream_ref.RelativeName())
+            sourceObjectIdentifier=object_identifier
+        ),
+        parent=stream_ref.RelativeName(),
+    )
     return self._service.Lookup(lookup_req)
 
   def GetUri(self, name):

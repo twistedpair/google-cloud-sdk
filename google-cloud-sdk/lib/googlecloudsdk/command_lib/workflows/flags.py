@@ -271,7 +271,6 @@ def AddWorkflowTagsArg(parser):
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       help='\n'.join(help_parts),
-      hidden=True,
   )
   tags.AddToParser(parser)
 

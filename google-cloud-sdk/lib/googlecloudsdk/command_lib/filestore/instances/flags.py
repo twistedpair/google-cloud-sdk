@@ -343,20 +343,34 @@ def AddSourceInstanceArg(parser):
   )
 
 
-def AddNetworkArg(parser):
+def AddNetworkArg(parser,
+                  api_version):
   """Adds a --network flag to the given parser.
 
   Args:
     parser: argparse parser.
   """
 
-  network_arg_spec = {
+  network_arg_spec_v1 = {
       'name': str,
       'reserved-ip-range': str,
       'connect-mode': str,
   }
 
-  network_help = """\
+  network_arg_spec_beta = {
+      'name': str,
+      'reserved-ip-range': str,
+      'connect-mode': str,
+      'psc-endpoint-project': str,
+  }
+
+  network_arg_spec = {
+      filestore_client.V1_API_VERSION: network_arg_spec_v1,
+      filestore_client.ALPHA_API_VERSION: network_arg_spec_v1,
+      filestore_client.BETA_API_VERSION: network_arg_spec_beta,
+  }
+
+  network_help_v1 = """\
         Network configuration for a Cloud Filestore instance. Specifying
         `reserved-ip-range` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
@@ -380,11 +394,47 @@ def AddNetworkArg(parser):
         CONNECT_MODE must be one of: DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
   """
 
+  network_help_beta = """\
+        Network configuration for a Cloud Filestore instance. Specifying
+        `reserved-ip-range` and `connect-mode` is optional.
+        *name*::: The name of the Google Compute Engine
+        [VPC network](/compute/docs/networks-and-firewalls#networks) to which
+        the instance is connected.
+        *reserved-ip-range*::: The `reserved-ip-range` can have one of the
+        following two types of values: a CIDR range value when using
+        DIRECT_PEERING connect mode or an allocated IP address range
+        (https://cloud.google.com/compute/docs/ip-addresses/reserve-static-internal-ip-address)
+        when using PRIVATE_SERVICE_ACCESS connect mode. When the name of an
+        allocated IP address range is specified, it must be one of the ranges
+        associated with the private service access connection. When specified as
+        a direct CIDR value, it must be a /29 CIDR block for Basic tier or a /24
+        CIDR block for High Scale, Zonal, Enterprise or Regional tier in one of the internal IP
+        address ranges (https://www.arin.net/knowledge/address_filters.html)
+        that identifies the range of IP addresses reserved for this instance.
+        For example, 10.0.0.0/29 or 192.168.0.0/24. The range you specify can't
+        overlap with either existing subnets or assigned IP address ranges for
+        other Cloud Filestore instances in the selected VPC network.
+        *connect-mode*::: Network connection mode used by instances.
+        CONNECT_MODE must be one of: DIRECT_PEERING, PRIVATE_SERVICE_ACCESS or
+        PRIVATE_SERVICE_CONNECT.
+        *psc-endpoint-project*::: Consumer service project in which the psc
+        endpoint would be set up. This is optional, and only relevant in case
+        the network is a shared VPC. If this is not specified, the psc endpoint
+        would be setup in the VPC host project.
+  """
+
+  network_help = {
+      filestore_client.V1_API_VERSION: network_help_v1,
+      filestore_client.ALPHA_API_VERSION: network_help_v1,
+      filestore_client.BETA_API_VERSION: network_help_beta,
+  }
+
   parser.add_argument(
       '--network',
-      type=arg_parsers.ArgDict(spec=network_arg_spec, required_keys=['name']),
+      type=arg_parsers.ArgDict(spec=network_arg_spec[api_version],
+                               required_keys=['name']),
       required=True,
-      help=network_help,
+      help=network_help[api_version],
   )
 
 
@@ -642,7 +692,7 @@ def AddInstanceCreateArgs(parser, api_version):
   AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddCreateLabelsFlags(parser)
-  AddNetworkArg(parser)
+  AddNetworkArg(parser, api_version)
   messages = filestore_client.GetMessages(version=api_version)
   GetTierArg(messages).choice_arg.AddToParser(parser)
   if api_version == filestore_client.BETA_API_VERSION:

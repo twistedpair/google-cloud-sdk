@@ -153,3 +153,41 @@ def GetMessageTransformsFromFile(message, path) -> List[Any]:
   ) as e:
     raise MessageTransformsInvalidFormatError(path, ErrorCause.YAML_OR_JSON, e)
   return result
+
+
+def GetMessageTransformFromFile(message, path) -> Any:
+  """Reads a YAML or JSON object of type message from local path.
+
+  Args:
+    message: The message type to be parsed from the file.
+    path: A local path to an object specification in YAML or JSON format.
+
+  Returns:
+    Object of type message, if successful.
+  Raises:
+    MessageTransformsMissingFileError: If file is missing.
+    MessageTransformsEmptyFileError: If file is empty.
+    MessageTransformsInvalidFormat: If file's format is invalid.
+  """
+  try:
+    in_text = files.ReadFileContents(path)
+  except files.MissingFileError as e:
+    raise MessageTransformsMissingFileError(e, path)
+
+  if not in_text:
+    raise MessageTransformsEmptyFileError(path=path)
+
+  # Parsing YAML or JSON file
+  try:
+    # yaml.load() is able to parse YAML and JSON files
+    message_transform = yaml.load(in_text)
+    result = encoding.PyValueToMessage(message, message_transform)
+    ValidateMessageTransformMessage(result, path)
+  except (
+      TypeError,
+      ValueError,
+      AttributeError,
+      yaml.YAMLParseError,
+  ) as e:
+    raise MessageTransformsInvalidFormatError(path, ErrorCause.YAML_OR_JSON, e)
+  return result

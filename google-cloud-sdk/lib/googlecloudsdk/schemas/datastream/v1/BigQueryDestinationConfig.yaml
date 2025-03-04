@@ -28,6 +28,9 @@ properties:
   appendOnly:
     description: Append only mode
     $ref: AppendOnly.yaml
+  blmtConfig:
+    description: Big Lake Managed Tables (BLMT) configuration.
+    $ref: BlmtConfig.yaml
   dataFreshness:
     description: |-
       The guaranteed data freshness (in seconds) when querying tables created by

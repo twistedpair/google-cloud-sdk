@@ -34,3 +34,9 @@ properties:
   postgresqlIdentifier:
     description: PostgreSQL data source object identifier.
     $ref: PostgresqlObjectIdentifier.yaml
+  salesforceIdentifier:
+    description: Salesforce data source object identifier.
+    $ref: SalesforceObjectIdentifier.yaml
+  sqlServerIdentifier:
+    description: SQLServer data source object identifier.
+    $ref: SqlServerObjectIdentifier.yaml

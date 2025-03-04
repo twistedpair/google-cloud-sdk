@@ -1069,8 +1069,8 @@ class Instance(_messages.Message):
     AuthorizationModeValueValuesEnum: Optional. Immutable. Authorization mode
       of the instance.
     ModeValueValuesEnum: Optional. The mode config for the instance.
-    NodeTypeValueValuesEnum: Optional. Immutable. Machine type for individual
-      nodes of the instance.
+    NodeTypeValueValuesEnum: Optional. Machine type for individual nodes of
+      the instance.
     StateValueValuesEnum: Output only. Current state of the instance.
     TransitEncryptionModeValueValuesEnum: Optional. Immutable. In-transit
       encryption mode of the instance.
@@ -1095,14 +1095,15 @@ class Instance(_messages.Message):
     endpoints: Optional. Endpoints for the instance.
     engineConfigs: Optional. User-provided engine configurations for the
       instance.
-    engineVersion: Optional. Immutable. Engine version of the instance.
+    engineVersion: Optional. Engine version of the instance.
     labels: Optional. Labels to represent user-provided metadata.
     mode: Optional. The mode config for the instance.
     name: Identifier. Unique name of the instance. Format:
       projects/{project}/locations/{location}/instances/{instance}
     nodeConfig: Output only. Configuration of individual nodes of the
       instance.
-    nodeType: Optional. Immutable. Machine type for individual nodes of the
+    nodeType: Optional. Machine type for individual nodes of the instance.
+    ondemandMaintenance: Optional. Input only. Ondemand maintenance for the
       instance.
     persistenceConfig: Optional. Persistence configuration of the instance.
     pscAttachmentDetails: Output only. Service attachment details to configure
@@ -1150,8 +1151,7 @@ class Instance(_messages.Message):
     CLUSTER_DISABLED = 3
 
   class NodeTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Immutable. Machine type for individual nodes of the
-    instance.
+    r"""Optional. Machine type for individual nodes of the instance.
 
     Values:
       NODE_TYPE_UNSPECIFIED: Not set.
@@ -1257,17 +1257,18 @@ class Instance(_messages.Message):
   name = _messages.StringField(11)
   nodeConfig = _messages.MessageField('NodeConfig', 12)
   nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 13)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 14)
-  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 15, repeated=True)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 16, repeated=True)
-  replicaCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateInfo = _messages.MessageField('StateInfo', 20)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 21)
-  uid = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 24)
+  ondemandMaintenance = _messages.BooleanField(14)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 15)
+  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 16, repeated=True)
+  pscAutoConnections = _messages.MessageField('PscAutoConnection', 17, repeated=True)
+  replicaCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateInfo = _messages.MessageField('StateInfo', 21)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 25)
 
 
 class InstanceEndpoint(_messages.Message):
@@ -1872,8 +1873,8 @@ class PscAutoConnection(_messages.Message):
       PSC forwarding rule.
     network: Required. The network where the PSC endpoints are created, in the
       form of projects/{project_id}/global/networks/{network_id}.
-    port: Optional. Output only. port will only be set for Primary/Reader or
-      Discovery endpoint.
+    port: Optional. port will only be set for Primary/Reader or Discovery
+      endpoint.
     projectId: Required. The consumer project_id where PSC connections are
       established. This should be the same project_id that the instance is
       being created in.

@@ -77,6 +77,18 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthenticationConfig(_messages.Message):
+  r"""Authentication configuration.
+
+  Fields:
+    mutualTlsAuth: mTLS authentication configuration.
+    saslAuth: SASL authentication configuration.
+  """
+
+  mutualTlsAuth = _messages.MessageField('MutualTlsAuthConfig', 1)
+  saslAuth = _messages.MessageField('SaslAuthConfig', 2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1128,6 +1140,44 @@ class EventarcProjectsLocationsGoogleApiSourcesTestIamPermissionsRequest(_messag
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class EventarcProjectsLocationsKafkaSourcesCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesCreateRequest object.
+
+  Fields:
+    kafkaSource: A KafkaSource resource to be passed as the request body.
+    kafkaSourceId: Required. The user-provided ID to be assigned to the
+      KafkaSource. It should match the format
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    parent: Required. The parent collection in which to add this kafka source.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  kafkaSource = _messages.MessageField('KafkaSource', 1)
+  kafkaSourceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsKafkaSourcesDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the KafkaSource is not found,
+      the request will succeed but no action will be taken on the server.
+    etag: Optional. If provided, the KafkaSource will only be deleted if the
+      etag matches the current etag on the resource.
+    name: Required. The name of the KafkaSource to be deleted.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
 class EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest(_messages.Message):
   r"""A EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest object.
 
@@ -1152,6 +1202,59 @@ class EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest(_messages.Message
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class EventarcProjectsLocationsKafkaSourcesGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesGetRequest object.
+
+  Fields:
+    name: Required. The name of the kafka source to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsKafkaSourcesListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return on each page.
+      Note: The service may send fewer.
+    pageToken: Optional. The page token; provide the value from the
+      `next_page_token` field in a previous call to retrieve the subsequent
+      page. When paginating, all other parameters provided must match the
+      previous call that provided the page token.
+    parent: Required. The parent collection to list triggers on.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class EventarcProjectsLocationsKafkaSourcesPatchRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the KafkaSource is not found,
+      a new KafkaSource will be created. In this situation, `update_mask` is
+      ignored.
+    kafkaSource: A KafkaSource resource to be passed as the request body.
+    name: Identifier. Resource name of the form
+      projects/{project}/locations/{location}/kafkaSources/{kafka_source}
+    updateMask: Optional. The fields to be updated; only fields explicitly
+      provided are updated. If no field mask is provided, all provided fields
+      in the request are updated. To update all fields, provide a field mask
+      of "*".
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  kafkaSource = _messages.MessageField('KafkaSource', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class EventarcProjectsLocationsKafkaSourcesSetIamPolicyRequest(_messages.Message):
@@ -2550,6 +2653,116 @@ class HttpEndpoint(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class KafkaSource(_messages.Message):
+  r"""KafkaSource that reads data from Kafka and delivers them to the Message
+  Bus. The location of the KafkaSource must match the location of the Message
+  Bus that it delivers to.
+
+  Messages:
+    AnnotationsValue: Optional. Resource annotations.
+    LabelsValue: Optional. Resource labels.
+
+  Fields:
+    annotations: Optional. Resource annotations.
+    authenticationConfig: Optional. Authentication configuration used to
+      authenticate the Kafka client with the Kafka broker, and authorize to
+      read the topic(s).
+    brokerUris: Required. The Kafka broker URIs. e.g. 10.12.34.56:8080
+    consumerGroupId: Required. The consumer group ID used by the Kafka broker
+      to track the offsets of all topic partitions being read by this Stream.
+    createTime: Output only. The creation time.
+    destination: Required. Destination is the message bus that the kafka
+      source is delivering to. It must be point to the full resource name of a
+      MessageBus. Format:
+      "projects/{PROJECT_ID}/locations/{region}/messagesBuses/{MESSAGE_BUS_ID)
+    displayName: Optional. Resource display name.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and might be sent only on update and delete
+      requests to ensure that the client has an up-to-date value before
+      proceeding.
+    initialOffset: Required. The initial message offset from which to start
+      streaming. Supported values: newest, oldest.
+    labels: Optional. Resource labels.
+    loggingConfig: Optional. Config to control Platform Logging for Kafka
+      Sources.
+    name: Identifier. Resource name of the form
+      projects/{project}/locations/{location}/kafkaSources/{kafka_source}
+    networkConfig: Optional. The network passed to the Kafka source to connect
+      to the kafka broker available from a customer VPC.
+    topics: Required. The Kafka topics to read from.
+    uid: Output only. Server assigned unique identifier for the KafkaSource.
+      The value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Resource annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  authenticationConfig = _messages.MessageField('AuthenticationConfig', 2)
+  brokerUris = _messages.StringField(3, repeated=True)
+  consumerGroupId = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  destination = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  initialOffset = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  loggingConfig = _messages.MessageField('LoggingConfig', 11)
+  name = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NetworkConfig', 13)
+  topics = _messages.StringField(14, repeated=True)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+
+
 class ListChannelConnectionsResponse(_messages.Message):
   r"""The response message for the `ListChannelConnections` method.
 
@@ -2612,6 +2825,22 @@ class ListGoogleApiSourcesResponse(_messages.Message):
   """
 
   googleApiSources = _messages.MessageField('GoogleApiSource', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListKafkaSourcesResponse(_messages.Message):
+  r"""The response message for the `ListKafkaSources` method.
+
+  Fields:
+    kafkaSources: The requested KafkaSources, up to the number specified in
+      `page_size`.
+    nextPageToken: A page token that can be sent to `ListKafkaSources` to
+      request the next page. If this is empty, then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  kafkaSources = _messages.MessageField('KafkaSource', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -2934,6 +3163,34 @@ class MessageBus(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class MutualTlsAuthConfig(_messages.Message):
+  r"""Mutual TLS authentication mechanism configuration.
+
+  Fields:
+    secretManagerResources: mTLS auth config loaded from Secret Manager.
+  """
+
+  secretManagerResources = _messages.MessageField('MutualTlsSecrets', 1)
+
+
+class MutualTlsSecrets(_messages.Message):
+  r"""Mutual TLS payloads from Secret Manager.
+
+  Fields:
+    clientCertificate: Required. The client certificate for mTLS may be loaded
+      from Secret Manager. Supported Formats:
+      `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
+      ect}/locations/{location}/secrets/{secret}/versions/{version}`
+    clientKey: Required. The client key for mTLS may be loaded from Secret
+      Manager. Supported Formats:
+      `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
+      ect}/locations/{location}/secrets/{secret}/versions/{version}`
+  """
+
+  clientCertificate = _messages.StringField(1)
+  clientKey = _messages.StringField(2)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network Configuration that can be inherited by other protos.
 
@@ -3209,6 +3466,40 @@ class Pubsub(_messages.Message):
 
   subscription = _messages.StringField(1)
   topic = _messages.StringField(2)
+
+
+class SaslAuthConfig(_messages.Message):
+  r"""SASL/Plain or SASL/SCRAM mechanism configuration.
+
+  Enums:
+    MechanismValueValuesEnum: Required. The SASL authentication mechanism.
+
+  Fields:
+    mechanism: Required. The SASL authentication mechanism.
+    passwordSecret: Required. The password for the authentication identity may
+      be loaded from Secret Manager. Supported Format: 1-
+      "projects/{project}/secrets/{secret}/versions/{version}" 2- "projects/{p
+      roject}/locations/{location}/secrets/{secret}/versions/{version}"
+    username: Required. The SASL authentication identity (username).
+  """
+
+  class MechanismValueValuesEnum(_messages.Enum):
+    r"""Required. The SASL authentication mechanism.
+
+    Values:
+      AUTH_MECHANISM_UNSPECIFIED: Default Mechanism is unspecified.
+      PLAIN: PLAIN
+      SHA_256: SHA_256
+      SHA_512: SHA_512
+    """
+    AUTH_MECHANISM_UNSPECIFIED = 0
+    PLAIN = 1
+    SHA_256 = 2
+    SHA_512 = 3
+
+  mechanism = _messages.EnumField('MechanismValueValuesEnum', 1)
+  passwordSecret = _messages.StringField(2)
+  username = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

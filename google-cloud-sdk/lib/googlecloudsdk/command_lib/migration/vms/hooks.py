@@ -56,7 +56,7 @@ def SetLocationAsGlobal():
 # Modify Request Hook For Disk Image Import
 def FixCreateDiskImageImportRequest(ref, args, req):
   """Fixes the Create Image Import request for disk image import."""
-  if not (args.generalize or args.license_type):
+  if not (args.generalize or args.license_type or args.boot_conversion):
     req.imageImport.diskImageTargetDefaults.osAdaptationParameters = None
 
   if not args.image_name:
@@ -89,7 +89,7 @@ def FixCreateMachineImageImportRequest(ref, args, req):
   if not args.machine_image_name:
     req.imageImport.machineImageTargetDefaults.machineImageName = ref.Name()
 
-  if not args.generalize and not args.license_type:
+  if not args.generalize and not args.license_type and not args.boot_conversion:
     req.imageImport.machineImageTargetDefaults.osAdaptationParameters = None
 
   if (

@@ -1,0 +1,53 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: datastream v1 OracleAsmConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- asmService
+- hostname
+- port
+- username
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  asmService:
+    description: ASM service name for the Oracle ASM connection.
+    type: string
+  connectionAttributes:
+    description: Connection string attributes
+    $ref: ConnectionAttributesValue.yaml
+  hostname:
+    description: Hostname for the Oracle ASM connection.
+    type: string
+  oracleSslConfig:
+    description: SSL configuration for the Oracle connection.
+    $ref: OracleSslConfig.yaml
+  password:
+    description: Password for the Oracle ASM connection.
+    type: string
+  port:
+    description: Port for the Oracle ASM connection.
+    type: integer
+  username:
+    description: Username for the Oracle ASM connection.
+    type: string

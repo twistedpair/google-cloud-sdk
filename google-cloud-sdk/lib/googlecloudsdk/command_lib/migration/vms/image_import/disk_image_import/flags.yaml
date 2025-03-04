@@ -99,3 +99,13 @@ single_region_storage:
   default: false
   help_text: |
     If true, the location of the imported image will be the region of the import job. Otherwise the closest multi-region is selected. Default is false.
+
+boot_conversion:
+  arg_name: boot-conversion
+  api_field: imageImport.diskImageTargetDefaults.osAdaptationParameters.bootConversion
+  required: false
+  help_text: |
+     This property will trigger an internal process which will convert the
+      image from using the existing boot option to another.
+      The size of the boot disk might be increased to allow the conversion.
+      Currently only support BIOS_TO_EFI.

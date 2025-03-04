@@ -939,6 +939,87 @@ class EventarcV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a new KafkaSource in a particular project and location.
+
+      Args:
+        request: (EventarcProjectsLocationsKafkaSourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/kafkaSources',
+        http_method='POST',
+        method_id='eventarc.projects.locations.kafkaSources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['kafkaSourceId', 'validateOnly'],
+        relative_path='v1/{+parent}/kafkaSources',
+        request_field='kafkaSource',
+        request_type_name='EventarcProjectsLocationsKafkaSourcesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a single KafkaSource.
+
+      Args:
+        request: (EventarcProjectsLocationsKafkaSourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/kafkaSources/{kafkaSourcesId}',
+        http_method='DELETE',
+        method_id='eventarc.projects.locations.kafkaSources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsKafkaSourcesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a single kafkaSource.
+
+      Args:
+        request: (EventarcProjectsLocationsKafkaSourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (KafkaSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/kafkaSources/{kafkaSourcesId}',
+        http_method='GET',
+        method_id='eventarc.projects.locations.kafkaSources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsKafkaSourcesGetRequest',
+        response_type_name='KafkaSource',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -963,6 +1044,60 @@ class EventarcV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List kafkaSources.
+
+      Args:
+        request: (EventarcProjectsLocationsKafkaSourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListKafkaSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/kafkaSources',
+        http_method='GET',
+        method_id='eventarc.projects.locations.kafkaSources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/kafkaSources',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsKafkaSourcesListRequest',
+        response_type_name='ListKafkaSourcesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a single KafkaSource.
+
+      Args:
+        request: (EventarcProjectsLocationsKafkaSourcesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/kafkaSources/{kafkaSourcesId}',
+        http_method='PATCH',
+        method_id='eventarc.projects.locations.kafkaSources.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='kafkaSource',
+        request_type_name='EventarcProjectsLocationsKafkaSourcesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

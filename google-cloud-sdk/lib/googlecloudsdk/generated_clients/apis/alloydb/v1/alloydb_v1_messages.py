@@ -2275,6 +2275,7 @@ class Instance(_messages.Message):
     networkConfig: Optional. Instance-level network configuration.
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    observabilityConfig: Configuration for observability.
     outboundPublicIpAddresses: Output only. All outbound public IP addresses
       configured for the instance.
     pscInstanceConfig: Optional. The configuration for Private Service Connect
@@ -2469,17 +2470,18 @@ class Instance(_messages.Message):
   name = _messages.StringField(14)
   networkConfig = _messages.MessageField('InstanceNetworkConfig', 15)
   nodes = _messages.MessageField('Node', 16, repeated=True)
-  outboundPublicIpAddresses = _messages.StringField(17, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 18)
-  publicIpAddress = _messages.StringField(19)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 20)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  writableNode = _messages.MessageField('Node', 27)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 17)
+  outboundPublicIpAddresses = _messages.StringField(18, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 19)
+  publicIpAddress = _messages.StringField(20)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 21)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  writableNode = _messages.MessageField('Node', 28)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2805,6 +2807,41 @@ class Node(_messages.Message):
   zoneId = _messages.StringField(4)
 
 
+class ObservabilityInstanceConfig(_messages.Message):
+  r"""Observability Instance specific configuration.
+
+  Fields:
+    enabled: Observability feature status for an instance. This flag is turned
+      "off" by default.
+    maxQueryStringLength: Query string length. The default value is 10k.
+    preserveComments: Preserve comments in query string for an instance. This
+      flag is turned "off" by default.
+    queryPlansPerMinute: Number of query execution plans captured by Insights
+      per minute for all queries combined. The default value is 200. Any
+      integer between 0 to 200 is considered valid.
+    recordApplicationTags: Record application tags for an instance. This flag
+      is turned "off" by default.
+    trackActiveQueries: Track actively running queries on the instance. If not
+      set, this flag is "off" by default.
+    trackWaitEventTypes: Output only. Track wait event types during query
+      execution for an instance. This flag is turned "on" by default but
+      tracking is enabled only after observability enabled flag is also turned
+      on. This is read-only flag and only modifiable by internal API.
+    trackWaitEvents: Track wait events during query execution for an instance.
+      This flag is turned "on" by default but tracking is enabled only after
+      observability enabled flag is also turned on.
+  """
+
+  enabled = _messages.BooleanField(1)
+  maxQueryStringLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  preserveComments = _messages.BooleanField(3)
+  queryPlansPerMinute = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  recordApplicationTags = _messages.BooleanField(5)
+  trackActiveQueries = _messages.BooleanField(6)
+  trackWaitEventTypes = _messages.BooleanField(7)
+  trackWaitEvents = _messages.BooleanField(8)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2929,6 +2966,7 @@ class OperationMetadata(_messages.Message):
       any.
     target: Output only. Server-defined resource path for the target of the
       operation.
+    upgradeClusterStatus: Output only. UpgradeClusterStatus related metadata.
     verb: Output only. Name of the verb executed by the operation.
   """
 
@@ -2938,7 +2976,8 @@ class OperationMetadata(_messages.Message):
   requestedCancellation = _messages.BooleanField(4)
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  upgradeClusterStatus = _messages.MessageField('UpgradeClusterStatus', 7)
+  verb = _messages.StringField(8)
 
 
 class PrimaryConfig(_messages.Message):
@@ -2982,6 +3021,31 @@ class PromoteClusterRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class PscAutoConnectionConfig(_messages.Message):
+  r"""Configuration for setting up PSC service automation. Consumer projects
+  in the configs will be allowlisted automatically for the instance.
+
+  Fields:
+    consumerNetwork: The consumer network for the PSC service automation,
+      example: "projects/vpc-host-project/global/networks/default". The
+      consumer network might be hosted a different project than the consumer
+      project.
+    consumerNetworkStatus: Output only. The status of the service connection
+      policy.
+    consumerProject: The consumer project to which the PSC service automation
+      endpoint will be created.
+    ipAddress: Output only. The IP address of the PSC service automation
+      endpoint.
+    status: Output only. The status of the PSC service automation connection.
+  """
+
+  consumerNetwork = _messages.StringField(1)
+  consumerNetworkStatus = _messages.StringField(2)
+  consumerProject = _messages.StringField(3)
+  ipAddress = _messages.StringField(4)
+  status = _messages.StringField(5)
+
+
 class PscConfig(_messages.Message):
   r"""PscConfig contains PSC related configuration at a cluster level.
 
@@ -3004,6 +3068,8 @@ class PscInstanceConfig(_messages.Message):
   Fields:
     allowedConsumerProjects: Optional. List of consumer projects that are
       allowed to create PSC endpoints to service-attachments to this instance.
+    pscAutoConnections: Optional. Configurations for setting up PSC service
+      automation.
     pscDnsName: Output only. The DNS name of the instance for PSC
       connectivity. Name convention: ...alloydb-psc.goog
     pscInterfaceConfigs: Optional. Configurations for setting up PSC
@@ -3017,9 +3083,10 @@ class PscInstanceConfig(_messages.Message):
   """
 
   allowedConsumerProjects = _messages.StringField(1, repeated=True)
-  pscDnsName = _messages.StringField(2)
-  pscInterfaceConfigs = _messages.MessageField('PscInterfaceConfig', 3, repeated=True)
-  serviceAttachmentLink = _messages.StringField(4)
+  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 2, repeated=True)
+  pscDnsName = _messages.StringField(3)
+  pscInterfaceConfigs = _messages.MessageField('PscInterfaceConfig', 4, repeated=True)
+  serviceAttachmentLink = _messages.StringField(5)
 
 
 class PscInterfaceConfig(_messages.Message):
@@ -3099,6 +3166,16 @@ class ReadPoolConfig(_messages.Message):
   """
 
   nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ReadPoolInstancesUpgradeStageStatus(_messages.Message):
+  r"""Read pool instances upgrade specific status.
+
+  Fields:
+    upgradeStats: Read pool instances upgrade statistics.
+  """
+
+  upgradeStats = _messages.MessageField('Stats', 1)
 
 
 class RestartInstanceRequest(_messages.Message):
@@ -3336,6 +3413,68 @@ class StageInfo(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
+class StageStatus(_messages.Message):
+  r"""Status of an upgrade stage.
+
+  Enums:
+    StageValueValuesEnum: Upgrade stage.
+    StateValueValuesEnum: State of this stage.
+
+  Fields:
+    readPoolInstancesUpgrade: Read pool instances upgrade metadata.
+    stage: Upgrade stage.
+    state: State of this stage.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""Upgrade stage.
+
+    Values:
+      STAGE_UNSPECIFIED: Unspecified stage.
+      ALLOYDB_PRECHECK: Pre-upgrade custom checks, not covered by pg_upgrade.
+      PG_UPGRADE_CHECK: Pre-upgrade pg_upgrade checks.
+      PREPARE_FOR_UPGRADE: Clone the original cluster.
+      PRIMARY_INSTANCE_UPGRADE: Upgrade the primary instance(downtime).
+      READ_POOL_INSTANCES_UPGRADE: This stage is read pool upgrade.
+      ROLLBACK: Rollback in case of critical failures.
+      CLEANUP: Cleanup.
+    """
+    STAGE_UNSPECIFIED = 0
+    ALLOYDB_PRECHECK = 1
+    PG_UPGRADE_CHECK = 2
+    PREPARE_FOR_UPGRADE = 3
+    PRIMARY_INSTANCE_UPGRADE = 4
+    READ_POOL_INSTANCES_UPGRADE = 5
+    ROLLBACK = 6
+    CLEANUP = 7
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of this stage.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: Not started.
+      IN_PROGRESS: In progress.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+      CANCEL_IN_PROGRESS: Cancel is in progress.
+      CANCELLED: Cancellation complete.
+    """
+    STATUS_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    SUCCESS = 3
+    FAILED = 4
+    PARTIAL_SUCCESS = 5
+    CANCEL_IN_PROGRESS = 6
+    CANCELLED = 7
+
+  readPoolInstancesUpgrade = _messages.MessageField('ReadPoolInstancesUpgradeStageStatus', 1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -3397,6 +3536,23 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Stats(_messages.Message):
+  r"""Upgrade stats for read pool instances.
+
+  Fields:
+    failed: Number of read pool instances which failed to upgrade.
+    notStarted: Number of read pool instances for which upgrade has not
+      started.
+    ongoing: Number of read pool instances undergoing upgrade.
+    success: Number of read pool instances successfully upgraded.
+  """
+
+  failed = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  notStarted = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ongoing = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  success = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class Status(_messages.Message):
@@ -5442,6 +5598,83 @@ class UpgradeClusterResponse(_messages.Message):
   clusterUpgradeDetails = _messages.MessageField('ClusterUpgradeDetails', 1, repeated=True)
   message = _messages.StringField(2)
   status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class UpgradeClusterStatus(_messages.Message):
+  r"""Message for current status of the Major Version Upgrade operation.
+
+  Enums:
+    SourceVersionValueValuesEnum: Source database major version.
+    StateValueValuesEnum: Cluster Major Version Upgrade state.
+    TargetVersionValueValuesEnum: Target database major version.
+
+  Fields:
+    cancellable: Whether the operation is cancellable.
+    sourceVersion: Source database major version.
+    stages: Status of all upgrade stages.
+    state: Cluster Major Version Upgrade state.
+    targetVersion: Target database major version.
+  """
+
+  class SourceVersionValueValuesEnum(_messages.Enum):
+    r"""Source database major version.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_13 = 1
+    POSTGRES_14 = 2
+    POSTGRES_15 = 3
+    POSTGRES_16 = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Cluster Major Version Upgrade state.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: Not started.
+      IN_PROGRESS: In progress.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+      CANCEL_IN_PROGRESS: Cancel is in progress.
+      CANCELLED: Cancellation complete.
+    """
+    STATUS_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    SUCCESS = 3
+    FAILED = 4
+    PARTIAL_SUCCESS = 5
+    CANCEL_IN_PROGRESS = 6
+    CANCELLED = 7
+
+  class TargetVersionValueValuesEnum(_messages.Enum):
+    r"""Target database major version.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_13 = 1
+    POSTGRES_14 = 2
+    POSTGRES_15 = 3
+    POSTGRES_16 = 4
+
+  cancellable = _messages.BooleanField(1)
+  sourceVersion = _messages.EnumField('SourceVersionValueValuesEnum', 2)
+  stages = _messages.MessageField('StageStatus', 3, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  targetVersion = _messages.EnumField('TargetVersionValueValuesEnum', 5)
 
 
 class User(_messages.Message):

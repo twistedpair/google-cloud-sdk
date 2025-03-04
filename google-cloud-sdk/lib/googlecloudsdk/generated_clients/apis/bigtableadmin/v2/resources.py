@@ -84,6 +84,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCES_LOGICALVIEWS = (
+      'projects.instances.logicalViews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/logicalViews/'
+              '{logicalViewsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_INSTANCES_TABLES = (
       'projects.instances.tables',
       '{+name}',

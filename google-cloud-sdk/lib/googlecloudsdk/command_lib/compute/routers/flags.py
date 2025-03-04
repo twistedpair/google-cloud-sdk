@@ -184,9 +184,7 @@ def AddNccGatewayArg(parser):
   parser.add_argument(
       '--ncc-gateway',
       type=str,
-      help=(
-          'The NCC gateway for this router.'
-      ),
+      help='The NCC gateway for this router.',
   )
 
 
@@ -254,12 +252,7 @@ def AddInterfaceArgs(parser, for_update=False):
     )
 
 
-def AddBgpPeerArgs(
-    parser,
-    for_add_bgp_peer=False,
-    is_update=False,
-    enable_route_policies=False,
-):
+def AddBgpPeerArgs(parser, for_add_bgp_peer=False, is_update=False):
   """Adds common arguments for managing BGP peers."""
 
   operation = 'updated'
@@ -484,25 +477,24 @@ def AddBgpPeerArgs(
         default=None,
         help='If specified, remove MD5 authentication from the BGP peer.',
     )
-  if enable_route_policies:
-    parser.add_argument(
-        '--export-policies',
-        metavar='EXPORT_POLICY',
-        type=arg_parsers.ArgList(),
-        help=(
-            'Comma-separated list of export policies. Passing an empty string'
-            ' removes all export policies.'
-        ),
-    )
-    parser.add_argument(
-        '--import-policies',
-        type=arg_parsers.ArgList(),
-        metavar='IMPORT_POLICY',
-        help=(
-            'Comma-separated list of import policies. Passing an empty string'
-            ' removes all import policies.'
-        ),
-    )
+  parser.add_argument(
+      '--export-policies',
+      metavar='EXPORT_POLICY',
+      type=arg_parsers.ArgList(),
+      help=(
+          'Comma-separated list of export policies. Passing an empty string'
+          ' removes all export policies.'
+      ),
+  )
+  parser.add_argument(
+      '--import-policies',
+      type=arg_parsers.ArgList(),
+      metavar='IMPORT_POLICY',
+      help=(
+          'Comma-separated list of import policies. Passing an empty string'
+          ' removes all import policies.'
+      ),
+  )
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

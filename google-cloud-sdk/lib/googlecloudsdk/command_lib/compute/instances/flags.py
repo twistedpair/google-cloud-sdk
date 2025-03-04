@@ -1943,7 +1943,8 @@ def AddPreemptibleVmArgs(parser, is_update=False):
         '--preemptible', action='store_true', default=False, help=help_text)
 
 
-def AddProvisioningModelVmArgs(parser, support_reservation_bound=False):
+def AddProvisioningModelVmArgs(
+    parser, support_reservation_bound=False, support_flex_start=False):
   """Set arguments for specifing provisioning model for instances."""
   choices = {
       'SPOT': (
@@ -1962,6 +1963,11 @@ def AddProvisioningModelVmArgs(parser, support_reservation_bound=False):
         ' reservation. You can only specify this provisioning model if you want'
         ' your VM instances to consume a specific reservation with either a'
         ' calendar reservation mode or a dense deployment type.'
+    )
+  if support_flex_start:
+    choices['FLEX_START'] = (
+        'Instance is provisioned using the Flex Start provisioning model and'
+        ' has a limited runtime.'
     )
   parser.add_argument(
       '--provisioning-model',

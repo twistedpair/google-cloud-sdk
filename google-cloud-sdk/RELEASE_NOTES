@@ -5,6 +5,109 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 513.0.0 (2025-03-04)
+
+### AlloyDB
+
+* Added option for `--cpu-count=1` in `gcloud alloydb instances create` and `gcloud alloydb instances update` commands.
+
+### Batch
+
+* Promoted Batch cancel job command from alpha to beta and GA.
+
+### BigQuery
+
+* Added support for `--set_label` and `--clear_label` flags for reservation updates.
+* Fixed a bug where Google Auth credentials of a user account would sometimes fail to refresh.
+* Fixed a bug where long-running queries created from a service account would fail after one hour.
+
+### Cloud Dataflow
+
+*   Added the ability to create Beam YAML templates via
+    `gcloud flex-template build`.
+* Added support for `--update` and `--transform-name-mappings` flags to
+`gcloud dataflow jobs run"` command to support update for streaming classic
+template jobs.
+
+### Cloud Datastream
+
+* Update Datastream schema files.
+* Support Salesforce source connection profile.
+* Support Salesforce source stream.
+
+### Cloud Workflows
+
+*   Added `--tags` flag to `gcloud workflows deploy`.
+
+### Colab
+
+*   Added support for Post startup script (PSS) and environment variables.
+
+### Compute Engine
+
+* Promote `--host-error-timeout-seconds` to GA. This option allows you to specify the timeout duration in seconds for host error detection in the following commands:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instance-templates create`
+    * `gcloud compute instances bulk create`
+    * `gcloud compute instances set-scheduling`
+    * `gcloud compute instances update-from-file`
+* Add defaultCustomErrorResponsePolicy to `gcloud compute url-maps edit`.
+* Promoted `gcloud compute routers add-route-policy` to GA.
+* Promoted `gcloud compute routers add-route-policy-term` to GA.
+* Promoted `gcloud compute routers download-route-policy` to GA.
+* Promoted `gcloud compute routers get-route-policy` to GA.
+* Promoted `gcloud compute routers list-bgp-routes` to GA.
+* Promoted `gcloud compute routers list-route-policies` to GA.
+* Promoted `gcloud compute routers remove-route-policy` to GA.
+* Promoted `gcloud compute routers remove-route-policy-term` to GA.
+* Promoted `gcloud compute routers update-route-policy-term` to GA.
+* Promoted `gcloud compute routers upload-route-policy` to GA.
+* Promoted `--import-policies` and `--export-policies` flags of `gcloud compute routers add-bgp-peer` and `gcloud compute routers update-bgp-peer` to GA.
+* Restricted limit to 1000 results for the following command:
+  - `gcloud compute url-maps invalidate-cdn-cache`.
+* Support `--provisioning-model=flex-start` in beta for `gcloud compute instances create` and `gcloud compute instance-templates create` commands.
+
+### Dataproc Metastore
+
+* Added `--encryption-kms-keys` flag to `gcloud metastore services create` beta
+release track to support multiregional Dataproc Metastore with Customer-managed
+encryption keys.
+
+### Eventarc
+
+* Allowed using project numbers in command arguments.
+
+### Kubernetes Engine
+
+* Added `--[no-]enable-autopilot-compatibility-auditing` flag to `gcloud
+container clusters update` for enabling and disabling Autopilot Compatibility
+Auditing feature. Only applicable to clusters with version >= 1.32.
+* Updated default kubectl from 1.30.9 to 1.31.6.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.15
+  * kubectl.1.29 (1.29.13)
+  * kubectl.1.30 (1.30.10)
+  * kubectl.1.31 (1.31.6)
+  * kubectl.1.32 (1.32.2)
+
+### Migrate to Virtual Machines
+
+* Add `--boot-conversion` flag to support BIOS_TO_EFI conversion.
+
+### Network Connectivity
+
+* Updated `gcloud network-connectivity internal-ranges create` to allow specifying the exclude Cidr Ranges option.
+
+### Network Security
+
+* Added `--antivirus` flag to `gcloud network-security security-profiles threat-prevention add-override|update-override|delete-override` commands.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 512.0.0 (2025-02-25)
 
 ### Breaking Changes

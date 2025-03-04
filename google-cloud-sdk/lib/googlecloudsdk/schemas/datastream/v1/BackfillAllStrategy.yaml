@@ -34,6 +34,9 @@ properties:
   postgresqlExcludedObjects:
     description: PostgreSQL data source objects to avoid backfilling.
     $ref: PostgresqlRdbms.yaml
+  salesforceExcludedObjects:
+    description: Salesforce data source objects to avoid backfilling
+    $ref: SalesforceOrg.yaml
   sqlServerExcludedObjects:
     description: SQLServer data source objects to avoid backfilling
     $ref: SqlServerRdbms.yaml

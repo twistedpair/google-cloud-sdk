@@ -92,8 +92,8 @@ class Instance(_messages.Message):
       {ip_address}@tcp:/{filesystem}.
     name: Identifier. name of resource
     network: Required. Immutable. VPC Network full name. Must be in a form
-      'projects/{project}/global/networks/{network}'. {project} is a project
-      number, as in '12345' {network} is network name.
+      'projects/{project_id}/global/networks/{network}'. {project_id} is a
+      project id, as in 'user-consumer-project' {network} is network name.
     perUnitStorageThroughput: Optional. The throughput of the instance in
       MB/s/TiB. Valid values are 250, 500, 1000. Default value is 1000.
     state: Output only. State of the instance

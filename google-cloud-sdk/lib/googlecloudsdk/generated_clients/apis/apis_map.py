@@ -3469,28 +3469,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'resourcesettings': {
-        'v1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.resourcesettings.v1',
-                    client_classpath='resourcesettings_v1_client.ResourcesettingsV1',
-                    base_url='https://resourcesettings.googleapis.com/',
-                    messages_modulepath='resourcesettings_v1_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.resourcesettings.v1alpha1',
-                    client_classpath='resourcesettings_v1alpha1_client.ResourcesettingsV1alpha1',
-                    base_url='https://resourcesettings.googleapis.com/',
-                    messages_modulepath='resourcesettings_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
     'run': {
         'v1':
             APIDef(

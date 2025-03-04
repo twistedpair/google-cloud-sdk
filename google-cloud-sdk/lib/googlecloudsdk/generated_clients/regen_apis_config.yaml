@@ -1341,26 +1341,6 @@ apis:
     v1:
       discovery_doc: redis_v1.json
       default: true
-  resourcesettings:
-    v1alpha1:
-      discovery_doc: resourcesettings_v1alpha1.json
-      unelidable_request_methods:
-      - resourcesettings.folders.settings.value.create
-      - resourcesettings.folders.settings.updateValue
-      - resourcesettings.organizations.settings.value.create
-      - resourcesettings.organizations.settings.updateValue
-      - resourcesettings.projects.settings.value.create
-      - resourcesettings.projects.settings.updateValue
-    v1:
-      discovery_doc: resourcesettings_v1.json
-      unelidable_request_methods:
-      - resourcesettings.folders.settings.get
-      - resourcesettings.folders.settings.patch
-      - resourcesettings.organizations.settings.get
-      - resourcesettings.organizations.settings.patch
-      - resourcesettings.projects.settings.get
-      - resourcesettings.projects.settings.patch
-      default: true
   run:
     v1alpha1:
       discovery_doc: run_v1alpha1.json

@@ -1378,8 +1378,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.redis = self._Add('redis', command='gcloud redis')
     self.remotebuildexecution = self._Add('remotebuildexecution', hidden=True)
     self.replicapoolupdater = self._Add('replicapoolupdater', hidden=True)
-    self.resourcesettings = self._Add(
-        'resourcesettings', command='gcloud resource-settings')
     self.run = self._Add('run', command='gcloud run')
     self.runapps = self._Add('runapps', hidden=True)
     self.runtimeconfig = self._Add(

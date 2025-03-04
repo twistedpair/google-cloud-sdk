@@ -18,17 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.container import api_adapter as container_api_adapter
 from googlecloudsdk.api_lib.container.fleet import client as hub_client
 from googlecloudsdk.api_lib.container.fleet import util as hub_util
-from googlecloudsdk.api_lib.resourcesettings import service as resourcesettings_service
 from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.runtime_config import util
-from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
 
 from googlecloudsdk.core import log
@@ -232,7 +228,7 @@ def MultiTenantClustersForProject(project_id, cluster_location):
   Returns:
     A list of cluster refs
   """
-  project_ids = _MultiTenantProjectsIfEnabled(project_id)
+  project_ids = []
   project_ids.insert(0, project_id)
   return _ClustersForProjectIds(project_ids, cluster_location)
 
@@ -244,46 +240,6 @@ def _ClustersForProjectIds(project_ids, cluster_location):
     for cluster in clusters:
       response.append(GetClusterRef(cluster, project_id))
   return response
-
-
-def _MultiTenantProjectsIfEnabled(project):
-  if not _IsResourceSettingsEnabled(project):
-    return []
-  return _MultiTenantProjectIds(project)
-
-
-def _IsResourceSettingsEnabled(project):
-  api_endpoint = apis.GetEffectiveApiEndpoint(
-      resourcesettings_service.RESOURCE_SETTINGS_API_NAME,
-      resourcesettings_service.RESOURCE_SETTINGS_API_VERSION)
-  # removes initial https:// and trailing slash
-  api_endpoint = re.sub(r'https://(.*)/', r'\1', api_endpoint)
-
-  return enable_api.IsServiceEnabled(project, api_endpoint)
-
-
-def _MultiTenantProjectIds(project):
-  """Returns a list of Multitenant project ids."""
-  setting_name = 'projects/{}/settings/cloudrun-multiTenancy'.format(project)
-
-  messages = resourcesettings_service.ResourceSettingsMessages()
-
-  get_request = messages.ResourcesettingsProjectsSettingsGetRequest(
-      name=setting_name,
-      view=messages.ResourcesettingsProjectsSettingsGetRequest
-      .ViewValueValuesEnum.SETTING_VIEW_EFFECTIVE_VALUE)
-  settings_service = resourcesettings_service.ProjectsSettingsService()
-  service_value = settings_service.LookupEffectiveValue(get_request)
-  return [
-      _MulitTenantProjectId(project)
-      for project in service_value.localValue.stringSetValue.values
-  ]
-
-
-# The setting value has the format of projects/PROJECT-ID.
-# Returns only the PROJECT-ID.
-def _MulitTenantProjectId(setting_value):
-  return setting_value.split('/')[1]
 
 
 def ListCloudRunForAnthosClusters(project):

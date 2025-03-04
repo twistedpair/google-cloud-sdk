@@ -92,7 +92,7 @@ class AppliedLicense(_messages.Message):
 
 
 class AvailableUpdates(_messages.Message):
-  r"""Holds informatiom about the available versions for upgrade.
+  r"""Holds information about the available versions for upgrade.
 
   Fields:
     inPlaceUpdate: The latest version for in place update. The current
@@ -219,6 +219,74 @@ class AwsSourceDetails(_messages.Message):
   migrationResourcesUserTags = _messages.MessageField('MigrationResourcesUserTagsValue', 6)
   publicIp = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
+class AwsSourceDiskDetails(_messages.Message):
+  r"""Represents the source AWS Disk details.
+
+  Enums:
+    DiskTypeValueValuesEnum: Optional. Output only. Disk type.
+
+  Messages:
+    TagsValue: Optional. Output only. A map of AWS volume tags.
+
+  Fields:
+    diskType: Optional. Output only. Disk type.
+    sizeGib: Output only. Size in GiB.
+    tags: Optional. Output only. A map of AWS volume tags.
+    volumeId: Required. AWS volume ID.
+  """
+
+  class DiskTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. Disk type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified AWS disk type. Should not be used.
+      GP2: GP2 disk type.
+      GP3: GP3 disk type.
+      IO1: IO1 disk type.
+      IO2: IO2 disk type.
+      ST1: ST1 disk type.
+      SC1: SC1 disk type.
+      STANDARD: Standard disk type.
+    """
+    TYPE_UNSPECIFIED = 0
+    GP2 = 1
+    GP3 = 2
+    IO1 = 3
+    IO2 = 4
+    ST1 = 5
+    SC1 = 6
+    STANDARD = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Output only. A map of AWS volume tags.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 1)
+  sizeGib = _messages.IntegerField(2)
+  tags = _messages.MessageField('TagsValue', 3)
+  volumeId = _messages.StringField(4)
 
 
 class AwsSourceVmDetails(_messages.Message):
@@ -749,6 +817,10 @@ class CancelCutoverJobRequest(_messages.Message):
   r"""Request message for 'CancelCutoverJob' request."""
 
 
+class CancelDiskMigrationJobRequest(_messages.Message):
+  r"""Request message for 'CancelDiskMigrationJob' request."""
+
+
 class CancelImageImportJobRequest(_messages.Message):
   r"""Request message for 'CancelImageImportJob' request."""
 
@@ -859,6 +931,50 @@ class CloneStep(_messages.Message):
   instantiatingMigratedVm = _messages.MessageField('InstantiatingMigratedVMStep', 3)
   preparingVmDisks = _messages.MessageField('PreparingVMDisksStep', 4)
   startTime = _messages.StringField(5)
+
+
+class ComputeEngineDisk(_messages.Message):
+  r"""Compute Engine disk target details.
+
+  Enums:
+    DiskTypeValueValuesEnum: Required. The disk type to use.
+
+  Fields:
+    diskId: Optional. Target Compute Engine Disk ID. This is the resource ID
+      segment of the Compute Engine Disk to create. In the resource name
+      compute/v1/projects/{project}/zones/{zone}/disks/disk1 "disk1" is the
+      resource ID for the disk.
+    diskType: Required. The disk type to use.
+    replicaZones: Optional. Replication zones of the regional disk. Should be
+      of the form: projects/{target-project}/locations/{replica-zone}
+      Currently only one replica zone is supported.
+    zone: Required. The Compute Engine zone in which to create the disk.
+      Should be of the form: projects/{target-project}/locations/{zone}
+  """
+
+  class DiskTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The disk type to use.
+
+    Values:
+      COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED: An unspecified disk type. Will be
+        used as STANDARD.
+      COMPUTE_ENGINE_DISK_TYPE_STANDARD: A Standard disk type.
+      COMPUTE_ENGINE_DISK_TYPE_SSD: SSD hard disk type.
+      COMPUTE_ENGINE_DISK_TYPE_BALANCED: An alternative to SSD persistent
+        disks that balance performance and cost.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
+        type.
+    """
+    COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
+    COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
+    COMPUTE_ENGINE_DISK_TYPE_SSD = 2
+    COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
+
+  diskId = _messages.StringField(1)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 2)
+  replicaZones = _messages.StringField(3, repeated=True)
+  zone = _messages.StringField(4)
 
 
 class ComputeEngineDisksTargetDefaults(_messages.Message):
@@ -1358,7 +1474,7 @@ class CutoverForecast(_messages.Message):
 
 class CutoverJob(_messages.Message):
   r"""CutoverJob message describes a cutover of a migrating VM. The CutoverJob
-  is the operation of shutting down the VM, creating a snapshot and clonning
+  is the operation of shutting down the VM, creating a snapshot and cloning
   the VM using the replicated snapshot.
 
   Enums:
@@ -1644,6 +1760,103 @@ class DiskImageTargetDetails(_messages.Message):
   targetProject = _messages.StringField(10)
 
 
+class DiskMigrationJob(_messages.Message):
+  r"""Describes the disk which will be migrated from the source environment.
+  The source disk has to be unattached.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the DiskMigrationJob.
+
+  Fields:
+    awsSourceDiskDetails: Details of the unattached AWS source disk.
+    createTime: Output only. The time the DiskMigrationJob resource was
+      created.
+    errors: Output only. Provides details on the errors that led to the disk
+      migration job's state in case of an error.
+    name: Output only. Identifier. The identifier of the DiskMigrationJob.
+    state: Output only. State of the DiskMigrationJob.
+    targetDetails: Required. Details of the target Disk in Compute Engine.
+    updateTime: Output only. The last time the DiskMigrationJob resource was
+      updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the DiskMigrationJob.
+
+    Values:
+      STATE_UNSPECIFIED: The state is unspecified. This is not in use.
+      READY: The initial state of the disk migration. In this state the
+        customers can update the target details.
+      RUNNING: The migration is active, and it's running or scheduled to run.
+      SUCCEEDED: The migration completed successfully.
+      CANCELLING: Migration cancellation was initiated.
+      CANCELLED: The migration was cancelled.
+      FAILED: The migration process encountered an unrecoverable error and was
+        aborted.
+    """
+    STATE_UNSPECIFIED = 0
+    READY = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    CANCELLING = 4
+    CANCELLED = 5
+    FAILED = 6
+
+  awsSourceDiskDetails = _messages.MessageField('AwsSourceDiskDetails', 1)
+  createTime = _messages.StringField(2)
+  errors = _messages.MessageField('Status', 3, repeated=True)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  targetDetails = _messages.MessageField('DiskMigrationJobTargetDetails', 6)
+  updateTime = _messages.StringField(7)
+
+
+class DiskMigrationJobTargetDetails(_messages.Message):
+  r"""Details of the target disk in Compute Engine.
+
+  Messages:
+    LabelsValue: Optional. A map of labels to associate with the disk.
+
+  Fields:
+    encryption: Optional. The encryption to apply to the disk.
+    labels: Optional. A map of labels to associate with the disk.
+    targetDisk: Required. The target disk.
+    targetProject: Required. The name of the resource of type TargetProject
+      which represents the Compute Engine project in which to create the disk.
+      Should be of the form:
+      projects/{project}/locations/global/targetProjects/{target-project}
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A map of labels to associate with the disk.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  encryption = _messages.MessageField('Encryption', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  targetDisk = _messages.MessageField('ComputeEngineDisk', 3)
+  targetProject = _messages.StringField(4)
+
+
 class DisksMigrationDisksTargetDefaults(_messages.Message):
   r"""Details for a disk only migration."""
 
@@ -1798,6 +2011,23 @@ class FetchInventoryResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
   updateTime = _messages.StringField(4)
   vmwareVms = _messages.MessageField('VmwareVmsDetails', 5)
+
+
+class FetchStorageInventoryResponse(_messages.Message):
+  r"""Response message for fetchStorageInventory.
+
+  Fields:
+    nextPageToken: Output only. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    resources: The list of storage resources in the source.
+    updateTime: Output only. The timestamp when the source was last queried
+      (if the result is from the cache).
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('SourceStorageResource', 2, repeated=True)
+  updateTime = _messages.StringField(3)
 
 
 class FinalizeMigrationRequest(_messages.Message):
@@ -2081,6 +2311,22 @@ class ListDatacenterConnectorsResponse(_messages.Message):
   """
 
   datacenterConnectors = _messages.MessageField('DatacenterConnector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListDiskMigrationJobsResponse(_messages.Message):
+  r"""Response message for 'ListDiskMigrationJobs' request.
+
+  Fields:
+    diskMigrationJobs: Output only. The list of the disk migration jobs.
+    nextPageToken: Optional. Output only. A token, which can be sent as
+      `page_token` to retrieve the next page. If this field is omitted, there
+      are no subsequent pages.
+    unreachable: Output only. Locations that could not be reached.
+  """
+
+  diskMigrationJobs = _messages.MessageField('DiskMigrationJob', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -2628,6 +2874,8 @@ class MigrationError(_messages.Message):
         error during appliance upgrade.
       IMAGE_IMPORT_ERROR: Migrate to Virtual Machines encountered an error in
         image import operation.
+      DISK_MIGRATION_ERROR: Migrate to Virtual Machines encountered an error
+        in disk migration operation.
     """
     ERROR_CODE_UNSPECIFIED = 0
     UNKNOWN_ERROR = 1
@@ -2640,6 +2888,7 @@ class MigrationError(_messages.Message):
     UTILIZATION_REPORT_ERROR = 8
     APPLIANCE_UPGRADE_ERROR = 9
     IMAGE_IMPORT_ERROR = 10
+    DISK_MIGRATION_ERROR = 11
 
   actionItem = _messages.MessageField('LocalizedMessage', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
@@ -3088,6 +3337,10 @@ class ResumeMigrationRequest(_messages.Message):
   r"""Request message for 'ResumeMigration' request."""
 
 
+class RunDiskMigrationJobRequest(_messages.Message):
+  r"""Request message for 'RunDiskMigrationJobRequest' request."""
+
+
 class SchedulePolicy(_messages.Message):
   r"""A policy for scheduling replications.
 
@@ -3260,6 +3513,16 @@ class Source(_messages.Message):
   name = _messages.StringField(8)
   updateTime = _messages.StringField(9)
   vmware = _messages.MessageField('VmwareSourceDetails', 10)
+
+
+class SourceStorageResource(_messages.Message):
+  r"""SourceStorageResource describes a storage resource in the source.
+
+  Fields:
+    awsDiskDetails: Source AWS volume details.
+  """
+
+  awsDiskDetails = _messages.MessageField('AwsSourceDiskDetails', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4310,6 +4573,145 @@ class VmmigrationProjectsLocationsSourcesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest
+  object.
+
+  Fields:
+    cancelDiskMigrationJobRequest: A CancelDiskMigrationJobRequest resource to
+      be passed as the request body.
+    name: Required. The name of the DiskMigrationJob.
+  """
+
+  cancelDiskMigrationJobRequest = _messages.MessageField('CancelDiskMigrationJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsCreateRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsCreateRequest
+  object.
+
+  Fields:
+    diskMigrationJob: A DiskMigrationJob resource to be passed as the request
+      body.
+    diskMigrationJobId: Required. The DiskMigrationJob identifier. The maximum
+      length of this value is 63 characters. Valid characters are lower case
+      Latin letters, digits and hyphen. It must start with a Latin letter and
+      must not end with a hyphen.
+    parent: Required. The DiskMigrationJob's parent.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request timed out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  diskMigrationJob = _messages.MessageField('DiskMigrationJob', 1)
+  diskMigrationJobId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsDeleteRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the DiskMigrationJob.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsGetRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the DiskMigrationJob.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsListRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsListRequest
+  object.
+
+  Fields:
+    filter: Optional. The filter request (according to AIP-160).
+    orderBy: Optional. Ordering of the result list.
+    pageSize: Optional. The maximum number of disk migration jobs to return.
+      The service may return fewer than this value. If unspecified, at most
+      500 disk migration jobs will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListDiskMigrationJobs` call. Provide this to retrieve the subsequent
+      page. When paginating, all parameters provided to
+      `ListDiskMigrationJobs` except `page_size` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns this collection of
+      DiskMigrationJobs.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsPatchRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsPatchRequest
+  object.
+
+  Fields:
+    diskMigrationJob: A DiskMigrationJob resource to be passed as the request
+      body.
+    name: Output only. Identifier. The identifier of the DiskMigrationJob.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request timed out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the DiskMigrationJob resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask, then a mask equivalent to all fields that are
+      populated (have a non-empty value), will be implied.
+  """
+
+  diskMigrationJob = _messages.MessageField('DiskMigrationJob', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest object.
+
+  Fields:
+    name: Required. The name of the DiskMigrationJob.
+    runDiskMigrationJobRequest: A RunDiskMigrationJobRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  runDiskMigrationJobRequest = _messages.MessageField('RunDiskMigrationJobRequest', 2)
+
+
 class VmmigrationProjectsLocationsSourcesFetchInventoryRequest(_messages.Message):
   r"""A VmmigrationProjectsLocationsSourcesFetchInventoryRequest object.
 
@@ -4333,6 +4735,47 @@ class VmmigrationProjectsLocationsSourcesFetchInventoryRequest(_messages.Message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   source = _messages.StringField(4, required=True)
+
+
+class VmmigrationProjectsLocationsSourcesFetchStorageInventoryRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesFetchStorageInventoryRequest
+  object.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the storage inventory to fetch.
+
+  Fields:
+    forceRefresh: Optional. If this flag is set to true, the source will be
+      queried instead of using cached results. Using this flag will make the
+      call slower.
+    pageSize: Optional. The maximum number of VMs to return. The service may
+      return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `FetchStorageInventory` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `FetchStorageInventory` must match the call that provided the page
+      token.
+    source: Required. The name of the Source.
+    type: Required. The type of the storage inventory to fetch.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the storage inventory to fetch.
+
+    Values:
+      STORAGE_TYPE_UNSPECIFIED: The type is unspecified.
+      DISKS: The type is disks.
+      SNAPSHOTS: The type is snapshots.
+    """
+    STORAGE_TYPE_UNSPECIFIED = 0
+    DISKS = 1
+    SNAPSHOTS = 2
+
+  forceRefresh = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  source = _messages.StringField(4, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class VmmigrationProjectsLocationsSourcesGetRequest(_messages.Message):

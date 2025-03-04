@@ -14,10 +14,6 @@
 # limitations under the License.
 """Cloud Datastream connection profiles API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
@@ -139,6 +135,28 @@ class ConnectionProfilesClient:
         database=args.sqlserver_database,
     )
 
+  def _GetSalesforceProfile(self, args):
+    if args.salesforce_oauth2_client_id:
+      return self._messages.SalesforceProfile(
+          domain=args.salesforce_domain,
+          oauth2ClientCredentials=self._messages.Oauth2ClientCredentials(
+              clientId=args.salesforce_oauth2_client_id,
+              clientSecret=args.salesforce_oauth2_client_secret,
+              secretManagerStoredClientSecret=args.salesforce_secret_manager_stored_oauth2_client_secret,
+          ),
+      )
+    else:
+      return self._messages.SalesforceProfile(
+          domain=args.salesforce_domain,
+          userCredentials=self._messages.UserCredentials(
+              username=args.salesforce_username,
+              password=args.salesforce_password,
+              secretManagerStoredPassword=args.salesforce_secret_manager_stored_password,
+              securityToken=args.salesforce_security_token,
+              secretManagerStoredSecurityToken=args.salesforce_secret_manager_stored_security_token,
+          ),
+      )
+
   def _GetGCSProfile(self, args, release_track):
     # TODO(b/207467120): remove bucket_name arg check.
     if release_track == base.ReleaseTrack.BETA:
@@ -235,11 +253,16 @@ class ConnectionProfilesClient:
           args, release_track)
     elif cp_type == 'BIGQUERY':
       connection_profile_obj.bigqueryProfile = self._messages.BigQueryProfile()
+    elif cp_type == 'SALESFORCE':
+      connection_profile_obj.salesforceProfile = self._GetSalesforceProfile(
+          args
+      )
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,
-          'The connection profile type {0} is either unknown or not supported yet.'
-          .format(cp_type))
+          'The connection profile type {0} is either unknown or not supported'
+          ' yet.'.format(cp_type),
+      )
 
     # TODO(b/207467120): deprecate BETA client.
     if release_track == base.ReleaseTrack.BETA:
@@ -248,11 +271,15 @@ class ConnectionProfilesClient:
       private_connectivity_ref = args.CONCEPTS.private_connection.Parse()
 
     if private_connectivity_ref:
-      connection_profile_obj.privateConnectivity = self._messages.PrivateConnectivity(
-          privateConnection=private_connectivity_ref.RelativeName())
+      connection_profile_obj.privateConnectivity = (
+          self._messages.PrivateConnectivity(
+              privateConnection=private_connectivity_ref.RelativeName()
+          )
+      )
     elif args.forward_ssh_hostname:
-      connection_profile_obj.forwardSshConnectivity = self._GetForwardSshTunnelConnectivity(
-          args)
+      connection_profile_obj.forwardSshConnectivity = (
+          self._GetForwardSshTunnelConnectivity(args)
+      )
     elif args.static_ip_connectivity:
       connection_profile_obj.staticServiceIpConnectivity = {}
 
@@ -305,46 +332,60 @@ class ConnectionProfilesClient:
       connection_profile_msg.gcsProfile = gcs_profile
 
     if 'static_service_ip_connectivity' in connection_profile_data:
-      connection_profile_msg.staticServiceIpConnectivity = connection_profile_data.get(
-          'static_service_ip_connectivity')
+      connection_profile_msg.staticServiceIpConnectivity = (
+          connection_profile_data.get('static_service_ip_connectivity')
+      )
     elif 'forward_ssh_connectivity' in connection_profile_data:
-      connection_profile_msg.forwardSshConnectivity = connection_profile_data.get(
-          'forward_ssh_connectivity')
+      connection_profile_msg.forwardSshConnectivity = (
+          connection_profile_data.get('forward_ssh_connectivity')
+      )
     elif 'private_connectivity' in connection_profile_data:
       connection_profile_msg.privateConnectivity = connection_profile_data.get(
-          'private_connectivity')
+          'private_connectivity'
+      )
     else:
       raise ds_exceptions.ParseError(
-          'Cannot parse YAML: missing connectivity method.')
+          'Cannot parse YAML: missing connectivity method.'
+      )
 
     return connection_profile_msg
 
   def _UpdateForwardSshTunnelConnectivity(
-      self, connection_profile,
-      args, update_fields):
+      self, connection_profile, args, update_fields
+  ):
     """Updates Forward SSH tunnel connectivity config."""
     if args.IsSpecified('forward_ssh_hostname'):
-      connection_profile.forwardSshConnectivity.hostname = args.forward_ssh_hostname
+      connection_profile.forwardSshConnectivity.hostname = (
+          args.forward_ssh_hostname
+      )
       update_fields.append('forwardSshConnectivity.hostname')
     if args.IsSpecified('forward_ssh_port'):
       connection_profile.forwardSshConnectivity.port = args.forward_ssh_port
       update_fields.append('forwardSshConnectivity.port')
     if args.IsSpecified('forward_ssh_username'):
-      connection_profile.forwardSshConnectivity.username = args.forward_ssh_username
+      connection_profile.forwardSshConnectivity.username = (
+          args.forward_ssh_username
+      )
       update_fields.append('forwardSshConnectivity.username')
     if args.IsSpecified('forward_ssh_private_key'):
-      connection_profile.forwardSshConnectivity.privateKey = args.forward_ssh_private_key
+      connection_profile.forwardSshConnectivity.privateKey = (
+          args.forward_ssh_private_key
+      )
       update_fields.append('forwardSshConnectivity.privateKey')
     if args.IsSpecified('forward_ssh_password'):
-      connection_profile.forwardSshConnectivity.privateKey = args.forward_ssh_password
+      connection_profile.forwardSshConnectivity.privateKey = (
+          args.forward_ssh_password
+      )
       update_fields.append('forwardSshConnectivity.password')
 
-  def _UpdateGCSProfile(self, connection_profile, release_track, args,
-                        update_fields):
+  def _UpdateGCSProfile(
+      self, connection_profile, release_track, args, update_fields
+  ):
     """Updates GOOGLE CLOUD STORAGE connection profile."""
     # TODO(b/207467120): remove bucket_name arg check.
     if release_track == base.ReleaseTrack.BETA and args.IsSpecified(
-        'bucket_name'):
+        'bucket_name'
+    ):
       connection_profile.gcsProfile.bucket = args.bucket_name
       update_fields.append('gcsProfile.bucket')
     if release_track == base.ReleaseTrack.GA and args.IsSpecified('bucket'):
@@ -375,23 +416,23 @@ class ConnectionProfilesClient:
       connection_profile.oracleProfile.databaseService = args.database_service
       update_fields.append('oracleProfile.databaseService')
 
-  def _UpdateMysqlSslConfig(
-      self, connection_profile,
-      args, update_fields):
+  def _UpdateMysqlSslConfig(self, connection_profile, args, update_fields):
     """Updates Mysql SSL config."""
     if args.IsSpecified('client_key'):
       connection_profile.mysqlProfile.sslConfig.clientKey = args.client_key
       update_fields.append('mysqlProfile.sslConfig.clientKey')
     if args.IsSpecified('client_certificate'):
-      connection_profile.mysqlProfile.sslConfig.clientCertificate = args.client_certificate
+      connection_profile.mysqlProfile.sslConfig.clientCertificate = (
+          args.client_certificate
+      )
       update_fields.append('mysqlProfile.sslConfig.clientCertificate')
     if args.IsSpecified('ca_certificate'):
-      connection_profile.mysqlProfile.sslConfig.caCertificate = args.ca_certificate
+      connection_profile.mysqlProfile.sslConfig.caCertificate = (
+          args.ca_certificate
+      )
       update_fields.append('mysqlProfile.sslConfig.caCertificate')
 
-  def _UpdateMySqlProfile(self,
-                          connection_profile,
-                          args, update_fields):
+  def _UpdateMySqlProfile(self, connection_profile, args, update_fields):
     """Updates MySQL connection profile."""
     if args.IsSpecified('mysql_hostname'):
       connection_profile.mysqlProfile.hostname = args.mysql_hostname
@@ -480,9 +521,70 @@ class ConnectionProfilesClient:
       connection_profile.sqlServerProfile.database = args.sqlserver_database
       update_fields.append('sqlServerProfile.database')
 
+  def _UpdateSalesforceProfile(self, connection_profile, args, update_fields):
+    """Updates Salesforce connection profile."""
+    if args.IsSpecified('salesforce_domain'):
+      connection_profile.salesforceProfile.domain = args.salesforce_domain
+      update_fields.append('salesforceProfile.domain')
+    if args.IsSpecified('salesforce_username'):
+      connection_profile.salesforceProfile.userCredentials.username = (
+          args.salesforce_username
+      )
+      update_fields.append('salesforceProfile.userCredentials.username')
+    if args.IsSpecified('salesforce_password') or args.IsSpecified(
+        'salesforce_secret_manager_stored_password'
+    ):
+      connection_profile.salesforceProfile.userCredentials.password = (
+          args.salesforce_password
+      )
+      connection_profile.salesforceProfile.userCredentials.secretManagerStoredPassword = (
+          args.salesforce_secret_manager_stored_password
+      )
+      update_fields.append('salesforceProfile.userCredentials.password')
+      update_fields.append(
+          'salesforceProfile.userCredentials.secretManagerStoredPassword'
+      )
+
+    if args.IsSpecified('salesforce_security_token') or args.IsSpecified(
+        'salesforce_secret_manager_stored_security_token'
+    ):
+      connection_profile.salesforceProfile.userCredentials.securityToken = (
+          args.salesforce_security_token
+      )
+      connection_profile.salesforceProfile.userCredentials.secretManagerStoredSecurityToken = (
+          args.salesforce_secret_manager_stored_security_token
+      )
+      update_fields.append('salesforceProfile.userCredentials.securityToken')
+      update_fields.append(
+          'salesforceProfile.userCredentials.secretManagerStoredSecurityToken'
+      )
+
+    if args.IsSpecified('salesforce_oauth2_client_id'):
+      connection_profile.salesforceProfile.oauth2ClientCredentials.clientId = (
+          args.salesforce_oauth2_client_id
+      )
+      update_fields.append('salesforceProfile.oauth2ClientCredentials.clientId')
+    if args.IsSpecified('salesforce_oauth2_client_secret') or args.IsSpecified(
+        'salesforce_secret_manager_stored_oauth2_client_secret'
+    ):
+      connection_profile.salesforceProfile.oauth2ClientCredentials.clientSecret = (
+          args.salesforce_oauth2_client_secret
+      )
+      connection_profile.salesforceProfile.oauth2ClientCredentials.secretManagerStoredClientSecret = (
+          args.salesforce_secret_manager_stored_oauth2_client_secret
+      )
+      update_fields.append(
+          'salesforceProfile.oauth2ClientCredentials.clientSecret'
+      )
+      update_fields.append(
+          'salesforceProfile.oauth2ClientCredentials.secretManagerStoredClientSecret'
+      )
+
   def _GetExistingConnectionProfile(self, name):
-    get_req = self._messages.DatastreamProjectsLocationsConnectionProfilesGetRequest(
-        name=name
+    get_req = (
+        self._messages.DatastreamProjectsLocationsConnectionProfilesGetRequest(
+            name=name
+        )
     )
     return self._service.Get(get_req)
 
@@ -516,17 +618,21 @@ class ConnectionProfilesClient:
       self._UpdatePostgresqlProfile(connection_profile, args, update_fields)
     elif cp_type == 'SQLSERVER':
       self._UpdateSqlServerProfile(connection_profile, args, update_fields)
+    elif cp_type == 'SALESFORCE':
+      self._UpdateSalesforceProfile(connection_profile, args, update_fields)
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
-      self._UpdateGCSProfile(connection_profile, release_track, args,
-                             update_fields)
+      self._UpdateGCSProfile(
+          connection_profile, release_track, args, update_fields
+      )
     elif cp_type == 'BIGQUERY':
       # There are currently no parameters that can be updated in a bigquery CP.
       pass
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,
-          'The connection profile type {0} is either unknown or not supported yet.'
-          .format(cp_type))
+          'The connection profile type {0} is either unknown or not supported'
+          ' yet.'.format(cp_type),
+      )
 
     # TODO(b/207467120): deprecate BETA client.
     if release_track == base.ReleaseTrack.BETA:
@@ -535,12 +641,16 @@ class ConnectionProfilesClient:
       private_connectivity_ref = args.CONCEPTS.private_connection.Parse()
 
     if private_connectivity_ref:
-      connection_profile.privateConnectivity = self._messages.PrivateConnectivity(
-          privateConnectionName=private_connectivity_ref.RelativeName())
+      connection_profile.privateConnectivity = (
+          self._messages.PrivateConnectivity(
+              privateConnectionName=private_connectivity_ref.RelativeName()
+          )
+      )
       update_fields.append('privateConnectivity')
     elif args.forward_ssh_hostname:
       self._UpdateForwardSshTunnelConnectivity(
-          connection_profile, args, update_fields)
+          connection_profile, args, update_fields
+      )
     elif args.static_ip_connectivity:
       connection_profile.staticServiceIpConnectivity = {}
       update_fields.append('staticServiceIpConnectivity')
@@ -580,7 +690,9 @@ class ConnectionProfilesClient:
       force = True
 
     request_id = util.GenerateRequestId()
-    create_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesCreateRequest
+    create_req_type = (
+        self._messages.DatastreamProjectsLocationsConnectionProfilesCreateRequest
+    )
     create_req = create_req_type(
         connectionProfile=connection_profile,
         connectionProfileId=connection_profile.name,
@@ -618,13 +730,16 @@ class ConnectionProfilesClient:
       force = True
 
     request_id = util.GenerateRequestId()
-    update_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesPatchRequest
+    update_req_type = (
+        self._messages.DatastreamProjectsLocationsConnectionProfilesPatchRequest
+    )
     update_req = update_req_type(
         connectionProfile=updated_cp,
         name=updated_cp.name,
         updateMask=','.join(update_fields),
         requestId=request_id,
-        force=force)
+        force=force,
+    )
 
     return self._service.Patch(update_req)
 
@@ -641,13 +756,17 @@ class ConnectionProfilesClient:
     location_ref = self._resource_parser.Create(
         'datastream.projects.locations',
         projectsId=project_id,
-        locationsId=args.location)
+        locationsId=args.location,
+    )
 
-    list_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesListRequest
+    list_req_type = (
+        self._messages.DatastreamProjectsLocationsConnectionProfilesListRequest
+    )
     list_req = list_req_type(
         parent=location_ref.RelativeName(),
         filter=args.filter,
-        orderBy=','.join(args.sort_by) if args.sort_by else None)
+        orderBy=','.join(args.sort_by) if args.sort_by else None,
+    )
 
     return list_pager.YieldFromList(
         service=self._client.projects_locations_connectionProfiles,
@@ -704,7 +823,9 @@ class ConnectionProfilesClient:
       request.sqlServerRdbms = util.ParseSqlServerRdbmsFile(
           self._messages, args.sqlserver_rdbms_file
       )
-    discover_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesDiscoverRequest
+    discover_req_type = (
+        self._messages.DatastreamProjectsLocationsConnectionProfilesDiscoverRequest
+    )
     discover_req = discover_req_type(
         discoverConnectionProfileRequest=request, parent=parent_ref)
     return self._service.Discover(discover_req)

@@ -389,6 +389,9 @@ def ParseUpdateOptionsBase(args, locations):
       in_transit_encryption=getattr(args, 'in_transit_encryption', None),
       autoprovisioning_resource_manager_tags=(
           args.autoprovisioning_resource_manager_tags),
+      service_account_verification_keys=(
+          args.service_account_verification_keys),
+      service_account_signing_keys=args.service_account_signing_keys,
       )
 
   if (args.disable_addons and

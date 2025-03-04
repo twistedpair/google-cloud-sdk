@@ -66,6 +66,13 @@ class Collections(enum.Enum):
       ['project', 'crossSiteNetwork'],
       True
   )
+  DISKSETTINGS = (
+      'diskSettings',
+      'projects/{project}/zones/{zone}/diskSettings',
+      {},
+      ['project', 'zone'],
+      True
+  )
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',
@@ -438,6 +445,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/commitments/{commitment}',
       {},
       ['project', 'region', 'commitment'],
+      True
+  )
+  REGIONDISKSETTINGS = (
+      'regionDiskSettings',
+      'projects/{project}/regions/{region}/diskSettings',
+      {},
+      ['project', 'region'],
       True
   )
   REGIONDISKTYPES = (

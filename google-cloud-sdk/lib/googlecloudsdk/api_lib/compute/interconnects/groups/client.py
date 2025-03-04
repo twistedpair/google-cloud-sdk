@@ -37,6 +37,35 @@ class InterconnectGroup(object):
   def _messages(self):
     return self._compute_client.messages
 
+  def MakeInterconnectGroupsCreateMembersInterconnectInput(
+      self,
+      facility: str = None,
+      description: str = None,
+      name: str = None,
+      link_type: str = None,
+      requested_link_count: int = 1,
+      interconnect_type: str = None,
+      admin_enabled: bool = True,
+      noc_contact_email: str = None,
+      customer_name: str = None,
+      remote_location: str = None,
+      requested_features: str = None,
+  ):
+    """Make an InterconnectGroupsCreateMembersInterconnectInput."""
+    return self._messages.InterconnectGroupsCreateMembersInterconnectInput(
+        facility=facility,
+        description=description,
+        name=name,
+        linkType=link_type,
+        requestedLinkCount=requested_link_count,
+        interconnectType=interconnect_type,
+        adminEnabled=admin_enabled,
+        nocContactEmail=noc_contact_email,
+        customerName=customer_name,
+        remoteLocation=remote_location,
+        requestedFeatures=requested_features,
+    )
+
   def _MakeAdditionalProperties(self, interconnects):
     return [
         self._messages.InterconnectGroup.InterconnectsValue.AdditionalProperty(
@@ -149,6 +178,29 @@ class InterconnectGroup(object):
         ),
     )
 
+  def _MakeCreateMembersRequestTuple(
+      self,
+      intent_mismatch_behavior,
+      template_interconnect,
+      member_interconnects,
+  ):
+    messages = self._messages
+    return (
+        self._client.interconnectGroups,
+        'CreateMembers',
+        messages.ComputeInterconnectGroupsCreateMembersRequest(
+            project=self.ref.project,
+            interconnectGroupsCreateMembersRequest=messages.InterconnectGroupsCreateMembersRequest(
+                request=messages.InterconnectGroupsCreateMembers(
+                    intentMismatchBehavior=intent_mismatch_behavior,
+                    templateInterconnect=template_interconnect,
+                    interconnects=member_interconnects,
+                ),
+            ),
+            interconnectGroup=self.ref.Name(),
+        ),
+    )
+
   def Create(
       self,
       description=None,
@@ -206,3 +258,20 @@ class InterconnectGroup(object):
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]
     return requests
+
+  def CreateMembers(
+      self,
+      intent_mismatch_behavior=None,
+      template_interconnect=None,
+      member_interconnects=(),
+  ):
+    """Create member interconnects in an interconnect group."""
+    requests = [
+        self._MakeCreateMembersRequestTuple(
+            intent_mismatch_behavior,
+            template_interconnect,
+            member_interconnects,
+        )
+    ]
+    resources = self._compute_client.MakeRequests(requests)
+    return resources[0]

@@ -19,13 +19,13 @@ class AppendOnly(_messages.Message):
   """
 
 
-
 class AvroFileFormat(_messages.Message):
   r"""AVRO file format configuration."""
 
 
 class BackfillAllStrategy(_messages.Message):
   r"""Backfill strategy to automatically backfill the Stream's objects.
+
   Specific objects can be excluded.
 
   Fields:
@@ -111,7 +111,6 @@ class BackfillNoneStrategy(_messages.Message):
   r"""Backfill strategy to disable automatic backfill for the Stream's
   objects.
   """
-
 
 
 class BigQueryDestinationConfig(_messages.Message):
@@ -224,6 +223,7 @@ class CdcStrategy(_messages.Message):
 
 class ConnectionProfile(_messages.Message):
   r"""A set of reusable connection configurations to be used as a source or
+
   destination for a stream.
 
   Messages:
@@ -1002,7 +1002,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Error(_messages.Message):
   r"""Represent a user-facing Error.
 
@@ -1371,12 +1370,10 @@ class Merge(_messages.Message):
   """
 
 
-
 class MostRecentStartPosition(_messages.Message):
   r"""CDC strategy to start replicating from the most recent position in the
   source.
   """
-
 
 
 class MysqlColumn(_messages.Message):
@@ -2635,7 +2632,6 @@ class StartBackfillJobRequest(_messages.Message):
   """
 
 
-
 class StartBackfillJobResponse(_messages.Message):
   r"""Response for manually initiating a backfill job for a specific stream
   object.
@@ -2652,7 +2648,6 @@ class StaticServiceIpConnectivity(_messages.Message):
   configured to allow incoming connections from the Datastream public IP
   addresses for the region specified in the connection profile.
   """
-
 
 
 class Status(_messages.Message):
@@ -2710,7 +2705,6 @@ class StopBackfillJobRequest(_messages.Message):
   r"""Request for manually stopping a running backfill job for a specific
   stream object.
   """
-
 
 
 class StopBackfillJobResponse(_messages.Message):

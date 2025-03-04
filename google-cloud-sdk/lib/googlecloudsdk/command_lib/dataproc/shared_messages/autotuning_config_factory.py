@@ -68,7 +68,11 @@ def AddArguments(parser):
   scenario_choices = [
       arg_utils.EnumNameToChoice(str(sc))
       for sc in ac.ScenariosValueListEntryValuesEnum
-      if sc != ac.ScenariosValueListEntryValuesEnum.SCENARIO_UNSPECIFIED
+      if sc
+      not in [
+          ac.ScenariosValueListEntryValuesEnum.SCENARIO_UNSPECIFIED,
+          ac.ScenariosValueListEntryValuesEnum.BHJ,
+      ]
   ]
 
   parser.add_argument(

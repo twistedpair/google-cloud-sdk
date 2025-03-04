@@ -25,9 +25,15 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  binaryLogPosition:
+    description: Use Binary log position based replication.
+    type: binarylogposition
   excludeObjects:
     description: MySQL objects to exclude from the stream.
     $ref: MysqlRdbms.yaml
+  gtid:
+    description: Use GTID based replication.
+    type: gtid
   includeObjects:
     description: MySQL objects to retrieve from the source.
     $ref: MysqlRdbms.yaml

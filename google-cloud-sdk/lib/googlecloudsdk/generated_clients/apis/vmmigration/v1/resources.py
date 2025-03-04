@@ -107,6 +107,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SOURCES_DISKMIGRATIONJOBS = (
+      'projects.locations.sources.diskMigrationJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sources/'
+              '{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SOURCES_MIGRATINGVMS = (
       'projects.locations.sources.migratingVms',
       '{+name}',

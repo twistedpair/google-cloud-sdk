@@ -18,10 +18,10 @@ class Action(_messages.Message):
   r"""An action to take on an object.
 
   Fields:
-    storageClass: Target storage class. Required iff the type of the action is
-      SetStorageClass.
-    type: Type of the action. Currently, only `Delete`, `SetStorageClass`, and
-      `AbortIncompleteMultipartUpload` are supported.
+    storageClass: Optional. Target storage class. Required iff the type of the
+      action is SetStorageClass.
+    type: Required. Type of the action. Currently, only `Delete`,
+      `SetStorageClass`, and `AbortIncompleteMultipartUpload` are supported.
   """
 
   storageClass = _messages.StringField(1)
@@ -32,7 +32,7 @@ class Autoclass(_messages.Message):
   r"""Configuration for a bucket's Autoclass feature.
 
   Fields:
-    enabled: Enables Autoclass.
+    enabled: Optional. Enables Autoclass.
     terminalStorageClass: An object in an Autoclass bucket will eventually
       cool down to the terminal storage class if there is no access to the
       object. The only valid values are NEARLINE and ARCHIVE.
@@ -54,8 +54,8 @@ class Billing(_messages.Message):
   r"""Billing properties of a bucket.
 
   Fields:
-    requesterPays: When set to true, Requester Pays is enabled for this
-      bucket.
+    requesterPays: Optional. When set to true, Requester Pays is enabled for
+      this bucket.
   """
 
   requesterPays = _messages.BooleanField(1)
@@ -65,42 +65,43 @@ class Bucket(_messages.Message):
   r"""A bucket.
 
   Messages:
-    LabelsValue: User-provided labels, in key/value pairs.
+    LabelsValue: Optional. User-provided labels, in key/value pairs.
 
   Fields:
-    acl: Access controls on the bucket. If
+    acl: Optional. Access controls on the bucket. If
       iam_config.uniform_bucket_level_access is enabled on this bucket,
       requests to set, read, or modify acl is an error.
-    autoclass: The bucket's Autoclass configuration. If there is no
+    autoclass: Optional. The bucket's Autoclass configuration. If there is no
       configuration, the Autoclass feature will be disabled and have no effect
       on the bucket.
-    billing: The bucket's billing config.
+    billing: Optional. The bucket's billing config.
     bucketId: Output only. The user-chosen part of the bucket name. The
       `{bucket}` portion of the `name` field. For globally unique buckets,
       this is equal to the "bucket name" of other Cloud Storage APIs. Example:
       "pub".
-    cors: The bucket's https://www.w3.org/TR/cors/ (CORS) config.
+    cors: Optional. The bucket's https://www.w3.org/TR/cors/ (CORS) config.
     createTime: Output only. The creation time of the bucket.
-    customPlacementConfig: Configuration that, if present, specifies the data
-      placement for a
+    customPlacementConfig: Optional. Configuration that, if present, specifies
+      the data placement for a
       https://cloud.google.com/storage/docs/locations#location-dr.
-    defaultEventBasedHold: The default value for event-based hold on newly
-      created objects in this bucket. Event-based hold is a way to retain
-      objects indefinitely until an event occurs, signified by the hold's
-      release. After being released, such objects will be subject to bucket-
-      level retention (if any). One sample use case of this flag is for banks
-      to hold loan documents for at least 3 years after loan is paid in full.
-      Here, bucket-level retention is 3 years and the event is loan being paid
-      in full. In this example, these objects will be held intact for any
-      number of years until the event has occurred (event-based hold on the
-      object is released) and then 3 more years after that. That means
+    defaultEventBasedHold: Optional. The default value for event-based hold on
+      newly created objects in this bucket. Event-based hold is a way to
+      retain objects indefinitely until an event occurs, signified by the
+      hold's release. After being released, such objects will be subject to
+      bucket-level retention (if any). One sample use case of this flag is for
+      banks to hold loan documents for at least 3 years after loan is paid in
+      full. Here, bucket-level retention is 3 years and the event is loan
+      being paid in full. In this example, these objects will be held intact
+      for any number of years until the event has occurred (event-based hold
+      on the object is released) and then 3 more years after that. That means
       retention duration of the objects begins from the moment event-based
       hold transitioned from true to false. Objects under event-based hold
       cannot be deleted, overwritten or archived until the hold is removed.
-    defaultObjectAcl: Default access controls to apply to new objects when no
-      ACL is provided. If iam_config.uniform_bucket_level_access is enabled on
-      this bucket, requests to set, read, or modify acl is an error.
-    encryption: Encryption config for a bucket.
+    defaultObjectAcl: Optional. Default access controls to apply to new
+      objects when no ACL is provided. If
+      iam_config.uniform_bucket_level_access is enabled on this bucket,
+      requests to set, read, or modify acl is an error.
+    encryption: Optional. Encryption config for a bucket.
     etag: The etag of the bucket. If included in the metadata of an
       UpdateBucketRequest, the operation will only be performed if the etag
       matches that of the bucket.
@@ -109,9 +110,9 @@ class Bucket(_messages.Message):
     hierarchicalNamespace: Optional. The bucket's hierarchical namespace
       configuration. If there is no configuration, the hierarchical namespace
       feature will be disabled and have no effect on the bucket.
-    iamConfig: The bucket's IAM config.
-    labels: User-provided labels, in key/value pairs.
-    lifecycle: The bucket's lifecycle config. See
+    iamConfig: Optional. The bucket's IAM config.
+    labels: Optional. User-provided labels, in key/value pairs.
+    lifecycle: Optional. The bucket's lifecycle config. See
       [https://developers.google.com/storage/docs/lifecycle]Lifecycle
       Management] for more information.
     location: Immutable. The location of the bucket. Object data for objects
@@ -122,10 +123,11 @@ class Bucket(_messages.Message):
       error.
     locationType: Output only. The location type of the bucket (region, dual-
       region, multi-region, etc).
-    logging: The bucket's logging config, which defines the destination bucket
-      and name prefix (if any) for the current bucket's logs.
+    logging: Optional. The bucket's logging config, which defines the
+      destination bucket and name prefix (if any) for the current bucket's
+      logs.
     metageneration: Output only. The metadata generation of this bucket.
-    name: Immutable. The name of the bucket. Format:
+    name: Identifier. The name of the bucket. Format:
       `projects/{project}/buckets/{bucket}`
     objectRetention: Optional. The bucket's object retention configuration.
       Must be enabled before objects in the bucket may have retention
@@ -135,45 +137,45 @@ class Bucket(_messages.Message):
     project: Immutable. The project which owns this bucket, in the format of
       "projects/{projectIdentifier}". {projectIdentifier} can be the project
       ID or project number.
-    retentionPolicy: The bucket's retention policy. The retention policy
-      enforces a minimum retention time for all objects contained in the
-      bucket, based on their creation time. Any attempt to overwrite or delete
-      objects younger than the retention period will result in a
+    retentionPolicy: Optional. The bucket's retention policy. The retention
+      policy enforces a minimum retention time for all objects contained in
+      the bucket, based on their creation time. Any attempt to overwrite or
+      delete objects younger than the retention period will result in a
       PERMISSION_DENIED error. An unlocked retention policy can be modified or
       removed from the bucket via a storage.buckets.update operation. A locked
       retention policy cannot be removed or shortened in duration for the
       lifetime of the bucket. Attempting to remove or decrease period of a
       locked retention policy will result in a PERMISSION_DENIED error.
-    rpo: The recovery point objective for cross-region replication of the
-      bucket. Applicable only for dual- and multi-region buckets. "DEFAULT"
-      uses default replication. "ASYNC_TURBO" enables turbo replication, valid
-      for dual-region buckets only. If rpo is not specified when the bucket is
-      created, it defaults to "DEFAULT". For more information, see
-      https://cloud.google.com/storage/docs/availability-durability#turbo-
-      replication.
+    rpo: Optional. The recovery point objective for cross-region replication
+      of the bucket. Applicable only for dual- and multi-region buckets.
+      "DEFAULT" uses default replication. "ASYNC_TURBO" enables turbo
+      replication, valid for dual-region buckets only. If rpo is not specified
+      when the bucket is created, it defaults to "DEFAULT". For more
+      information, see https://cloud.google.com/storage/docs/availability-
+      durability#turbo-replication.
     satisfiesPzi: Optional. Reserved for future use.
-    satisfiesPzs: Reserved for future use.
+    satisfiesPzs: Optional. Reserved for future use.
     softDeletePolicy: Optional. The bucket's soft delete policy. The soft
       delete policy prevents soft-deleted objects from being permanently
       deleted.
     softDeleteTime: Output only. The soft delete time of the bucket.
-    storageClass: The bucket's default storage class, used whenever no
-      storageClass is specified for a newly-created object. This defines how
-      objects in the bucket are stored and determines the SLA and the cost of
-      storage. If this value is not specified when the bucket is created, it
-      will default to `STANDARD`. For more information, see
+    storageClass: Optional. The bucket's default storage class, used whenever
+      no storageClass is specified for a newly-created object. This defines
+      how objects in the bucket are stored and determines the SLA and the cost
+      of storage. If this value is not specified when the bucket is created,
+      it will default to `STANDARD`. For more information, see
       https://developers.google.com/storage/docs/storage-classes.
     updateTime: Output only. The modification time of the bucket.
-    versioning: The bucket's versioning config.
-    website: The bucket's website config, controlling how the service behaves
-      when accessing bucket contents as a web site. See the
+    versioning: Optional. The bucket's versioning config.
+    website: Optional. The bucket's website config, controlling how the
+      service behaves when accessing bucket contents as a web site. See the
       https://cloud.google.com/storage/docs/static-website for more
       information.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-provided labels, in key/value pairs.
+    r"""Optional. User-provided labels, in key/value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -236,12 +238,12 @@ class BucketAccessControl(_messages.Message):
   r"""An access-control entry.
 
   Fields:
-    domain: The domain associated with the entity, if any.
-    email: The email address associated with the entity, if any.
-    entity: The entity holding the permission, in one of the following forms:
-      * `user-{userid}` * `user-{email}` * `group-{groupid}` * `group-{email}`
-      * `domain-{domain}` * `project-{team}-{projectnumber}` *
-      `project-{team}-{projectid}` * `allUsers` * `allAuthenticatedUsers`
+    domain: Optional. The domain associated with the entity, if any.
+    email: Optional. The email address associated with the entity, if any.
+    entity: Required. The entity holding the permission, in one of the
+      following forms: * `user-{userid}` * `user-{email}` * `group-{groupid}`
+      * `group-{email}` * `domain-{domain}` * `project-{team}-{projectnumber}`
+      * `project-{team}-{projectid}` * `allUsers` * `allAuthenticatedUsers`
       Examples: * The user `liz@example.com` would be `user-liz@example.com`.
       * The group `example@googlegroups.com` would be `group-
       example@googlegroups.com` * All members of the Google Apps for Business
@@ -250,14 +252,15 @@ class BucketAccessControl(_messages.Message):
     entityAlt: Output only. The alternative entity format, if exists. For
       project entities, `project-{team}-{projectid}` format will be returned
       on response.
-    entityId: The ID for the entity, if any.
-    etag: The etag of the BucketAccessControl. If included in the metadata of
-      an update or delete request message, the operation operation will only
-      be performed if the etag matches that of the bucket's
+    entityId: Optional. The ID for the entity, if any.
+    etag: Optional. The etag of the BucketAccessControl. If included in the
+      metadata of an update or delete request message, the operation operation
+      will only be performed if the etag matches that of the bucket's
       BucketAccessControl.
-    id: The ID of the access-control entry.
-    projectTeam: The project team associated with the entity, if any.
-    role: The access permission for the entity.
+    id: Required. The ID of the access-control entry.
+    projectTeam: Optional. The project team associated with the entity, if
+      any.
+    role: Required. The access permission for the entity.
   """
 
   domain = _messages.StringField(1)
@@ -342,10 +345,10 @@ class Condition(_messages.Message):
     ageDays: Age of an object (in days). This condition is satisfied when an
       object reaches the specified age. A value of 0 indicates that all
       objects immediately match this condition.
-    createdBefore: This condition is satisfied when an object is created
-      before midnight of the specified date in UTC.
-    customTimeBefore: An object matches this condition if the custom timestamp
-      set on the object is before the specified date in UTC.
+    createdBefore: Optional. This condition is satisfied when an object is
+      created before midnight of the specified date in UTC.
+    customTimeBefore: Optional. An object matches this condition if the custom
+      timestamp set on the object is before the specified date in UTC.
     daysSinceCustomTime: Number of days that have elapsed since the custom
       timestamp set on an object. The value of the field must be a nonnegative
       integer.
@@ -363,17 +366,19 @@ class Condition(_messages.Message):
       stage and is only available to an allowlisted set of users; that means
       that this feature may be changed in backward-incompatible ways and that
       it is not guaranteed to be released. An empty pattern matches nothing.
-    matchesPrefix: List of object name prefixes. If any prefix exactly matches
-      the beginning of the object name, the condition evaluates to true.
-    matchesStorageClass: Objects having any of the storage classes specified
-      by this condition will be matched. Values include `MULTI_REGIONAL`,
-      `REGIONAL`, `NEARLINE`, `COLDLINE`, `STANDARD`, and
+    matchesPrefix: Optional. List of object name prefixes. If any prefix
+      exactly matches the beginning of the object name, the condition
+      evaluates to true.
+    matchesStorageClass: Optional. Objects having any of the storage classes
+      specified by this condition will be matched. Values include
+      `MULTI_REGIONAL`, `REGIONAL`, `NEARLINE`, `COLDLINE`, `STANDARD`, and
       `DURABLE_REDUCED_AVAILABILITY`.
-    matchesSuffix: List of object name suffixes. If any suffix exactly matches
-      the end of the object name, the condition evaluates to true.
-    noncurrentTimeBefore: This condition is relevant only for versioned
-      objects. An object version satisfies this condition only if it became
-      noncurrent before the specified date in UTC.
+    matchesSuffix: Optional. List of object name suffixes. If any suffix
+      exactly matches the end of the object name, the condition evaluates to
+      true.
+    noncurrentTimeBefore: Optional. This condition is relevant only for
+      versioned objects. An object version satisfies this condition only if it
+      became noncurrent before the specified date in UTC.
     numNewerVersions: Relevant only for versioned objects. If the value is N,
       this condition is satisfied when there are at least N versions
       (including the live version) newer than this version of the object.
@@ -400,16 +405,16 @@ class Cors(_messages.Message):
   https://tools.ietf.org/html/rfc6454.
 
   Fields:
-    maxAgeSeconds: The value, in seconds, to return in the
+    maxAgeSeconds: Optional. The value, in seconds, to return in the
       https://www.w3.org/TR/cors/#access-control-max-age-response-header used
       in preflight responses.
-    method: The list of HTTP methods on which to include CORS response
-      headers, (`GET`, `OPTIONS`, `POST`, etc) Note: "*" is permitted in the
-      list of methods, and means "any method".
-    origin: The list of Origins eligible to receive CORS response headers. See
-      https://tools.ietf.org/html/rfc6454 for more on origins. Note: "*" is
-      permitted in the list of origins, and means "any Origin".
-    responseHeader: The list of HTTP headers other than the
+    method: Optional. The list of HTTP methods on which to include CORS
+      response headers, (`GET`, `OPTIONS`, `POST`, etc) Note: "*" is permitted
+      in the list of methods, and means "any method".
+    origin: Optional. The list of Origins eligible to receive CORS response
+      headers. See https://tools.ietf.org/html/rfc6454 for more on origins.
+      Note: "*" is permitted in the list of origins, and means "any Origin".
+    responseHeader: Optional. The list of HTTP headers other than the
       https://www.w3.org/TR/cors/#simple-response-header to give permission
       for the user-agent to share across domains.
   """
@@ -504,8 +509,9 @@ class Encryption(_messages.Message):
   r"""Encryption properties of a bucket.
 
   Fields:
-    defaultKmsKey: The name of the Cloud KMS key that will be used to encrypt
-      objects inserted into this bucket, if no encryption method is specified.
+    defaultKmsKey: Optional. The name of the Cloud KMS key that will be used
+      to encrypt objects inserted into this bucket, if no encryption method is
+      specified.
   """
 
   defaultKmsKey = _messages.StringField(1)
@@ -560,7 +566,7 @@ class GoogleStorageV2CustomPlacementConfig(_messages.Message):
   may be found https://cloud.google.com/storage/docs/locations.
 
   Fields:
-    dataLocations: List of locations to use for data placement.
+    dataLocations: Optional. List of locations to use for data placement.
   """
 
   dataLocations = _messages.StringField(1, repeated=True)
@@ -590,10 +596,10 @@ class IamConfig(_messages.Message):
   r"""Bucket restriction options.
 
   Fields:
-    publicAccessPrevention: Whether IAM will enforce public access prevention.
-      Valid values are "enforced" or "inherited".
-    uniformBucketLevelAccess: Bucket restriction options currently enforced on
-      the bucket.
+    publicAccessPrevention: Optional. Whether IAM will enforce public access
+      prevention. Valid values are "enforced" or "inherited".
+    uniformBucketLevelAccess: Optional. Bucket restriction options currently
+      enforced on the bucket.
   """
 
   publicAccessPrevention = _messages.StringField(1)
@@ -605,8 +611,8 @@ class Lifecycle(_messages.Message):
   https://cloud.google.com/storage/docs/lifecycle.
 
   Fields:
-    rule: A lifecycle management rule, which is made of an action to take and
-      the condition(s) under which the action will be taken.
+    rule: Optional. A lifecycle management rule, which is made of an action to
+      take and the condition(s) under which the action will be taken.
   """
 
   rule = _messages.MessageField('Rule', 1, repeated=True)
@@ -630,9 +636,10 @@ class Logging(_messages.Message):
   r"""Logging-related properties of a bucket.
 
   Fields:
-    logBucket: The destination bucket where the current bucket's logs should
-      be placed, using path format (like `projects/123456/buckets/foo`).
-    logObjectPrefix: A prefix for log object names.
+    logBucket: Optional. The destination bucket where the current bucket's
+      logs should be placed, using path format (like
+      `projects/123456/buckets/foo`).
+    logObjectPrefix: Optional. A prefix for log object names.
   """
 
   logBucket = _messages.StringField(1)
@@ -653,6 +660,10 @@ class ManagementHub(_messages.Message):
     effectiveManagementHubEdition: Output only. The effective `ManagementHub`
       resource edition that is applicable for the resource.
     filter: Optional. Filter over location and bucket.
+    managementHubStats: Output only. The evaluation results you get when you
+      trigger the statistics of the `ManagementHub` resource. The evaluation
+      is triggered when you set the `edition_configuration` field to
+      `EVALUATE`.
     name: Identifier. The name of the `ManagementHub` resource associated with
       your organization, folder, or project. The name format varies based on
       the scope as follows: * For project:
@@ -674,29 +685,86 @@ class ManagementHub(_messages.Message):
       DISABLED: The edition configuration is disabled for the `ManagementHub`
         resource and its children. Filters are not applicable.
       STANDARD: The `ManagementHub` resource is of standard edition.
+      EVALUATE: Initiates a statistical evaluation of your Cloud Storage
+        resources that have `ManagementHub` enabled. The evaluation process
+        gives the count of objects, buckets, and projects in your Cloud
+        Storage environment that would be affected by enabling
+        `ManagementHub`. Using the evaluation result, you can estimate the
+        cost of enabling `ManagementHub`. When you set the edition
+        configuration as `EVALUATE`, the process analyzes your resource and
+        all of its child resources without enabling `ManagementHub`. This
+        means that Cloud Storage does not charge you for `ManagementHub`
+        features during the evaluation, and you won't have access to those
+        features similar to a resource in the `DISABLED` state. You can view
+        the evaluation results through the `GET` method of the `ManagementHub`
+        resource. You can refine the evaluation by using filters to specify
+        which buckets you want to include in the analysis. Filters are
+        applicable.
     """
     EDITION_CONFIG_UNSPECIFIED = 0
     INHERIT = 1
     DISABLED = 2
     STANDARD = 3
+    EVALUATE = 4
 
   editionConfig = _messages.EnumField('EditionConfigValueValuesEnum', 1)
   effectiveManagementHubEdition = _messages.MessageField('EffectiveManagementHubEdition', 2)
   filter = _messages.MessageField('Filter', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  managementHubStats = _messages.MessageField('ManagementHubStats', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class ManagementHubStats(_messages.Message):
+  r"""The statistics of `ManagementHub`.
+
+  Enums:
+    ProcessingStateValueValuesEnum: Output only. The processing state of
+      management hub stats.
+
+  Fields:
+    bucketCount: Output only. The number of buckets within the `ManagementHub`
+      scope.
+    objectCount: Output only. The number of objects within the `ManagementHub`
+      scope.
+    processingState: Output only. The processing state of management hub
+      stats.
+    projectCount: Output only. The number of projects within the
+      `ManagementHub` scope.
+    snapshotTime: Output only. The snapshot time of the reported stats.
+  """
+
+  class ProcessingStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The processing state of management hub stats.
+
+    Values:
+      PROCESSING_STATE_UNSPECIFIED: Unspecified processing state.
+      IN_PROGRESS: Processing is in progress.
+      COMPLETED: Processing is completed.
+      FAILED: Processing failed.
+    """
+    PROCESSING_STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    COMPLETED = 2
+    FAILED = 3
+
+  bucketCount = _messages.IntegerField(1)
+  objectCount = _messages.IntegerField(2)
+  processingState = _messages.EnumField('ProcessingStateValueValuesEnum', 3)
+  projectCount = _messages.IntegerField(4)
+  snapshotTime = _messages.StringField(5)
 
 
 class ObjectAccessControl(_messages.Message):
   r"""An access-control entry.
 
   Fields:
-    domain: The domain associated with the entity, if any.
-    email: The email address associated with the entity, if any.
-    entity: The entity holding the permission, in one of the following forms:
-      * `user-{userid}` * `user-{email}` * `group-{groupid}` * `group-{email}`
-      * `domain-{domain}` * `project-{team}-{projectnumber}` *
-      `project-{team}-{projectid}` * `allUsers` * `allAuthenticatedUsers`
+    domain: Optional. The domain associated with the entity, if any.
+    email: Optional. The email address associated with the entity, if any.
+    entity: Optional. The entity holding the permission, in one of the
+      following forms: * `user-{userid}` * `user-{email}` * `group-{groupid}`
+      * `group-{email}` * `domain-{domain}` * `project-{team}-{projectnumber}`
+      * `project-{team}-{projectid}` * `allUsers` * `allAuthenticatedUsers`
       Examples: * The user `liz@example.com` would be `user-liz@example.com`.
       * The group `example@googlegroups.com` would be `group-
       example@googlegroups.com`. * All members of the Google Apps for Business
@@ -706,15 +774,16 @@ class ObjectAccessControl(_messages.Message):
     entityAlt: Output only. The alternative entity format, if exists. For
       project entities, `project-{team}-{projectid}` format will be returned
       on response.
-    entityId: The ID for the entity, if any.
-    etag: The etag of the ObjectAccessControl. If included in the metadata of
-      an update or delete request message, the operation will only be
-      performed if the etag matches that of the live object's
+    entityId: Optional. The ID for the entity, if any.
+    etag: Optional. The etag of the ObjectAccessControl. If included in the
+      metadata of an update or delete request message, the operation will only
+      be performed if the etag matches that of the live object's
       ObjectAccessControl.
-    id: The ID of the access-control entry.
-    projectTeam: The project team associated with the entity, if any.
-    role: The access permission for the entity. One of the following values: *
-      `READER` * `WRITER` * `OWNER`
+    id: Optional. The ID of the access-control entry.
+    projectTeam: Optional. The project team associated with the entity, if
+      any.
+    role: Required. The access permission for the entity. One of the following
+      values: * `READER` * `WRITER` * `OWNER`
   """
 
   domain = _messages.StringField(1)
@@ -851,8 +920,8 @@ class Owner(_messages.Message):
   r"""The owner of a specific resource.
 
   Fields:
-    entity: The entity, in the form `user-`*userId*.
-    entityId: The ID for the entity.
+    entity: Optional. The entity, in the form `user-`*userId*.
+    entityId: Optional. The ID for the entity.
   """
 
   entity = _messages.StringField(1)
@@ -873,8 +942,8 @@ class ProjectTeam(_messages.Message):
   r"""Represents the Viewers, Editors, or Owners of a given project.
 
   Fields:
-    projectNumber: The project number.
-    team: The team.
+    projectNumber: Optional. The project number.
+    team: Optional. The team.
   """
 
   projectNumber = _messages.StringField(1)
@@ -923,12 +992,13 @@ class RetentionPolicy(_messages.Message):
   r"""Retention policy properties of a bucket.
 
   Fields:
-    effectiveTime: Server-determined value that indicates the time from which
-      policy was enforced and effective.
-    isLocked: Once locked, an object retention policy cannot be modified.
-    retentionDuration: The duration that objects need to be retained.
-      Retention duration must be greater than zero and less than 100 years.
-      Note that enforcement of retention periods less than a day is not
+    effectiveTime: Optional. Server-determined value that indicates the time
+      from which policy was enforced and effective.
+    isLocked: Optional. Once locked, an object retention policy cannot be
+      modified.
+    retentionDuration: Optional. The duration that objects need to be
+      retained. Retention duration must be greater than zero and less than 100
+      years. Note that enforcement of retention periods less than a day is not
       guaranteed. Such periods should only be used for testing purposes. Any
       `nanos` value specified will be rounded down to the nearest second.
   """
@@ -943,8 +1013,9 @@ class Rule(_messages.Message):
   condition which will trigger that action.
 
   Fields:
-    action: The action to take.
-    condition: The condition(s) under which the action will be taken.
+    action: Optional. The action to take.
+    condition: Optional. The condition(s) under which the action will be
+      taken.
   """
 
   action = _messages.MessageField('Action', 1)
@@ -1355,9 +1426,9 @@ class UniformBucketLevelAccess(_messages.Message):
   https://cloud.google.com/storage/docs/uniform-bucket-level-access.
 
   Fields:
-    enabled: If set, access checks only use bucket-level IAM policies or
-      above.
-    lockTime: The deadline time for changing
+    enabled: Optional. If set, access checks only use bucket-level IAM
+      policies or above.
+    lockTime: Optional. The deadline time for changing
       `iam_config.uniform_bucket_level_access.enabled` from `true` to `false`.
       Mutable until the specified deadline is reached, but not afterward.
   """
@@ -1371,7 +1442,8 @@ class Versioning(_messages.Message):
   versioning, see https://cloud.google.com/storage/docs/object-versioning.
 
   Fields:
-    enabled: While set to true, versioning is fully enabled for this bucket.
+    enabled: Optional. While set to true, versioning is fully enabled for this
+      bucket.
   """
 
   enabled = _messages.BooleanField(1)
@@ -1383,11 +1455,11 @@ class Website(_messages.Message):
   https://cloud.google.com/storage/docs/hosting-static-website.
 
   Fields:
-    mainPageSuffix: If the requested object path is missing, the service will
-      ensure the path has a trailing '/', append this suffix, and attempt to
-      retrieve the resulting object. This allows the creation of `index.html`
-      objects to represent directory pages.
-    notFoundPage: If the requested object path is missing, and any
+    mainPageSuffix: Optional. If the requested object path is missing, the
+      service will ensure the path has a trailing '/', append this suffix, and
+      attempt to retrieve the resulting object. This allows the creation of
+      `index.html` objects to represent directory pages.
+    notFoundPage: Optional. If the requested object path is missing, and any
       `mainPageSuffix` object is missing, if applicable, the service will
       return the named object from this bucket as the content for a
       https://tools.ietf.org/html/rfc7231#section-6.5.4 result.

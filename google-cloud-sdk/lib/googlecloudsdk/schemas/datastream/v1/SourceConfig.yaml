@@ -36,9 +36,12 @@ properties:
   postgresqlSourceConfig:
     description: PostgreSQL data source configuration.
     $ref: PostgresqlSourceConfig.yaml
+  salesforceSourceConfig:
+    description: Salesforce data source configuration.
+    $ref: SalesforceSourceConfig.yaml
   sourceConnectionProfile:
     description: |-
-      Source connection profile resoource. Format:
+      Source connection profile resource. Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
     type: string
   sqlServerSourceConfig:

@@ -165,6 +165,21 @@ permissive_mode:
     If true, backups won't fail when Backup for GKE detects
     Kubernetes configuration that is known to cause restore failures.
 
+backup_channel_description:
+  arg_name: description
+  api_field: backupChannel.description
+  help_text: |
+    The description of the backup channel.
+
+backup_destination_project:
+  arg_name: destination-project
+  api_field: backupChannel.destinationProject
+  help_text: |
+    The project where Backups are allowed to be created.
+    The format is `projects/{project}`.
+    Currently, {project} can only be the project number.
+    e.g. `projects/1234567890`.
+
 delete_lock_days:
   arg_name: delete-lock-days
   api_field: backup.deleteLockDays
@@ -237,6 +252,21 @@ restore_plan_description:
   api_field: restorePlan.description
   help_text: |
     The description of the restore plan.
+
+restore_channel_description:
+  arg_name: description
+  api_field: restoreChannel.description
+  help_text: |
+    The description of the restore channel.
+
+restore_destination_project:
+  arg_name: destination-project
+  api_field: restoreChannel.destinationProject
+  help_text: |
+    The project where Restores are allowed to be created.
+    The format is `projects/{project}`.
+    Currently, {project} can only be the project number.
+    e.g. `projects/1234567890`.
 
 volume_data_restore_policy:
   arg_name: volume-data-restore-policy
@@ -566,6 +596,14 @@ backup_plan_etag:
     The etag is used for optimistic concurrency control as a way to help
     prevent simultaneous updates or deletes of a resource from overwriting each other.
 
+backup_channel_etag:
+  arg_name: etag
+  api_field: backupChannel.etag
+  type: str
+  help_text: |
+    The etag is used for optimistic concurrency control as a way to help
+    prevent simultaneous updates or deletes of a resource from overwriting each other.
+
 backup_etag:
   arg_name: etag
   api_field: backup.etag
@@ -577,6 +615,14 @@ backup_etag:
 restore_plan_etag:
   arg_name: etag
   api_field: restorePlan.etag
+  type: str
+  help_text: |
+    The etag is used for optimistic concurrency control as a way to help
+    prevent simultaneous updates or deletes of a resource from overwriting each other.
+
+restore_channel_etag:
+  arg_name: etag
+  api_field: restoreChannel.etag
   type: str
   help_text: |
     The etag is used for optimistic concurrency control as a way to help

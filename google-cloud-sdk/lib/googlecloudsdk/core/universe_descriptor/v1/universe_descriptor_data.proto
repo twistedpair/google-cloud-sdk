@@ -28,4 +28,7 @@ message UniverseDescriptorData {
 
   // State of the universe.
   optional string state = 8;
+
+  // Artifact Registry domain.
+  optional string artifact_registry_domain = 9;
 }

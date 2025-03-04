@@ -1685,6 +1685,7 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
       always sends queries through the VPC network for this target.
 
   Fields:
+    domainName: Fully qualified domain name for the forwarding target.
     forwardingPath: Forwarding path for this NameServerTarget. If unset or set
       to DEFAULT, Cloud DNS makes forwarding decisions based on IP address
       ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918
@@ -1713,10 +1714,11 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
     default = 0
     private = 1
 
-  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
-  ipv4Address = _messages.StringField(2)
-  ipv6Address = _messages.StringField(3)
-  kind = _messages.StringField(4, default='dns#managedZoneForwardingConfigNameServerTarget')
+  domainName = _messages.StringField(1)
+  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 2)
+  ipv4Address = _messages.StringField(3)
+  ipv6Address = _messages.StringField(4)
+  kind = _messages.StringField(5, default='dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -2102,6 +2104,7 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
       always sends queries through the VPC network for this target.
 
   Fields:
+    domainName: Fully qualified domain name for the forwarding target.
     forwardingPath: Forwarding path for this TargetNameServer. If unset or set
       to DEFAULT, Cloud DNS makes forwarding decisions based on address
       ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918
@@ -2129,10 +2132,11 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
     default = 0
     private = 1
 
-  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
-  ipv4Address = _messages.StringField(2)
-  ipv6Address = _messages.StringField(3)
-  kind = _messages.StringField(4, default='dns#policyAlternativeNameServerConfigTargetNameServer')
+  domainName = _messages.StringField(1)
+  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 2)
+  ipv4Address = _messages.StringField(3)
+  ipv6Address = _messages.StringField(4)
+  kind = _messages.StringField(5, default='dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyDns64Config(_messages.Message):

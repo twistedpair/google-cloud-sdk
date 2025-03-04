@@ -3854,25 +3854,6 @@ remotebuildexecution:
   projects.operations:
     supported_apis:
     - v1alpha
-resourcesettings:
-  folders:
-    supported_apis:
-    - v1
-  folders.settings:
-    supported_apis:
-    - v1
-  organizations:
-    supported_apis:
-    - v1
-  organizations.settings:
-    supported_apis:
-    - v1
-  projects:
-    supported_apis:
-    - v1
-  projects.settings:
-    supported_apis:
-    - v1
 run:
   api.v1.namespaces:
     supported_apis:

@@ -155,6 +155,8 @@ class Backup(_messages.Message):
     createTime: Output only. The time when the backup was created.
     description: A description of the backup with 2048 characters or less.
       Requests with longer descriptions will be rejected.
+    enforcedRetentionEndTime: Output only. The time until which the backup is
+      not deletable.
     labels: Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup. Format: `projects/{proj
       ect_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{bac
@@ -241,15 +243,16 @@ class Backup(_messages.Message):
   chainStorageBytes = _messages.IntegerField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  sourceSnapshot = _messages.StringField(10)
-  sourceVolume = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  volumeRegion = _messages.StringField(13)
-  volumeUsageBytes = _messages.IntegerField(14)
+  enforcedRetentionEndTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  sourceSnapshot = _messages.StringField(11)
+  sourceVolume = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  volumeRegion = _messages.StringField(14)
+  volumeUsageBytes = _messages.IntegerField(15)
 
 
 class BackupConfig(_messages.Message):
@@ -358,6 +361,37 @@ class BackupPolicy(_messages.Message):
   weeklyBackupLimit = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
+class BackupRetentionPolicy(_messages.Message):
+  r"""Retention policy for backups in the backup vault
+
+  Fields:
+    backupMinimumEnforcedRetentionDays: Required. Minimum retention duration
+      in days for backups in the backup vault.
+    dailyBackupImmutable: Optional. Indicates if the daily backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+    manualBackupImmutable: Optional. Indicates if the manual backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+    monthlyBackupImmutable: Optional. Indicates if the monthly backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+    weeklyBackupImmutable: Optional. Indicates if the weekly backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+  """
+
+  backupMinimumEnforcedRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dailyBackupImmutable = _messages.BooleanField(2)
+  manualBackupImmutable = _messages.BooleanField(3)
+  monthlyBackupImmutable = _messages.BooleanField(4)
+  weeklyBackupImmutable = _messages.BooleanField(5)
+
+
 class BackupVault(_messages.Message):
   r"""A NetApp BackupVault.
 
@@ -372,6 +406,8 @@ class BackupVault(_messages.Message):
   Fields:
     backupRegion: Optional. Region where the backups are stored. Format:
       `projects/{project_id}/locations/{location}`
+    backupRetentionPolicy: Optional. Backup retention policy defining the
+      retenton of backups.
     backupVaultType: Optional. Type of backup vault to be created. Default is
       IN_REGION.
     createTime: Output only. Create time of the backup vault.
@@ -445,15 +481,16 @@ class BackupVault(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupRegion = _messages.StringField(1)
-  backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  destinationBackupVault = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  sourceBackupVault = _messages.StringField(8)
-  sourceRegion = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  backupRetentionPolicy = _messages.MessageField('BackupRetentionPolicy', 2)
+  backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  destinationBackupVault = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  sourceBackupVault = _messages.StringField(9)
+  sourceRegion = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -570,17 +607,32 @@ class HybridPeeringDetails(_messages.Message):
       executed on user's ONTAP.
     passphrase: Optional. Temporary passphrase generated to accept cluster
       peering command.
+    peerClusterName: Optional. Name of the user's local source cluster to be
+      peered with the destination cluster.
+    peerSvmName: Optional. Name of the user's local source vserver svm to be
+      peered with the destination vserver svm.
+    peerVolumeName: Optional. Name of the user's local source volume to be
+      peered with the destination volume.
     subnetIp: Optional. IP address of the subnet.
   """
 
   command = _messages.StringField(1)
   commandExpiryTime = _messages.StringField(2)
   passphrase = _messages.StringField(3)
-  subnetIp = _messages.StringField(4)
+  peerClusterName = _messages.StringField(4)
+  peerSvmName = _messages.StringField(5)
+  peerVolumeName = _messages.StringField(6)
+  subnetIp = _messages.StringField(7)
 
 
 class HybridReplicationParameters(_messages.Message):
   r"""The Hybrid Replication parameters for the volume.
+
+  Enums:
+    HybridReplicationTypeValueValuesEnum: Optional. Type of the hybrid
+      replication.
+    ReplicationScheduleValueValuesEnum: Optional. Replication Schedule for the
+      replication created.
 
   Messages:
     LabelsValue: Optional. Labels to be added to the replication as the key
@@ -591,8 +643,11 @@ class HybridReplicationParameters(_messages.Message):
       the Hybrid replication. This is a free-form field for the display
       purpose only.
     description: Optional. Description of the replication.
+    hybridReplicationType: Optional. Type of the hybrid replication.
     labels: Optional. Labels to be added to the replication as the key value
       pairs.
+    largeVolumeConstituentCount: Optional. Constituent volume count for large
+      volume.
     peerClusterName: Required. Name of the user's local source cluster to be
       peered with the destination cluster.
     peerIpAddresses: Required. List of node ip addresses to be peered with.
@@ -601,7 +656,44 @@ class HybridReplicationParameters(_messages.Message):
     peerVolumeName: Required. Name of the user's local source volume to be
       peered with the destination volume.
     replication: Required. Desired name for the replication of this volume.
+    replicationSchedule: Optional. Replication Schedule for the replication
+      created.
   """
+
+  class HybridReplicationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the hybrid replication.
+
+    Values:
+      VOLUME_HYBRID_REPLICATION_TYPE_UNSPECIFIED: Unspecified hybrid
+        replication type.
+      MIGRATION: Hybrid replication type for migration.
+      CONTINUOUS_REPLICATION: Hybrid replication type for continuous
+        replication.
+      ONPREM_REPLICATION: New field for reversible OnPrem replication, to be
+        used for data protection.
+      REVERSE_ONPREM_REPLICATION: New field for reversible OnPrem replication,
+        to be used for data protection.
+    """
+    VOLUME_HYBRID_REPLICATION_TYPE_UNSPECIFIED = 0
+    MIGRATION = 1
+    CONTINUOUS_REPLICATION = 2
+    ONPREM_REPLICATION = 3
+    REVERSE_ONPREM_REPLICATION = 4
+
+  class ReplicationScheduleValueValuesEnum(_messages.Enum):
+    r"""Optional. Replication Schedule for the replication created.
+
+    Values:
+      HYBRID_REPLICATION_SCHEDULE_UNSPECIFIED: Unspecified
+        HybridReplicationSchedule
+      EVERY_10_MINUTES: Replication happens once every 10 minutes.
+      HOURLY: Replication happens once every hour.
+      DAILY: Replication happens once every day.
+    """
+    HYBRID_REPLICATION_SCHEDULE_UNSPECIFIED = 0
+    EVERY_10_MINUTES = 1
+    HOURLY = 2
+    DAILY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -630,12 +722,15 @@ class HybridReplicationParameters(_messages.Message):
 
   clusterLocation = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  peerClusterName = _messages.StringField(4)
-  peerIpAddresses = _messages.StringField(5, repeated=True)
-  peerSvmName = _messages.StringField(6)
-  peerVolumeName = _messages.StringField(7)
-  replication = _messages.StringField(8)
+  hybridReplicationType = _messages.EnumField('HybridReplicationTypeValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  largeVolumeConstituentCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  peerClusterName = _messages.StringField(6)
+  peerIpAddresses = _messages.StringField(7, repeated=True)
+  peerSvmName = _messages.StringField(8)
+  peerVolumeName = _messages.StringField(9)
+  replication = _messages.StringField(10)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 11)
 
 
 class KmsConfig(_messages.Message):
@@ -994,12 +1089,27 @@ class LocationMetadata(_messages.Message):
   r"""Metadata for a given google.cloud.location.Location.
 
   Enums:
+    SupportedFlexPerformanceValueListEntryValuesEnum:
     SupportedServiceLevelsValueListEntryValuesEnum:
 
   Fields:
+    supportedFlexPerformance: Output only. Supported flex performance in a
+      location.
     supportedServiceLevels: Output only. Supported service levels in a
       location.
   """
+
+  class SupportedFlexPerformanceValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedFlexPerformanceValueListEntryValuesEnum enum type.
+
+    Values:
+      FLEX_PERFORMANCE_UNSPECIFIED: Unspecified flex performance.
+      FLEX_PERFORMANCE_DEFAULT: Flex Storage Pool with default performance.
+      FLEX_PERFORMANCE_CUSTOM: Flex Storage Pool with custom performance.
+    """
+    FLEX_PERFORMANCE_UNSPECIFIED = 0
+    FLEX_PERFORMANCE_DEFAULT = 1
+    FLEX_PERFORMANCE_CUSTOM = 2
 
   class SupportedServiceLevelsValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedServiceLevelsValueListEntryValuesEnum enum type.
@@ -1017,7 +1127,8 @@ class LocationMetadata(_messages.Message):
     STANDARD = 3
     FLEX = 4
 
-  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 1, repeated=True)
+  supportedFlexPerformance = _messages.EnumField('SupportedFlexPerformanceValueListEntryValuesEnum', 1, repeated=True)
+  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 2, repeated=True)
 
 
 class MonthlySchedule(_messages.Message):
@@ -1824,9 +1935,9 @@ class NetappProjectsLocationsVolumesQuotaRulesPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesQuotaRulesPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the active directory. Format: `proj
-      ects/{project_number}/locations/{location_id}/quotaRules/{quota_rule_id}
-      `.
+    name: Identifier. The resource name of the quota rule. Format: `projects/{
+      project_number}/locations/{location_id}/volumes/volumes/{volume_id}/quot
+      aRules/{quota_rule_id}`.
     quotaRule: A QuotaRule resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Quota Rule resource by the update. The fields
@@ -1995,6 +2106,20 @@ class NetappProjectsLocationsVolumesReplicationsSyncRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   syncReplicationRequest = _messages.MessageField('SyncReplicationRequest', 2)
+
+
+class NetappProjectsLocationsVolumesRestoreRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesRestoreRequest object.
+
+  Fields:
+    name: Required. The volume resource name, in the format
+      `projects/{project_id}/locations/{location}/volumes/{volume_id}`
+    restoreBackupFilesRequest: A RestoreBackupFilesRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreBackupFilesRequest = _messages.MessageField('RestoreBackupFilesRequest', 2)
 
 
 class NetappProjectsLocationsVolumesRevertRequest(_messages.Message):
@@ -2242,9 +2367,9 @@ class QuotaRule(_messages.Message):
     description: Optional. Description of the quota rule
     diskLimitMib: Required. The maximum allowed disk space in MiB.
     labels: Optional. Labels of the quota rule
-    name: Identifier. The resource name of the active directory. Format: `proj
-      ects/{project_number}/locations/{location_id}/quotaRules/{quota_rule_id}
-      `.
+    name: Identifier. The resource name of the quota rule. Format: `projects/{
+      project_number}/locations/{location_id}/volumes/volumes/{volume_id}/quot
+      aRules/{quota_rule_id}`.
     state: Output only. State of the quota rule
     stateDetails: Output only. State details of the quota rule
     target: Optional. The quota rule applies to the specified user or group,
@@ -2353,6 +2478,8 @@ class Replication(_messages.Message):
       transfer.
     hybridPeeringDetails: Output only. Hybrid peering details.
     hybridReplicationType: Output only. Type of the hybrid replication.
+    hybridReplicationUserCommands: Output only. Copy pastable snapmirror
+      commands to be executed on onprem cluster by the customer.
     labels: Resource labels to represent user provided metadata.
     mirrorState: Output only. Indicates the state of mirroring.
     name: Identifier. The resource name of the Replication. Format: `projects/
@@ -2376,10 +2503,17 @@ class Replication(_messages.Message):
       MIGRATION: Hybrid replication type for migration.
       CONTINUOUS_REPLICATION: Hybrid replication type for continuous
         replication.
+      ONPREM_REPLICATION: New field for reversible OnPrem replication, to be
+        used for data protection.
+      REVERSE_ONPREM_REPLICATION: Hybrid replication type for incremental
+        Transfer in the reverse direction (GCNV is source and Onprem is
+        destination)
     """
     HYBRID_REPLICATION_TYPE_UNSPECIFIED = 0
     MIGRATION = 1
     CONTINUOUS_REPLICATION = 2
+    ONPREM_REPLICATION = 3
+    REVERSE_ONPREM_REPLICATION = 4
 
   class MirrorStateValueValuesEnum(_messages.Enum):
     r"""Output only. Indicates the state of mirroring.
@@ -2442,6 +2576,10 @@ class Replication(_messages.Message):
         be established.
       PENDING_SVM_PEERING: Replication is waiting for SVM peering to be
         established.
+      PENDING_REMOTE_RESYNC: Replication is waiting for Commands to be
+        executed on Onprem ONTAP.
+      EXTERNALLY_MANAGED_FROM_ONPREM_ONTAP: Onprem ONTAP is destination and
+        Replication can only be managed from Onprem.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2451,6 +2589,8 @@ class Replication(_messages.Message):
     ERROR = 5
     PENDING_CLUSTER_PEERING = 6
     PENDING_SVM_PEERING = 7
+    PENDING_REMOTE_RESYNC = 8
+    EXTERNALLY_MANAGED_FROM_ONPREM_ONTAP = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2484,15 +2624,34 @@ class Replication(_messages.Message):
   healthy = _messages.BooleanField(6)
   hybridPeeringDetails = _messages.MessageField('HybridPeeringDetails', 7)
   hybridReplicationType = _messages.EnumField('HybridReplicationTypeValueValuesEnum', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 12)
-  role = _messages.EnumField('RoleValueValuesEnum', 13)
-  sourceVolume = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateDetails = _messages.StringField(16)
-  transferStats = _messages.MessageField('TransferStats', 17)
+  hybridReplicationUserCommands = _messages.MessageField('UserCommands', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 13)
+  role = _messages.EnumField('RoleValueValuesEnum', 14)
+  sourceVolume = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateDetails = _messages.StringField(17)
+  transferStats = _messages.MessageField('TransferStats', 18)
+
+
+class RestoreBackupFilesRequest(_messages.Message):
+  r"""RestoreBackupFilesRequest restores files from a backup to a volume.
+
+  Fields:
+    backup: Required. The backup resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{back
+      up_id}`
+    fileList: Required. List of files to be restored in the form of their
+      absolute path as in source volume.
+    restoreDestinationPath: Required. Absolute directory path in the
+      destination volume.
+  """
+
+  backup = _messages.StringField(1)
+  fileList = _messages.StringField(2, repeated=True)
+  restoreDestinationPath = _messages.StringField(3)
 
 
 class RestoreParameters(_messages.Message):
@@ -2839,6 +2998,8 @@ class StoragePool(_messages.Message):
       storage pool creation but it can't be disabled once enabled.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
+    customPerformanceEnabled: Optional. True if using Independent Scaling of
+      capacity and performance (Hyperdisk) By default set to false
     description: Optional. Description of the storage pool
     encryptionType: Output only. Specifies the current pool encryption key
       source.
@@ -2861,6 +3022,10 @@ class StoragePool(_messages.Message):
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
+    totalIops: Optional. Custom Performance Total IOPS of the pool If not
+      provided, it will be calculated based on the total_throughput_mibps
+    totalThroughputMibps: Optional. Custom Performance Total Throughput of the
+      pool (in MiB/s)
     volumeCapacityGib: Output only. Allocated size of all volumes in GIB in
       the storage pool
     volumeCount: Output only. Volume count of the storage pool
@@ -2946,24 +3111,27 @@ class StoragePool(_messages.Message):
   allowAutoTiering = _messages.BooleanField(2)
   capacityGib = _messages.IntegerField(3)
   createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
-  globalAccessAllowed = _messages.BooleanField(7)
-  kmsConfig = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  ldapEnabled = _messages.BooleanField(10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  psaRange = _messages.StringField(13)
-  replicaZone = _messages.StringField(14)
-  satisfiesPzi = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  stateDetails = _messages.StringField(19)
-  volumeCapacityGib = _messages.IntegerField(20)
-  volumeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(22)
+  customPerformanceEnabled = _messages.BooleanField(5)
+  description = _messages.StringField(6)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
+  globalAccessAllowed = _messages.BooleanField(8)
+  kmsConfig = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  ldapEnabled = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  psaRange = _messages.StringField(14)
+  replicaZone = _messages.StringField(15)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateDetails = _messages.StringField(20)
+  totalIops = _messages.IntegerField(21)
+  totalThroughputMibps = _messages.IntegerField(22)
+  volumeCapacityGib = _messages.IntegerField(23)
+  volumeCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(25)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):
@@ -2988,7 +3156,7 @@ class TieringPolicy(_messages.Message):
 
   Fields:
     coolingThresholdDays: Optional. Time in days to mark the volume's data
-      block as cold and make it eligible for tiering, can be range from 7-183.
+      block as cold and make it eligible for tiering, can be range from 2-183.
       Default is 31.
     tierAction: Optional. Flag indicating if the volume has tiering policy
       enable/pause. Default is PAUSED.
@@ -3038,6 +3206,16 @@ class TransferStats(_messages.Message):
   totalTransferDuration = _messages.StringField(6)
   transferBytes = _messages.IntegerField(7)
   updateTime = _messages.StringField(8)
+
+
+class UserCommands(_messages.Message):
+  r"""UserCommands contains the commands to be executed by the customer.
+
+  Fields:
+    commands: Output only. List of commands to be executed by the customer.
+  """
+
+  commands = _messages.StringField(1, repeated=True)
 
 
 class ValidateDirectoryServiceRequest(_messages.Message):

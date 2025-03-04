@@ -25,6 +25,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  binaryLogParser:
+    description: Use Binary Log Parser.
+    $ref: BinaryLogParser.yaml
   dropLargeObjects:
     description: Drop large object values.
     type: droplargeobjects
@@ -34,6 +37,9 @@ properties:
   includeObjects:
     description: Oracle objects to include in the stream.
     $ref: OracleRdbms.yaml
+  logMiner:
+    description: Use LogMiner.
+    type: logminer
   maxConcurrentBackfillTasks:
     description: |-
       Maximum number of concurrent backfill tasks. The number should be non-

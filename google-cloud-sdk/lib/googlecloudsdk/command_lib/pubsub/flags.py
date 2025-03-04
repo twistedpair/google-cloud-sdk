@@ -1401,21 +1401,75 @@ def AddMessageTransformsFlags(parser, is_update=False):
   """
   current_group = parser
   if is_update:
-    mutex_group = parser.add_mutually_exclusive_group(hidden=True)
+    mutex_group = parser.add_mutually_exclusive_group()
     AddBooleanFlag(
         parser=mutex_group,
         flag_name='clear-message-transforms',
         action='store_true',
         help_text='If set, clears the message transforms field.',
-        hidden=True,
     )
     current_group = mutex_group
   current_group.add_argument(
       '--message-transforms-file',
       type=str,
       help='Path to YAML or JSON file containing message transforms.',
-      hidden=True,
   )
+
+
+def AddValidateMessageTransformFlags(parser):
+  """Add flags for message transform validation.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--message-transform-file',
+      type=str,
+      help='Path to YAML or JSON file containing a message transform.',
+      required=True,
+  )
+
+
+def AddTestMessageTransformFlags(parser):
+  """Add flags for testing message transforms.
+
+  Args:
+    parser: The argparse parser.
+  """
+  message_group = parser.add_argument_group(
+      help='Message to test the message transforms against.', required=True
+  )
+  message_group.add_argument(
+      '--message', help='Message body to test the message transforms against.'
+  )
+  message_group.add_argument(
+      '--attribute',
+      type=arg_parsers.ArgDict(max_length=MAX_ATTRIBUTES),
+      metavar='ATTRIBUTE',
+      help=(
+          'Comma-separated list of attributes to attach to the message. Each'
+          ' ATTRIBUTE has the form name="value". You can specify up to {0}'
+          ' attributes.'.format(MAX_ATTRIBUTES)
+      ),
+  )
+  mutex_group = parser.add_mutually_exclusive_group(required=True)
+  mutex_group.add_argument(
+      '--message-transforms-file',
+      type=str,
+      help='Path to YAML or JSON file containing message transforms.',
+  )
+  help_text = (
+      'from which the message transforms are taken to be applied to the'
+      ' message.'
+  )
+
+  topic = resource_args.CreateTopicResourceArg(
+      help_text, positional=False, required=False
+  )
+  subscription = resource_args.CreateSubscriptionResourceArg(
+      help_text, required=False, positional=False
+  )
+  resource_args.AddResourceArgs(mutex_group, [topic, subscription])
 
 
 def ParseMessageBody(args):

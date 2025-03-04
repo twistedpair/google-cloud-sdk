@@ -1926,6 +1926,8 @@ class NetworkConfig(_messages.Message):
     network: The name of the Google Compute Engine [VPC
       network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
       connected.
+    pscConfig: Private Service Connect configuration. Should only be set when
+      connect_mode is PRIVATE_SERVICE_CONNECT.
     reservedIpRange: Optional, reserved_ip_range can have one of the following
       two types of values. * CIDR range value when using DIRECT_PEERING
       connect mode. * [Allocated IP address
@@ -1954,10 +1956,14 @@ class NetworkConfig(_messages.Message):
       PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
         Service Access. Private services access provides an IP address range
         for multiple Google Cloud services, including Filestore.
+      PRIVATE_SERVICE_CONNECT: Connect to your Filestore instance using
+        Private Service Connect. A connection policy must exist in the region
+        for the VPC network and the google-cloud-filestore service class.
     """
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1
     PRIVATE_SERVICE_ACCESS = 2
+    PRIVATE_SERVICE_CONNECT = 3
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
     r"""ModesValueListEntryValuesEnum enum type.
@@ -1973,7 +1979,8 @@ class NetworkConfig(_messages.Message):
   ipAddresses = _messages.StringField(2, repeated=True)
   modes = _messages.EnumField('ModesValueListEntryValuesEnum', 3, repeated=True)
   network = _messages.StringField(4)
-  reservedIpRange = _messages.StringField(5)
+  pscConfig = _messages.MessageField('PscConfig', 5)
+  reservedIpRange = _messages.StringField(6)
 
 
 class NfsExportOptions(_messages.Message):
@@ -2006,6 +2013,9 @@ class NfsExportOptions(_messages.Message):
       file share. Overlapping IP ranges are not allowed, both within and
       across NfsExportOptions. An error will be returned. The limit is 64 IP
       ranges/addresses for each FileShareConfig among all NfsExportOptions.
+    network: The source VPC network for ip_ranges. Required for instances
+      using Private Service Connect, optional otherwise. If provided, must be
+      the same network specified in the `NetworkConfig.network` field.
     securityFlavors: The security flavors allowed for mount operations. The
       default is AUTH_SYS.
     squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
@@ -2065,8 +2075,9 @@ class NfsExportOptions(_messages.Message):
   anonGid = _messages.IntegerField(2)
   anonUid = _messages.IntegerField(3)
   ipRanges = _messages.StringField(4, repeated=True)
-  securityFlavors = _messages.EnumField('SecurityFlavorsValueListEntryValuesEnum', 5, repeated=True)
-  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 6)
+  network = _messages.StringField(5)
+  securityFlavors = _messages.EnumField('SecurityFlavorsValueListEntryValuesEnum', 6, repeated=True)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 7)
 
 
 class Operation(_messages.Message):
@@ -2268,6 +2279,19 @@ class PromoteReplicaRequest(_messages.Message):
   """
 
   peerInstance = _messages.StringField(1)
+
+
+class PscConfig(_messages.Message):
+  r"""Private Service Connect configuration.
+
+  Fields:
+    endpointProject: Consumer service project in which the Private Service
+      Connect endpoint would be set up. This is optional, and only relevant in
+      case the network is a shared VPC. If this is not specified, the endpoint
+      would be setup in the VPC host project.
+  """
+
+  endpointProject = _messages.StringField(1)
 
 
 class ReplicaConfig(_messages.Message):

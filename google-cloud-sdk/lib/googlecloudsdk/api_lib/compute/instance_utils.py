@@ -620,7 +620,7 @@ def GetScheduling(
     support_node_affinity=False,
     support_min_node_cpu=True,
     support_node_project=False,
-    support_host_error_timeout_seconds=False,
+    support_host_error_timeout_seconds=True,
     support_max_run_duration=False,
     support_local_ssd_recovery_timeout=False,
     support_graceful_shutdown=False,

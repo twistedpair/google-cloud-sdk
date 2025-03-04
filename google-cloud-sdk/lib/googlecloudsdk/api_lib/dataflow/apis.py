@@ -415,6 +415,9 @@ class Templates:
   FLEX_TEMPLATE_USER_LABELS_VALUE = (
       FLEX_TEMPLATE_ENVIRONMENT.AdditionalUserLabelsValue
   )
+  DYNAMIC_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE = (
+      LAUNCH_TEMPLATE_PARAMETERS.TransformNameMappingValue
+  )
   FLEX_TEMPLATE_PARAMETER = GetMessagesModule().LaunchFlexTemplateParameter
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
   FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE = (
@@ -440,6 +443,9 @@ class Templates:
                                       'python3-template-launcher-base:latest')
   FLEX_TEMPLATE_GO_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                  'go-template-launcher-base:latest')
+  YAML_TEMPLATE_GCS_LOCATION = (
+      'gs://dataflow-templates-{}/latest/flex/Yaml_Template'
+  )
   ALL_PERMISSIONS_MASK = (
       stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO
   )
@@ -535,6 +541,21 @@ class Templates:
           Templates.LAUNCH_TEMPLATE_PARAMETERS_VALUE.AdditionalProperty(
               key=k, value=v))
 
+    transform_mapping_list = Templates.__ConvertDictArguments(
+        template_args.transform_name_mappings,
+        Templates.DYNAMIC_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE,
+    )
+    transform_mappings = None
+    streaming_update = None
+    if template_args.streaming_update:
+      streaming_update = template_args.streaming_update
+      if transform_mapping_list:
+        transform_mappings = (
+            Templates.DYNAMIC_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE(
+                additionalProperties=transform_mapping_list
+            )
+        )
+
     # TODO(b/139889563): Remove default when args region is changed to required
     region_id = template_args.region_id or DATAFLOW_API_DEFAULT_REGION
 
@@ -556,19 +577,29 @@ class Templates:
             kmsKeyName=template_args.kms_key_name,
             ipConfiguration=ip_configuration,
             workerRegion=template_args.worker_region,
-            workerZone=template_args.worker_zone),
+            workerZone=template_args.worker_zone,
+            enableStreamingEngine=template_args.enable_streaming_engine,
+            additionalExperiments=(
+                template_args.additional_experiments
+                if template_args.additional_experiments
+                else []
+            ),
+        ),
         jobName=template_args.job_name,
         parameters=Templates.LAUNCH_TEMPLATE_PARAMETERS_VALUE(
-            additionalProperties=params_list) if parameters else None,
-        update=False)
-    request = GetMessagesModule(
-    ).DataflowProjectsLocationsTemplatesLaunchRequest(
-        dynamicTemplate_gcsPath=template_args.gcs_location,
-        dynamicTemplate_stagingLocation=template_args.staging_location,
-        location=region_id,
-        launchTemplateParameters=body,
-        projectId=template_args.project_id or GetProject(),
-        validateOnly=False)
+            additionalProperties=params_list) if params_list else None,
+        update=streaming_update,
+        transformNameMapping=transform_mappings,
+    )
+    request = (
+        GetMessagesModule().DataflowProjectsLocationsTemplatesLaunchRequest(
+            gcsPath=template_args.gcs_location,
+            location=region_id,
+            launchTemplateParameters=body,
+            projectId=template_args.project_id or GetProject(),
+            validateOnly=False,
+        )
+    )
 
     try:
       return Templates.GetService().Launch(request)
@@ -832,7 +863,46 @@ class Templates:
       Templates._ValidateTemplateParameters(template_metadata.parameters)
       template_metadata_obj.parameters = template_metadata.parameters
 
+    if template_metadata.yamlDefinition:
+      template_metadata_obj.yamlDefinition = template_metadata.yamlDefinition
+
     return template_metadata_obj
+
+  @staticmethod
+  def GetYamlTemplateImage(args):
+    """Returns the image path for a YAML template."""
+    if args.image:
+      return args.image
+    elif args.yaml_image:
+      return args.yaml_image
+
+    # TODO: b/397983834 - Try to extract a region from the gcs bucket.
+    if args.worker_region:
+      try:
+        return Templates._ExtractYamlTemplateImage(args.worker_region)
+      except exceptions.HttpException:
+        pass  # Fall through to using default region.
+
+    return Templates._ExtractYamlTemplateImage(DATAFLOW_API_DEFAULT_REGION)
+
+  @staticmethod
+  def _ExtractYamlTemplateImage(region_id):
+    """Returns the image path for a YAML template."""
+    yaml_gcl_template_path = Templates.YAML_TEMPLATE_GCS_LOCATION.format(
+        region_id
+    )
+    storage_client = storage_api.StorageClient()
+    obj_ref = storage_util.ObjectReference.FromUrl(yaml_gcl_template_path)
+    try:
+      generic_template_definition = json.load(
+          storage_client.ReadObject(obj_ref)
+      )
+    except Exception as e:
+      raise exceptions.HttpException(
+          'Unable to read file {0} due to incorrect file path or insufficient'
+          ' read permissions'.format(yaml_gcl_template_path)
+      ) from e
+    return generic_template_definition['image']
 
   @staticmethod
   def _GetFlexTemplateBaseImage(flex_template_base_image):
@@ -873,6 +943,8 @@ class Templates:
       return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.JAVA)
     elif sdk_language == 'PYTHON':
       return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.PYTHON)
+    elif sdk_language == 'YAML':
+      return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.YAML)
     elif sdk_language == 'GO':
       return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.GO)
 

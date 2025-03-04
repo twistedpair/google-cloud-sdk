@@ -408,6 +408,9 @@ class Cluster(_messages.Message):
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     nodeType: Optional. The type of a redis node in the cluster. NodeType
       determines the underlying machine-type of a redis node.
+    ondemandMaintenance: Optional. Input only. Ondemand maintenance for the
+      cluster. This field can be used to trigger ondemand critical update on
+      the cluster.
     persistenceConfig: Optional. Persistence config (RDB, AOF) for the
       cluster.
     preciseSizeGb: Output only. Precise value of redis memory size in GB for
@@ -541,20 +544,21 @@ class Cluster(_messages.Message):
   managedBackupSource = _messages.MessageField('ManagedBackupSource', 15)
   name = _messages.StringField(16)
   nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 17)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 18)
-  preciseSizeGb = _messages.FloatField(19)
-  pscConfigs = _messages.MessageField('PscConfig', 20, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 21, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 22, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 23)
-  replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  stateInfo = _messages.MessageField('StateInfo', 28)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 29)
-  uid = _messages.StringField(30)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 31)
+  ondemandMaintenance = _messages.BooleanField(18)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 19)
+  preciseSizeGb = _messages.FloatField(20)
+  pscConfigs = _messages.MessageField('PscConfig', 21, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 22, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 23, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 24)
+  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  stateInfo = _messages.MessageField('StateInfo', 29)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 30)
+  uid = _messages.StringField(31)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 32)
 
 
 class ClusterEndpoint(_messages.Message):

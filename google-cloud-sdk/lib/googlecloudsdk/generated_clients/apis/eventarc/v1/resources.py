@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_KAFKASOURCES = (
+      'projects.locations.kafkaSources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/kafkaSources/'
+              '{kafkaSourcesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MESSAGEBUSES = (
       'projects.locations.messageBuses',
       '{+name}',

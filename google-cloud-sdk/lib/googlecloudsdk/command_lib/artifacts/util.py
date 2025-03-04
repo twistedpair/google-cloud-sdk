@@ -640,16 +640,41 @@ def ListRepositories(args):
       # Fall back to client-side paging with client-side filtering.
       page_size = None
 
+  def ListLocationRepos(
+      project, page_size=None, order_by=None, server_filter=None
+  ):
+    """Lists repositories in a given project and location, and if an error occurs, returns an empty list."""
+    try:
+      return ar_requests.ListRepositories(
+          project,
+          page_size=page_size,
+          order_by=order_by,
+          server_filter=server_filter,
+      )
+    except apitools_exceptions.HttpError as e:
+      if e.status_code > 500:
+        log.warning.Print(
+            "WARNING: Failed to list repositories for project {}".format(
+                project
+            )
+        )
+        return []
+      else:
+        raise
+
   def ListRepos(page_size=None, order_by=None, server_filter=None):
     pool = parallel.GetPool(pool_size)
     try:
       pool.Start()
       results = pool.Map(
-          lambda x: ar_requests.ListRepositories(
-              x, page_size=page_size,
+          lambda x: ListLocationRepos(
+              x,
+              page_size=page_size,
               order_by=order_by,
-              server_filter=server_filter),
-          loc_paths)
+              server_filter=server_filter,
+          ),
+          loc_paths,
+      )
     except parallel.MultiError as e:
       if server_filter or order_by:
         for err in e.errors:

@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-_INTERCONNECT_TYPE_CHOICES_GA = {
+INTERCONNECT_TYPE_CHOICES_GA = {
     'DEDICATED': 'Dedicated private interconnect.',
     'PARTNER': 'Partner interconnect. Only available to approved partners.',
 }
@@ -42,22 +42,24 @@ _INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {
         'Partner interconnect. Only available to approved partners.',
 }
 
-_LINK_TYPE_CHOICES = {
+LINK_TYPE_CHOICES = {
     'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
-    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.'
+    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.',
 }
 
-_REQUESTED_FEATURES_CHOICES = {
-    'MACSEC':
+REQUESTED_FEATURES_CHOICES = {
+    'MACSEC': (
         'If specified then the interconnect is created on MACsec capable '
         'hardware ports. If not specified, the interconnect is created on '
         'non-MACsec capable ports first, if available. This parameter can only '
         'be provided during interconnect INSERT and cannot be changed using '
-        'interconnect PATCH.',
-    'CROSS_SITE_NETWORK':
+        'interconnect PATCH.'
+    ),
+    'CROSS_SITE_NETWORK': (
         'If specified then the interconnect is created on Cross-Site Network '
         'capable hardware ports. This parameter can only be provided during '
-        'interconnect INSERT and cannot be changed using interconnect PATCH.',
+        'interconnect INSERT and cannot be changed using interconnect PATCH.'
+    ),
 }
 
 
@@ -175,21 +177,21 @@ def GetRequestedFeature(messages, feature_arg):
   return None
 
 
-def AddCreateCommonArgs(parser):
+def AddCreateCommonArgs(parser, required=True):
   """Adds shared flags for create command to the argparse.ArgumentParser."""
   AddAdminEnabled(parser)
   AddDescription(parser)
   AddCustomerName(parser)
-  AddLinkType(parser)
+  AddLinkType(parser, required)
   AddNocContactEmail(parser)
-  AddRequestedLinkCount(parser)
+  AddRequestedLinkCount(parser, required)
   AddRequestedFeatures(parser)
 
 
-def AddCreateGaArgs(parser):
+def AddCreateGaArgs(parser, required=True):
   """Adds GA flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser)
-  AddInterconnectTypeGA(parser)
+  AddCreateCommonArgs(parser, required)
+  AddInterconnectTypeGA(parser, required)
 
 
 def AddCreateAlphaBetaArgs(parser):
@@ -205,15 +207,16 @@ def AddDescription(parser):
       help='An optional, textual description for the interconnect.')
 
 
-def AddInterconnectTypeGA(parser):
+def AddInterconnectTypeGA(parser, required=True):
   """Adds interconnect-type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--interconnect-type',
-      choices=_INTERCONNECT_TYPE_CHOICES_GA,
-      required=True,
+      choices=INTERCONNECT_TYPE_CHOICES_GA,
+      required=required,
       help="""\
       Type of the interconnect.
-      """)
+      """,
+  )
 
 
 def _ShouldShowDeprecatedWarning(value):
@@ -245,34 +248,37 @@ def AddRequestedFeatures(parser):
   """Adds requested-features flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--requested-features',
-      type=arg_parsers.ArgList(choices=_REQUESTED_FEATURES_CHOICES),
+      type=arg_parsers.ArgList(choices=REQUESTED_FEATURES_CHOICES),
       metavar='FEATURES',
       help="""\
       List of features requested for this interconnect.
-      """)
+      """,
+  )
 
 
-def AddLinkType(parser):
+def AddLinkType(parser, required=True):
   """Adds link-type flag to the argparse.ArgumentParser."""
-  link_types = _LINK_TYPE_CHOICES
+  link_types = LINK_TYPE_CHOICES
   parser.add_argument(
       '--link-type',
       choices=link_types,
-      required=True,
+      required=required,
       help="""\
       Type of the link for the interconnect.
-      """)
+      """,
+  )
 
 
-def AddRequestedLinkCount(parser):
+def AddRequestedLinkCount(parser, required=True):
   """Adds requestedLinkCount flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--requested-link-count',
-      required=True,
+      required=required,
       type=int,
       help="""\
       Target number of physical links in the link bundle.
-      """)
+      """,
+  )
 
 
 def AddRequestedLinkCountForUpdate(parser):

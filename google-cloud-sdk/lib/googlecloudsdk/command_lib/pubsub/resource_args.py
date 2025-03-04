@@ -65,27 +65,37 @@ def GetSchemaResourceSpec(name='schema'):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def CreateSubscriptionResourceArg(verb, plural=False):
+def CreateSubscriptionResourceArg(
+    verb, plural=False, required=True, positional=True
+):
   """Create a resource argument for a Cloud Pub/Sub Subscription.
 
   Args:
     verb: str, the verb to describe the resource, such as 'to update'.
     plural: bool, if True, use a resource argument that returns a list.
+    required: bool, if True, create subscription resource arg will be required.
+    positional: bool, if True, means that the subscription ID is a positional
+      rather than a flag.
 
   Returns:
     the PresentationSpec for the resource argument.
   """
+  if positional:
+    name = 'subscription'
+  else:
+    name = '--subscription'
   if plural:
     help_stem = 'One or more subscriptions'
   else:
     help_stem = 'Name of the subscription'
   return presentation_specs.ResourcePresentationSpec(
-      'subscription',
+      name,
       GetSubscriptionResourceSpec(),
       '{} {}'.format(help_stem, verb),
-      required=True,
+      required=required,
       plural=plural,
-      prefixes=True)
+      prefixes=True,
+  )
 
 
 def AddSubscriptionResourceArg(parser, verb, plural=False):

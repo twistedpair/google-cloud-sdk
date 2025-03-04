@@ -409,6 +409,7 @@ def AddCommonBulkInsertArgs(
     support_igmp_query=False,
     support_reservation_bound=False,
     support_graceful_shutdown=False,
+    support_flex_start=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -431,7 +432,8 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddNoRestartOnFailureArgs(parser)
   instances_flags.AddPreemptibleVmArgs(parser)
   instances_flags.AddProvisioningModelVmArgs(
-      parser, support_reservation_bound=support_reservation_bound
+      parser, support_reservation_bound=support_reservation_bound,
+      support_flex_start=support_flex_start,
   )
   if support_graceful_shutdown:
     instances_flags.AddGracefulShutdownArgs(parser, is_create=True)

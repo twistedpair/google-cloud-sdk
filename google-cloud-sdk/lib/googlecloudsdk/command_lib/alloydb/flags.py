@@ -539,7 +539,7 @@ def AddCPUCount(parser, required=True):
       '--cpu-count',
       required=required,
       type=int,
-      choices=[2, 4, 8, 16, 32, 64, 96, 128],
+      choices=[1, 2, 4, 8, 16, 32, 64, 96, 128],
       help=(
           'Whole number value indicating how many vCPUs the machine should '
           'contain. Each vCPU count corresponds to a N2 high-mem machine: '

@@ -40,6 +40,45 @@ project_location_with_default:
         if left empty, will use the wildcard '-' to list all locations
   disable_auto_completers: true
 
+flag:
+  name: flag
+  plural_name: flags
+  collection: saasservicemgmt.projects.locations.flags
+  attributes:
+  - *project
+  - *location
+  - &flagId
+    parameter_name: flagsId
+    attribute_name: flag
+    help: Flag ID
+  disable_auto_completers: false
+
+flag_release:
+  name: flagRelease
+  plural_name: flagReleases
+  collection: saasservicemgmt.projects.locations.flagReleases
+  attributes:
+  - *project
+  - *location
+  - &flagRelease
+    parameter_name: flagReleasesId
+    attribute_name: flag_release
+    help: Flag Release ID
+  disable_auto_completers: false
+
+flag_revision:
+  name: flagRevision
+  plural_name: flagRevisions
+  collection: saasservicemgmt.projects.locations.flagRevisions
+  attributes:
+  - *project
+  - *location
+  - &flagRevision
+    parameter_name: flagRevisionsId
+    attribute_name: flag_revision
+    help: Flag Revision ID
+  disable_auto_completers: false
+
 rollout_type:
   name: rolloutTypeId
   plural_name: rolloutTypes
@@ -91,6 +130,19 @@ saas_type:
     parameter_name: saasTypesId
     attribute_name: saas_type
     help: SaasType ID
+  disable_auto_completers: false
+
+saas:
+  name: saas
+  plural_name: saas
+  collection: saasservicemgmt.projects.locations.saas
+  attributes:
+  - *project
+  - *location
+  - &saas
+    parameter_name: saasId
+    attribute_name: saas
+    help: Saas ID
   disable_auto_completers: false
 
 tenant:

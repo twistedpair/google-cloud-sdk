@@ -23,8 +23,8 @@ from __future__ import unicode_literals
 import ipaddress
 import re
 from typing import Any
-
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.metastore import parsers
 
 
 STRING_MAX_LENGTH = 1000
@@ -345,7 +345,8 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
   """
   if (
       req.service.encryptionConfig
-      and req.service.encryptionConfig.kmsKey
+      and (req.service.encryptionConfig.kmsKey or
+           req.service.encryptionConfig.kmsKeys)
       and req.service.metadataIntegration.dataCatalogConfig.enabled
   ):
     raise exceptions.BadArgumentException(
@@ -577,3 +578,28 @@ def ParseBackendsIntoRequest(job_ref, request):
   for prop in request.federation.backendMetastores.additionalProperties:
     prop.value.name = prop.value.name.format(job_ref.Parent().RelativeName())
   return request
+
+
+def ValidateKmsKeys(unused_ref, unused_args, req):
+  """Validates that the kms keys are valid.
+
+  Args:
+    req: A request with `service` field.
+
+  Returns:
+    The unchaged request.
+  Raises:
+      InvalidResourceException: If the line is invalid.
+      RequiredFieldOmittedException: If resource is underspecified.
+      UnknownCollectionException: If no collection is provided or can be
+          inferred.
+      WrongResourceCollectionException: If the provided URL points into a
+          collection other than the one specified.
+  """
+
+  if (req.service.encryptionConfig is None or
+      req.service.encryptionConfig.kmsKeys is None):
+    return req
+  for kms_key in req.service.encryptionConfig.kmsKeys:
+    parsers.ParseCloudKmsKey(kms_key)
+  return req

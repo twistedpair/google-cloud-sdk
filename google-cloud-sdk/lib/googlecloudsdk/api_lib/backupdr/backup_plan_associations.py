@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.backupdr import util
+from googlecloudsdk.command_lib.backupdr import util as command_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.backupdr.v1 import backupdr_v1_messages
 
@@ -47,6 +48,22 @@ class BackupPlanAssociationsClient(util.BackupDrClientBase):
         backupPlanAssociationId=bpa_id,
     )
     return self.service.Create(request)
+
+  def ParseUpdate(self, backup_plan):
+    updated_bpa = self.messages.BackupPlanAssociation()
+    if backup_plan is not None:
+      updated_bpa.backupPlan = backup_plan.RelativeName()
+    return updated_bpa
+
+  def Update(self, bpa_resource, bpa, update_mask):
+    request_id = command_util.GenerateRequestId()
+    request = self.messages.BackupdrProjectsLocationsBackupPlanAssociationsPatchRequest(
+        backupPlanAssociation=bpa,
+        name=bpa_resource.RelativeName(),
+        requestId=request_id,
+        updateMask=update_mask,
+    )
+    return self.service.Patch(request)
 
   def Delete(self, resource):
     request = self.messages.BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest(

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import http_wrapper
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.cloudkms import iam as kms_iam
@@ -25,6 +27,7 @@ from googlecloudsdk.api_lib.iam import util as iam_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import resources
+
 
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
 ARTIFACTREGISTRY_API_VERSION = "v1"
@@ -45,12 +48,21 @@ def GetStorageMessages():
   return apis.GetMessagesModule(STORAGE_API_NAME, STORAGE_API_VERSION)
 
 
+def SkipRetryOn500Errors(response):
+  """Wrap http_wrapper.CheckResponse to skip retry on 501."""
+  if response.status_code >= 500:
+    raise apitools_exceptions.HttpError.FromResponse(response)
+  return http_wrapper.CheckResponse(response)
+
+
 def GetClient(skip_activation_prompt=False):
-  return apis.GetClientInstance(
+  client = apis.GetClientInstance(
       ARTIFACTREGISTRY_API_NAME,
       ARTIFACTREGISTRY_API_VERSION,
       skip_activation_prompt=skip_activation_prompt,
   )
+  client.check_response_func = SkipRetryOn500Errors
+  return client
 
 
 def GetMessages():

@@ -14,9 +14,6 @@
 # limitations under the License.
 """Flags and helpers for the Datastream related commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
@@ -213,6 +210,111 @@ def AddSqlServerProfileGroup(parser, required=True):
       '--sqlserver-prompt-for-password',
       action='store_true',
       help='Prompt for the password used to connect to the database.',
+  )
+
+
+def AddSalesforceProfileGroup(parser, required=True):
+  """Adds necessary salesforce profile flags to the given parser.
+
+  Args:
+    parser: The parser for the command line flags.
+    required: Whether or not the flags are required.
+  """
+  salesforce_profile = parser.add_group()
+  salesforce_profile.add_argument(
+      '--salesforce-domain',
+      help="""Domain of the Salesforce organization. For example, 'myorg.my.salesforce.com'""",
+      required=required,
+  )
+
+  login_group = salesforce_profile.add_group(required=required, mutex=True)
+
+  user_login_group = login_group.add_group()
+  user_login_group.add_argument(
+      '--salesforce-username',
+      help="""Username Datastream will use to connect to the database.""",
+      required=required,
+  )
+
+  password_group = user_login_group.add_group(required=required, mutex=True)
+  password_group.add_argument(
+      '--salesforce-password',
+      help="""\
+          Password for the user that Datastream will be using to
+          connect to Salesforce.
+          This field is not returned on request, and the value is encrypted
+          when stored in Datastream.""",
+      default='',
+  )
+  password_group.add_argument(
+      '--salesforce-prompt-for-password',
+      action='store_true',
+      help='Prompt for the password used to connect to Salesforce.',
+  )
+  password_group.add_argument(
+      '--salesforce-secret-manager-stored-password',
+      help=(
+          'Path to secret manager, storing the password used to connect to'
+          ' Salesforce.'
+      ),
+      default='',
+  )
+
+  security_token_group = user_login_group.add_group(
+      required=required, mutex=True
+  )
+  security_token_group.add_argument(
+      '--salesforce-security-token',
+      help="""\
+          Security token for the user that Datastream will be using to
+          connect to Salesforce.""",
+      default='',
+  )
+  security_token_group.add_argument(
+      '--salesforce-prompt-for-security-token',
+      action='store_true',
+      help='Prompt for the security token used to connect to Salesforce.',
+  )
+  security_token_group.add_argument(
+      '--salesforce-secret-manager-stored-security-token',
+      help=(
+          'Path to secret manager, storing the security token used to connect'
+          ' to Salesforce.'
+      ),
+      default='',
+  )
+
+  oauth2_login_group = login_group.add_group()
+  oauth2_login_group.add_argument(
+      '--salesforce-oauth2-client-id',
+      help="""OAuth 2.0 Client ID used to connect to Salesforce.""",
+      required=required,
+  )
+  client_secret_group = oauth2_login_group.add_group(
+      required=required, mutex=True
+  )
+
+  client_secret_group.add_argument(
+      '--salesforce-oauth2-client-secret',
+      help="""\
+          OAuth 2.0 Client secret used to connect to Salesforce.""",
+      default='',
+  )
+  client_secret_group.add_argument(
+      '--salesforce-prompt-for-oauth2-client-secret',
+      action='store_true',
+      help=(
+          'Prompt for the OAuth 2.0 Client secret used to connect to'
+          ' Salesforce.'
+      ),
+  )
+  client_secret_group.add_argument(
+      '--salesforce-secret-manager-stored-oauth2-client-secret',
+      help=(
+          'Path to secret manager, storing the OAuth 2.0 Client secret used to'
+          ' connect to Salesforce.'
+      ),
+      default='',
   )
 
 

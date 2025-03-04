@@ -240,6 +240,38 @@ def GetNetworkTagsFromArgs(args):
   return args.network_tags if args.IsSpecified('network_tags') else []
 
 
+def GetSoftwareConfigFromArgs(args, messages):
+  """Constructs the software config from command line args."""
+  env_var = messages.GoogleCloudAiplatformV1beta1EnvVar
+  post_startup_script_config = (
+      messages.GoogleCloudAiplatformV1beta1PostStartupScriptConfig
+  )
+  software_config = messages.GoogleCloudAiplatformV1beta1NotebookSoftwareConfig
+  post_startup_script_behavior_enum = None
+  if args.IsSpecified('post_startup_script_behavior'):
+    post_startup_script_behavior_enum = arg_utils.ChoiceEnumMapper(
+        arg_name='post-startup-script-behavior',
+        message_enum=post_startup_script_config.PostStartupScriptBehaviorValueValuesEnum,
+        include_filter=lambda x: x
+        != 'POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED',
+    ).GetEnumForChoice(
+        arg_utils.EnumNameToChoice(args.post_startup_script_behavior)
+    )
+  env_vars = []
+  if args.IsSpecified('set_env_vars'):
+    env_vars = [
+        env_var(name=k, value=args.set_env_vars[k]) for k in args.set_env_vars
+    ]
+  return software_config(
+      env=env_vars,
+      postStartupScriptConfig=post_startup_script_config(
+          postStartupScriptBehavior=post_startup_script_behavior_enum,
+          postStartupScript=args.post_startup_script,
+          postStartupScriptUrl=args.post_startup_script_url,
+      ),
+  )
+
+
 def CreateEncryptionSpecConfig(args, messages):
   """Constructs the encryption spec from the kms key resource arg.
 
@@ -295,6 +327,7 @@ def CreateRuntimeTemplate(args, messages):
       shieldedVmConfig=GetShieldedVmConfigFromArgs(args, messages),
       networkTags=GetNetworkTagsFromArgs(args),
       encryptionSpec=CreateEncryptionSpecConfig(args, messages),
+      softwareConfig=GetSoftwareConfigFromArgs(args, messages),
   )
 
 
