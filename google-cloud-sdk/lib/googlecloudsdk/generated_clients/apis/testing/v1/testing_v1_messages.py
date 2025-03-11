@@ -1095,9 +1095,12 @@ class LabInfo(_messages.Message):
   Fields:
     name: Lab name where the device is hosted. If empty, the device is hosted
       in a Google owned lab.
+    regionCode: The Unicode country/region code (CLDR) of the lab where the
+      device is hosted. E.g. "US" for United States, "CH" for Switzerland.
   """
 
   name = _messages.StringField(1)
+  regionCode = _messages.StringField(2)
 
 
 class LauncherActivityIntent(_messages.Message):

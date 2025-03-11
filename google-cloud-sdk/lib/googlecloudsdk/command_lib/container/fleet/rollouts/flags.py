@@ -89,6 +89,26 @@ class RolloutFlags:
         """),
     )
 
+  def AddScheduleOffset(self):
+    self.parser.add_argument(
+        '--schedule-offset',
+        type=arg_parsers.Duration(),
+        help=textwrap.dedent("""\
+            Offset to shift the schedule by when resuming a paused rollout, e.g. `8h`, `7d12h`.
+
+            See $ gcloud topic datetimes for information on duration formats.
+        """),
+    )
+
+  def AddValidateOnly(self):
+    self.parser.add_argument(
+        '--validate-only',
+        action='store_true',
+        help=textwrap.dedent("""\
+            Generate a new schedule without actually resuming the rollout.
+        """),
+    )
+
   def AddManagedRolloutConfig(self):
     managed_rollout_config_group = self.parser.add_group(
         help='Configurations for the Rollout. Waves are assigned automatically.'
@@ -471,3 +491,20 @@ class RolloutFlagParser:
       bool, True if specified, False if unspecified.
     """
     return self.args.async_
+
+  def ScheduleOffset(self) -> str:
+    """Parses --schedule-offset.
+
+    Accepts ISO 8601 durations format. To read more,
+    https://cloud.google.com/sdk/gcloud/reference/topic/
+
+    Returns:
+      str, in standard duration format, in unit of seconds.
+    """
+    if '--schedule-offset' not in self.args.GetSpecifiedArgs():
+      return None
+    return '{}s'.format(self.args.schedule_offset)
+
+  def ValidateOnly(self) -> bool:
+    """Parses --validate-only flag."""
+    return self.args.validate_only

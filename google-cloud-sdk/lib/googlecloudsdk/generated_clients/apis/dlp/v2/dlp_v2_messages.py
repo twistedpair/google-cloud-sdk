@@ -7619,6 +7619,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       CHINA: The infoType is typically used in China.
       COLOMBIA: The infoType is typically used in Colombia.
       CROATIA: The infoType is typically used in Croatia.
+      CZECHIA: The infoType is typically used in Czechia.
       DENMARK: The infoType is typically used in Denmark.
       FRANCE: The infoType is typically used in France.
       FINLAND: The infoType is typically used in Finland.
@@ -7671,43 +7672,44 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     CHINA = 11
     COLOMBIA = 12
     CROATIA = 13
-    DENMARK = 14
-    FRANCE = 15
-    FINLAND = 16
-    GERMANY = 17
-    HONG_KONG = 18
-    INDIA = 19
-    INDONESIA = 20
-    IRELAND = 21
-    ISRAEL = 22
-    ITALY = 23
-    JAPAN = 24
-    KAZAKHSTAN = 25
-    KOREA = 26
-    MEXICO = 27
-    THE_NETHERLANDS = 28
-    NEW_ZEALAND = 29
-    NORWAY = 30
-    PARAGUAY = 31
-    PERU = 32
-    POLAND = 33
-    PORTUGAL = 34
-    RUSSIA = 35
-    SINGAPORE = 36
-    SOUTH_AFRICA = 37
-    SPAIN = 38
-    SWEDEN = 39
-    SWITZERLAND = 40
-    TAIWAN = 41
-    THAILAND = 42
-    TURKEY = 43
-    UKRAINE = 44
-    UNITED_KINGDOM = 45
-    UNITED_STATES = 46
-    URUGUAY = 47
-    UZBEKISTAN = 48
-    VENEZUELA = 49
-    INTERNAL = 50
+    CZECHIA = 14
+    DENMARK = 15
+    FRANCE = 16
+    FINLAND = 17
+    GERMANY = 18
+    HONG_KONG = 19
+    INDIA = 20
+    INDONESIA = 21
+    IRELAND = 22
+    ISRAEL = 23
+    ITALY = 24
+    JAPAN = 25
+    KAZAKHSTAN = 26
+    KOREA = 27
+    MEXICO = 28
+    THE_NETHERLANDS = 29
+    NEW_ZEALAND = 30
+    NORWAY = 31
+    PARAGUAY = 32
+    PERU = 33
+    POLAND = 34
+    PORTUGAL = 35
+    RUSSIA = 36
+    SINGAPORE = 37
+    SOUTH_AFRICA = 38
+    SPAIN = 39
+    SWEDEN = 40
+    SWITZERLAND = 41
+    TAIWAN = 42
+    THAILAND = 43
+    TURKEY = 44
+    UKRAINE = 45
+    UNITED_KINGDOM = 46
+    UNITED_STATES = 47
+    URUGUAY = 48
+    UZBEKISTAN = 49
+    VENEZUELA = 50
+    INTERNAL = 51
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs

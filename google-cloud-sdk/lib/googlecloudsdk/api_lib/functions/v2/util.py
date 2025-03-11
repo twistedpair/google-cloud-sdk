@@ -270,6 +270,17 @@ def _GetOperationAndLogProgress(client, request, tracker, messages):
       else:
         tracker.CompleteStage(stage_key)
 
+  # We try to detect custom IAM roles in migrtion setup config.
+  if operation.done and operation_metadata.customIamRoleDetected:
+    # TODO(b/327636194): update the link once the doc is ready.
+    log.warning(
+        'A custom IAM role was detected. If this role is used to manage or'
+        ' access your function, you must manually add the equivalent Cloud Run'
+        ' permissions and add the binding to your Cloud Run function. Refer to'
+        ' https://cloud.google.com/run/docs/reference/iam/permissions for'
+        ' details.'
+    )
+
   return operation
 
 
@@ -389,7 +400,7 @@ def HasRoleBinding(iam_policy, sa_email, role):
 
 def PromptToBindRoleIfMissing(sa_email, role, alt_roles=None, reason=''):
   # type: (str, str, tuple[str] | None, str) -> None
-  """Prompts to bind the role to the service account if missing.
+  """Prompts to bind the role to the service account in project level if missing.
 
   If the console cannot prompt, a warning is logged instead.
 

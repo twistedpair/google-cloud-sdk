@@ -461,11 +461,11 @@ class BatchCreateSessionsRequest(_messages.Message):
 
   Fields:
     sessionCount: Required. The number of sessions to be created in this batch
-      call. The API may return fewer than the requested number of sessions. If
+      call. The API can return fewer than the requested number of sessions. If
       a specific number of sessions are desired, the client can make
-      additional calls to BatchCreateSessions (adjusting session_count as
+      additional calls to `BatchCreateSessions` (adjusting session_count as
       necessary).
-    sessionTemplate: Parameters to be applied to each created session.
+    sessionTemplate: Parameters to apply to each created session.
   """
 
   sessionCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -488,15 +488,15 @@ class BatchWriteRequest(_messages.Message):
   Fields:
     excludeTxnFromChangeStreams: Optional. When
       `exclude_txn_from_change_streams` is set to `true`: * Modifications from
-      all transactions in this batch write operation will not be recorded in
+      all transactions in this batch write operation are not be recorded in
       change streams with DDL option `allow_txn_exclusion=true` that are
       tracking columns modified by these transactions. * Modifications from
-      all transactions in this batch write operation will be recorded in
-      change streams with DDL option `allow_txn_exclusion=false or not set`
-      that are tracking columns modified by these transactions. When
+      all transactions in this batch write operation are recorded in change
+      streams with DDL option `allow_txn_exclusion=false or not set` that are
+      tracking columns modified by these transactions. When
       `exclude_txn_from_change_streams` is set to `false` or not set,
-      Modifications from all transactions in this batch write operation will
-      be recorded in all change streams that are tracking columns modified by
+      Modifications from all transactions in this batch write operation are
+      recorded in all change streams that are tracking columns modified by
       these transactions.
     mutationGroups: Required. The groups of mutations to be applied.
     requestOptions: Common options for this request.
@@ -529,14 +529,14 @@ class BeginTransactionRequest(_messages.Message):
 
   Fields:
     mutationKey: Optional. Required for read-write transactions on a
-      multiplexed session that commit mutations but do not perform any reads
-      or queries. Clients should randomly select one of the mutations from the
-      mutation set and send it as a part of this request.
+      multiplexed session that commit mutations but don't perform any reads or
+      queries. You must randomly select one of the mutations from the mutation
+      set and send it as a part of this request.
     options: Required. Options for the new transaction.
     requestOptions: Common options for this request. Priority is ignored for
-      this request. Setting the priority in this request_options struct will
-      not do anything. To set the priority for a transaction, set it on the
-      reads and writes that are part of this transaction instead.
+      this request. Setting the priority in this `request_options` struct
+      doesn't do anything. To set the priority for a transaction, set it on
+      the reads and writes that are part of this transaction instead.
   """
 
   mutationKey = _messages.MessageField('Mutation', 1)
@@ -695,24 +695,24 @@ class CommitRequest(_messages.Message):
 
   Fields:
     maxCommitDelay: Optional. The amount of latency this request is configured
-      to incur in order to improve throughput. If this field is not set,
+      to incur in order to improve throughput. If this field isn't set,
       Spanner assumes requests are relatively latency sensitive and
       automatically determines an appropriate delay time. You can specify a
       commit delay value between 0 and 500 ms.
     mutations: The mutations to be executed when this transaction commits. All
       mutations are applied atomically, in the order they appear in this list.
     precommitToken: Optional. If the read-write transaction was executed on a
-      multiplexed session, the precommit token with the highest sequence
-      number received in this transaction attempt, should be included here.
-      Failing to do so will result in a FailedPrecondition error.
+      multiplexed session, then you must include the precommit token with the
+      highest sequence number received in this transaction attempt. Failing to
+      do so results in a `FailedPrecondition` error.
     requestOptions: Common options for this request.
     returnCommitStats: If `true`, then statistics related to the transaction
-      will be included in the CommitResponse. Default value is `false`.
+      is included in the CommitResponse. Default value is `false`.
     singleUseTransaction: Execute mutations in a temporary transaction. Note
       that unlike commit of a previously-started transaction, commit with a
       temporary transaction is non-idempotent. That is, if the `CommitRequest`
       is sent to Cloud Spanner more than once (for instance, due to retries in
-      the application, or in the transport library), it is possible that the
+      the application, or in the transport library), it's possible that the
       mutations are executed more than once. If this is undesirable, use
       BeginTransaction and Commit instead.
     transactionId: Commit a previously-started transaction.
@@ -731,12 +731,12 @@ class CommitResponse(_messages.Message):
   r"""The response for Commit.
 
   Fields:
-    commitStats: The statistics about this Commit. Not returned by default.
+    commitStats: The statistics about this `Commit`. Not returned by default.
       For more information, see CommitRequest.return_commit_stats.
     commitTimestamp: The Cloud Spanner timestamp at which the transaction
       committed.
-    precommitToken: If specified, transaction has not committed yet. Clients
-      must retry the commit with the new precommit token.
+    precommitToken: If specified, transaction has not committed yet. You must
+      retry the commit with the new precommit token.
   """
 
   commitStats = _messages.MessageField('CommitStats', 1)
@@ -1480,20 +1480,21 @@ class DiagnosticMessage(_messages.Message):
 
 
 class DirectedReadOptions(_messages.Message):
-  r"""The DirectedReadOptions can be used to indicate which replicas or
+  r"""The `DirectedReadOptions` can be used to indicate which replicas or
   regions should be used for non-transactional reads or queries.
-  DirectedReadOptions may only be specified for a read-only transaction,
-  otherwise the API will return an `INVALID_ARGUMENT` error.
+  `DirectedReadOptions` can only be specified for a read-only transaction,
+  otherwise the API returns an `INVALID_ARGUMENT` error.
 
   Fields:
-    excludeReplicas: Exclude_replicas indicates that specified replicas should
-      be excluded from serving requests. Spanner will not route requests to
-      the replicas in this list.
-    includeReplicas: Include_replicas indicates the order of replicas (as they
-      appear in this list) to process the request. If auto_failover_disabled
-      is set to true and all replicas are exhausted without finding a healthy
-      replica, Spanner will wait for a replica in the list to become
-      available, requests may fail due to `DEADLINE_EXCEEDED` errors.
+    excludeReplicas: `Exclude_replicas` indicates that specified replicas
+      should be excluded from serving requests. Spanner doesn't route requests
+      to the replicas in this list.
+    includeReplicas: `Include_replicas` indicates the order of replicas (as
+      they appear in this list) to process the request. If
+      `auto_failover_disabled` is set to `true` and all replicas are exhausted
+      without finding a healthy replica, Spanner waits for a replica in the
+      list to become available, requests might fail due to `DEADLINE_EXCEEDED`
+      errors.
   """
 
   excludeReplicas = _messages.MessageField('ExcludeReplicas', 1)
@@ -1595,22 +1596,22 @@ class ExecuteBatchDmlRequest(_messages.Message):
   r"""The request for ExecuteBatchDml.
 
   Fields:
-    lastStatements: Optional. If set to true, this request marks the end of
-      the transaction. The transaction should be committed or aborted after
-      these statements execute, and attempts to execute any other requests
-      against this transaction (including reads and queries) will be rejected.
-      Setting this option may cause some error reporting to be deferred until
-      commit time (e.g. validation of unique constraints). Given this,
-      successful execution of statements should not be assumed until a
-      subsequent Commit call completes successfully.
+    lastStatements: Optional. If set to `true`, this request marks the end of
+      the transaction. After these statements execute, you must commit or
+      abort the transaction. Attempts to execute any other requests against
+      this transaction (including reads and queries) are rejected. Setting
+      this option might cause some error reporting to be deferred until commit
+      time (for example, validation of unique constraints). Given this,
+      successful execution of statements shouldn't be assumed until a
+      subsequent `Commit` call completes successfully.
     requestOptions: Common options for this request.
     seqno: Required. A per-transaction sequence number used to identify this
       request. This field makes each request idempotent such that if the
-      request is received multiple times, at most one will succeed. The
-      sequence number must be monotonically increasing within the transaction.
-      If a request arrives for the first time with an out-of-order sequence
-      number, the transaction may be aborted. Replays of previously handled
-      requests will yield the same response as the first execution.
+      request is received multiple times, at most one succeeds. The sequence
+      number must be monotonically increasing within the transaction. If a
+      request arrives for the first time with an out-of-order sequence number,
+      the transaction might be aborted. Replays of previously handled requests
+      yield the same response as the first execution.
     statements: Required. The list of statements to execute in this batch.
       Statements are executed serially, such that the effects of statement `i`
       are visible to statement `i+1`. Each statement must be a DML statement.
@@ -1647,8 +1648,8 @@ class ExecuteBatchDmlResponse(_messages.Message):
   and fifth statements were not executed.
 
   Fields:
-    precommitToken: Optional. A precommit token will be included if the read-
-      write transaction is on a multiplexed session. The precommit token with
+    precommitToken: Optional. A precommit token is included if the read-write
+      transaction is on a multiplexed session. Pass the precommit token with
       the highest sequence number from this transaction attempt should be
       passed to the Commit request for this transaction.
     resultSets: One ResultSet for each statement in the request that ran
@@ -1674,10 +1675,10 @@ class ExecuteSqlRequest(_messages.Message):
       query_mode can only be set to QueryMode.NORMAL.
 
   Messages:
-    ParamTypesValue: It is not always possible for Cloud Spanner to infer the
+    ParamTypesValue: It isn't always possible for Cloud Spanner to infer the
       right SQL type from a JSON value. For example, values of type `BYTES`
       and values of type `STRING` both appear in params as JSON strings. In
-      these cases, `param_types` can be used to specify the exact SQL type for
+      these cases, you can use `param_types` to specify the exact SQL type for
       some or all of the SQL statement parameters. See the definition of Type
       for more information about SQL types.
     ParamsValue: Parameter names and values that bind to placeholders in the
@@ -1687,27 +1688,28 @@ class ExecuteSqlRequest(_messages.Message):
       specified at https://cloud.google.com/spanner/docs/lexical#identifiers.
       Parameters can appear anywhere that a literal value is expected. The
       same parameter name can be used more than once, for example: `"WHERE id
-      > @msg_id AND id < @msg_id + 100"` It is an error to execute a SQL
+      > @msg_id AND id < @msg_id + 100"` It's an error to execute a SQL
       statement with unbound parameters.
 
   Fields:
     dataBoostEnabled: If this is for a partitioned query and this field is set
       to `true`, the request is executed with Spanner Data Boost independent
-      compute resources. If the field is set to `true` but the request does
-      not set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+      compute resources. If the field is set to `true` but the request doesn't
+      set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
-    lastStatement: Optional. If set to true, this statement marks the end of
-      the transaction. The transaction should be committed or aborted after
-      this statement executes, and attempts to execute any other requests
-      against this transaction (including reads and queries) will be rejected.
-      For DML statements, setting this option may cause some error reporting
-      to be deferred until commit time (e.g. validation of unique
-      constraints). Given this, successful execution of a DML statement should
-      not be assumed until a subsequent Commit call completes successfully.
-    paramTypes: It is not always possible for Cloud Spanner to infer the right
+    lastStatement: Optional. If set to `true`, this statement marks the end of
+      the transaction. After this statement executes, you must commit or abort
+      the transaction. Attempts to execute any other requests against this
+      transaction (including reads and queries) are rejected. For DML
+      statements, setting this option might cause some error reporting to be
+      deferred until commit time (for example, validation of unique
+      constraints). Given this, successful execution of a DML statement
+      shouldn't be assumed until a subsequent `Commit` call completes
+      successfully.
+    paramTypes: It isn't always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings. In these
-      cases, `param_types` can be used to specify the exact SQL type for some
+      cases, you can use `param_types` to specify the exact SQL type for some
       or all of the SQL statement parameters. See the definition of Type for
       more information about SQL types.
     params: Parameter names and values that bind to placeholders in the SQL
@@ -1717,12 +1719,12 @@ class ExecuteSqlRequest(_messages.Message):
       https://cloud.google.com/spanner/docs/lexical#identifiers. Parameters
       can appear anywhere that a literal value is expected. The same parameter
       name can be used more than once, for example: `"WHERE id > @msg_id AND
-      id < @msg_id + 100"` It is an error to execute a SQL statement with
+      id < @msg_id + 100"` It's an error to execute a SQL statement with
       unbound parameters.
-    partitionToken: If present, results will be restricted to the specified
-      partition previously created using PartitionQuery(). There must be an
+    partitionToken: If present, results are restricted to the specified
+      partition previously created using `PartitionQuery`. There must be an
       exact match for the values of fields common to this message and the
-      PartitionQueryRequest message used to create this partition_token.
+      `PartitionQueryRequest` message used to create this `partition_token`.
     queryMode: Used to control the amount of debugging information returned in
       ResultSetStats. If partition_token is set, query_mode can only be set to
       QueryMode.NORMAL.
@@ -1736,12 +1738,12 @@ class ExecuteSqlRequest(_messages.Message):
       yielded this token.
     seqno: A per-transaction sequence number used to identify this request.
       This field makes each request idempotent such that if the request is
-      received multiple times, at most one will succeed. The sequence number
-      must be monotonically increasing within the transaction. If a request
-      arrives for the first time with an out-of-order sequence number, the
-      transaction may be aborted. Replays of previously handled requests will
-      yield the same response as the first execution. Required for DML
-      statements. Ignored for queries.
+      received multiple times, at most one succeeds. The sequence number must
+      be monotonically increasing within the transaction. If a request arrives
+      for the first time with an out-of-order sequence number, the transaction
+      can be aborted. Replays of previously handled requests yield the same
+      response as the first execution. Required for DML statements. Ignored
+      for queries.
     sql: Required. The SQL string.
     transaction: The transaction to use. For queries, if none is provided, the
       default is a temporary read-only transaction with strong concurrency.
@@ -1763,8 +1765,8 @@ class ExecuteSqlRequest(_messages.Message):
         execution statistics information.
       PROFILE: This mode returns the query plan, overall execution statistics,
         operator level execution statistics along with the results. This has a
-        performance overhead compared to the other modes. It is not
-        recommended to use this mode for production traffic.
+        performance overhead compared to the other modes. It isn't recommended
+        to use this mode for production traffic.
       WITH_STATS: This mode returns the overall (but not operator-level)
         execution statistics along with the results.
       WITH_PLAN_AND_STATS: This mode returns the query plan, overall (but not
@@ -1778,12 +1780,12 @@ class ExecuteSqlRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
-    r"""It is not always possible for Cloud Spanner to infer the right SQL
-    type from a JSON value. For example, values of type `BYTES` and values of
-    type `STRING` both appear in params as JSON strings. In these cases,
-    `param_types` can be used to specify the exact SQL type for some or all of
-    the SQL statement parameters. See the definition of Type for more
-    information about SQL types.
+    r"""It isn't always possible for Cloud Spanner to infer the right SQL type
+    from a JSON value. For example, values of type `BYTES` and values of type
+    `STRING` both appear in params as JSON strings. In these cases, you can
+    use `param_types` to specify the exact SQL type for some or all of the SQL
+    statement parameters. See the definition of Type for more information
+    about SQL types.
 
     Messages:
       AdditionalProperty: An additional property for a ParamTypesValue object.
@@ -1814,7 +1816,7 @@ class ExecuteSqlRequest(_messages.Message):
     https://cloud.google.com/spanner/docs/lexical#identifiers. Parameters can
     appear anywhere that a literal value is expected. The same parameter name
     can be used more than once, for example: `"WHERE id > @msg_id AND id <
-    @msg_id + 100"` It is an error to execute a SQL statement with unbound
+    @msg_id + 100"` It's an error to execute a SQL statement with unbound
     parameters.
 
     Messages:
@@ -2006,12 +2008,12 @@ class GetPolicyOptions(_messages.Message):
 
 
 class IncludeReplicas(_messages.Message):
-  r"""An IncludeReplicas contains a repeated set of ReplicaSelection which
+  r"""An `IncludeReplicas` contains a repeated set of `ReplicaSelection` which
   indicates the order in which replicas should be considered.
 
   Fields:
-    autoFailoverDisabled: If true, Spanner will not route requests to a
-      replica outside the include_replicas list when all of the specified
+    autoFailoverDisabled: If `true`, Spanner doesn't route requests to a
+      replica outside the <`include_replicas` list when all of the specified
       replicas are unavailable or unhealthy. Default value is `false`.
     replicaSelections: The directed read replica selector.
   """
@@ -3405,9 +3407,9 @@ class MoveInstanceRequest(_messages.Message):
 
 class MultiplexedSessionPrecommitToken(_messages.Message):
   r"""When a read-write transaction is executed on a multiplexed session, this
-  precommit token is sent back to the client as a part of the [Transaction]
-  message in the BeginTransaction response and also as a part of the
-  [ResultSet] and [PartialResultSet] responses.
+  precommit token is sent back to the client as a part of the Transaction
+  message in the BeginTransaction response and also as a part of the ResultSet
+  and PartialResultSet responses.
 
   Fields:
     precommitToken: Opaque precommit token.
@@ -3614,12 +3616,15 @@ class PartialResultSet(_messages.Message):
     chunkedValue: If true, then the final value in values is chunked, and must
       be combined with more values from subsequent `PartialResultSet`s to
       obtain a complete field value.
+    last: Optional. Indicates whether this is the last `PartialResultSet` in
+      the stream. The server might optionally set this field. Clients
+      shouldn't rely on this field being set in all cases.
     metadata: Metadata about the result set, such as row type information.
       Only present in the first response.
-    precommitToken: Optional. A precommit token will be included if the read-
-      write transaction is on a multiplexed session. The precommit token with
-      the highest sequence number from this transaction attempt should be
-      passed to the Commit request for this transaction.
+    precommitToken: Optional. A precommit token is included if the read-write
+      transaction has multiplexed sessions enabled. Pass the precommit token
+      with the highest sequence number from this transaction attempt to the
+      Commit request for this transaction.
     resumeToken: Streaming calls might be interrupted for a variety of
       reasons, such as TCP connection loss. If this occurs, the stream of
       results can be resumed by re-sending the original request and including
@@ -3628,83 +3633,84 @@ class PartialResultSet(_messages.Message):
     stats: Query plan and execution statistics for the statement that produced
       this streaming result set. These can be requested by setting
       ExecuteSqlRequest.query_mode and are sent only once with the last
-      response in the stream. This field will also be present in the last
-      response for DML statements.
+      response in the stream. This field is also present in the last response
+      for DML statements.
     values: A streamed result set consists of a stream of values, which might
       be split into many `PartialResultSet` messages to accommodate large rows
       and/or large values. Every N complete values defines a row, where N is
       equal to the number of entries in metadata.row_type.fields. Most values
-      are encoded based on type as described here. It is possible that the
-      last value in values is "chunked", meaning that the rest of the value is
-      sent in subsequent `PartialResultSet`(s). This is denoted by the
+      are encoded based on type as described here. It's possible that the last
+      value in values is "chunked", meaning that the rest of the value is sent
+      in subsequent `PartialResultSet`(s). This is denoted by the
       chunked_value field. Two or more chunked values can be merged to form a
-      complete value as follows: * `bool/number/null`: cannot be chunked *
+      complete value as follows: * `bool/number/null`: can't be chunked *
       `string`: concatenate the strings * `list`: concatenate the lists. If
       the last element in a list is a `string`, `list`, or `object`, merge it
       with the first element in the next list by applying these rules
       recursively. * `object`: concatenate the (field name, field value)
       pairs. If a field name is duplicated, then apply these rules recursively
-      to merge the field values. Some examples of merging: # Strings are
-      concatenated. "foo", "bar" => "foobar" # Lists of non-strings are
-      concatenated. [2, 3], [4] => [2, 3, 4] # Lists are concatenated, but the
-      last and first elements are merged # because they are strings. ["a",
-      "b"], ["c", "d"] => ["a", "bc", "d"] # Lists are concatenated, but the
-      last and first elements are merged # because they are lists.
-      Recursively, the last and first elements # of the inner lists are merged
-      because they are strings. ["a", ["b", "c"]], [["d"], "e"] => ["a", ["b",
-      "cd"], "e"] # Non-overlapping object fields are combined. {"a": "1"},
-      {"b": "2"} => {"a": "1", "b": 2"} # Overlapping object fields are
-      merged. {"a": "1"}, {"a": "2"} => {"a": "12"} # Examples of merging
-      objects containing lists of strings. {"a": ["1"]}, {"a": ["2"]} => {"a":
-      ["12"]} For a more complete example, suppose a streaming SQL query is
-      yielding a result set whose rows contain a single string field. The
-      following `PartialResultSet`s might be yielded: { "metadata": { ... }
-      "values": ["Hello", "W"] "chunked_value": true "resume_token": "Af65..."
-      } { "values": ["orl"] "chunked_value": true } { "values": ["d"]
-      "resume_token": "Zx1B..." } This sequence of `PartialResultSet`s encodes
-      two rows, one containing the field value `"Hello"`, and a second
-      containing the field value `"World" = "W" + "orl" + "d"`. Not all
-      `PartialResultSet`s contain a `resume_token`. Execution can only be
-      resumed from a previously yielded `resume_token`. For the above sequence
-      of `PartialResultSet`s, resuming the query with `"resume_token":
-      "Af65..."` will yield results from the `PartialResultSet` with value
-      `["orl"]`.
+      to merge the field values. Some examples of merging: Strings are
+      concatenated. "foo", "bar" => "foobar" Lists of non-strings are
+      concatenated. [2, 3], [4] => [2, 3, 4] Lists are concatenated, but the
+      last and first elements are merged because they are strings. ["a", "b"],
+      ["c", "d"] => ["a", "bc", "d"] Lists are concatenated, but the last and
+      first elements are merged because they are lists. Recursively, the last
+      and first elements of the inner lists are merged because they are
+      strings. ["a", ["b", "c"]], [["d"], "e"] => ["a", ["b", "cd"], "e"] Non-
+      overlapping object fields are combined. {"a": "1"}, {"b": "2"} => {"a":
+      "1", "b": 2"} Overlapping object fields are merged. {"a": "1"}, {"a":
+      "2"} => {"a": "12"} Examples of merging objects containing lists of
+      strings. {"a": ["1"]}, {"a": ["2"]} => {"a": ["12"]} For a more complete
+      example, suppose a streaming SQL query is yielding a result set whose
+      rows contain a single string field. The following `PartialResultSet`s
+      might be yielded: { "metadata": { ... } "values": ["Hello", "W"]
+      "chunked_value": true "resume_token": "Af65..." } { "values": ["orl"]
+      "chunked_value": true } { "values": ["d"] "resume_token": "Zx1B..." }
+      This sequence of `PartialResultSet`s encodes two rows, one containing
+      the field value `"Hello"`, and a second containing the field value
+      `"World" = "W" + "orl" + "d"`. Not all `PartialResultSet`s contain a
+      `resume_token`. Execution can only be resumed from a previously yielded
+      `resume_token`. For the above sequence of `PartialResultSet`s, resuming
+      the query with `"resume_token": "Af65..."` yields results from the
+      `PartialResultSet` with value "orl".
   """
 
   chunkedValue = _messages.BooleanField(1)
-  metadata = _messages.MessageField('ResultSetMetadata', 2)
-  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 3)
-  resumeToken = _messages.BytesField(4)
-  stats = _messages.MessageField('ResultSetStats', 5)
-  values = _messages.MessageField('extra_types.JsonValue', 6, repeated=True)
+  last = _messages.BooleanField(2)
+  metadata = _messages.MessageField('ResultSetMetadata', 3)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 4)
+  resumeToken = _messages.BytesField(5)
+  stats = _messages.MessageField('ResultSetStats', 6)
+  values = _messages.MessageField('extra_types.JsonValue', 7, repeated=True)
 
 
 class Partition(_messages.Message):
   r"""Information returned for each partition returned in a PartitionResponse.
 
   Fields:
-    partitionToken: This token can be passed to Read, StreamingRead,
-      ExecuteSql, or ExecuteStreamingSql requests to restrict the results to
-      those identified by this partition token.
+    partitionToken: This token can be passed to `Read`, `StreamingRead`,
+      `ExecuteSql`, or `ExecuteStreamingSql` requests to restrict the results
+      to those identified by this partition token.
   """
 
   partitionToken = _messages.BytesField(1)
 
 
 class PartitionOptions(_messages.Message):
-  r"""Options for a PartitionQueryRequest and PartitionReadRequest.
+  r"""Options for a `PartitionQueryRequest` and `PartitionReadRequest`.
 
   Fields:
-    maxPartitions: **Note:** This hint is currently ignored by PartitionQuery
-      and PartitionRead requests. The desired maximum number of partitions to
-      return. For example, this may be set to the number of workers available.
-      The default for this option is currently 10,000. The maximum value is
-      currently 200,000. This is only a hint. The actual number of partitions
-      returned may be smaller or larger than this maximum count request.
+    maxPartitions: **Note:** This hint is currently ignored by
+      `PartitionQuery` and `PartitionRead` requests. The desired maximum
+      number of partitions to return. For example, this might be set to the
+      number of workers available. The default for this option is currently
+      10,000. The maximum value is currently 200,000. This is only a hint. The
+      actual number of partitions returned can be smaller or larger than this
+      maximum count request.
     partitionSizeBytes: **Note:** This hint is currently ignored by
-      PartitionQuery and PartitionRead requests. The desired data size for
+      `PartitionQuery` and `PartitionRead` requests. The desired data size for
       each partition generated. The default for this option is currently 1
-      GiB. This is only a hint. The actual size of each partition may be
+      GiB. This is only a hint. The actual size of each partition can be
       smaller or larger than this size request.
   """
 
@@ -3716,7 +3722,7 @@ class PartitionQueryRequest(_messages.Message):
   r"""The request for PartitionQuery
 
   Messages:
-    ParamTypesValue: It is not always possible for Cloud Spanner to infer the
+    ParamTypesValue: It isn't always possible for Cloud Spanner to infer the
       right SQL type from a JSON value. For example, values of type `BYTES`
       and values of type `STRING` both appear in params as JSON strings. In
       these cases, `param_types` can be used to specify the exact SQL type for
@@ -3728,11 +3734,11 @@ class PartitionQueryRequest(_messages.Message):
       names can contain letters, numbers, and underscores. Parameters can
       appear anywhere that a literal value is expected. The same parameter
       name can be used more than once, for example: `"WHERE id > @msg_id AND
-      id < @msg_id + 100"` It is an error to execute a SQL statement with
+      id < @msg_id + 100"` It's an error to execute a SQL statement with
       unbound parameters.
 
   Fields:
-    paramTypes: It is not always possible for Cloud Spanner to infer the right
+    paramTypes: It isn't always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings. In these
       cases, `param_types` can be used to specify the exact SQL type for some
@@ -3744,29 +3750,29 @@ class PartitionQueryRequest(_messages.Message):
       contain letters, numbers, and underscores. Parameters can appear
       anywhere that a literal value is expected. The same parameter name can
       be used more than once, for example: `"WHERE id > @msg_id AND id <
-      @msg_id + 100"` It is an error to execute a SQL statement with unbound
+      @msg_id + 100"` It's an error to execute a SQL statement with unbound
       parameters.
     partitionOptions: Additional options that affect how many partitions are
       created.
     sql: Required. The query request to generate partitions for. The request
-      fails if the query is not root partitionable. For a query to be root
+      fails if the query isn't root partitionable. For a query to be root
       partitionable, it needs to satisfy a few conditions. For example, if the
       query execution plan contains a distributed union operator, then it must
       be the first operator in the plan. For more information about other
       conditions, see [Read data in parallel](https://cloud.google.com/spanner
       /docs/reads#read_data_in_parallel). The query request must not contain
       DML commands, such as `INSERT`, `UPDATE`, or `DELETE`. Use
-      `ExecuteStreamingSql` with a PartitionedDml transaction for large,
+      `ExecuteStreamingSql` with a `PartitionedDml` transaction for large,
       partition-friendly DML operations.
-    transaction: Read only snapshot transactions are supported, read/write and
-      single use transactions are not.
+    transaction: Read-only snapshot transactions are supported, read and write
+      and single-use transactions are not.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
-    r"""It is not always possible for Cloud Spanner to infer the right SQL
-    type from a JSON value. For example, values of type `BYTES` and values of
-    type `STRING` both appear in params as JSON strings. In these cases,
+    r"""It isn't always possible for Cloud Spanner to infer the right SQL type
+    from a JSON value. For example, values of type `BYTES` and values of type
+    `STRING` both appear in params as JSON strings. In these cases,
     `param_types` can be used to specify the exact SQL type for some or all of
     the SQL query parameters. See the definition of Type for more information
     about SQL types.
@@ -3798,8 +3804,8 @@ class PartitionQueryRequest(_messages.Message):
     the parameter name (for example, `@firstName`). Parameter names can
     contain letters, numbers, and underscores. Parameters can appear anywhere
     that a literal value is expected. The same parameter name can be used more
-    than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It
-    is an error to execute a SQL statement with unbound parameters.
+    than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It's
+    an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -3840,7 +3846,7 @@ class PartitionReadRequest(_messages.Message):
     keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
       names the primary keys of the rows in table to be yielded, unless index
       is present. If index is present, then key_set instead names index keys
-      in index. It is not an error for the `key_set` to name rows that do not
+      in index. It isn't an error for the `key_set` to name rows that don't
       exist in the database. Read yields nothing for nonexistent rows.
     partitionOptions: Additional options that affect how many partitions are
       created.
@@ -4120,9 +4126,9 @@ class QueryOptions(_messages.Message):
       `latest` as a value instructs Cloud Spanner to use the latest generated
       statistics package. If not specified, Cloud Spanner uses the statistics
       package set at the database level options, or the latest package if the
-      database option is not set. The statistics package requested by the
-      query has to be exempt from garbage collection. This can be achieved
-      with the following DDL statement: ``` ALTER STATISTICS SET OPTIONS
+      database option isn't set. The statistics package requested by the query
+      has to be exempt from garbage collection. This can be achieved with the
+      following DDL statement: ```sql ALTER STATISTICS SET OPTIONS
       (allow_gc=false) ``` The list of available statistics packages can be
       queried from `INFORMATION_SCHEMA.SPANNER_STATISTICS`. Executing a SQL
       statement with an invalid optimizer statistics package or with a
@@ -4136,11 +4142,11 @@ class QueryOptions(_messages.Message):
       level options. Any other positive integer (from the list of supported
       optimizer versions) overrides the default optimizer version for query
       execution. The list of supported optimizer versions can be queried from
-      SPANNER_SYS.SUPPORTED_OPTIMIZER_VERSIONS. Executing a SQL statement with
-      an invalid optimizer version fails with an `INVALID_ARGUMENT` error. See
-      https://cloud.google.com/spanner/docs/query-optimizer/manage-query-
-      optimizer for more information on managing the query optimizer. The
-      `optimizer_version` statement hint has precedence over this setting.
+      `SPANNER_SYS.SUPPORTED_OPTIMIZER_VERSIONS`. Executing a SQL statement
+      with an invalid optimizer version fails with an `INVALID_ARGUMENT`
+      error. See https://cloud.google.com/spanner/docs/query-optimizer/manage-
+      query-optimizer for more information on managing the query optimizer.
+      The `optimizer_version` statement hint has precedence over this setting.
   """
 
   optimizerStatisticsPackage = _messages.StringField(1)
@@ -4267,19 +4273,20 @@ class ReadRequest(_messages.Message):
     LockHintValueValuesEnum: Optional. Lock Hint for the request, it can only
       be used with read-write transactions.
     OrderByValueValuesEnum: Optional. Order for the returned rows. By default,
-      Spanner will return result rows in primary key order except for
-      PartitionRead requests. For applications that do not require rows to be
+      Spanner returns result rows in primary key order except for
+      PartitionRead requests. For applications that don't require rows to be
       returned in primary key (`ORDER_BY_PRIMARY_KEY`) order, setting
       `ORDER_BY_NO_ORDER` option allows Spanner to optimize row retrieval,
-      resulting in lower latencies in certain cases (e.g. bulk point lookups).
+      resulting in lower latencies in certain cases (for example, bulk point
+      lookups).
 
   Fields:
     columns: Required. The columns of table to be returned for each row
       matching this request.
     dataBoostEnabled: If this is for a partitioned read and this field is set
       to `true`, the request is executed with Spanner Data Boost independent
-      compute resources. If the field is set to `true` but the request does
-      not set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+      compute resources. If the field is set to `true` but the request doesn't
+      set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
     index: If non-empty, the name of an index on table. This index is used
       instead of the table primary key when interpreting key_set and sorting
@@ -4289,23 +4296,23 @@ class ReadRequest(_messages.Message):
       is present. If index is present, then key_set instead names index keys
       in index. If the partition_token field is empty, rows are yielded in
       table primary key order (if index is empty) or index key order (if index
-      is non-empty). If the partition_token field is not empty, rows will be
-      yielded in an unspecified order. It is not an error for the `key_set` to
-      name rows that do not exist in the database. Read yields nothing for
+      is non-empty). If the partition_token field isn't empty, rows are
+      yielded in an unspecified order. It isn't an error for the `key_set` to
+      name rows that don't exist in the database. Read yields nothing for
       nonexistent rows.
     limit: If greater than zero, only the first `limit` rows are yielded. If
-      `limit` is zero, the default is no limit. A limit cannot be specified if
+      `limit` is zero, the default is no limit. A limit can't be specified if
       `partition_token` is set.
     lockHint: Optional. Lock Hint for the request, it can only be used with
       read-write transactions.
-    orderBy: Optional. Order for the returned rows. By default, Spanner will
-      return result rows in primary key order except for PartitionRead
-      requests. For applications that do not require rows to be returned in
+    orderBy: Optional. Order for the returned rows. By default, Spanner
+      returns result rows in primary key order except for PartitionRead
+      requests. For applications that don't require rows to be returned in
       primary key (`ORDER_BY_PRIMARY_KEY`) order, setting `ORDER_BY_NO_ORDER`
       option allows Spanner to optimize row retrieval, resulting in lower
-      latencies in certain cases (e.g. bulk point lookups).
-    partitionToken: If present, results will be restricted to the specified
-      partition previously created using PartitionRead(). There must be an
+      latencies in certain cases (for example, bulk point lookups).
+    partitionToken: If present, results are restricted to the specified
+      partition previously created using `PartitionRead`. There must be an
       exact match for the values of fields common to this message and the
       PartitionReadRequest message used to create this partition_token.
     requestOptions: Common options for this request.
@@ -4324,8 +4331,8 @@ class ReadRequest(_messages.Message):
     write transactions.
 
     Values:
-      LOCK_HINT_UNSPECIFIED: Default value. LOCK_HINT_UNSPECIFIED is
-        equivalent to LOCK_HINT_SHARED.
+      LOCK_HINT_UNSPECIFIED: Default value. `LOCK_HINT_UNSPECIFIED` is
+        equivalent to `LOCK_HINT_SHARED`.
       LOCK_HINT_SHARED: Acquire shared locks. By default when you perform a
         read as part of a read-write transaction, Spanner acquires shared read
         locks, which allows other reads to still access the data until your
@@ -4350,8 +4357,8 @@ class ReadRequest(_messages.Message):
         try to act on the same data, they automatically get serialized. Each
         transaction waits its turn to acquire the lock and avoids getting into
         deadlock situations. Because the exclusive lock hint is just a hint,
-        it should not be considered equivalent to a mutex. In other words, you
-        should not use Spanner exclusive locks as a mutual exclusion mechanism
+        it shouldn't be considered equivalent to a mutex. In other words, you
+        shouldn't use Spanner exclusive locks as a mutual exclusion mechanism
         for the execution of code outside of Spanner. **Note:** Request
         exclusive locks judiciously because they block others from reading
         that data for the entire transaction, rather than just when the writes
@@ -4364,20 +4371,19 @@ class ReadRequest(_messages.Message):
     LOCK_HINT_EXCLUSIVE = 2
 
   class OrderByValueValuesEnum(_messages.Enum):
-    r"""Optional. Order for the returned rows. By default, Spanner will return
+    r"""Optional. Order for the returned rows. By default, Spanner returns
     result rows in primary key order except for PartitionRead requests. For
-    applications that do not require rows to be returned in primary key
+    applications that don't require rows to be returned in primary key
     (`ORDER_BY_PRIMARY_KEY`) order, setting `ORDER_BY_NO_ORDER` option allows
     Spanner to optimize row retrieval, resulting in lower latencies in certain
-    cases (e.g. bulk point lookups).
+    cases (for example, bulk point lookups).
 
     Values:
-      ORDER_BY_UNSPECIFIED: Default value. ORDER_BY_UNSPECIFIED is equivalent
-        to ORDER_BY_PRIMARY_KEY.
+      ORDER_BY_UNSPECIFIED: Default value. `ORDER_BY_UNSPECIFIED` is
+        equivalent to `ORDER_BY_PRIMARY_KEY`.
       ORDER_BY_PRIMARY_KEY: Read rows are returned in primary key order. In
         the event that this option is used in conjunction with the
-        `partition_token` field, the API will return an `INVALID_ARGUMENT`
-        error.
+        `partition_token` field, the API returns an `INVALID_ARGUMENT` error.
       ORDER_BY_NO_ORDER: Read rows are returned in any order.
     """
     ORDER_BY_UNSPECIFIED = 0
@@ -4417,14 +4423,23 @@ class ReadWrite(_messages.Message):
     r"""Read lock mode for the transaction.
 
     Values:
-      READ_LOCK_MODE_UNSPECIFIED: Default value. If the value is not
-        specified, the pessimistic read lock is used.
+      READ_LOCK_MODE_UNSPECIFIED: Default value. * If isolation level is
+        REPEATABLE_READ, then it is an error to specify `read_lock_mode`.
+        Locking semantics default to `OPTIMISTIC`. No validation checks are
+        done for reads, except to validate that the data that was served at
+        the snapshot time is unchanged at commit time in the following cases:
+        1. reads done as part of queries that use `SELECT FOR UPDATE` 2. reads
+        done as part of statements with a `LOCK_SCANNED_RANGES` hint 3. reads
+        done as part of DML statements * At all other isolation levels, if
+        `read_lock_mode` is the default value, then pessimistic read locks are
+        used.
       PESSIMISTIC: Pessimistic lock mode. Read locks are acquired immediately
-        on read.
+        on read. Semantics described only applies to SERIALIZABLE isolation.
       OPTIMISTIC: Optimistic lock mode. Locks for reads within the transaction
         are not acquired on read. Instead the locks are acquired on a commit
         to validate that read/queried data has not changed since the
-        transaction started.
+        transaction started. Semantics described only applies to SERIALIZABLE
+        isolation.
     """
     READ_LOCK_MODE_UNSPECIFIED = 0
     PESSIMISTIC = 1
@@ -4502,17 +4517,18 @@ class ReplicaSelection(_messages.Message):
   be one of the regions within the multi-region configuration of your
   database. * `type` - The type of the replica. Some examples of using
   replica_selectors are: * `location:us-east1` --> The "us-east1" replica(s)
-  of any available type will be used to process the request. *
-  `type:READ_ONLY` --> The "READ_ONLY" type replica(s) in nearest available
-  location will be used to process the request. * `location:us-east1
-  type:READ_ONLY` --> The "READ_ONLY" type replica(s) in location "us-east1"
-  will be used to process the request.
+  of any available type is used to process the request. * `type:READ_ONLY` -->
+  The "READ_ONLY" type replica(s) in the nearest available location are used
+  to process the request. * `location:us-east1 type:READ_ONLY` --> The
+  "READ_ONLY" type replica(s) in location "us-east1" is used to process the
+  request.
 
   Enums:
     TypeValueValuesEnum: The type of replica.
 
   Fields:
-    location: The location or region of the serving requests, e.g. "us-east1".
+    location: The location or region of the serving requests, for example,
+      "us-east1".
     type: The type of replica.
   """
 
@@ -4541,23 +4557,23 @@ class RequestOptions(_messages.Message):
   Fields:
     priority: Priority for the request.
     requestTag: A per-request tag which can be applied to queries or reads,
-      used for statistics collection. Both request_tag and transaction_tag can
-      be specified for a read or query that belongs to a transaction. This
-      field is ignored for requests where it's not applicable (e.g.
-      CommitRequest). Legal characters for `request_tag` values are all
+      used for statistics collection. Both `request_tag` and `transaction_tag`
+      can be specified for a read or query that belongs to a transaction. This
+      field is ignored for requests where it's not applicable (for example,
+      `CommitRequest`). Legal characters for `request_tag` values are all
       printable characters (ASCII 32 - 126) and the length of a request_tag is
       limited to 50 characters. Values that exceed this limit are truncated.
-      Any leading underscore (_) characters will be removed from the string.
+      Any leading underscore (_) characters are removed from the string.
     transactionTag: A tag used for statistics collection about this
-      transaction. Both request_tag and transaction_tag can be specified for a
-      read or query that belongs to a transaction. The value of
+      transaction. Both `request_tag` and `transaction_tag` can be specified
+      for a read or query that belongs to a transaction. The value of
       transaction_tag should be the same for all requests belonging to the
       same transaction. If this request doesn't belong to any transaction,
-      transaction_tag will be ignored. Legal characters for `transaction_tag`
+      `transaction_tag` is ignored. Legal characters for `transaction_tag`
       values are all printable characters (ASCII 32 - 126) and the length of a
-      transaction_tag is limited to 50 characters. Values that exceed this
-      limit are truncated. Any leading underscore (_) characters will be
-      removed from the string.
+      `transaction_tag` is limited to 50 characters. Values that exceed this
+      limit are truncated. Any leading underscore (_) characters are removed
+      from the string.
   """
 
   class PriorityValueValuesEnum(_messages.Enum):
@@ -4737,10 +4753,10 @@ class ResultSet(_messages.Message):
 
   Fields:
     metadata: Metadata about the result set, such as row type information.
-    precommitToken: Optional. A precommit token will be included if the read-
-      write transaction is on a multiplexed session. The precommit token with
-      the highest sequence number from this transaction attempt should be
-      passed to the Commit request for this transaction.
+    precommitToken: Optional. A precommit token is included if the read-write
+      transaction is on a multiplexed session. Pass the precommit token with
+      the highest sequence number from this transaction attempt to the Commit
+      request for this transaction.
     rows: Each element in `rows` is a row whose format is defined by
       metadata.row_type. The ith element in each row matches the ith field in
       metadata.row_type. Elements are encoded based on type as described here.
@@ -4749,7 +4765,7 @@ class ResultSet(_messages.Message):
       ExecuteSqlRequest.query_mode. DML statements always produce stats
       containing the number of rows modified, unless executed using the
       ExecuteSqlRequest.QueryMode.PLAN ExecuteSqlRequest.query_mode. Other
-      fields may or may not be populated, based on the
+      fields might or might not be populated, based on the
       ExecuteSqlRequest.query_mode.
   """
 
@@ -4810,7 +4826,7 @@ class ResultSetStats(_messages.Message):
       secs", "cpu_time": "1.19 secs" }
     rowCountExact: Standard DML returns an exact count of rows that were
       modified.
-    rowCountLowerBound: Partitioned DML does not offer exactly-once semantics,
+    rowCountLowerBound: Partitioned DML doesn't offer exactly-once semantics,
       so it returns a lower bound of the rows modified.
   """
 
@@ -4939,7 +4955,7 @@ class Session(_messages.Message):
 
   Fields:
     approximateLastUseTime: Output only. The approximate timestamp when the
-      session is last used. It is typically earlier than the actual last use
+      session is last used. It's typically earlier than the actual last use
       time.
     createTime: Output only. The timestamp when the session is created.
     creatorRole: The database role which created this session.
@@ -4950,7 +4966,7 @@ class Session(_messages.Message):
       `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64 labels can be
       associated with a given session. See https://goo.gl/xmQnxf for more
       information on and examples of labels.
-    multiplexed: Optional. If true, specifies a multiplexed session. Use a
+    multiplexed: Optional. If `true`, specifies a multiplexed session. Use a
       multiplexed session for multiple, concurrent read-only operations. Don't
       use them for read-write transactions, partitioned reads, or partitioned
       queries. Use `sessions.create` to create multiplexed sessions. Don't use
@@ -7008,7 +7024,7 @@ class Statement(_messages.Message):
   r"""A single DML statement.
 
   Messages:
-    ParamTypesValue: It is not always possible for Cloud Spanner to infer the
+    ParamTypesValue: It isn't always possible for Cloud Spanner to infer the
       right SQL type from a JSON value. For example, values of type `BYTES`
       and values of type `STRING` both appear in params as JSON strings. In
       these cases, `param_types` can be used to specify the exact SQL type for
@@ -7020,11 +7036,11 @@ class Statement(_messages.Message):
       names can contain letters, numbers, and underscores. Parameters can
       appear anywhere that a literal value is expected. The same parameter
       name can be used more than once, for example: `"WHERE id > @msg_id AND
-      id < @msg_id + 100"` It is an error to execute a SQL statement with
+      id < @msg_id + 100"` It's an error to execute a SQL statement with
       unbound parameters.
 
   Fields:
-    paramTypes: It is not always possible for Cloud Spanner to infer the right
+    paramTypes: It isn't always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings. In these
       cases, `param_types` can be used to specify the exact SQL type for some
@@ -7036,16 +7052,16 @@ class Statement(_messages.Message):
       contain letters, numbers, and underscores. Parameters can appear
       anywhere that a literal value is expected. The same parameter name can
       be used more than once, for example: `"WHERE id > @msg_id AND id <
-      @msg_id + 100"` It is an error to execute a SQL statement with unbound
+      @msg_id + 100"` It's an error to execute a SQL statement with unbound
       parameters.
     sql: Required. The DML string.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
-    r"""It is not always possible for Cloud Spanner to infer the right SQL
-    type from a JSON value. For example, values of type `BYTES` and values of
-    type `STRING` both appear in params as JSON strings. In these cases,
+    r"""It isn't always possible for Cloud Spanner to infer the right SQL type
+    from a JSON value. For example, values of type `BYTES` and values of type
+    `STRING` both appear in params as JSON strings. In these cases,
     `param_types` can be used to specify the exact SQL type for some or all of
     the SQL statement parameters. See the definition of Type for more
     information about SQL types.
@@ -7077,8 +7093,8 @@ class Statement(_messages.Message):
     the parameter name (for example, `@firstName`). Parameter names can
     contain letters, numbers, and underscores. Parameters can appear anywhere
     that a literal value is expected. The same parameter name can be used more
-    than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It
-    is an error to execute a SQL statement with unbound parameters.
+    than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It's
+    an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -7420,6 +7436,9 @@ class TransactionOptions(_messages.Message):
   good fit for large, database-wide, operations that are idempotent, such as
   deleting old rows from a very large table.
 
+  Enums:
+    IsolationLevelValueValuesEnum: Isolation level for the transaction.
+
   Fields:
     excludeTxnFromChangeStreams: When `exclude_txn_from_change_streams` is set
       to `true`: * Modifications from this transaction will not be recorded in
@@ -7433,6 +7452,7 @@ class TransactionOptions(_messages.Message):
       these transactions. `exclude_txn_from_change_streams` may only be
       specified for read-write or partitioned-dml transactions, otherwise the
       API will return an `INVALID_ARGUMENT` error.
+    isolationLevel: Isolation level for the transaction.
     partitionedDml: Partitioned DML transaction. Authorization to begin a
       Partitioned DML transaction requires
       `spanner.databases.beginPartitionedDmlTransaction` permission on the
@@ -7446,10 +7466,39 @@ class TransactionOptions(_messages.Message):
       the `session` resource.
   """
 
+  class IsolationLevelValueValuesEnum(_messages.Enum):
+    r"""Isolation level for the transaction.
+
+    Values:
+      ISOLATION_LEVEL_UNSPECIFIED: Default value. If the value is not
+        specified, the `SERIALIZABLE` isolation level is used.
+      SERIALIZABLE: All transactions appear as if they executed in a serial
+        order, even if some of the reads, writes, and other operations of
+        distinct transactions actually occurred in parallel. Spanner assigns
+        commit timestamps that reflect the order of committed transactions to
+        implement this property. Spanner offers a stronger guarantee than
+        serializability called external consistency. For further details,
+        please refer to https://cloud.google.com/spanner/docs/true-time-
+        external-consistency#serializability.
+      REPEATABLE_READ: All reads performed during the transaction observe a
+        consistent snapshot of the database, and the transaction will only
+        successfully commit in the absence of conflicts between its updates
+        and any concurrent updates that have occurred since that snapshot.
+        Consequently, in contrast to `SERIALIZABLE` transactions, only write-
+        write conflicts are detected in snapshot transactions. This isolation
+        level does not support Read-only and Partitioned DML transactions.
+        When `REPEATABLE_READ` is specified on a read-write transaction, the
+        locking semantics default to `OPTIMISTIC`.
+    """
+    ISOLATION_LEVEL_UNSPECIFIED = 0
+    SERIALIZABLE = 1
+    REPEATABLE_READ = 2
+
   excludeTxnFromChangeStreams = _messages.BooleanField(1)
-  partitionedDml = _messages.MessageField('PartitionedDml', 2)
-  readOnly = _messages.MessageField('ReadOnly', 3)
-  readWrite = _messages.MessageField('ReadWrite', 4)
+  isolationLevel = _messages.EnumField('IsolationLevelValueValuesEnum', 2)
+  partitionedDml = _messages.MessageField('PartitionedDml', 3)
+  readOnly = _messages.MessageField('ReadOnly', 4)
+  readWrite = _messages.MessageField('ReadWrite', 5)
 
 
 class TransactionSelector(_messages.Message):

@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions
@@ -821,6 +820,63 @@ def IpPortDynamicForwarding(client, args, backend_service):
     )
     dynamic_forwarding_config.ipPortSelection.enabled = True
     backend_service.dynamicForwarding = dynamic_forwarding_config
+
+
+def HasZonalAffinityArgs(args):
+  """Returns true if at least one of the zonal affinity args is defined.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+  """
+  if args.IsSpecified('zonal_affinity_spillover') or args.IsSpecified(
+      'zonal_affinity_spillover_ratio'
+  ):
+    return True
+  else:
+    return False
+
+
+def ZonalAffinity(client, args, backend_service):
+  """Applies the Zonal Affinity related aguments in the backend service.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+
+  if HasZonalAffinityArgs(args):
+    if backend_service.networkPassThroughLbTrafficPolicy is not None:
+      network_pass_through_lb_traffic_policy = encoding.CopyProtoMessage(
+          backend_service.networkPassThroughLbTrafficPolicy
+      )
+    else:
+      network_pass_through_lb_traffic_policy = (
+          client.messages.BackendServiceNetworkPassThroughLbTrafficPolicy()
+      )
+
+    if network_pass_through_lb_traffic_policy.zonalAffinity is not None:
+      zonal_affinity = encoding.CopyProtoMessage(
+          network_pass_through_lb_traffic_policy.zonalAffinity
+      )
+    else:
+      zonal_affinity = (
+          client.messages.BackendServiceNetworkPassThroughLbTrafficPolicyZonalAffinity()
+      )
+
+    if args.zonal_affinity_spillover:
+      zonal_affinity.spillover = client.messages.BackendServiceNetworkPassThroughLbTrafficPolicyZonalAffinity.SpilloverValueValuesEnum(
+          args.zonal_affinity_spillover
+      )
+
+    if args.zonal_affinity_spillover_ratio:
+      zonal_affinity.spilloverRatio = args.zonal_affinity_spillover_ratio
+
+    network_pass_through_lb_traffic_policy.zonalAffinity = zonal_affinity
+
+    backend_service.networkPassThroughLbTrafficPolicy = (
+        network_pass_through_lb_traffic_policy
+    )
 
 
 def SendGetRequest(client, backend_service_ref):

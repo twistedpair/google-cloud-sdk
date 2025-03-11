@@ -71,6 +71,13 @@ IDENTITY_FLAG = base.Argument(
     hidden=True,
 )
 
+ENABLE_WORKLOAD_CERTIFICATE_FLAG = base.Argument(
+    '--enable-workload-certificate',
+    help='Enables workload certificates using managed workload identity.',
+    action=arg_parsers.StoreTrueFalseAction,
+    hidden=True,
+)
+
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
     'external': 'Visible from outside the cluster.',
@@ -3118,6 +3125,13 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
               revision.IDENTITY_ANNOTATION
           )
       )
+  if FlagIsExplicitlySet(args, 'enable_workload_certificate'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            revision.ENABLE_WORKLOAD_CERTIFICATE_ANNOTATION,
+            str(args.enable_workload_certificate).lower(),
+        )
+    )
 
   if FlagIsExplicitlySet(args, 'base_image'):
     changes.append(
@@ -4621,6 +4635,8 @@ def ContainerFlag():
 
   help_text = """
   Specifies a container by name. Flags following --container will apply to the specified container.
+
+  Flags that are not container-specific must be specified before --container.
   """
   return base.Argument(
       '--container',

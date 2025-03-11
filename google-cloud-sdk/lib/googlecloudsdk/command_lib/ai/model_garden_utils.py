@@ -219,16 +219,23 @@ def GetDeployConfig(args, publisher_model):
     )
 
   deploy_config = None
-  if args.machine_type or args.accelerator_type:
+  if args.machine_type or args.accelerator_type or args.container_image_uri:
     for deploy in multi_deploy:
       if (
-          args.machine_type
-          and deploy.dedicatedResources.machineSpec.machineType
-          != args.machine_type
-      ) or (
-          args.accelerator_type
-          and str(deploy.dedicatedResources.machineSpec.acceleratorType)
-          != args.accelerator_type.upper()
+          (
+              args.machine_type
+              and deploy.dedicatedResources.machineSpec.machineType
+              != args.machine_type
+          )
+          or (
+              args.accelerator_type
+              and str(deploy.dedicatedResources.machineSpec.acceleratorType)
+              != args.accelerator_type.upper()
+          )
+          or (
+              args.container_image_uri
+              and deploy.containerSpec.imageUri != args.container_image_uri
+          )
       ):
         continue
       deploy_config = deploy
@@ -236,29 +243,27 @@ def GetDeployConfig(args, publisher_model):
 
     if not deploy_config:
       raise core_exceptions.Error(
-          'The machine type and/or accelerator type is not supported by the'
-          ' model. You can use `gcloud ai model-garden models'
-          ' list-deployment-config` command to find the supported'
-          ' configurations'
+          'The machine type, accelerator type and/or container image URI is not'
+          ' supported by the model. You can use `gcloud alpha/beta ai'
+          ' model-garden models list-deployment-config` command to find the'
+          ' supported configurations'
       )
+    log.status.Print('Using the selected deployment configuration:')
   else:
     # Default to use the first config.
     deploy_config = multi_deploy[0]
+    log.status.Print('Using the default deployment configuration:')
 
   machine_spec = deploy_config.dedicatedResources.machineSpec
-  log.status.Print(
-      'Using the {} deployment configuration:'.format(
-          'selected'
-          if (args.machine_type or args.accelerator_type)
-          else 'default'
-      )
-  )
+  container_image_uri = deploy_config.containerSpec.imageUri
   if machine_spec.machineType:
     log.status.Print(f' Machine type: {machine_spec.machineType}')
   if machine_spec.acceleratorType:
     log.status.Print(f' Accelerator type: {machine_spec.acceleratorType}')
   if machine_spec.acceleratorCount:
     log.status.Print(f' Accelerator count: {machine_spec.acceleratorCount}')
+  if container_image_uri:
+    log.status.Print(f' Container image URI: {container_image_uri}')
   return deploy_config
 
 
@@ -475,12 +480,12 @@ def DeployModel(
   )
 
 
-def DeployPublisherModel(
+def Deploy(
     args, machine_spec, endpoint_name, model, operation_client, mg_client
 ):
   """Deploys the publisher model to a Vertex endpoint."""
   try:
-    deploy_op = mg_client.DeployPublisherModel(
+    deploy_op = mg_client.Deploy(
         project=properties.VALUES.core.project.GetOrFail(),
         location=args.region,
         model=model,
@@ -492,6 +497,24 @@ def DeployPublisherModel(
         hugging_face_access_token=args.hugging_face_access_token,
         spot=args.spot,
         reservation_affinity=args.reservation_affinity,
+        use_dedicated_endpoint=args.use_dedicated_endpoint,
+        enable_fast_tryout=args.enable_fast_tryout,
+        container_image_uri=args.container_image_uri,
+        container_command=args.container_command,
+        container_args=args.container_args,
+        container_env_vars=args.container_env_vars,
+        container_ports=args.container_ports,
+        container_grpc_ports=args.container_grpc_ports,
+        container_predict_route=args.container_predict_route,
+        container_health_route=args.container_health_route,
+        container_deployment_timeout_seconds=args.container_deployment_timeout_seconds,
+        container_shared_memory_size_mb=args.container_shared_memory_size_mb,
+        container_startup_probe_exec=args.container_startup_probe_exec,
+        container_startup_probe_period_seconds=args.container_startup_probe_period_seconds,
+        container_startup_probe_timeout_seconds=args.container_startup_probe_timeout_seconds,
+        container_health_probe_exec=args.container_health_probe_exec,
+        container_health_probe_period_seconds=args.container_health_probe_period_seconds,
+        container_health_probe_timeout_seconds=args.container_health_probe_timeout_seconds,
     )
   except apitools_exceptions.HttpError as e:
     # Keep prompting for HF token if the error is due to missing HF token.
@@ -504,7 +527,7 @@ def DeployPublisherModel(
         args.hugging_face_access_token = console_io.PromptPassword(
             'Please enter your Hugging Face read access token: '
         )
-      DeployPublisherModel(
+      Deploy(
           args,
           machine_spec,
           endpoint_name,
@@ -537,7 +560,7 @@ def DeployPublisherModel(
         raise core_exceptions.Error(
             'Please accept the EULA using the `--accept-eula` flag.'
         )
-      DeployPublisherModel(
+      Deploy(
           args,
           machine_spec,
           endpoint_name,

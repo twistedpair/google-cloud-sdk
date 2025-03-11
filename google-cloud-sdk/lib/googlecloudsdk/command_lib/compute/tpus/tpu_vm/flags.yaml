@@ -349,3 +349,44 @@ autocheckpoint_enabled:
   required: false
   help_text: |
     If specified, the TPU node is created with the Autocheckpoint feature enabled.
+
+reservation:
+  api_field: node.schedulingConfig.reservationName
+  arg_name: reservation
+  type: str
+  required: false
+  help_text: |
+    The name of the reservation. This can either be the full name or just the name.
+    However, a full name is required if the reservation is not in the default project.
+
+    Full reservation name format is:
+
+    projects/<project>/reservations/<reservation-name>
+
+worker:
+  arg_name: worker
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    List of worker IDs to apply attach/detach disk to.
+    If not specified, the update is applied to all workers.
+    Only numeric values are allowed.
+    The only exception is 'all'.
+
+    `--attach-disk` and `--worker` can be used to specify which workers to attach the disk to. For example:
+
+      $ {command} example-tpu --attach-disk source=projects/my-project/zones/us-central1-c/disks/my-disk,mode=read-only --zone=us-central1-c
+            --worker=0,1
+
+    attaches the disk named 'projects/my-project/zones/us-central1-c/disks/my-disk' to worker 0 and 1 of a TPU VM
+    named 'example-tpu' in read-only mode in zone `us-central1-c`.
+    if `--worker` is not specified or `--worker=all` is specified, the disk is attached to all workers.
+
+    `--detach-disk` and `--worker` can be used to specify which workers to detach the disk from. For example:
+
+      $ {command} example-tpu --detach-disk=projects/my-project/zones/us-central1-c/disks/my-disk --zone=us-central1-c
+            --worker=0,1
+
+    detaches the disk named 'projects/my-project/zones/us-central1-c/disks/my-disk' from worker 0 and 1 of a TPU VM
+    named 'example-tpu' in zone `us-central1-c`.
+    if `--worker` is not specified or `--worker=all` is specified, the disk is attached to all workers.

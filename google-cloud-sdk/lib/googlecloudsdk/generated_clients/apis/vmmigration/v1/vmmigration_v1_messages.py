@@ -1448,8 +1448,16 @@ class ComputeScheduling(_messages.Message):
   restartType = _messages.EnumField('RestartTypeValueValuesEnum', 4)
 
 
+class CopyingSourceDiskSnapshotStep(_messages.Message):
+  r"""CopyingSourceDiskSnapshotStep contains specific step details."""
+
+
 class CreatingImageStep(_messages.Message):
   r"""CreatingImageStep contains specific step details."""
+
+
+class CreatingSourceDiskSnapshotStep(_messages.Message):
+  r"""CreatingSourceDiskSnapshotStep contains specific step details."""
 
 
 class CutoverForecast(_messages.Message):
@@ -1758,6 +1766,8 @@ class DiskMigrationJob(_messages.Message):
       migration job's state in case of an error.
     name: Output only. Identifier. The identifier of the DiskMigrationJob.
     state: Output only. State of the DiskMigrationJob.
+    steps: Output only. The disk migration steps list representing its
+      progress.
     targetDetails: Required. Details of the target Disk in Compute Engine.
     updateTime: Output only. The last time the DiskMigrationJob resource was
       updated.
@@ -1790,8 +1800,9 @@ class DiskMigrationJob(_messages.Message):
   errors = _messages.MessageField('Status', 3, repeated=True)
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
-  targetDetails = _messages.MessageField('DiskMigrationJobTargetDetails', 6)
-  updateTime = _messages.StringField(7)
+  steps = _messages.MessageField('DiskMigrationStep', 6, repeated=True)
+  targetDetails = _messages.MessageField('DiskMigrationJobTargetDetails', 7)
+  updateTime = _messages.StringField(8)
 
 
 class DiskMigrationJobTargetDetails(_messages.Message):
@@ -1838,6 +1849,25 @@ class DiskMigrationJobTargetDetails(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   targetDisk = _messages.MessageField('ComputeEngineDisk', 3)
   targetProject = _messages.StringField(4)
+
+
+class DiskMigrationStep(_messages.Message):
+  r"""DiskMigrationStep holds information about the disk migration step
+  progress.
+
+  Fields:
+    copyingSourceDiskSnapshot: Copying source disk snapshot step.
+    creatingSourceDiskSnapshot: Creating source disk snapshot step.
+    endTime: Output only. The time the step has ended.
+    provisioningTargetDisk: Creating target disk step.
+    startTime: Output only. The time the step has started.
+  """
+
+  copyingSourceDiskSnapshot = _messages.MessageField('CopyingSourceDiskSnapshotStep', 1)
+  creatingSourceDiskSnapshot = _messages.MessageField('CreatingSourceDiskSnapshotStep', 2)
+  endTime = _messages.StringField(3)
+  provisioningTargetDisk = _messages.MessageField('ProvisioningTargetDiskStep', 4)
+  startTime = _messages.StringField(5)
 
 
 class DisksMigrationDisksTargetDefaults(_messages.Message):
@@ -3212,6 +3242,10 @@ class PostProcessingStep(_messages.Message):
 
 class PreparingVMDisksStep(_messages.Message):
   r"""PreparingVMDisksStep contains specific step details."""
+
+
+class ProvisioningTargetDiskStep(_messages.Message):
+  r"""ProvisioningTargetDiskStep contains specific step details."""
 
 
 class RemoveGroupMigrationRequest(_messages.Message):

@@ -240,33 +240,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDeleteR
   requestId = _messages.StringField(2)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGet
-  IamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGet
   Request object.
@@ -322,23 +295,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRe
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesSetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesSet
-  IamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTestIamPermissionsRequest(_messages.Message):
@@ -408,34 +364,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest(_message
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetIamPolicyRequest(_messages.Message):
-  r"""A
-  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest(_messages.Message):
@@ -572,33 +500,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDeleteRequ
   requestId = _messages.StringField(2)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIam
-  PolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest(_messages.Message):
   r"""A
   BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest
@@ -682,23 +583,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchReque
   updateMask = _messages.StringField(4)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsSetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsSetIam
-  PolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsTestIa
   mPermissionsRequest object.
@@ -714,24 +598,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsTestIamPer
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsSetIamPolicyRequest(_messages.Message):
-  r"""A
-  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsSetIamPolicyRequest
-  object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
 
 
@@ -1942,22 +1808,6 @@ class BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest(_messages.Mes
   resource = _messages.StringField(2, required=True)
 
 
-class BeyondcorpProjectsLocationsClientGatewaysSetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsClientGatewaysSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class BeyondcorpProjectsLocationsClientGatewaysTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsClientGatewaysTestIamPermissionsRequest
   object.
@@ -2173,24 +2023,6 @@ class BeyondcorpProjectsLocationsConnectionsSetIamPolicyRequest(_messages.Messag
   resource = _messages.StringField(2, required=True)
 
 
-class BeyondcorpProjectsLocationsConnectionsTestIamPermissionsRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsConnectionsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class BeyondcorpProjectsLocationsConnectorsCreateRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsConnectorsCreateRequest object.
 
@@ -2386,23 +2218,6 @@ class BeyondcorpProjectsLocationsConnectorsSetIamPolicyRequest(_messages.Message
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpProjectsLocationsConnectorsTestIamPermissionsRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsConnectorsTestIamPermissionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
 
 
@@ -6063,12 +5878,6 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
-encoding.AddCustomJsonFieldMapping(
-    BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest, 'customGrouping_fieldFilter', 'customGrouping.fieldFilter')
 encoding.AddCustomJsonFieldMapping(

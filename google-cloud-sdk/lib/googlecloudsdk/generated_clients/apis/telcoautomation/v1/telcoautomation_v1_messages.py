@@ -112,7 +112,7 @@ class Blueprint(_messages.Message):
     Values:
       DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
       HYDRATION: Blueprints at HYDRATION level cannot be used to create a
-        Deployment (A user cannot manually initate deployment of these
+        Deployment (A user cannot manually initiate deployment of these
         blueprints on orchestration or workload cluster). These blueprints
         stay in a user's private catalog and are configured and deployed by
         TNA automation.
@@ -291,7 +291,7 @@ class Deployment(_messages.Message):
     Values:
       DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
       HYDRATION: Blueprints at HYDRATION level cannot be used to create a
-        Deployment (A user cannot manually initate deployment of these
+        Deployment (A user cannot manually initiate deployment of these
         blueprints on orchestration or workload cluster). These blueprints
         stay in a user's private catalog and are configured and deployed by
         TNA automation.
@@ -1130,7 +1130,7 @@ class PublicBlueprint(_messages.Message):
     Values:
       DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
       HYDRATION: Blueprints at HYDRATION level cannot be used to create a
-        Deployment (A user cannot manually initate deployment of these
+        Deployment (A user cannot manually initiate deployment of these
         blueprints on orchestration or workload cluster). These blueprints
         stay in a user's private catalog and are configured and deployed by
         TNA automation.

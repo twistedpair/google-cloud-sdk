@@ -51,6 +51,8 @@ class DetailedProgressMessage(ThreadMessage):
       total number of components.
     operation_name (task_status.OperationName|None): Name of the operation
       running on target data.
+    error_occurred (bool): Indicates if an error occurred during the
+      operation.
     process_id (int|None): Identifies process that produced the instance of this
       message (overridable for testing).
     thread_id (int|None): Identifies thread that produced the instance of this
@@ -67,6 +69,7 @@ class DetailedProgressMessage(ThreadMessage):
                component_number=None,
                total_components=None,
                operation_name=None,
+               error_occurred=False,
                process_id=None,
                thread_id=None):
     # pylint:disable=g-doc-args
@@ -83,6 +86,7 @@ class DetailedProgressMessage(ThreadMessage):
     self.total_components = total_components
 
     self.operation_name = operation_name
+    self.error_occurred = error_occurred
     self.process_id = process_id or os.getpid()
     self.thread_id = thread_id or threading.current_thread().ident
 
@@ -94,29 +98,37 @@ class DetailedProgressMessage(ThreadMessage):
   def __repr__(self):
     """Returns a string with a valid constructor for this message."""
     source_url_string = "'{}'".format(self.source_url)
-    destination_url_string = ("'{}'".format(
-        self.destination_url)) if self.destination_url else None
-    operation_name_string = ("'{}'".format(
-        self.operation_name.value)) if self.operation_name else None
-    return ('{class_name}(time={time}, offset={offset},'
-            ' length={length}, current_byte={current_byte},'
-            ' source_url={source_url}, destination_url={destination_url},'
-            ' component_number={component_number},'
-            ' total_components={total_components},'
-            ' operation_name={operation_name}, process_id={process_id},'
-            ' thread_id={thread_id})').format(
-                class_name=self.__class__.__name__,
-                time=self.time,
-                offset=self.offset,
-                length=self.length,
-                current_byte=self.current_byte,
-                source_url=source_url_string,
-                destination_url=destination_url_string,
-                component_number=self.component_number,
-                total_components=self.total_components,
-                operation_name=operation_name_string,
-                process_id=self.process_id,
-                thread_id=self.thread_id)
+    destination_url_string = (
+        "'{}'".format(self.destination_url) if self.destination_url else None
+    )
+    operation_name_string = (
+        "'{}'".format(self.operation_name.value)
+        if self.operation_name
+        else None
+    )
+    return (
+        '{class_name}(time={time}, offset={offset}, length={length},'
+        ' current_byte={current_byte}, source_url={source_url},'
+        ' destination_url={destination_url},'
+        ' component_number={component_number},'
+        ' total_components={total_components}, operation_name={operation_name},'
+        ' error_occurred={error_occurred}, process_id={process_id},'
+        ' thread_id={thread_id})'
+    ).format(
+        class_name=self.__class__.__name__,
+        time=self.time,
+        offset=self.offset,
+        length=self.length,
+        current_byte=self.current_byte,
+        source_url=source_url_string,
+        destination_url=destination_url_string,
+        component_number=self.component_number,
+        total_components=self.total_components,
+        operation_name=operation_name_string,
+        error_occurred=self.error_occurred,
+        process_id=self.process_id,
+        thread_id=self.thread_id,
+    )
 
 
 class ManifestMessage(ThreadMessage):

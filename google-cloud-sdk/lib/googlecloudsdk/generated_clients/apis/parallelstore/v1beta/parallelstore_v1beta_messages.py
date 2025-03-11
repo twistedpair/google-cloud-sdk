@@ -40,6 +40,7 @@ class ExportDataRequest(_messages.Message):
 
   Fields:
     destinationGcsBucket: Cloud Storage destination.
+    metadataOptions: Optional. The metadata options for the export data.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -62,9 +63,10 @@ class ExportDataRequest(_messages.Message):
   """
 
   destinationGcsBucket = _messages.MessageField('DestinationGcsBucket', 1)
-  requestId = _messages.StringField(2)
-  serviceAccount = _messages.StringField(3)
-  sourceParallelstore = _messages.MessageField('SourceParallelstore', 4)
+  metadataOptions = _messages.MessageField('TransferMetadataOptions', 2)
+  requestId = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
+  sourceParallelstore = _messages.MessageField('SourceParallelstore', 5)
 
 
 class GoogleProtobufEmpty(_messages.Message):
@@ -81,6 +83,8 @@ class ImportDataRequest(_messages.Message):
 
   Fields:
     destinationParallelstore: Parallelstore destination.
+    metadataOptions: Optional. The transfer metadata options for the import
+      data.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -104,9 +108,10 @@ class ImportDataRequest(_messages.Message):
   """
 
   destinationParallelstore = _messages.MessageField('DestinationParallelstore', 1)
-  requestId = _messages.StringField(2)
-  serviceAccount = _messages.StringField(3)
-  sourceGcsBucket = _messages.MessageField('SourceGcsBucket', 4)
+  metadataOptions = _messages.MessageField('TransferMetadataOptions', 2)
+  requestId = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
+  sourceGcsBucket = _messages.MessageField('SourceGcsBucket', 5)
 
 
 class Instance(_messages.Message):
@@ -782,6 +787,39 @@ class ParallelstoreProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Enums:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
+
+  Fields:
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: Excluisive action returned by the CLH.
+  """
+
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""Excluisive action returned by the CLH.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel.
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
+  deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
 class SourceGcsBucket(_messages.Message):
   r"""Cloud Storage as the source of a data transfer.
 
@@ -916,6 +954,63 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TransferMetadataOptions(_messages.Message):
+  r"""Transfer metadata options for the instance.
+
+  Enums:
+    GidValueValuesEnum: Optional. The GID preservation behavior.
+    ModeValueValuesEnum: Optional. The mode preservation behavior.
+    UidValueValuesEnum: Optional. The UID preservation behavior.
+
+  Fields:
+    gid: Optional. The GID preservation behavior.
+    mode: Optional. The mode preservation behavior.
+    uid: Optional. The UID preservation behavior.
+  """
+
+  class GidValueValuesEnum(_messages.Enum):
+    r"""Optional. The GID preservation behavior.
+
+    Values:
+      GID_UNSPECIFIED: default is GID_NUMBER_PRESERVE.
+      GID_SKIP: Do not preserve GID during a transfer job.
+      GID_NUMBER_PRESERVE: Preserve GID that is in number format during a
+        transfer job.
+    """
+    GID_UNSPECIFIED = 0
+    GID_SKIP = 1
+    GID_NUMBER_PRESERVE = 2
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode preservation behavior.
+
+    Values:
+      MODE_UNSPECIFIED: default is MODE_PRESERVE.
+      MODE_SKIP: Do not preserve mode during a transfer job.
+      MODE_PRESERVE: Preserve mode during a transfer job.
+    """
+    MODE_UNSPECIFIED = 0
+    MODE_SKIP = 1
+    MODE_PRESERVE = 2
+
+  class UidValueValuesEnum(_messages.Enum):
+    r"""Optional. The UID preservation behavior.
+
+    Values:
+      UID_UNSPECIFIED: default is UID_NUMBER_PRESERVE.
+      UID_SKIP: Do not preserve UID during a transfer job.
+      UID_NUMBER_PRESERVE: Preserve UID that is in number format during a
+        transfer job.
+    """
+    UID_UNSPECIFIED = 0
+    UID_SKIP = 1
+    UID_NUMBER_PRESERVE = 2
+
+  gid = _messages.EnumField('GidValueValuesEnum', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  uid = _messages.EnumField('UidValueValuesEnum', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -84,6 +84,18 @@ project_location_account_connector:
     attribute_name: account_connector
     help: The accountConnector id of the {resource} resource.
   disable_auto_completers: false
+project_location_insights_config:
+  name: insightsConfig
+  plural_name: insightsConfigs
+  collection: developerconnect.projects.locations.insightsConfigs
+  attributes:
+  - *project
+  - *location
+  - &insightsConfig
+    parameter_name: insightsConfigsId
+    attribute_name: insights_config
+    help: The insightsConfig id of the {resource} resource.
+  disable_auto_completers: false
 project_location_key_ring:
   name: keyRing
   plural_name: keyRings

@@ -17,12 +17,23 @@ import re
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
 _BUILDER_ROLE = 'roles/cloudbuild.builds.builder'
 _EDITOR_ROLE = 'roles/editor'
+_RUN_INVOKER_ROLE = 'roles/run.invoker'
+_PREDEFINE_ROLES_WITH_ROUTE_INVOKER_PERMISSION = [
+    'roles/run.admin',
+    'roles/run.developer',
+    _RUN_INVOKER_ROLE,
+    'roles/run.servicesInvoker',
+    'roles/run.sourceDeveloper',
+]
+
+_ROUTE_INVOKER_PERMISSION = 'run.routes.invoke'
 
 _GCE_SA = '{project_number}-compute@developer.gserviceaccount.com'
 
@@ -116,3 +127,93 @@ def ValidateDefaultBuildServiceAccountAndPromptWarning(
               ' Would you like to continue?'
           ),
       )
+
+
+def ValidateAndBindTriggerServiceAccount(
+    function,
+    project_id,
+    trigger_service_account,
+    is_gen2=False,
+):
+  """Validates trigger service account has route.invoker permission on project.
+
+  If missing, prompt user to add the run invoker role on the function's Cloud
+  Run service.
+
+  Args:
+    function: the function to add the binding to
+    project_id: the project id to validate
+    trigger_service_account: the trigger service account to validate
+    is_gen2: whether the function is a gen2 function
+  """
+  project_number = project_util.GetProjectNumber(project_id)
+  trigger_service_account = (
+      trigger_service_account
+      if trigger_service_account
+      else _GCE_SA.format(project_number=project_number)
+  )
+  try:
+    iam_policy = projects_api.GetIamPolicy(
+        project_util.ParseProject(project_id)
+    )
+    if _ShouldBindInvokerRole(iam_policy, trigger_service_account):
+      run_util.AddOrRemoveInvokerBinding(
+          function,
+          f'serviceAccount:{trigger_service_account}',
+          add_binding=True,
+          is_gen2=is_gen2,
+      )
+      log.status.Print('Role successfully bound.\n')
+  except apitools_exceptions.HttpForbiddenError:
+    log.warning(
+        'Your account does not have permission to check or bind IAM'
+        ' policies to project [%s]. If your function encounters'
+        ' authentication errors, ensure [%s] has the role [%s].',
+        project_id,
+        trigger_service_account,
+        _RUN_INVOKER_ROLE,
+    )
+
+
+def _ShouldBindInvokerRole(iam_policy, service_account):
+  """Prompts user to bind the invoker role if missing."""
+  custom_role_detected = False
+  account_string = f'serviceAccount:{service_account}'
+  for binding in iam_policy.bindings:
+    if account_string not in binding.members:
+      continue
+    if binding.role in _PREDEFINE_ROLES_WITH_ROUTE_INVOKER_PERMISSION:
+      return False
+    elif not binding.role.startswith('roles/'):
+      # A custom role starts with "projects/" or "organizations/" while a
+      # predefined role starts with "roles/".
+      custom_role_detected = True
+
+  prompt_string = (
+      f'Your trigger service account [{service_account}] is missing'
+      f' the [{_RUN_INVOKER_ROLE}] role. This will cause authentication'
+      ' errors when running the function.\n'
+  )
+  if custom_role_detected:
+    prompt_string = (
+        f'Your trigger service account [{service_account}] likely'
+        f' lacks the [{_ROUTE_INVOKER_PERMISSION}] permission, which will'
+        ' cause authentication errors. Since this service account uses a'
+        ' custom role, please verify that the custom role includes this'
+        " permission. If not, you'll need to either add this permission to"
+        f' the custom role, or grant the [{_RUN_INVOKER_ROLE}] role to the'
+        ' service account directly.\n'
+    )
+
+  should_bind = console_io.CanPrompt() and console_io.PromptContinue(
+      default=False,
+      cancel_on_no=True,
+      prompt_string=prompt_string
+      + ' Do you want to add the invoker binding to the IAM policy of'
+      ' your Cloud Run function?',
+  )
+
+  if not should_bind:
+    log.warning(prompt_string)
+
+  return should_bind

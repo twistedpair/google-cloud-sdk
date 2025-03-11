@@ -114,7 +114,7 @@ class AllToAllTraffic(_messages.Message):
 
 
 class AttachedDisk(_messages.Message):
-  r"""A node-attached disk resource. Next ID: 8;
+  r"""A node-attached disk resource.
 
   Enums:
     ModeValueValuesEnum: The mode in which to attach this disk. If not
@@ -126,6 +126,7 @@ class AttachedDisk(_messages.Message):
       is READ_WRITE mode. Only applicable to data_disks.
     sourceDisk: Specifies the full path to an existing disk. For example:
       "projects/my-project/zones/us-central1-c/disks/my-disk".
+    workerIds: Optional. The list of worker IDs this disk is attached to.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -145,6 +146,7 @@ class AttachedDisk(_messages.Message):
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
   sourceDisk = _messages.StringField(2)
+  workerIds = _messages.StringField(3, repeated=True)
 
 
 class BestEffort(_messages.Message):
@@ -1150,31 +1152,56 @@ class QueuedResource(_messages.Message):
   r"""A QueuedResource represents a request for resources that will be placed
   in a queue and fulfilled when the necessary resources are available.
 
+  Enums:
+    ProvisioningModelValueValuesEnum: Optional. The provisioning model for the
+      resource.
+
   Fields:
     bestEffort: The BestEffort tier.
     createTime: Output only. The time when the QueuedResource was created.
     guaranteed: The Guaranteed tier.
     name: Output only. Immutable. The name of the QueuedResource.
+    provisioningModel: Optional. The provisioning model for the resource.
     queueingPolicy: The queueing policy of the QueuedRequest.
     reservationName: Name of the reservation in which the resource should be
       provisioned. Format:
       projects/{project}/locations/{zone}/reservations/{reservation}
+    runDuration: Optional. The duration of the requested resource.
     spot: Optional. The Spot tier.
     state: Output only. State of the QueuedResource request.
     tpu: Defines a TPU resource.
     trafficConfig: Network traffic configuration.
   """
 
+  class ProvisioningModelValueValuesEnum(_messages.Enum):
+    r"""Optional. The provisioning model for the resource.
+
+    Values:
+      PROVISIONING_MODEL_UNSPECIFIED: Provisioning model is unknown.
+      STANDARD: Standard provisioning with user controlled runtime.
+      SPOT: Spot provisioning with no guaranteed runtime.
+      RESERVATION_BOUND: Reservation provisioning with runtime bound to the
+        lifetime of the consumed reservation.
+      FLEX_START: Provisioning with DWS Flex Start with max run duration.
+    """
+    PROVISIONING_MODEL_UNSPECIFIED = 0
+    STANDARD = 1
+    SPOT = 2
+    RESERVATION_BOUND = 3
+    FLEX_START = 4
+
   bestEffort = _messages.MessageField('BestEffort', 1)
   createTime = _messages.StringField(2)
   guaranteed = _messages.MessageField('Guaranteed', 3)
   name = _messages.StringField(4)
-  queueingPolicy = _messages.MessageField('QueueingPolicy', 5)
-  reservationName = _messages.StringField(6)
-  spot = _messages.MessageField('Spot', 7)
-  state = _messages.MessageField('QueuedResourceState', 8)
-  tpu = _messages.MessageField('Tpu', 9)
-  trafficConfig = _messages.MessageField('TrafficConfig', 10)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 5)
+  queueingPolicy = _messages.MessageField('QueueingPolicy', 6)
+  reservationName = _messages.StringField(7)
+  runDuration = _messages.MessageField('RunDuration', 8)
+  spot = _messages.MessageField('Spot', 9)
+  state = _messages.MessageField('QueuedResourceState', 10)
+  tpu = _messages.MessageField('Tpu', 11)
+  trafficConfig = _messages.MessageField('TrafficConfig', 12)
 
 
 class QueuedResourceState(_messages.Message):
@@ -1394,6 +1421,19 @@ class RingTraffic(_messages.Message):
 
   group = _messages.MessageField('CoordinateList', 1)
   trafficDirection = _messages.EnumField('TrafficDirectionValueValuesEnum', 2)
+
+
+class RunDuration(_messages.Message):
+  r"""Defines the maximum lifetime of the requested resource.
+
+  Fields:
+    maxRunDuration: The maximum duration of the requested resource.
+    terminationTime: The time at which the requested resource will be
+      terminated.
+  """
+
+  maxRunDuration = _messages.StringField(1)
+  terminationTime = _messages.StringField(2)
 
 
 class RuntimeVersion(_messages.Message):

@@ -118,6 +118,7 @@ from .prediction_service import (
 from .tool import (
     CodeExecutionResult,
     DynamicRetrievalConfig,
+    EnterpriseWebSearch,
     ExecutableCode,
     FunctionCall,
     FunctionCallingConfig,
@@ -232,6 +233,7 @@ __all__ = (
     'StreamRawPredictRequest',
     'CodeExecutionResult',
     'DynamicRetrievalConfig',
+    'EnterpriseWebSearch',
     'ExecutableCode',
     'FunctionCall',
     'FunctionCallingConfig',

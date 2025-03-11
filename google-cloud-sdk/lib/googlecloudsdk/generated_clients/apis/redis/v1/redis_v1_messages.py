@@ -2880,13 +2880,12 @@ class MachineConfiguration(_messages.Message):
 
   Fields:
     cpuCount: The number of CPUs. Deprecated. Use vcpu_count instead.
-      TODO(b/342344482, b/342346271) add proto validations again after bug
-      fix.
-    memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
-      add proto validations again after bug fix.
+      TODO(b/342344482) add proto validations again after bug fix.
+    memorySizeInBytes: Memory size in bytes. TODO(b/342344482) add proto
+      validations again after bug fix.
     shardCount: Optional. Number of shards (if applicable).
-    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482, b/342346271)
-      add proto validations again after bug fix.
+    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482) add proto
+      validations again after bug fix.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

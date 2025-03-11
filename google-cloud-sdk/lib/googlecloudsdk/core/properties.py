@@ -1298,6 +1298,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.genomics = self._Add('genomics', command='gcloud genomics')
     self.gkebackup = self._Add('gkebackup', hidden=True)
     self.gkehub = self._Add('gkehub', hidden=True)
+    self.transcoder = self._Add(
+        'transcoder', command='gcloud transcoder', hidden=True
+    )
     self.gkemulticloud = self._Add(
         'gkemulticloud',
         help_text='Overrides API endpoint for `gcloud container aws`, '

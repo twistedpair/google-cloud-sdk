@@ -1888,7 +1888,9 @@ class EventarcProjectsLocationsUpdateGoogleChannelConfigRequest(_messages.Messag
     googleChannelConfig: A GoogleChannelConfig resource to be passed as the
       request body.
     name: Required. The resource name of the config. Must be in the format of,
-      `projects/{project}/locations/{location}/googleChannelConfig`.
+      `projects/{project}/locations/{location}/googleChannelConfig`. In API
+      responses, the config name always includes the projectID, regardless of
+      whether the projectID or projectNumber was provided.
     updateMask: The fields to be updated; only fields explicitly provided are
       updated. If no field mask is provided, all provided fields in the
       request are updated. To update all fields, provide a field mask of "*".
@@ -2087,7 +2089,9 @@ class GoogleChannelConfig(_messages.Message):
       user) used to encrypt/decrypt their event data. It must match the
       pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     name: Required. The resource name of the config. Must be in the format of,
-      `projects/{project}/locations/{location}/googleChannelConfig`.
+      `projects/{project}/locations/{location}/googleChannelConfig`. In API
+      responses, the config name always includes the projectID, regardless of
+      whether the projectID or projectNumber was provided.
     updateTime: Output only. The last-modified time.
   """
 

@@ -414,6 +414,61 @@ def AddConnectionTrackingPolicy(parser):
       """)
 
 
+def AddZonalAffinity(parser):
+  """Add flags related to zonal affinity.
+
+  Args:
+    parser: The parser that parses args from user input.
+  """
+  parser.add_argument(
+      '--zonal-affinity-spillover',
+      choices=[
+          'ZONAL_AFFINITY_DISABLED',
+          'ZONAL_AFFINITY_STAY_WITHIN_ZONE',
+          'ZONAL_AFFINITY_SPILL_CROSS_ZONE',
+      ],
+      type=lambda x: x.replace('-', '_').upper(),
+      help="""\
+      Specifies whether zonal affinity is enabled or not.
+
+      Can only be set if load balancing scheme is INTERNAL,
+
+      The possible values are:
+
+       ZONAL_AFFINITY_DISABLED
+         Zonal Affinity is disabled. The load balancer distributes new
+         connections to all healthy backend endpoints across all zones.
+
+       ZONAL_AFFINITY_STAY_WITHIN_ZONE
+         Zonal Affinity is enabled. The load balancer distributes new
+         connections to all healthy backend endpoints in the local zone only.
+         If there are no healthy backend endpoints in the local zone, the load
+         balancer distributes new connections to all backend endpoints in the
+         local zone.
+
+       ZONAL_AFFINITY_SPILL_CROSS_ZONE
+         Zonal Affinity is enabled. The load balancer distributes new
+         connections to all healthy backend endpoints in the local zone only.
+         If there aren't enough healthy backend endpoints in the local zone,
+         the load balancer distributes new connections to all healthy backend
+         endpoints across all zones.
+      """,
+  )
+  parser.add_argument(
+      '--zonal-affinity-spillover-ratio',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help="""\
+      The value of the field must be in [0, 1]. When the ratio of the count
+      of healthy backend endpoints in a zone to the count of backend
+      endpoints in that same zone is equal to or above this threshold, the
+      load balancer distributes new connections to all healthy endpoints in
+      the local zone only. When the ratio of the count of healthy backend
+      endpoints in a zone to the count of backend endpoints in that same
+      zone is below this threshold, the load balancer distributes all new
+      connections to all healthy endpoints across all zones.
+      """)
+
+
 def AddSubsettingSubsetSize(parser):
   parser.add_argument(
       '--subsetting-subset-size',

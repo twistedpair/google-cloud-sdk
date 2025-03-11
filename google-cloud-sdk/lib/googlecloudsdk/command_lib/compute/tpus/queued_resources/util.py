@@ -267,6 +267,41 @@ def SetGuaranteed(api_version):
   return Process
 
 
+def SetProvisioningModel(api_version):
+  """Sets the provisioning model enum value."""
+  def Process(ref, args, request):
+    del ref  # unused
+    # create.yaml is in declarative style without direct access to the parser,
+    # instead leverage the generated client's enum functionality.
+    if args.provisioning_model:
+      tpu_messages = GetMessagesModule(api_version)
+      if request.queuedResource is None:
+        request.queuedResource = tpu_messages.QueuedResource()
+      try:
+        candidate_enum = (
+            tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum(
+                args.provisioning_model)
+        )
+      except TypeError as e:
+        raise exceptions.InvalidArgumentException(
+            '--provisioning-model',
+            f'{args.provisioning_model} is not a valid provisioning model',
+        ) from e
+      flex_start_enum = (
+          tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.FLEX_START
+      )
+      if candidate_enum != flex_start_enum:
+        raise exceptions.InvalidArgumentException(
+            '--provisioning-model',
+            'Only FLEX_START is supported for provisioning model',
+        )
+      request.queuedResource.provisioningModel = (
+          tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.FLEX_START
+      )
+    return request
+  return Process
+
+
 def SetValidInterval(api_version):
   """Combine multiple timing constraints into a valid_interval."""
 

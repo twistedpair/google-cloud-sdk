@@ -2594,8 +2594,8 @@ class RedisClusterInfo(_messages.Message):
     displayName: Name of a Redis Cluster.
     location: Name of the region in which the Redis Cluster is defined. For
       example, "us-central1".
-    networkUri: URI of a Redis Cluster network in format
-      "projects/{project_id}/global/networks/{network_id}".
+    networkUri: URI of the network containing the Redis Cluster endpoints in
+      format "projects/{project_id}/global/networks/{network_id}".
     secondaryEndpointIpAddress: Secondary endpoint IP address of a Redis
       Cluster.
     uri: URI of a Redis Cluster in format

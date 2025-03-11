@@ -707,6 +707,13 @@ class Collections(enum.Enum):
       ['project', 'region'],
       True
   )
+  RELIABILITYRISKS = (
+      'reliabilityRisks',
+      'projects/{project}/global/reliabilityRisks/{reliabilityRisk}',
+      {},
+      ['project', 'reliabilityRisk'],
+      True
+  )
   RESERVATIONBLOCKS = (
       'reservationBlocks',
       'projects/{project}/zones/{zone}/reservations/{reservation}/'
@@ -764,6 +771,13 @@ class Collections(enum.Enum):
       '{serviceAttachment}',
       {},
       ['project', 'region', 'serviceAttachment'],
+      True
+  )
+  SNAPSHOTGROUPS = (
+      'snapshotGroups',
+      'projects/{project}/global/snapshotGroups/{snapshotGroup}',
+      {},
+      ['project', 'snapshotGroup'],
       True
   )
   SNAPSHOTSETTINGS = (

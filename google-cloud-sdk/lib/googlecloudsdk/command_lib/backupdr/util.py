@@ -32,17 +32,17 @@ def ConvertIntToStr(duration):
   return str(duration) + 's'
 
 
-def VerifyDateInFuture(effective_time):
-  """Verify that the effective time is in the future."""
-  if effective_time is None:
+def VerifyDateInFuture(date, flag):
+  """Verify that the date is in the future."""
+  if date is None:
     return None
-  if effective_time < times.Now():
+  if date < times.Now():
     raise exceptions.InvalidArgumentException(
-        'Date must be in the future: {0}'.format(effective_time),
-        'effective_time',
+        flag,
+        'Date must be in the future: {0}'.format(date)
     )
-  effective_time = effective_time.astimezone(tz.tzutc())
-  return effective_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+  date = date.astimezone(tz.tzutc())
+  return date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def ResetEnforcedRetention():

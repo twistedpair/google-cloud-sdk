@@ -1909,7 +1909,8 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   Fields:
     cidrBlocks: Up to 50 external networks that could access Kubernetes master
       through HTTPS.
-    enabled: Whether or not master authorized networks feature is enabled.
+    enabled: Optional. Whether or not master authorized networks feature is
+      enabled.
   """
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)

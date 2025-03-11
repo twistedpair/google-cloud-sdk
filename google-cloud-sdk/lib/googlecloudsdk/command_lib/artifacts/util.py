@@ -1138,12 +1138,21 @@ def RecommendAuthChange(
     new_string = yaml.dump(encoding.MessageToDict(policy_addition)).split(
         "\n", 1
     )[1]
-    string_policy = (
-        "# Existing repository policy:\n{existing}\n# New additions:\n{new}"
-        .format(existing=existing_string, new=new_string)
-    )
+    if new_string:
+      string_policy = (
+          f"# Existing repository policy:\n{existing_string}\n# New"
+          f" additions:\n{new_string}"
+      )
+    else:
+      string_policy = (
+          f"# Existing repository policy:\n{existing_string}\n# No new bindings"
+          " added"
+      )
   else:
-    string_policy = yaml.dump(encoding.MessageToDict(policy_addition))
+    d = encoding.MessageToDict(policy_addition)
+    string_policy = yaml.dump(d)
+    if not d:
+      string_policy += "\n# No bindings needed"
     etag = ""
 
   warning_message = (
@@ -1472,7 +1481,7 @@ def SetupAuthForRepository(
       gcr_auth, ar_non_repo_auth, ar_repo_policy
   )
 
-  if missing_auth:
+  if missing_auth or output_iam_policy_dir:
     continue_checking_auth = RecommendAuthChange(
         upgrade_util.policy_from_map(missing_auth),
         ar_repo_policy,
@@ -1728,10 +1737,29 @@ def MigrateToArtifactRegistry(unused_ref, args):
     )
     sys.exit(1)
 
-  if enabled_projects:
+  if enabled_projects and canary_reads != 100 and canary_reads != 0:
     log.status.Print(
         "Skipping already migrated projects: {}\n".format(enabled_projects)
     )
+
+  # Allow going backwards -> 100% canary reads, which is the safest way to
+  # revert
+  # Also allow backwards ->0% canary reads, because it is clear user wants to
+  # disable redirection
+  # Disallow other values, because those are probably accidents when grouping
+  # multiple projects
+  if canary_reads == 100 or canary_reads == 0:
+    partial_projects.extend(copying_projects)
+    copying_projects = []
+    partial_projects.extend(enabled_projects)
+    enabled_projects = []
+  elif canary_reads is not None and copying_projects:
+    log.status.Print(
+        f"Skipping projects in final copying: {copying_projects}\n"
+        "Only --canary-reads=100 (safer) or --canary-reads=0 are"
+        " allowed for projects with migrated writes.\n",
+    )
+    copying_projects = []
 
   # Only do the initial steps for projects where we haven't started redirection
   # yet. Otherwise, we pick up where we left off.
@@ -1961,13 +1989,23 @@ def MigrateToArtifactRegistry(unused_ref, args):
         messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING,
     ):
       copying_projects.append(project)
-      log.status.Print(
+      rollback_command = (
           "*gcr.io traffic is now being served by Artifact Registry for"
-          " {project}. Missing images are being copied from Container Registry"
-          "\nTo send traffic back to Container Registry, run:"
-          "\n  gcloud artifacts settings disable-upgrade-redirection"
-          " --project={project}\n".format(project=project)
+          f" {project}. Missing images are being copied from Container"
+          " Registry\nTo send all write traffic back to Container Registry,"
+          " re-run this command with --canary-reads=100\n"
       )
+
+      # Don't even mention full rollback if doing a partial migration, because
+      # it is a footgun. If doing a full migration, give both options.
+      if not partial_projects:
+        rollback_command += (
+            "To send all read and write traffic to "
+            " Container Registry, instead run:\n"
+            "  gcloud artifacts settings disable-upgrade-redirection"
+            f" --project={project}\n"
+        )
+      log.status.Print(rollback_command)
 
   if not copying_projects:
     return None
@@ -1988,6 +2026,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
       if (
           state
           == messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_DISABLED
+          or state
+          == messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_PARTIAL_AND_COPYING
       ):
         unredirected_copying_projects.add(project)
   for project in copying_projects:
@@ -2449,9 +2489,15 @@ def DisableUpgradeRedirection(unused_ref, args):
 
   update = console_io.PromptContinue(
       "This action will disable the redirection of Container Registry traffic "
-      "to Artifact Registry for project {}"
-      .format(project),
-      default=True)
+      f"to Artifact Registry for project {project}\n\n"
+      + con.Colorize("WARNING:", "red")
+      + " This will disable redirection for both read and write traffic to"
+      f" Artifact Registry for project {project} and you may lose access to"
+      " images pushed to Artifact Registry. To disable redirection for write"
+      " traffic only, run:\n  gcloud artifacts docker upgrade migrate"
+      f" --project={project} --canary-reads=100",
+      default=True,
+  )
   if not update:
     log.status.Print("No changes made.")
     return None

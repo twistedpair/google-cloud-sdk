@@ -58,6 +58,33 @@ class StorageV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetIntelligenceConfig(self, request, global_params=None):
+      r"""Returns the Folder scoped singleton IntelligenceConfig resource.
+
+      Args:
+        request: (StorageFoldersLocationsGetIntelligenceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetIntelligenceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIntelligenceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/intelligenceConfig',
+        http_method='GET',
+        method_id='storage.folders.locations.getIntelligenceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='StorageFoldersLocationsGetIntelligenceConfigRequest',
+        response_type_name='IntelligenceConfig',
+        supports_download=False,
+    )
+
     def GetManagementHub(self, request, global_params=None):
       r"""Gets the `ManagementHub` resource associated with your folder. **IAM Permissions**: Requires `storage.managementHubs.get` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the folder.
 
@@ -82,6 +109,33 @@ class StorageV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='StorageFoldersLocationsGetManagementHubRequest',
         response_type_name='ManagementHub',
+        supports_download=False,
+    )
+
+    def UpdateIntelligenceConfig(self, request, global_params=None):
+      r"""Updates the Folder scoped singleton IntelligenceConfig resource.
+
+      Args:
+        request: (StorageFoldersLocationsUpdateIntelligenceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateIntelligenceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateIntelligenceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/intelligenceConfig',
+        http_method='PATCH',
+        method_id='storage.folders.locations.updateIntelligenceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='intelligenceConfig',
+        request_type_name='StorageFoldersLocationsUpdateIntelligenceConfigRequest',
+        response_type_name='IntelligenceConfig',
         supports_download=False,
     )
 
@@ -132,6 +186,33 @@ class StorageV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetIntelligenceConfig(self, request, global_params=None):
+      r"""Returns the Organization scoped singleton IntelligenceConfig resource.
+
+      Args:
+        request: (StorageOrganizationsLocationsGetIntelligenceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetIntelligenceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIntelligenceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/intelligenceConfig',
+        http_method='GET',
+        method_id='storage.organizations.locations.getIntelligenceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='StorageOrganizationsLocationsGetIntelligenceConfigRequest',
+        response_type_name='IntelligenceConfig',
+        supports_download=False,
+    )
+
     def GetManagementHub(self, request, global_params=None):
       r"""Gets the `ManagementHub` resource associated with your organization. **IAM Permissions**: Requires `storage.managementHubs.get` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the folder.
 
@@ -156,6 +237,33 @@ class StorageV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='StorageOrganizationsLocationsGetManagementHubRequest',
         response_type_name='ManagementHub',
+        supports_download=False,
+    )
+
+    def UpdateIntelligenceConfig(self, request, global_params=None):
+      r"""Updates the Organization scoped singleton IntelligenceConfig resource.
+
+      Args:
+        request: (StorageOrganizationsLocationsUpdateIntelligenceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateIntelligenceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateIntelligenceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/intelligenceConfig',
+        http_method='PATCH',
+        method_id='storage.organizations.locations.updateIntelligenceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='intelligenceConfig',
+        request_type_name='StorageOrganizationsLocationsUpdateIntelligenceConfigRequest',
+        response_type_name='IntelligenceConfig',
         supports_download=False,
     )
 
@@ -388,6 +496,33 @@ class StorageV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetIntelligenceConfig(self, request, global_params=None):
+      r"""Returns the Project scoped singleton IntelligenceConfig resource.
+
+      Args:
+        request: (StorageProjectsLocationsGetIntelligenceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetIntelligenceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIntelligenceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceConfig',
+        http_method='GET',
+        method_id='storage.projects.locations.getIntelligenceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='StorageProjectsLocationsGetIntelligenceConfigRequest',
+        response_type_name='IntelligenceConfig',
+        supports_download=False,
+    )
+
     def GetManagementHub(self, request, global_params=None):
       r"""Gets the `ManagementHub` resource associated with your project. **IAM Permissions**: Requires `storage.managementHubs.get` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the project.
 
@@ -412,6 +547,33 @@ class StorageV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='StorageProjectsLocationsGetManagementHubRequest',
         response_type_name='ManagementHub',
+        supports_download=False,
+    )
+
+    def UpdateIntelligenceConfig(self, request, global_params=None):
+      r"""Updates the Project scoped singleton IntelligenceConfig resource.
+
+      Args:
+        request: (StorageProjectsLocationsUpdateIntelligenceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IntelligenceConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateIntelligenceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateIntelligenceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/intelligenceConfig',
+        http_method='PATCH',
+        method_id='storage.projects.locations.updateIntelligenceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='intelligenceConfig',
+        request_type_name='StorageProjectsLocationsUpdateIntelligenceConfigRequest',
+        response_type_name='IntelligenceConfig',
         supports_download=False,
     )
 

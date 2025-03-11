@@ -492,15 +492,11 @@ class AppengineAppsServicesDeleteRequest(_messages.Message):
   r"""A AppengineAppsServicesDeleteRequest object.
 
   Fields:
-    force: Optional. If set to true, any versions of this service will also be
-      deleted. (Otherwise, the request will only succeed if the service has no
-      versions.)
     name: Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class AppengineAppsServicesGetIamPolicyRequest(_messages.Message):
@@ -851,15 +847,11 @@ class AppengineProjectsLocationsApplicationsServicesDeleteRequest(_messages.Mess
   r"""A AppengineProjectsLocationsApplicationsServicesDeleteRequest object.
 
   Fields:
-    force: Optional. If set to true, any versions of this service will also be
-      deleted. (Otherwise, the request will only succeed if the service has no
-      versions.)
     name: Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest(_messages.Message):

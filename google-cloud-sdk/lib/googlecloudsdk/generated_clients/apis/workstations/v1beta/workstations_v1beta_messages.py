@@ -558,12 +558,19 @@ class GcePersistentDisk(_messages.Message):
     sourceImage: Optional. Name of the disk image to use as the source for the
       disk. Must be empty if source_snapshot is set. Updating source_image
       will update content in the ephemeral directory after the workstation is
-      restarted. This field is mutable.
+      restarted. Only file systems supported by Container-Optimized OS (COS)
+      are explicitly supported. For a list of supported file systems, please
+      refer to the [COS documentation](https://cloud.google.com/container-
+      optimized-os/docs/concepts/supported-filesystems). This field is
+      mutable.
     sourceSnapshot: Optional. Name of the snapshot to use as the source for
       the disk. Must be empty if source_image is set. Must be empty if
       read_only is false. Updating source_snapshot will update content in the
-      ephemeral directory after the workstation is restarted. This field is
-      mutable.
+      ephemeral directory after the workstation is restarted. Only file
+      systems supported by Container-Optimized OS (COS) are explicitly
+      supported. For a list of supported file systems, please refer to the
+      [COS documentation](https://cloud.google.com/container-optimized-
+      os/docs/concepts/supported-filesystems). This field is mutable.
   """
 
   diskType = _messages.StringField(1)
@@ -602,7 +609,8 @@ class GceRegionalPersistentDisk(_messages.Message):
       `500`, or `1000`. Defaults to `200`. If less than `200` GB, the
       disk_type must be `"pd-balanced"` or `"pd-ssd"`.
     sourceSnapshot: Optional. Name of the snapshot to use as the source for
-      the disk. If set, size_gb and fs_type must be empty.
+      the disk. If set, size_gb and fs_type must be empty. Must be formatted
+      as ext4 file system with no partitions.
   """
 
   class ReclaimPolicyValueValuesEnum(_messages.Enum):
@@ -1067,7 +1075,7 @@ class PrivateClusterConfig(_messages.Message):
     enablePrivateEndpoint: Immutable. Whether Workstations endpoint is
       private.
     serviceAttachmentUri: Output only. Service attachment URI for the
-      workstation cluster. The service attachemnt is created when private
+      workstation cluster. The service attachment is created when private
       endpoint is enabled. To access workstations in the workstation cluster,
       configure access to the managed service using [Private Service
       Connect](https://cloud.google.com/vpc/docs/configure-private-service-
@@ -1312,8 +1320,9 @@ class Workstation(_messages.Message):
       current state.
     createTime: Output only. Time when this workstation was created.
     degraded: Output only. Whether this workstation is in degraded mode, in
-      which case it may require user action to restore full functionality.
-      Details can be found in conditions.
+      which case it may require user action to restore full functionality. The
+      conditions field contains detailed information about the status of the
+      workstation.
     deleteTime: Output only. Time when this workstation was soft-deleted.
     displayName: Optional. Human-readable name for this workstation.
     env: Optional. Environment variables passed to the workstation container's
@@ -1492,8 +1501,9 @@ class WorkstationCluster(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation cluster and that are also propagated
       to the underlying Compute Engine resources.
-    TagsValue: Optional. Tag keys/values directly bound to this resource. For
-      example: "123/environment": "production", "123/costCenter": "marketing"
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     annotations: Optional. Client-specified annotations.
@@ -1506,7 +1516,8 @@ class WorkstationCluster(_messages.Message):
     createTime: Output only. Time when this workstation cluster was created.
     degraded: Output only. Whether this workstation cluster is in degraded
       mode, in which case it may require user action to restore full
-      functionality. Details can be found in conditions.
+      functionality. The conditions field contains detailed information about
+      the status of the cluster.
     deleteTime: Output only. Time when this workstation cluster was soft-
       deleted.
     displayName: Optional. Human-readable name for this workstation cluster.
@@ -1530,8 +1541,9 @@ class WorkstationCluster(_messages.Message):
     subnetwork: Immutable. Name of the Compute Engine subnetwork in which
       instances associated with this workstation cluster will be created. Must
       be part of the subnetwork specified for this workstation cluster.
-    tags: Optional. Tag keys/values directly bound to this resource. For
-      example: "123/environment": "production", "123/costCenter": "marketing"
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     uid: Output only. A system-assigned unique identifier for this workstation
       cluster.
     updateTime: Output only. Time when this workstation cluster was most
@@ -1591,8 +1603,9 @@ class WorkstationCluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Tag keys/values directly bound to this resource. For
-    example: "123/environment": "production", "123/costCenter": "marketing"
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1659,15 +1672,16 @@ class WorkstationConfig(_messages.Message):
       Allowed ports must be one of 22, 80, or within range 1024-65535. If not
       specified defaults to ports 22, 80, and ports 1024-65535.
     annotations: Optional. Client-specified annotations.
-    conditions: Output only. Status conditions describing the current resource
-      state.
+    conditions: Output only. Status conditions describing the workstation
+      configuration's current state.
     container: Optional. Container that runs upon startup for each workstation
       using this workstation configuration.
     createTime: Output only. Time when this workstation configuration was
       created.
-    degraded: Output only. Whether this resource is degraded, in which case it
-      may require user action to restore full functionality. See also the
-      conditions field.
+    degraded: Output only. Whether this workstation configuration is in
+      degraded mode, in which case it may require user action to restore full
+      functionality. The conditions field contains detailed information about
+      the status of the configuration.
     deleteTime: Output only. Time when this workstation configuration was
       soft-deleted.
     disableTcpConnections: Optional. Disables support for plain TCP

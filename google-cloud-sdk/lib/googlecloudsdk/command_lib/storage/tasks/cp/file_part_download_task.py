@@ -398,6 +398,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         )
       # pylint:disable=broad-except
       except Exception as e:
+        if task_status_queue is not None:
+          progress_callback(self._offset, error_occurred=True)
         # pylint:enable=broad-except
         return task.Output(
             additional_task_iterators=None,

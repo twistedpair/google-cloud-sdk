@@ -75,6 +75,20 @@ guaranteed:
   help_text: |
     If provided, the Node requested here will only be scheduled at the 'guaranteed' tier.
 
+provisioning_model:
+  arg_name: provisioning-model
+  help_text: |
+    If provided, the resource will be provisioned with the specified provisioning model.
+
+max_run_duration:
+  arg_name: max-run-duration
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  api_field: queuedResource.runDuration.maxRunDuration
+  help_text: |
+    A duration after which the resource will be terminated. Used with flex-start.
+    See $ gcloud topic datetimes for information on duration formats.
+
 min_duration:
   arg_name: min-duration
   api_field: queuedResource.guaranteed.minDuration

@@ -422,6 +422,20 @@ class _FieldSpec:
   hidden: bool | None
 
 
+class EquitableType(metaclass=abc.ABCMeta):
+  """Wrapper that deteremines if two message fields of same type are equal.
+
+  This is needed because the old message may contain ouptut only fields the
+  user is not able to specify. For example, a message field may contain output
+  only field `uid` that the user is not able to specify. Message(foo=bar)
+  should still "match" existing Message(foo=bar, uid=baz).
+  """
+
+  @abc.abstractmethod
+  def Matches(self, existing_value, new_value):
+    """Checks if new value matches existing value based on what user input."""
+
+
 class _FieldSpecType(usage_text.DefaultArgTypeWrapper, metaclass=abc.ABCMeta):
   """Wrapper that holds the arg type and information about the type.
 
@@ -463,7 +477,7 @@ class _FieldSpecType(usage_text.DefaultArgTypeWrapper, metaclass=abc.ABCMeta):
     """Parses arg_value into apitools message using field specs provided."""
 
 
-class _FieldType(_FieldSpecType):
+class _FieldType(_FieldSpecType, EquitableType):
   """Type that converts string into apitools field instance.
 
   Attributes:
@@ -481,8 +495,35 @@ class _FieldType(_FieldSpecType):
         self.field, parsed_arg_value, repeated=self.repeated,
         choices=self.choices)
 
+  def Matches(self, existing_value, new_value):
+    """Checks if new value matches existing value based on what user input."""
+    if existing_value == new_value:
+      return True
+    elif existing_value is None or new_value is None:
+      return False
 
-class _MessageFieldType(_FieldSpecType):
+    # Handle repeated fields. Convert to list if not already a list.
+    new_val_list = new_value if isinstance(new_value, list) else [new_value]
+    existing_val_list = (existing_value if isinstance(existing_value, list)
+                         else [existing_value])
+    if len(new_val_list) != len(existing_val_list):
+      return False
+    for val in new_val_list:
+      if val not in existing_val_list:
+        return False
+    return True
+
+
+def _SubFieldMatches(existing_value, new_value, field_spec):
+  """Checks if new value matches existing value based on what user input."""
+  existing_field = arg_utils.GetFieldValueFromMessage(
+      existing_value, field_spec.api_field)
+  new_field = arg_utils.GetFieldValueFromMessage(
+      new_value, field_spec.api_field)
+  return field_spec.Matches(existing_field, new_field)
+
+
+class _MessageFieldType(_FieldSpecType, EquitableType):
   """Type that converts string input into apitools message.
 
   Attributes:
@@ -509,8 +550,38 @@ class _MessageFieldType(_FieldSpecType):
     else:
       return self._ParseFieldsIntoMessage(parsed_arg_value)
 
+  def _ContainsVal(self, new_val, all_values):
+    """Checks if new value matches existing value based on what user input."""
+    for val in all_values:
+      matches = all(_SubFieldMatches(val, new_val, spec)
+                    for spec in self.field_specs)
+      if matches:
+        return True
+    else:
+      return False
 
-class _AdditionalPropsType(_FieldSpecType):
+  def Matches(self, existing_value, new_value):
+    """Checks if new value matches existing value based on what user input."""
+    if existing_value == new_value:
+      return True
+    elif existing_value is None or new_value is None:
+      return False
+
+    # Handle repeated fields. Convert to list if not already a list.
+    existing_val_list = (existing_value if isinstance(existing_value, list)
+                         else [existing_value])
+    new_val_list = (new_value if isinstance(new_value, list)
+                    else [new_value])
+    if len(existing_val_list) != len(new_val_list):
+      return False
+
+    for new_val in new_val_list:
+      if not self._ContainsVal(new_val, existing_val_list):
+        return False
+    return True
+
+
+class _AdditionalPropsType(_FieldSpecType, EquitableType):
   """Type converts string into list of apitools message instances for map field.
 
   Type function returns a list of apitools messages with key, value fields ie
@@ -540,8 +611,26 @@ class _AdditionalPropsType(_FieldSpecType):
       messages.append(message_instance)
     return messages
 
+  def Matches(self, existing_value, new_value):
+    if existing_value == new_value:
+      return True
+    elif existing_value is None or new_value is None:
+      return False
+    elif len(existing_value) != len(new_value):
+      return False
 
-class _MapFieldType(_FieldSpecType):
+    sub_field_map = {
+        val.key: val.value for val in existing_value
+    }
+    for val in new_value:
+      if val.key not in sub_field_map:
+        return False
+      if not self.value_spec.Matches(sub_field_map[val.key], val.value):
+        return False
+    return True
+
+
+class _MapFieldType(_FieldSpecType, EquitableType):
   """Type converts string into apitools additional props field instance."""
 
   def __call__(self, arg_value):
@@ -550,6 +639,15 @@ class _MapFieldType(_FieldSpecType):
     parent_message = self.field.type()
     self.arg_type.ParseIntoMessage(parent_message, additional_props_field)
     return parent_message
+
+  def Matches(self, existing_value, new_value):
+    """Checks if new value matches existing value based on what user input."""
+    if existing_value == new_value:
+      return True
+    elif existing_value is None or new_value is None:
+      return False
+    else:
+      return _SubFieldMatches(existing_value, new_value, self.arg_type)
 
 
 def _GetFieldValueType(field):

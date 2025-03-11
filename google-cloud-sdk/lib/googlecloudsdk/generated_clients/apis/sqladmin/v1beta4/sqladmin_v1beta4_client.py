@@ -1019,10 +1019,37 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.instances.patch',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=[],
+        query_params=['enforcePsaWriteEndpoint'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='databaseInstance',
         request_type_name='SqlInstancesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PointInTimeRestore(self, request, global_params=None):
+      r"""Point in time restore for an instance managed by Google Cloud Backup and Disaster Recovery.
+
+      Args:
+        request: (SqlInstancesPointInTimeRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PointInTimeRestore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PointInTimeRestore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='sql/v1beta4/projects/{projectsId}:pointInTimeRestore',
+        http_method='POST',
+        method_id='sql.instances.pointInTimeRestore',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='sql/v1beta4/{+parent}:pointInTimeRestore',
+        request_field='pointInTimeRestoreContext',
+        request_type_name='SqlInstancesPointInTimeRestoreRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -1331,7 +1358,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.instances.update',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=[],
+        query_params=['enforcePsaWriteEndpoint'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='databaseInstance',
         request_type_name='SqlInstancesUpdateRequest',

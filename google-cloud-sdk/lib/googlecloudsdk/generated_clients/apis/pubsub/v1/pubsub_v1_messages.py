@@ -949,16 +949,18 @@ class MessageTransform(_messages.Message):
   r"""All supported message transforms types.
 
   Fields:
-    enabled: Optional. If set to true, the transform is enabled. If false, the
-      transform is disabled and will not be applied to messages. Defaults to
-      `true`.
+    disabled: Optional. If true, the transform is disabled and will not be
+      applied to messages. Defaults to `false`.
+    enabled: Optional. This field is deprecated, use the `disabled` field to
+      disable transforms.
     javascriptUdf: Optional. JavaScript User Defined Function. If multiple
       JavaScriptUDF's are specified on a resource, each must have a unique
       `function_name`.
   """
 
-  enabled = _messages.BooleanField(1)
-  javascriptUdf = _messages.MessageField('JavaScriptUDF', 2)
+  disabled = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  javascriptUdf = _messages.MessageField('JavaScriptUDF', 3)
 
 
 class MessageTransforms(_messages.Message):

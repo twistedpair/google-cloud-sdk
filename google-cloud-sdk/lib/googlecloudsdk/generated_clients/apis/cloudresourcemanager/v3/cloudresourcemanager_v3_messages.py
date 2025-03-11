@@ -222,7 +222,7 @@ class CloudresourcemanagerFoldersEffectiveSettingsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the effective setting to get, example
-      projects/123/effectiveSettings/project-creator-roles.
+      projects/123/effectiveSettings/iam.projectCreatorRoles.
   """
 
   name = _messages.StringField(1, required=True)
@@ -369,7 +369,7 @@ class CloudresourcemanagerFoldersSettingsClearRequest(_messages.Message):
     clearSettingRequest: A ClearSettingRequest resource to be passed as the
       request body.
     name: Required. The name of the setting to clear, example
-      projects/123/settings/project-creator-roles.
+      projects/123/settings/iam.projectCreatorRoles.
   """
 
   clearSettingRequest = _messages.MessageField('ClearSettingRequest', 1)
@@ -381,7 +381,7 @@ class CloudresourcemanagerFoldersSettingsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the setting to get, example
-      projects/123/settings/project-creator-roles.
+      projects/123/settings/iam.projectCreatorRoles.
   """
 
   name = _messages.StringField(1, required=True)
@@ -391,8 +391,6 @@ class CloudresourcemanagerFoldersSettingsListRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersSettingsListRequest object.
 
   Fields:
-    pageSize: The size of the page to be returned.
-    pageToken: A page token used to retrieve the next page.
     parent: Required. The name of the parent cloud resource. Must be in one of
       the following forms: * `projects/{project_number}`, e.g. `projects/123`
       * `projects/{project_id}`, e.g. `projects/project-id` *
@@ -400,9 +398,7 @@ class CloudresourcemanagerFoldersSettingsListRequest(_messages.Message):
       `organizations/{organization_id}`, e.g. `organizations/123`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class CloudresourcemanagerFoldersSettingsPatchRequest(_messages.Message):
@@ -413,9 +409,9 @@ class CloudresourcemanagerFoldersSettingsPatchRequest(_messages.Message):
       forms: * `projects/{project_number}/settings/{setting_name}` *
       `folders/{folder_id}/settings/{setting_name}` *
       `organizations/{organization_id}/settings/{setting_name}` For example,
-      "projects/123/settings/project-creator-roles" Following are the allowed
-      {setting_name} values: * `project-creator-roles` * `folder-creator-
-      roles`
+      "projects/123/settings/iam.projectCreatorRoles" Following are the
+      allowed {setting_name} values: * `iam.projectCreatorRoles` *
+      `iam.folderCreatorRoles`
     setting: A Setting resource to be passed as the request body.
     updateMask: Optional. The list of fields to update. Only Setting.value can
       be updated.
@@ -578,7 +574,7 @@ class CloudresourcemanagerOrganizationsEffectiveSettingsGetRequest(_messages.Mes
 
   Fields:
     name: Required. The name of the effective setting to get, example
-      projects/123/effectiveSettings/project-creator-roles.
+      projects/123/effectiveSettings/iam.projectCreatorRoles.
   """
 
   name = _messages.StringField(1, required=True)
@@ -662,7 +658,7 @@ class CloudresourcemanagerOrganizationsSettingsClearRequest(_messages.Message):
     clearSettingRequest: A ClearSettingRequest resource to be passed as the
       request body.
     name: Required. The name of the setting to clear, example
-      projects/123/settings/project-creator-roles.
+      projects/123/settings/iam.projectCreatorRoles.
   """
 
   clearSettingRequest = _messages.MessageField('ClearSettingRequest', 1)
@@ -674,7 +670,7 @@ class CloudresourcemanagerOrganizationsSettingsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the setting to get, example
-      projects/123/settings/project-creator-roles.
+      projects/123/settings/iam.projectCreatorRoles.
   """
 
   name = _messages.StringField(1, required=True)
@@ -684,8 +680,6 @@ class CloudresourcemanagerOrganizationsSettingsListRequest(_messages.Message):
   r"""A CloudresourcemanagerOrganizationsSettingsListRequest object.
 
   Fields:
-    pageSize: The size of the page to be returned.
-    pageToken: A page token used to retrieve the next page.
     parent: Required. The name of the parent cloud resource. Must be in one of
       the following forms: * `projects/{project_number}`, e.g. `projects/123`
       * `projects/{project_id}`, e.g. `projects/project-id` *
@@ -693,9 +687,7 @@ class CloudresourcemanagerOrganizationsSettingsListRequest(_messages.Message):
       `organizations/{organization_id}`, e.g. `organizations/123`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class CloudresourcemanagerOrganizationsSettingsPatchRequest(_messages.Message):
@@ -706,9 +698,9 @@ class CloudresourcemanagerOrganizationsSettingsPatchRequest(_messages.Message):
       forms: * `projects/{project_number}/settings/{setting_name}` *
       `folders/{folder_id}/settings/{setting_name}` *
       `organizations/{organization_id}/settings/{setting_name}` For example,
-      "projects/123/settings/project-creator-roles" Following are the allowed
-      {setting_name} values: * `project-creator-roles` * `folder-creator-
-      roles`
+      "projects/123/settings/iam.projectCreatorRoles" Following are the
+      allowed {setting_name} values: * `iam.projectCreatorRoles` *
+      `iam.folderCreatorRoles`
     setting: A Setting resource to be passed as the request body.
     updateMask: Optional. The list of fields to update. Only Setting.value can
       be updated.
@@ -751,7 +743,7 @@ class CloudresourcemanagerProjectsEffectiveSettingsGetRequest(_messages.Message)
 
   Fields:
     name: Required. The name of the effective setting to get, example
-      projects/123/effectiveSettings/project-creator-roles.
+      projects/123/effectiveSettings/iam.projectCreatorRoles.
   """
 
   name = _messages.StringField(1, required=True)
@@ -900,7 +892,7 @@ class CloudresourcemanagerProjectsSettingsClearRequest(_messages.Message):
     clearSettingRequest: A ClearSettingRequest resource to be passed as the
       request body.
     name: Required. The name of the setting to clear, example
-      projects/123/settings/project-creator-roles.
+      projects/123/settings/iam.projectCreatorRoles.
   """
 
   clearSettingRequest = _messages.MessageField('ClearSettingRequest', 1)
@@ -912,7 +904,7 @@ class CloudresourcemanagerProjectsSettingsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the setting to get, example
-      projects/123/settings/project-creator-roles.
+      projects/123/settings/iam.projectCreatorRoles.
   """
 
   name = _messages.StringField(1, required=True)
@@ -922,8 +914,6 @@ class CloudresourcemanagerProjectsSettingsListRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsSettingsListRequest object.
 
   Fields:
-    pageSize: The size of the page to be returned.
-    pageToken: A page token used to retrieve the next page.
     parent: Required. The name of the parent cloud resource. Must be in one of
       the following forms: * `projects/{project_number}`, e.g. `projects/123`
       * `projects/{project_id}`, e.g. `projects/project-id` *
@@ -931,9 +921,7 @@ class CloudresourcemanagerProjectsSettingsListRequest(_messages.Message):
       `organizations/{organization_id}`, e.g. `organizations/123`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class CloudresourcemanagerProjectsSettingsPatchRequest(_messages.Message):
@@ -944,9 +932,9 @@ class CloudresourcemanagerProjectsSettingsPatchRequest(_messages.Message):
       forms: * `projects/{project_number}/settings/{setting_name}` *
       `folders/{folder_id}/settings/{setting_name}` *
       `organizations/{organization_id}/settings/{setting_name}` For example,
-      "projects/123/settings/project-creator-roles" Following are the allowed
-      {setting_name} values: * `project-creator-roles` * `folder-creator-
-      roles`
+      "projects/123/settings/iam.projectCreatorRoles" Following are the
+      allowed {setting_name} values: * `iam.projectCreatorRoles` *
+      `iam.folderCreatorRoles`
     setting: A Setting resource to be passed as the request body.
     updateMask: Optional. The list of fields to update. Only Setting.value can
       be updated.
@@ -1461,9 +1449,9 @@ class EffectiveSetting(_messages.Message):
       `projects/{project_number}/effectiveSettings/{effective_setting_name}` *
       `folders/{folder_id}/effectiveSettings/{effective_setting_name}` * `orga
       nizations/{organization_id}/effectiveSettings/{effective_setting_name}`
-      For example, "/projects/123/effectiveSettings/project-creator-roles"
-      Following are the allowed {effective_setting_name} values: * `project-
-      creator-roles` * `folder-creator-roles`
+      For example, "/projects/123/effectiveSettings/iam.projectCreatorRoles"
+      Following are the allowed {effective_setting_name} values: *
+      `iam.projectCreatorRoles` * `iam.folderCreatorRoles`
     value: Output only. The effective value of the setting at the given parent
       resource.
   """
@@ -1874,13 +1862,11 @@ class ListSettingsResponse(_messages.Message):
   r"""The response from ListSettings.
 
   Fields:
-    nextPageToken: A page token used to retrieve the next page.
     settings: A list of settings that are available at the specified Cloud
       resource.
   """
 
-  nextPageToken = _messages.StringField(1)
-  settings = _messages.MessageField('Setting', 2, repeated=True)
+  settings = _messages.MessageField('Setting', 1, repeated=True)
 
 
 class ListTagBindingsResponse(_messages.Message):
@@ -2480,9 +2466,9 @@ class Setting(_messages.Message):
       forms: * `projects/{project_number}/settings/{setting_name}` *
       `folders/{folder_id}/settings/{setting_name}` *
       `organizations/{organization_id}/settings/{setting_name}` For example,
-      "projects/123/settings/project-creator-roles" Following are the allowed
-      {setting_name} values: * `project-creator-roles` * `folder-creator-
-      roles`
+      "projects/123/settings/iam.projectCreatorRoles" Following are the
+      allowed {setting_name} values: * `iam.projectCreatorRoles` *
+      `iam.folderCreatorRoles`
     value: The configured value of the setting at the given parent resource.
   """
 
@@ -2650,8 +2636,8 @@ class StringSet(_messages.Message):
   strings are allowed in the string set.
 
   Fields:
-    values: The strings in the set. A string must always contain UTF-8 encoded
-      text and cannot be longer than 200 characters.
+    values: Required. The strings in the set. A string must always contain
+      UTF-8 encoded text and cannot be longer than 200 characters.
   """
 
   values = _messages.StringField(1, repeated=True)

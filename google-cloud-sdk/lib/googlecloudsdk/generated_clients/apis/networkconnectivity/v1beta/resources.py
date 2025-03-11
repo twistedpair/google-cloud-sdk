@@ -130,6 +130,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MIATAS = (
+      'projects.locations.miatas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/miatas/'
+              '{miatasId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIATAS_MIATADESTINATIONS = (
+      'projects.locations.miatas.miataDestinations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/miatas/'
+              '{miatasId}/miataDestinations/{miataDestinationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

@@ -30,7 +30,7 @@ import six
 _INSTALLATION_GUIDE = textwrap.dedent("""\
     You must install Docker and Pack to run this command.
     To install Docker and Pack, please follow this guide:
-    <INSERT_LINK_HERE>""")
+    https://cloud.google.com/functions/1stgendocs/running/functions-emulator""")
 _DOCKER = files.FindExecutableOnPath('docker')
 _PACK = files.FindExecutableOnPath('pack')
 _APPENGINE_BUILDER = 'gcr.io/serverless-runtimes/google-{}-full/builder/{}'

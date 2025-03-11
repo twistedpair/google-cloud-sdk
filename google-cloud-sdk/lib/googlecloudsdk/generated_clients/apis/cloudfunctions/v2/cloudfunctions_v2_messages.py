@@ -1044,6 +1044,8 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
       google.longrunning.Operation.error value with a google.rpc.Status.code
       of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
+    customIamRoleDetected: Output only. Whether a custom IAM role binding was
+      detected during the upgrade.
     endTime: The time the operation finished running.
     operationType: The operation type.
     requestResource: The original request that started the operation.
@@ -1111,14 +1113,15 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
   buildName = _messages.StringField(2)
   cancelRequested = _messages.BooleanField(3)
   createTime = _messages.StringField(4)
-  endTime = _messages.StringField(5)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 6)
-  requestResource = _messages.MessageField('RequestResourceValue', 7)
-  sourceToken = _messages.StringField(8)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 9, repeated=True)
-  statusDetail = _messages.StringField(10)
-  target = _messages.StringField(11)
-  verb = _messages.StringField(12)
+  customIamRoleDetected = _messages.BooleanField(5)
+  endTime = _messages.StringField(6)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 7)
+  requestResource = _messages.MessageField('RequestResourceValue', 8)
+  sourceToken = _messages.StringField(9)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 10, repeated=True)
+  statusDetail = _messages.StringField(11)
+  target = _messages.StringField(12)
+  verb = _messages.StringField(13)
 
 
 class GoogleCloudFunctionsV2Stage(_messages.Message):

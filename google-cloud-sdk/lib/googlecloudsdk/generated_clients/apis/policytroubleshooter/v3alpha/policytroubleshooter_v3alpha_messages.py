@@ -2134,26 +2134,25 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanat
   r"""Explanation of an access policy NextTAG: 6
 
   Enums:
-    DeviceEnforcementStateValueValuesEnum: Output only. The device enforcement
-      state of the access policy. It indicates whether the device is used for
-      access level evaluation.
+    DeviceEnforcementStateValueValuesEnum: The device enforcement state of the
+      access policy. It indicates whether the device is used for access level
+      evaluation.
 
   Fields:
     accessLevelDetailedExplanations: Detailed explanations of access levels
       from the Access Level Troubleshooter Frontend Service
     accessPolicy: The full resource name of an access policy Format:
       `accessPolicies/{access_policy}`
-    deviceEnforcementState: Output only. The device enforcement state of the
-      access policy. It indicates whether the device is used for access level
-      evaluation.
+    deviceEnforcementState: The device enforcement state of the access policy.
+      It indicates whether the device is used for access level evaluation.
     servicePerimeterExplanations: The explanations for the service perimeters
       in order
     servicePerimeters: The service perimeter definitions
   """
 
   class DeviceEnforcementStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The device enforcement state of the access policy. It
-    indicates whether the device is used for access level evaluation.
+    r"""The device enforcement state of the access policy. It indicates
+    whether the device is used for access level evaluation.
 
     Values:
       CONTEXT_ENFORCEMENT_STATE_UNSPECIFIED: Not used
@@ -2242,17 +2241,17 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaDeviceInfo(_messages
   r"""Detailed Device Information. NextTAG: 5
 
   Enums:
-    DeviceStateValueValuesEnum: Output only. The device condition.
+    DeviceStateValueValuesEnum: The device condition.
 
   Fields:
     deviceContext: Device details.
     deviceId: DDS Device id. It is visible publicly in MDM
     deviceLastSyncTime: The last sync time of the device
-    deviceState: Output only. The device condition.
+    deviceState: The device condition.
   """
 
   class DeviceStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The device condition.
+    r"""The device condition.
 
     Values:
       DEVICE_STATE_UNSPECIFIED: Reserved
@@ -2310,8 +2309,8 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPoliciesExplan
         the egress policy
       EGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
         egress policy
-      EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The egress policy is applicable
-        for the request
+      EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The egress policy is not
+        applicable for the request
     """
     EGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
     EGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER = 1
@@ -2375,8 +2374,8 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanat
         the egress policy
       EGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
         egress policy
-      EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The egress policy is applicable
-        for the request
+      EGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The egress policy is not
+        applicable for the request
     """
     EGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
     EGRESS_POLICY_EVAL_STATE_IN_SAME_SERVICE_PERIMETER = 1
@@ -2437,17 +2436,16 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIdentityExplanation(
   r"""Explanation of an identity. NextTAG: 3
 
   Enums:
-    IdentityEvalStateValueValuesEnum: Output only. Details about the
-      evaluation state of the identity set in policy.
+    IdentityEvalStateValueValuesEnum: Details about the evaluation state of
+      the identity set in policy.
 
   Fields:
-    identityEvalState: Output only. Details about the evaluation state of the
-      identity set in policy.
+    identityEvalState: Details about the evaluation state of the identity set
+      in policy.
   """
 
   class IdentityEvalStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Details about the evaluation state of the identity set in
-    policy.
+    r"""Details about the evaluation state of the identity set in policy.
 
     Values:
       IDENTITY_EVAL_STATE_UNSPECIFIED: Not used
@@ -2496,7 +2494,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExpla
         the ingress policy
       INGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
         ingress policy
-      INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The ingress policy is
+      INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The ingress policy is not
         applicable for the request
     """
     INGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
@@ -2594,7 +2592,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
         the ingress policy
       INGRESS_POLICY_EVAL_STATE_DENIED_BY_POLICY: The request is denied by the
         ingress policy
-      INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The ingress policy is
+      INGRESS_POLICY_EVAL_STATE_NOT_APPLICABLE: The ingress policy is not
         applicable for the request
     """
     INGRESS_POLICY_EVAL_STATE_UNSPECIFIED = 0
@@ -2883,7 +2881,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterExpl
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterRequest(_messages.Message):
-  r"""LINT.IfChange Request to troubleshoot service perimeters
+  r"""Request to troubleshoot service perimeters
 
   Fields:
     troubleshootingToken: The troubleshooting token can be generated when

@@ -48,6 +48,8 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_global_hubs = self.ProjectsLocationsGlobalHubsService(self)
     self.projects_locations_global_policyBasedRoutes = self.ProjectsLocationsGlobalPolicyBasedRoutesService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
+    self.projects_locations_miatas_miataDestinations = self.ProjectsLocationsMiatasMiataDestinationsService(self)
+    self.projects_locations_miatas = self.ProjectsLocationsMiatasService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
     self.projects_locations_spokes_gatewayAdvertisedRoutes = self.ProjectsLocationsSpokesGatewayAdvertisedRoutesService(self)
@@ -1629,6 +1631,296 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
       super(NetworkconnectivityV1beta.ProjectsLocationsGlobalService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsMiatasMiataDestinationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_miatas_miataDestinations resource."""
+
+    _NAME = 'projects_locations_miatas_miataDestinations'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsMiatasMiataDestinationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a MiataDestination in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasMiataDestinationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}/miataDestinations',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.miatas.miataDestinations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['miataDestinationId', 'requestId'],
+        relative_path='v1beta/{+parent}/miataDestinations',
+        request_field='googleCloudNetworkconnectivityV1betaMiataDestination',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasMiataDestinationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single MiataDestination.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasMiataDestinationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}/miataDestinations/{miataDestinationsId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.miatas.miataDestinations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasMiataDestinationsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single MiataDestination.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasMiataDestinationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaMiataDestination) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}/miataDestinations/{miataDestinationsId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.miatas.miataDestinations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasMiataDestinationsGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaMiataDestination',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MiataDestinations in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasMiataDestinationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListMiataDestinationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}/miataDestinations',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.miatas.miataDestinations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'returnPartialSuccess'],
+        relative_path='v1beta/{+parent}/miataDestinations',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasMiataDestinationsListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListMiataDestinationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a MiataDestination in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasMiataDestinationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}/miataDestinations/{miataDestinationsId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.miatas.miataDestinations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='googleCloudNetworkconnectivityV1betaMiataDestination',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasMiataDestinationsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMiatasService(base_api.BaseApiService):
+    """Service class for the projects_locations_miatas resource."""
+
+    _NAME = 'projects_locations_miatas'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsMiatasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Miata in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.miatas.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['miataId', 'requestId'],
+        relative_path='v1beta/{+parent}/miatas',
+        request_field='googleCloudNetworkconnectivityV1betaMiata',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Miata.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.miatas.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Miata.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaMiata) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.miatas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaMiata',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Miatas in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListMiatasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.miatas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'returnPartialSuccess'],
+        relative_path='v1beta/{+parent}/miatas',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListMiatasResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Miata in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMiatasPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/miatas/{miatasId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.miatas.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='googleCloudNetworkconnectivityV1betaMiata',
+        request_type_name='NetworkconnectivityProjectsLocationsMiatasPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

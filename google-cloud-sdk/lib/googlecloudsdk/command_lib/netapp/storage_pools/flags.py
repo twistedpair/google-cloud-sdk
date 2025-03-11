@@ -232,7 +232,6 @@ def AddStoragePoolCustomPerformanceEnabledArg(parser):
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
       help="""Boolean flag indicating whether Storage Pool is a custom performance Storage Pool or not""",
-      hidden=True,
   )
 
 
@@ -247,7 +246,6 @@ def AddStoragePoolTotalThroughputArg(parser):
       ),
       help="""The total throughput of the Storage Pool in MiB/s or GiB/s units.
               If no throughput unit is specified, MiB/s is assumed.""",
-      hidden=True,
   )
 
 
@@ -257,7 +255,6 @@ def AddStoragePoolTotalIopsArg(parser):
       '--total-iops',
       type=int,
       help="""Integer indicating total IOPS of the Storage Pool""",
-      hidden=True,
   )
 
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##

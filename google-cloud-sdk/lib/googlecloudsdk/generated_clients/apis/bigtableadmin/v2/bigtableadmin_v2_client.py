@@ -982,6 +982,87 @@ class BigtableadminV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a materialized view within an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesMaterializedViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/materializedViews',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.materializedViews.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['materializedViewId'],
+        relative_path='v2/{+parent}/materializedViews',
+        request_field='materializedView',
+        request_type_name='BigtableadminProjectsInstancesMaterializedViewsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a materialized view from an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesMaterializedViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/materializedViews/{materializedViewsId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.materializedViews.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesMaterializedViewsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a materialized view.
+
+      Args:
+        request: (BigtableadminProjectsInstancesMaterializedViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MaterializedView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/materializedViews/{materializedViewsId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.materializedViews.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesMaterializedViewsGetRequest',
+        response_type_name='MaterializedView',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for an instance resource. Returns an empty policy if an instance exists but does not have a policy set.
 
@@ -1006,6 +1087,60 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='getIamPolicyRequest',
         request_type_name='BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about materialized views in an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesMaterializedViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMaterializedViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/materializedViews',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.materializedViews.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/materializedViews',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesMaterializedViewsListRequest',
+        response_type_name='ListMaterializedViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a materialized view within an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesMaterializedViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/materializedViews/{materializedViewsId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.materializedViews.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='materializedView',
+        request_type_name='BigtableadminProjectsInstancesMaterializedViewsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

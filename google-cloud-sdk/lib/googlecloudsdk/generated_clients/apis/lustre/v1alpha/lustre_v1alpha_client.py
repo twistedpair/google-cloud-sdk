@@ -260,7 +260,7 @@ class LustreV1alpha(base_api.BaseApiClient):
         request: (LustreProjectsLocationsOperationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Cancel')
       return self._RunMethod(
@@ -276,7 +276,7 @@ class LustreV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}:cancel',
         request_field='cancelOperationRequest',
         request_type_name='LustreProjectsLocationsOperationsCancelRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -287,7 +287,7 @@ class LustreV1alpha(base_api.BaseApiClient):
         request: (LustreProjectsLocationsOperationsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -303,7 +303,7 @@ class LustreV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='LustreProjectsLocationsOperationsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 

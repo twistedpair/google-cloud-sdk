@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
+import six
 
 
 class InvalidInputValueError(exceptions.Error):
@@ -43,3 +44,46 @@ class DirectoryNotExistError(ArtifactRegistryError):
 
 class PathNotDirectoryError(ArtifactRegistryError):
   """Raised when a path is not a directory."""
+
+
+class NoJsonKeyCredentialsError(ArtifactRegistryError):
+  """Raised when no JSON key credentials are found."""
+
+  def __init__(self, cause):
+    super().__init__(
+        "JSON key credentials not found: {}".format(six.text_type(cause))
+    )
+
+
+class NoDefaultCredentialsError(ArtifactRegistryError):
+  """Raised when no JSON key credentials are found."""
+
+  def __init__(self, cause):
+    super().__init__(
+        "Application default credentials not found: {}".format(
+            six.text_type(cause)
+        )
+    )
+
+
+class NoUserCredentialsError(ArtifactRegistryError):
+  """Raised when no JSON key credentials are found."""
+
+  def __init__(self, cause):
+    super().__init__(
+        "User credentials not found: {}".format(six.text_type(cause))
+    )
+
+
+class NoCredentialsError(ArtifactRegistryError):
+  """Raised when no credentials are found."""
+
+  def __init__(self, json_key_err, adc_err, user_creds_err):
+    super().__init__(
+        "No credentials found. Details: {}".format(
+            "; ".join(
+                six.text_type(e)
+                for e in [json_key_err, adc_err, user_creds_err]
+            )
+        )
+    )

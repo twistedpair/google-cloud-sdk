@@ -466,6 +466,15 @@ CloudTPU deployments:
 https://cloud.google.com/kubernetes-engine/docs/concepts/tpus#topology.
 """,
     ).AddToParser(parser)
+    # for multihost GPU deployments
+    base.Argument(
+        '--multihost-gpu-node-count',
+        type=int,
+        help="""\
+The number of nodes per replica for multihost GPU deployments. Required for
+multihost GPU deployments.
+""",
+    ).AddToParser(parser)
 
   base.Argument(
       '--accelerator',

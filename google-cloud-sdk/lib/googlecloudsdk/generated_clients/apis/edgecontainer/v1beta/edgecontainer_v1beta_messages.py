@@ -1054,9 +1054,7 @@ class Local(_messages.Message):
 
   Fields:
     controlPlaneNodeStorageSchema: Optional. Name for the storage schema of
-      control plane nodes. Warning: Configurable node local storage schema
-      feature is an experimental feature, and is not recommended for general
-      use in production clusters/nodepools.
+      control plane nodes.
     machineFilter: Only machines matching this filter will be allowed to host
       control plane nodes. The filtering language accepts strings like
       "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
@@ -1500,9 +1498,6 @@ class NodeConfig(_messages.Message):
   Fields:
     labels: Optional. The Kubernetes node labels
     nodeStorageSchema: Optional. Name for the storage schema of worker nodes.
-      Warning: Configurable node local storage schema feature is an
-      experimental feature, and is not recommended for general use in
-      production clusters/nodepools.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

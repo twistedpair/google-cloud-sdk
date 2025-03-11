@@ -118,6 +118,9 @@ class AbortInfo(_messages.Message):
       NO_SERVERLESS_IP_RANGES: Aborted because the source endpoint is a Cloud
         Run revision with direct VPC access enabled, but there are no reserved
         serverless IP ranges.
+      ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED: Packet sent from an
+        AlloyDB instance that does not support outbound connections (e.g. a
+        read-pool instance).
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -157,6 +160,7 @@ class AbortInfo(_messages.Message):
     UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 35
     INVALID_JUSTIFICATION = 36
     NO_SERVERLESS_IP_RANGES = 37
+    ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED = 38
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -3014,8 +3018,8 @@ class RedisClusterInfo(_messages.Message):
     displayName: Name of a Redis Cluster.
     location: Name of the region in which the Redis Cluster is defined. For
       example, "us-central1".
-    networkUri: URI of a Redis Cluster network in format
-      "projects/{project_id}/global/networks/{network_id}".
+    networkUri: URI of the network containing the Redis Cluster endpoints in
+      format "projects/{project_id}/global/networks/{network_id}".
     secondaryEndpointIpAddress: Secondary endpoint IP address of a Redis
       Cluster.
     uri: URI of a Redis Cluster in format

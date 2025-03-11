@@ -111,6 +111,19 @@ backup_channel:
     attribute_name: backup-channel
     help: Backup Channel name.
 
+backup_plan_binding:
+  name: backup plan binding
+  collection: gkebackup.projects.locations.backupChannels.backupPlanBindings
+  request_id_field: backupPlanBindingId
+  attributes:
+  - *default_project
+  - *default_location
+  - *backup_channel
+  - &backup_plan_binding
+    parameter_name: backupPlanBindingsId
+    attribute_name: backup_plan_binding
+    help: Backup Plan Binding name.
+
 backup:
   name: backup
   collection: gkebackup.projects.locations.backupPlans.backups
@@ -213,6 +226,19 @@ restore_channel:
     parameter_name: restoreChannelsId
     attribute_name: restore-channel
     help: Restore Channel name.
+
+restore_plan_binding:
+  name: restore plan binding
+  collection: gkebackup.projects.locations.restoreChannels.restorePlanBindings
+  request_id_field: restorePlanBindingId
+  attributes:
+  - *default_project
+  - *default_location
+  - *restore_channel
+  - &restore_plan_binding
+    parameter_name: restorePlanBindingsId
+    attribute_name: restore_plan_binding
+    help: Restore Plan Binding name.
 
 restore:
   name: restore

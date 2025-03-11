@@ -19763,7 +19763,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def Deploy(self, request, global_params=None):
-      r"""Deploys publisher models.
+      r"""Deploys a model to a new endpoint.
 
       Args:
         request: (AiplatformProjectsLocationsDeployRequest) input message
@@ -19783,8 +19783,35 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         path_params=['destination'],
         query_params=[],
         relative_path='v1beta1/{+destination}:deploy',
-        request_field='googleCloudAiplatformV1beta1DeployPublisherModelRequest',
+        request_field='googleCloudAiplatformV1beta1DeployRequest',
         request_type_name='AiplatformProjectsLocationsDeployRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DeployPublisherModel(self, request, global_params=None):
+      r"""Deploys publisher models.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeployPublisherModelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('DeployPublisherModel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeployPublisherModel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:deployPublisherModel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.deployPublisherModel',
+        ordered_params=['destination'],
+        path_params=['destination'],
+        query_params=[],
+        relative_path='v1beta1/{+destination}:deployPublisherModel',
+        request_field='googleCloudAiplatformV1beta1DeployPublisherModelRequest',
+        request_type_name='AiplatformProjectsLocationsDeployPublisherModelRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
@@ -20098,7 +20125,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.publishers.models.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['huggingFaceToken', 'isHuggingFaceModel', 'languageCode', 'view'],
+        query_params=['huggingFaceToken', 'includeEquivalentModelGardenModelDeploymentConfigs', 'isHuggingFaceModel', 'languageCode', 'view'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AiplatformPublishersModelsGetRequest',

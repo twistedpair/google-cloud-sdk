@@ -106,8 +106,8 @@ class AuthzExtension(_messages.Message):
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     WireFormatValueValuesEnum: Optional. The format of communication supported
-      by the callout extension. If not specified, the default is
-      `EXT_PROC_GRPC`.
+      by the callout extension. If not specified, the default value
+      `EXT_PROC_GRPC` is used.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
@@ -170,7 +170,7 @@ class AuthzExtension(_messages.Message):
       the stream. The timeout must be between 10-10000 milliseconds.
     updateTime: Output only. The timestamp when the resource was updated.
     wireFormat: Optional. The format of communication supported by the callout
-      extension. If not specified, the default is `EXT_PROC_GRPC`.
+      extension. If not specified, the default value `EXT_PROC_GRPC` is used.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -193,15 +193,15 @@ class AuthzExtension(_messages.Message):
 
   class WireFormatValueValuesEnum(_messages.Enum):
     r"""Optional. The format of communication supported by the callout
-    extension. If not specified, the default is `EXT_PROC_GRPC`.
+    extension. If not specified, the default value `EXT_PROC_GRPC` is used.
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
       EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
         stream. This is the default value if the wire format is not specified.
         The backend service for the extension must use HTTP2 or H2C as the
-        protocol. All `supported_events` for a client request will be sent as
-        part of the same gRPC stream.
+        protocol. All `supported_events` for a client request are sent as part
+        of the same gRPC stream.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
@@ -3298,7 +3298,7 @@ class LbTrafficExtension(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
@@ -3334,7 +3334,7 @@ class LbTrafficExtension(_messages.Message):
       resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
-      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      Supported values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more
       information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included in the
@@ -3353,7 +3353,7 @@ class LbTrafficExtension(_messages.Message):
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
-    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information, refer to
     [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
@@ -3460,10 +3460,14 @@ class ListEdgeCacheKeysetsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       page_token.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   edgeCacheKeysets = _messages.MessageField('EdgeCacheKeyset', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEdgeCacheOriginsResponse(_messages.Message):
@@ -3475,10 +3479,14 @@ class ListEdgeCacheOriginsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       page_token.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   edgeCacheOrigins = _messages.MessageField('EdgeCacheOrigin', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEdgeCacheServicesResponse(_messages.Message):
@@ -3490,10 +3498,14 @@ class ListEdgeCacheServicesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       page_token.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   edgeCacheServices = _messages.MessageField('EdgeCacheService', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEndpointPoliciesResponse(_messages.Message):
@@ -3518,10 +3530,14 @@ class ListGatewayRouteViewsResponse(_messages.Message):
     gatewayRouteViews: List of GatewayRouteView resources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   gatewayRouteViews = _messages.MessageField('GatewayRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGatewaysResponse(_messages.Message):
@@ -3565,10 +3581,14 @@ class ListHttpFiltersResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   httpFilters = _messages.MessageField('HttpFilter', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListHttpRoutesResponse(_messages.Message):
@@ -3652,10 +3672,14 @@ class ListMeshRouteViewsResponse(_messages.Message):
     meshRouteViews: List of MeshRouteView resources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   meshRouteViews = _messages.MessageField('MeshRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMeshesResponse(_messages.Message):
@@ -3856,10 +3880,14 @@ class ListObservabilityPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     observabilityPolicies: List of ObservabilityPolicy resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   observabilityPolicies = _messages.MessageField('ObservabilityPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -3884,10 +3912,14 @@ class ListServiceBindingsResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serviceBindings: List of ServiceBinding resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListServiceLbPoliciesResponse(_messages.Message):
@@ -3899,10 +3931,14 @@ class ListServiceLbPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serviceLbPolicies: List of ServiceLbPolicy resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTcpRoutesResponse(_messages.Message):
@@ -5244,13 +5280,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -5270,13 +5305,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest(_messages.Mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -5301,15 +5335,15 @@ class NetworkservicesProjectsLocationsAuthzExtensionsListRequest(_messages.Messa
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the `AuthzExtension`
-      resources are listed, specified in the following format:
-      `projects/{project}/locations/{location}`.
+      resources are listed. These values are specified in the following
+      format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -5331,13 +5365,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Mess
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Used to specify the fields to be overwritten in the
       `AuthzExtension` resource by the update. The fields specified in the
@@ -6255,13 +6288,12 @@ class NetworkservicesProjectsLocationsLbObservabilityExtensionsCreateRequest(_me
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -6282,13 +6314,12 @@ class NetworkservicesProjectsLocationsLbObservabilityExtensionsDeleteRequest(_me
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -6315,15 +6346,16 @@ class NetworkservicesProjectsLocationsLbObservabilityExtensionsListRequest(_mess
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbObservabilityExtension` resources are listed, specified in the
-      following format: `projects/{project}/locations/{location}`.
+      `LbObservabilityExtension` resources are listed. These values are
+      specified in the following format:
+      `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -6346,13 +6378,12 @@ class NetworkservicesProjectsLocationsLbObservabilityExtensionsPatchRequest(_mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbObservabilityExtension` resource by the update. The fields specified
@@ -6380,13 +6411,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.M
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -6406,13 +6436,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.M
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -6437,15 +6466,15 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Mes
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbRouteExtension` resources are listed, specified in the following
-      format: `projects/{project}/locations/{location}`.
+      `LbRouteExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -6467,13 +6496,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbRouteExtension` resource by the update. The fields specified in the
@@ -6503,13 +6531,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest(_messages
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -6530,13 +6557,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest(_messages
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -6561,15 +6587,15 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest(_messages.M
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbTrafficExtension` resources are listed, specified in the following
-      format: `projects/{project}/locations/{location}`.
+      `LbTrafficExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -6592,13 +6618,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbTrafficExtension` resource by the update. The fields specified in the
@@ -8352,7 +8377,7 @@ class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Mes
 
   Fields:
     parent: Required. The parent resource of the ServiceBinding. Must be in
-      the format `projects/*/locations/global`.
+      the format `projects/*/locations/*`.
     serviceBinding: A ServiceBinding resource to be passed as the request
       body.
     serviceBindingId: Required. Short name of the ServiceBinding resource to
@@ -8369,7 +8394,7 @@ class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Mes
 
   Fields:
     name: Required. A name of the ServiceBinding to delete. Must be in the
-      format `projects/*/locations/global/serviceBindings/*`.
+      format `projects/*/locations/*/serviceBindings/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -8380,7 +8405,7 @@ class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Messag
 
   Fields:
     name: Required. A name of the ServiceBinding to get. Must be in the format
-      `projects/*/locations/global/serviceBindings/*`.
+      `projects/*/locations/*/serviceBindings/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -8395,7 +8420,7 @@ class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Messa
       Indicates that this is a continuation of a prior `ListRouters` call, and
       that the system should return the next page of data.
     parent: Required. The project and location from which the ServiceBindings
-      should be listed, specified in the format `projects/*/locations/global`.
+      should be listed, specified in the format `projects/*/locations/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -9460,8 +9485,10 @@ class Secret(_messages.Message):
 
 
 class ServiceBinding(_messages.Message):
-  r"""ServiceBinding is the resource that defines a Service Directory Service
-  to be used in a BackendService resource.
+  r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
+  used in a BackendService resource. - Bind a Private Service Connect producer
+  service to be used in consumer Cloud Service Mesh or Application Load
+  Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -9474,11 +9501,12 @@ class ServiceBinding(_messages.Message):
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
     name: Identifier. Name of the ServiceBinding resource. It matches pattern
-      `projects/*/locations/global/serviceBindings/service_binding_name`.
-    service: Required. The full Service Directory Service name of the format
-      projects/*/locations/*/namespaces/*/services/*
+      `projects/*/locations/*/serviceBindings/`.
+    service: Optional. The full Service Directory Service name of the format
+      `projects/*/locations/*/namespaces/*/services/*`. This field must be
+      set.
     serviceId: Output only. The unique identifier of the Service Directory
-      Service against which the Service Binding resource is validated. This is
+      Service against which the ServiceBinding resource is validated. This is
       populated when the Service Binding resource is used in another resource
       (like Backend Service). This is of the UUID4 format.
     updateTime: Output only. The timestamp when the resource was updated.
@@ -9552,6 +9580,8 @@ class ServiceLbPolicy(_messages.Message):
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
     failoverConfig: Optional. Configuration related to health based failover.
+    isolationConfig: Optional. Configuration to provide isolation support for
+      the associated Backend Service.
     labels: Optional. Set of label tags associated with the ServiceLbPolicy
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
@@ -9617,10 +9647,11 @@ class ServiceLbPolicy(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   failoverConfig = _messages.MessageField('ServiceLbPolicyFailoverConfig', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  isolationConfig = _messages.MessageField('ServiceLbPolicyIsolationConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
@@ -9653,6 +9684,35 @@ class ServiceLbPolicyFailoverConfig(_messages.Message):
   """
 
   failoverHealthThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ServiceLbPolicyIsolationConfig(_messages.Message):
+  r"""Configuration to provide isolation support for the associated Backend
+  Service.
+
+  Enums:
+    IsolationGranularityValueValuesEnum: Optional. The isolation granularity
+      of the load balancer.
+
+  Fields:
+    isolationGranularity: Optional. The isolation granularity of the load
+      balancer.
+  """
+
+  class IsolationGranularityValueValuesEnum(_messages.Enum):
+    r"""Optional. The isolation granularity of the load balancer.
+
+    Values:
+      ISOLATION_GRANULARITY_UNSPECIFIED: No isolation is configured for the
+        backend service. Traffic can overflow based on the load balancing
+        algorithm.
+      REGION: Traffic for this service will be isolated at the nearest cloud
+        region.
+    """
+    ISOLATION_GRANULARITY_UNSPECIFIED = 0
+    REGION = 1
+
+  isolationGranularity = _messages.EnumField('IsolationGranularityValueValuesEnum', 1)
 
 
 class ServiceObserver(_messages.Message):

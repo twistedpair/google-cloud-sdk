@@ -2111,6 +2111,13 @@ class CsvOptions(_messages.Message):
       error if an empty string is present for all data types except for STRING
       and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
       string as an empty value.
+    nullMarkers: Optional. A list of strings represented as SQL NULL value in
+      a CSV file. null_marker and null_markers can't be set at the same time.
+      If null_marker is set, null_markers has to be not set. If null_markers
+      is set, null_marker has to be not set. If both null_marker and
+      null_markers are set at the same time, a user error would be thrown. Any
+      strings listed in null_markers, including empty string would be
+      interpreted as SQL NULL. This applies to all column types.
     preserveAsciiControlCharacters: Optional. Indicates if the embedded ASCII
       control characters (the first 32 characters in the ASCII-table, from
       '\x00' to '\x1F') are preserved.
@@ -2136,6 +2143,15 @@ class CsvOptions(_messages.Message):
       skips N-1 rows and tries to detect headers in row N. If headers are not
       detected, row N is just skipped. Otherwise row N is used to extract
       column names for the detected schema.
+    sourceColumnMatch: Optional. Controls the strategy used to match loaded
+      columns to the schema. If not set, a sensible default is chosen based on
+      how the schema is provided. If autodetect is used, then columns are
+      matched by name. Otherwise, columns are matched by position. This is
+      done to keep the behavior backward-compatible. Acceptable values are:
+      POSITION - matches by position. This assumes that the columns are
+      ordered the same way as the schema. NAME - matches by name. This reads
+      the header row as column names and reorders columns to match the field
+      names in the schema.
   """
 
   allowJaggedRows = _messages.BooleanField(1)
@@ -2143,9 +2159,11 @@ class CsvOptions(_messages.Message):
   encoding = _messages.StringField(3)
   fieldDelimiter = _messages.StringField(4)
   nullMarker = _messages.StringField(5)
-  preserveAsciiControlCharacters = _messages.BooleanField(6)
-  quote = _messages.StringField(7, default='"')
-  skipLeadingRows = _messages.IntegerField(8)
+  nullMarkers = _messages.StringField(6, repeated=True)
+  preserveAsciiControlCharacters = _messages.BooleanField(7)
+  quote = _messages.StringField(8, default='"')
+  skipLeadingRows = _messages.IntegerField(9)
+  sourceColumnMatch = _messages.StringField(10)
 
 
 class DataFormatOptions(_messages.Message):
@@ -4254,6 +4272,11 @@ class JobConfigurationLoad(_messages.Message):
       with source_format newline-delimited JSON to indicate that a variant of
       JSON is being loaded. To load newline-delimited GeoJSON, specify GEOJSON
       (and source_format must be set to NEWLINE_DELIMITED_JSON).
+    SourceColumnMatchValueValuesEnum: Optional. Controls the strategy used to
+      match loaded columns to the schema. If not set, a sensible default is
+      chosen based on how the schema is provided. If autodetect is used, then
+      columns are matched by name. Otherwise, columns are matched by position.
+      This is done to keep the behavior backward-compatible.
 
   Fields:
     allowJaggedRows: Optional. Accept rows that are missing trailing optional
@@ -4382,6 +4405,13 @@ class JobConfigurationLoad(_messages.Message):
       error if an empty string is present for all data types except for STRING
       and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
       string as an empty value.
+    nullMarkers: Optional. A list of strings represented as SQL NULL value in
+      a CSV file. null_marker and null_markers can't be set at the same time.
+      If null_marker is set, null_markers has to be not set. If null_markers
+      is set, null_marker has to be not set. If both null_marker and
+      null_markers are set at the same time, a user error would be thrown. Any
+      strings listed in null_markers, including empty string would be
+      interpreted as SQL NULL. This applies to all column types.
     parquetOptions: Optional. Additional properties to set if sourceFormat is
       set to PARQUET.
     preserveAsciiControlCharacters: Optional. When sourceFormat is set to
@@ -4440,6 +4470,11 @@ class JobConfigurationLoad(_messages.Message):
       skips N-1 rows and tries to detect headers in row N. If headers are not
       detected, row N is just skipped. Otherwise row N is used to extract
       column names for the detected schema.
+    sourceColumnMatch: Optional. Controls the strategy used to match loaded
+      columns to the schema. If not set, a sensible default is chosen based on
+      how the schema is provided. If autodetect is used, then columns are
+      matched by name. Otherwise, columns are matched by position. This is
+      done to keep the behavior backward-compatible.
     sourceFormat: Optional. The format of the data files. For CSV files,
       specify "CSV". For datastore backups, specify "DATASTORE_BACKUP". For
       newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro,
@@ -4543,6 +4578,27 @@ class JobConfigurationLoad(_messages.Message):
     JSON_EXTENSION_UNSPECIFIED = 0
     GEOJSON = 1
 
+  class SourceColumnMatchValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls the strategy used to match loaded columns to the
+    schema. If not set, a sensible default is chosen based on how the schema
+    is provided. If autodetect is used, then columns are matched by name.
+    Otherwise, columns are matched by position. This is done to keep the
+    behavior backward-compatible.
+
+    Values:
+      SOURCE_COLUMN_MATCH_UNSPECIFIED: Uses sensible defaults based on how the
+        schema is provided. If autodetect is used, then columns are matched by
+        name. Otherwise, columns are matched by position. This is done to keep
+        the behavior backward-compatible.
+      POSITION: Matches by position. This assumes that the columns are ordered
+        the same way as the schema.
+      NAME: Matches by name. This reads the header row as column names and
+        reorders columns to match the field names in the schema.
+    """
+    SOURCE_COLUMN_MATCH_UNSPECIFIED = 0
+    POSITION = 1
+    NAME = 2
+
   allowJaggedRows = _messages.BooleanField(1)
   allowQuotedNewlines = _messages.BooleanField(2)
   autodetect = _messages.BooleanField(3)
@@ -4566,25 +4622,27 @@ class JobConfigurationLoad(_messages.Message):
   jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 21)
   maxBadRecords = _messages.IntegerField(22, variant=_messages.Variant.INT32)
   nullMarker = _messages.StringField(23)
-  parquetOptions = _messages.MessageField('ParquetOptions', 24)
-  preserveAsciiControlCharacters = _messages.BooleanField(25)
-  projectionFields = _messages.StringField(26, repeated=True)
-  quote = _messages.StringField(27, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 28)
-  referenceFileSchemaUri = _messages.StringField(29)
-  schema = _messages.MessageField('TableSchema', 30)
-  schemaInline = _messages.StringField(31)
-  schemaInlineFormat = _messages.StringField(32)
-  schemaUpdateOptions = _messages.StringField(33, repeated=True)
-  skipLeadingRows = _messages.IntegerField(34, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(35)
-  sourceUris = _messages.StringField(36, repeated=True)
-  timeFormat = _messages.StringField(37)
-  timePartitioning = _messages.MessageField('TimePartitioning', 38)
-  timeZone = _messages.StringField(39)
-  timestampFormat = _messages.StringField(40)
-  useAvroLogicalTypes = _messages.BooleanField(41)
-  writeDisposition = _messages.StringField(42)
+  nullMarkers = _messages.StringField(24, repeated=True)
+  parquetOptions = _messages.MessageField('ParquetOptions', 25)
+  preserveAsciiControlCharacters = _messages.BooleanField(26)
+  projectionFields = _messages.StringField(27, repeated=True)
+  quote = _messages.StringField(28, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 29)
+  referenceFileSchemaUri = _messages.StringField(30)
+  schema = _messages.MessageField('TableSchema', 31)
+  schemaInline = _messages.StringField(32)
+  schemaInlineFormat = _messages.StringField(33)
+  schemaUpdateOptions = _messages.StringField(34, repeated=True)
+  skipLeadingRows = _messages.IntegerField(35, variant=_messages.Variant.INT32)
+  sourceColumnMatch = _messages.EnumField('SourceColumnMatchValueValuesEnum', 36)
+  sourceFormat = _messages.StringField(37)
+  sourceUris = _messages.StringField(38, repeated=True)
+  timeFormat = _messages.StringField(39)
+  timePartitioning = _messages.MessageField('TimePartitioning', 40)
+  timeZone = _messages.StringField(41)
+  timestampFormat = _messages.StringField(42)
+  useAvroLogicalTypes = _messages.BooleanField(43)
+  writeDisposition = _messages.StringField(44)
 
 
 class JobConfigurationQuery(_messages.Message):

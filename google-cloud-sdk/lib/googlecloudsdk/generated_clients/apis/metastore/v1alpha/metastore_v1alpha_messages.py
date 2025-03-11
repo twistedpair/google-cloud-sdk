@@ -2736,9 +2736,13 @@ class MultiRegionMetadata(_messages.Message):
 
   Fields:
     constituentRegions: The regions constituting the multi-region.
+    continent: The continent for this multi-region.
+    witnessRegion: The Spanner witness region for this multi-region.
   """
 
   constituentRegions = _messages.StringField(1, repeated=True)
+  continent = _messages.StringField(2)
+  witnessRegion = _messages.StringField(3)
 
 
 class NetworkConfig(_messages.Message):

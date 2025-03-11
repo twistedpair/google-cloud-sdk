@@ -994,9 +994,7 @@ class DataplexProjectsLocationsDataTaxonomiesCreateRequest(_messages.Message):
       Must be unique within the Project.
     googleCloudDataplexV1DataTaxonomy: A GoogleCloudDataplexV1DataTaxonomy
       resource to be passed as the request body.
-    parent: Required. The resource name of the data taxonomy location, of the
-      form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+    parent: A string attribute.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -1050,8 +1048,7 @@ class DataplexProjectsLocationsDataTaxonomiesGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataTaxonomiesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the DataTaxonomy: projects/{project_n
-      umber}/locations/{location_id}/dataTaxonomies/{data_taxonomy_id}
+    name: A string attribute.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5151,6 +5148,23 @@ class GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(_messages.M
     connection: Optional. The BigQuery connection used to create BigLake
       tables. Must be in the form projects/{project_id}/locations/{location_id
       }/connections/{connection_id}
+    location: Optional. The location of the BigQuery dataset to publish
+      BigLake external or non-BigLake external tables to. 1. If the Cloud
+      Storage bucket is located in a multi-region bucket, then BigQuery
+      dataset can be in the same multi-region bucket or any single region that
+      is included in the same multi-region bucket. The datascan can be created
+      in any single region that is included in the same multi-region bucket 2.
+      If the Cloud Storage bucket is located in a dual-region bucket, then
+      BigQuery dataset can be located in regions that are included in the
+      dual-region bucket, or in a multi-region that includes the dual-region.
+      The datascan can be created in any single region that is included in the
+      same dual-region bucket. 3. If the Cloud Storage bucket is located in a
+      single region, then BigQuery dataset can be in the same single region or
+      any multi-region bucket that includes the same single region. The
+      datascan will be created in the same single region as the bucket. 4. If
+      the BigQuery dataset is in single region, it must be in the same single
+      region as the datascan.For supported values, refer to
+      https://cloud.google.com/bigquery/docs/locations#supported_locations.
     tableType: Optional. Determines whether to publish discovered tables as
       BigLake external tables or non-BigLake external tables.
   """
@@ -5173,7 +5187,8 @@ class GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(_messages.M
     BIGLAKE = 2
 
   connection = _messages.StringField(1)
-  tableType = _messages.EnumField('TableTypeValueValuesEnum', 2)
+  location = _messages.StringField(2)
+  tableType = _messages.EnumField('TableTypeValueValuesEnum', 3)
 
 
 class GoogleCloudDataplexV1DataDiscoverySpecStorageConfig(_messages.Message):

@@ -9001,14 +9001,109 @@ class WorkloadIdentityFeatureSpec(_messages.Message):
 class WorkloadIdentityFeatureState(_messages.Message):
   r"""**WorkloadIdentity**: Global feature state.
 
+  Messages:
+    NamespaceStatesValue: The state of the IAM namespaces for the fleet.
+    WorkloadIdentityPoolStatesValue: The state of the Workload Identity Pools
+      for the fleet.
+
   Fields:
+    namespaceStates: The state of the IAM namespaces for the fleet.
     scopeTenancyWorkloadIdentityPool: The full name of the scope-tenancy pool
       for the fleet.
     workloadIdentityPool: The full name of the svc.id.goog pool for the fleet.
+    workloadIdentityPoolStates: The state of the Workload Identity Pools for
+      the fleet.
   """
 
-  scopeTenancyWorkloadIdentityPool = _messages.StringField(1)
-  workloadIdentityPool = _messages.StringField(2)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceStatesValue(_messages.Message):
+    r"""The state of the IAM namespaces for the fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a NamespaceStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NamespaceStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceStatesValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          NAMESPACE_STATE_UNSPECIFIED: Unknown state.
+          NAMESPACE_STATE_OK: The Namespace was created/updated successfully.
+          NAMESPACE_STATE_ERROR: The Namespace was not created/updated
+            successfully. The error message is in the description field.
+        """
+        NAMESPACE_STATE_UNSPECIFIED = 0
+        NAMESPACE_STATE_OK = 1
+        NAMESPACE_STATE_ERROR = 2
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WorkloadIdentityPoolStatesValue(_messages.Message):
+    r"""The state of the Workload Identity Pools for the fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        WorkloadIdentityPoolStatesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        WorkloadIdentityPoolStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WorkloadIdentityPoolStatesValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          WORKLOAD_IDENTITY_POOL_STATE_UNSPECIFIED: Unknown state.
+          WORKLOAD_IDENTITY_POOL_STATE_OK: The Workload Identity Pool was
+            created/updated successfully.
+          WORKLOAD_IDENTITY_POOL_STATE_ERROR: The Workload Identity Pool was
+            not created/updated successfully. The error message is in the
+            description field.
+        """
+        WORKLOAD_IDENTITY_POOL_STATE_UNSPECIFIED = 0
+        WORKLOAD_IDENTITY_POOL_STATE_OK = 1
+        WORKLOAD_IDENTITY_POOL_STATE_ERROR = 2
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  namespaceStates = _messages.MessageField('NamespaceStatesValue', 1)
+  scopeTenancyWorkloadIdentityPool = _messages.StringField(2)
+  workloadIdentityPool = _messages.StringField(3)
+  workloadIdentityPoolStates = _messages.MessageField('WorkloadIdentityPoolStatesValue', 4)
 
 
 class WorkloadIdentityMembershipState(_messages.Message):
@@ -9030,13 +9125,15 @@ class WorkloadIdentityMembershipState(_messages.Message):
 
     Values:
       IDENTITY_PROVIDER_STATE_UNSPECIFIED: Unknown state.
-      OK: The Identity Provider was created/updated successfully.
-      ERROR: The Identity Provider was not created/updated successfully. The
-        error message is in the description field.
+      IDENTITY_PROVIDER_STATE_OK: The Identity Provider was created/updated
+        successfully.
+      IDENTITY_PROVIDER_STATE_ERROR: The Identity Provider was not
+        created/updated successfully. The error message is in the description
+        field.
     """
     IDENTITY_PROVIDER_STATE_UNSPECIFIED = 0
-    OK = 1
-    ERROR = 2
+    IDENTITY_PROVIDER_STATE_OK = 1
+    IDENTITY_PROVIDER_STATE_ERROR = 2
 
   description = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)

@@ -118,6 +118,7 @@ SUPPORTED_SERVICES = (
     SecurityCenterService('container-threat-detection', abbreviation='ctd'),
     SecurityCenterService('vm-threat-detection', abbreviation='vmtd'),
     SecurityCenterService('web-security-scanner', abbreviation='wss'),
+    SecurityCenterService('vm-threat-detection-aws', abbreviation='vmtd-aws'),
 )
 
 SERVICE_INVENTORY: Dict[str, SecurityCenterService] = make_service_inventory(

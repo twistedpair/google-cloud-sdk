@@ -186,6 +186,20 @@ class AttestationOccurrence(_messages.Message):
   signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
+class BaseImage(_messages.Message):
+  r"""BaseImage describes a base image of a container image.
+
+  Fields:
+    layerCount: The number of layers that the base image is composed of.
+    name: The name of the base image.
+    repository: The repository name in which the base image is from.
+  """
+
+  layerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2)
+  repository = _messages.StringField(3)
+
+
 class BatchCreateNotesRequest(_messages.Message):
   r"""Request to create notes in batch.
 
@@ -542,7 +556,7 @@ class BuildProvenance(_messages.Message):
 
 
 class BuildStep(_messages.Message):
-  r"""A step in the build pipeline. Next ID: 21
+  r"""A step in the build pipeline. Next ID: 22
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the build step. At this
@@ -597,6 +611,7 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    results: A StepResult attribute.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
     secretEnv: A list of environment variables which are encrypted using a
@@ -664,13 +679,14 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('TimeSpan', 11)
-  script = _messages.StringField(12)
-  secretEnv = _messages.StringField(13, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  timeout = _messages.StringField(15)
-  timing = _messages.MessageField('TimeSpan', 16)
-  volumes = _messages.MessageField('Volume', 17, repeated=True)
-  waitFor = _messages.StringField(18, repeated=True)
+  results = _messages.MessageField('StepResult', 12, repeated=True)
+  script = _messages.StringField(13)
+  secretEnv = _messages.StringField(14, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  timeout = _messages.StringField(16)
+  timing = _messages.MessageField('TimeSpan', 17)
+  volumes = _messages.MessageField('Volume', 18, repeated=True)
+  waitFor = _messages.StringField(19, repeated=True)
 
 
 class BuilderConfig(_messages.Message):
@@ -3967,9 +3983,12 @@ class GrafeasV1FileLocation(_messages.Message):
   Fields:
     filePath: For jars that are contained inside .war files, this filepath can
       indicate the path to war file combined with the path to jar file.
+    layerDetails: Each package found in a file should have its own layer
+      metadata (that is, information from the origin layer of the package).
   """
 
   filePath = _messages.StringField(1)
+  layerDetails = _messages.MessageField('LayerDetails', 2)
 
 
 class GrafeasV1SlsaProvenanceZeroTwoSlsaBuilder(_messages.Message):
@@ -4386,6 +4405,25 @@ class Layer(_messages.Message):
 
   arguments = _messages.StringField(1)
   directive = _messages.StringField(2)
+
+
+class LayerDetails(_messages.Message):
+  r"""Details about the layer a package was found in.
+
+  Fields:
+    baseImages: The base images the layer is found within.
+    command: The layer build command that was used to build the layer. This
+      may not be found in all layers depending on how the container image is
+      built.
+    diffId: The diff ID (typically a sha256 hash) of the layer in the
+      container image.
+    index: The index of the layer in the container image.
+  """
+
+  baseImages = _messages.MessageField('BaseImage', 1, repeated=True)
+  command = _messages.StringField(2)
+  diffId = _messages.StringField(3)
+  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class License(_messages.Message):
@@ -5949,6 +5987,20 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StepResult(_messages.Message):
+  r"""StepResult is the declaration of a result for a build step.
+
+  Fields:
+    attestationContentName: A string attribute.
+    attestationType: A string attribute.
+    name: A string attribute.
+  """
+
+  attestationContentName = _messages.StringField(1)
+  attestationType = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class Subject(_messages.Message):

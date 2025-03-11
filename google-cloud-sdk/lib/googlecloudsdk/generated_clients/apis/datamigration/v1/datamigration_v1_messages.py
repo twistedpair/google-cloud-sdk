@@ -915,10 +915,8 @@ class ConnectionProfile(_messages.Message):
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
     role: Optional. The connection profile role.
-    satisfiesPzi: Output only. Zone Isolation compliance state of the
-      resource.
-    satisfiesPzs: Output only. Zone Separation compliance state of the
-      resource.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     spanner: A Spanner database connection profile.
     sqlserver: Connection profile for a SQL Server data source.
     state: The current connection profile state (e.g. DRAFT, READY, or
@@ -2915,8 +2913,8 @@ class EntityDdl(_messages.Message):
   r"""A single DDL statement for a specific entity
 
   Enums:
-    DdlKindValueValuesEnum: The DDL Kind selected for apply, or SOURCE if
-      getting the source tree.
+    DdlKindValueValuesEnum: The DDL Kind selected for apply, or UNSPECIFIED if
+      the entity wasn't converted yet.
     EditedDdlKindValueValuesEnum: If ddl_kind is USER_EDIT, this holds the DDL
       kind of the original content - DETERMINISTIC or AI. Otherwise, this is
       DDL_KIND_UNSPECIFIED.
@@ -2925,8 +2923,8 @@ class EntityDdl(_messages.Message):
 
   Fields:
     ddl: The actual ddl code.
-    ddlKind: The DDL Kind selected for apply, or SOURCE if getting the source
-      tree.
+    ddlKind: The DDL Kind selected for apply, or UNSPECIFIED if the entity
+      wasn't converted yet.
     ddlType: Type of DDL (Create, Alter).
     editedDdlKind: If ddl_kind is USER_EDIT, this holds the DDL kind of the
       original content - DETERMINISTIC or AI. Otherwise, this is
@@ -2937,7 +2935,8 @@ class EntityDdl(_messages.Message):
   """
 
   class DdlKindValueValuesEnum(_messages.Enum):
-    r"""The DDL Kind selected for apply, or SOURCE if getting the source tree.
+    r"""The DDL Kind selected for apply, or UNSPECIFIED if the entity wasn't
+    converted yet.
 
     Values:
       DDL_KIND_UNSPECIFIED: The kind of the DDL is unknown.
@@ -4095,10 +4094,8 @@ class MigrationJob(_messages.Message):
     phase: Output only. The current migration job phase.
     reverseSshConnectivity: The details needed to communicate to the source
       over Reverse SSH tunnel connectivity.
-    satisfiesPzi: Output only. Zone Isolation compliance state of the
-      resource.
-    satisfiesPzs: Output only. Zone Separation compliance state of the
-      resource.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     source: Required. The resource name (URI) of the source connection
       profile.
     sourceDatabase: The database engine type and provider of the source.
@@ -5178,10 +5175,8 @@ class PrivateConnection(_messages.Message):
       containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
       "mass": "1.3kg", "count": "3" }`.
     name: The name of the resource.
-    satisfiesPzi: Output only. Zone Isolation compliance state of the
-      resource.
-    satisfiesPzs: Output only. Zone Separation compliance state of the
-      resource.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The state of the private connection.
     updateTime: Output only. The last update time of the resource.
     vpcPeeringConfig: VPC peering configuration.

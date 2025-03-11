@@ -296,10 +296,16 @@ class CloudStorageBuckets(_messages.Message):
   r"""Collection of buckets.
 
   Fields:
-    cloudStorageBuckets: Optional. Buckets to include or exclude.
+    bucketIdRegexes: Optional. A regex pattern for matching bucket names.
+      Regex should follow the syntax specified in
+      [google/re2](https://github.com/google/re2). For example, `^sample_.*`
+      matches all buckets of the form `gs://sample_bucket-1`,
+      `gs://sample_bucket-2`, `gs://sample_bucket-n` but not
+      `gs://test_sample_bucket`. If you want to match a single bucket, say
+      `gs://sample_bucket`, use `sample_bucket`.
   """
 
-  cloudStorageBuckets = _messages.MessageField('CloudStorageBucket', 1, repeated=True)
+  bucketIdRegexes = _messages.StringField(1, repeated=True)
 
 
 class CloudStorageLocations(_messages.Message):
@@ -463,6 +469,39 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class EffectiveIntelligenceConfig(_messages.Message):
+  r"""The effective `IntelligenceConfig` for the resource.
+
+  Enums:
+    EffectiveEditionValueValuesEnum: Output only. The `IntelligenceConfig`
+      edition that is applicable for the resource.
+
+  Fields:
+    effectiveEdition: Output only. The `IntelligenceConfig` edition that is
+      applicable for the resource.
+    intelligenceConfig: Output only. The `IntelligenceConfig` resource that is
+      applied for the target resource. Format: `{organizations|folders|project
+      s}/{id}/locations/{location}/intelligenceConfig`
+  """
+
+  class EffectiveEditionValueValuesEnum(_messages.Enum):
+    r"""Output only. The `IntelligenceConfig` edition that is applicable for
+    the resource.
+
+    Values:
+      EFFECTIVE_EDITION_UNSPECIFIED: This is an unknown edition of the
+        resource.
+      NONE: No edition.
+      STANDARD: The `IntelligenceConfig` resource is of STANDARD edition.
+    """
+    EFFECTIVE_EDITION_UNSPECIFIED = 0
+    NONE = 1
+    STANDARD = 2
+
+  effectiveEdition = _messages.EnumField('EffectiveEditionValueValuesEnum', 1)
+  intelligenceConfig = _messages.StringField(2)
+
+
 class EffectiveManagementHubEdition(_messages.Message):
   r"""The `ManagementHub` edition that is effective for the resource.
 
@@ -520,12 +559,12 @@ class Encryption(_messages.Message):
 class Filter(_messages.Message):
   r"""Filter over location and bucket using include or exclude semantics.
   Resources that match the include or exclude filter are exclusively included
-  or excluded from the Management Hub plan.
+  or excluded from the Storage Intelligence plan.
 
   Fields:
-    excludedCloudStorageBuckets: Buckets to include or exclude.
+    excludedCloudStorageBuckets: Buckets to exclude.
     excludedCloudStorageLocations: Bucket locations to exclude.
-    includedCloudStorageBuckets: Buckets to include or exclude.
+    includedCloudStorageBuckets: Buckets to include.
     includedCloudStorageLocations: Bucket locations to include.
   """
 
@@ -604,6 +643,76 @@ class IamConfig(_messages.Message):
 
   publicAccessPrevention = _messages.StringField(1)
   uniformBucketLevelAccess = _messages.MessageField('UniformBucketLevelAccess', 2)
+
+
+class IntelligenceConfig(_messages.Message):
+  r"""The `IntelligenceConfig` resource associated with your organization,
+  folder, or project.
+
+  Enums:
+    EditionConfigValueValuesEnum: Optional. The edition configuration of the
+      `IntelligenceConfig` resource.
+
+  Fields:
+    editionConfig: Optional. The edition configuration of the
+      `IntelligenceConfig` resource.
+    effectiveIntelligenceConfig: Output only. The `IntelligenceConfig`
+      resource that is applicable for the resource.
+    filter: Optional. Filter over location and bucket.
+    name: Identifier. The name of the `IntelligenceConfig` resource associated
+      with your organization, folder, or project. The name format varies based
+      on the GCP resource hierarchy as follows: * For project:
+      `projects/{project_number}/locations/global/intelligenceConfig` * For
+      organization:
+      `organizations/{org_id}/locations/global/intelligenceConfig` * For
+      folder: `folders/{folder_id}/locations/global/intelligenceConfig`
+    stats: Output only. Stats from the evaluvation of `IntelligenceConfig`
+      resource. The evaluation is triggered when `edition_config` is set to
+      `EVALUATE`.
+    updateTime: Output only. The time at which the `IntelligenceConfig`
+      resource is last updated.
+  """
+
+  class EditionConfigValueValuesEnum(_messages.Enum):
+    r"""Optional. The edition configuration of the `IntelligenceConfig`
+    resource.
+
+    Values:
+      EDITION_CONFIG_UNSPECIFIED: This is an unknown edition of the resource.
+      INHERIT: The inherited edition from the parent and filters. This is the
+        default edition when there is no `IntelligenceConfig` setup for a GCP
+        resource.
+      DISABLED: The edition configuration is disabled for the
+        `IntelligenceConfig` resource and its children. Filters are not
+        applicable.
+      STANDARD: The `IntelligenceConfig` resource is of STANDARD edition.
+      EVALUATE: Initiates a statistical evaluation of your Cloud Storage
+        resources that have `IntelligenceConfig` enabled. The evaluation
+        process gives the count of objects, buckets, and projects in your
+        Cloud Storage environment that would be affected by enabling
+        `IntelligenceConfig`. Using the evaluation result, you can estimate
+        the cost of enabling `IntelligenceConfig`. When you set the edition
+        configuration as `EVALUATE`, the process analyzes your resource and
+        all of its child resources without enabling `IntelligenceConfig`. This
+        means that Cloud Storage does not charge you for `IntelligenceConfig`
+        features during the evaluation, and you won't have access to those
+        features similar to a resource in the `DISABLED` state. You can view
+        the evaluation results through the `GET` method of the
+        `IntelligenceConfig` resource. You can refine the evaluation by using
+        filters to specify which buckets you want to include in the analysis.
+    """
+    EDITION_CONFIG_UNSPECIFIED = 0
+    INHERIT = 1
+    DISABLED = 2
+    STANDARD = 3
+    EVALUATE = 4
+
+  editionConfig = _messages.EnumField('EditionConfigValueValuesEnum', 1)
+  effectiveIntelligenceConfig = _messages.MessageField('EffectiveIntelligenceConfig', 2)
+  filter = _messages.MessageField('Filter', 3)
+  name = _messages.StringField(4)
+  stats = _messages.MessageField('Stats', 5)
+  updateTime = _messages.StringField(6)
 
 
 class Lifecycle(_messages.Message):
@@ -709,10 +818,50 @@ class ManagementHub(_messages.Message):
 
   editionConfig = _messages.EnumField('EditionConfigValueValuesEnum', 1)
   effectiveManagementHubEdition = _messages.MessageField('EffectiveManagementHubEdition', 2)
-  filter = _messages.MessageField('Filter', 3)
+  filter = _messages.MessageField('ManagementHubFilter', 3)
   managementHubStats = _messages.MessageField('ManagementHubStats', 4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class ManagementHubFilter(_messages.Message):
+  r"""Filter over location and bucket using include or exclude semantics.
+  Resources that match the include or exclude filter are exclusively included
+  or excluded from the Management Hub plan.
+
+  Fields:
+    excludedCloudStorageBuckets: Buckets to include or exclude.
+    excludedCloudStorageLocations: Bucket locations to exclude.
+    includedCloudStorageBuckets: Buckets to include or exclude.
+    includedCloudStorageLocations: Bucket locations to include.
+  """
+
+  excludedCloudStorageBuckets = _messages.MessageField('ManagementHubFilterCloudStorageBuckets', 1)
+  excludedCloudStorageLocations = _messages.MessageField('ManagementHubFilterCloudStorageLocations', 2)
+  includedCloudStorageBuckets = _messages.MessageField('ManagementHubFilterCloudStorageBuckets', 3)
+  includedCloudStorageLocations = _messages.MessageField('ManagementHubFilterCloudStorageLocations', 4)
+
+
+class ManagementHubFilterCloudStorageBuckets(_messages.Message):
+  r"""Collection of buckets.
+
+  Fields:
+    cloudStorageBuckets: Optional. Buckets to include or exclude.
+  """
+
+  cloudStorageBuckets = _messages.MessageField('CloudStorageBucket', 1, repeated=True)
+
+
+class ManagementHubFilterCloudStorageLocations(_messages.Message):
+  r"""Collection of bucket locations.
+
+  Fields:
+    locations: Optional. Bucket locations. Location can be any of the Cloud
+      Storage regions specified in lower case format. For example, `us-east1`,
+      `us-west1`.
+  """
+
+  locations = _messages.StringField(1, repeated=True)
 
 
 class ManagementHubStats(_messages.Message):
@@ -1100,6 +1249,45 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Stats(_messages.Message):
+  r"""The statistics of `IntelligenceConfig`.
+
+  Enums:
+    ProcessingStateValueValuesEnum: Output only. The processing state of
+      stats.
+
+  Fields:
+    bucketCount: Output only. The number of buckets within the
+      `IntelligenceConfig` scope.
+    objectCount: Output only. The number of objects within the
+      `IntelligenceConfig` scope.
+    processingState: Output only. The processing state of stats.
+    projectCount: Output only. The number of projects within the
+      `IntelligenceConfig` scope.
+    snapshotTime: Output only. The snapshot time of the reported stats.
+  """
+
+  class ProcessingStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The processing state of stats.
+
+    Values:
+      PROCESSING_STATE_UNSPECIFIED: Unspecified processing state.
+      IN_PROGRESS: Processing is in progress.
+      COMPLETED: Processing is completed.
+      FAILED: Processing failed.
+    """
+    PROCESSING_STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    COMPLETED = 2
+    FAILED = 3
+
+  bucketCount = _messages.IntegerField(1)
+  objectCount = _messages.IntegerField(2)
+  processingState = _messages.EnumField('ProcessingStateValueValuesEnum', 3)
+  projectCount = _messages.IntegerField(4)
+  snapshotTime = _messages.StringField(5)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -1151,6 +1339,18 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StorageFoldersLocationsGetIntelligenceConfigRequest(_messages.Message):
+  r"""A StorageFoldersLocationsGetIntelligenceConfigRequest object.
+
+  Fields:
+    name: Required. The name of the `IntelligenceConfig` resource associated
+      with your folder. Format:
+      `folders/{id}/locations/global/intelligenceConfig`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class StorageFoldersLocationsGetManagementHubRequest(_messages.Message):
   r"""A StorageFoldersLocationsGetManagementHubRequest object.
 
@@ -1160,6 +1360,32 @@ class StorageFoldersLocationsGetManagementHubRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class StorageFoldersLocationsUpdateIntelligenceConfigRequest(_messages.Message):
+  r"""A StorageFoldersLocationsUpdateIntelligenceConfigRequest object.
+
+  Fields:
+    intelligenceConfig: A IntelligenceConfig resource to be passed as the
+      request body.
+    name: Identifier. The name of the `IntelligenceConfig` resource associated
+      with your organization, folder, or project. The name format varies based
+      on the GCP resource hierarchy as follows: * For project:
+      `projects/{project_number}/locations/global/intelligenceConfig` * For
+      organization:
+      `organizations/{org_id}/locations/global/intelligenceConfig` * For
+      folder: `folders/{folder_id}/locations/global/intelligenceConfig`
+    requestId: Optional. The ID that uniquely identifies the request,
+      preventing duplicate processing.
+    updateMask: Required. The `update_mask` that specifies the fields within
+      the `IntelligenceConfig` resource that should be modified by this
+      update. Only the listed fields are updated.
+  """
+
+  intelligenceConfig = _messages.MessageField('IntelligenceConfig', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class StorageFoldersLocationsUpdateManagementHubRequest(_messages.Message):
@@ -1210,6 +1436,18 @@ class StorageLayout(_messages.Message):
   name = _messages.StringField(5)
 
 
+class StorageOrganizationsLocationsGetIntelligenceConfigRequest(_messages.Message):
+  r"""A StorageOrganizationsLocationsGetIntelligenceConfigRequest object.
+
+  Fields:
+    name: Required. The name of the `IntelligenceConfig` resource associated
+      with your organization. Format:
+      `organizations/{org_id}/locations/global/intelligenceConfig`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class StorageOrganizationsLocationsGetManagementHubRequest(_messages.Message):
   r"""A StorageOrganizationsLocationsGetManagementHubRequest object.
 
@@ -1220,6 +1458,32 @@ class StorageOrganizationsLocationsGetManagementHubRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class StorageOrganizationsLocationsUpdateIntelligenceConfigRequest(_messages.Message):
+  r"""A StorageOrganizationsLocationsUpdateIntelligenceConfigRequest object.
+
+  Fields:
+    intelligenceConfig: A IntelligenceConfig resource to be passed as the
+      request body.
+    name: Identifier. The name of the `IntelligenceConfig` resource associated
+      with your organization, folder, or project. The name format varies based
+      on the GCP resource hierarchy as follows: * For project:
+      `projects/{project_number}/locations/global/intelligenceConfig` * For
+      organization:
+      `organizations/{org_id}/locations/global/intelligenceConfig` * For
+      folder: `folders/{folder_id}/locations/global/intelligenceConfig`
+    requestId: Optional. The ID that uniquely identifies the request,
+      preventing duplicate processing.
+    updateMask: Required. The `update_mask` that specifies the fields within
+      the `IntelligenceConfig` resource that should be modified by this
+      update. Only the listed fields are updated.
+  """
+
+  intelligenceConfig = _messages.MessageField('IntelligenceConfig', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class StorageOrganizationsLocationsUpdateManagementHubRequest(_messages.Message):
@@ -1386,6 +1650,18 @@ class StorageProjectsBucketsGetStorageLayoutRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class StorageProjectsLocationsGetIntelligenceConfigRequest(_messages.Message):
+  r"""A StorageProjectsLocationsGetIntelligenceConfigRequest object.
+
+  Fields:
+    name: Required. The name of the `IntelligenceConfig` resource associated
+      with your project. Format:
+      `projects/{id}/locations/global/intelligenceConfig`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class StorageProjectsLocationsGetManagementHubRequest(_messages.Message):
   r"""A StorageProjectsLocationsGetManagementHubRequest object.
 
@@ -1395,6 +1671,32 @@ class StorageProjectsLocationsGetManagementHubRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class StorageProjectsLocationsUpdateIntelligenceConfigRequest(_messages.Message):
+  r"""A StorageProjectsLocationsUpdateIntelligenceConfigRequest object.
+
+  Fields:
+    intelligenceConfig: A IntelligenceConfig resource to be passed as the
+      request body.
+    name: Identifier. The name of the `IntelligenceConfig` resource associated
+      with your organization, folder, or project. The name format varies based
+      on the GCP resource hierarchy as follows: * For project:
+      `projects/{project_number}/locations/global/intelligenceConfig` * For
+      organization:
+      `organizations/{org_id}/locations/global/intelligenceConfig` * For
+      folder: `folders/{folder_id}/locations/global/intelligenceConfig`
+    requestId: Optional. The ID that uniquely identifies the request,
+      preventing duplicate processing.
+    updateMask: Required. The `update_mask` that specifies the fields within
+      the `IntelligenceConfig` resource that should be modified by this
+      update. Only the listed fields are updated.
+  """
+
+  intelligenceConfig = _messages.MessageField('IntelligenceConfig', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class StorageProjectsLocationsUpdateManagementHubRequest(_messages.Message):

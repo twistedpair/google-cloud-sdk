@@ -16,12 +16,12 @@
 """Utilities for operating on different endpoints."""
 
 import contextlib
-from googlecloudsdk.api_lib.artifacts import exceptions as aa_exceptions
+from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.core import properties
 
 # Rerouted regions are regions that don't have a regional endpoint
 # and must be redirected to global region.
-_REROUTED_LOCATIONS = frozenset([
+_CONTAINER_ANALYSIS_REROUTED_LOCATIONS = frozenset([
     "africa-south1",
     "asia-northeast2",
     "australia-southeast2",
@@ -35,7 +35,7 @@ _REROUTED_LOCATIONS = frozenset([
 ])
 
 # Direct locations are regions and multi-regions that have regional endpoints.
-_DIRECT_LOCATIONS = frozenset([
+_CONTAINER_ANALYSIS_DIRECT_LOCATIONS = frozenset([
     "asia-east1",
     "asia-east2",
     "asia-northeast1",
@@ -74,12 +74,16 @@ _DIRECT_LOCATIONS = frozenset([
     "us-west4",
 ])
 
-_REP_STRUCTURE = "https://containeranalysis.{}.rep.{}/"
+_CONTAINER_ANALYSIS_REP_STRUCTURE = "https://containeranalysis.{}.rep.{}/"
+_ARTIFACT_REGISTRY_FACADE_STRUCTURE = "{protocol}{prefix}{location}-{format}.{domain}"
+_ARTIFACT_REGISTRY_FACADE_REP_STRUCTURE = "{protocol}{prefix}{format}.{location}.rep.{domain}"
 
 
 def _GetRegionalEndpoint(region):
   universe_domain = properties.VALUES.core.universe_domain.Get()
-  regional_endpoint = _REP_STRUCTURE.format(region, universe_domain)
+  regional_endpoint = _CONTAINER_ANALYSIS_REP_STRUCTURE.format(
+      region, universe_domain
+  )
   return regional_endpoint
 
 
@@ -104,13 +108,46 @@ def WithRegion(region=None):
   override = properties.VALUES.api_endpoint_overrides.containeranalysis.Get()
   if region is None:
     pass
-  elif region not in _DIRECT_LOCATIONS and region not in _REROUTED_LOCATIONS:
-    raise aa_exceptions.UnsupportedLocationError()
-  elif override is None and region not in _REROUTED_LOCATIONS:
+  elif (
+      region not in _CONTAINER_ANALYSIS_DIRECT_LOCATIONS
+      and region not in _CONTAINER_ANALYSIS_REROUTED_LOCATIONS
+  ):
+    raise ar_exceptions.UnsupportedLocationError()
+  elif (
+      override is None and region not in _CONTAINER_ANALYSIS_REROUTED_LOCATIONS
+  ):
     regional_endpoint = _GetRegionalEndpoint(region)
     properties.VALUES.api_endpoint_overrides.containeranalysis.Set(
-        regional_endpoint)
+        regional_endpoint
+    )
   try:
     yield
   finally:
     properties.VALUES.api_endpoint_overrides.containeranalysis.Set(override)
+
+
+def ArtifactRegistryDomainEndpoint(
+    location, repo_format, protocol="", rep=False,
+):
+  """Returns the Artifact Registry domain endpoint for the given region."""
+  # TODO(b/399155579): read from universe descriptor once AR is added.
+  domain = "pkg.dev"
+  prefix = properties.VALUES.artifacts.registry_endpoint_prefix.Get()
+  if protocol:
+    if protocol != "https" and protocol != "http":
+      raise ar_exceptions.ArtifactRegistryError(
+          "Invalid protocol: {}, must be https or http".format(protocol)
+      )
+    protocol = protocol + "://"
+  template = (
+      _ARTIFACT_REGISTRY_FACADE_REP_STRUCTURE
+      if rep
+      else _ARTIFACT_REGISTRY_FACADE_STRUCTURE
+  )
+  return template.format(
+      protocol=protocol,
+      prefix=prefix,
+      location=location,
+      format=repo_format,
+      domain=domain,
+  )

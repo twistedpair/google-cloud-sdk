@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://lustre.googleapis.com/v1alpha/'
-DOCS_URL = 'go/managedlustre'
+DOCS_URL = 'https://cloud.google.com/managed-lustre/'
 
 
 class Collections(enum.Enum):

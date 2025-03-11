@@ -22,13 +22,16 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import util
-from googlecloudsdk.api_lib.dataproc.poller import (
-    abstract_operation_streamer_poller as dataproc_poller_base)
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import log
 
 
-class SessionPoller(dataproc_poller_base.AbstractOperationStreamerPoller):
+class SessionPoller(waiter.OperationPoller):
   """Poller for session workload."""
+
+  def __init__(self, dataproc):
+    """Poller for session workload."""
+    self.dataproc = dataproc
 
   def IsDone(self, session):
     """See base class."""
@@ -49,7 +52,7 @@ class SessionPoller(dataproc_poller_base.AbstractOperationStreamerPoller):
         # Stop polling if encounter client Http error (4xx).
         raise
 
-  def _GetResult(self, session):
+  def GetResult(self, session):
     """Handles errors.
 
     Error handling for sessions. This happen after the session reaches one of
@@ -85,5 +88,5 @@ class SessionPoller(dataproc_poller_base.AbstractOperationStreamerPoller):
     # Nothing to return.
     return None
 
-  def _CheckStreamer(self, poll_result):
+  def TrackerUpdateFunction(self, tracker, poll_result, status):
     pass

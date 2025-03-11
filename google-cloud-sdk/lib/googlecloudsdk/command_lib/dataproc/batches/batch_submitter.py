@@ -22,7 +22,8 @@ from __future__ import unicode_literals
 import sys
 
 from googlecloudsdk.api_lib.dataproc import util
-from googlecloudsdk.api_lib.dataproc.poller import batch_poller
+from googlecloudsdk.api_lib.dataproc.poller import gce_batch_poller
+from googlecloudsdk.api_lib.dataproc.poller import rm_batch_poller
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.dataproc.batches import (
     batches_create_request_factory)
@@ -57,16 +58,30 @@ def Submit(batch_workload_message, dataproc, args):
     log.warning(warning)
 
   if not args.async_:
-    poller = batch_poller.BatchPoller(dataproc)
+    # Get the batch workload to obtain the resolved version.
+    batch_ref = '{}/batches/{}'.format(request.parent, request.batchId)
+    batch = dataproc.client.projects_locations_batches.Get(
+        dataproc.messages.DataprocProjectsLocationsBatchesGetRequest(
+            name=batch_ref
+        )
+    )
+    if batch.runtimeConfig.version.startswith(
+        '1'
+    ) or batch.runtimeConfig.version.startswith('2'):
+      poller = gce_batch_poller.GceBatchPoller(dataproc)
+    else:
+      poller = rm_batch_poller.RmBatchPoller(dataproc)
+
     waiter.WaitFor(
         poller,
-        '{}/batches/{}'.format(request.parent, request.batchId),
+        batch_ref,
         max_wait_ms=sys.maxsize,
         sleep_ms=5000,
         wait_ceiling_ms=5000,
-        exponential_sleep_multiplier=1.,
+        exponential_sleep_multiplier=1.0,
         custom_tracker=None,
-        tracker_update_func=poller.TrackerUpdateFunction)
+        tracker_update_func=poller.TrackerUpdateFunction,
+    )
     log.status.Print('Batch [{}] finished.'.format(request.batchId))
 
   return batch_op

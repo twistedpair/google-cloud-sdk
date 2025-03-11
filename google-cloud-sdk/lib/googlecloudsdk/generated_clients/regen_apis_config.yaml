@@ -2273,7 +2273,7 @@ canonical_surfaces:
     command: runtime-config
   saasservicemgmt:
     name: saasservicemgmt
-    command: saas
+    command: saas_runtime
     hidden: true
   sasportal:
     name: sasportal

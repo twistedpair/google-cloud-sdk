@@ -6394,11 +6394,11 @@ class TargetArtifact(_messages.Message):
       This contains deployment configuration used by Skaffold during a
       rollout, and all paths are relative to this location.
     manifestPath: Output only. File path of the rendered manifest relative to
-      the URI.
+      the URI for the stable phase.
     phaseArtifacts: Output only. Map from the phase ID to the phase artifacts
       for the `Target`.
     skaffoldConfigPath: Output only. File path of the resolved Skaffold
-      configuration relative to the URI.
+      configuration for the stable phase, relative to the URI.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6562,9 +6562,9 @@ class TargetRender(_messages.Message):
         successfully because the verification stanza required for verify was
         not found on the Skaffold configuration.
       CUSTOM_ACTION_NOT_FOUND: The render operation did not complete
-        successfully because the custom action required for predeploy or
-        postdeploy was not found in the Skaffold configuration. See
-        failure_message for additional details.
+        successfully because the custom action(s) required for Rollout jobs
+        were not found in the Skaffold configuration. See failure_message for
+        additional details.
       DEPLOYMENT_STRATEGY_NOT_SUPPORTED: Release failed during rendering
         because the release configuration is not supported with the specified
         deployment strategy.

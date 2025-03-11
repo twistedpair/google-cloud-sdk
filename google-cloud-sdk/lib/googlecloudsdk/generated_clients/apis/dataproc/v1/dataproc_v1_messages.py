@@ -628,6 +628,10 @@ class AutoscalingConfig(_messages.Message):
 class AutoscalingPolicy(_messages.Message):
   r"""Describes an autoscaling policy for Dataproc cluster autoscaler.
 
+  Enums:
+    ClusterTypeValueValuesEnum: Optional. The type of the clusters for which
+      this autoscaling policy is to be configured.
+
   Messages:
     LabelsValue: Optional. The labels to associate with this autoscaling
       policy. Label keys must contain 1 to 63 characters, and must conform to
@@ -638,6 +642,8 @@ class AutoscalingPolicy(_messages.Message):
 
   Fields:
     basicAlgorithm: A BasicAutoscalingAlgorithm attribute.
+    clusterType: Optional. The type of the clusters for which this autoscaling
+      policy is to be configured.
     id: Required. The policy id.The id must contain only letters (a-z, A-Z),
       numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
       with underscore or hyphen. Must consist of between 3 and 50 characters.
@@ -660,6 +666,19 @@ class AutoscalingPolicy(_messages.Message):
     workerConfig: Required. Describes how the autoscaler will operate for
       primary workers.
   """
+
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the clusters for which this autoscaling policy
+    is to be configured.
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: Not set.
+      STANDARD: Standard dataproc cluster with minimum 2 primary workers.
+      ZERO_SCALE: Clusters that could be scaled down to zero worker nodes.
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    ZERO_SCALE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -691,11 +710,12 @@ class AutoscalingPolicy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   basicAlgorithm = _messages.MessageField('BasicAutoscalingAlgorithm', 1)
-  id = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 5)
-  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 6)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 2)
+  id = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 6)
+  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 7)
 
 
 class AutotuningConfig(_messages.Message):
@@ -1234,10 +1254,14 @@ class ClusterAuthenticationConfig(_messages.Message):
 class ClusterConfig(_messages.Message):
   r"""The cluster config.
 
+  Enums:
+    ClusterTypeValueValuesEnum: Optional. The type of the cluster.
+
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
     auxiliaryNodeGroups: Optional. The node group settings.
+    clusterType: Optional. The type of the cluster.
     configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
       specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
@@ -1292,24 +1316,41 @@ class ClusterConfig(_messages.Message):
       cluster's worker instances.
   """
 
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the cluster.
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: Not set.
+      STANDARD: Standard dataproc cluster with minimum 2 primary workers.
+      SINGLE_NODE:
+        https://cloud.google.com/dataproc/docs/concepts/configuring-
+        clusters/single-node-clusters
+      ZERO_SCALE: Clusters that could be scaled down to zero worker nodes.
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    SINGLE_NODE = 2
+    ZERO_SCALE = 3
+
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   auxiliaryNodeGroups = _messages.MessageField('AuxiliaryNodeGroup', 2, repeated=True)
-  configBucket = _messages.StringField(3)
-  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 4)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
-  endpointConfig = _messages.MessageField('EndpointConfig', 6)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 7)
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 8)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 9, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 10)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 11)
-  metastoreConfig = _messages.MessageField('MetastoreConfig', 12)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 13)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 14)
-  securityConfig = _messages.MessageField('SecurityConfig', 15)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 16)
-  tempBucket = _messages.StringField(17)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 18)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
+  configBucket = _messages.StringField(4)
+  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
+  endpointConfig = _messages.MessageField('EndpointConfig', 7)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 8)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 9)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 10, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 11)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 12)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 13)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 14)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 15)
+  securityConfig = _messages.MessageField('SecurityConfig', 16)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 17)
+  tempBucket = _messages.StringField(18)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 19)
 
 
 class ClusterMetrics(_messages.Message):
@@ -5337,10 +5378,10 @@ class GceClusterConfig(_messages.Message):
       instances (see Project and instance metadata
       (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
-    ResourceManagerTagsValue: Optional. Resource manager tags to add to all
-      instances (see Resource manager tags resources
+    ResourceManagerTagsValue: Optional. Resource manager tags
       (https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
-      managing)).
+      managing) to add to all instances (see Use secure tags in Dataproc
+      (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
 
   Fields:
     confidentialInstanceConfig: Optional. Confidential Instance Config for
@@ -5373,10 +5414,10 @@ class GceClusterConfig(_messages.Message):
     privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
-    resourceManagerTags: Optional. Resource manager tags to add to all
-      instances (see Resource manager tags resources
+    resourceManagerTags: Optional. Resource manager tags
       (https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
-      managing)).
+      managing) to add to all instances (see Use secure tags in Dataproc
+      (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
     serviceAccount: Optional. The Dataproc service account
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/service-accounts#service_accounts_in_dataproc) (also see VM
@@ -5465,9 +5506,10 @@ class GceClusterConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceManagerTagsValue(_messages.Message):
-    r"""Optional. Resource manager tags to add to all instances (see Resource
-    manager tags resources (https://cloud.google.com/resource-
-    manager/docs/tags/tags-creating-and-managing)).
+    r"""Optional. Resource manager tags (https://cloud.google.com/resource-
+    manager/docs/tags/tags-creating-and-managing) to add to all instances (see
+    Use secure tags in Dataproc
+    (https://cloud.google.com/dataproc/docs/guides/attach-secure-tags)).
 
     Messages:
       AdditionalProperty: An additional property for a

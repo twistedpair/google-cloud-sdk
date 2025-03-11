@@ -43,6 +43,7 @@ class DeploymentResourcePoolsClient(object):
       max_replica_count=None,
       machine_type=None,
       tpu_topology=None,
+      multihost_gpu_node_count=None,
       reservation_affinity=None,
       spot=False,
   ):
@@ -67,6 +68,8 @@ class DeploymentResourcePoolsClient(object):
         increases.
       machine_type: str or None, Immutable. The type of the machine.
       tpu_topology: str or None, the topology of the TPU to serve the model.
+      multihost_gpu_node_count: int or None, the number of nodes per replica for
+        multihost GPU deployments.
       reservation_affinity: dict or None, the reservation affinity of the
         deployed model which specifies which reservations the deployed model can
         use.
@@ -81,6 +84,8 @@ class DeploymentResourcePoolsClient(object):
       machine_spec.machineType = machine_type
     if tpu_topology is not None:
       machine_spec.tpuTopology = tpu_topology
+    if multihost_gpu_node_count is not None:
+      machine_spec.multihostGpuNodeCount = multihost_gpu_node_count
     accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
                                              constants.BETA_VERSION)
     if accelerator is not None:

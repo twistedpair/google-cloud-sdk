@@ -14,10 +14,6 @@
 # limitations under the License.
 """Module for wrangling bigtable command arguments."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import textwrap
 
 from googlecloudsdk.api_lib.bigtable import util
@@ -50,7 +46,7 @@ class ClusterCompleter(completers.ListCommandCompleter):
     super(ClusterCompleter, self).__init__(
         collection='bigtableadmin.projects.instances.clusters',
         list_command='beta bigtable clusters list --uri',
-        **kwargs
+        **kwargs,
     )
 
 
@@ -60,7 +56,7 @@ class InstanceCompleter(completers.ListCommandCompleter):
     super(InstanceCompleter, self).__init__(
         collection='bigtableadmin.projects.instances',
         list_command='beta bigtable instances list --uri',
-        **kwargs
+        **kwargs,
     )
 
 
@@ -70,7 +66,7 @@ class TableCompleter(completers.ListCommandCompleter):
     super(TableCompleter, self).__init__(
         collection='bigtableadmin.projects.instances.tables',
         list_command='beta bigtable instances tables list --uri',
-        **kwargs
+        **kwargs,
     )
 
 
@@ -360,6 +356,15 @@ class ArgAdder(object):
     )
     return self
 
+  def AddViewQuery(self):
+    """Add argument for view query to the parser."""
+    self.parser.add_argument(
+        '--query',
+        help='The query of the view.',
+        required=True,
+    )
+    return self
+
   def AddIsolation(self):
     """Add argument for isolating this app profile's traffic to parser."""
     isolation_group = self.parser.add_mutually_exclusive_group()
@@ -641,6 +646,8 @@ class ArgAdder(object):
 
 
 def InstanceAttributeConfig():
+  # TODO: b/400682775 - Change help text for this file from Cloud Bigtable to
+  # Bigtable and rerun help text generation.
   return concepts.ResourceParameterAttributeConfig(
       name='instance', help_text='Cloud Bigtable instance for the {resource}.'
   )
@@ -740,6 +747,17 @@ def GetAppProfileResourceSpec():
   )
 
 
+def GetLogicalViewResourceSpec():
+  """Return the resource specification for a Bigtable logical view."""
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances.logicalViews',
+      resource_name='logical view',
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
 def GetKmsKeyResourceSpec():
   return concepts.ResourceSpec(
       'cloudkms.projects.locations.keyRings.cryptoKeys',
@@ -813,6 +831,16 @@ def AddAppProfileResourceArg(parser, verb):
       'app_profile',
       GetAppProfileResourceSpec(),
       'The app profile {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddLogicalViewResourceArg(parser, verb):
+  """Add logical view positional resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'logical_view',
+      GetLogicalViewResourceSpec(),
+      f'The logical view {verb}.',
       required=True,
   ).AddToParser(parser)
 

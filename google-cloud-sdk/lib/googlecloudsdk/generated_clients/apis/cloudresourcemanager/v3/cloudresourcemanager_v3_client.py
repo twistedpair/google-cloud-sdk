@@ -140,7 +140,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           }
 
     def Clear(self, request, global_params=None):
-      r"""Clears the setting. This method is equivalent to updating the setting with an empty value.
+      r"""Clears the setting.
 
       Args:
         request: (CloudresourcemanagerFoldersSettingsClearRequest) input message
@@ -167,7 +167,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified setting.
+      r"""Returns a specified setting. If the setting has been cleared or never been updated, the default value of the setting will be returned.
 
       Args:
         request: (CloudresourcemanagerFoldersSettingsGetRequest) input message
@@ -194,7 +194,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the settings that are available on the project / folder / organization resource in the request.
+      r"""Lists all the settings that are configured on the project / folder / organization resource in the request. Settings which has been cleared or never been updated will not be listed.
 
       Args:
         request: (CloudresourcemanagerFoldersSettingsListRequest) input message
@@ -212,7 +212,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         method_id='cloudresourcemanager.folders.settings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=[],
         relative_path='v3/{+parent}/settings',
         request_field='',
         request_type_name='CloudresourcemanagerFoldersSettingsListRequest',
@@ -752,7 +752,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           }
 
     def Clear(self, request, global_params=None):
-      r"""Clears the setting. This method is equivalent to updating the setting with an empty value.
+      r"""Clears the setting.
 
       Args:
         request: (CloudresourcemanagerOrganizationsSettingsClearRequest) input message
@@ -779,7 +779,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified setting.
+      r"""Returns a specified setting. If the setting has been cleared or never been updated, the default value of the setting will be returned.
 
       Args:
         request: (CloudresourcemanagerOrganizationsSettingsGetRequest) input message
@@ -806,7 +806,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the settings that are available on the project / folder / organization resource in the request.
+      r"""Lists all the settings that are configured on the project / folder / organization resource in the request. Settings which has been cleared or never been updated will not be listed.
 
       Args:
         request: (CloudresourcemanagerOrganizationsSettingsListRequest) input message
@@ -824,7 +824,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         method_id='cloudresourcemanager.organizations.settings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=[],
         relative_path='v3/{+parent}/settings',
         request_field='',
         request_type_name='CloudresourcemanagerOrganizationsSettingsListRequest',
@@ -1051,7 +1051,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           }
 
     def Clear(self, request, global_params=None):
-      r"""Clears the setting. This method is equivalent to updating the setting with an empty value.
+      r"""Clears the setting.
 
       Args:
         request: (CloudresourcemanagerProjectsSettingsClearRequest) input message
@@ -1078,7 +1078,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified setting.
+      r"""Returns a specified setting. If the setting has been cleared or never been updated, the default value of the setting will be returned.
 
       Args:
         request: (CloudresourcemanagerProjectsSettingsGetRequest) input message
@@ -1105,7 +1105,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the settings that are available on the project / folder / organization resource in the request.
+      r"""Lists all the settings that are configured on the project / folder / organization resource in the request. Settings which has been cleared or never been updated will not be listed.
 
       Args:
         request: (CloudresourcemanagerProjectsSettingsListRequest) input message
@@ -1123,7 +1123,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         method_id='cloudresourcemanager.projects.settings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=[],
         relative_path='v3/{+parent}/settings',
         request_field='',
         request_type_name='CloudresourcemanagerProjectsSettingsListRequest',

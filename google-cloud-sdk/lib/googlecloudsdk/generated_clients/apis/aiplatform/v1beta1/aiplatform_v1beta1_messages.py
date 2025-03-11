@@ -1620,8 +1620,8 @@ class AiplatformProjectsLocationsDatasetsSearchDataItemsRequest(_messages.Messag
   savedQuery = _messages.StringField(14)
 
 
-class AiplatformProjectsLocationsDeployRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsDeployRequest object.
+class AiplatformProjectsLocationsDeployPublisherModelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeployPublisherModelRequest object.
 
   Fields:
     destination: Required. The resource name of the Location to deploy the
@@ -1633,6 +1633,21 @@ class AiplatformProjectsLocationsDeployRequest(_messages.Message):
 
   destination = _messages.StringField(1, required=True)
   googleCloudAiplatformV1beta1DeployPublisherModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployPublisherModelRequest', 2)
+
+
+class AiplatformProjectsLocationsDeployRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeployRequest object.
+
+  Fields:
+    destination: Required. The resource name of the Location to deploy the
+      model in. Format: `projects/{project}/locations/{location}`
+    googleCloudAiplatformV1beta1DeployRequest: A
+      GoogleCloudAiplatformV1beta1DeployRequest resource to be passed as the
+      request body.
+  """
+
+  destination = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1DeployRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployRequest', 2)
 
 
 class AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest(_messages.Message):
@@ -11309,6 +11324,9 @@ class AiplatformPublishersModelsGetRequest(_messages.Message):
   Fields:
     huggingFaceToken: Optional. Token used to access Hugging Face gated
       models.
+    includeEquivalentModelGardenModelDeploymentConfigs: Optional. Whether to
+      cnclude the deployment configs from the equivalent Model Garden model if
+      the requested model is a Hugging Face model.
     isHuggingFaceModel: Optional. Boolean indicates whether the requested
       model is a Hugging Face model.
     languageCode: Optional. The IETF BCP-47 language code representing the
@@ -11337,10 +11355,11 @@ class AiplatformPublishersModelsGetRequest(_messages.Message):
     PUBLISHER_MODEL_VERSION_VIEW_BASIC = 3
 
   huggingFaceToken = _messages.StringField(1)
-  isHuggingFaceModel = _messages.BooleanField(2)
-  languageCode = _messages.StringField(3)
-  name = _messages.StringField(4, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
+  includeEquivalentModelGardenModelDeploymentConfigs = _messages.BooleanField(2)
+  isHuggingFaceModel = _messages.BooleanField(3)
+  languageCode = _messages.StringField(4)
+  name = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class AiplatformPublishersModelsListRequest(_messages.Message):
@@ -12359,7 +12378,7 @@ class GoogleCloudAiplatformV1beta1AuthConfigApiKeyConfig(_messages.Message):
   r"""Config for authentication with API key.
 
   Enums:
-    HttpElementLocationValueValuesEnum: Required. The location of the API key.
+    HttpElementLocationValueValuesEnum: Optional. The location of the API key.
 
   Fields:
     apiKeySecret: Optional. The name of the SecretManager secret version
@@ -12372,14 +12391,14 @@ class GoogleCloudAiplatformV1beta1AuthConfigApiKeyConfig(_messages.Message):
       ai/docs/general/access-control#service-agents) on the specified
       resource.
     apiKeyString: Optional. The API key to be used in the request directly.
-    httpElementLocation: Required. The location of the API key.
-    name: Required. The parameter name of the API key. E.g. If the API request
+    httpElementLocation: Optional. The location of the API key.
+    name: Optional. The parameter name of the API key. E.g. If the API request
       is "https://example.com/act?api_key=", "api_key" would be the parameter
       name.
   """
 
   class HttpElementLocationValueValuesEnum(_messages.Enum):
-    r"""Required. The location of the API key.
+    r"""Optional. The location of the API key.
 
     Values:
       HTTP_IN_UNSPECIFIED: <no description>
@@ -15728,7 +15747,7 @@ class GoogleCloudAiplatformV1beta1DeployPublisherModelRequest(_messages.Message)
       `publishers/hf-{hugging-face-author}/models/{hugging-face-model-
       name}@001`. 2. Hugging Face model ID like `google/gemma-2-2b-it`. 3.
       Custom model Google Cloud Storage URI like `gs://bucket`. 4. Custom
-      model zip file like `https://abc.com/a.zip`.
+      model zip file like `https://example.com/a.zip`.
     modelDisplayName: Optional. The user-specified display name of the
       uploaded model. If not set, a default name will be used.
   """
@@ -16234,9 +16253,10 @@ class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
 
   Fields:
     bootDiskSizeGb: Size in GB of the boot disk (default is 100GB).
-    bootDiskType: Type of the boot disk (default is "pd-ssd"). Valid values:
-      "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
-      (Persistent Disk Hard Disk Drive).
+    bootDiskType: Type of the boot disk. For non-A3U machines, the default
+      value is "pd-ssd", for A3U machines, the default value is "hyperdisk-
+      balanced". Valid values: "pd-ssd" (Persistent Disk Solid State Drive),
+      "pd-standard" (Persistent Disk Hard Disk Drive) or "hyperdisk-balanced".
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -16542,6 +16562,13 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
   satisfiesPzs = _messages.BooleanField(20)
   trafficSplit = _messages.MessageField('TrafficSplitValue', 21)
   updateTime = _messages.StringField(22)
+
+
+class GoogleCloudAiplatformV1beta1EnterpriseWebSearch(_messages.Message):
+  r"""Tool to search public web data, powered by Vertex AI Search and Sec4
+  compliance.
+  """
+
 
 
 class GoogleCloudAiplatformV1beta1EntityIdSelector(_messages.Message):
@@ -21222,6 +21249,8 @@ class GoogleCloudAiplatformV1beta1GenerateContentResponseUsageMetadata(_messages
       includes the number of tokens in the cached content.
     promptTokensDetails: Output only. List of modalities that were processed
       in the request input.
+    thoughtsTokenCount: Output only. Number of tokens present in thoughts
+      output.
     toolUsePromptTokenCount: Output only. Number of tokens present in tool-use
       prompt(s).
     toolUsePromptTokensDetails: Output only. List of modalities that were
@@ -21236,9 +21265,10 @@ class GoogleCloudAiplatformV1beta1GenerateContentResponseUsageMetadata(_messages
   candidatesTokensDetails = _messages.MessageField('GoogleCloudAiplatformV1beta1ModalityTokenCount', 4, repeated=True)
   promptTokenCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   promptTokensDetails = _messages.MessageField('GoogleCloudAiplatformV1beta1ModalityTokenCount', 6, repeated=True)
-  toolUsePromptTokenCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  toolUsePromptTokensDetails = _messages.MessageField('GoogleCloudAiplatformV1beta1ModalityTokenCount', 8, repeated=True)
-  totalTokenCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  thoughtsTokenCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  toolUsePromptTokenCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  toolUsePromptTokensDetails = _messages.MessageField('GoogleCloudAiplatformV1beta1ModalityTokenCount', 9, repeated=True)
+  totalTokenCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1GenerateVideoResponse(_messages.Message):
@@ -23627,6 +23657,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       compute#machine-types). For DeployedModel this field is optional, and
       the default value is `n1-standard-2`. For BatchPredictionJob or as part
       of WorkerPoolSpec this field is required.
+    multihostGpuNodeCount: Optional. Immutable. The number of nodes per
+      replica for multihost GPU deployments.
     reservationAffinity: Optional. Immutable. Configuration controlling how
       this resource pool consumes reservation.
     tpuTopology: Immutable. The topology of the TPUs. Corresponds to the TPU
@@ -23675,8 +23707,9 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
-  reservationAffinity = _messages.MessageField('GoogleCloudAiplatformV1beta1ReservationAffinity', 4)
-  tpuTopology = _messages.StringField(5)
+  multihostGpuNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  reservationAffinity = _messages.MessageField('GoogleCloudAiplatformV1beta1ReservationAffinity', 5)
+  tpuTopology = _messages.StringField(6)
 
 
 class GoogleCloudAiplatformV1beta1ManualBatchTuningParameters(_messages.Message):
@@ -31385,9 +31418,14 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpecDeploymentSpec(_messages.Me
     env: Optional. Environment variables to be set with the Reasoning Engine
       deployment. The environment variables can be updated through the
       UpdateReasoningEngine API.
+    secretEnv: Optional. Environment variables where the value is a secret in
+      Cloud Secret Manager. To use this feature, add 'Secret Manager Secret
+      Accessor' role (roles/secretmanager.secretAccessor) to AI Platform
+      Reasoning Engine Service Agent.
   """
 
   env = _messages.MessageField('GoogleCloudAiplatformV1beta1EnvVar', 1, repeated=True)
+  secretEnv = _messages.MessageField('GoogleCloudAiplatformV1beta1SecretEnvVar', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ReasoningEngineSpecPackageSpec(_messages.Message):
@@ -31611,7 +31649,8 @@ class GoogleCloudAiplatformV1beta1ReservationAffinity(_messages.Message):
     reservationAffinityType: Required. Specifies the reservation affinity
       type.
     values: Optional. Corresponds to the label values of a reservation
-      resource. This must be the full resource name of the reservation.
+      resource. This must be the full resource name of the reservation or
+      reservation block.
   """
 
   class ReservationAffinityTypeValueValuesEnum(_messages.Enum):
@@ -37216,6 +37255,37 @@ class GoogleCloudAiplatformV1beta1SearchNearestEntitiesResponse(_messages.Messag
   nearestNeighbors = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighbors', 1)
 
 
+class GoogleCloudAiplatformV1beta1SecretEnvVar(_messages.Message):
+  r"""Represents an environment variable where the value is a secret in Cloud
+  Secret Manager.
+
+  Fields:
+    name: Required. Name of the secret environment variable.
+    secretRef: Required. Reference to a secret stored in the Cloud Secret
+      Manager that will provide the value for this environment variable.
+  """
+
+  name = _messages.StringField(1)
+  secretRef = _messages.MessageField('GoogleCloudAiplatformV1beta1SecretRef', 2)
+
+
+class GoogleCloudAiplatformV1beta1SecretRef(_messages.Message):
+  r"""Reference to a secret stored in the Cloud Secret Manager that will
+  provide the value for this environment variable.
+
+  Fields:
+    secret: Required. The name of the secret in Cloud Secret Manager. Format:
+      {secret_name} if the secret is in the same project.
+      projects/{project}/secrets/{secret_name} if the secret is in a different
+      project.
+    version: The Cloud Secret Manager secret version. Can be 'latest' for the
+      latest version, an integer for a specific version, or a version alias.
+  """
+
+  secret = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1Segment(_messages.Message):
   r"""Segment of the content.
 
@@ -39543,6 +39613,8 @@ class GoogleCloudAiplatformV1beta1Tool(_messages.Message):
   Fields:
     codeExecution: Optional. CodeExecution tool type. Enables the model to
       execute code as part of generation.
+    enterpriseWebSearch: Optional. Tool to support searching public web data,
+      powered by Vertex AI Search and Sec4 compliance.
     functionDeclarations: Optional. Function tool type. One or more function
       declarations to be passed to the model along with the current user
       query. Model may decide to call a subset of these functions by
@@ -39560,10 +39632,11 @@ class GoogleCloudAiplatformV1beta1Tool(_messages.Message):
   """
 
   codeExecution = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCodeExecution', 1)
-  functionDeclarations = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionDeclaration', 2, repeated=True)
-  googleSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolGoogleSearch', 3)
-  googleSearchRetrieval = _messages.MessageField('GoogleCloudAiplatformV1beta1GoogleSearchRetrieval', 4)
-  retrieval = _messages.MessageField('GoogleCloudAiplatformV1beta1Retrieval', 5)
+  enterpriseWebSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1EnterpriseWebSearch', 2)
+  functionDeclarations = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionDeclaration', 3, repeated=True)
+  googleSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolGoogleSearch', 4)
+  googleSearchRetrieval = _messages.MessageField('GoogleCloudAiplatformV1beta1GoogleSearchRetrieval', 5)
+  retrieval = _messages.MessageField('GoogleCloudAiplatformV1beta1Retrieval', 6)
 
 
 class GoogleCloudAiplatformV1beta1ToolCall(_messages.Message):
@@ -41201,16 +41274,21 @@ class GoogleCloudAiplatformV1beta1Value(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1VertexAISearch(_messages.Message):
-  r"""Retrieve from Vertex AI Search datastore for grounding. See
+  r"""Retrieve from Vertex AI Search datastore or engine for grounding.
+  datastore and engine are mutually exclusive. See
   https://cloud.google.com/products/agent-builder
 
   Fields:
-    datastore: Required. Fully-qualified Vertex AI Search data store resource
+    datastore: Optional. Fully-qualified Vertex AI Search data store resource
       ID. Format: `projects/{project}/locations/{location}/collections/{collec
       tion}/dataStores/{dataStore}`
+    engine: Optional. Fully-qualified Vertex AI Search engine resource ID.
+      Format: `projects/{project}/locations/{location}/collections/{collection
+      }/engines/{engine}`
   """
 
   datastore = _messages.StringField(1)
+  engine = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1VertexAiSearchConfig(_messages.Message):

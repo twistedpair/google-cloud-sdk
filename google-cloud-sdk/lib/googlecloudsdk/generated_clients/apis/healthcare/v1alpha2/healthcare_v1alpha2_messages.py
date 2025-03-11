@@ -1905,6 +1905,12 @@ class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
       write_disposition is specified, the `force` parameter is ignored.
 
   Fields:
+    changeDataCaptureConfig: Optional. Setting this field will enable
+      BigQuery's Change Data Capture (CDC) on the destination tables. Set this
+      field if you want to only keep the latest version of each instance.
+      Updates and deletes to an existing' instance will overwrite the
+      corresponding row. See https://cloud.google.com/bigquery/docs/change-
+      data-capture for details.
     force: Use `write_disposition` instead. If `write_disposition` is
       specified, this parameter is ignored. force=false is equivalent to
       write_disposition=WRITE_EMPTY and force=true is equivalent to
@@ -1934,9 +1940,14 @@ class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
     WRITE_TRUNCATE = 2
     WRITE_APPEND = 3
 
-  force = _messages.BooleanField(1)
-  tableUri = _messages.StringField(2)
-  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 3)
+  changeDataCaptureConfig = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomChangeDataCaptureConfig', 1)
+  force = _messages.BooleanField(2)
+  tableUri = _messages.StringField(3)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
+
+
+class GoogleCloudHealthcareV1alpha2DicomChangeDataCaptureConfig(_messages.Message):
+  r"""BigQuery Change Data Capture configuration."""
 
 
 class GoogleCloudHealthcareV1alpha2DicomGcsDestination(_messages.Message):

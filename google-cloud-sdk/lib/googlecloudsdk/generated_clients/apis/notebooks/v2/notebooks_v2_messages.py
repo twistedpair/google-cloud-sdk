@@ -291,12 +291,16 @@ class Config(_messages.Message):
     availableImages: Output only. The list of available images to create a
       WbI.
     defaultValues: Output only. The default values for configuration.
+    disableWorkbenchLegacyCreation: Output only. Flag to disable the creation
+      of legacy Workbench notebooks (User-managed notebooks and Google-managed
+      notebooks).
     supportedValues: Output only. The supported values for configuration.
   """
 
   availableImages = _messages.MessageField('ImageRelease', 1, repeated=True)
   defaultValues = _messages.MessageField('DefaultValues', 2)
-  supportedValues = _messages.MessageField('SupportedValues', 3)
+  disableWorkbenchLegacyCreation = _messages.BooleanField(3)
+  supportedValues = _messages.MessageField('SupportedValues', 4)
 
 
 class ContainerImage(_messages.Message):

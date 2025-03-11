@@ -2812,6 +2812,7 @@ class GoogleCloudRunV2Task(_messages.Message):
     maxRetries: Number of retries allowed per Task, before marking this Task
       failed.
     name: Output only. The unique name of this Task.
+    nodeSelector: Output only. The node selector for the task.
     observedGeneration: Output only. The generation of this Task. See comments
       in `Job.reconciling` for additional information on reconciliation
       process in Cloud Run.
@@ -2932,18 +2933,19 @@ class GoogleCloudRunV2Task(_messages.Message):
   logUri = _messages.StringField(17)
   maxRetries = _messages.IntegerField(18, variant=_messages.Variant.INT32)
   name = _messages.StringField(19)
-  observedGeneration = _messages.IntegerField(20)
-  reconciling = _messages.BooleanField(21)
-  retried = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(23)
-  scheduledTime = _messages.StringField(24)
-  serviceAccount = _messages.StringField(25)
-  startTime = _messages.StringField(26)
-  timeout = _messages.StringField(27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 30, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 31)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 20)
+  observedGeneration = _messages.IntegerField(21)
+  reconciling = _messages.BooleanField(22)
+  retried = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(24)
+  scheduledTime = _messages.StringField(25)
+  serviceAccount = _messages.StringField(26)
+  startTime = _messages.StringField(27)
+  timeout = _messages.StringField(28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 31, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 32)
 
 
 class GoogleCloudRunV2TaskAttemptResult(_messages.Message):
@@ -2979,6 +2981,7 @@ class GoogleCloudRunV2TaskTemplate(_messages.Message):
       host this Task.
     maxRetries: Number of retries allowed per Task, before marking this Task
       failed. Defaults to 3.
+    nodeSelector: Optional. The node selector for the task template.
     serviceAccount: Optional. Email address of the IAM service account
       associated with the Task of a Job. The service account represents the
       identity of the running task, and determines what permissions the task
@@ -3010,10 +3013,11 @@ class GoogleCloudRunV2TaskTemplate(_messages.Message):
   encryptionKey = _messages.StringField(2)
   executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 3)
   maxRetries = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(5)
-  timeout = _messages.StringField(6)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 7, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 8)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 5)
+  serviceAccount = _messages.StringField(6)
+  timeout = _messages.StringField(7)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 8, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 9)
 
 
 class GoogleCloudRunV2TrafficTarget(_messages.Message):

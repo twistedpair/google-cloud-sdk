@@ -125,6 +125,8 @@ def HandleOauth2FlowErrors():
     raise six.raise_from(AuthRequestFailedError(e), e)
   except ValueError as e:
     raise six.raise_from(AuthRequestFailedError(e), e)
+  except rfc6749_errors.OAuth2Error as e:
+    raise six.raise_from(AuthRequestFailedError(e), e)
 
 
 class WSGIServer(wsgiref.simple_server.WSGIServer):

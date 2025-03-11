@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import itertools
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
@@ -167,7 +168,11 @@ def AddCreateBackupPlanAssociationFlags(parser):
       ),
   )
 
-  AddResourceType(parser)
+  AddResourceType(
+      parser,
+      """Type of resource to which the backup plan should be applied.
+          E.g., `compute.<UNIVERSE_DOMAIN>.com/Instance` """,
+  )
 
 
 def AddUpdateBackupPlanAssociationFlags(parser):
@@ -421,6 +426,25 @@ def AddEnforcedRetention(parser, required):
   )
 
 
+def AddBackupEnforcedRetentionEndTime(parser):
+  """Adds the --enforced-retention-end-time flag to the given parser."""
+  help_text = ("""
+   Backups cannot be deleted until this time or later. This period can be extended, but not shortened.
+   It should be specified in the format of "YYYY-MM-DD".
+
+   * For backup configured with a backup appliance, there are additional restrictions:
+     1. Enforced retention cannot be extended past the expiry time.
+     2. Enforced retention can only be updated for finalized backups.
+  """)
+
+  parser.add_argument(
+      '--enforced-retention-end-time',
+      required=True,
+      type=arg_parsers.Datetime.Parse,
+      help=help_text,
+  )
+
+
 def AddOutputFormat(parser, output_format):
   parser.display_info.AddFormat(output_format)
   parser.display_info.AddTransforms({
@@ -520,18 +544,18 @@ def AddBackupVaultAccessRestrictionEnumFlag(parser):
   )
 
 
-def AddResourceType(parser):
+def AddResourceType(parser, help_text):
   """Adds a positional resource-type argument to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    help_text: Help text for the resource-type argument.
   """
   parser.add_argument(
       '--resource-type',
       required=True,
       type=str,
-      help=("""Type of resource to which the backup plan should be applied.
-          E.g., `compute.<UNIVERSE_DOMAIN>.com/Instance` """),
+      help=help_text,
   )
 
 

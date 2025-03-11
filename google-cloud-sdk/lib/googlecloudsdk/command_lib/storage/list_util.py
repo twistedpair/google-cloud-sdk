@@ -456,9 +456,16 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
   def _print_total(self, all_sources_total_bytes):
     del all_sources_total_bytes
 
+  # Method is intended to be implemented by subclass to print bucket headers for
+  # `ls` command.
+  def _print_bucket_header(self, url):
+    del url
+
   def list_urls(self):
     all_sources_total_bytes = 0
     for url in self._cloud_urls:
+      if url.is_bucket():
+        self._print_bucket_header(url)
       if self._total:
         all_sources_total_bytes += self._list_url(url)
       else:

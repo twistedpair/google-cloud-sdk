@@ -71,6 +71,7 @@ LIST_SPOKES_FORMAT = """
       spokeType:label=TYPE,
       state,
       reasons.code.list():label="STATE REASON",
+      etag,
       format(
         "{0}{1}",
         linkedVpcNetwork.yesno(yes="N/A", no=""),

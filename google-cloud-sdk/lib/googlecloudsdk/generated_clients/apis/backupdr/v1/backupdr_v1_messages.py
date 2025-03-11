@@ -686,6 +686,8 @@ class BackupConfigInfo(_messages.Message):
       BackupVault
     lastSuccessfulBackupConsistencyTime: Output only. If the last backup were
       successful, this field has the consistency date.
+    lastSuccessfulLogBackupConsistencyTime: Output only. If the last log
+      backup were successful, this field has the consistency date.
   """
 
   class LastBackupStateValueValuesEnum(_messages.Enum):
@@ -710,6 +712,7 @@ class BackupConfigInfo(_messages.Message):
   lastBackupError = _messages.MessageField('Status', 3)
   lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 4)
   lastSuccessfulBackupConsistencyTime = _messages.StringField(5)
+  lastSuccessfulLogBackupConsistencyTime = _messages.StringField(6)
 
 
 class BackupDrPlanConfig(_messages.Message):

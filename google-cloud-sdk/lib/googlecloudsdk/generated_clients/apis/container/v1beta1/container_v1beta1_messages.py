@@ -146,6 +146,7 @@ class AddonsConfig(_messages.Message):
       use the Cloud Console to manage and monitor your Kubernetes clusters,
       workloads and applications. For more information, see:
       https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards
+    lustreCsiDriverConfig: Configuration for the Lustre CSI driver.
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
@@ -169,11 +170,12 @@ class AddonsConfig(_messages.Message):
   istioConfig = _messages.MessageField('IstioConfig', 11)
   kalmConfig = _messages.MessageField('KalmConfig', 12)
   kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 13)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 14)
-  parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 15)
-  rayConfig = _messages.MessageField('RayConfig', 16)
-  rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 17)
-  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 18)
+  lustreCsiDriverConfig = _messages.MessageField('LustreCsiDriverConfig', 14)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 15)
+  parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 16)
+  rayConfig = _messages.MessageField('RayConfig', 17)
+  rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 18)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 19)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -807,6 +809,9 @@ class Cluster(_messages.Message):
   Messages:
     ResourceLabelsValue: The resource labels for the cluster to use to
       annotate any related Google Compute Engine resources.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     addonsConfig: Configurations for the various addons available to run in
@@ -959,7 +964,7 @@ class Cluster(_messages.Message):
     monitoringConfig: Monitoring configuration for the cluster.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options: *
-      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      `monitoring.googleapis.com/kubernetes` - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
       The legacy Cloud Monitoring service (no longer available as of GKE
       1.15). * `none` - No metrics will be exported from the cluster. If left
@@ -1044,6 +1049,9 @@ class Cluster(_messages.Message):
       [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
       the cluster is connected. On output this shows the subnetwork ID instead
       of the name.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     tpuConfig: Configuration for Cloud TPU support; This field is deprecated
       due to the deprecation of 2VM TPU. The end of life date for 2VM TPU is
       2025-04-25.
@@ -1112,6 +1120,32 @@ class Cluster(_messages.Message):
 
     class AdditionalProperty(_messages.Message):
       r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1208,16 +1242,17 @@ class Cluster(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 83)
   statusMessage = _messages.StringField(84)
   subnetwork = _messages.StringField(85)
-  tpuConfig = _messages.MessageField('TpuConfig', 86)
-  tpuIpv4CidrBlock = _messages.StringField(87)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 88)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 89)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 90)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 91)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 92)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 93)
-  workloadMonitoringEnabledEap = _messages.BooleanField(94)
-  zone = _messages.StringField(95)
+  tags = _messages.MessageField('TagsValue', 86)
+  tpuConfig = _messages.MessageField('TpuConfig', 87)
+  tpuIpv4CidrBlock = _messages.StringField(88)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 89)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 90)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 91)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 92)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 93)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 94)
+  workloadMonitoringEnabledEap = _messages.BooleanField(95)
+  zone = _messages.StringField(96)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1443,7 +1478,7 @@ class ClusterUpdate(_messages.Message):
     desiredMonitoringConfig: The desired monitoring configuration.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options: *
-      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      `monitoring.googleapis.com/kubernetes` - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
       The legacy Cloud Monitoring service (no longer available as of GKE
       1.15). * `none` - No metrics will be exported from the cluster. If left
@@ -4144,6 +4179,16 @@ class LoggingVariantConfig(_messages.Message):
     MAX_THROUGHPUT = 2
 
   variant = _messages.EnumField('VariantValueValuesEnum', 1)
+
+
+class LustreCsiDriverConfig(_messages.Message):
+  r"""Configuration for the Lustre CSI driver.
+
+  Fields:
+    enabled: Whether the Lustre CSI driver is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class MaintenanceExclusionOptions(_messages.Message):
@@ -7294,7 +7339,7 @@ class SetMonitoringServiceRequest(_messages.Message):
       field has been deprecated and replaced by the name field.
     monitoringService: Required. The monitoring service the cluster should use
       to write metrics. Currently available options: *
-      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      `monitoring.googleapis.com/kubernetes` - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
       The legacy Cloud Monitoring service (no longer available as of GKE
       1.15). * `none` - No metrics will be exported from the cluster. If left
@@ -7824,6 +7869,8 @@ class StatusCondition(_messages.Message):
       CLOUD_KMS_KEY_ERROR: Unable to perform an encrypt operation against the
         CloudKMS key used for etcd level encryption.
       CA_EXPIRING: Cluster CA is expiring soon.
+      NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS: Node service account is
+        missing permissions.
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
@@ -7832,6 +7879,7 @@ class StatusCondition(_messages.Message):
     SET_BY_OPERATOR = 4
     CLOUD_KMS_KEY_ERROR = 5
     CA_EXPIRING = 6
+    NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS = 7
 
   canonicalCode = _messages.EnumField('CanonicalCodeValueValuesEnum', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

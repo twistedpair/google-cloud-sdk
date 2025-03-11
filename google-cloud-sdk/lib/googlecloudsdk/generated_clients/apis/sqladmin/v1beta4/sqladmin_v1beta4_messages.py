@@ -164,7 +164,9 @@ class Backup(_messages.Message):
       SQL for SQL Server instance has a different time zone from the backup's
       time zone, then the restore to the instance doesn't happen.
     ttlDays: Input only. The time-to-live (TTL) interval for this resource (in
-      days). For example: ttlDays:7 means 7 days.
+      days). For example: ttlDays:7, means 7 days from the current time. The
+      expiration time can't exceed 365 days from the time that the backup is
+      created.
     type: Output only. The type of this backup. The type can be "AUTOMATED",
       "ON_DEMAND", or "FINAL".
   """
@@ -245,12 +247,16 @@ class BackupConfiguration(_messages.Message):
   r"""Database instance backup configuration.
 
   Enums:
+    BackupTierValueValuesEnum: Output only. Backup tier that manages the
+      backups for the instance.
     TransactionalLogStorageStateValueValuesEnum: Output only. This value
       contains the storage location of transactional logs for the database for
       point-in-time recovery.
 
   Fields:
     backupRetentionSettings: Backup retention settings.
+    backupTier: Output only. Backup tier that manages the backups for the
+      instance.
     binaryLogEnabled: (MySQL only) Whether binary log is enabled. If backup
       configuration is disabled, binarylog must be disabled as well.
     enabled: Whether this configuration is enabled.
@@ -266,6 +272,21 @@ class BackupConfiguration(_messages.Message):
       location of transactional logs for the database for point-in-time
       recovery.
   """
+
+  class BackupTierValueValuesEnum(_messages.Enum):
+    r"""Output only. Backup tier that manages the backups for the instance.
+
+    Values:
+      BACKUP_TIER_UNSPECIFIED: Unspecified.
+      STANDARD: Instance is managed by Cloud SQL.
+      ADVANCED: Deprecated: ADVANCED is deprecated. Please use ENHANCED
+        instead.
+      ENHANCED: Instance is managed by Google Cloud Backup and DR Service.
+    """
+    BACKUP_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+    ENHANCED = 3
 
   class TransactionalLogStorageStateValueValuesEnum(_messages.Enum):
     r"""Output only. This value contains the storage location of transactional
@@ -291,15 +312,16 @@ class BackupConfiguration(_messages.Message):
     CLOUD_STORAGE = 4
 
   backupRetentionSettings = _messages.MessageField('BackupRetentionSettings', 1)
-  binaryLogEnabled = _messages.BooleanField(2)
-  enabled = _messages.BooleanField(3)
-  kind = _messages.StringField(4)
-  location = _messages.StringField(5)
-  pointInTimeRecoveryEnabled = _messages.BooleanField(6)
-  replicationLogArchivingEnabled = _messages.BooleanField(7)
-  startTime = _messages.StringField(8)
-  transactionLogRetentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  transactionalLogStorageState = _messages.EnumField('TransactionalLogStorageStateValueValuesEnum', 10)
+  backupTier = _messages.EnumField('BackupTierValueValuesEnum', 2)
+  binaryLogEnabled = _messages.BooleanField(3)
+  enabled = _messages.BooleanField(4)
+  kind = _messages.StringField(5)
+  location = _messages.StringField(6)
+  pointInTimeRecoveryEnabled = _messages.BooleanField(7)
+  replicationLogArchivingEnabled = _messages.BooleanField(8)
+  startTime = _messages.StringField(9)
+  transactionLogRetentionDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  transactionalLogStorageState = _messages.EnumField('TransactionalLogStorageStateValueValuesEnum', 11)
 
 
 class BackupContext(_messages.Message):
@@ -620,6 +642,7 @@ class ConnectSettings(_messages.Message):
       `SQLSERVER_2019_ENTERPRISE`, `SQLSERVER_2019_EXPRESS`, or
       `SQLSERVER_2019_WEB`.
     dnsName: The dns name of the instance.
+    dnsNames: Output only. The list of DNS names used by this instance.
     ipAddresses: The assigned IP addresses for the instance.
     kind: This is always `sql#connectSettings`.
     pscEnabled: Whether PSC connectivity is enabled for this instance.
@@ -798,12 +821,13 @@ class ConnectSettings(_messages.Message):
   customSubjectAlternativeNames = _messages.StringField(2, repeated=True)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 3)
   dnsName = _messages.StringField(4)
-  ipAddresses = _messages.MessageField('IpMapping', 5, repeated=True)
-  kind = _messages.StringField(6)
-  pscEnabled = _messages.BooleanField(7)
-  region = _messages.StringField(8)
-  serverCaCert = _messages.MessageField('SslCert', 9)
-  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 10)
+  dnsNames = _messages.MessageField('DnsNameMapping', 5, repeated=True)
+  ipAddresses = _messages.MessageField('IpMapping', 6, repeated=True)
+  kind = _messages.StringField(7)
+  pscEnabled = _messages.BooleanField(8)
+  region = _messages.StringField(9)
+  serverCaCert = _messages.MessageField('SslCert', 10)
+  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 11)
 
 
 class ConnectionPoolConfig(_messages.Message):
@@ -974,6 +998,7 @@ class DatabaseInstance(_messages.Message):
       instance.
     diskEncryptionStatus: Disk encryption status specific to an instance.
     dnsName: Output only. The dns name of the instance.
+    dnsNames: Output only. The list of DNS names used by this instance.
     etag: This field is deprecated and will be removed from a future version
       of the API. Use the `settings.settingsVersion` field instead.
     failoverReplica: The name and status of the failover replica.
@@ -1368,6 +1393,8 @@ class DatabaseInstance(_messages.Message):
       FAILED: The creation of the instance failed or a fatal error occurred
         during maintenance.
       ONLINE_MAINTENANCE: Deprecated
+      REPAIRING: (Applicable to read pool nodes only.) The read pool node
+        needs to be repaired. The database might be unavailable.
     """
     SQL_INSTANCE_STATE_UNSPECIFIED = 0
     RUNNABLE = 1
@@ -1377,6 +1404,7 @@ class DatabaseInstance(_messages.Message):
     MAINTENANCE = 5
     FAILED = 6
     ONLINE_MAINTENANCE = 7
+    REPAIRING = 8
 
   class SuspensionReasonValueListEntryValuesEnum(_messages.Enum):
     r"""SuspensionReasonValueListEntryValuesEnum enum type.
@@ -1453,46 +1481,47 @@ class DatabaseInstance(_messages.Message):
   diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 8)
   diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 9)
   dnsName = _messages.StringField(10)
-  etag = _messages.StringField(11)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 12)
-  gceZone = _messages.StringField(13)
-  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 14)
-  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(15)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 16)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 17)
-  ipAddresses = _messages.MessageField('IpMapping', 18, repeated=True)
-  ipv6Address = _messages.StringField(19)
-  kind = _messages.StringField(20)
-  maintenanceVersion = _messages.StringField(21)
-  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(22)
-  masterInstanceName = _messages.StringField(23)
-  maxDiskSize = _messages.IntegerField(24)
-  name = _messages.StringField(25)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 26)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 27)
-  primaryDnsName = _messages.StringField(28)
-  project = _messages.StringField(29)
-  pscServiceAttachmentLink = _messages.StringField(30)
-  region = _messages.StringField(31)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 32)
-  replicaNames = _messages.StringField(33, repeated=True)
-  replicationCluster = _messages.MessageField('ReplicationCluster', 34)
-  rootPassword = _messages.StringField(35)
-  satisfiesPzi = _messages.BooleanField(36)
-  satisfiesPzs = _messages.BooleanField(37)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 38)
-  secondaryGceZone = _messages.StringField(39)
-  selfLink = _messages.StringField(40)
-  serverCaCert = _messages.MessageField('SslCert', 41)
-  serviceAccountEmailAddress = _messages.StringField(42)
-  settings = _messages.MessageField('Settings', 43)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 44)
-  state = _messages.EnumField('StateValueValuesEnum', 45)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 46, repeated=True)
-  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(47)
-  tags = _messages.MessageField('TagsValue', 48)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 49, repeated=True)
-  writeEndpoint = _messages.StringField(50)
+  dnsNames = _messages.MessageField('DnsNameMapping', 11, repeated=True)
+  etag = _messages.StringField(12)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 13)
+  gceZone = _messages.StringField(14)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 15)
+  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(16)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 17)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 18)
+  ipAddresses = _messages.MessageField('IpMapping', 19, repeated=True)
+  ipv6Address = _messages.StringField(20)
+  kind = _messages.StringField(21)
+  maintenanceVersion = _messages.StringField(22)
+  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(23)
+  masterInstanceName = _messages.StringField(24)
+  maxDiskSize = _messages.IntegerField(25)
+  name = _messages.StringField(26)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 27)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 28)
+  primaryDnsName = _messages.StringField(29)
+  project = _messages.StringField(30)
+  pscServiceAttachmentLink = _messages.StringField(31)
+  region = _messages.StringField(32)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 33)
+  replicaNames = _messages.StringField(34, repeated=True)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 35)
+  rootPassword = _messages.StringField(36)
+  satisfiesPzi = _messages.BooleanField(37)
+  satisfiesPzs = _messages.BooleanField(38)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 39)
+  secondaryGceZone = _messages.StringField(40)
+  selfLink = _messages.StringField(41)
+  serverCaCert = _messages.MessageField('SslCert', 42)
+  serviceAccountEmailAddress = _messages.StringField(43)
+  settings = _messages.MessageField('Settings', 44)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 45)
+  state = _messages.EnumField('StateValueValuesEnum', 46)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 47, repeated=True)
+  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(48)
+  tags = _messages.MessageField('TagsValue', 49)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 50, repeated=True)
+  writeEndpoint = _messages.StringField(51)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1634,6 +1663,50 @@ class DiskEncryptionStatus(_messages.Message):
   kmsKeyVersionName = _messages.StringField(2)
 
 
+class DnsNameMapping(_messages.Message):
+  r"""DNS metadata.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Output only. The connection type of the DNS
+      name.
+    DnsScopeValueValuesEnum: Output only. The scope that the DNS name applies
+      to.
+
+  Fields:
+    connectionType: Output only. The connection type of the DNS name.
+    dnsScope: Output only. The scope that the DNS name applies to.
+    name: The DNS name.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The connection type of the DNS name.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Unknown connection type.
+      PUBLIC: Public IP.
+      PRIVATE_SERVICES_ACCESS: Private services access (private IP).
+      PRIVATE_SERVICE_CONNECT: Private Service Connect.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    PUBLIC = 1
+    PRIVATE_SERVICES_ACCESS = 2
+    PRIVATE_SERVICE_CONNECT = 3
+
+  class DnsScopeValueValuesEnum(_messages.Enum):
+    r"""Output only. The scope that the DNS name applies to.
+
+    Values:
+      DNS_SCOPE_UNSPECIFIED: Unknown DNS scope.
+      INSTANCE: Indicates a instance-level DNS name.
+    """
+    DNS_SCOPE_UNSPECIFIED = 0
+    INSTANCE = 1
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  dnsScope = _messages.EnumField('DnsScopeValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1666,11 +1739,15 @@ class ExportContext(_messages.Message):
       for the `mysql` system database. If `fileType` is `CSV`, you can specify
       one database, either by using this property or by using the
       `csvExportOptions.selectQuery` property, which takes precedence over
-      this property. `PostgreSQL instances:` You must specify one database to
-      be exported. If `fileType` is `CSV`, this database must match the one
-      specified in the `csvExportOptions.selectQuery` property. `SQL Server
-      instances:` You must specify one database to be exported, and the
-      `fileType` must be `BAK`.
+      this property. `PostgreSQL instances:` If you don't specify a database
+      by name, all user databases in the instance are exported. This excludes
+      system databases and Cloud SQL databases used to manage internal
+      operations. Exporting all user databases is only available for
+      directory-formatted parallel export. If `fileType` is `CSV`, this
+      database must match the one specified in the
+      `csvExportOptions.selectQuery` property. `SQL Server instances:` You
+      must specify one database to be exported, and the `fileType` must be
+      `BAK`.
     fileType: The file type for the specified uri.
     kind: This is always `sql#exportContext`.
     offload: Option for export offload.
@@ -2167,8 +2244,10 @@ class ImportContext(_messages.Message):
     csvImportOptions: Options for importing data as CSV.
     database: The target database for the import. If `fileType` is `SQL`, this
       field is required only if the import file does not specify a database,
-      and is overridden by any database specification in the import file. If
-      `fileType` is `CSV`, one database must be specified.
+      and is overridden by any database specification in the import file. For
+      entire instance parallel import operations, the database is overridden
+      by the database name stored in subdirectory name. If `fileType` is
+      `CSV`, one database must be specified.
     fileType: The file type for the specified uri. * `SQL`: The file contains
       SQL statements. * `CSV`: The file contains CSV data. * `BAK`: The file
       contains backup data for a SQL Server instance.
@@ -2556,10 +2635,11 @@ class InstancesRestoreBackupRequest(_messages.Message):
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
     restoreInstanceSettings: Optional. By using this parameter, Cloud SQL
-      overrides any instance settings that it stored with the instance
-      settings that you want to restore. You can't change the Instance's major
-      database version and you can only increase the disk size. You can use
-      this field to restore new instances only.
+      overrides any instance settings stored in the backup you are restoring
+      from. You can't change the instance's major database version and you can
+      only increase the disk size. You can use this field to restore new
+      instances only. This field is not applicable for restore to existing
+      instances.
   """
 
   backup = _messages.StringField(1)
@@ -2671,7 +2751,7 @@ class IpConfiguration(_messages.Message):
     serverCaMode: Specify what type of CA is used for the server certificate.
     serverCaPool: Optional. The resource name of the server CA pool for an
       instance with `CUSTOMER_MANAGED_CAS_CA` as the `server_ca_mode`. Format:
-      projects//locations//caPools/
+      projects/{PROJECT}/locations/{REGION}/caPools/{CA_POOL_ID}
     sslMode: Specify how SSL/TLS is enforced in database connections. If you
       must use the `require_ssl` flag for backward compatibility, then only
       the following value pairs are valid: For PostgreSQL and MySQL: *
@@ -3177,6 +3257,8 @@ class Operation(_messages.Message):
       MANAGE_BACKUP: Changes the BackupTier of a Cloud SQL instance.
       ENHANCED_BACKUP: Creates a backup for an Enhanced BackupTier Cloud SQL
         instance.
+      REPAIR_READ_POOL_CLUSTER: Repairs entire read pool or specified nodes in
+        the read pool.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -3228,6 +3310,7 @@ class Operation(_messages.Message):
     ADVANCED_BACKUP = 47
     MANAGE_BACKUP = 48
     ENHANCED_BACKUP = 49
+    REPAIR_READ_POOL_CLUSTER = 50
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3393,6 +3476,50 @@ class PerformDiskShrinkContext(_messages.Message):
   """
 
   targetSizeGb = _messages.IntegerField(1)
+
+
+class PointInTimeRestoreContext(_messages.Message):
+  r"""Context to perform a point-in-time restore of an instance managed by
+  Google Cloud Backup and Disaster Recovery.
+
+  Fields:
+    allocatedIpRange: Optional. The name of the allocated IP range for the
+      internal IP Cloud SQL instance. For example: "google-managed-services-
+      default". If you set this, then Cloud SQL creates the IP address for the
+      cloned instance in the allocated range. This range must comply with [RFC
+      1035](https://tools.ietf.org/html/rfc1035) standards. Specifically, the
+      name must be 1-63 characters long and match the regular expression
+      [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use. http://go/speckle-
+      subnet-picker-clone
+    databaseNames: Optional. (SQL Server only) Clone only the specified
+      databases from the source instance. If you don't specify any databases,
+      then Cloud SQL clones all databases for the instance.
+    datasource: The Google Cloud Backup and Disaster Recovery Datasource URI.
+      Format: projects/{project}/locations/{region}/backupVaults/{backupvault}
+      /dataSources/{datasource}.
+    pointInTime: Required. The date and time to which you want to restore the
+      instance.
+    preferredSecondaryZone: Optional. Point-in-time recovery of a regional
+      instance in the specified zones. If not specified, clone to the same
+      secondary zone as the source instance. This value cannot be the same as
+      the preferred_zone field.
+    preferredZone: Optional. Point-in-time recovery of an instance to the
+      specified zone. If no zone is specified, then clone to the same primary
+      zone as the source instance.
+    privateNetwork: Optional. The resource link for the VPC network from which
+      the Cloud SQL instance is accessible for private IP. For example,
+      `/projects/myProject/global/networks/default`.
+    targetInstance: Target instance name.
+  """
+
+  allocatedIpRange = _messages.StringField(1)
+  databaseNames = _messages.StringField(2, repeated=True)
+  datasource = _messages.StringField(3)
+  pointInTime = _messages.StringField(4)
+  preferredSecondaryZone = _messages.StringField(5)
+  preferredZone = _messages.StringField(6)
+  privateNetwork = _messages.StringField(7)
+  targetInstance = _messages.StringField(8)
 
 
 class PscAutoConnectionConfig(_messages.Message):
@@ -3719,6 +3846,9 @@ class Settings(_messages.Message):
       only applicable to First Generation instances.
     retainBackupsOnDelete: Optional. When this parameter is set to true, Cloud
       SQL retains backups of the instance even after the instance is deleted.
+      The ON_DEMAND backup will be retained until customer deletes the backup
+      or the project. The AUTOMATED backup will be retained based on the
+      backups retention setting.
     settingsVersion: The version of instance settings. This is a required
       field for update method to make sure concurrent updates are handled
       properly. During update, use the most recent settingsVersion value for
@@ -4040,8 +4170,9 @@ class SqlBackupsListBackupsRequest(_messages.Message):
 
   Fields:
     filter: Multiple filter queries are separated by spaces. For example,
-      'instance:abc type:FINAL. You can filter by type, instance name,
-      creation time, or location.
+      'instance:abc AND type:FINAL, 'location:us',
+      'backupInterval.startTime>=1950-01-01T01:01:25.771Z'. You can filter by
+      type, instance, backupInterval.startTime (creation time), or location.
     pageSize: The maximum number of backups to return per response. The
       service might return fewer backups than this value. If a value for this
       parameter isn't specified, then, at most, 500 backups are returned. The
@@ -4676,13 +4807,29 @@ class SqlInstancesPatchRequest(_messages.Message):
   Fields:
     databaseInstance: A DatabaseInstance resource to be passed as the request
       body.
+    enforcePsaWriteEndpoint: Optional. Flag to enforce PSA write endpoint.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
   """
 
   databaseInstance = _messages.MessageField('DatabaseInstance', 1)
-  instance = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
+  enforcePsaWriteEndpoint = _messages.BooleanField(2)
+  instance = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+
+
+class SqlInstancesPointInTimeRestoreRequest(_messages.Message):
+  r"""A SqlInstancesPointInTimeRestoreRequest object.
+
+  Fields:
+    parent: Required. The parent resource where you created this instance.
+      Format: projects/{project}
+    pointInTimeRestoreContext: A PointInTimeRestoreContext resource to be
+      passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pointInTimeRestoreContext = _messages.MessageField('PointInTimeRestoreContext', 2)
 
 
 class SqlInstancesPromoteReplicaRequest(_messages.Message):
@@ -4977,13 +5124,15 @@ class SqlInstancesUpdateRequest(_messages.Message):
   Fields:
     databaseInstance: A DatabaseInstance resource to be passed as the request
       body.
+    enforcePsaWriteEndpoint: Optional. Flag to enforce PSA write endpoint.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
   """
 
   databaseInstance = _messages.MessageField('DatabaseInstance', 1)
-  instance = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
+  enforcePsaWriteEndpoint = _messages.BooleanField(2)
+  instance = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
 
 
 class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):

@@ -24,8 +24,8 @@ class AuthzExtension(_messages.Message):
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     WireFormatValueValuesEnum: Optional. The format of communication supported
-      by the callout extension. If not specified, the default is
-      `EXT_PROC_GRPC`.
+      by the callout extension. If not specified, the default value
+      `EXT_PROC_GRPC` is used.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
@@ -88,7 +88,7 @@ class AuthzExtension(_messages.Message):
       the stream. The timeout must be between 10-10000 milliseconds.
     updateTime: Output only. The timestamp when the resource was updated.
     wireFormat: Optional. The format of communication supported by the callout
-      extension. If not specified, the default is `EXT_PROC_GRPC`.
+      extension. If not specified, the default value `EXT_PROC_GRPC` is used.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -111,15 +111,15 @@ class AuthzExtension(_messages.Message):
 
   class WireFormatValueValuesEnum(_messages.Enum):
     r"""Optional. The format of communication supported by the callout
-    extension. If not specified, the default is `EXT_PROC_GRPC`.
+    extension. If not specified, the default value `EXT_PROC_GRPC` is used.
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
       EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
         stream. This is the default value if the wire format is not specified.
         The backend service for the extension must use HTTP2 or H2C as the
-        protocol. All `supported_events` for a client request will be sent as
-        part of the same gRPC stream.
+        protocol. All `supported_events` for a client request are sent as part
+        of the same gRPC stream.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
@@ -754,9 +754,6 @@ class GrpcRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this GrpcRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -824,15 +821,14 @@ class GrpcRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  gateways = _messages.StringField(4, repeated=True)
-  hostnames = _messages.StringField(5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  meshes = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  gateways = _messages.StringField(3, repeated=True)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GrpcRouteDestination(_messages.Message):
@@ -1100,9 +1096,6 @@ class HttpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -1168,15 +1161,14 @@ class HttpRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  gateways = _messages.StringField(4, repeated=True)
-  hostnames = _messages.StringField(5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  meshes = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  rules = _messages.MessageField('HttpRouteRouteRule', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  gateways = _messages.StringField(3, repeated=True)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('HttpRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -1862,7 +1854,7 @@ class LbTrafficExtension(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
@@ -1898,7 +1890,7 @@ class LbTrafficExtension(_messages.Message):
       resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
-      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      Supported values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more
       information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included in the
@@ -1917,7 +1909,7 @@ class LbTrafficExtension(_messages.Message):
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
-    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information, refer to
     [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
@@ -2037,10 +2029,14 @@ class ListGatewayRouteViewsResponse(_messages.Message):
     gatewayRouteViews: List of GatewayRouteView resources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   gatewayRouteViews = _messages.MessageField('GatewayRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGatewaysResponse(_messages.Message):
@@ -2140,10 +2136,14 @@ class ListMeshRouteViewsResponse(_messages.Message):
     meshRouteViews: List of MeshRouteView resources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   meshRouteViews = _messages.MessageField('MeshRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMeshesResponse(_messages.Message):
@@ -2155,10 +2155,14 @@ class ListMeshesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      `return_partial_success` and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   meshes = _messages.MessageField('Mesh', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMulticastConsumerAssociationsResponse(_messages.Message):
@@ -2323,10 +2327,14 @@ class ListServiceBindingsResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serviceBindings: List of ServiceBinding resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListServiceLbPoliciesResponse(_messages.Message):
@@ -2338,10 +2346,14 @@ class ListServiceLbPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serviceLbPolicies: List of ServiceLbPolicy resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTcpRoutesResponse(_messages.Message):
@@ -3170,6 +3182,12 @@ class MulticastGroupProducerActivation(_messages.Message):
 class MulticastGroupRange(_messages.Message):
   r"""Multicast group range resource.
 
+  Enums:
+    DistributionScopeValueValuesEnum: Optional. Multicast group range's
+      distribution scope. Intra-zone or intra-region cross-zone is supported,
+      with default value being intra-region. Cross region distribution is not
+      supported.
+
   Messages:
     LabelsValue: Optional. Labels as key-value pairs.
 
@@ -3185,6 +3203,9 @@ class MulticastGroupRange(_messages.Message):
       group range was created.
     description: Optional. An optional text description of the multicast group
       range.
+    distributionScope: Optional. Multicast group range's distribution scope.
+      Intra-zone or intra-region cross-zone is supported, with default value
+      being intra-region. Cross region distribution is not supported.
     ipCidrRange: Output only. [Output only] The multicast group IP address
       range.
     labels: Optional. Labels as key-value pairs.
@@ -3211,6 +3232,23 @@ class MulticastGroupRange(_messages.Message):
     updateTime: Output only. [Output only] The timestamp when the multicast
       group range was most recently updated.
   """
+
+  class DistributionScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. Multicast group range's distribution scope. Intra-zone or
+    intra-region cross-zone is supported, with default value being intra-
+    region. Cross region distribution is not supported.
+
+    Values:
+      DISTRIBUTION_SCOPE_UNSPECIFIED: Unspecified value means no restriction,
+        hence the broadest scope supported by the system applies.
+      INTRA_ZONE: Multicast traffic is distributed from source to only
+        subscribers in the same zone.
+      INTRA_REGION: Multicast traffic is distributed from source to
+        subscribers in any zone in the same region.
+    """
+    DISTRIBUTION_SCOPE_UNSPECIFIED = 0
+    INTRA_ZONE = 1
+    INTRA_REGION = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3239,15 +3277,16 @@ class MulticastGroupRange(_messages.Message):
   consumerAcceptList = _messages.StringField(1, repeated=True)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  ipCidrRange = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  logConfig = _messages.MessageField('MulticastLogConfig', 6)
-  multicastDomain = _messages.StringField(7)
-  name = _messages.StringField(8)
-  requireExplicitAccept = _messages.BooleanField(9)
-  reservedInternalRange = _messages.StringField(10)
-  uniqueId = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  distributionScope = _messages.EnumField('DistributionScopeValueValuesEnum', 4)
+  ipCidrRange = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  logConfig = _messages.MessageField('MulticastLogConfig', 7)
+  multicastDomain = _messages.StringField(8)
+  name = _messages.StringField(9)
+  requireExplicitAccept = _messages.BooleanField(10)
+  reservedInternalRange = _messages.StringField(11)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class MulticastGroupRangeActivation(_messages.Message):
@@ -3417,13 +3456,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -3443,13 +3481,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest(_messages.Mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -3474,15 +3511,15 @@ class NetworkservicesProjectsLocationsAuthzExtensionsListRequest(_messages.Messa
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the `AuthzExtension`
-      resources are listed, specified in the following format:
-      `projects/{project}/locations/{location}`.
+      resources are listed. These values are specified in the following
+      format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -3504,13 +3541,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Mess
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Used to specify the fields to be overwritten in the
       `AuthzExtension` resource by the update. The fields specified in the
@@ -3733,15 +3769,11 @@ class NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest(_messages.Message)
   r"""A NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest object.
 
   Fields:
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the GrpcRoute to delete. Must be in the format
       `projects/*/locations/global/grpcRoutes/*`.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class NetworkservicesProjectsLocationsGrpcRoutesGetRequest(_messages.Message):
@@ -3810,15 +3842,11 @@ class NetworkservicesProjectsLocationsHttpRoutesDeleteRequest(_messages.Message)
   r"""A NetworkservicesProjectsLocationsHttpRoutesDeleteRequest object.
 
   Fields:
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the HttpRoute to delete. Must be in the format
       `projects/*/locations/global/httpRoutes/*`.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class NetworkservicesProjectsLocationsHttpRoutesGetRequest(_messages.Message):
@@ -3881,13 +3909,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.M
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -3907,13 +3934,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.M
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -3938,15 +3964,15 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Mes
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbRouteExtension` resources are listed, specified in the following
-      format: `projects/{project}/locations/{location}`.
+      `LbRouteExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -3968,13 +3994,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbRouteExtension` resource by the update. The fields specified in the
@@ -4004,13 +4029,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest(_messages
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -4031,13 +4055,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest(_messages
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -4062,15 +4085,15 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest(_messages.M
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbTrafficExtension` resources are listed, specified in the following
-      format: `projects/{project}/locations/{location}`.
+      `LbTrafficExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -4093,13 +4116,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbTrafficExtension` resource by the update. The fields specified in the
@@ -4181,11 +4203,15 @@ class NetworkservicesProjectsLocationsMeshesListRequest(_messages.Message):
       system should return the next page of data.
     parent: Required. The project and location from which the Meshes should be
       listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
@@ -5506,7 +5532,7 @@ class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Mes
 
   Fields:
     parent: Required. The parent resource of the ServiceBinding. Must be in
-      the format `projects/*/locations/global`.
+      the format `projects/*/locations/*`.
     serviceBinding: A ServiceBinding resource to be passed as the request
       body.
     serviceBindingId: Required. Short name of the ServiceBinding resource to
@@ -5523,7 +5549,7 @@ class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Mes
 
   Fields:
     name: Required. A name of the ServiceBinding to delete. Must be in the
-      format `projects/*/locations/global/serviceBindings/*`.
+      format `projects/*/locations/*/serviceBindings/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5534,7 +5560,7 @@ class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Messag
 
   Fields:
     name: Required. A name of the ServiceBinding to get. Must be in the format
-      `projects/*/locations/global/serviceBindings/*`.
+      `projects/*/locations/*/serviceBindings/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5549,7 +5575,7 @@ class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Messa
       Indicates that this is a continuation of a prior `ListRouters` call, and
       that the system should return the next page of data.
     parent: Required. The project and location from which the ServiceBindings
-      should be listed, specified in the format `projects/*/locations/global`.
+      should be listed, specified in the format `projects/*/locations/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5656,15 +5682,11 @@ class NetworkservicesProjectsLocationsTcpRoutesDeleteRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesDeleteRequest object.
 
   Fields:
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the TcpRoute to delete. Must be in the format
       `projects/*/locations/global/tcpRoutes/*`.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class NetworkservicesProjectsLocationsTcpRoutesGetRequest(_messages.Message):
@@ -5733,15 +5755,11 @@ class NetworkservicesProjectsLocationsTlsRoutesDeleteRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTlsRoutesDeleteRequest object.
 
   Fields:
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     name: Required. A name of the TlsRoute to delete. Must be in the format
       `projects/*/locations/global/tlsRoutes/*`.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class NetworkservicesProjectsLocationsTlsRoutesGetRequest(_messages.Message):
@@ -6110,8 +6128,10 @@ class RetryFilterPerRouteConfig(_messages.Message):
 
 
 class ServiceBinding(_messages.Message):
-  r"""ServiceBinding is the resource that defines a Service Directory Service
-  to be used in a BackendService resource.
+  r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
+  used in a BackendService resource. - Bind a Private Service Connect producer
+  service to be used in consumer Cloud Service Mesh or Application Load
+  Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -6124,11 +6144,12 @@ class ServiceBinding(_messages.Message):
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
     name: Identifier. Name of the ServiceBinding resource. It matches pattern
-      `projects/*/locations/global/serviceBindings/service_binding_name`.
-    service: Required. The full Service Directory Service name of the format
-      projects/*/locations/*/namespaces/*/services/*
+      `projects/*/locations/*/serviceBindings/`.
+    service: Optional. The full Service Directory Service name of the format
+      `projects/*/locations/*/namespaces/*/services/*`. This field must be
+      set.
     serviceId: Output only. The unique identifier of the Service Directory
-      Service against which the Service Binding resource is validated. This is
+      Service against which the ServiceBinding resource is validated. This is
       populated when the Service Binding resource is used in another resource
       (like Backend Service). This is of the UUID4 format.
     updateTime: Output only. The timestamp when the resource was updated.
@@ -6417,9 +6438,6 @@ class TcpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -6465,14 +6483,13 @@ class TcpRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  gateways = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  meshes = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  rules = _messages.MessageField('TcpRouteRouteRule', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  gateways = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('TcpRouteRouteRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class TcpRouteRouteAction(_messages.Message):
@@ -6567,9 +6584,6 @@ class TlsRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
-    etag: Optional. Etag of the resource. If this is provided, it must match
-      the server's etag. If the provided etag does not match the server's
-      etag, the request will fail with a 409 ABORTED error.
     gateways: Optional. Gateways defines a list of gateways this TlsRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -6615,14 +6629,13 @@ class TlsRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  gateways = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  meshes = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  rules = _messages.MessageField('TlsRouteRouteRule', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  gateways = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('TlsRouteRouteRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class TlsRouteRouteAction(_messages.Message):
@@ -6659,8 +6672,7 @@ class TlsRouteRouteDestination(_messages.Message):
 
 class TlsRouteRouteMatch(_messages.Message):
   r"""RouteMatch defines the predicate used to match requests to a given
-  action. Multiple match types are "AND"ed for evaluation. If no routeMatch
-  field is specified, this rule will unconditionally match traffic.
+  action. Multiple match types are "AND"ed for evaluation.
 
   Fields:
     alpn: Optional. ALPN (Application-Layer Protocol Negotiation) to match
@@ -6686,6 +6698,7 @@ class TlsRouteRouteRule(_messages.Message):
     action: Required. The detailed rule defining how to route matched traffic.
     matches: Required. RouteMatch defines the predicate used to match requests
       to a given action. Multiple match types are "OR"ed for evaluation.
+      Atleast one RouteMatch must be supplied.
   """
 
   action = _messages.MessageField('TlsRouteRouteAction', 1)

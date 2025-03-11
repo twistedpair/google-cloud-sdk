@@ -393,3 +393,19 @@ class BackupsClient(util.BackupDrClientBase):
         name=resource.RelativeName(), restoreBackupRequest=restore_request
     )
     return self.service.Restore(request)
+
+  def ParseUpdate(self, enforced_retention):
+    updated_backup = self.messages.Backup()
+    if enforced_retention != "Nones":
+      updated_backup.enforcedRetentionEndTime = enforced_retention
+    return updated_backup
+
+  def Update(self, resource, backup, update_mask):
+    request_id = command_util.GenerateRequestId()
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest(
+        backup=backup,
+        name=resource.RelativeName(),
+        updateMask=update_mask,
+        requestId=request_id,
+    )
+    return self.service.Patch(request)

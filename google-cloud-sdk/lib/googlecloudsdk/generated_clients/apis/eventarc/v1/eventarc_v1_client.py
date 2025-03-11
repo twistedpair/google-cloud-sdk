@@ -2080,7 +2080,7 @@ class EventarcV1(base_api.BaseApiClient):
     )
 
     def GetGoogleChannelConfig(self, request, global_params=None):
-      r"""Get a GoogleChannelConfig.
+      r"""Get a GoogleChannelConfig. The name of the GoogleChannelConfig in the response is ALWAYS coded with projectID.
 
       Args:
         request: (EventarcProjectsLocationsGetGoogleChannelConfigRequest) input message

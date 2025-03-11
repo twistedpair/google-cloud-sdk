@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
 import sys
 
 from googlecloudsdk.api_lib.compute import base_classes
@@ -48,6 +49,10 @@ class DetachDiskError(exceptions.Error):
 
 
 class BootDiskConfigurationError(exceptions.Error):
+  """Error if the boot disk configuration is invalid."""
+
+
+class WorkerIdsError(exceptions.Error):
   """Error if the boot disk configuration is invalid."""
 
 
@@ -196,6 +201,13 @@ def GenerateUpdateMask(api_version='v2'):
       update_mask.add('metadata')
 
     if args.IsKnownAndSpecified('attach_disk'):
+      # validates worker
+      if not args.IsKnownAndSpecified('worker'):
+        args.worker = ['all']
+      is_all_workers_specified = ValidateWorkerIdsField(args)
+      if is_all_workers_specified:
+        args.worker = []
+
       mode, source = '', ''
       for key in args.attach_disk.keys():
         if key == 'mode':
@@ -211,19 +223,33 @@ def GenerateUpdateMask(api_version='v2'):
         mode_enum = tpu_messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
       elif not mode or mode == 'read-write':
         mode_enum = tpu_messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
+        if len(args.worker) > 1:
+          raise AttachDiskError(
+              'argument --attach-disk: can only attach disks in read-write'
+              ' to at most one worker; received: ' + str(args.worker)
+          )
       else:
         raise AttachDiskError(
             'argument --attach-disk: key mode: can only attach disks in '
             'read-write or read-only mode; received: ' + mode
         )
+      # worker is de-duped and sorted.
+      worker = set(args.worker)
       disk_to_attach = tpu_messages.AttachedDisk(
           mode=mode_enum,
-          sourceDisk=source
+          sourceDisk=source,
       )
+      if api_version == 'v2alpha1':
+        disk_to_attach.workerIds = sorted(worker)
       request.node.dataDisks.append(disk_to_attach)
       update_mask.add('data_disks')
 
     elif args.IsKnownAndSpecified('detach_disk'):
+      # validates worker
+      if not args.IsKnownAndSpecified('worker'):
+        args.worker = ['all']
+      is_all_workers_specified = ValidateWorkerIdsField(args)
+
       if not request.node.dataDisks:
         raise DetachDiskError(
             'argument --detach-disk: No data disks to detach from current TPU '
@@ -236,7 +262,12 @@ def GenerateUpdateMask(api_version='v2'):
         if args.detach_disk != source_disk:
           continue
         if args.detach_disk == source_disk:
-          del request.node.dataDisks[i]
+          if is_all_workers_specified:
+            del request.node.dataDisks[i]
+          else:
+            worker_diff = set(
+                request.node.dataDisks[i].workerIds) - set(args.worker)
+            request.node.dataDisks[i].workerIds = sorted(worker_diff)
           break
       else:
         raise DetachDiskError(
@@ -356,6 +387,39 @@ def TransformGuestAttributes(response, args):
   return lst
 
 
+def ValidateWorkerIdsField(args):
+  """Checks that the worker are numberic strings only.
+
+  The only exception is "all" which is a special value that means all
+  workers. If "all" is specified return True.
+
+  Args:
+    args: the arguments for the update command.
+
+  Returns:
+    True if only one string "all" is specified in args.worker
+    False otherwise.
+
+  Raises:
+    WorkerIdsError: if the worker are not numberic strings only.
+  """
+  if len(args.worker) == 1 and args.worker[0] == 'all':
+    return True
+  for w in args.worker:
+    if w == 'all' and len(args.worker) > 1:
+      raise WorkerIdsError(
+          'argument --worker',
+          '"all" cannot be specified with other worker.',
+      )
+    if not w.isnumeric():
+      raise WorkerIdsError(
+          'argument --worker',
+          'worker must be numeric strings only or '
+          '"all". e.g. --worker=0,1,2 or --worker=all',
+      )
+  return False
+
+
 def CheckTPUVMNode(response, args):
   """Verifies that the node is a TPU VM node.
 
@@ -430,6 +494,43 @@ def ParseBootDiskConfigurations(api_version='v2'):
     return request
 
   return Process
+
+
+def ProjectIdToProjectNumber(project_id):
+  """Returns the Cloud project number associated with the `project_id`."""
+  crm_message_module = apis.GetMessagesModule('cloudresourcemanager', 'v1')
+  resource_manager = apis.GetClientInstance('cloudresourcemanager', 'v1')
+  req = crm_message_module.CloudresourcemanagerProjectsGetRequest(
+      projectId=project_id)
+  project = resource_manager.projects.Get(req)
+  return project.projectNumber
+
+
+def CreateReservationName(unused_ref, args, request):
+  """Request hook for creating the target reservation name.
+
+  Args:
+    unused_ref: ref to the service.
+    args: The args for this method.
+    request: The request to be made.
+
+  Returns:
+    Request with reservationName field populated.
+  """
+  short_reservation_name_pattern = '^[a-zA-Z0-9-]+$'
+  full_reservation_name_pattern = 'projects/{}/locations/{}/reservations/{}'
+  reservation_name = None
+  if args.IsKnownAndSpecified('reservation') and re.match(
+      short_reservation_name_pattern, args.reservation
+  ):
+    project_id = properties.VALUES.core.project.GetOrFail()
+    project_number = ProjectIdToProjectNumber(project_id)
+    reservation_name = full_reservation_name_pattern.format(
+        project_number, args.zone, args.reservation
+    )
+  if reservation_name:
+    request.node.schedulingConfig.reservationName = reservation_name
+  return request
 
 
 class TPUNode(object):

@@ -24,6 +24,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
+
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import log
@@ -34,10 +36,9 @@ from googlecloudsdk.core.console import console_attr
 class AbstractOperationStreamerPoller(waiter.OperationPoller):
   """Base abstract poller class for dataproc operation.
 
-  Base abstract poller class for dataproc operation. Sub classes should
-  override IsDone, Poll, _GetResult and _GetOutputUri functions to provide
-  command specific logic. Noticed that it is _GetResult not GetResult. The
-  function name is precedes with an underscore.
+  Base abstract poller class for dataproc operation. The class is designed to
+  stream remote output from GCS.
+
   Pass TrackerUpdateFunction to waiter.WaitFor's tracker_update_func parameter
   to stream remote output.
   """
@@ -52,6 +53,7 @@ class AbstractOperationStreamerPoller(waiter.OperationPoller):
     self.driver_log_streamer = None
     self.dataproc = dataproc
 
+  @abc.abstractmethod
   def IsDone(self, poll_result):
     """Determines if the poll result is done.
 
@@ -69,6 +71,7 @@ class AbstractOperationStreamerPoller(waiter.OperationPoller):
     """
     return False
 
+  @abc.abstractmethod
   def Poll(self, ref):
     """Fetches remote resource.
 
@@ -86,6 +89,7 @@ class AbstractOperationStreamerPoller(waiter.OperationPoller):
     """
     return None
 
+  @abc.abstractmethod
   def _GetOutputUri(self, poll_result):
     """Gets output uri from poll result.
 
@@ -103,6 +107,7 @@ class AbstractOperationStreamerPoller(waiter.OperationPoller):
     """
     return None
 
+  @abc.abstractmethod
   def _GetResult(self, poll_result):
     """Returns operation result to caller.
 

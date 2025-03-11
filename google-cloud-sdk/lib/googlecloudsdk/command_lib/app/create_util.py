@@ -71,6 +71,11 @@ def AddAppCreateFlags(parser):
           https://cloud.google.com/appengine/docs/standard/python3/service-account
           outlines the limitation of that service account."""),
   )
+  parser.add_argument(
+      '--ssl-policy',
+      choices=['TLS_VERSION_1_0', 'TLS_VERSION_1_2'],
+      help='The app-level SSL policy to create the app with.',
+  )
 
 
 def CheckAppNotExists(api_client, project):
@@ -122,10 +127,12 @@ def CreateApp(
   """
 
   ssl_policy_enum = {
-      'default': (
+      'TLS_VERSION_1_0': (
           api_client.messages.Application.SslPolicyValueValuesEnum.DEFAULT
       ),
-      'modern': api_client.messages.Application.SslPolicyValueValuesEnum.MODERN,
+      'TLS_VERSION_1_2': (
+          api_client.messages.Application.SslPolicyValueValuesEnum.MODERN
+      ),
   }.get(ssl_policy)
 
   if not suppress_warning:

@@ -740,6 +740,38 @@ class GoogleCloudBigqueryMigrationTasksTranslationV2alphaTranslationTaskDetails(
   translationExceptionTable = _messages.StringField(11)
 
 
+class GoogleCloudBigqueryMigrationV2AssessmentFeatureHandle(_messages.Message):
+  r"""User-definable feature flags for assessment tasks.
+
+  Fields:
+    addShareableDataset: Optional. Whether to create a dataset containing non-
+      PII data in addition to the output dataset.
+  """
+
+  addShareableDataset = _messages.BooleanField(1)
+
+
+class GoogleCloudBigqueryMigrationV2AssessmentTaskDetails(_messages.Message):
+  r"""Assessment task config.
+
+  Fields:
+    dataSource: Required. The data source or data warehouse type (eg:
+      TERADATA/REDSHIFT) from which the input data is extracted.
+    featureHandle: Optional. A collection of additional feature flags for this
+      assessment.
+    inputPath: Required. The Cloud Storage path for assessment input files.
+    outputDataset: Required. The BigQuery dataset for output.
+    querylogsPath: Optional. An optional Cloud Storage path to write the query
+      logs (which is then used as an input path on the translation task)
+  """
+
+  dataSource = _messages.StringField(1)
+  featureHandle = _messages.MessageField('GoogleCloudBigqueryMigrationV2AssessmentFeatureHandle', 2)
+  inputPath = _messages.StringField(3)
+  outputDataset = _messages.StringField(4)
+  querylogsPath = _messages.StringField(5)
+
+
 class GoogleCloudBigqueryMigrationV2AssignmentInfo(_messages.Message):
   r"""Information about assignments.
 
@@ -1071,20 +1103,20 @@ class GoogleCloudBigqueryMigrationV2MigrationSubtask(_messages.Message):
 
   Fields:
     assignmentInfo: Output only. Information about the assignment status.
-    createTime: Time when the subtask was created.
+    createTime: Output only. Time when the subtask was created.
     details: The details of the sub task. This is opaque to migration service
       and entirely between orchestrator and worker.
-    lastUpdateTime: Time when the subtask was last updated.
+    lastUpdateTime: Output only. Time when the subtask was last updated.
     lease: Output only. A lease, if this is currently assigned.
-    metrics: The metrics for the subtask.
+    metrics: Output only. The metrics for the subtask.
     name: Output only. Immutable. The resource name for the migration subtask.
       The ID is server-generated. Example:
       `projects/123/locations/us/workflows/345/subtasks/678`
     processingError: Output only. An explanation that may be populated when
       the task is in FAILED state.
-    resourceErrorCount: The number or resources with errors. Note: This is not
-      the total number of errors as each resource can have more than one
-      error. This is used to indicate truncation by having a
+    resourceErrorCount: Output only. The number or resources with errors.
+      Note: This is not the total number of errors as each resource can have
+      more than one error. This is used to indicate truncation by having a
       `resource_error_count` that is higher than the size of
       `resource_error_details`.
     resourceErrorDetails: Output only. Provides details to errors and issues
@@ -1184,13 +1216,14 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the task.
 
   Fields:
+    assessmentTaskDetails: Task configuration for Assessment.
     assignmentInfo: Output only. Information about the assignment status.
-    createTime: Time when the task was created.
+    createTime: Output only. Time when the task was created.
     id: Output only. Immutable. The unique identifier for the migration task.
       The ID is server-generated.
-    lastUpdateTime: Time when the task was last updated.
+    lastUpdateTime: Output only. Time when the task was last updated.
     lease: Output only. A lease, if this is currently assigned.
-    metrics: The metrics for the task.
+    metrics: Output only. The metrics for the task.
     processingError: Output only. An explanation that may be populated when
       the task is in FAILED state.
     resourceErrorCount: The number or resources with errors. Note: This is not
@@ -1203,10 +1236,10 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
       not mean that the task failed.
     state: Output only. The current state of the task.
     taskResult: Output only. The result of the task.
-    totalProcessingErrorCount: Count of all the processing errors in this task
-      and its subtasks.
-    totalResourceErrorCount: Count of all the resource errors in this task and
-      its subtasks.
+    totalProcessingErrorCount: Output only. Count of all the processing errors
+      in this task and its subtasks.
+    totalResourceErrorCount: Output only. Count of all the resource errors in
+      this task and its subtasks.
     translationConfigDetails: Task configuration for CW Batch/Offline SQL
       Translation.
     translationDetails: Task details for unified SQL Translation.
@@ -1228,7 +1261,7 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
       PENDING: The task is waiting for orchestration.
       ORCHESTRATING: The task is assigned to an orchestrator.
       RUNNING: The task is running, i.e. its subtasks are ready for execution.
-      PAUSED: Tha task is paused. Assigned subtasks can continue, but no new
+      PAUSED: The task is paused. Assigned subtasks can continue, but no new
         subtasks will be scheduled.
       SUCCEEDED: The task finished successfully.
       FAILED: The task finished unsuccessfully.
@@ -1241,22 +1274,23 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
     SUCCEEDED = 5
     FAILED = 6
 
-  assignmentInfo = _messages.MessageField('GoogleCloudBigqueryMigrationV2AssignmentInfo', 1)
-  createTime = _messages.StringField(2)
-  id = _messages.StringField(3)
-  lastUpdateTime = _messages.StringField(4)
-  lease = _messages.MessageField('GoogleCloudBigqueryMigrationV2Lease', 5)
-  metrics = _messages.MessageField('GoogleCloudBigqueryMigrationV2TimeSeries', 6, repeated=True)
-  processingError = _messages.MessageField('GoogleRpcErrorInfo', 7)
-  resourceErrorCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  resourceErrorDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2ResourceErrorDetail', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  taskResult = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTaskResult', 11)
-  totalProcessingErrorCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  totalResourceErrorCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  translationConfigDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2TranslationConfigDetails', 14)
-  translationDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2TranslationDetails', 15)
-  type = _messages.StringField(16)
+  assessmentTaskDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2AssessmentTaskDetails', 1)
+  assignmentInfo = _messages.MessageField('GoogleCloudBigqueryMigrationV2AssignmentInfo', 2)
+  createTime = _messages.StringField(3)
+  id = _messages.StringField(4)
+  lastUpdateTime = _messages.StringField(5)
+  lease = _messages.MessageField('GoogleCloudBigqueryMigrationV2Lease', 6)
+  metrics = _messages.MessageField('GoogleCloudBigqueryMigrationV2TimeSeries', 7, repeated=True)
+  processingError = _messages.MessageField('GoogleRpcErrorInfo', 8)
+  resourceErrorCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resourceErrorDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2ResourceErrorDetail', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  taskResult = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTaskResult', 12)
+  totalProcessingErrorCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  totalResourceErrorCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  translationConfigDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2TranslationConfigDetails', 15)
+  translationDetails = _messages.MessageField('GoogleCloudBigqueryMigrationV2TranslationDetails', 16)
+  type = _messages.StringField(17)
 
 
 class GoogleCloudBigqueryMigrationV2MigrationTaskResult(_messages.Message):
@@ -1282,11 +1316,11 @@ class GoogleCloudBigqueryMigrationV2MigrationWorkflow(_messages.Message):
       in a workflow.
 
   Fields:
-    createTime: Time when the workflow was created.
+    createTime: Output only. Time when the workflow was created.
     displayName: The display name of the workflow. This can be set to give a
       workflow a descriptive name. There is no guarantee or enforcement of
       uniqueness.
-    lastUpdateTime: Time when the workflow was last updated.
+    lastUpdateTime: Output only. Time when the workflow was last updated.
     name: Output only. Immutable. Identifier. The unique identifier for the
       migration workflow. The ID is server-generated. Example:
       `projects/123/locations/us/workflows/345`

@@ -1367,10 +1367,10 @@ class DialogflowProjectsAnswerRecordsListRequest(_messages.Message):
     filter: Optional. Filters to restrict results to specific answer records.
       The expression has the following syntax: [AND ] ... The following fields
       and operators are supported: * conversation_id with equals(=) operator
-      Examples: * "conversation_id=bar" matches answer records in the
-      projects/foo/locations/global/conversations/bar conversation (assuming
-      the parent is projects/foo/locations/global). For more information about
-      filtering, see [API Filtering](https://aip.dev/160).
+      Examples: * `conversation_id=bar` matches answer records in the
+      `projects/foo/locations/global/conversations/bar` conversation (assuming
+      the parent is `projects/foo/locations/global`). For more information
+      about filtering, see [API Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of records to return in a single
       page. The server may return fewer records than this. If unspecified, we
       use 10. The maximum is 100.
@@ -3367,10 +3367,10 @@ class DialogflowProjectsLocationsAnswerRecordsListRequest(_messages.Message):
     filter: Optional. Filters to restrict results to specific answer records.
       The expression has the following syntax: [AND ] ... The following fields
       and operators are supported: * conversation_id with equals(=) operator
-      Examples: * "conversation_id=bar" matches answer records in the
-      projects/foo/locations/global/conversations/bar conversation (assuming
-      the parent is projects/foo/locations/global). For more information about
-      filtering, see [API Filtering](https://aip.dev/160).
+      Examples: * `conversation_id=bar` matches answer records in the
+      `projects/foo/locations/global/conversations/bar` conversation (assuming
+      the parent is `projects/foo/locations/global`). For more information
+      about filtering, see [API Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of records to return in a single
       page. The server may return fewer records than this. If unspecified, we
       use 10. The maximum is 100.
@@ -14861,7 +14861,8 @@ class GoogleCloudDialogflowV2Message(_messages.Message):
       `projects//locations//conversations//messages/`.
     participant: Output only. The participant that sends this message.
     participantRole: Output only. The role of the participant.
-    sendTime: Optional. The time when the message was sent.
+    sendTime: Optional. The time when the message was sent. For voice
+      messages, this is the time when an utterance started.
     sentimentAnalysis: Output only. The sentiment analysis result for the
       message.
   """
@@ -15797,8 +15798,15 @@ class GoogleCloudDialogflowV2SearchKnowledgeRequestSearchConfig(_messages.Messag
   r"""Configuration specific to search queries with data stores.
 
   Fields:
-    boostSpecs: Optional. Boost specifications for data stores.
-    filterSpecs: Optional. Filter specification for data store queries.
+    boostSpecs: Optional. Boost specifications for data stores. Maps from
+      datastore name to their boost configuration. Do not specify more than
+      one BoostSpecs for each datastore name. If multiple BoostSpecs are
+      provided for the same datastore name, the behavior is undefined.
+    filterSpecs: Optional. Filter specification for data store queries. TMaps
+      from datastore name to the filter expression for that datastore. Do not
+      specify more than one FilterSpecs for each datastore name. If multiple
+      FilterSpecs are provided for the same datastore name, the behavior is
+      undefined.
   """
 
   boostSpecs = _messages.MessageField('GoogleCloudDialogflowV2SearchKnowledgeRequestSearchConfigBoostSpecs', 1, repeated=True)
@@ -16338,7 +16346,9 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       unspecified to use [Agent Speech settings](https://cloud.google.com/dial
       ogflow/cx/docs/concept/agent#settings-speech) for model selection.
     phraseSets: List of names of Cloud Speech phrase sets that are used for
-      transcription.
+      transcription. For phrase set limitations, please refer to [Cloud Speech
+      API quotas and limits](https://cloud.google.com/speech-to-
+      text/quotas#content).
     sampleRateHertz: Sample rate (in Hertz) of the audio content sent in the
       query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for
@@ -19460,7 +19470,8 @@ class GoogleCloudDialogflowV2beta1Message(_messages.Message):
     participant: Output only. The participant that sends this message.
     participantRole: Output only. The role of the participant.
     responseMessages: Optional. Automated agent responses.
-    sendTime: Optional. The time when the message was sent.
+    sendTime: Optional. The time when the message was sent. For voice
+      messages, this is the time when an utterance started.
     sentimentAnalysis: Output only. The sentiment analysis result for the
       message.
   """

@@ -66,7 +66,7 @@ def Args():
           ),
       ),
       base.Argument(
-          "--remote-go-repo", help=_GoRemoteRepoHelpText(), hidden=True
+          "--remote-go-repo", help=_GoRemoteRepoHelpText()
       ),
       base.Argument(
           "--remote-username",
@@ -309,8 +309,8 @@ REMOTE_{command}_REPO can be either:
 
 def _GoRemoteRepoHelpText() -> str:
   return (
-      '(Go only) Repo upstream for go remote repository. "https://github.com"'
-      " is the only valid value at this moment."
+      '(Go only) Repo upstream for Go remote repository. '
+      '"https://proxy.golang.org/" is the only valid value.'
   )
 
 

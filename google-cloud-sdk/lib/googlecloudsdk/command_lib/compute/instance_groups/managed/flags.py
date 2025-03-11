@@ -655,6 +655,8 @@ def AddMigDefaultActionOnVmFailureAlpha(parser):
           '(Default) MIG automatically repairs a failed VM by recreating it.',
       ),
       ('do-nothing', 'MIG does not repair a failed VM.'),
+      ('delete', ('MIG deletes a failed VM. Deleting the VM decreases the '
+                  'target size of the MIG.')),
   ])
 
   parser.add_argument(

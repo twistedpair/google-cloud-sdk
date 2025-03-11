@@ -32,7 +32,7 @@ def MakeSnapshotArg(plural=False):
   )
 
 
-def MakeSnapshotArgAlpha(plural=False):
+def MakeSnapshotArgForRegionalSnapshots(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='snapshot',
       name='snapshot_name',

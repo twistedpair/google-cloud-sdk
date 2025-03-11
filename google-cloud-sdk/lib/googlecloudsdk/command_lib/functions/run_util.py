@@ -29,18 +29,20 @@ _CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
 
 
-def AddOrRemoveInvokerBinding(function, member, add_binding=True):
+def AddOrRemoveInvokerBinding(function, member, add_binding=True, is_gen2=True):
   """Add the IAM binding for the invoker role on the function's Cloud Run service.
 
   Args:
     function: cloudfunctions_v2_messages.Function, a GCF v2 function.
     member: str, The user to bind the Invoker role to.
     add_binding: bool, Whether to add to or remove from the IAM policy.
+    is_gen2: bool, Whether the function is a 2nd gen function. If false, the
+      function is a 1st gen function undergoing upgrade.
 
   Returns:
     A google.iam.v1.Policy
   """
-  service_ref_one_platform = _GetOnePlatformServiceRef(function)
+  service_ref_one_platform = _GetOnePlatformServiceRef(function, is_gen2)
 
   run_connection_context = _GetRunRegionalConnectionContext(
       service_ref_one_platform.locationsId
@@ -77,9 +79,14 @@ def _GetRunRegionalConnectionContext(location):
   )
 
 
-def _GetOnePlatformServiceRef(function):
+def _GetOnePlatformServiceRef(function, is_gen2=True):
+  service_name = (
+      function.serviceConfig.service
+      if is_gen2
+      else function.upgradeInfo.serviceConfig.service
+  )
   return resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service, _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM
+      service_name, _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM
   )
 
 

@@ -111,7 +111,11 @@ class ApigeeOrganizationsApiproductsAttributesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the API product attribute. Use the following
       structure in your request:
-      `organizations/{org}/apiproducts/{apiproduct}/attributes/{attribute}`
+      `organizations/{org}/apiproducts/{apiproduct}/attributes/{attribute}` If
+      the API Product resource has the `space` attribute set, IAM permissions
+      are checked against the Space resource path. To learn more, read the
+      [Apigee Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -123,7 +127,11 @@ class ApigeeOrganizationsApiproductsAttributesGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the API product attribute. Use the following
       structure in your request:
-      `organizations/{org}/apiproducts/{apiproduct}/attributes/{attribute}`
+      `organizations/{org}/apiproducts/{apiproduct}/attributes/{attribute}` If
+      the API Product resource has the `space` attribute set, IAM permissions
+      are checked against the Space resource path. To learn more, read the
+      [Apigee Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -134,7 +142,11 @@ class ApigeeOrganizationsApiproductsAttributesListRequest(_messages.Message):
 
   Fields:
     parent: Required. Name of the API product. Use the following structure in
-      your request: `organizations/{org}/apiproducts/{apiproduct}`
+      your request: `organizations/{org}/apiproducts/{apiproduct}` If the API
+      Product resource has the `space` attribute set, IAM permissions are
+      checked against the Space resource path. To learn more, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -147,7 +159,11 @@ class ApigeeOrganizationsApiproductsAttributesRequest(_messages.Message):
     googleCloudApigeeV1Attributes: A GoogleCloudApigeeV1Attributes resource to
       be passed as the request body.
     name: Required. Name of the API product. Use the following structure in
-      your request: `organizations/{org}/apiproducts/{apiproduct}`
+      your request: `organizations/{org}/apiproducts/{apiproduct}` If the API
+      Product resource has the `space` attribute set, IAM permissions are
+      checked against the Space resource path. To learn more, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1Attributes = _messages.MessageField('GoogleCloudApigeeV1Attributes', 1)
@@ -162,7 +178,11 @@ class ApigeeOrganizationsApiproductsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. Name of the organization in which the API product will
       be created. Use the following structure in your request:
-      `organizations/{org}`
+      `organizations/{org}` If the resource has the `space` attribute set, IAM
+      permissions are checked against the Space resource path. To learn more,
+      read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1ApiProduct = _messages.MessageField('GoogleCloudApigeeV1ApiProduct', 1)
@@ -174,7 +194,11 @@ class ApigeeOrganizationsApiproductsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the API product. Use the following structure in
-      your request: `organizations/{org}/apiproducts/{apiproduct}`
+      your request: `organizations/{org}/apiproducts/{apiproduct}` If the
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -185,7 +209,11 @@ class ApigeeOrganizationsApiproductsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the API product. Use the following structure in
-      your request: `organizations/{org}/apiproducts/{apiproduct}`
+      your request: `organizations/{org}/apiproducts/{apiproduct}` If the
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -208,7 +236,11 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
       value is 100; values above 100 will be coerced to 100.
     pageToken: The starting index record for listing the developers.
     parent: Required. Name of the organization. Use the following structure in
-      your request: `organizations/{org}`
+      your request: `organizations/{org}` If the resource has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     space: Optional. The Space to list API products for. When none provided,
       all the spaces the user has list access, will be used implicitly, and
       the same following rules will apply. Can be used in conjunction with
@@ -256,7 +288,11 @@ class ApigeeOrganizationsApiproductsRateplansCreateRequest(_messages.Message):
       passed as the request body.
     parent: Required. Name of the API product that is associated with the rate
       plan. Use the following structure in your request:
-      `organizations/{org}/apiproducts/{apiproduct}`
+      `organizations/{org}/apiproducts/{apiproduct}` If the API Product
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1RatePlan = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 1)
@@ -269,7 +305,11 @@ class ApigeeOrganizationsApiproductsRateplansDeleteRequest(_messages.Message):
   Fields:
     name: Required. ID of the rate plan. Use the following structure in your
       request:
-      `organizations/{org}/apiproducts/{apiproduct}/rateplans/{rateplan}`
+      `organizations/{org}/apiproducts/{apiproduct}/rateplans/{rateplan}` If
+      the API Product resource has the `space` attribute set, IAM permissions
+      are checked against the Space resource path. To learn more, read the
+      [Apigee Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -281,7 +321,11 @@ class ApigeeOrganizationsApiproductsRateplansGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the rate plan. Use the following structure in your
       request:
-      `organizations/{org}/apiproducts/{apiproduct}/rateplans/{rateplan}`
+      `organizations/{org}/apiproducts/{apiproduct}/rateplans/{rateplan}` If
+      the API Product resource has the `space` attribute set, IAM permissions
+      are checked against the Space resource path. To learn more, read the
+      [Apigee Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -308,7 +352,11 @@ class ApigeeOrganizationsApiproductsRateplansListRequest(_messages.Message):
     parent: Required. Name of the API product. Use the following structure in
       your request: `organizations/{org}/apiproducts/{apiproduct}` Use
       `organizations/{org}/apiproducts/-` to return rate plans for all API
-      products within the organization.
+      products within the organization. If the API Product resource has the
+      `space` attribute set, IAM permissions are checked against the Space
+      resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     startKey: Name of the rate plan from which to start displaying the list of
       rate plans. If omitted, the list starts from the first item. For
       example, to view the rate plans from 51-150, set the value of `startKey`
@@ -351,7 +399,11 @@ class ApigeeOrganizationsApisCreateRequest(_messages.Message):
       request body.
     name: Name of the API proxy. Restrict the characters used to: A-Za-z0-9._-
     parent: Required. Name of the organization in the following format:
-      `organizations/{org}`
+      `organizations/{org}` If the API Proxy resource has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     space: Optional. The ID of the space associated with this proxy. Any IAM
       policies applied to the space will affect access to this proxy. Note
       that this field is only respected when creating a new proxy. It has no
@@ -391,7 +443,11 @@ class ApigeeOrganizationsApisDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the API proxy in the following format:
-      `organizations/{org}/apis/{api}`
+      `organizations/{org}/apis/{api}` If the API Proxy resource has the
+      `space` attribute set, IAM permissions are checked against the Space
+      resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -402,7 +458,11 @@ class ApigeeOrganizationsApisDeploymentsListRequest(_messages.Message):
 
   Fields:
     parent: Required. Name of the API proxy for which to return deployment
-      information in the following format: `organizations/{org}/apis/{api}`
+      information in the following format: `organizations/{org}/apis/{api}` If
+      the API proxy resource has the `space` attribute set, IAM permissions
+      are checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -413,7 +473,11 @@ class ApigeeOrganizationsApisGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the API proxy in the following format:
-      `organizations/{org}/apis/{api}`
+      `organizations/{org}/apis/{api}` If the API Proxy resource has the
+      `space` attribute set, IAM permissions are checked against the Space
+      resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -427,7 +491,11 @@ class ApigeeOrganizationsApisKeyvaluemapsCreateRequest(_messages.Message):
       to be passed as the request body.
     parent: Required. Name of the environment in which to create the key value
       map. Use the following structure in your request:
-      `organizations/{org}/apis/{api}`
+      `organizations/{org}/apis/{api}` If the API Proxy resource has the
+      `space` attribute set, IAM permissions are checked against the Space
+      resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1KeyValueMap = _messages.MessageField('GoogleCloudApigeeV1KeyValueMap', 1)
@@ -440,7 +508,11 @@ class ApigeeOrganizationsApisKeyvaluemapsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the key value map. Use the following structure in
       your request:
-      `organizations/{org}/apis/{api}/keyvaluemaps/{keyvaluemap}`
+      `organizations/{org}/apis/{api}/keyvaluemaps/{keyvaluemap}` If the API
+      Proxy resource has the `space` attribute set, IAM permissions are
+      checked against the Space resource path. To learn more, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -458,7 +530,12 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest(_messages.Message)
       `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
       `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
       eyvaluemap}` *
-      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
@@ -474,7 +551,12 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest(_messages.Message)
       request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
       uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
       nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
-      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -489,7 +571,12 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest(_messages.Message):
       request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
       uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
       nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
-      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -509,7 +596,12 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest(_messages.Message):
       `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
       `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
       eyvaluemap}` *
-      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -526,7 +618,11 @@ class ApigeeOrganizationsApisListRequest(_messages.Message):
     includeRevisions: Flag that specifies whether to include a list of
       revisions in the response.
     parent: Required. Name of the organization in the following format:
-      `organizations/{org}`
+      `organizations/{org}` If the resource has the `space` attribute set, IAM
+      permissions are checked against the Space resource path. To learn more,
+      read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     space: Optional. The space ID to filter the list of proxies (optional). If
       unspecified, all proxies in the organization will be listed.
   """
@@ -559,7 +655,11 @@ class ApigeeOrganizationsApisPatchRequest(_messages.Message):
     googleCloudApigeeV1ApiProxy: A GoogleCloudApigeeV1ApiProxy resource to be
       passed as the request body.
     name: Required. API proxy to update in the following format:
-      `organizations/{org}/apis/{api}`
+      `organizations/{org}/apis/{api}` If the resource has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     updateMask: Required. The list of fields to update.
   """
 
@@ -573,7 +673,11 @@ class ApigeeOrganizationsApisRevisionsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. API proxy revision in the following format:
-      `organizations/{org}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/apis/{api}/revisions/{rev}` If the API Proxy
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -585,7 +689,11 @@ class ApigeeOrganizationsApisRevisionsDeploymentsListRequest(_messages.Message):
   Fields:
     parent: Required. Name of the API proxy revision for which to return
       deployment information in the following format:
-      `organizations/{org}/apis/{api}/revisions/{rev}`.
+      `organizations/{org}/apis/{api}/revisions/{rev}`. If the API proxy
+      resource has the `space` attribute set, IAM permissions are checked
+      differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -599,7 +707,11 @@ class ApigeeOrganizationsApisRevisionsGetRequest(_messages.Message):
       Set to `bundle` to download the API proxy configuration revision as a
       zip file.
     name: Required. API proxy revision in the following format:
-      `organizations/{org}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/apis/{api}/revisions/{rev}` If the API Proxy
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   format = _messages.StringField(1)
@@ -613,7 +725,11 @@ class ApigeeOrganizationsApisRevisionsUpdateApiProxyRevisionRequest(_messages.Me
     googleApiHttpBody: A GoogleApiHttpBody resource to be passed as the
       request body.
     name: Required. API proxy revision to update in the following format:
-      `organizations/{org}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/apis/{api}/revisions/{rev}` If the API Proxy
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     validate: Ignored. All uploads are validated regardless of the value of
       this field. Maintained for compatibility with Apigee Edge API.
   """
@@ -1948,7 +2064,11 @@ class ApigeeOrganizationsEnvironmentsApisDeploymentsListRequest(_messages.Messag
 
   Fields:
     parent: Required. Name representing an API proxy in an environment in the
-      following format: `organizations/{org}/environments/{env}/apis/{api}`
+      following format: `organizations/{org}/environments/{env}/apis/{api}` If
+      the API proxy resource has the `space` attribute set, IAM permissions
+      are checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1964,7 +2084,10 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsCreateRequest(_me
     parent: Required. The resource name of the API Proxy revision deployment
       for which to create the DebugSession. Must be of the form `organizations
       /{organization}/environments/{environment}/apis/{api}/revisions/{revisio
-      n}`.
+      n}`. If the API proxy resource has the `space` attribute set, IAM
+      permissions are checked differently . To learn more, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
     timeout: Optional. The time in seconds after which this DebugSession
       should end. A timeout specified in DebugSession will overwrite this
       value.
@@ -1983,7 +2106,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsDataGetRequest(_m
   Fields:
     name: Required. The name of the debug session transaction. Must be of the
       form: `organizations/{organization}/environments/{environment}/apis/{api
-      }/revisions/{revision}/debugsessions/{session}/data/{transaction}`.
+      }/revisions/{revision}/debugsessions/{session}/data/{transaction}`. If
+      the API proxy resource has the `space` attribute set, IAM permissions
+      are checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -1997,7 +2124,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsDeleteDataRequest
   Fields:
     name: Required. The name of the debug session to delete. Must be of the
       form: `organizations/{organization}/environments/{environment}/apis/{api
-      }/revisions/{revision}/debugsessions/{debugsession}`.
+      }/revisions/{revision}/debugsessions/{debugsession}`. If the API proxy
+      resource has the `space` attribute set, IAM permissions are checked
+      differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -2010,7 +2141,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsGetRequest(_messa
   Fields:
     name: Required. The name of the debug session to retrieve. Must be of the
       form: `organizations/{organization}/environments/{environment}/apis/{api
-      }/revisions/{revision}/debugsessions/{session}`.
+      }/revisions/{revision}/debugsessions/{session}`. If the API proxy
+      resource has the `space` attribute set, IAM permissions are checked
+      differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -2027,7 +2162,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsListRequest(_mess
       that you can use to retrieve the next page.
     parent: Required. The name of the API Proxy revision deployment for which
       to list debug sessions. Must be of the form: `organizations/{organizatio
-      n}/environments/{environment}/apis/{api}/revisions/{revision}`.
+      n}/environments/{environment}/apis/{api}/revisions/{revision}`. If the
+      API proxy resource has the `space` attribute set, IAM permissions are
+      checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2041,7 +2180,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
   Fields:
     name: Required. Name of the API proxy revision deployment in the following
       format:
-      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}` If
+      the API proxy resource being deployed has the `space` attribute set, IAM
+      permissions are checked differently . To learn more, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
     override: Flag that specifies whether the new deployment replaces other
       deployed revisions of the API proxy in the environment. Set `override`
       to `true` to replace other deployed revisions. By default, `override` is
@@ -2077,7 +2220,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChang
 
   Fields:
     name: Name of the API proxy revision deployment in the following format:
-      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}` If
+      the API proxy resource has the `space` attribute set, IAM permissions
+      are checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     override: Flag that specifies whether to force the deployment of the new
       revision over the currently deployed revision by overriding conflict
       checks.
@@ -2106,7 +2253,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsGetDeploymentsRequest(_message
   Fields:
     name: Required. Name representing an API proxy revision in an environment
       in the following format:
-      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}` If
+      the API proxy resource has the `space` attribute set, IAM permissions
+      are checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -2118,7 +2269,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsUndeployRequest(_messages.Mess
   Fields:
     name: Required. Name of the API proxy revision deployment in the following
       format:
-      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}` If
+      the API proxy resource has the `space` attribute set, IAM permissions
+      are checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     sequencedRollout: Flag that specifies whether to enable sequenced rollout.
       If set to `true`, the environment group routing rules corresponding to
       this deployment will be removed before removing the deployment from the
@@ -2705,7 +2860,12 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest(_messages.
       `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
       `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
       eyvaluemap}` *
-      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
@@ -2722,7 +2882,12 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest(_messages.
       request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
       uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
       nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
-      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -2737,7 +2902,12 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest(_messages.Mes
       request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
       uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
       nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
-      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -2757,7 +2927,12 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest(_messages.Me
       `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
       `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
       eyvaluemap}` *
-      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3352,7 +3527,11 @@ class ApigeeOrganizationsEnvironmentsSharedflowsDeploymentsListRequest(_messages
   Fields:
     parent: Required. Name representing a shared flow in an environment in the
       following format:
-      `organizations/{org}/environments/{env}/sharedflows/{sharedflow}`
+      `organizations/{org}/environments/{env}/sharedflows/{sharedflow}` If the
+      shared flow resource has the `space` attribute set, IAM permissions are
+      checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -3365,7 +3544,11 @@ class ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeployRequest(_messages
   Fields:
     name: Required. Name of the shared flow revision to deploy in the
       following format: `organizations/{org}/environments/{env}/sharedflows/{s
-      haredflow}/revisions/{rev}`
+      haredflow}/revisions/{rev}` If the shared flow resource being deployed
+      has the `space` attribute set, IAM permissions are checked differently .
+      To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     override: Flag that specifies whether the new deployment replaces other
       deployed revisions of the shared flow in the environment. Set `override`
       to `true` to replace other deployed revisions. By default, `override` is
@@ -3390,7 +3573,11 @@ class ApigeeOrganizationsEnvironmentsSharedflowsRevisionsGetDeploymentsRequest(_
   Fields:
     name: Required. Name representing a shared flow in an environment in the
       following format: `organizations/{org}/environments/{env}/sharedflows/{s
-      haredflow}/revisions/{rev}`
+      haredflow}/revisions/{rev}` If the shared flow resource has the `space`
+      attribute set, IAM permissions are checked differently . To learn more,
+      read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -3403,7 +3590,11 @@ class ApigeeOrganizationsEnvironmentsSharedflowsRevisionsUndeployRequest(_messag
   Fields:
     name: Required. Name of the shared flow revision to undeploy in the
       following format: `organizations/{org}/environments/{env}/sharedflows/{s
-      haredflow}/revisions/{rev}`
+      haredflow}/revisions/{rev}` If the shared flow resource has the `space`
+      attribute set, IAM permissions are checked differently . To learn more,
+      read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -4295,7 +4486,12 @@ class ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest(_messages.Message):
       `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
       `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
       eyvaluemap}` *
-      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
@@ -4311,7 +4507,12 @@ class ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest(_messages.Message):
       request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
       uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
       nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
-      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -4326,7 +4527,12 @@ class ApigeeOrganizationsKeyvaluemapsEntriesGetRequest(_messages.Message):
       request: * `organizations/{organization}/apis/{api}/keyvaluemaps/{keyval
       uemap}/entries/{entry}`. * `organizations/{organization}/environments/{e
       nvironment}/keyvaluemaps/{keyvaluemap}/entries/{entry}` * `organizations
-      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+      /{organization}/keyvaluemaps/{keyvaluemap}/entries/{entry}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -4346,7 +4552,12 @@ class ApigeeOrganizationsKeyvaluemapsEntriesListRequest(_messages.Message):
       `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
       `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
       eyvaluemap}` *
-      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4959,7 +5170,11 @@ class ApigeeOrganizationsSharedflowsCreateRequest(_messages.Message):
     name: Required. The name to give the shared flow
     parent: Required. The name of the parent organization under which to
       create the shared flow. Must be of the form:
-      `organizations/{organization_id}`
+      `organizations/{organization_id}` If the resource has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     space: Optional. The ID of the space to associated with this shared flow.
       Any IAM policies applied to the space will affect access to this shared
       flow. Note that this field is only respected when creating a new shared
@@ -4979,7 +5194,11 @@ class ApigeeOrganizationsSharedflowsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. shared flow name of the form:
-      `organizations/{organization_id}/sharedflows/{shared_flow_id}`
+      `organizations/{organization_id}/sharedflows/{shared_flow_id}` If the
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -4991,7 +5210,11 @@ class ApigeeOrganizationsSharedflowsDeploymentsListRequest(_messages.Message):
   Fields:
     parent: Required. Name of the shared flow for which to return deployment
       information in the following format:
-      `organizations/{org}/sharedflows/{sharedflow}`
+      `organizations/{org}/sharedflows/{sharedflow}` If the shared flow
+      resource has the `space` attribute set, IAM permissions are checked
+      differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5002,7 +5225,11 @@ class ApigeeOrganizationsSharedflowsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the shared flow to get. Must be of the form:
-      `organizations/{organization_id}/sharedflows/{shared_flow_id}`
+      `organizations/{organization_id}/sharedflows/{shared_flow_id}` If the
+      resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -5017,10 +5244,16 @@ class ApigeeOrganizationsSharedflowsListRequest(_messages.Message):
     includeRevisions: Indicates whether to include a list of revisions in the
       response.
     parent: Required. The name of the parent organization under which to get
-      shared flows. Must be of the form: `organizations/{organization_id}`
+      shared flows. Must be of the form: `organizations/{organization_id}` If
+      the resource has the `space` attribute set, IAM permissions are checked
+      against the Space resource path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     space: Optional. The space ID used to filter the list of shared flows
       (optional). If unspecified, all shared flows in the organization will be
-      listed.
+      listed. To learn how Spaces can be used to manage resources, read the
+      [Apigee Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   includeMetaData = _messages.BooleanField(1)
@@ -5050,7 +5283,11 @@ class ApigeeOrganizationsSharedflowsRevisionsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The name of the shared flow revision to delete. Must be of
       the form: `organizations/{organization_id}/sharedflows/{shared_flow_id}/
-      revisions/{revision_id}`
+      revisions/{revision_id}` If the Shared Flow resource has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -5062,7 +5299,11 @@ class ApigeeOrganizationsSharedflowsRevisionsDeploymentsListRequest(_messages.Me
   Fields:
     parent: Required. Name of the API proxy revision for which to return
       deployment information in the following format:
-      `organizations/{org}/sharedflows/{sharedflow}/revisions/{rev}`.
+      `organizations/{org}/sharedflows/{sharedflow}/revisions/{rev}`. If the
+      shared flow resource has the `space` attribute set, IAM permissions are
+      checked differently . To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5076,7 +5317,11 @@ class ApigeeOrganizationsSharedflowsRevisionsGetRequest(_messages.Message):
       Otherwise, the bundle metadata is returned.
     name: Required. The name of the shared flow revision to get. Must be of
       the form: `organizations/{organization_id}/sharedflows/{shared_flow_id}/
-      revisions/{revision_id}`
+      revisions/{revision_id}` If the Shared Flow resource has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   format = _messages.StringField(1)
@@ -5092,7 +5337,11 @@ class ApigeeOrganizationsSharedflowsRevisionsUpdateSharedFlowRevisionRequest(_me
       request body.
     name: Required. The name of the shared flow revision to update. Must be of
       the form: `organizations/{organization_id}/sharedflows/{shared_flow_id}/
-      revisions/{revision_id}`
+      revisions/{revision_id}` If the resource has the `space` attribute set,
+      IAM permissions are checked against the Space resource path. To learn
+      more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
     validate: Ignored. All uploads are validated regardless of the value of
       this field. It is kept for compatibility with existing APIs. Must be
       `true` or `false` if provided.
@@ -6109,8 +6358,10 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       match the scopes defined in the OAuth policy associated with the API
       product.
     space: Optional. The resource ID of the parent Space. If not set, the
-      parent resource will be the Organization. TODO b/329340109 remove
-      TRUSTED_TESTER to make API available in prod
+      parent resource will be the Organization. To learn how Spaces can be
+      used to manage resources, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
   """
 
   class QuotaCounterScopeValueValuesEnum(_messages.Enum):
@@ -6199,7 +6450,10 @@ class GoogleCloudApigeeV1ApiProxy(_messages.Message):
       archive.
     revision: Output only. List of revisions defined for the API proxy.
     space: Optional. The id of the space this proxy is associated with. Any
-      IAM policies applied to the space will control access to this proxy.
+      IAM policies applied to the space will control access to this proxy. To
+      learn how Spaces can be used to manage resources, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   class ApiProxyTypeValueValuesEnum(_messages.Enum):
@@ -7504,7 +7758,7 @@ class GoogleCloudApigeeV1DeleteResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1Deployment(_messages.Message):
-  r"""A GoogleCloudApigeeV1Deployment object.
+  r"""Deployment represents a deployment of an API proxy or shared flow.
 
   Enums:
     ProxyDeploymentTypeValueValuesEnum: Output only. The type of the
@@ -9794,12 +10048,32 @@ class GoogleCloudApigeeV1MaintenanceUpdatePolicy(_messages.Message):
   r"""MaintenanceUpdatePolicy specifies the preferred window to perform
   maintenance on the instance (day of the week and time of day).
 
+  Enums:
+    MaintenanceChannelValueValuesEnum: Optional. Maintenance channel to
+      specify relative scheduling for maintenance.
+
   Fields:
+    maintenanceChannel: Optional. Maintenance channel to specify relative
+      scheduling for maintenance.
     maintenanceWindows: Optional. Preferred windows to perform maintenance.
       Currently limited to 1.
   """
 
-  maintenanceWindows = _messages.MessageField('GoogleCloudApigeeV1MaintenanceUpdatePolicyMaintenanceWindow', 1, repeated=True)
+  class MaintenanceChannelValueValuesEnum(_messages.Enum):
+    r"""Optional. Maintenance channel to specify relative scheduling for
+    maintenance.
+
+    Values:
+      MAINTENANCE_CHANNEL_UNSPECIFIED: Unspecified maintenance channel.
+      WEEK1: Receive 1 weeks notice before maintenance occurs
+      WEEK2: Receive 2 weeks notice before maintenance occurs
+    """
+    MAINTENANCE_CHANNEL_UNSPECIFIED = 0
+    WEEK1 = 1
+    WEEK2 = 2
+
+  maintenanceChannel = _messages.EnumField('MaintenanceChannelValueValuesEnum', 1)
+  maintenanceWindows = _messages.MessageField('GoogleCloudApigeeV1MaintenanceUpdatePolicyMaintenanceWindow', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1MaintenanceUpdatePolicyMaintenanceWindow(_messages.Message):
@@ -9957,7 +10231,7 @@ class GoogleCloudApigeeV1MoveApiProductRequest(_messages.Message):
 
 
 class GoogleCloudApigeeV1MoveApiProxyRequest(_messages.Message):
-  r"""Moves an API Proxy to a different space.
+  r"""Moves an API Proxy to a different Space.
 
   Fields:
     space: Optional. Resource ID of the space to move the proxy to. If
@@ -12861,9 +13135,11 @@ class GoogleCloudApigeeV1SharedFlow(_messages.Message):
     metaData: Metadata describing the shared flow.
     name: The ID of the shared flow.
     revision: A list of revisions of this shared flow.
-    space: Optional. The ID of the space associtaed with this shared flow. Any
+    space: Optional. The ID of the space associated with this shared flow. Any
       IAM policies applied to the space will control access to this shared
-      flow.
+      flow. To learn how Spaces can be used to manage resources, read the
+      [Apigee Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   latestRevisionId = _messages.StringField(1)
@@ -12953,7 +13229,9 @@ class GoogleCloudApigeeV1Space(_messages.Message):
   Fields:
     createTime: Output only. Create timestamp of the space.
     displayName: Optional. Display name of the space.
-    name: Output only. Identifier. Id of the space.
+    name: Output only. Identifier. Id of the space. This field is used as the
+      resource name, and must follow [AIP-122](https://google.aip.dev/122)
+      guidelines.
     updateTime: Output only. Last modified timestamp of the space.
   """
 

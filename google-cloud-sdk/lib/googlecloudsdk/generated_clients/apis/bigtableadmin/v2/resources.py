@@ -95,6 +95,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCES_MATERIALIZEDVIEWS = (
+      'projects.instances.materializedViews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/'
+              'materializedViews/{materializedViewsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_INSTANCES_TABLES = (
       'projects.instances.tables',
       '{+name}',

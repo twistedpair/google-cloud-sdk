@@ -5,6 +5,65 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 514.0.0 (2025-03-11)
+
+### Artifact Registry
+
+* Added visibility for previously hidden flags `--output-iam-policy-dir`, `--input-iam-policy-dir`, `--skip-pre-copy`, and `--use-analyze-iam` in `gcloud artifacts docker upgrade migrate`.
+* Added `--remote-go-repo` for Go Modules Remote Repositories.
+
+### Cloud Filestore
+
+*   Add the peer-instance parameter to support the API promote replica API from the active instance.
+
+### Cloud Identity-Aware Proxy
+
+* Promote `cloud-run` resource-type support for IAP CLI to beta.
+
+### Cloud Managed Kafka
+
+* Added `gcloud managed-kafka operations describe` and `gcloud managed-kafka operations list` commands for viewing operations in releases alpha and beta.
+* Promoted `gcloud managed-kafka operations` to GA.
+
+### Cloud NetApp
+
+* Added `custom-performance-enabled`, `total-throughput` and `total-iops` flags to `gcloud beta netapp storagepools create` and `gcloud beta netapp storagepools update` commands.
+
+### Cloud SQL
+
+* Updated 'cloud-sql-proxy' packaged component to use v2.15.1 of the Cloud SQL Proxy.
+
+### Cloud Storage
+
+* Promoted `gcloud storage buckets anywhere-caches` group to GA.
+
+### Compute Engine
+
+* Promoted `gcloud compute disk-settings` to beta.
+* Promoted `gcloud compute snapshot --region --kms-key` to beta.
+* Promote regional snapshot settings related commands to beta.
+* Promoted `--reservation-sharing-policy` flag of
+ `gcloud beta compute reservations create` and
+ `gcloud beta compute reservations update` to GA.
+* Promoted `gcloud compute future-reservations` DWS flags to beta.
+
+### Parametermanager
+
+* [ALPHA] To create a Parameter Version, file can be uploaded using the new flag `payload-data-from-file`.
+
+### Policy Intelligence
+
+*   Added `gcloud beta policy-intelligence` group which provides beta level
+    access to the policy intelligence commands.
+
+### Security Command Center
+
+* Added `vm-threat-detection-aws` service to the `SUPPORTED_SERVICES` list.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 513.0.0 (2025-03-04)
 
 ### AlloyDB

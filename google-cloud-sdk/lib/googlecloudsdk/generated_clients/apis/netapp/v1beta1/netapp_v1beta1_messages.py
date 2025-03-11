@@ -2478,6 +2478,8 @@ class Replication(_messages.Message):
       transfer.
     hybridPeeringDetails: Output only. Hybrid peering details.
     hybridReplicationType: Output only. Type of the hybrid replication.
+    hybridReplicationUserCommands: Output only. Copy pastable snapmirror
+      commands to be executed on onprem cluster by the customer.
     labels: Resource labels to represent user provided metadata.
     mirrorState: Output only. Indicates the state of mirroring.
     name: Identifier. The resource name of the Replication. Format: `projects/
@@ -2525,6 +2527,8 @@ class Replication(_messages.Message):
       TRANSFERRING: Incremental replication is in progress.
       BASELINE_TRANSFERRING: Baseline replication is in progress.
       ABORTED: Replication is aborted.
+      EXTERNALLY_MANAGED: Mirror state for when replication is managed from
+        Onprem ONTAP.
     """
     MIRROR_STATE_UNSPECIFIED = 0
     PREPARING = 1
@@ -2533,6 +2537,7 @@ class Replication(_messages.Message):
     TRANSFERRING = 4
     BASELINE_TRANSFERRING = 5
     ABORTED = 6
+    EXTERNALLY_MANAGED = 7
 
   class ReplicationScheduleValueValuesEnum(_messages.Enum):
     r"""Required. Indicates the schedule for replication.
@@ -2574,9 +2579,9 @@ class Replication(_messages.Message):
         be established.
       PENDING_SVM_PEERING: Replication is waiting for SVM peering to be
         established.
-      PENDING_REVERSE_RESYNC_FROM_ONPREM_ONTAP: Replication is waiting for
-        Commands to be executed on Onprem ONTAP.
-      EXTERNALLY_MANAGED_FROM_ONPREM_ONTAP: Onprem ONTAP is destination and
+      PENDING_REMOTE_RESYNC: Replication is waiting for Commands to be
+        executed on Onprem ONTAP.
+      EXTERNALLY_MANAGED_REPLICATION: Onprem ONTAP is destination and
         Replication can only be managed from Onprem.
     """
     STATE_UNSPECIFIED = 0
@@ -2587,8 +2592,8 @@ class Replication(_messages.Message):
     ERROR = 5
     PENDING_CLUSTER_PEERING = 6
     PENDING_SVM_PEERING = 7
-    PENDING_REVERSE_RESYNC_FROM_ONPREM_ONTAP = 8
-    EXTERNALLY_MANAGED_FROM_ONPREM_ONTAP = 9
+    PENDING_REMOTE_RESYNC = 8
+    EXTERNALLY_MANAGED_REPLICATION = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2622,15 +2627,16 @@ class Replication(_messages.Message):
   healthy = _messages.BooleanField(6)
   hybridPeeringDetails = _messages.MessageField('HybridPeeringDetails', 7)
   hybridReplicationType = _messages.EnumField('HybridReplicationTypeValueValuesEnum', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 12)
-  role = _messages.EnumField('RoleValueValuesEnum', 13)
-  sourceVolume = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateDetails = _messages.StringField(16)
-  transferStats = _messages.MessageField('TransferStats', 17)
+  hybridReplicationUserCommands = _messages.MessageField('UserCommands', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 13)
+  role = _messages.EnumField('RoleValueValuesEnum', 14)
+  sourceVolume = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateDetails = _messages.StringField(17)
+  transferStats = _messages.MessageField('TransferStats', 18)
 
 
 class RestoreBackupFilesRequest(_messages.Message):
@@ -2998,10 +3004,18 @@ class StoragePool(_messages.Message):
     customPerformanceEnabled: Optional. True if using Independent Scaling of
       capacity and performance (Hyperdisk) By default set to false
     description: Optional. Description of the storage pool
+    enableHotTierAutoResize: Optional. Flag indicating that the hot-tier
+      threshold will be auto-increased by 10% of the hot-tier when it hits
+      100%. Default is true. The increment will kick in only if the new size
+      after increment is still less than or equal to storage pool size.
     encryptionType: Output only. Specifies the current pool encryption key
       source.
     globalAccessAllowed: Deprecated. Used to allow SO pool to access AD or DNS
       server from other regions.
+    hotTierSizeGib: Optional. Total hot tier capacity for the Storage Pool. It
+      is applicable only to Flex service level. It should be less than the
+      minimum storage pool size and cannot be more than the current storage
+      pool size. It cannot be decreased once set.
     kmsConfig: Optional. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
@@ -3110,25 +3124,27 @@ class StoragePool(_messages.Message):
   createTime = _messages.StringField(4)
   customPerformanceEnabled = _messages.BooleanField(5)
   description = _messages.StringField(6)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
-  globalAccessAllowed = _messages.BooleanField(8)
-  kmsConfig = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  ldapEnabled = _messages.BooleanField(11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  psaRange = _messages.StringField(14)
-  replicaZone = _messages.StringField(15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateDetails = _messages.StringField(20)
-  totalIops = _messages.IntegerField(21)
-  totalThroughputMibps = _messages.IntegerField(22)
-  volumeCapacityGib = _messages.IntegerField(23)
-  volumeCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(25)
+  enableHotTierAutoResize = _messages.BooleanField(7)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 8)
+  globalAccessAllowed = _messages.BooleanField(9)
+  hotTierSizeGib = _messages.IntegerField(10)
+  kmsConfig = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  ldapEnabled = _messages.BooleanField(13)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  psaRange = _messages.StringField(16)
+  replicaZone = _messages.StringField(17)
+  satisfiesPzi = _messages.BooleanField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  stateDetails = _messages.StringField(22)
+  totalIops = _messages.IntegerField(23)
+  totalThroughputMibps = _messages.IntegerField(24)
+  volumeCapacityGib = _messages.IntegerField(25)
+  volumeCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(27)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):
@@ -3153,8 +3169,11 @@ class TieringPolicy(_messages.Message):
 
   Fields:
     coolingThresholdDays: Optional. Time in days to mark the volume's data
-      block as cold and make it eligible for tiering, can be range from 7-183.
+      block as cold and make it eligible for tiering, can be range from 2-183.
       Default is 31.
+    hotTierBypassModeEnabled: Optional. Flag indicating that the hot tier
+      bypass mode is enabled. Default is false. This is only applicable to
+      Flex service level.
     tierAction: Optional. Flag indicating if the volume has tiering policy
       enable/pause. Default is PAUSED.
   """
@@ -3174,7 +3193,8 @@ class TieringPolicy(_messages.Message):
     PAUSED = 2
 
   coolingThresholdDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  tierAction = _messages.EnumField('TierActionValueValuesEnum', 2)
+  hotTierBypassModeEnabled = _messages.BooleanField(2)
+  tierAction = _messages.EnumField('TierActionValueValuesEnum', 3)
 
 
 class TransferStats(_messages.Message):
@@ -3203,6 +3223,16 @@ class TransferStats(_messages.Message):
   totalTransferDuration = _messages.StringField(6)
   transferBytes = _messages.IntegerField(7)
   updateTime = _messages.StringField(8)
+
+
+class UserCommands(_messages.Message):
+  r"""UserCommands contains the commands to be executed by the customer.
+
+  Fields:
+    commands: Output only. List of commands to be executed by the customer.
+  """
+
+  commands = _messages.StringField(1, repeated=True)
 
 
 class ValidateDirectoryServiceRequest(_messages.Message):

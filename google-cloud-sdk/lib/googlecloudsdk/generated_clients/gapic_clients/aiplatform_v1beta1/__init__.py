@@ -111,6 +111,7 @@ from .types.prediction_service import StreamingRawPredictResponse
 from .types.prediction_service import StreamRawPredictRequest
 from .types.tool import CodeExecutionResult
 from .types.tool import DynamicRetrievalConfig
+from .types.tool import EnterpriseWebSearch
 from .types.tool import ExecutableCode
 from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
@@ -159,6 +160,7 @@ __all__ = (
 'DirectUploadSource',
 'DoubleArray',
 'DynamicRetrievalConfig',
+'EnterpriseWebSearch',
 'Examples',
 'ExamplesOverride',
 'ExamplesRestrictionsNamespace',

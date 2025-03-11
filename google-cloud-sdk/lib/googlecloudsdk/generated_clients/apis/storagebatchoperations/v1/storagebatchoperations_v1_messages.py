@@ -602,7 +602,6 @@ class OperationMetadata(_messages.Message):
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     job: Output only. The Job associated with the operation.
-    jobDeprecated: Output only.
     operation: Output only. The unique operation resource name. Format:
       projects/{project}/locations/{location}/operations/{operation}.
     requestedCancellation: Output only. Identifies whether the user has
@@ -615,9 +614,8 @@ class OperationMetadata(_messages.Message):
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
   job = _messages.MessageField('Job', 4)
-  jobDeprecated = _messages.StringField(5)
-  operation = _messages.StringField(6)
-  requestedCancellation = _messages.BooleanField(7)
+  operation = _messages.StringField(5)
+  requestedCancellation = _messages.BooleanField(6)
 
 
 class PrefixList(_messages.Message):

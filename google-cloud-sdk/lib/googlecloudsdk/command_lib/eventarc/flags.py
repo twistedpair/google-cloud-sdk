@@ -105,6 +105,11 @@ def PipelineAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='pipeline')
 
 
+def KafkaSourceAttributeConfig():
+  """Builds an AttributeConfig for the kafka source resource."""
+  return concepts.ResourceParameterAttributeConfig(name='kafka-source')
+
+
 def TriggerResourceSpec():
   """Builds a ResourceSpec for trigger resource."""
   return concepts.ResourceSpec(
@@ -188,6 +193,17 @@ def PipelineResourceSpec(resource_name='pipeline'):
       'eventarc.projects.locations.pipelines',
       resource_name=resource_name,
       pipelinesId=PipelineAttributeConfig(),
+      locationsId=LocationAttributeConfig(allow_global=False),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def KafkaSourceResourceSpec():
+  """Builds a ResourceSpec for destination."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.kafkaSources',
+      resource_name='kafka source',
+      kafkaSourcesId=KafkaSourceAttributeConfig(),
       locationsId=LocationAttributeConfig(allow_global=False),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
@@ -450,6 +466,16 @@ def AddPipelineResourceArg(parser, group_help_text, required=False):
   concept_parsers.ConceptParser.ForResource(
       'pipeline',
       PipelineResourceSpec(),
+      group_help_text,
+      required=required,
+  ).AddToParser(parser)
+
+
+def AddKafkaSourceResourceArg(parser, group_help_text, required=False):
+  """Adds a resource argument for an Eventarc kafka source."""
+  concept_parsers.ConceptParser.ForResource(
+      'kafka_source',
+      KafkaSourceResourceSpec(),
       group_help_text,
       required=required,
   ).AddToParser(parser)
@@ -1458,6 +1484,232 @@ If the max-retry-delay and min-retry-delay are set to the same value, then the d
       help=(
           'The maximum retry delay in seconds. If not set, the default value'
           ' is 60.'
+      ),
+  )
+
+
+def AddKafkaSourceBootstrapServersArg(parser, required=False):
+  """Adds an argument for the Kafka Source's bootstrap server URIs."""
+  help_text = """
+The Kafka bootstrap server URIs, in the format <hostname>:<port>
+This flag can be repeated to add more URIs to the list, or comma-separated.
+At least one URI must be specified.
+
+Examples:
+
+  $ gcloud eventarc kafka-sources create example-kafka-source --bootstrap-servers='broker-1.private:9092,broker-2.private:9092'
+"""
+  parser.add_argument(
+      '--bootstrap-servers',
+      metavar='BOOTSTRAP_SERVER',
+      type=arg_parsers.ArgList(min_length=1, element_type=str),
+      required=required,
+      help=help_text,
+  )
+
+
+def AddKafkaSourceTopicArg(parser, required=False):
+  """Adds an argument for the Kafka Source's topic."""
+  help_text = """
+  The Kafka topic(s) to subscribe to. At least one topic must be specified.
+  Examples:
+
+  $ gcloud eventarc kafka-sources create example-kafka-source --topics='topic1,topic2'
+  """
+  parser.add_argument(
+      '--topics',
+      metavar='KAFKA_TOPIC',
+      type=arg_parsers.ArgList(min_length=1, element_type=str),
+      required=required,
+      help=help_text,
+  )
+
+
+def AddKafkaSourceConsumerGroupIDArg(parser, required=False):
+  """Adds an argument for the Kafka Source's Consumer Group ID."""
+  help_text = """
+  The Kafka consumer group ID. If not specified, a random UUID will be generated.
+  This consumer group ID is used by the Kafka cluster to record the current read
+  offsets of any topics subscribed.
+  Examples:
+
+  $ gcloud eventarc kafka-sources create example-kafka-source --consumer-group-id='my-consumer-group'
+  """
+  parser.add_argument(
+      '--consumer-group-id',
+      type=str,
+      required=required,
+      help=help_text,
+  )
+
+
+def AddCreateKafkaSourceResourceArgs(parser):
+  """Adds a resource argument for the Kafka Source's Message Bus."""
+  help_text = """
+  The Message Bus to which the Kafka Source will send events.
+  Examples:
+
+  $ gcloud eventarc kafka-sources create example-kafka-source --message-bus=my-message-bus
+  """
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'kafka_source',
+              KafkaSourceResourceSpec(),
+              'The Kafka source to create.',
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--message-bus',
+              MessageBusResourceSpec(),
+              help_text,
+              required=True,
+              flag_name_overrides={
+                  'location': '',
+                  'project': '--message-bus-project',
+              },
+          ),
+      ],
+      # This configures the fallthrough from the message bus' location to the
+      # primary flag for the kafka sources's location.
+      command_level_fallthroughs={
+          '--message-bus.location': ['kafka_source.location'],
+      },
+  ).AddToParser(parser)
+
+
+def AddKafkaSourceInitialOffsetArg(parser, required=False):
+  """Adds an argument for the Kafka Source's initial offset."""
+  help_text = """
+  The initial offset for the Kafka Source. If not specified, the default value is 'newest'.
+  Examples:
+  $ gcloud eventarc kafka-sources create example-kafka-source --initial-offset=oldest
+  """
+  parser.add_argument(
+      '--initial-offset',
+      type=str,
+      choices=['newest', 'oldest'],
+      required=required,
+      help=help_text,
+  )
+
+
+def AddKafkaSourceAuthGroup(parser, required=False):
+  """Adds an argument group for the Kafka Source's authentication."""
+  auth_group = parser.add_mutually_exclusive_group(
+      required=required,
+      help=(
+          'Flags for specifying the authentication method to use with the Kafka'
+          ' broker.'
+      ),
+  )
+  sasl_group = auth_group.add_group(
+      mutex=False,
+      help='Flags for specifying SASL authentication with the Kafka broker.',
+  )
+  _AddKafkaSourceSASLMechanismArg(sasl_group, required=True)
+  _AddKafkaSourceSASLUsernameArg(sasl_group, required=True)
+  _AddKafkaSourceSASLPasswordArg(sasl_group, required=True)
+  tls_group = auth_group.add_group(
+      mutex=False,
+      help=(
+          'Flags for specifying mutual TLS authentication with the Kafka'
+          ' broker.'
+      ),
+  )
+  _AddKafkaSourceTLSClientCertificateArg(tls_group, required=True)
+  _AddKafkaSourceTLSClientKeyArg(tls_group, required=True)
+
+
+def _AddKafkaSourceSASLMechanismArg(parser, required=False):
+  """Adds an argument for the Kafka Source's SASL mechanism."""
+  help_text = """
+  The SASL mechanism to use for authentication with the Kafka broker.
+  This flag cannot be set if --tls-client-certificate is set (using mutual TLS for authentication).
+  Examples:
+  $ gcloud eventarc kafka-sources create example-kafka-source --sasl-mechanism=plain
+  """
+  parser.add_argument(
+      '--sasl-mechanism',
+      type=str,
+      choices=['PLAIN', 'SCRAM-SHA-256', 'SCRAM-SHA-512'],
+      required=required,
+      help=help_text,
+  )
+
+
+def _AddKafkaSourceSASLUsernameArg(parser, required=False):
+  """Adds an argument for the Kafka Source's SASL username."""
+  help_text = """
+  The SASL username to use for authentication with the Kafka broker.
+  This flag is required if --sasl-mechanism is set.
+  Examples:
+  $ gcloud eventarc kafka-sources create example-kafka-source --sasl-username=my-username
+  """
+  parser.add_argument(
+      '--sasl-username',
+      type=str,
+      required=required,
+      help=help_text,
+  )
+
+
+def _AddKafkaSourceSASLPasswordArg(parser, required=False):
+  """Adds an argument for the Kafka Source's SASL password."""
+  help_text = """
+  The SASL password to use for authentication with the Kafka broker.
+  This flag is required if --sasl-mechanism is set.
+  Examples:
+  $ gcloud eventarc kafka-sources create example-kafka-source --sasl-password='projects/123/secrets/my-secret/versions/1'
+  """
+  parser.add_argument(
+      '--sasl-password',
+      type=str,
+      required=required,
+      help=help_text,
+  )
+
+
+def _AddKafkaSourceTLSClientCertificateArg(parser, required=False):
+  """Adds an argument for the Kafka Source's mutual TLS Client Certificate."""
+  help_text = """
+  The mutual TLS Client Certificate to use for authentication with the Kafka broker.
+  This option cannot be set if --sasl-mechanism is set.
+  Examples:
+  $ gcloud eventarc kafka-sources create example-kafka-source --tls-client-certificate='projects/123/secrets/my-certificate/versions/1'
+  """
+  parser.add_argument(
+      '--tls-client-certificate',
+      type=str,
+      required=required,
+      help=help_text,
+  )
+
+
+def _AddKafkaSourceTLSClientKeyArg(parser, required=False):
+  """Adds an argument for the Kafka Source's mutual TLS Client Key."""
+  help_text = """
+  The mutual TLS Client Key to use for authentication with the Kafka broker.
+  This option is required if --tls-client-certificate is set.
+  Examples:
+  $ gcloud eventarc kafka-sources create example-kafka-source --tls-client-key='projects/123/secrets/my-key/versions/1'
+  """
+  parser.add_argument(
+      '--tls-client-key',
+      type=str,
+      required=required,
+      help=help_text,
+  )
+
+
+def AddKafkaSourceNetworkAttachmentArg(parser, required=False):
+  """Adds an argument for the Kafka sources's ingress network attachment."""
+  parser.add_argument(
+      '--network-attachment',
+      required=required,
+      help=(
+          'The network attachment associated with the trigger that allows'
+          ' access to the ingress VPC.'
       ),
   )
 

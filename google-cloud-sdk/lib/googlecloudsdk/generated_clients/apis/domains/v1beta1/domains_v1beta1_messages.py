@@ -1072,8 +1072,8 @@ class GeoPolicyItem(_messages.Message):
       "southamerica-east1", "asia-east1", etc.
     rrdata: A string attribute.
     signatureRrdata: DNSSEC generated signatures for all the `rrdata` within
-      this item. If health checked targets are provided for DNSSEC enabled
-      zones, there's a restriction of 1 IP address per item.
+      this item. When using health-checked targets for DNSSEC-enabled zones,
+      you can only use at most one health-checked IP address per item.
   """
 
   healthCheckedTargets = _messages.MessageField('HealthCheckTargets', 1)
@@ -1154,7 +1154,8 @@ class GoogleDomainsDns(_messages.Message):
 class HealthCheckTargets(_messages.Message):
   r"""HealthCheckTargets describes endpoints to health-check when responding
   to Routing Policy queries. Only the healthy endpoints will be included in
-  the response.
+  the response. Set either `internal_load_balancer` or `external_endpoints`.
+  Do not set both.
 
   Fields:
     externalEndpoints: The Internet IP addresses to be health checked. The
@@ -1931,8 +1932,9 @@ class RRSetRoutingPolicy(_messages.Message):
   Fields:
     geo: A GeoPolicy attribute.
     geoPolicy: A GeoPolicy attribute.
-    healthCheck: The selfLink attribute of the HealthCheck resource to use for
-      this RRSetRoutingPolicy.
+    healthCheck: The fully qualified URL of the HealthCheck to use for this
+      RRSetRoutingPolicy. Format this URL like `https://www.googleapis.com/com
+      pute/v1/projects/{project}/global/healthChecks/{healthCheck}`.
       https://cloud.google.com/compute/docs/reference/rest/v1/healthChecks
     primaryBackup: A PrimaryBackupPolicy attribute.
     wrr: A WrrPolicy attribute.
@@ -2830,8 +2832,8 @@ class WrrPolicyItem(_messages.Message):
       can be set.
     rrdata: A string attribute.
     signatureRrdata: DNSSEC generated signatures for all the `rrdata` within
-      this item. Note that if health checked targets are provided for DNSSEC
-      enabled zones, there's a restriction of 1 IP address per item.
+      this item. When using health-checked targets for DNSSEC-enabled zones,
+      you can only use at most one health-checked IP address per item.
     weight: The weight corresponding to this `WrrPolicyItem` object. When
       multiple `WrrPolicyItem` objects are configured, the probability of
       returning an `WrrPolicyItem` object's data is proportional to its weight

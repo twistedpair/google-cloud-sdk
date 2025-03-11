@@ -34,6 +34,12 @@ def AddAppUpdateFlags(parser):
       '--service-account',
       help='The app-level default service account to update the app with.')
 
+  parser.add_argument(
+      '--ssl-policy',
+      choices=['TLS_VERSION_1_0', 'TLS_VERSION_1_2'],
+      help='The app-level SSL policy to update the app with.',
+  )
+
 
 def PatchApplication(
     release_track,
@@ -50,17 +56,19 @@ def PatchApplication(
     service_account: str, the app-level default service account to update for
       this App Engine app.
     ssl_policy: str, the app-level SSL policy to update for this App Engine app.
-      Can be default or modern.
+      Can be TLS_VERSION_1_0 or TLS_VERSION_1_2.
   """
   api_client = appengine_app_update_api_client.GetApiClientForTrack(
       release_track
   )
 
   ssl_policy_enum = {
-      'default': (
+      'TLS_VERSION_1_0': (
           api_client.messages.Application.SslPolicyValueValuesEnum.DEFAULT
       ),
-      'modern': api_client.messages.Application.SslPolicyValueValuesEnum.MODERN,
+      'TLS_VERSION_1_2': (
+          api_client.messages.Application.SslPolicyValueValuesEnum.MODERN
+      ),
   }.get(ssl_policy)
 
   if (

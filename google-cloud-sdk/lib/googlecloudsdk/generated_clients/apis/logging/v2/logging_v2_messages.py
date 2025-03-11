@@ -9691,17 +9691,17 @@ class SortOrderParameter(_messages.Message):
     r"""The sort order to use for the query.
 
     Values:
-      SORT_ORDER_DIRECTION_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
       SORT_ORDER_NONE: No sorting will be applied. This is used to determine
         if the query is in pass thru mode. To correctly chart a query in pass
         thru mode, NONE will need to be sent
-      ASCENDING: The lowest-valued entries will be selected.
-      DESCENDING: The highest-valued entries will be selected.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
     """
-    SORT_ORDER_DIRECTION_UNSPECIFIED = 0
+    SORT_ORDER_UNSPECIFIED = 0
     SORT_ORDER_NONE = 1
-    ASCENDING = 2
-    DESCENDING = 3
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
 
   field = _messages.StringField(1)
   sortOrderDirection = _messages.EnumField('SortOrderDirectionValueValuesEnum', 2)

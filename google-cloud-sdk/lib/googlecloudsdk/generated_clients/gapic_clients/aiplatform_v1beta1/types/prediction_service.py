@@ -1109,6 +1109,9 @@ class GenerateContentResponse(proto.Message):
             tool_use_prompt_token_count (int):
                 Output only. Number of tokens present in
                 tool-use prompt(s).
+            thoughts_token_count (int):
+                Output only. Number of tokens present in
+                thoughts output.
             total_token_count (int):
                 Total token count for prompt, response
                 candidates, and tool-use prompts (if present).
@@ -1140,6 +1143,10 @@ class GenerateContentResponse(proto.Message):
         tool_use_prompt_token_count: int = proto.Field(
             proto.INT32,
             number=13,
+        )
+        thoughts_token_count: int = proto.Field(
+            proto.INT32,
+            number=14,
         )
         total_token_count: int = proto.Field(
             proto.INT32,

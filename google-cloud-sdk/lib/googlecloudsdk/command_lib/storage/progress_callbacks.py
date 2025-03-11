@@ -75,11 +75,13 @@ class FilesAndBytesProgressCallback:
     self._process_id = process_id
     self._thread_id = thread_id
 
-  def __call__(self, current_byte, *args):
+  def __call__(self, current_byte, error_occurred=False, *args):
     """Sends operation progress information to global status queue.
 
     Args:
       current_byte (int): Index of byte being operated on.
+      error_occurred (bool): Whether an error occurred during the
+        operation.
       *args (list[any]): Unused.
     """
     del args  # Unused.
@@ -97,6 +99,7 @@ class FilesAndBytesProgressCallback:
             component_number=self._component_number,
             total_components=self._total_components,
             operation_name=self._operation_name,
+            error_occurred=error_occurred,
             process_id=self._process_id,
             thread_id=self._thread_id))
 

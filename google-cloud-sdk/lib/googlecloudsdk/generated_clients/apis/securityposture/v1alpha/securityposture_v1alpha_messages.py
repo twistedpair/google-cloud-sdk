@@ -17,6 +17,16 @@ from apitools.base.py import extra_types
 package = 'securityposture'
 
 
+class Allowed(_messages.Message):
+  r"""Allowed IP rule.
+
+  Fields:
+    ipRules: Optional. Optional list of allowed IP rules.
+  """
+
+  ipRules = _messages.MessageField('IpRule', 1, repeated=True)
+
+
 class AssetDetails(_messages.Message):
   r"""Details of a Cloud Asset Inventory asset that caused a violation.
 
@@ -337,6 +347,16 @@ class DataRetentionAndDeletionPolicy(_messages.Message):
   name = _messages.StringField(4)
 
 
+class Denied(_messages.Message):
+  r"""Denied IP rule.
+
+  Fields:
+    ipRules: Optional. Optional list of denied IP rules.
+  """
+
+  ipRules = _messages.MessageField('IpRule', 1, repeated=True)
+
+
 class Duration(_messages.Message):
   r"""Duration representation
 
@@ -488,13 +508,14 @@ class FindingMetadata(_messages.Message):
   r"""Finding metadata of the finding associated with this remediation intent.
 
   Fields:
-    iamBindings: Optional. List of IAM bindings of the finding associated with
-      this remediation intent. Example: [{"role": "roles/owner", "member":
-      ["user:test@gmail.com"], Action: "ADD"}] It will be used to fetch the TF
-      state of the finding.
+    firewallRule: Firewall rules of the finding associated with this
+      remediation intent.
+    iamBindingsList: IAM bindings of the finding associated with this
+      remediation intent.
   """
 
-  iamBindings = _messages.MessageField('IAMBinding', 1, repeated=True)
+  firewallRule = _messages.MessageField('FirewallRule', 1)
+  iamBindingsList = _messages.MessageField('IAMBindingsList', 2)
 
 
 class FindingRemediationExecution(_messages.Message):
@@ -510,6 +531,20 @@ class FindingRemediationExecution(_messages.Message):
   """
 
   finding = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class FirewallRule(_messages.Message):
+  r"""FirewallRule captures the details of a firewall rule for OPEN_FIREWALL
+  Type finding. Error details in case of failure while generating remediation.
+
+  Fields:
+    ipRules: Required. IP rules associated with the finding.
+    name: Required. The name of the firewall rule. For example, "//compute.goo
+      gleapis.com/projects/{project_id}/global/firewalls/{firewall_name}".
+  """
+
+  ipRules = _messages.MessageField('IpRules', 1)
   name = _messages.StringField(2)
 
 
@@ -767,20 +802,20 @@ class IAMBinding(_messages.Message):
   r"""IAMBinding captures a member's role addition, removal, or state.
 
   Enums:
-    ActionValueValuesEnum: Optional. The action that was performed on the IAM
+    ActionValueValuesEnum: Required. The action that was performed on the IAM
       binding.
 
   Fields:
-    action: Optional. The action that was performed on the IAM binding.
-    member: Optional. The member to whom the role is assigned. For example,
+    action: Required. The action that was performed on the IAM binding.
+    member: Required. The member to whom the role is assigned. For example,
       `user:222larabrown@gmail.com`, `group:admins@example.com`, or
       `domain:google.com`.
-    role: Optional. The role that is assigned to the member. For example,
+    role: Required. The role that is assigned to the member. For example,
       `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Optional. The action that was performed on the IAM binding.
+    r"""Required. The action that was performed on the IAM binding.
 
     Values:
       ACTION_UNSPECIFIED: Unspecified.
@@ -794,6 +829,20 @@ class IAMBinding(_messages.Message):
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   member = _messages.StringField(2)
   role = _messages.StringField(3)
+
+
+class IAMBindingsList(_messages.Message):
+  r"""List of IAM bindings of the finding associated with this remediation
+  intent.
+
+  Fields:
+    iamBindings: Required. List of IAM bindings of the finding associated with
+      this remediation intent. Example: [{"role": "roles/owner", "member":
+      ["user:test@gmail.com"], Action: "ADD"}] It will be used to fetch the TF
+      state of the finding.
+  """
+
+  iamBindings = _messages.MessageField('IAMBinding', 1, repeated=True)
 
 
 class IaC(_messages.Message):
@@ -869,6 +918,71 @@ class IndustryStandard(_messages.Message):
 
   standard = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class IpRule(_messages.Message):
+  r"""IP rule information.
+
+  Fields:
+    portRanges: Optional. An optional list of ports to which this rule
+      applies. This field is only applicable for the UDP or (S)TCP protocols.
+      Each entry must be either an integer or a range including a min and max
+      port number.
+    protocol: Required. The IP protocol this rule applies to. This value can
+      either be one of the following well known protocol strings (TCP, UDP,
+      ICMP, ESP, AH, IPIP, SCTP) or a string representation of the integer
+      value.
+  """
+
+  portRanges = _messages.MessageField('PortRange', 1, repeated=True)
+  protocol = _messages.StringField(2)
+
+
+class IpRules(_messages.Message):
+  r"""IP rules associated with the finding.
+
+  Enums:
+    DirectionValueValuesEnum: Required. The direction that the rule is
+      applicable to, one of ingress or egress.
+
+  Fields:
+    allowed: Tuple with allowed rules.
+    denied: Tuple with denied rules.
+    destinationIpRanges: Optional. If destination IP ranges are specified, the
+      firewall rule applies only to traffic that has a destination IP address
+      in these ranges. These ranges must be expressed in CIDR format. Only
+      supports IPv4.
+    direction: Required. The direction that the rule is applicable to, one of
+      ingress or egress.
+    exposedServices: Optional. Name of the network protocol service, such as
+      FTP, that is exposed by the open port. Follows the naming convention
+      available at: https://www.iana.org/assignments/service-names-port-
+      numbers/service-names-port-numbers.xhtml.
+    sourceIpRanges: Optional. If source IP ranges are specified, the firewall
+      rule applies only to traffic that has a source IP address in these
+      ranges. These ranges must be expressed in CIDR format. Only supports
+      IPv4.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""Required. The direction that the rule is applicable to, one of ingress
+    or egress.
+
+    Values:
+      DIRECTION_UNSPECIFIED: Unspecified direction value.
+      INGRESS: Ingress direction value.
+      EGRESS: Egress direction value.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    INGRESS = 1
+    EGRESS = 2
+
+  allowed = _messages.MessageField('Allowed', 1)
+  denied = _messages.MessageField('Denied', 2)
+  destinationIpRanges = _messages.StringField(3, repeated=True)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 4)
+  exposedServices = _messages.StringField(5, repeated=True)
+  sourceIpRanges = _messages.StringField(6, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -1238,6 +1352,20 @@ class PolicySet(_messages.Message):
   description = _messages.StringField(1)
   policies = _messages.MessageField('Policy', 2, repeated=True)
   policySetId = _messages.StringField(3)
+
+
+class PortRange(_messages.Message):
+  r"""A port range which is inclusive of the min and max values. Values are
+  between 0 and 2^16-1. The max can be equal / must be not smaller than the
+  min value. If min and max are equal this indicates that it is a single port.
+
+  Fields:
+    max: Required. Maximum port value.
+    min: Required. Minimum port value.
+  """
+
+  max = _messages.IntegerField(1)
+  min = _messages.IntegerField(2)
 
 
 class Posture(_messages.Message):

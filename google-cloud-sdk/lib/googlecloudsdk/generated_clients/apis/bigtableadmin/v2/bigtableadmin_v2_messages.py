@@ -911,6 +911,40 @@ class BigtableadminProjectsInstancesLogicalViewsTestIamPermissionsRequest(_messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class BigtableadminProjectsInstancesMaterializedViewsCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesMaterializedViewsCreateRequest object.
+
+  Fields:
+    materializedView: A MaterializedView resource to be passed as the request
+      body.
+    materializedViewId: Required. The ID to use for the materialized view,
+      which will become the final component of the materialized view's
+      resource name.
+    parent: Required. The parent instance where this materialized view will be
+      created. Format: `projects/{project}/instances/{instance}`.
+  """
+
+  materializedView = _messages.MessageField('MaterializedView', 1)
+  materializedViewId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesMaterializedViewsDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesMaterializedViewsDeleteRequest object.
+
+  Fields:
+    etag: Optional. The current etag of the materialized view. If an etag is
+      provided and does not match the current etag of the materialized view,
+      deletion will be blocked and an ABORTED error will be returned.
+    name: Required. The unique name of the materialized view to be deleted.
+      Format: `projects/{project}/instances/{instance}/materializedViews/{mate
+      rialized_view}`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest
   object.
@@ -926,6 +960,55 @@ class BigtableadminProjectsInstancesMaterializedViewsGetIamPolicyRequest(_messag
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesMaterializedViewsGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesMaterializedViewsGetRequest object.
+
+  Fields:
+    name: Required. The unique name of the requested materialized view. Values
+      are of the form `projects/{project}/instances/{instance}/materializedVie
+      ws/{materialized_view}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BigtableadminProjectsInstancesMaterializedViewsListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesMaterializedViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of materialized views to return.
+      The service may return fewer than this value
+    pageToken: Optional. A page token, received from a previous
+      `ListMaterializedViews` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListMaterializedViews` must match the call that provided the page
+      token.
+    parent: Required. The unique name of the instance for which the list of
+      materialized views is requested. Values are of the form
+      `projects/{project}/instances/{instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesMaterializedViewsPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesMaterializedViewsPatchRequest object.
+
+  Fields:
+    materializedView: A MaterializedView resource to be passed as the request
+      body.
+    name: Identifier. The unique name of the materialized view. Format: `proje
+      cts/{project}/instances/{instance}/materializedViews/{materialized_view}
+    updateMask: Optional. The list of fields to update.
+  """
+
+  materializedView = _messages.MessageField('MaterializedView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class BigtableadminProjectsInstancesMaterializedViewsSetIamPolicyRequest(_messages.Message):
@@ -2240,6 +2323,39 @@ class CreateLogicalViewRequest(_messages.Message):
   parent = _messages.StringField(3)
 
 
+class CreateMaterializedViewMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by CreateMaterializedView.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      canceled.
+    originalRequest: The request that prompted the initiation of this
+      CreateMaterializedView operation.
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('CreateMaterializedViewRequest', 2)
+  startTime = _messages.StringField(3)
+
+
+class CreateMaterializedViewRequest(_messages.Message):
+  r"""Request message for BigtableInstanceAdmin.CreateMaterializedView.
+
+  Fields:
+    materializedView: Required. The materialized view to create.
+    materializedViewId: Required. The ID to use for the materialized view,
+      which will become the final component of the materialized view's
+      resource name.
+    parent: Required. The parent instance where this materialized view will be
+      created. Format: `projects/{project}/instances/{instance}`.
+  """
+
+  materializedView = _messages.MessageField('MaterializedView', 1)
+  materializedViewId = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
 class CreateProtoBundleMetadata(_messages.Message):
   r"""The metadata for the Operation returned by CreateProtoBundle.
 
@@ -3095,6 +3211,19 @@ class ListLogicalViewsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMaterializedViewsResponse(_messages.Message):
+  r"""Response message for BigtableInstanceAdmin.ListMaterializedViews.
+
+  Fields:
+    materializedViews: The list of requested materialized views.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  materializedViews = _messages.MessageField('MaterializedView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -3231,6 +3360,26 @@ class LogicalView(_messages.Message):
   etag = _messages.StringField(1)
   name = _messages.StringField(2)
   query = _messages.StringField(3)
+
+
+class MaterializedView(_messages.Message):
+  r"""A materialized view object that can be referenced in SQL queries.
+
+  Fields:
+    deletionProtection: Set to true to make the MaterializedView protected
+      against deletion.
+    etag: Optional. The etag for this materialized view. This may be sent on
+      update requests to ensure that the client has an up-to-date value before
+      proceeding. The server returns an ABORTED error on a mismatched etag.
+    name: Identifier. The unique name of the materialized view. Format: `proje
+      cts/{project}/instances/{instance}/materializedViews/{materialized_view}
+    query: Required. Immutable. The materialized view's select query.
+  """
+
+  deletionProtection = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  query = _messages.StringField(4)
 
 
 class Modification(_messages.Message):

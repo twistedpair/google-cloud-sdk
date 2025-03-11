@@ -2295,8 +2295,30 @@ class SingleViewGroup(_messages.Message):
   r"""A widget that groups the other widgets by using a dropdown menu. All
   widgets that are within the area spanned by the grouping widget are
   considered member widgets.
+
+  Enums:
+    DisplayTypeValueValuesEnum: Optional. Determines how the widget selector
+      will be displayed.
+
+  Fields:
+    displayType: Optional. Determines how the widget selector will be
+      displayed.
   """
 
+  class DisplayTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines how the widget selector will be displayed.
+
+    Values:
+      DISPLAY_TYPE_UNSPECIFIED: Display type is not specified, defaults to
+        DROPDOWN.
+      DROPDOWN: Renders the widget selector as a dropdown.
+      TAB: Renders the widget selector as a tab list.
+    """
+    DISPLAY_TYPE_UNSPECIFIED = 0
+    DROPDOWN = 1
+    TAB = 2
+
+  displayType = _messages.EnumField('DisplayTypeValueValuesEnum', 1)
 
 
 class SourceContext(_messages.Message):

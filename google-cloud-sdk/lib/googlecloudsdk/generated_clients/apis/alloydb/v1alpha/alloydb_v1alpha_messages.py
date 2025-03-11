@@ -981,8 +981,8 @@ class AutomatedBackupPolicy(_messages.Message):
       defaults to true.
     encryptionConfig: Optional. The encryption config can be specified to
       encrypt the backups with a customer-managed encryption key (CMEK). When
-      this field is not specified, the backup will then use default encryption
-      scheme to protect the user data.
+      this field is not specified, the backup will use the cluster's
+      encryption config.
     enforcedRetention: If true, backups created by this policy would have
       `enforced_retention` set and cannot be deleted unless they expire (or as
       part of project deletion).
@@ -1780,8 +1780,10 @@ class ConnectionPoolConfig(_messages.Message):
   Fields:
     defaultPoolSize: Optional. Deprecated. Use 'flags' instead. The default
       pool size. Defaults to 20.
-    enable: Optional. Whether to enable Managed Connection Pool (MCP).
-      TODO(b/394996708) rename to 'enabled'
+    enable: Optional. Deprecated; Prefer 'enabled' as this will be removed
+      soon. TODO(b/394996708) move to reserved once the field is removed from
+      the gcloud client.
+    enabled: Optional. Whether to enable Managed Connection Pool (MCP).
     flags: Optional. Connection Pool flags, as a list of "key": "value" pairs.
     ignoreStartupParameters: Optional. Deprecated. Use 'flags' instead. The
       list of startup parameters to ignore. Defaults to ["extra_float_digits"]
@@ -1851,15 +1853,16 @@ class ConnectionPoolConfig(_messages.Message):
 
   defaultPoolSize = _messages.StringField(1)
   enable = _messages.BooleanField(2)
-  flags = _messages.MessageField('FlagsValue', 3)
-  ignoreStartupParameters = _messages.StringField(4, repeated=True)
-  maxClientConn = _messages.StringField(5)
-  maxPreparedStatements = _messages.StringField(6)
-  minPoolSize = _messages.StringField(7)
-  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 8)
-  queryWaitTimeout = _messages.StringField(9)
-  serverIdleTimeout = _messages.StringField(10)
-  statsUsers = _messages.StringField(11, repeated=True)
+  enabled = _messages.BooleanField(3)
+  flags = _messages.MessageField('FlagsValue', 4)
+  ignoreStartupParameters = _messages.StringField(5, repeated=True)
+  maxClientConn = _messages.StringField(6)
+  maxPreparedStatements = _messages.StringField(7)
+  minPoolSize = _messages.StringField(8)
+  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 9)
+  queryWaitTimeout = _messages.StringField(10)
+  serverIdleTimeout = _messages.StringField(11)
+  statsUsers = _messages.StringField(12, repeated=True)
 
 
 class ContinuousBackupConfig(_messages.Message):
@@ -2114,6 +2117,32 @@ class FailoverInstanceRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   validateOnly = _messages.BooleanField(2)
+
+
+class GCAInstanceConfig(_messages.Message):
+  r"""Instance level configuration parameters related to the Gemini Cloud
+  Assist product.
+
+  Enums:
+    GcaEntitlementValueValuesEnum: Output only. Represents the GCA entitlement
+      state of the instance.
+
+  Fields:
+    gcaEntitlement: Output only. Represents the GCA entitlement state of the
+      instance.
+  """
+
+  class GcaEntitlementValueValuesEnum(_messages.Enum):
+    r"""Output only. Represents the GCA entitlement state of the instance.
+
+    Values:
+      GCA_ENTITLEMENT_TYPE_UNSPECIFIED: No GCA entitlement is assigned.
+      GCA_STANDARD: The resource is entitled to the GCA Standard Tier.
+    """
+    GCA_ENTITLEMENT_TYPE_UNSPECIFIED = 0
+    GCA_STANDARD = 1
+
+  gcaEntitlement = _messages.EnumField('GcaEntitlementValueValuesEnum', 1)
 
 
 class GcsDestination(_messages.Message):
@@ -2443,6 +2472,8 @@ class Instance(_messages.Message):
     enablePublicIp: Optional. Enabling public ip for the Instance. Deprecated;
       use network_config.enable_public_ip instead.
     etag: For Resource freshness validation (https://google.aip.dev/154)
+    gcaConfig: Output only. Configuration parameters related to Gemini Cloud
+      Assist.
     gceZone: The Compute Engine zone that the instance should serve from, per
       https://cloud.google.com/compute/docs/regions-zones This can ONLY be
       specified for ZONAL instances. If present for a REGIONAL instance, an
@@ -2663,29 +2694,30 @@ class Instance(_messages.Message):
   displayName = _messages.StringField(8)
   enablePublicIp = _messages.BooleanField(9)
   etag = _messages.StringField(10)
-  gceZone = _messages.StringField(11)
-  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 12)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
-  ipAddress = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  machineConfig = _messages.MessageField('MachineConfig', 16)
-  name = _messages.StringField(17)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 18)
-  nodes = _messages.MessageField('Node', 19, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 20)
-  outboundPublicIpAddresses = _messages.StringField(21, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 22)
-  publicIpAddress = _messages.StringField(23)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 24)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 25)
-  reconciling = _messages.BooleanField(26)
-  satisfiesPzi = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  uid = _messages.StringField(30)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 31)
-  updateTime = _messages.StringField(32)
-  writableNode = _messages.MessageField('Node', 33)
+  gcaConfig = _messages.MessageField('GCAInstanceConfig', 11)
+  gceZone = _messages.StringField(12)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 13)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 14)
+  ipAddress = _messages.StringField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  machineConfig = _messages.MessageField('MachineConfig', 17)
+  name = _messages.StringField(18)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 19)
+  nodes = _messages.MessageField('Node', 20, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 21)
+  outboundPublicIpAddresses = _messages.StringField(22, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 23)
+  publicIpAddress = _messages.StringField(24)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 25)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 26)
+  reconciling = _messages.BooleanField(27)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  uid = _messages.StringField(31)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 32)
+  updateTime = _messages.StringField(33)
+  writableNode = _messages.MessageField('Node', 34)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2866,9 +2898,12 @@ class MachineConfig(_messages.Message):
 
   Fields:
     cpuCount: The number of CPU's in the VM instance.
+    machineType: Machine type of the VM instance. E.g. "n2-highmem-4",
+      "n2-highmem-8-lssd"
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(2)
 
 
 class MaintenanceSchedule(_messages.Message):
@@ -5196,13 +5231,12 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
 
   Fields:
     cpuCount: The number of CPUs. Deprecated. Use vcpu_count instead.
-      TODO(b/342344482, b/342346271) add proto validations again after bug
-      fix.
-    memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
-      add proto validations again after bug fix.
+      TODO(b/342344482) add proto validations again after bug fix.
+    memorySizeInBytes: Memory size in bytes. TODO(b/342344482) add proto
+      validations again after bug fix.
     shardCount: Optional. Number of shards (if applicable).
-    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482, b/342346271)
-      add proto validations again after bug fix.
+    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482) add proto
+      validations again after bug fix.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

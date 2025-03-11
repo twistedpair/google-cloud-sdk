@@ -64,6 +64,14 @@ class AutonomousDatabase(_messages.Message):
     network: Optional. The name of the VPC network used by the Autonomous
       Database in the following format:
       projects/{project}/global/networks/{network}
+    odbNetwork: Optional. The name of the OdbNetwork used by the Autonomous
+      Database in the following format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
+      optioanl but if specified, this should match the parent ODBNetwork of
+      the OdbSubnet.
+    odbSubnet: Optional. The name of the OdbSubnet used by the Autonomous
+      Database in the following format: projects/{project}/locations/{location
+      }/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
     peerAutonomousDatabases: Output only. The peer Autonomous Database names
       of the given Autonomous Database.
     properties: Optional. The properties of the Autonomous Database.
@@ -107,9 +115,11 @@ class AutonomousDatabase(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
   network = _messages.StringField(10)
-  peerAutonomousDatabases = _messages.StringField(11, repeated=True)
-  properties = _messages.MessageField('AutonomousDatabaseProperties', 12)
-  sourceConfig = _messages.MessageField('SourceConfig', 13)
+  odbNetwork = _messages.StringField(11)
+  odbSubnet = _messages.StringField(12)
+  peerAutonomousDatabases = _messages.StringField(13, repeated=True)
+  properties = _messages.MessageField('AutonomousDatabaseProperties', 14)
+  sourceConfig = _messages.MessageField('SourceConfig', 15)
 
 
 class AutonomousDatabaseApex(_messages.Message):

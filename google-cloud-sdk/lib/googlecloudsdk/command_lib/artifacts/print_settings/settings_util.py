@@ -19,26 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
-import json
 
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
-from googlecloudsdk.api_lib.auth import service_account
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import util as ar_util
 from googlecloudsdk.command_lib.artifacts.print_settings import apt
+from googlecloudsdk.command_lib.artifacts.print_settings import credentials
 from googlecloudsdk.command_lib.artifacts.print_settings import gradle
 from googlecloudsdk.command_lib.artifacts.print_settings import mvn
 from googlecloudsdk.command_lib.artifacts.print_settings import npm
 from googlecloudsdk.command_lib.artifacts.print_settings import python
 from googlecloudsdk.command_lib.artifacts.print_settings import yum
-from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import creds
-from googlecloudsdk.core.credentials import exceptions as creds_exceptions
-from googlecloudsdk.core.credentials import store
-from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import files
 
 _EXT_VERSION = "2.2.0"
 
@@ -109,64 +101,6 @@ def _GetLocationRepoPathAndMavenConfig(args, repo_format):
         "Invalid repository type {}. Valid type is {}.".format(
             repo.format, repo_format))
   return location, repo_path, repo.mavenConfig
-
-
-def _LoadJsonFile(filename):
-  """Checks and validates if given filename is a proper JSON file.
-
-  Args:
-    filename: str, path to JSON file.
-
-  Returns:
-    bytes, the content of the file.
-  """
-  content = console_io.ReadFromFileOrStdin(filename, binary=True)
-  try:
-    json.loads(encoding.Decode(content))
-    return content
-  except ValueError as e:
-    if filename.endswith(".json"):
-      raise service_account.BadCredentialFileException(
-          "Could not read JSON file {0}: {1}".format(filename, e))
-  raise service_account.BadCredentialFileException(
-      "Unsupported credential file: {0}".format(filename))
-
-
-def _GetServiceAccountCreds(args):
-  """Gets service account credentials from given file path or default if any.
-
-  Args:
-    args: Command arguments.
-
-  Returns:
-    str, service account credentials.
-  """
-  if args.json_key:
-    file_content = _LoadJsonFile(args.json_key)
-    return base64.b64encode(file_content).decode("utf-8")
-
-  account = properties.VALUES.core.account.Get()
-  if not account:
-    raise creds_exceptions.NoActiveAccountException()
-  cred = store.Load(account, prevent_refresh=True, use_google_auth=True)
-  if not cred:
-    raise store.NoCredentialsForAccountException(account)
-
-  if _IsServiceAccountCredentials(cred):
-    paths = config.Paths()
-    json_content = files.ReadFileContents(
-        paths.LegacyCredentialsAdcPath(account))
-    return base64.b64encode(json_content.encode("utf-8")).decode("utf-8")
-  return ""
-
-
-def _IsServiceAccountCredentials(cred):
-  if creds.IsOauth2ClientCredentials(cred):
-    return creds.CredentialType.FromCredentials(
-        cred) == creds.CredentialType.SERVICE_ACCOUNT
-  else:
-    return creds.CredentialTypeGoogleAuth.FromCredentials(
-        cred) == creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT
 
 
 def IsPublicRepo(project, location, repo):
@@ -279,7 +213,7 @@ def GetNpmSettingsSnippet(args):
       "repo_path": repo_path
   }
 
-  sa_creds = _GetServiceAccountCreds(args)
+  sa_creds = credentials.GetServiceAccountCreds(args.json_key)
   if sa_creds:
     npm_setting_template = npm.SERVICE_ACCOUNT_TEMPLATE
     data["password"] = base64.b64encode(
@@ -308,7 +242,7 @@ def GetMavenSnippet(args):
       "server_id": "artifact-registry",
       "repo_path": repo_path,
   }
-  sa_creds = _GetServiceAccountCreds(args)
+  sa_creds = credentials.GetServiceAccountCreds(args.json_key)
   mvn_template = GetMavenTemplate(messages, maven_cfg, sa_creds)
 
   if sa_creds:
@@ -361,7 +295,7 @@ def GetGradleSnippet(args):
   messages = ar_requests.GetMessages()
   location, repo_path, maven_cfg = _GetLocationRepoPathAndMavenConfig(
       args, messages.Repository.FormatValueValuesEnum.MAVEN)
-  sa_creds = _GetServiceAccountCreds(args)
+  sa_creds = credentials.GetServiceAccountCreds(args.json_key)
   gradle_template = GetGradleTemplate(messages, maven_cfg, sa_creds)
   data = {"location": location, "repo_path": repo_path}
 
@@ -387,11 +321,15 @@ def GetGradleTemplate(messages, maven_cfg, sa_creds):
     str, a gradle template to add to build.gradle.
   """
   gradle_template = gradle.NO_SERVICE_ACCOUNT_TEMPLATE
-  if maven_cfg and maven_cfg.versionPolicy == messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.SNAPSHOT:
+  snapshot = (
+      messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.SNAPSHOT
+  )
+  release = messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.RELEASE
+  if maven_cfg and maven_cfg.versionPolicy == snapshot:
     gradle_template = gradle.NO_SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE
     if sa_creds:
       gradle_template = gradle.SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE
-  elif maven_cfg and maven_cfg.versionPolicy == messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.RELEASE:
+  elif maven_cfg and maven_cfg.versionPolicy == release:
     gradle_template = gradle.NO_SERVICE_ACCOUNT_RELEASE_TEMPLATE
     if sa_creds:
       gradle_template = gradle.SERVICE_ACCOUNT_RELEASE_TEMPLATE
@@ -417,7 +355,7 @@ def GetPythonSettingsSnippet(args):
   repo = _GetRequiredRepoValue(args)
   data = {"location": location, "repo_path": repo_path, "repo": repo}
 
-  sa_creds = _GetServiceAccountCreds(args)
+  sa_creds = credentials.GetServiceAccountCreds(args.json_key)
 
   if sa_creds:
     data["password"] = sa_creds

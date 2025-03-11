@@ -981,8 +981,8 @@ class AutomatedBackupPolicy(_messages.Message):
       defaults to true.
     encryptionConfig: Optional. The encryption config can be specified to
       encrypt the backups with a customer-managed encryption key (CMEK). When
-      this field is not specified, the backup will then use default encryption
-      scheme to protect the user data.
+      this field is not specified, the backup will use the cluster's
+      encryption config.
     labels: Labels to apply to backups created using this configuration.
     location: The location where the backup will be stored. Currently, the
       only supported option is to store the backup in the same region as the
@@ -4989,13 +4989,12 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
 
   Fields:
     cpuCount: The number of CPUs. Deprecated. Use vcpu_count instead.
-      TODO(b/342344482, b/342346271) add proto validations again after bug
-      fix.
-    memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
-      add proto validations again after bug fix.
+      TODO(b/342344482) add proto validations again after bug fix.
+    memorySizeInBytes: Memory size in bytes. TODO(b/342344482) add proto
+      validations again after bug fix.
     shardCount: Optional. Number of shards (if applicable).
-    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482, b/342346271)
-      add proto validations again after bug fix.
+    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482) add proto
+      validations again after bug fix.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

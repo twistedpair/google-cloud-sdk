@@ -43,6 +43,18 @@ class AOFConfig(_messages.Message):
   appendFsync = _messages.EnumField('AppendFsyncValueValuesEnum', 1)
 
 
+class AddLabelTransformer(_messages.Message):
+  r"""Add new system label to the usage.
+
+  Fields:
+    labelName: A string attribute.
+    labelValue: A string attribute.
+  """
+
+  labelName = _messages.StringField(1)
+  labelValue = _messages.StringField(2)
+
+
 class BillingView(_messages.Message):
   r"""Message for reporting billing requests through Eventstream.
 
@@ -78,6 +90,16 @@ class CertificateAuthority(_messages.Message):
   name = _messages.StringField(2)
 
 
+class CompositeMatcher(_messages.Message):
+  r"""A CompositeMatcher object.
+
+  Fields:
+    matchers: A SingleMatcher attribute.
+  """
+
+  matchers = _messages.MessageField('SingleMatcher', 1, repeated=True)
+
+
 class ConnectionDetail(_messages.Message):
   r"""Information of each PSC connection.
 
@@ -90,6 +112,102 @@ class ConnectionDetail(_messages.Message):
 
   pscAutoConnection = _messages.MessageField('PscAutoConnection', 1)
   pscConnection = _messages.MessageField('PscConnection', 2)
+
+
+class CrossInstanceReplicationConfig(_messages.Message):
+  r"""Cross instance replication config.
+
+  Enums:
+    InstanceRoleValueValuesEnum: Required. The role of the instance in cross
+      instance replication.
+
+  Fields:
+    instanceRole: Required. The role of the instance in cross instance
+      replication.
+    membership: Output only. An output only view of all the member instances
+      participating in the cross instance replication. This view will be
+      provided by every member instance irrespective of its instance
+      role(primary or secondary). A primary instance can provide information
+      about all the secondary instances replicating from it. However, a
+      secondary instance only knows about the primary instance from which it
+      is replicating. However, for scenarios, where the primary instance is
+      unavailable(e.g. regional outage), a Getinstance request can be sent to
+      any other member instance and this field will list all the member
+      instances participating in cross instance replication.
+    primaryInstance: Optional. Details of the primary instance that is used as
+      the replication source for this secondary instance. This field is only
+      set for a secondary instance.
+    secondaryInstances: Optional. List of secondary instances that are
+      replicating from this primary instance. This field is only set for a
+      primary instance.
+    updateTime: Output only. The last time cross instance replication config
+      was updated.
+  """
+
+  class InstanceRoleValueValuesEnum(_messages.Enum):
+    r"""Required. The role of the instance in cross instance replication.
+
+    Values:
+      INSTANCE_ROLE_UNSPECIFIED: instance role is not set. The behavior is
+        equivalent to NONE.
+      NONE: This instance does not participate in cross instance replication.
+        It is an independent instance and does not replicate to or from any
+        other instances.
+      PRIMARY: A instance that allows both reads and writes. Any data written
+        to this instance is also replicated to the attached secondary
+        instances.
+      SECONDARY: A instance that allows only reads and replicates data from a
+        primary instance.
+    """
+    INSTANCE_ROLE_UNSPECIFIED = 0
+    NONE = 1
+    PRIMARY = 2
+    SECONDARY = 3
+
+  instanceRole = _messages.EnumField('InstanceRoleValueValuesEnum', 1)
+  membership = _messages.MessageField('Membership', 2)
+  primaryInstance = _messages.MessageField('RemoteInstance', 3)
+  secondaryInstances = _messages.MessageField('RemoteInstance', 4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
+class CustomTransformer(_messages.Message):
+  r"""For any custom transformm defined by the service producer. Note: Not
+  supported yet.
+
+  Messages:
+    DataValue: A DataValue object.
+
+  Fields:
+    data: A DataValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""A DataValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
 
 
 class DiscoveryEndpoint(_messages.Message):
@@ -116,6 +234,16 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class ExclusionKeys(_messages.Message):
+  r"""A ExclusionKeys object.
+
+  Fields:
+    projectExclusions: ProjectNumber-based exclusion.
+  """
+
+  projectExclusions = _messages.MessageField('ProjectExclusions', 1)
 
 
 class Exemplar(_messages.Message):
@@ -1088,6 +1216,8 @@ class Instance(_messages.Message):
     authorizationMode: Optional. Immutable. Authorization mode of the
       instance.
     createTime: Output only. Creation timestamp of the instance.
+    crossInstanceReplicationConfig: Optional. The config for cross instance
+      replication.
     deletionProtectionEnabled: Optional. If set to true deletion of the
       instance will fail.
     discoveryEndpoints: Output only. Endpoints clients can connect to the
@@ -1247,28 +1377,29 @@ class Instance(_messages.Message):
   asyncInstanceEndpointsDeletionEnabled = _messages.BooleanField(1)
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
-  deletionProtectionEnabled = _messages.BooleanField(4)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 5, repeated=True)
-  endpoints = _messages.MessageField('InstanceEndpoint', 6, repeated=True)
-  engineConfigs = _messages.MessageField('EngineConfigsValue', 7)
-  engineVersion = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  mode = _messages.EnumField('ModeValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  nodeConfig = _messages.MessageField('NodeConfig', 12)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 13)
-  ondemandMaintenance = _messages.BooleanField(14)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 15)
-  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 16, repeated=True)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 17, repeated=True)
-  replicaCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  stateInfo = _messages.MessageField('StateInfo', 21)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 25)
+  crossInstanceReplicationConfig = _messages.MessageField('CrossInstanceReplicationConfig', 4)
+  deletionProtectionEnabled = _messages.BooleanField(5)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 6, repeated=True)
+  endpoints = _messages.MessageField('InstanceEndpoint', 7, repeated=True)
+  engineConfigs = _messages.MessageField('EngineConfigsValue', 8)
+  engineVersion = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  mode = _messages.EnumField('ModeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  nodeConfig = _messages.MessageField('NodeConfig', 13)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 14)
+  ondemandMaintenance = _messages.BooleanField(15)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 16)
+  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 17, repeated=True)
+  pscAutoConnections = _messages.MessageField('PscAutoConnection', 18, repeated=True)
+  replicaCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  stateInfo = _messages.MessageField('StateInfo', 22)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 26)
 
 
 class InstanceEndpoint(_messages.Message):
@@ -1282,6 +1413,17 @@ class InstanceEndpoint(_messages.Message):
   """
 
   connections = _messages.MessageField('ConnectionDetail', 1, repeated=True)
+
+
+class LabelFilterMatcher(_messages.Message):
+  r"""A label matcher that matches label key and value via go/filtering.
+
+  Fields:
+    filter: The filter expression is applied to the label values on
+      ReportRequest, based on filter syntax from go/aip/160.
+  """
+
+  filter = _messages.StringField(1)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1416,6 +1558,21 @@ class ManagedCertificateAuthority(_messages.Message):
   """
 
   caCerts = _messages.MessageField('CertChain', 1, repeated=True)
+
+
+class Membership(_messages.Message):
+  r"""An output only view of all the member instances participating in the
+  cross instance replication.
+
+  Fields:
+    primaryInstance: Output only. The primary instance that acts as the source
+      of replication for the secondary instances.
+    secondaryInstances: Output only. The list of secondary instances
+      replicating from the primary instance.
+  """
+
+  primaryInstance = _messages.MessageField('RemoteInstance', 1)
+  secondaryInstances = _messages.MessageField('RemoteInstance', 2, repeated=True)
 
 
 class MemorystoreProjectsLocationsGetRequest(_messages.Message):
@@ -1622,6 +1779,20 @@ class MemorystoreProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class MeteringTransformView(_messages.Message):
+  r"""Message for reporting billing requests through Eventstream.
+  RuleInstances to be created / updated for cloud.eventstream.v2.ResourceEvent
+  Each requests contains RuleInstances that should be created or updated for
+  Metering Transforms. RuleInstances reported this way are managed
+  declaratively. See go/mtx-integration-guide.
+
+  Fields:
+    ruleInstances: View should be created with key = "billing-transform"
+  """
+
+  ruleInstances = _messages.MessageField('RuleInstance', 1, repeated=True)
+
+
 class Money(_messages.Message):
   r"""Represents an amount of money with its currency type.
 
@@ -1640,6 +1811,16 @@ class Money(_messages.Message):
   currencyCode = _messages.StringField(1)
   nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   units = _messages.IntegerField(3)
+
+
+class NewProjectNumberTransformer(_messages.Message):
+  r"""Redirect the usage to a new project number.
+
+  Fields:
+    newProjectNumber: A string attribute.
+  """
+
+  newProjectNumber = _messages.StringField(1)
 
 
 class NodeConfig(_messages.Message):
@@ -1818,6 +1999,18 @@ class PersistenceConfig(_messages.Message):
   aofConfig = _messages.MessageField('AOFConfig', 1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   rdbConfig = _messages.MessageField('RDBConfig', 3)
+
+
+class ProjectExclusions(_messages.Message):
+  r"""ProjectExclusions contains projectIDs that need to be excluded during
+  transformations.
+
+  Fields:
+    projectNumber: ProjectID to be excluded. Format: projects/{project_number}
+      or project_number:{project_number}
+  """
+
+  projectNumber = _messages.StringField(1)
 
 
 class PscAttachmentDetail(_messages.Message):
@@ -2041,6 +2234,149 @@ class RDBConfig(_messages.Message):
   rdbSnapshotStartTime = _messages.StringField(2)
 
 
+class RemoteInstance(_messages.Message):
+  r"""Details of the remote instance associated with this instance in a cross
+  instance replication setup.
+
+  Fields:
+    instance: Optional. The full resource path of the remote instance in the
+      format: projects//locations//instances/
+    uid: Output only. The unique identifier of the remote instance.
+  """
+
+  instance = _messages.StringField(1)
+  uid = _messages.StringField(2)
+
+
+class RuleInstance(_messages.Message):
+  r"""A RuleInstance contains: 1). values describing a project or cloud
+  resource 2). a reference to a RuleConfig which defines the transform to
+  apply to relevant metrics for that project / resource. Next ID: 21
+
+  Enums:
+    StateValueValuesEnum: Output only. The RuleInstance state: aip.dev/216
+
+  Messages:
+    PlaceholderValuesValue: RuleConfigs can use placeholders instead of
+      literals for values that need to vary per RuleInstance. Each placeholder
+      in the associated RuleConfig must have a value provided here.
+
+  Fields:
+    billingAccountId: Billing Account ID
+    compositeMatcherData: A CompositeMatcher attribute.
+    consumerId: Consumer ID must be a project number in either format: -
+      project_number:PROJECT_NUMBER - projects/PROJECT_NUMBER
+    deleteTime: Output only. The time when the RuleInstance was successfully
+      soft-deleted. When the deletion is forward or back dated via a custom
+      effective time, this contains the time the deletion request was
+      received. See aip.dev/148#timestamps
+    effectiveTime: Required. This revision will take effect no earlier than
+      this time. It may be delayed due to data plane eventual consistency. The
+      max delay is defined by the Metering Transform SLOs.
+    excludedKeys: Optional. A subset of the consumer that should be excluded
+      from this RuleInstance. The excluded sub keys must be a descendant of
+      the matching key. Three cases are allowed: - If the key type is
+      organization id, the exclusive sub keys can only be resource id or
+      project id. - If the key type is billing account id, the exclusive sub
+      keys can only be resource id or project id. - If the key type is project
+      id, the exclusive sub keys can only be project id. NOTE: Only project
+      exclusions are currently supported.
+    expireTime: The time when a soft-deleted RuleInstance will be purged. This
+      is set by the service to 30 days after the delete_time. See
+      aip.dev/148#timestamps
+    name: The resource name of the RuleInstance. Format:
+      projects/{projectNumber}/ruleInstances/{ruleInstanceID} ruleInstanceID
+      is set by caller in CreateRuleInstanceRequest.
+    newConsumerId: The consumer_id to transform to. Required if
+      consumer_id_transform = VALUE_FROM_RULE_INSTANCE in the associated
+      RuleConfig, invalid otherwise. Consumer ID must be a project number in
+      either format: - project_number:PROJECT_NUMBER - projects/PROJECT_NUMBER
+    organizationId: Organization ID
+    placeholderValues: RuleConfigs can use placeholders instead of literals
+      for values that need to vary per RuleInstance. Each placeholder in the
+      associated RuleConfig must have a value provided here.
+    resourceId: Resource ID refers to the value used in system label
+      /resource_id.
+    revisionCreateTime: When this revision was created.
+    revisionId: Identifier for the revision.
+    ruleConfig: Required. The resource name of the associated RuleConfig.
+      Format: projects/{projectNumber}/ruleConfigs/{ruleConfigID}
+    state: Output only. The RuleInstance state: aip.dev/216
+    transformerData: A Transformers attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The RuleInstance state: aip.dev/216
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      ACTIVE: The RuleInstance is being applied to any matching usage.
+      DELETED: Soft-deleted; the RuleInstance is not being applied, but
+        remains in the system until it expires permanently.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PlaceholderValuesValue(_messages.Message):
+    r"""RuleConfigs can use placeholders instead of literals for values that
+    need to vary per RuleInstance. Each placeholder in the associated
+    RuleConfig must have a value provided here.
+
+    Messages:
+      AdditionalProperty: An additional property for a PlaceholderValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PlaceholderValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PlaceholderValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  billingAccountId = _messages.StringField(1)
+  compositeMatcherData = _messages.MessageField('CompositeMatcher', 2)
+  consumerId = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  effectiveTime = _messages.StringField(5)
+  excludedKeys = _messages.MessageField('ExclusionKeys', 6, repeated=True)
+  expireTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  newConsumerId = _messages.StringField(9)
+  organizationId = _messages.StringField(10)
+  placeholderValues = _messages.MessageField('PlaceholderValuesValue', 11)
+  resourceId = _messages.StringField(12)
+  revisionCreateTime = _messages.StringField(13)
+  revisionId = _messages.StringField(14)
+  ruleConfig = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  transformerData = _messages.MessageField('Transformers', 17)
+
+
+class SingleMatcher(_messages.Message):
+  r"""A single matcher that includes a matcher id and a matcher. Next ID: 6
+
+  Fields:
+    labelFilterMatcher: System label matcher.
+    matcherId: Required - unique identifier for the matcher.
+  """
+
+  labelFilterMatcher = _messages.MessageField('LabelFilterMatcher', 1)
+  matcherId = _messages.StringField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2164,6 +2500,33 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Transformer(_messages.Message):
+  r"""Defines a transformer to transform usage.
+
+  Fields:
+    addLabelTransformer: Add new system label to the usage.
+    customTransformer: A CustomTransformer attribute.
+    newProjectNumberTransformer: A NewProjectNumberTransformer attribute.
+    transformerId: Unique identifier for the transformer for reference in
+      RuleInstance. Required.
+  """
+
+  addLabelTransformer = _messages.MessageField('AddLabelTransformer', 1)
+  customTransformer = _messages.MessageField('CustomTransformer', 2)
+  newProjectNumberTransformer = _messages.MessageField('NewProjectNumberTransformer', 3)
+  transformerId = _messages.StringField(4)
+
+
+class Transformers(_messages.Message):
+  r"""Contains a list of transformers.
+
+  Fields:
+    transformers: A Transformer attribute.
+  """
+
+  transformers = _messages.MessageField('Transformer', 1, repeated=True)
 
 
 class UpdateInfo(_messages.Message):

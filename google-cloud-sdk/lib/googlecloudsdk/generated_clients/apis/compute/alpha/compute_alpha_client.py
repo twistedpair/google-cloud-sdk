@@ -132,6 +132,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionUrlMaps = self.RegionUrlMapsService(self)
     self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
+    self.reliabilityRisks = self.ReliabilityRisksService(self)
     self.reservationBlocks = self.ReservationBlocksService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -139,6 +140,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.routes = self.RoutesService(self)
     self.securityPolicies = self.SecurityPoliciesService(self)
     self.serviceAttachments = self.ServiceAttachmentsService(self)
+    self.snapshotGroups = self.SnapshotGroupsService(self)
     self.snapshotSettings = self.SnapshotSettingsService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
@@ -10781,6 +10783,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='globalSetPolicyRequest',
         request_type_name='ComputeMachineImagesSetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeMachineImagesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.machineImages.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/machineImages/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeMachineImagesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -21450,6 +21478,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ReliabilityRisksService(base_api.BaseApiService):
+    """Service class for the reliabilityRisks resource."""
+
+    _NAME = 'reliabilityRisks'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ReliabilityRisksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified ReliabilityRisk resource.
+
+      Args:
+        request: (ComputeReliabilityRisksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReliabilityRisk) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.reliabilityRisks.get',
+        ordered_params=['project', 'reliabilityRisk'],
+        path_params=['project', 'reliabilityRisk'],
+        query_params=[],
+        relative_path='projects/{project}/global/reliabilityRisks/{reliabilityRisk}',
+        request_field='',
+        request_type_name='ComputeReliabilityRisksGetRequest',
+        response_type_name='ReliabilityRisk',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of reliabilityRisks available in the specified project.
+
+      Args:
+        request: (ComputeReliabilityRisksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReliabilityRisksListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.reliabilityRisks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/reliabilityRisks',
+        request_field='',
+        request_type_name='ComputeReliabilityRisksListRequest',
+        response_type_name='ReliabilityRisksListResponse',
+        supports_download=False,
+    )
+
   class ReservationBlocksService(base_api.BaseApiService):
     """Service class for the reservationBlocks resource."""
 
@@ -23414,6 +23504,198 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/serviceAttachments/{resource}/testIamPermissions',
         request_field='testPermissionsRequest',
         request_type_name='ComputeServiceAttachmentsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class SnapshotGroupsService(base_api.BaseApiService):
+    """Service class for the snapshotGroups resource."""
+
+    _NAME = 'snapshotGroups'
+
+    def __init__(self, client):
+      super(ComputeAlpha.SnapshotGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified SnapshotGroup resource.
+
+      Args:
+        request: (ComputeSnapshotGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.snapshotGroups.delete',
+        ordered_params=['project', 'snapshotGroup'],
+        path_params=['project', 'snapshotGroup'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshotGroups/{snapshotGroup}',
+        request_field='',
+        request_type_name='ComputeSnapshotGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""returns the specified SnapshotGroup resource.
+
+      Args:
+        request: (ComputeSnapshotGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshotGroups.get',
+        ordered_params=['project', 'snapshotGroup'],
+        path_params=['project', 'snapshotGroup'],
+        query_params=[],
+        relative_path='projects/{project}/global/snapshotGroups/{snapshotGroup}',
+        request_field='',
+        request_type_name='ComputeSnapshotGroupsGetRequest',
+        response_type_name='SnapshotGroup',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeSnapshotGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshotGroups.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/snapshotGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeSnapshotGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a snapshot group in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSnapshotGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshotGroups.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshotGroups',
+        request_field='snapshotGroup',
+        request_type_name='ComputeSnapshotGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""retrieves the list of SnapshotGroup resources contained within the specified project.
+
+      Args:
+        request: (ComputeSnapshotGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSnapshotGroups) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshotGroups.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/snapshotGroups',
+        request_field='',
+        request_type_name='ComputeSnapshotGroupsListRequest',
+        response_type_name='ListSnapshotGroups',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeSnapshotGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshotGroups.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/snapshotGroups/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeSnapshotGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSnapshotGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshotGroups.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/snapshotGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeSnapshotGroupsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
         supports_download=False,
     )

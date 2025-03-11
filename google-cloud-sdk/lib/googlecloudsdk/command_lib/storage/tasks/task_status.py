@@ -66,12 +66,20 @@ class FileProgress:
     total_bytes_copied (int|None): Sum of bytes copied for each component.
       Needed because components are popped when completed, but we don't want to
       lose info on them if writing to the manifest.
+    error_occurred (bool): Whether an error occurred during the operation.
   """
 
-  def __init__(self, component_count, start_time=None, total_bytes_copied=None):
+  def __init__(
+      self,
+      component_count,
+      start_time=None,
+      total_bytes_copied=None,
+      error_occurred=False,
+  ):
     self.component_progress = {i: 0 for i in range(component_count)}
     self.start_time = start_time
     self.total_bytes_copied = total_bytes_copied
+    self.error_occurred = error_occurred
 
 
 def _get_formatted_throughput(bytes_processed, time_delta):
@@ -256,11 +264,17 @@ class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
       self._tracked_file_progress[
           file_url_string].total_bytes_copied += newly_processed_bytes
 
+    if status_message.error_occurred:
+      # If an error occurred, mark the file as failed.
+      self._tracked_file_progress[file_url_string].error_occurred = True
+
     if processed_component_bytes == status_message.length:
       # Operation complete.
       component_tracker.pop(component_number, None)
       if not component_tracker:
-        self._completed_files += 1
+        if not self._tracked_file_progress[file_url_string].error_occurred:
+          # Count as completed, if no error occurred.
+          self._completed_files += 1
         if not self._manifest_manager:
           # If managing manifest, _add_to_manifest clears items from tracking.
           del self._tracked_file_progress[file_url_string]

@@ -1147,9 +1147,9 @@ class Documentation(_messages.Message):
     rules: A list of documentation rules that apply to individual API
       elements. **NOTE:** All service configuration rules follow "last one
       wins" order.
-    sectionOverrides: Specifies section and content to override boilerplate
-      content provided by go/api-docgen. Currently overrides following
-      sections: 1. rest.service.client_libraries
+    sectionOverrides: Specifies section and content to override the
+      boilerplate content. Currently overrides following sections: 1.
+      rest.service.client_libraries
     serviceRootUrl: Specifies the service root url if the default one (the
       service name from the yaml file) is not suitable. This can be seen in
       any fully specified service urls as well as sections that show a base
@@ -1181,8 +1181,7 @@ class DocumentationRule(_messages.Message):
       trailing comments taken from the proto source definition of the proto
       element.
     disableReplacementWords: String of comma or space separated case-sensitive
-      words for which method/field name replacement will be disabled by
-      go/api-docgen.
+      words for which method/field name replacement will be disabled.
     selector: The selector is a comma-separated list of patterns for any
       element such as a method, a field, an enum value. Each pattern is a
       qualified name of the element which may end in "*", indicating a
@@ -5307,21 +5306,14 @@ class Usage(_messages.Message):
 
 
 class UsageRule(_messages.Message):
-  r"""Usage configuration rules for the service. NOTE: Under development. Use
-  this rule to configure unregistered calls for the service. Unregistered
-  calls are calls that do not contain consumer project identity. (Example:
-  calls that do not contain an API key). By default, API methods do not allow
-  unregistered calls, and each method call must be identified by a consumer
-  project identity. Use this rule to allow/disallow unregistered calls.
-  Example of an API that wants to allow unregistered calls for entire service.
-  usage: rules: - selector: "*" allow_unregistered_calls: true Example of a
-  method that wants to allow unregistered calls. usage: rules: - selector:
-  "google.example.library.v1.LibraryService.CreateBook"
-  allow_unregistered_calls: true
+  r"""Usage configuration rules for the service.
 
   Fields:
-    allowUnregisteredCalls: If true, the selected method allows unregistered
-      calls, e.g. calls that don't identify any user or application.
+    allowUnregisteredCalls:  Use this rule to configure unregistered calls for
+      the service. Unregistered calls are calls that do not contain consumer
+      project identity. (Example: calls that do not contain an API key).
+      WARNING: By default, API methods do not allow unregistered calls, and
+      each method call must be identified by a consumer project identity.
     selector: Selects the methods to which this rule applies. Use '*' to
       indicate all methods in all APIs. Refer to selector for syntax details.
     skipServiceControl: If true, the selected method should skip service

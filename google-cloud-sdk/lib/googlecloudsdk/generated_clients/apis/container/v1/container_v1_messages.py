@@ -138,6 +138,7 @@ class AddonsConfig(_messages.Message):
       use the Cloud Console to manage and monitor your Kubernetes clusters,
       workloads and applications. For more information, see:
       https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards
+    lustreCsiDriverConfig: Configuration for the Lustre CSI driver.
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
@@ -159,11 +160,12 @@ class AddonsConfig(_messages.Message):
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 9)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 10)
   kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 11)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 12)
-  parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 13)
-  rayConfig = _messages.MessageField('RayConfig', 14)
-  rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 15)
-  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 16)
+  lustreCsiDriverConfig = _messages.MessageField('LustreCsiDriverConfig', 12)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 13)
+  parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 14)
+  rayConfig = _messages.MessageField('RayConfig', 15)
+  rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 16)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 17)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -749,6 +751,9 @@ class Cluster(_messages.Message):
   Messages:
     ResourceLabelsValue: The resource labels for the cluster to use to
       annotate any related Google Compute Engine resources.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     addonsConfig: Configurations for the various addons available to run in
@@ -881,7 +886,7 @@ class Cluster(_messages.Message):
     monitoringConfig: Monitoring configuration for the cluster.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options: *
-      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      `monitoring.googleapis.com/kubernetes` - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
       The legacy Cloud Monitoring service (no longer available as of GKE
       1.15). * `none` - No metrics will be exported from the cluster. If left
@@ -956,6 +961,9 @@ class Cluster(_messages.Message):
     subnetwork: The name of the Google Compute Engine
       [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
       the cluster is connected.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     tpuIpv4CidrBlock: Output only. The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`). This field is deprecated
@@ -1014,6 +1022,32 @@ class Cluster(_messages.Message):
 
     class AdditionalProperty(_messages.Message):
       r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1100,11 +1134,12 @@ class Cluster(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 73)
   statusMessage = _messages.StringField(74)
   subnetwork = _messages.StringField(75)
-  tpuIpv4CidrBlock = _messages.StringField(76)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 77)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 78)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 79)
-  zone = _messages.StringField(80)
+  tags = _messages.MessageField('TagsValue', 76)
+  tpuIpv4CidrBlock = _messages.StringField(77)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 78)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 79)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 80)
+  zone = _messages.StringField(81)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1293,7 +1328,7 @@ class ClusterUpdate(_messages.Message):
     desiredMonitoringConfig: The desired monitoring configuration.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options: *
-      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      `monitoring.googleapis.com/kubernetes` - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
       The legacy Cloud Monitoring service (no longer available as of GKE
       1.15). * `none` - No metrics will be exported from the cluster. If left
@@ -3665,6 +3700,16 @@ class LoggingVariantConfig(_messages.Message):
     MAX_THROUGHPUT = 2
 
   variant = _messages.EnumField('VariantValueValuesEnum', 1)
+
+
+class LustreCsiDriverConfig(_messages.Message):
+  r"""Configuration for the Lustre CSI driver.
+
+  Fields:
+    enabled: Whether the Lustre CSI driver is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class MaintenanceExclusionOptions(_messages.Message):
@@ -6603,7 +6648,7 @@ class SetMonitoringServiceRequest(_messages.Message):
       been deprecated and replaced by the name field.
     monitoringService: Required. The monitoring service the cluster should use
       to write metrics. Currently available options: *
-      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      `monitoring.googleapis.com/kubernetes` - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
       The legacy Cloud Monitoring service (no longer available as of GKE
       1.15). * `none` - No metrics will be exported from the cluster. If left
@@ -7096,6 +7141,8 @@ class StatusCondition(_messages.Message):
       CLOUD_KMS_KEY_ERROR: Unable to perform an encrypt operation against the
         CloudKMS key used for etcd level encryption.
       CA_EXPIRING: Cluster CA is expiring soon.
+      NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS: Node service account is
+        missing permissions.
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
@@ -7104,6 +7151,7 @@ class StatusCondition(_messages.Message):
     SET_BY_OPERATOR = 4
     CLOUD_KMS_KEY_ERROR = 5
     CA_EXPIRING = 6
+    NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS = 7
 
   canonicalCode = _messages.EnumField('CanonicalCodeValueValuesEnum', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

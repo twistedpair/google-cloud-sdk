@@ -1314,6 +1314,10 @@ class InsightsConfig(_messages.Message):
     artifactConfigs: Optional. The artifact configurations of the artifacts
       that are deployed.
     createTime: Output only. [Output only] Create timestamp
+    errors: Output only. Any errors that occurred while setting up the
+      InsightsConfig. Each error will be in the format: `field_name:
+      error_message`, e.g. GetAppHubApplication: Permission denied while
+      getting App Hub application. Please grant permissions to the P4SA.
     labels: Optional. Set of labels associated with an InsightsConfig.
     name: Identifier. The name of the InsightsConfig. Format:
       projects/{project}/locations/{location}/insightsConfigs/{insightsConfig}
@@ -1399,12 +1403,13 @@ class InsightsConfig(_messages.Message):
   appHubApplication = _messages.StringField(2)
   artifactConfigs = _messages.MessageField('ArtifactConfig', 3, repeated=True)
   createTime = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  runtimeConfigs = _messages.MessageField('RuntimeConfig', 8, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  errors = _messages.MessageField('Status', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  runtimeConfigs = _messages.MessageField('RuntimeConfig', 9, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class Installation(_messages.Message):

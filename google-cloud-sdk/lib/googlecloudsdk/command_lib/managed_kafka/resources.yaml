@@ -57,3 +57,14 @@ consumer_group:
     attribute_name: consumer_group
     help: |
       The consumer group name.
+
+operation:
+  name: operation
+  collection: managedkafka.projects.locations.operations
+  attributes:
+  - *location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The operation name.
