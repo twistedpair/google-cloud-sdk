@@ -120,7 +120,7 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       alloydb_messages, args.availability_type
   )
   instance_resource.machineConfig = alloydb_messages.MachineConfig(
-      cpuCount=args.cpu_count
+      cpuCount=args.cpu_count, machineType=args.machine_type
   )
   instance_ref = client.resource_parser.Create(
       'alloydb.projects.locations.clusters.instances',
@@ -347,6 +347,7 @@ def ConstructInstanceAndUpdatePathsFromArgs(
   availability_type_path = 'availabilityType'
   database_flags_path = 'databaseFlags'
   cpu_count_path = 'machineConfig.cpuCount'
+  machine_type_path = 'machineConfig.machineType'
   read_pool_node_count_path = 'readPoolConfig.nodeCount'
   insights_config_query_string_length_path = (
       'queryInsightsConfig.queryStringLength'
@@ -382,11 +383,14 @@ def ConstructInstanceAndUpdatePathsFromArgs(
     instance_resource.databaseFlags = database_flags
     paths.append(database_flags_path)
 
-  if args.cpu_count:
+  if args.cpu_count or args.machine_type:
     instance_resource.machineConfig = alloydb_messages.MachineConfig(
-        cpuCount=args.cpu_count
+        cpuCount=args.cpu_count, machineType=args.machine_type
     )
-    paths.append(cpu_count_path)
+    if args.cpu_count:
+      paths.append(cpu_count_path)
+    if args.machine_type:
+      paths.append(machine_type_path)
 
   if args.read_pool_node_count:
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(

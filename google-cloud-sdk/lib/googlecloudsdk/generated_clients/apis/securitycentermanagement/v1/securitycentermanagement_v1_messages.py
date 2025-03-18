@@ -1001,7 +1001,8 @@ class SecurityCenterService(_messages.Message):
       * `projects/{project}/locations/{location}/securityCenterServices/{servi
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
-      analytics` * `vm-threat-detection` * `web-security-scanner`
+      analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
+      threat-detection-aws`
     serviceConfig: Optional. Additional service-specific configuration. Not
       all services will utilize this field.
     updateTime: Output only. The time the service was last updated. This could
@@ -1433,7 +1434,8 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_
       projects/{project}/locations/{location}/securityCenterServices/{service}
       The following values are valid for `{service}`: * `container-threat-
       detection` * `event-threat-detection` * `security-health-analytics` *
-      `vm-threat-detection` * `web-security-scanner`
+      `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
+      aws`
     showEligibleModulesOnly: Set to `true` to show only modules that are in
       scope. By default, all modules are shown.
   """
@@ -1483,7 +1485,8 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
       * `projects/{project}/locations/{location}/securityCenterServices/{servi
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
-      analytics` * `vm-threat-detection` * `web-security-scanner`
+      analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
+      threat-detection-aws`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Required. The fields to update. Accepts the following values:
@@ -1934,7 +1937,8 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetReq
       projects/{project}/locations/{location}/securityCenterServices/{service}
       The following values are valid for `{service}`: * `container-threat-
       detection` * `event-threat-detection` * `security-health-analytics` *
-      `vm-threat-detection` * `web-security-scanner`
+      `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
+      aws`
     showEligibleModulesOnly: Set to `true` to show only modules that are in
       scope. By default, all modules are shown.
   """
@@ -1982,7 +1986,8 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
       * `projects/{project}/locations/{location}/securityCenterServices/{servi
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
-      analytics` * `vm-threat-detection` * `web-security-scanner`
+      analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
+      threat-detection-aws`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Required. The fields to update. Accepts the following values:
@@ -2463,7 +2468,8 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(
       projects/{project}/locations/{location}/securityCenterServices/{service}
       The following values are valid for `{service}`: * `container-threat-
       detection` * `event-threat-detection` * `security-health-analytics` *
-      `vm-threat-detection` * `web-security-scanner`
+      `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
+      aws`
     showEligibleModulesOnly: Set to `true` to show only modules that are in
       scope. By default, all modules are shown.
   """
@@ -2513,7 +2519,8 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
       * `projects/{project}/locations/{location}/securityCenterServices/{servi
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
-      analytics` * `vm-threat-detection` * `web-security-scanner`
+      analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
+      threat-detection-aws`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Required. The fields to update. Accepts the following values:

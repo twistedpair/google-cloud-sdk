@@ -73,44 +73,47 @@ class ImportDataRequest(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""Message describing Instance object
+  r"""A Managed Lustre instance.
 
   Enums:
-    StateValueValuesEnum: Output only. State of the instance
+    StateValueValuesEnum: Output only. The state of the instance.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
-    capacityGib: Required. Capacity of the instance in GiB
-    createTime: Output only. [Output only] Create time stamp
-    description: Optional. Description
-    filesystem: Required. Immutable. Filesystem Name for Lustre.
-    labels: Optional. Labels as key value pairs
-    mountPoint: Output only. Mount point of the instance given by IP address
-      and filesystem name and is in the format of
-      {ip_address}@tcp:/{filesystem}.
-    name: Identifier. name of resource
-    network: Required. Immutable. VPC Network full name. Must be in a form
-      'projects/{project_id}/global/networks/{network}'. {project_id} is a
-      project id, as in 'user-consumer-project' {network} is network name.
-    perUnitStorageThroughput: Optional. The throughput of the instance in
-      MB/s/TiB. Valid values are 250, 500, 1000. Default value is 1000.
-    state: Output only. State of the instance
-    updateTime: Output only. [Output only] Update time stamp
+    capacityGib: Required. The storage capacity of the instance in gibibytes
+      (GiB). Allowed values are from 18000 to 954000, in increments of 9000.
+    createTime: Output only. Timestamp when the instance was created.
+    description: Optional. A user-readable description of the instance.
+    filesystem: Required. Immutable. The filesystem name for this instance.
+      This name is used by client-side tools, including when mounting the
+      instance. Must be 8 characters or less and may only contain letters and
+      numbers.
+    gkeSupportEnabled: Optional. Indicates whether you want to enable support
+      for GKE clients. By default, GKE clients are not supported.
+    labels: Optional. Labels as key value pairs.
+    mountPoint: Output only. Mount point of the instance in the format
+      `IP_ADDRESS@tcp:/FILESYSTEM`.
+    name: Identifier. The name of the instance.
+    network: Required. Immutable. The full name of the VPC network to which
+      the instance is connected. Must be in the format
+      `projects/{project_id}/global/networks/{network_name}`.
+    state: Output only. The state of the instance.
+    updateTime: Output only. Timestamp when the instance was last updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the instance
+    r"""Output only. The state of the instance.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified Instance State
-      ACTIVE: Instance State is Active
-      CREATING: Instance State is Creating
-      DELETING: Instance State is Deleting
-      UPGRADING: Instance State is Upgrading
-      REPAIRING: Instance State is Repairing
-      STOPPED: Instance State is Stopped
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: The instance is available for use.
+      CREATING: The instance is being created and is not yet ready for use.
+      DELETING: The instance is being deleted.
+      UPGRADING: The instance is being upgraded.
+      REPAIRING: The instance is being repaired.
+      STOPPED: The instance is stopped.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -122,7 +125,7 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -148,11 +151,11 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   filesystem = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mountPoint = _messages.StringField(6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  perUnitStorageThroughput = _messages.IntegerField(9)
+  gkeSupportEnabled = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  mountPoint = _messages.StringField(7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
 
@@ -161,7 +164,7 @@ class ListInstancesResponse(_messages.Message):
   r"""Message for response to listing Instances
 
   Fields:
-    instances: The list of Instance
+    instances: Response from ListInstances.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Unordered list. Locations that could not be reached.
@@ -304,10 +307,13 @@ class LustreProjectsLocationsInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and instance_id from the method_signature
-      of Create RPC
-    parent: Required. Value for parent.
+    instanceId: Required. The name of the Managed Lustre instance. * Must
+      contain only lowercase letters, numbers, and hyphens. * Must start with
+      a letter. * Must be between 1-63 characters. * Must end with a number or
+      a letter.
+    parent: Required. The instance's project and location, in the format
+      `projects/{project}/locations/{location}`. Locations map to Google Cloud
+      zones; for example, `us-west1-b`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -331,7 +337,8 @@ class LustreProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A LustreProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the instance to delete, in the format
+      `projects/{projectId}/locations/{location}/instances/{instanceId}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -366,7 +373,8 @@ class LustreProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A LustreProjectsLocationsInstancesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The instance resource name, in the format
+      `projects/{projectId}/locations/{location}/instances/{instanceId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -389,13 +397,17 @@ class LustreProjectsLocationsInstancesListRequest(_messages.Message):
   r"""A LustreProjectsLocationsInstancesListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Desired order of results.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, the server will pick an appropriate
+      default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListInstancesRequest
+    parent: Required. The project and location for which to retrieve a list of
+      instances, in the format `projects/{projectId}/locations/{location}`. To
+      retrieve instance information for all locations, use "-" as the value of
+      `{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -410,7 +422,7 @@ class LustreProjectsLocationsInstancesPatchRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: Identifier. name of resource
+    name: Identifier. The name of the instance.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -422,12 +434,11 @@ class LustreProjectsLocationsInstancesPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Instance resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields present in the request will be
-      overwritten.
+    updateMask: Optional. Specifies the fields to be overwritten in the
+      instance resource by the update. The fields specified in the update_mask
+      are relative to the resource, not the full request. A field will be
+      overwritten if it is in the mask. If no mask is provided then all fields
+      present in the request are overwritten.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -614,7 +625,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""Represents the metadata of a long-running operation.
 
   Fields:
     apiVersion: Output only. API version used to start the operation.

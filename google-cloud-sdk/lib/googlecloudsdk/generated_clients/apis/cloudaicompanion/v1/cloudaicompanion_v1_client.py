@@ -542,6 +542,33 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single SettingBinding.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsDataSharingWithGoogleSettingsSettingBindingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataSharingWithGoogleSettings/{dataSharingWithGoogleSettingsId}/settingBindings/{settingBindingsId}',
+        http_method='PATCH',
+        method_id='cloudaicompanion.projects.locations.dataSharingWithGoogleSettings.settingBindings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='settingBinding',
+        request_type_name='CloudaicompanionProjectsLocationsDataSharingWithGoogleSettingsSettingBindingsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDataSharingWithGoogleSettingsService(base_api.BaseApiService):
     """Service class for the projects_locations_dataSharingWithGoogleSettings resource."""
 

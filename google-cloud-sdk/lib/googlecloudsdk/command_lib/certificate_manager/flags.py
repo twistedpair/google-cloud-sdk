@@ -78,3 +78,42 @@ def AddSelfManagedCertificateDataFlagsToParser(parser, is_required):
   group.AddArgument(cert_flag)
   group.AddArgument(key_flag)
   group.AddToParser(parser)
+
+
+def GetTags(parser):
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  base.Argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='\n'.join(help_parts),
+      hidden=True,
+  ).AddToParser(parser)
+
+
+def AddTagsFlags(parser):
+  """Adds create command tags flags to an argparse parser.
+
+  Args:
+    parser: The argparse parser to add the flags to.
+  """
+  GetTags(parser)
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(additionalProperties=[
+      tags_message.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(tags.items())])
+

@@ -3791,7 +3791,8 @@ class InlineTrustConfig(_messages.Message):
   Messages:
     AdditionalTrustBundlesValue: Optional. Maps specific trust domains (e.g.,
       "example.com") to their corresponding TrustStore objects, which contain
-      the trusted root certificates for that domain. Note that a trust domain
+      the trusted root certificates for that domain. There can be a maximum of
+      10 trust domain entries in this map. Note that a trust domain
       automatically trusts itself and don't need to be specified here. If
       however, this WorkloadIdentityPool's trust domain contains any trust
       anchors in the additional_trust_bundles map, those trust anchors will be
@@ -3801,7 +3802,8 @@ class InlineTrustConfig(_messages.Message):
   Fields:
     additionalTrustBundles: Optional. Maps specific trust domains (e.g.,
       "example.com") to their corresponding TrustStore objects, which contain
-      the trusted root certificates for that domain. Note that a trust domain
+      the trusted root certificates for that domain. There can be a maximum of
+      10 trust domain entries in this map. Note that a trust domain
       automatically trusts itself and don't need to be specified here. If
       however, this WorkloadIdentityPool's trust domain contains any trust
       anchors in the additional_trust_bundles map, those trust anchors will be
@@ -3813,8 +3815,9 @@ class InlineTrustConfig(_messages.Message):
   class AdditionalTrustBundlesValue(_messages.Message):
     r"""Optional. Maps specific trust domains (e.g., "example.com") to their
     corresponding TrustStore objects, which contain the trusted root
-    certificates for that domain. Note that a trust domain automatically
-    trusts itself and don't need to be specified here. If however, this
+    certificates for that domain. There can be a maximum of 10 trust domain
+    entries in this map. Note that a trust domain automatically trusts itself
+    and don't need to be specified here. If however, this
     WorkloadIdentityPool's trust domain contains any trust anchors in the
     additional_trust_bundles map, those trust anchors will be *appended to*
     the Trust Bundle automatically derived from your

@@ -1563,6 +1563,8 @@ class LinkedProducerVpcNetwork(_messages.Message):
       Consumer VPC and the Producer VPC (defined in the Tenant project) which
       is added to the NCC hub. This peering must be in ACTIVE state.
     producerNetwork: Output only. The URI of the Producer VPC.
+    proposedExcludeExportRanges: Output only. The proposed exclude export IP
+      ranges waiting for hub administration's approval.
     proposedIncludeExportRanges: Optional. The proposed include export IP
       ranges waiting for hub administration's approval.
     serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
@@ -1573,8 +1575,9 @@ class LinkedProducerVpcNetwork(_messages.Message):
   network = _messages.StringField(3)
   peering = _messages.StringField(4)
   producerNetwork = _messages.StringField(5)
-  proposedIncludeExportRanges = _messages.StringField(6, repeated=True)
-  serviceConsumerVpcSpoke = _messages.StringField(7)
+  proposedExcludeExportRanges = _messages.StringField(6, repeated=True)
+  proposedIncludeExportRanges = _messages.StringField(7, repeated=True)
+  serviceConsumerVpcSpoke = _messages.StringField(8)
 
 
 class LinkedRouterApplianceInstances(_messages.Message):
@@ -1617,6 +1620,8 @@ class LinkedVpcNetwork(_messages.Message):
       filters do not apply between the service consumer VPC spoke and any of
       its producer VPC spokes. This VPC spoke cannot be deleted as long as any
       of these producer VPC spokes are connected to the NCC Hub.
+    proposedExcludeExportRanges: Output only. The proposed exclude export IP
+      ranges waiting for hub administration's approval.
     proposedIncludeExportRanges: Optional. The proposed include export IP
       ranges waiting for hub administration's approval.
     uri: Required. The URI of the VPC network resource.
@@ -1625,8 +1630,9 @@ class LinkedVpcNetwork(_messages.Message):
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
   producerVpcSpokes = _messages.StringField(3, repeated=True)
-  proposedIncludeExportRanges = _messages.StringField(4, repeated=True)
-  uri = _messages.StringField(5)
+  proposedExcludeExportRanges = _messages.StringField(4, repeated=True)
+  proposedIncludeExportRanges = _messages.StringField(5, repeated=True)
+  uri = _messages.StringField(6)
 
 
 class LinkedVpnTunnels(_messages.Message):
@@ -2867,7 +2873,7 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsCreateRequest(_messag
     regionalEndpoint: A RegionalEndpoint resource to be passed as the request
       body.
     regionalEndpointId: Required. Unique id of the Regional Endpoint to be
-      created.
+      created. @pattern: ^[-a-z0-9](?:[-a-z0-9]{0,44})[a-z0-9]$
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       knows to ignore the request if it has already been completed. The server
@@ -4375,8 +4381,9 @@ class RegionalEndpoint(_messages.Message):
       created on behalf of the customer. This field is deprecated. Use address
       instead.
     labels: User-defined labels.
-    name: Output only. The name of a RegionalEndpoint. Format: `projects/{proj
-      ect}/locations/{location}/regionalEndpoints/{regional_endpoint}`.
+    name: Output only. The name of a RegionalEndpoint. Pattern: `projects/{pro
+      ject}/locations/{location}/regionalEndpoints/^[-a-z0-9](?:[-a-z0-
+      9]{0,44})[a-z0-9]$`.
     network: The name of the VPC network for this private regional endpoint.
       Format: `projects/{project}/global/networks/{network}`
     pscForwardingRule: Output only. The resource reference of the PSC

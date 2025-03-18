@@ -1044,6 +1044,8 @@ apis:
       discovery_doc: lifesciences_v2beta.json
       default: true
   lustre:
+    v1:
+      discovery_doc: lustre_v1.json
     v1alpha:
       discovery_doc: lustre_v1alpha.json
       default: true
@@ -1363,6 +1365,8 @@ apis:
     v1alpha1:
       discovery_doc: saasservicemgmt_v1alpha1.json
       default: true
+    v1beta1:
+      discovery_doc: saasservicemgmt_v1beta1.json
   sasportal:
     v1alpha1:
       discovery_doc: sasportal_v1alpha1.json
@@ -2134,6 +2138,9 @@ canonical_surfaces:
   looker:
     name: looker
     command: looker
+  lustre:
+    name: lustre
+    command: lustre
   managedflink:
     name: managedflink
     command: managedflink

@@ -869,7 +869,7 @@ class BigtableadminProjectsInstancesLogicalViewsPatchRequest(_messages.Message):
   Fields:
     logicalView: A LogicalView resource to be passed as the request body.
     name: Identifier. The unique name of the logical view. Format:
-      `projects/{project}/instances/{instance}/logicalViews/{logical_view}
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}`
     updateMask: Optional. The list of fields to update.
   """
 
@@ -1003,6 +1003,7 @@ class BigtableadminProjectsInstancesMaterializedViewsPatchRequest(_messages.Mess
       body.
     name: Identifier. The unique name of the materialized view. Format: `proje
       cts/{project}/instances/{instance}/materializedViews/{materialized_view}
+      `
     updateMask: Optional. The list of fields to update.
   """
 
@@ -1488,6 +1489,8 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesPatchRequest object.
 
   Fields:
+    ignoreWarnings: Optional. If true, ignore safety checks when updating the
+      table.
     name: The unique name of the table. Values are of the form
       `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`. Views:
       `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `STATS_VIEW`, `FULL`
@@ -1500,13 +1503,15 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
       `change_stream_config` * `change_stream_config.retention_period` *
       `deletion_protection` * `automated_backup_policy` *
       `automated_backup_policy.retention_period` *
-      `automated_backup_policy.frequency` If `column_families` is set in
-      `update_mask`, it will return an UNIMPLEMENTED error.
+      `automated_backup_policy.frequency` * `row_key_schema` If
+      `column_families` is set in `update_mask`, it will return an
+      UNIMPLEMENTED error.
   """
 
-  name = _messages.StringField(1, required=True)
-  table = _messages.MessageField('Table', 2)
-  updateMask = _messages.StringField(3)
+  ignoreWarnings = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  table = _messages.MessageField('Table', 3)
+  updateMask = _messages.StringField(4)
 
 
 class BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest(_messages.Message):
@@ -2787,8 +2792,14 @@ class GoogleBigtableAdminV2TypeBytesEncoding(_messages.Message):
 class GoogleBigtableAdminV2TypeBytesEncodingRaw(_messages.Message):
   r"""Leaves the value as-is. Sorted mode: all values are supported. Distinct
   mode: all values are supported.
+
+  Fields:
+    escapeNulls: If set, allows NULL values to be encoded as the empty string
+      "". The actual empty string, or any value which only contains the null
+      byte 0x00, has one more null byte appended.
   """
 
+  escapeNulls = _messages.BooleanField(1)
 
 
 class GoogleBigtableAdminV2TypeDate(_messages.Message):
@@ -2819,9 +2830,11 @@ class GoogleBigtableAdminV2TypeInt64Encoding(_messages.Message):
 
   Fields:
     bigEndianBytes: Use `BigEndianBytes` encoding.
+    orderedCodeBytes: Use `OrderedCodeBytes` encoding.
   """
 
   bigEndianBytes = _messages.MessageField('GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes', 1)
+  orderedCodeBytes = _messages.MessageField('GoogleBigtableAdminV2TypeInt64EncodingOrderedCodeBytes', 2)
 
 
 class GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes(_messages.Message):
@@ -2835,6 +2848,14 @@ class GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes(_messages.Message):
   """
 
   bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 1)
+
+
+class GoogleBigtableAdminV2TypeInt64EncodingOrderedCodeBytes(_messages.Message):
+  r"""Encodes the value in a variable length binary format of up to 10 bytes.
+  Values that are closer to zero use fewer bytes. Sorted mode: all values are
+  supported. Distinct mode: all values are supported.
+  """
+
 
 
 class GoogleBigtableAdminV2TypeMap(_messages.Message):
@@ -2883,8 +2904,17 @@ class GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes(_messages.Message):
   order is preserved. Distinct mode: all values are supported. Compatible
   with: - BigQuery `TEXT` encoding - HBase `Bytes.toBytes` - Java
   `String#getBytes(StandardCharsets.UTF_8)`
+
+  Fields:
+    nullEscapeChar: Single-character escape sequence used to support NULL
+      values. If set, allows NULL values to be encoded as the empty string "".
+      The actual empty string, or any value where every character equals
+      `null_escape_char`, has one more `null_escape_char` appended. If
+      `null_escape_char` is set and does not equal the ASCII null character
+      0x00, then the encoding will not support sorted mode. .
   """
 
+  nullEscapeChar = _messages.StringField(1)
 
 
 class GoogleBigtableAdminV2TypeStringEncodingUtf8Raw(_messages.Message):
@@ -2897,10 +2927,76 @@ class GoogleBigtableAdminV2TypeStruct(_messages.Message):
   where entries are in the same order and number as `field_types`.
 
   Fields:
+    encoding: The encoding to use when converting to or from lower level
+      types.
     fields: The names and types of the fields in this struct.
   """
 
-  fields = _messages.MessageField('GoogleBigtableAdminV2TypeStructField', 1, repeated=True)
+  encoding = _messages.MessageField('GoogleBigtableAdminV2TypeStructEncoding', 1)
+  fields = _messages.MessageField('GoogleBigtableAdminV2TypeStructField', 2, repeated=True)
+
+
+class GoogleBigtableAdminV2TypeStructEncoding(_messages.Message):
+  r"""Rules used to convert to or from lower level types.
+
+  Fields:
+    delimitedBytes: Use `DelimitedBytes` encoding.
+    orderedCodeBytes: User `OrderedCodeBytes` encoding.
+    singleton: Use `Singleton` encoding.
+  """
+
+  delimitedBytes = _messages.MessageField('GoogleBigtableAdminV2TypeStructEncodingDelimitedBytes', 1)
+  orderedCodeBytes = _messages.MessageField('GoogleBigtableAdminV2TypeStructEncodingOrderedCodeBytes', 2)
+  singleton = _messages.MessageField('GoogleBigtableAdminV2TypeStructEncodingSingleton', 3)
+
+
+class GoogleBigtableAdminV2TypeStructEncodingDelimitedBytes(_messages.Message):
+  r"""Fields are encoded independently and concatenated with a configurable
+  `delimiter` in between. A struct with no fields defined is encoded as a
+  single `delimiter`. Sorted mode: - Fields are encoded in sorted mode. -
+  Encoded field values must not contain any bytes <= `delimiter[0]` - Element-
+  wise order is preserved: `A < B` if `A[0] < B[0]`, or if `A[0] == B[0] &&
+  A[1] < B[1]`, etc. Strict prefixes sort first. Distinct mode: - Fields are
+  encoded in distinct mode. - Encoded field values must not contain
+  `delimiter[0]`.
+
+  Fields:
+    delimiter: Byte sequence used to delimit concatenated fields. The
+      delimiter must contain at least 1 character and at most 50 characters.
+  """
+
+  delimiter = _messages.BytesField(1)
+
+
+class GoogleBigtableAdminV2TypeStructEncodingOrderedCodeBytes(_messages.Message):
+  r"""Fields are encoded independently and concatenated with the fixed byte
+  pair {0x00, 0x01} in between. Any null (0x00) byte in an encoded field is
+  replaced by the fixed byte pair {0x00, 0xFF}. Fields that encode to the
+  empty string "" have special handling: - If *every* field encodes to "", or
+  if the STRUCT has no fields defined, then the STRUCT is encoded as the fixed
+  byte pair {0x00, 0x00}. - Otherwise, the STRUCT only encodes until the last
+  non-empty field, omitting any trailing empty fields. Any empty fields that
+  aren't omitted are replaced with the fixed byte pair {0x00, 0x00}. Examples:
+  - STRUCT() -> "\00\00" - STRUCT("") -> "\00\00" - STRUCT("", "") -> "\00\00"
+  - STRUCT("", "B") -> "\00\00" + "\00\01" + "B" - STRUCT("A", "") -> "A" -
+  STRUCT("", "B", "") -> "\00\00" + "\00\01" + "B" - STRUCT("A", "", "C") ->
+  "A" + "\00\01" + "\00\00" + "\00\01" + "C" Since null bytes are always
+  escaped, this encoding can cause size blowup for encodings like
+  `Int64.BigEndianBytes` that are likely to produce many such bytes. Sorted
+  mode: - Fields are encoded in sorted mode. - All values supported by the
+  field encodings are allowed - Element-wise order is preserved: `A < B` if
+  `A[0] < B[0]`, or if `A[0] == B[0] && A[1] < B[1]`, etc. Strict prefixes
+  sort first. Distinct mode: - Fields are encoded in distinct mode. - All
+  values supported by the field encodings are allowed.
+  """
+
+
+
+class GoogleBigtableAdminV2TypeStructEncodingSingleton(_messages.Message):
+  r"""Uses the encoding of `fields[0].type` as-is. Only valid if `fields.size
+  == 1`.
+  """
+
 
 
 class GoogleBigtableAdminV2TypeStructField(_messages.Message):
@@ -2919,8 +3015,25 @@ class GoogleBigtableAdminV2TypeStructField(_messages.Message):
 class GoogleBigtableAdminV2TypeTimestamp(_messages.Message):
   r"""Timestamp Values of type `Timestamp` are stored in
   `Value.timestamp_value`.
+
+  Fields:
+    encoding: The encoding to use when converting to or from lower level
+      types.
   """
 
+  encoding = _messages.MessageField('GoogleBigtableAdminV2TypeTimestampEncoding', 1)
+
+
+class GoogleBigtableAdminV2TypeTimestampEncoding(_messages.Message):
+  r"""Rules used to convert to or from lower level types.
+
+  Fields:
+    unixMicrosInt64: Encodes the number of microseconds since the Unix epoch
+      using the given `Int64` encoding. Values must be microsecond-aligned.
+      Compatible with: - Java `Instant.truncatedTo()` with `ChronoUnit.MICROS`
+  """
+
+  unixMicrosInt64 = _messages.MessageField('GoogleBigtableAdminV2TypeInt64Encoding', 1)
 
 
 class HotTablet(_messages.Message):
@@ -3353,7 +3466,7 @@ class LogicalView(_messages.Message):
       requests to ensure that the client has an up-to-date value before
       proceeding. The server returns an ABORTED error on a mismatched etag.
     name: Identifier. The unique name of the logical view. Format:
-      `projects/{project}/instances/{instance}/logicalViews/{logical_view}
+      `projects/{project}/instances/{instance}/logicalViews/{logical_view}`
     query: Required. The logical view's select query.
   """
 
@@ -3373,6 +3486,7 @@ class MaterializedView(_messages.Message):
       proceeding. The server returns an ABORTED error on a mismatched etag.
     name: Identifier. The unique name of the materialized view. Format: `proje
       cts/{project}/instances/{instance}/materializedViews/{materialized_view}
+      `
     query: Required. Immutable. The materialized view's select query.
   """
 
@@ -4130,6 +4244,42 @@ class Table(_messages.Message):
     restoreInfo: Output only. If this table was restored from another data
       source (e.g. a backup), this field will be populated with information
       about the restore.
+    rowKeySchema: The row key schema for this table. The schema is used to
+      decode the raw row key bytes into a structured format. The order of
+      field declarations in this schema is important, as it reflects how the
+      raw row key bytes are structured. Currently, this only affects how the
+      key is read via a GoogleSQL query from the ExecuteQuery API. For a SQL
+      query, the _key column is still read as raw bytes. But queries can
+      reference the key fields by name, which will be decoded from _key using
+      provided type and encoding. Queries that reference key fields will fail
+      if they encounter an invalid row key. For example, if _key =
+      "some_id#2024-04-30#\x00\x13\x00\xf3" with the following schema: {
+      fields { field_name: "id" type { string { encoding: utf8_bytes {} } } }
+      fields { field_name: "date" type { string { encoding: utf8_bytes {} } }
+      } fields { field_name: "product_code" type { int64 { encoding:
+      big_endian_bytes {} } } } encoding { delimited_bytes { delimiter: "#" }
+      } } The decoded key parts would be: id = "some_id", date = "2024-04-30",
+      product_code = 1245427 The query "SELECT _key, product_code FROM table"
+      will return two columns:
+      /------------------------------------------------------\ | _key |
+      product_code | | --------------------------------------|--------------|
+      | "some_id#2024-04-30#\x00\x13\x00\xf3" | 1245427 |
+      \------------------------------------------------------/ The schema has
+      the following invariants: (1) The decoded field values are order-
+      preserved. For read, the field values will be decoded in sorted mode
+      from the raw bytes. (2) Every field in the schema must specify a non-
+      empty name. (3) Every field must specify a type with an associated
+      encoding. The type is limited to scalar types only: Array, Map,
+      Aggregate, and Struct are not allowed. (4) The field names must not
+      collide with existing column family names and reserved keywords "_key"
+      and "_timestamp". The following update operations are allowed for
+      row_key_schema: - Update from an empty schema to a new schema. - Remove
+      the existing schema. This operation requires setting the
+      `ignore_warnings` flag to `true`, since it might be a backward
+      incompatible change. Without the flag, the update request will fail with
+      an INVALID_ARGUMENT error. Any other row key schema update operation
+      (e.g. update existing schema columns names or types) is currently
+      unsupported.
     stats: Output only. Only available with STATS_VIEW, this includes summary
       statistics about the entire table contents. For statistics about a
       specific column family, see ColumnFamilyStats in the mapped ColumnFamily
@@ -4214,7 +4364,8 @@ class Table(_messages.Message):
   granularity = _messages.EnumField('GranularityValueValuesEnum', 6)
   name = _messages.StringField(7)
   restoreInfo = _messages.MessageField('RestoreInfo', 8)
-  stats = _messages.MessageField('TableStats', 9)
+  rowKeySchema = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 9)
+  stats = _messages.MessageField('TableStats', 10)
 
 
 class TableProgress(_messages.Message):

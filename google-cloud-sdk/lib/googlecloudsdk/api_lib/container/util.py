@@ -125,6 +125,11 @@ NC_CGROUP_MODE = 'cgroupMode'
 NC_HUGEPAGE = 'hugepageConfig'
 NC_HUGEPAGE_2M = 'hugepage_size2m'
 NC_HUGEPAGE_1G = 'hugepage_size1g'
+NC_MEMORY_MANAGER = 'memoryManager'
+NC_MEMORY_MANAGER_POLICY = 'policy'
+NC_TOPOLOGY_MANAGER = 'topologyManager'
+NC_TOPOLOGY_MANAGER_POLICY = 'policy'
+NC_TOPOLOGY_MANAGER_SCOPE = 'scope'
 
 NC_CC_PRIVATE_CR_CONFIG = 'privateRegistryAccessConfig'
 NC_CC_PRIVATE_CR_CONFIG_ENABLED = 'enabled'
@@ -793,6 +798,8 @@ def LoadSystemConfigFromYAML(
         NC_IMAGE_GC_LOW_THRESHOLD_PERCENT: int,
         NC_IMAGE_MINIMUM_GC_AGE: str,
         NC_IMAGE_MAXIMUM_GC_AGE: str,
+        NC_TOPOLOGY_MANAGER: dict,
+        NC_MEMORY_MANAGER: dict,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields
@@ -831,6 +838,38 @@ def LoadSystemConfigFromYAML(
     node_config.kubeletConfig.imageMaximumGcAge = kubelet_config_opts.get(
         NC_IMAGE_MAXIMUM_GC_AGE
     )
+    # node_config.kubeletConfig.topologyManager = kubelet_config_opts.get(
+    #     NC_TOPOLOGY_MANAGER
+    # )
+    # node_config.kubeletConfig.memoryManager = kubelet_config_opts.get(
+    #     NC_MEMORY_MANAGER
+    # )
+     # Parse memory manager.
+    memory_manager_opts = kubelet_config_opts.get(NC_MEMORY_MANAGER)
+    if memory_manager_opts:
+      node_config.kubeletConfig.memoryManager = messages.MemoryManagerConfig()
+      memory_manager_policy = memory_manager_opts.get(NC_MEMORY_MANAGER_POLICY)
+      if memory_manager_policy:
+        node_config.kubeletConfig.memoryManager.policy = memory_manager_policy
+    # Parse topology manager.
+    topology_manager_opts = kubelet_config_opts.get(NC_TOPOLOGY_MANAGER)
+    if topology_manager_opts:
+      node_config.kubeletConfig.topologyManager = (
+          messages.TopologyManagerConfig()
+      )
+      topology_manager_policy = topology_manager_opts.get(
+          NC_TOPOLOGY_MANAGER_POLICY
+      )
+      if topology_manager_policy:
+        node_config.kubeletConfig.topologyManager.policy = (
+            topology_manager_policy
+        )
+      topology_manager_scope = topology_manager_opts.get(
+          NC_TOPOLOGY_MANAGER_SCOPE
+      )
+      if topology_manager_scope:
+        node_config.kubeletConfig.topologyManager.scope = topology_manager_scope
+
     sysctls = kubelet_config_opts.get(NC_ALLOWED_UNSAFE_SYSCTLS)
     if sysctls:
       node_config.kubeletConfig.allowedUnsafeSysctls = sysctls

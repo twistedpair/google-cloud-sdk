@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.privateca import base as privateca_base
+from googlecloudsdk.api_lib.privateca import certificate_utils
+from googlecloudsdk.api_lib.privateca import request_utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import flags
 from googlecloudsdk.command_lib.privateca import resource_args
@@ -267,3 +269,66 @@ def ValidateIssuingPool(ca_pool_name, issuing_ca_id):
         'The issuing CA Pool [{}] was not found. Please verify this information'
         ' is correct and try again.'.format(ca_pool_name),
     )
+
+
+def _CreateCertificateCreateRequest(issuer_pool_ref, csr, issuer_ca_id, new_ca):
+  """Returns the certificate create request with the given settings.
+
+  Args:
+    issuer_pool_ref: The resource reference for the issuing CA pool.
+    csr: The Certificate Signing Request.
+    issuer_ca_id: The CA ID of the CA to sign the CSR, if specified.
+    new_ca: The CA object.
+
+  Returns:
+    A certificate create request.
+  """
+  messages = privateca_base.GetMessagesModule(api_version='v1')
+
+  certificate_id = 'subordinate-{}'.format(certificate_utils.GenerateCertId())
+  issuer_pool_name = issuer_pool_ref.RelativeName()
+  certificate_name = '{}/certificates/{}'.format(
+      issuer_pool_name, certificate_id
+  )
+  lifetime = new_ca.lifetime
+  cert_request = (
+      messages.PrivatecaProjectsLocationsCaPoolsCertificatesCreateRequest(
+          certificateId=certificate_id,
+          parent=issuer_pool_name,
+          requestId=request_utils.GenerateRequestId(),
+          issuingCertificateAuthorityId=issuer_ca_id,
+          certificate=messages.Certificate(
+              name=certificate_name,
+              lifetime=lifetime,
+              pemCsr=csr,
+          ),
+      )
+  )
+
+  if new_ca.config.subjectConfig.subject.rdnSequence:
+    cert_request.certificate.subjectMode = (
+        messages.Certificate.SubjectModeValueValuesEnum.RDN_SEQUENCE
+    )
+
+  return cert_request
+
+
+def SignCsr(issuer_pool_ref, csr, issuer_ca_id, new_ca):
+  """Issues a certificate under the given issuer with the given settings.
+
+  Args:
+    issuer_pool_ref: The resource reference for the issuing CA pool.
+    csr: The Certificate Signing Request.
+    issuer_ca_id: The CA ID of the CA to sign the CSR, if specified.
+    new_ca: The CA object.
+
+  Returns:
+    The certificate for the new CA.
+  """
+  client = privateca_base.GetClientInstance(api_version='v1')
+
+  cert_request = _CreateCertificateCreateRequest(
+      issuer_pool_ref, csr, issuer_ca_id, new_ca
+  )
+
+  return client.projects_locations_caPools_certificates.Create(cert_request)

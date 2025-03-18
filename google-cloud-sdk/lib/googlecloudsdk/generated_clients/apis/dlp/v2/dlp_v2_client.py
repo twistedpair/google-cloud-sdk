@@ -50,6 +50,7 @@ class DlpV2(base_api.BaseApiClient):
     self.organizations_locations_discoveryConfigs = self.OrganizationsLocationsDiscoveryConfigsService(self)
     self.organizations_locations_dlpJobs = self.OrganizationsLocationsDlpJobsService(self)
     self.organizations_locations_fileStoreDataProfiles = self.OrganizationsLocationsFileStoreDataProfilesService(self)
+    self.organizations_locations_infoTypes = self.OrganizationsLocationsInfoTypesService(self)
     self.organizations_locations_inspectTemplates = self.OrganizationsLocationsInspectTemplatesService(self)
     self.organizations_locations_jobTriggers = self.OrganizationsLocationsJobTriggersService(self)
     self.organizations_locations_projectDataProfiles = self.OrganizationsLocationsProjectDataProfilesService(self)
@@ -72,6 +73,7 @@ class DlpV2(base_api.BaseApiClient):
     self.projects_locations_dlpJobs = self.ProjectsLocationsDlpJobsService(self)
     self.projects_locations_fileStoreDataProfiles = self.ProjectsLocationsFileStoreDataProfilesService(self)
     self.projects_locations_image = self.ProjectsLocationsImageService(self)
+    self.projects_locations_infoTypes = self.ProjectsLocationsInfoTypesService(self)
     self.projects_locations_inspectTemplates = self.ProjectsLocationsInspectTemplatesService(self)
     self.projects_locations_jobTriggers = self.ProjectsLocationsJobTriggersService(self)
     self.projects_locations_projectDataProfiles = self.ProjectsLocationsProjectDataProfilesService(self)
@@ -1105,6 +1107,43 @@ class DlpV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DlpOrganizationsLocationsFileStoreDataProfilesListRequest',
         response_type_name='GooglePrivacyDlpV2ListFileStoreDataProfilesResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsInfoTypesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_infoTypes resource."""
+
+    _NAME = 'organizations_locations_infoTypes'
+
+    def __init__(self, client):
+      super(DlpV2.OrganizationsLocationsInfoTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of the sensitive information types that the DLP API supports. See https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsInfoTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListInfoTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/infoTypes',
+        http_method='GET',
+        method_id='dlp.organizations.locations.infoTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'languageCode', 'locationId'],
+        relative_path='v2/{+parent}/infoTypes',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsInfoTypesListRequest',
+        response_type_name='GooglePrivacyDlpV2ListInfoTypesResponse',
         supports_download=False,
     )
 
@@ -3539,6 +3578,43 @@ class DlpV2(base_api.BaseApiClient):
         request_field='googlePrivacyDlpV2RedactImageRequest',
         request_type_name='DlpProjectsLocationsImageRedactRequest',
         response_type_name='GooglePrivacyDlpV2RedactImageResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInfoTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_infoTypes resource."""
+
+    _NAME = 'projects_locations_infoTypes'
+
+    def __init__(self, client):
+      super(DlpV2.ProjectsLocationsInfoTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of the sensitive information types that the DLP API supports. See https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference to learn more.
+
+      Args:
+        request: (DlpProjectsLocationsInfoTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListInfoTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/infoTypes',
+        http_method='GET',
+        method_id='dlp.projects.locations.infoTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'languageCode', 'locationId'],
+        relative_path='v2/{+parent}/infoTypes',
+        request_field='',
+        request_type_name='DlpProjectsLocationsInfoTypesListRequest',
+        response_type_name='GooglePrivacyDlpV2ListInfoTypesResponse',
         supports_download=False,
     )
 

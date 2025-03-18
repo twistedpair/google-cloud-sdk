@@ -1900,9 +1900,8 @@ class InterceptDeployment(_messages.Message):
     description: Optional. User-provided description of the deployment. Used
       as additional context for the deployment.
     forwardingRule: Required. Immutable. The regional forwarding rule that
-      fronts the intercept collectors, for example:
-      `projects/123456789/regions/us-central1/forwardingRules/my-rule`. See
-      https://google.aip.dev/124.
+      fronts the interceptors, for example: `projects/123456789/regions/us-
+      central1/forwardingRules/my-rule`. See https://google.aip.dev/124.
     interceptDeploymentGroup: Required. Immutable. The deployment group that
       this deployment is a part of, for example:
       `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
@@ -2159,8 +2158,8 @@ class InterceptEndpointGroup(_messages.Message):
       https://google.aip.dev/148#timestamps.
     description: Optional. User-provided description of the endpoint group.
       Used as additional context for the endpoint group.
-    interceptDeploymentGroup: Immutable. The deployment group that this
-      endpoint group is connected to, for example:
+    interceptDeploymentGroup: Required. Immutable. The deployment group that
+      this endpoint group is connected to, for example:
       `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
       See https://google.aip.dev/124.
     labels: Optional. Labels are key/value pairs that help to organize and
@@ -2265,7 +2264,7 @@ class InterceptEndpointGroupAssociation(_messages.Message):
   Fields:
     createTime: Output only. The timestamp when the resource was created. See
       https://google.aip.dev/148#timestamps.
-    interceptEndpointGroup: Immutable. The endpoint group that this
+    interceptEndpointGroup: Required. Immutable. The endpoint group that this
       association is connected to, for example:
       `projects/123456789/locations/global/interceptEndpointGroups/my-eg`. See
       https://google.aip.dev/124.
@@ -2281,8 +2280,8 @@ class InterceptEndpointGroupAssociation(_messages.Message):
       association, for example: `projects/123456789/locations/global/intercept
       EndpointGroupAssociations/my-eg-association`. See
       https://google.aip.dev/122 for more details.
-    network: Immutable. The VPC network that is associated. for example:
-      `projects/123456789/global/networks/my-network`. See
+    network: Required. Immutable. The VPC network that is associated. for
+      example: `projects/123456789/global/networks/my-network`. See
       https://google.aip.dev/124.
     reconciling: Output only. The current state of the resource does not match
       the user's intended state, and the system is working to reconcile them.
@@ -3016,10 +3015,14 @@ class ListServerTlsPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serverTlsPolicies: List of ServerTlsPolicy resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      `return_partial_success` and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTlsInspectionPoliciesResponse(_messages.Message):
@@ -7718,11 +7721,18 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesListRequest(_messages.Mes
     parent: Required. The project and location from which the
       ServerTlsPolicies should be listed, specified in the format
       `projects/*/locations/{location}`.
+    returnPartialSuccess: Optional. Setting this field to `true` will opt the
+      request into returning the resources that are reachable, and into
+      including the names of those that were unreachable in the
+      [ListServerTlsPoliciesResponse.unreachable] field. This can only be
+      `true` when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworksecurityProjectsLocationsServerTlsPoliciesPatchRequest(_messages.Message):
@@ -8554,10 +8564,6 @@ class PartnerSSEGateway(_messages.Message):
       associated with Symantec today.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
-    maxBandwidthMbps: Output only. Not an enforced cap. Filled from the
-      customer SSEGateway, and only for PartnerSSEGateways associated with
-      Symantec today in TTM flow. This field will be deprecated with TTM. Use
-      capacity_bps for NCCGW.
     name: Immutable. name of resource
     partnerSseEnvironment: Output only. [Output Only] Full URI of the partner
       environment this PartnerSSEGateway is connected to. Filled from the
@@ -8643,26 +8649,25 @@ class PartnerSSEGateway(_messages.Message):
   country = _messages.StringField(2)
   createTime = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  maxBandwidthMbps = _messages.IntegerField(5)
-  name = _messages.StringField(6)
-  partnerSseEnvironment = _messages.StringField(7)
-  partnerSseRealm = _messages.StringField(8)
-  partnerSubnetRange = _messages.StringField(9)
-  partnerVpcSubnetRange = _messages.StringField(10)
-  sseBgpAsn = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(12, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(13)
-  sseNetwork = _messages.StringField(14)
-  sseProject = _messages.StringField(15)
-  sseSubnetRange = _messages.StringField(16)
-  sseTargetIp = _messages.StringField(17)
-  sseVpcSubnetRange = _messages.StringField(18)
-  sseVpcTargetIp = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 21)
-  timezone = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
-  vni = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  partnerSseEnvironment = _messages.StringField(6)
+  partnerSseRealm = _messages.StringField(7)
+  partnerSubnetRange = _messages.StringField(8)
+  partnerVpcSubnetRange = _messages.StringField(9)
+  sseBgpAsn = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(11, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(12)
+  sseNetwork = _messages.StringField(13)
+  sseProject = _messages.StringField(14)
+  sseSubnetRange = _messages.StringField(15)
+  sseTargetIp = _messages.StringField(16)
+  sseVpcSubnetRange = _messages.StringField(17)
+  sseVpcTargetIp = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 20)
+  timezone = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  vni = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):

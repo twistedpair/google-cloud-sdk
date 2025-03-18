@@ -26,7 +26,6 @@ from google.auth.transport.grpc import SslCredentials  # type: ignore
 import grpc  # type: ignore
 
 from google.iam.v1 import iam_policy_pb2  # type: ignore
-from google.iam.v1 import policy_pb2  # type: ignore
 from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as gcr_worker_pool
@@ -383,61 +382,6 @@ class WorkerPoolsGrpcTransport(WorkerPoolsTransport):
                 response_deserializer=operations_pb2.Operation.FromString,
             )
         return self._stubs['delete_worker_pool']
-
-    @property
-    def get_iam_policy(self) -> Callable[
-            [iam_policy_pb2.GetIamPolicyRequest],
-            policy_pb2.Policy]:
-        r"""Return a callable for the get iam policy method over gRPC.
-
-        Gets the IAM Access Control policy currently in
-        effect for the given Cloud Run WorkerPool. This result
-        does not include any inherited policies.
-
-        Returns:
-            Callable[[~.GetIamPolicyRequest],
-                    ~.Policy]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'get_iam_policy' not in self._stubs:
-            self._stubs['get_iam_policy'] = self.grpc_channel.unary_unary(
-                '/google.cloud.run.v2.WorkerPools/GetIamPolicy',
-                request_serializer=iam_policy_pb2.GetIamPolicyRequest.SerializeToString,
-                response_deserializer=policy_pb2.Policy.FromString,
-            )
-        return self._stubs['get_iam_policy']
-
-    @property
-    def set_iam_policy(self) -> Callable[
-            [iam_policy_pb2.SetIamPolicyRequest],
-            policy_pb2.Policy]:
-        r"""Return a callable for the set iam policy method over gRPC.
-
-        Sets the IAM Access control policy for the specified
-        WorkerPool. Overwrites any existing policy.
-
-        Returns:
-            Callable[[~.SetIamPolicyRequest],
-                    ~.Policy]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'set_iam_policy' not in self._stubs:
-            self._stubs['set_iam_policy'] = self.grpc_channel.unary_unary(
-                '/google.cloud.run.v2.WorkerPools/SetIamPolicy',
-                request_serializer=iam_policy_pb2.SetIamPolicyRequest.SerializeToString,
-                response_deserializer=policy_pb2.Policy.FromString,
-            )
-        return self._stubs['set_iam_policy']
 
     @property
     def test_iam_permissions(self) -> Callable[

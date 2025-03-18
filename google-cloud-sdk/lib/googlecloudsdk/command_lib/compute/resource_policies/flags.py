@@ -138,6 +138,71 @@ def AddCommonArgs(parser):
       help='An optional, textual description for the backend.')
 
 
+def AddTypeArgsForWorkloadPolicy(parser):
+  """Set arguments for workload-type for workload policies."""
+  choices = {
+      'HIGH_AVAILABILITY': (
+          'For workloads that aim to be highly available. Common examples'
+          ' are web / ML serving, or distributed database clusters. Compute'
+          ' Engine spreads VMs at best-effort to improve reliability of the'
+          ' distributed infrastructure.'
+      ),
+      'HIGH_THROUGHPUT': (
+          'For high throughput distributed workloads eg. HPC or ML'
+          ' training. Compute Engine collocates VMs at best-effort to'
+          ' reduce network latency between VMs.'
+      ),
+  }
+
+  parser.add_argument(
+      '--type',
+      required=True,
+      choices=choices,
+      type=arg_utils.ChoiceToEnumName,
+      help=(
+          'Type of the workload policy defining the high-level intent of the'
+          ' cluster.'
+      ),
+  )
+
+
+def AddMaxTopologyDistanceAndAcceleratorTopologyArgsForWorkloadPolicy(parser):
+  """Set arguments for max-topology-distance and accelerator-topology for workload policies."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--accelerator-topology',
+      type=str,
+      help=(
+          'Specifies the topology of placement and interconnection performance'
+          ' required to create a slice of VMs with interconnected accelerators.'
+      ),
+  )
+  choices = {
+      'CLUSTER': (
+          'VMs are placed within the same cluster of capacity with improved'
+          ' latency between them.'
+      ),
+      'BLOCK': (
+          'VMs are placed within the same block of capacity with improved'
+          ' latency compared to Cluster.'
+      ),
+      'SUBBLOCK': (
+          'Tightest collocation of VMs that provides minimized network'
+          ' latency. VMs are placed within the same rack of capacity with'
+          ' improved latency compared to Block.'
+      ),
+  }
+  group.add_argument(
+      '--max-topology-distance',
+      choices=choices,
+      type=arg_utils.ChoiceToEnumName,
+      help=(
+          'Specifies the topology of placement and interconnection network'
+          ' performance of the group of VMs (MIG / Multi-MIGs).'
+      ),
+  )
+
+
 def GetOnSourceDiskDeleteFlagMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--on-source-disk-delete',
@@ -267,6 +332,14 @@ def AddGroupPlacementArgs(parser, messages, track):
         '--max-distance',
         type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=3),
         help='Specifies the number of max logical switches between VMs.'
+    )
+    parser.add_argument(
+        '--gpu-topology',
+        type=str,
+        help=(
+            'Specifies the shape of the GPU slice, in slice based GPU families'
+            ' eg. A4X.'
+        ),
     )
 
 

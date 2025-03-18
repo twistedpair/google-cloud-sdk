@@ -539,13 +539,51 @@ def AddCPUCount(parser, required=True):
       '--cpu-count',
       required=required,
       type=int,
-      choices=[1, 2, 4, 8, 16, 32, 64, 96, 128],
+      choices=[1, 2, 4, 8, 16, 32, 48, 64, 72, 96, 128],
       help=(
-          'Whole number value indicating how many vCPUs the machine should '
-          'contain. Each vCPU count corresponds to a N2 high-mem machine: '
-          '(https://cloud.google.com/compute/docs/general-purpose-machines#n2_'
-          'machines).'
+          'Whole number value indicating how many vCPUs the machine should'
+          ' contain. If the instance does not have a machine-type, the vCPU'
+          ' count will be used to determine the machine type where each vCPU'
+          ' corresponds to an N2  high-mem machine: '
+          ' (https://cloud.google.com/compute/docs/general-purpose-machines#n2_machine_types).'
+          ' where CPU_COUNT can be one of: 2, 4, 8, 16, 32, 64, 96, 128. If the'
+          ' instance has a machine-type, cpu-count must have the same value as'
+          ' the vCPU count in the machine-type. Eg: if machine-type is'
+          ' c4a-highmem-4-lssd, cpu-count must be 4.'
       ),
+  )
+
+
+def AddMachineType(parser, required=False):
+  """Adds a --machine-type flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --machine-type is required.
+  """
+  parser.add_argument(
+      '--machine-type',
+      required=required,
+      type=str,
+      choices=[
+          'n2-highmem-2',
+          'n2-highmem-4',
+          'n2-highmem-8',
+          'n2-highmem-16',
+          'n2-highmem-32',
+          'n2-highmem-64',
+          'n2-highmem-96',
+          'n2-highmem-128',
+          'c4a-highmem-1',
+          'c4a-highmem-4-lssd',
+          'c4a-highmem-8-lssd',
+          'c4a-highmem-16-lssd',
+          'c4a-highmem-32-lssd',
+          'c4a-highmem-48-lssd',
+          'c4a-highmem-64-lssd',
+          'c4a-highmem-72-lssd',
+      ],
+      help='Specifies machine type for the instance.',
   )
 
 

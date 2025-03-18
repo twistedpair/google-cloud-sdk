@@ -715,6 +715,7 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState(_messages.Messa
     failedActions: Output only. Number of orchestration actions which failed
       so far. For more details, query the Cloud Logs.
     finishTime: Output only. Finish time of the wave iteration.
+    iterationId: Output only. Unique identifier of the iteration.
     performedActions: Output only. Overall number of actions done by the
       orchestrator so far.
     progress: Output only. An estimated percentage of the progress. Number
@@ -747,11 +748,12 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState(_messages.Messa
   error = _messages.MessageField('Status', 1)
   failedActions = _messages.IntegerField(2)
   finishTime = _messages.StringField(3)
-  performedActions = _messages.IntegerField(4)
-  progress = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  rolloutResource = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  iterationId = _messages.StringField(4)
+  performedActions = _messages.IntegerField(5)
+  progress = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  rolloutResource = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class GoogleCloudOsconfigV2alphaPolicyOrchestratorOrchestrationState(_messages.Message):

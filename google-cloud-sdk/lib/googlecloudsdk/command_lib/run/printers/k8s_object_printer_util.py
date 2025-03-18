@@ -162,6 +162,13 @@ def GetExecutionEnvironment(record):
   return record.annotations.get(k8s_object.EXECUTION_ENVIRONMENT_ANNOTATION, '')
 
 
+def GetThreatDetectionEnabled(record):
+  if record.annotations.get(
+      k8s_object.THREAT_DETECTION_ANNOTATION, '').lower() == 'true':
+    return 'Enabled'
+  return ''
+
+
 def GetStartupProbe(
     container: container_resource.Container,
     labels: Mapping[str, str],

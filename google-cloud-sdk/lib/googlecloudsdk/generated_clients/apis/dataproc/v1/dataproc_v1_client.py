@@ -2867,6 +2867,33 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateMetadataConfig(self, request, global_params=None):
+      r"""Updates config on the node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsUpdateMetadataConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMetadataConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMetadataConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}:updateMetadataConfig',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.updateMetadataConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:updateMetadataConfig',
+        request_field='updateMetadataConfigNodeGroupRequest',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsUpdateMetadataConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsRegionsClustersService(base_api.BaseApiService):
     """Service class for the projects_regions_clusters resource."""
 

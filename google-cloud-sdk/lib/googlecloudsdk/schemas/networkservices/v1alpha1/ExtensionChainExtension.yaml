@@ -28,6 +28,13 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  allowDynamicForwarding:
+    description: |-
+      When set to `TRUE`, the response from an extension service is allowed to
+      set the `com.google.envoy.dynamic_forwarding` namespace in the dynamic
+      metadata. This field is not supported for plugin extensions. Setting it
+      results in a validation error.
+    type: boolean
   authority:
     description: |-
       The `:authority` header in the gRPC request sent from Envoy to the
@@ -63,8 +70,13 @@ properties:
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field is subject to following
+      limitations: * The total size of the metadata must be less than 1KiB.
+      * The total number of keys in the metadata must be less than 20. * The
+      length of each key must be less than 64 characters. * The length of
+      each value must be less than 1024 characters. * All values must be
+      strings. This field is not supported for plugin extensions. Setting it
+      results in a validation error.
     type: object
   name:
     description: |-
@@ -98,8 +110,9 @@ properties:
     description: |-
       A set of events during request or response processing for which this
       extension is called. This field is required for the
-      `LbTrafficExtension` resource. It must not be set for the
-      `LbRouteExtension` resource, otherwise a validation error is returned.
+      `LbTrafficExtension` resource. It is optional for the
+      `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
+      assumed as supported.
     type: array
     items:
       type: string

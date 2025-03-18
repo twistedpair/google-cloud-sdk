@@ -45,7 +45,7 @@ def MakeRegionalPublicDelegatedPrefixesArg():
   )
 
 
-def AddCreatePdpArgsToParser(parser, include_subnetwork_creation_mode=False):
+def AddCreatePdpArgsToParser(parser):
   """Adds flags for public delegated prefixes create command."""
   parent_prefix_args = parser.add_mutually_exclusive_group(required=True)
   parent_prefix_args.add_argument(
@@ -82,12 +82,13 @@ def AddCreatePdpArgsToParser(parser, include_subnetwork_creation_mode=False):
           'migrated.'
       ),
   )
-  mode_choices = ['delegation', 'external-ipv6-forwarding-rule-creation']
-  if include_subnetwork_creation_mode:
-    mode_choices.append('external-ipv6-subnetwork-creation')
   base.ChoiceArgument(
       '--mode',
-      choices=mode_choices,
+      choices=[
+          'delegation',
+          'external-ipv6-forwarding-rule-creation',
+          'external-ipv6-subnetwork-creation',
+      ],
       help_str='Specifies the mode of this IPv6 PDP.',
   ).AddToParser(parser)
   parser.add_argument(
@@ -106,7 +107,7 @@ def _AddCommonSubPrefixArgs(parser, verb):
   )
 
 
-def AddCreateSubPrefixArgs(parser, include_subnetwork_creation_mode=False):
+def AddCreateSubPrefixArgs(parser):
   """Adds flags for delegate sub prefixes create command."""
   _AddCommonSubPrefixArgs(parser, 'create')
   parser.add_argument(
@@ -135,12 +136,13 @@ def AddCreateSubPrefixArgs(parser, include_subnetwork_creation_mode=False):
           'resources in the delegatee project. Default is false.'
       ),
   )
-  mode_choices = ['delegation', 'external-ipv6-forwarding-rule-creation']
-  if include_subnetwork_creation_mode:
-    mode_choices.append('external-ipv6-subnetwork-creation')
   base.ChoiceArgument(
       '--mode',
-      choices=mode_choices,
+      choices=[
+          'delegation',
+          'external-ipv6-forwarding-rule-creation',
+          'external-ipv6-subnetwork-creation',
+      ],
       help_str='Specifies the mode of this IPv6 PDP.',
   ).AddToParser(parser)
   parser.add_argument(

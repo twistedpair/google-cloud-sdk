@@ -1262,6 +1262,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsListRequest(_messages.Message)
       token.
     parent: Required. The BackupPlan that contains the Backups to list.
       Format: `projects/*/locations/*/backupPlans/*`
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field will be populated.
   """
 
   filter = _messages.StringField(1)
@@ -1269,6 +1272,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsListRequest(_messages.Message)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class GkebackupProjectsLocationsBackupPlansBackupsPatchRequest(_messages.Message):
@@ -2545,10 +2549,12 @@ class ListBackupsResponse(_messages.Message):
     nextPageToken: A token which may be sent as page_token in a subsequent
       `ListBackups` call to retrieve the next page of results. If this field
       is omitted or empty, then there are no more results to return.
+    unreachable: Locations that could not be reached.
   """
 
   backups = _messages.MessageField('Backup', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -3966,8 +3972,8 @@ class TransformationRuleAction(_messages.Message):
 
 class TroubleshootingInfo(_messages.Message):
   r"""Stores information about troubleshooting doc for debugging a particular
-  state of an. This will be used by the end user to debug their operation
-  failure scenario easily.
+  state of an operation (eg - backup/restore). This will be used by the end
+  user to debug their operation failure scenario easily.
 
   Fields:
     stateReasonCode: Output only. Unique code for each backup/restore

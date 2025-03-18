@@ -106,8 +106,8 @@ class AuthzExtension(_messages.Message):
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     WireFormatValueValuesEnum: Optional. The format of communication supported
-      by the callout extension. If not specified, the default is
-      `EXT_PROC_GRPC`.
+      by the callout extension. If not specified, the default value
+      `EXT_PROC_GRPC` is used.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
@@ -170,7 +170,7 @@ class AuthzExtension(_messages.Message):
       the stream. The timeout must be between 10-10000 milliseconds.
     updateTime: Output only. The timestamp when the resource was updated.
     wireFormat: Optional. The format of communication supported by the callout
-      extension. If not specified, the default is `EXT_PROC_GRPC`.
+      extension. If not specified, the default value `EXT_PROC_GRPC` is used.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -193,15 +193,15 @@ class AuthzExtension(_messages.Message):
 
   class WireFormatValueValuesEnum(_messages.Enum):
     r"""Optional. The format of communication supported by the callout
-    extension. If not specified, the default is `EXT_PROC_GRPC`.
+    extension. If not specified, the default value `EXT_PROC_GRPC` is used.
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
       EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
         stream. This is the default value if the wire format is not specified.
         The backend service for the extension must use HTTP2 or H2C as the
-        protocol. All `supported_events` for a client request will be sent as
-        part of the same gRPC stream.
+        protocol. All `supported_events` for a client request are sent as part
+        of the same gRPC stream.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
@@ -1473,8 +1473,13 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field is subject to following limitations:
+      * The total size of the metadata must be less than 1KiB. * The total
+      number of keys in the metadata must be less than 20. * The length of
+      each key must be less than 64 characters. * The length of each value
+      must be less than 1024 characters. * All values must be strings. This
+      field is not supported for plugin extensions. Setting it results in a
+      validation error.
 
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
@@ -1501,8 +1506,13 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field is subject to following limitations:
+      * The total size of the metadata must be less than 1KiB. * The total
+      number of keys in the metadata must be less than 20. * The length of
+      each key must be less than 64 characters. * The length of each value
+      must be less than 1024 characters. * All values must be strings. This
+      field is not supported for plugin extensions. Setting it results in a
+      validation error.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
@@ -1525,8 +1535,9 @@ class ExtensionChainExtension(_messages.Message):
       `LbTrafficExtension` and the `LbRouteExtension` resources.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
-      for the `LbTrafficExtension` resource. It must not be set for the
-      `LbRouteExtension` resource, otherwise a validation error is returned.
+      for the `LbTrafficExtension` resource. It is optional for the
+      `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
+      assumed as supported.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between `10`-`1000` milliseconds.
       Required for callout extensions. This field is not supported for plugin
@@ -1568,8 +1579,12 @@ class ExtensionChainExtension(_messages.Message):
     `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
     following variables are supported in the metadata: `{forwarding_rule_id}`
     - substituted with the forwarding rule's fully qualified resource name.
-    This field is not supported for plugin extensions. Setting it results in a
-    validation error.
+    This field is subject to following limitations: * The total size of the
+    metadata must be less than 1KiB. * The total number of keys in the
+    metadata must be less than 20. * The length of each key must be less than
+    64 characters. * The length of each value must be less than 1024
+    characters. * All values must be strings. This field is not supported for
+    plugin extensions. Setting it results in a validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3091,7 +3106,7 @@ class LbTrafficExtension(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
       `EXTERNAL_MANAGED`. For more information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
@@ -3127,7 +3142,7 @@ class LbTrafficExtension(_messages.Message):
       resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
-      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      Supported values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more
       information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included in the
@@ -3146,7 +3161,7 @@ class LbTrafficExtension(_messages.Message):
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
-    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information, refer to
     [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
@@ -3253,10 +3268,14 @@ class ListEdgeCacheKeysetsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       page_token.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   edgeCacheKeysets = _messages.MessageField('EdgeCacheKeyset', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEdgeCacheOriginsResponse(_messages.Message):
@@ -3268,10 +3287,14 @@ class ListEdgeCacheOriginsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       page_token.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   edgeCacheOrigins = _messages.MessageField('EdgeCacheOrigin', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEdgeCacheServicesResponse(_messages.Message):
@@ -3283,10 +3306,14 @@ class ListEdgeCacheServicesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       page_token.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   edgeCacheServices = _messages.MessageField('EdgeCacheService', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEndpointPoliciesResponse(_messages.Message):
@@ -3298,10 +3325,14 @@ class ListEndpointPoliciesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   endpointPolicies = _messages.MessageField('EndpointPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGatewayRouteViewsResponse(_messages.Message):
@@ -3311,10 +3342,14 @@ class ListGatewayRouteViewsResponse(_messages.Message):
     gatewayRouteViews: List of GatewayRouteView resources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   gatewayRouteViews = _messages.MessageField('GatewayRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGatewaysResponse(_messages.Message):
@@ -3343,10 +3378,14 @@ class ListGrpcRoutesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   grpcRoutes = _messages.MessageField('GrpcRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListHttpRoutesResponse(_messages.Message):
@@ -3358,10 +3397,14 @@ class ListHttpRoutesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLbRouteExtensionsResponse(_messages.Message):
@@ -3414,10 +3457,14 @@ class ListMeshRouteViewsResponse(_messages.Message):
     meshRouteViews: List of MeshRouteView resources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   meshRouteViews = _messages.MessageField('MeshRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMeshesResponse(_messages.Message):
@@ -3601,10 +3648,14 @@ class ListServiceBindingsResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serviceBindings: List of ServiceBinding resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListServiceLbPoliciesResponse(_messages.Message):
@@ -3616,10 +3667,14 @@ class ListServiceLbPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serviceLbPolicies: List of ServiceLbPolicy resources.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
   """
 
   nextPageToken = _messages.StringField(1)
   serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTcpRoutesResponse(_messages.Message):
@@ -3631,10 +3686,14 @@ class ListTcpRoutesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     tcpRoutes: List of TcpRoute resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   tcpRoutes = _messages.MessageField('TcpRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTlsRoutesResponse(_messages.Message):
@@ -3646,10 +3705,14 @@ class ListTlsRoutesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     tlsRoutes: List of TlsRoute resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   tlsRoutes = _messages.MessageField('TlsRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListWasmPluginVersionsResponse(_messages.Message):
@@ -3660,11 +3723,15 @@ class ListWasmPluginVersionsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
     wasmPluginVersions: List of `WasmPluginVersion` resources.
   """
 
   nextPageToken = _messages.StringField(1)
-  wasmPluginVersions = _messages.MessageField('WasmPluginVersion', 2, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
+  wasmPluginVersions = _messages.MessageField('WasmPluginVersion', 3, repeated=True)
 
 
 class ListWasmPluginsResponse(_messages.Message):
@@ -3675,11 +3742,15 @@ class ListWasmPluginsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
     wasmPlugins: List of `WasmPlugin` resources.
   """
 
   nextPageToken = _messages.StringField(1)
-  wasmPlugins = _messages.MessageField('WasmPlugin', 2, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
+  wasmPlugins = _messages.MessageField('WasmPlugin', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -4700,13 +4771,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -4726,13 +4796,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest(_messages.Mes
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -4757,15 +4826,15 @@ class NetworkservicesProjectsLocationsAuthzExtensionsListRequest(_messages.Messa
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the `AuthzExtension`
-      resources are listed, specified in the following format:
-      `projects/{project}/locations/{location}`.
+      resources are listed. These values are specified in the following
+      format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -4787,13 +4856,12 @@ class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Mess
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Used to specify the fields to be overwritten in the
       `AuthzExtension` resource by the update. The fields specified in the
@@ -5302,11 +5370,15 @@ class NetworkservicesProjectsLocationsEndpointPoliciesListRequest(_messages.Mess
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the EndpointPolicies
       should be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Message):
@@ -5489,11 +5561,15 @@ class NetworkservicesProjectsLocationsGrpcRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the GrpcRoutes
       should be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
@@ -5562,11 +5638,15 @@ class NetworkservicesProjectsLocationsHttpRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the HttpRoutes
       should be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
@@ -5601,13 +5681,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.M
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -5627,13 +5706,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.M
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -5658,15 +5736,15 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Mes
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbRouteExtension` resources are listed, specified in the following
-      format: `projects/{project}/locations/{location}`.
+      `LbRouteExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -5688,13 +5766,12 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbRouteExtension` resource by the update. The fields specified in the
@@ -5724,13 +5801,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest(_messages
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -5751,13 +5827,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest(_messages
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -5782,15 +5857,15 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest(_messages.M
 
   Fields:
     filter: Optional. Filtering results.
-    orderBy: Optional. Hint for how to order the results.
+    orderBy: Optional. Hint about how to order the results.
     pageSize: Optional. Requested page size. The server might return fewer
       items than requested. If unspecified, the server picks an appropriate
       default.
     pageToken: Optional. A token identifying a page of results that the server
       returns.
     parent: Required. The project and location from which the
-      `LbTrafficExtension` resources are listed, specified in the following
-      format: `projects/{project}/locations/{location}`.
+      `LbTrafficExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -5813,13 +5888,12 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbTrafficExtension` resource by the update. The fields specified in the
@@ -7230,7 +7304,7 @@ class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Mes
 
   Fields:
     parent: Required. The parent resource of the ServiceBinding. Must be in
-      the format `projects/*/locations/global`.
+      the format `projects/*/locations/*`.
     serviceBinding: A ServiceBinding resource to be passed as the request
       body.
     serviceBindingId: Required. Short name of the ServiceBinding resource to
@@ -7247,7 +7321,7 @@ class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Mes
 
   Fields:
     name: Required. A name of the ServiceBinding to delete. Must be in the
-      format `projects/*/locations/global/serviceBindings/*`.
+      format `projects/*/locations/*/serviceBindings/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7258,7 +7332,7 @@ class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Messag
 
   Fields:
     name: Required. A name of the ServiceBinding to get. Must be in the format
-      `projects/*/locations/global/serviceBindings/*`.
+      `projects/*/locations/*/serviceBindings/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7273,7 +7347,7 @@ class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Messa
       Indicates that this is a continuation of a prior `ListRouters` call, and
       that the system should return the next page of data.
     parent: Required. The project and location from which the ServiceBindings
-      should be listed, specified in the format `projects/*/locations/global`.
+      should be listed, specified in the format `projects/*/locations/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -7408,11 +7482,15 @@ class NetworkservicesProjectsLocationsTcpRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the TcpRoutes should
       be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
@@ -7481,11 +7559,15 @@ class NetworkservicesProjectsLocationsTlsRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the TlsRoutes should
       be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
@@ -8205,8 +8287,10 @@ class Secret(_messages.Message):
 
 
 class ServiceBinding(_messages.Message):
-  r"""ServiceBinding is the resource that defines a Service Directory Service
-  to be used in a BackendService resource.
+  r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
+  used in a BackendService resource. This feature will be deprecated soon. -
+  Bind a Private Service Connect producer service to be used in consumer Cloud
+  Service Mesh or Application Load Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -8219,13 +8303,15 @@ class ServiceBinding(_messages.Message):
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
     name: Identifier. Name of the ServiceBinding resource. It matches pattern
-      `projects/*/locations/global/serviceBindings/service_binding_name`.
-    service: Required. The full Service Directory Service name of the format
-      projects/*/locations/*/namespaces/*/services/*
+      `projects/*/locations/*/serviceBindings/`.
+    service: Optional. The full Service Directory Service name of the format
+      `projects/*/locations/*/namespaces/*/services/*`. This field is for
+      Service Directory integration which will be deprecated soon.
     serviceId: Output only. The unique identifier of the Service Directory
-      Service against which the Service Binding resource is validated. This is
+      Service against which the ServiceBinding resource is validated. This is
       populated when the Service Binding resource is used in another resource
-      (like Backend Service). This is of the UUID4 format.
+      (like Backend Service). This is of the UUID4 format. This field is for
+      Service Directory integration which will be deprecated soon.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -8817,7 +8903,7 @@ class TlsRouteRouteDestination(_messages.Message):
 
   Fields:
     serviceName: Required. The URL of a BackendService to route traffic to.
-    weight: Optional. Specifies the proportion of requests forwareded to the
+    weight: Optional. Specifies the proportion of requests forwarded to the
       backend referenced by the service_name field. This is computed as: -
       weight/Sum(weights in destinations) Weights in all destinations does not
       need to sum up to 100.

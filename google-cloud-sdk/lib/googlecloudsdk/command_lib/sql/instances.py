@@ -474,6 +474,35 @@ class _BaseInstances(object):
           sql_messages, args.server_ca_mode
       )
 
+    if args.retain_backups_on_delete is not None:
+      settings.retainBackupsOnDelete = args.retain_backups_on_delete
+
+    if args.IsKnownAndSpecified('server_ca_pool'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.serverCaPool = args.server_ca_pool
+      if (
+          settings.ipConfiguration.serverCaMode
+          != sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
+      ):
+        raise sql_exceptions.ArgumentError(
+            '`--server-ca-pool` can only be specified when the server CA mode'
+            ' is CUSTOMER_MANAGED_CAS_CA.'
+        )
+    elif (
+        settings.ipConfiguration
+        and settings.ipConfiguration.serverCaMode
+        == sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
+    ):
+      raise exceptions.RequiredArgumentException(
+          '--server-ca-pool',
+          (
+              'To create an instance with server CA mode '
+              'CUSTOMER_MANAGED_CAS_CA, [--server-ca-pool] must be '
+              'specified.'
+          ),
+      )
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -502,32 +531,6 @@ class _BaseInstances(object):
             args.replication_lag_max_seconds_for_recreate
         )
 
-      if args.IsKnownAndSpecified('server_ca_pool'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.serverCaPool = args.server_ca_pool
-        if (
-            settings.ipConfiguration.serverCaMode
-            != sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
-        ):
-          raise sql_exceptions.ArgumentError(
-              '`--server-ca-pool` can only be specified when the server CA mode'
-              ' is CUSTOMER_MANAGED_CAS_CA.'
-          )
-      elif (
-          settings.ipConfiguration
-          and settings.ipConfiguration.serverCaMode
-          == sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
-      ):
-        raise exceptions.RequiredArgumentException(
-            '--server-ca-pool',
-            (
-                'To create an instance with server CA mode '
-                'CUSTOMER_MANAGED_CAS_CA, [--server-ca-pool] must be '
-                'specified.'
-            ),
-        )
-
       if args.IsKnownAndSpecified('custom_subject_alternative_names'):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
@@ -539,9 +542,6 @@ class _BaseInstances(object):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.customSubjectAlternativeNames = []
-
-      if args.retain_backups_on_delete is not None:
-        settings.retainBackupsOnDelete = args.retain_backups_on_delete
 
     return settings
 
@@ -569,6 +569,7 @@ class _BaseInstances(object):
         enable_point_in_time_recovery=args.enable_point_in_time_recovery,
         retained_backups_count=args.retained_backups_count,
         retained_transaction_log_days=args.retained_transaction_log_days,
+        patch_request=False,
     )
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
@@ -671,12 +672,9 @@ class _BaseInstances(object):
       mcp_config = reducers.ConnectionPoolConfig(
           sql_messages,
           enable_connection_pooling=args.enable_connection_pooling,
-          connection_pooling_pool_mode=args.connection_pooling_pool_mode,
-          connection_pooling_pool_size=args.connection_pooling_pool_size,
-          connection_pooling_max_client_connections=args.connection_pooling_max_client_connections,
-          connection_pooling_client_idle_timeout=args.connection_pooling_client_idle_timeout,
-          connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
-          connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+          connection_pool_flags=args.connection_pool_flags,
+          clear_connection_pool_flags=None,
+          current_config=None,
       )
       if mcp_config is not None:
         settings.connectionPoolConfig = mcp_config
@@ -726,6 +724,7 @@ class _BaseInstances(object):
         enable_point_in_time_recovery=args.enable_point_in_time_recovery,
         retained_backups_count=args.retained_backups_count,
         retained_transaction_log_days=args.retained_transaction_log_days,
+        patch_request=True,
     )
 
     if backup_configuration:
@@ -840,16 +839,12 @@ class _BaseInstances(object):
       updated_config = reducers.ConnectionPoolConfig(
           sql_messages,
           enable_connection_pooling=args.enable_connection_pooling,
-          connection_pooling_pool_mode=args.connection_pooling_pool_mode,
-          connection_pooling_pool_size=args.connection_pooling_pool_size,
-          connection_pooling_max_client_connections=args.connection_pooling_max_client_connections,
-          connection_pooling_client_idle_timeout=args.connection_pooling_client_idle_timeout,
-          connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
-          connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+          connection_pool_flags=args.connection_pool_flags,
+          clear_connection_pool_flags=args.clear_connection_pool_flags,
+          current_config=original_settings.connectionPoolConfig,
       )
       if updated_config is not None:
         settings.connectionPoolConfig = updated_config
-
     return settings
 
   @classmethod

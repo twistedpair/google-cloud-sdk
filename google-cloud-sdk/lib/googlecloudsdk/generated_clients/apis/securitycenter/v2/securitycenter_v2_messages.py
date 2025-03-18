@@ -1329,6 +1329,20 @@ class Cvssv3(_messages.Message):
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 9)
 
 
+class Cwe(_messages.Message):
+  r"""CWE stands for Common Weakness Enumeration. Information about this
+  weakness, as described by [CWE](https://cwe.mitre.org/).
+
+  Fields:
+    id: The CWE identifier, e.g. CWE-94
+    references: Any reference to the details on the CWE, for example,
+      https://cwe.mitre.org/data/definitions/94.html
+  """
+
+  id = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
+
+
 class DataAccessEvent(_messages.Message):
   r"""Details about a data access attempt made by a principal not authorized
   under applicable data security policy.
@@ -4207,6 +4221,20 @@ class GoogleCloudSecuritycenterV2Cvssv3(_messages.Message):
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 9)
 
 
+class GoogleCloudSecuritycenterV2Cwe(_messages.Message):
+  r"""CWE stands for Common Weakness Enumeration. Information about this
+  weakness, as described by [CWE](https://cwe.mitre.org/).
+
+  Fields:
+    id: The CWE identifier, e.g. CWE-94
+    references: Any reference to the details on the CWE, for example,
+      https://cwe.mitre.org/data/definitions/94.html
+  """
+
+  id = _messages.StringField(1)
+  references = _messages.MessageField('GoogleCloudSecuritycenterV2Reference', 2, repeated=True)
+
+
 class GoogleCloudSecuritycenterV2DataAccessEvent(_messages.Message):
   r"""Details about a data access attempt made by a principal not authorized
   under applicable data security policy.
@@ -7013,15 +7041,24 @@ class GoogleCloudSecuritycenterV2Vulnerability(_messages.Message):
   Fields:
     cve: CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
+    cwes: Represents one or more Common Weakness Enumeration (CWE) information
+      on this vulnerability.
     fixedPackage: The fixed package is relevant to the finding.
     offendingPackage: The offending package is relevant to the finding.
+    providerRiskScore: Provider provided risk_score based on multiple factors.
+      The higher the risk score, the more risky the vulnerability is.
+    reachable: Represents whether the vulnerability is reachable (detected via
+      static analysis)
     securityBulletin: The security bulletin is relevant to this finding.
   """
 
   cve = _messages.MessageField('GoogleCloudSecuritycenterV2Cve', 1)
-  fixedPackage = _messages.MessageField('GoogleCloudSecuritycenterV2Package', 2)
-  offendingPackage = _messages.MessageField('GoogleCloudSecuritycenterV2Package', 3)
-  securityBulletin = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityBulletin', 4)
+  cwes = _messages.MessageField('GoogleCloudSecuritycenterV2Cwe', 2, repeated=True)
+  fixedPackage = _messages.MessageField('GoogleCloudSecuritycenterV2Package', 3)
+  offendingPackage = _messages.MessageField('GoogleCloudSecuritycenterV2Package', 4)
+  providerRiskScore = _messages.IntegerField(5)
+  reachable = _messages.BooleanField(6)
+  securityBulletin = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityBulletin', 7)
 
 
 class GoogleCloudSecuritycenterV2YaraRuleSignature(_messages.Message):
@@ -12691,15 +12728,24 @@ class Vulnerability(_messages.Message):
   Fields:
     cve: CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
+    cwes: Represents one or more Common Weakness Enumeration (CWE) information
+      on this vulnerability.
     fixedPackage: The fixed package is relevant to the finding.
     offendingPackage: The offending package is relevant to the finding.
+    providerRiskScore: Provider provided risk_score based on multiple factors.
+      The higher the risk score, the more risky the vulnerability is.
+    reachable: Represents whether the vulnerability is reachable (detected via
+      static analysis)
     securityBulletin: The security bulletin is relevant to this finding.
   """
 
   cve = _messages.MessageField('Cve', 1)
-  fixedPackage = _messages.MessageField('Package', 2)
-  offendingPackage = _messages.MessageField('Package', 3)
-  securityBulletin = _messages.MessageField('SecurityBulletin', 4)
+  cwes = _messages.MessageField('Cwe', 2, repeated=True)
+  fixedPackage = _messages.MessageField('Package', 3)
+  offendingPackage = _messages.MessageField('Package', 4)
+  providerRiskScore = _messages.IntegerField(5)
+  reachable = _messages.BooleanField(6)
+  securityBulletin = _messages.MessageField('SecurityBulletin', 7)
 
 
 class VulnerabilityCountBySeverity(_messages.Message):

@@ -5845,7 +5845,8 @@ class RunProjectsLocationsExportMetadataRequest(_messages.Message):
       services/{service}` for Service `projects/{project_id_or_number}/locatio
       ns/{location}/services/{service}/revisions/{revision}` for Revision `pro
       jects/{project_id_or_number}/locations/{location}/jobs/{job}/executions/
-      {execution}` for Execution
+      {execution}` for Execution {project_id_or_number} may contains domain-
+      scoped project IDs
   """
 
   name = _messages.StringField(1, required=True)
@@ -6472,32 +6473,6 @@ class RunProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
-class RunProjectsLocationsWorkerPoolsGetIamPolicyRequest(_messages.Message):
-  r"""A RunProjectsLocationsWorkerPoolsGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsWorkerPoolsGetRequest object.
 
@@ -6615,22 +6590,6 @@ class RunProjectsLocationsWorkerPoolsRevisionsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
-class RunProjectsLocationsWorkerPoolsSetIamPolicyRequest(_messages.Message):
-  r"""A RunProjectsLocationsWorkerPoolsSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsWorkerPoolsTestIamPermissionsRequest(_messages.Message):
   r"""A RunProjectsLocationsWorkerPoolsTestIamPermissionsRequest object.
 
@@ -6715,11 +6674,8 @@ class UtilStatusProto(_messages.Message):
   r"""Wire-format for a Status object
 
   Fields:
-    canonicalCode: The canonical error code (see codes.proto) that most
-      closely corresponds to this status. This may be missing, and in the
-      common case of the generic space, it definitely will be.
-      copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
-      optional int32 canonical_code = 6;
+    canonicalCode: copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 canonical_code = 6;
     code: Numeric code drawn from the space specified below. Often, this is
       the canonical error space, and code is drawn from
       google3/util/task/codes.proto copybara:strip_begin(b/383363683)
@@ -6729,9 +6685,9 @@ class UtilStatusProto(_messages.Message):
     messageSet: message_set associates an arbitrary proto message with the
       status. copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
       optional proto2.bridge.MessageSet message_set = 5;
-    space: The following are usually only present when code != 0 Space to
-      which this status belongs copybara:strip_begin(b/383363683)
-      copybara:strip_end_and_replace optional string space = 2;
+    space: copybara:strip_begin(b/383363683) Space to which this status
+      belongs copybara:strip_end_and_replace optional string space = 2; //
+      Space to which this status belongs
   """
 
   canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6751,5 +6707,3 @@ encoding.AddCustomJsonFieldMapping(
     RunProjectsLocationsJobsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     RunProjectsLocationsServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    RunProjectsLocationsWorkerPoolsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

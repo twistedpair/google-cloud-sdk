@@ -109,7 +109,8 @@ def GetLocalSsdFlagWithCount(custom_name=None):
   values are `scsi` and `nvme`. SCSI is the default and is supported by more
   guest operating systems. NVME may provide higher performance.
   *size*::: The size of the local SSD in base-2 GB.
-  *count*::: The number of local SSD to use per VM. Default value is 1.
+  *count*::: The number of local SSD to use per VM. If you don't specify this
+  argument, then the default value is 1.
   """
   return base.Argument(
       custom_name if custom_name else '--local-ssd',
@@ -367,6 +368,20 @@ def GetAcceleratorType(required=True):
   The accelerator type to use for this reservation.
   """
   return base.Argument('--accelerator-type', required=required, help=help_text)
+
+
+def GetEnableEmergentMaintenanceFlag():
+  """--emergent-maintenance flag."""
+  help_text = """\
+  The emergent maintenance flag for the reservation, which enrolls all the
+  underlying vms, hosts and SB infrastructure to receive emergent maintenance
+  notifications in advance.
+  """
+  return base.Argument(
+      '--enable-emergent-maintenance',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=help_text,
+  )
 
 
 def AddCreateFlags(

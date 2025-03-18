@@ -50,6 +50,17 @@ def LocationAttributeConfig():
       ])
 
 
+def AllDefaultLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='The Cloud location for the {resource}.',
+      fallthroughs=[
+          deps.Fallthrough(
+              lambda: '-',
+              "if left empty, will use the wildcard '-' to list all locations")
+      ])
+
+
 def OperationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='operation',
@@ -92,6 +103,14 @@ def GetLocationResourceSpec():
       'certificatemanager.projects.locations',
       resource_name='location',
       locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetAllDefaultLocationResourceSpec():
+  return concepts.ResourceSpec(
+      'certificatemanager.projects.locations',
+      resource_name='location',
+      locationsId=AllDefaultLocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -295,7 +314,7 @@ def AddCertificateResourceArg(
   ]).AddToParser(parser)
 
 
-def AddLocationResourceArg(parser, verb=''):
+def AddLocationResourceArg(parser, verb='', all_default_location=False):
   """Add a resource argument for a cloud location.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -303,9 +322,15 @@ def AddLocationResourceArg(parser, verb=''):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    all_default_location: bool, if True, the default for the location flag will
+    be set to '-'.
   """
+  if all_default_location:
+    resource_spec = GetAllDefaultLocationResourceSpec()
+  else:
+    resource_spec = GetLocationResourceSpec()
   concept_parsers.ConceptParser.ForResource(
       '--location',
-      GetLocationResourceSpec(),
+      resource_spec,
       'The Cloud location {}.'.format(verb),
       required=True).AddToParser(parser)

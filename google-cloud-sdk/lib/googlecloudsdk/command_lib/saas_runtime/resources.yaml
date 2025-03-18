@@ -79,20 +79,6 @@ flag_revision:
     help: Flag Revision ID
   disable_auto_completers: false
 
-rollout_type:
-  name: rolloutTypeId
-  plural_name: rolloutTypes
-  collection: saasservicemgmt.projects.locations.rolloutTypes
-  attributes:
-  - *project
-  - *location
-  - &rolloutTypeId
-    parameter_name: rolloutTypesId
-    attribute_name: rollout_type
-    help: Rollout Type ID
-  disable_auto_completers: false
-
-
 rollout_kind:
   name: rolloutKindId
   plural_name: rolloutKinds
@@ -117,19 +103,6 @@ rollout:
     parameter_name: rolloutsId
     attribute_name: rollout
     help: Rollout ID
-  disable_auto_completers: false
-
-saas_type:
-  name: saasType
-  plural_name: saasTypes
-  collection: saasservicemgmt.projects.locations.saasTypes
-  attributes:
-  - *project
-  - *location
-  - &saasType
-    parameter_name: saasTypesId
-    attribute_name: saas_type
-    help: SaasType ID
   disable_auto_completers: false
 
 saas:
@@ -170,6 +143,7 @@ unit_kind:
     attribute_name: unit_kind
     help: Unit Kind ID
   disable_auto_completers: false
+
 unit:
   name: unit
   plural_name: units
@@ -195,6 +169,7 @@ unit_operation:
     attribute_name: unit_operation
     help: Unit Operation ID
   disable_auto_completers: false
+
 parent_unit_operation:
   name: parentUnitOperation
   plural_name: parentUnitOperations

@@ -3981,11 +3981,15 @@ class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
       corresponding EgressFrom. A request matches if it contains a resource in
       this list. If `*` is specified for `resources`, then this EgressTo rule
       will authorize access to all resources outside the perimeter.
+    roles: IAM roles that represent the set of operations that the sources
+      specified in the corresponding EgressFrom. are allowed to perform in
+      this ServicePerimeter.
   """
 
   externalResources = _messages.StringField(1, repeated=True)
   operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 2, repeated=True)
   resources = _messages.StringField(3, repeated=True)
+  roles = _messages.StringField(4, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1IngressFrom(_messages.Message):
@@ -4106,10 +4110,14 @@ class GoogleIdentityAccesscontextmanagerV1IngressTo(_messages.Message):
       accessed by sources defined in the corresponding IngressFrom. If a
       single `*` is specified, then access to all resources inside the
       perimeter are allowed.
+    roles: IAM roles that represent the set of operations that the sources
+      specified in the corresponding IngressFrom are allowed to perform in
+      this ServicePerimeter.
   """
 
   operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
+  roles = _messages.StringField(3, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1MethodSelector(_messages.Message):

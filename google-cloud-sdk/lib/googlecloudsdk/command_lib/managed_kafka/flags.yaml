@@ -59,6 +59,92 @@ auto-rebalance:
   - arg_value: false
     enum_value: NO_REBALANCE
 
+# Trying to define this as a resouce causes test failures in yaml_command_schema_test so we define
+# it as a flag instead.
+kafka-cluster:
+  arg_name: kafka-cluster
+  help_text: |
+    The resource path of the Kafka cluster to connect to, or the name of the Kafka cluster to
+    connect to if the cluster is in the same project as the Connect cluster.
+
+connect-cpu:
+  api_field: connectCluster.capacityConfig.vcpuCount
+  arg_name: cpu
+  processor: googlecloudsdk.command_lib.managed_kafka.util:ValidateCPU
+  help_text: |
+    The number of vCPUs to provision for the cluster. The minimum is 3.
+
+connect-memory:
+  api_field: connectCluster.capacityConfig.memoryBytes
+  arg_name: memory
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
+  help_text: |
+    The memory to provision for the cluster in bytes. The value must be between 1 GiB and 8 GiB
+    per vCPU.
+    Ex. 1024Mi, 4Gi.
+
+connect-labels:
+  api_field: connectCluster.labels
+  arg_name: labels
+  metavar: KEY=VALUE
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  help_text: |
+    List of label KEY=VALUE pairs to add.
+    Keys must start with a lowercase character and contain only hyphens (`-`),
+    underscores (```_```), lowercase characters, and numbers. Values must contain only
+    hyphens (`-`), underscores (```_```), lowercase characters, and numbers.
+
+clear-connect-labels:
+  arg_name: clear-labels
+  action: store_true
+  help_text: |
+    Remove all the labels from the connect cluster.
+
+connect-encryption-key:
+  api_field: connectCluster.gcpConfig.kmsKey
+  arg_name: encryption-key
+  help_text: |
+    The relative resource path of the Cloud KMS key to use for encryption in the form:
+    projects/``PROJECT_ID''/locations/``LOCATION''/keyRings/``KEY_RING''/cryptoKeys/``KEY''.
+    The key must be located in the same region as the cluster. The key cannot be changed once set.
+
+dns-name:
+  arg_name: dns-name
+  api_field: connectCluster.gcpConfig.accessConfig.networkConfigs.dnsDomainNames
+  repeated: true
+  action: append
+  help_text: |
+    DNS domain name from the subnet's network to be made visible to the Connect Cluster.
+
+secret:
+  arg_name: secret
+  api_field: connectCluster.gcpConfig.secretPaths
+  repeated: true
+  action: append
+  help_text: |
+    Secrets to load into workers. Exact SecretVersions from Secret Manager must
+    be provided -- aliases are not supported. Up to 32 secrets may be loaded
+    into one cluster.
+    Format: projects/<project-id>/secrets/<secret-name>/versions/<version-id>
+
+connect-primary-subnet:
+  arg_name: primary-subnet
+  api_field: connectCluster.gcpConfig.accessConfig.networkConfigs.primarySubnet
+  help_text: |
+    VPC subnet to make available to the Kafka Connect cluster. Structured
+    like: projects/{project}/regions/{region}/subnetworks/{subnet_id}.
+    The primary subnet is used to create a Private Service Connect (PSC) interface for the Kafka Connect workers.
+    It must be located in the same region as the Connect cluster.
+
+connect-additional-subnet:
+  arg_name: additional-subnet
+  api_field: connectCluster.gcpConfig.accessConfig.networkConfigs.additionalSubnets
+  repeated: true
+  action: append
+  help_text: |
+    Additional subnet to make available to the Kafka Connect cluster. Structured
+    like: projects/{project}/regions/{region}/subnetworks/{subnet_id}.
+
 partitions:
   api_field: topic.partitionCount
   arg_name: partitions
@@ -85,6 +171,54 @@ configs:
     `cleanup.policy=compact`,`compression.type=producer`. If you provide a map with a key that
     already exists, only that configuration is updated. If the map contains a key that does not
     exist, the entry is appended to the topic configuration.
+
+connectCluster-configs:
+  arg_name: configs
+  api_field: connectCluster.config
+  metavar: KEY=VALUE
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  help_text: |
+    Configuration for the connect cluster that are overridden from the cluster defaults.
+    The key of the map is a Kafka topic property name, for example:
+    `cleanup.policy=compact`,`compression.type=producer`.
+
+connectCluster-config-file:
+  arg_name: config-file
+  metavar: JSON|YAML|FILE
+  type: "googlecloudsdk.calliope.arg_parsers:ArgObject:"
+  help_text: |
+    The path to the JSON or YAML file containing the configuration that are overridden
+    from the cluster or connector defaults. This also supports inline JSON or YAML.
+
+connector-configs:
+  arg_name: configs
+  api_field: connector.configs
+  metavar: KEY=VALUE
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  help_text: |
+    Configuration for the connector that are overridden from the connector defaults.
+    The key of the map is a Kafka topic property name, for example:
+    `cleanup.policy=compact`,`compression.type=producer`.
+
+connector-config-file:
+  arg_name: config-file
+  metavar: JSON|YAML|FILE
+  type: "googlecloudsdk.calliope.arg_parsers:ArgObject:"
+  help_text: |
+    The path to the JSON or YAML file containing the configuration that are overridden
+    from the connector defaults. This also supports inline JSON or YAML.
+
+clear-secrets:
+  arg_name: clear-secrets
+  action: store_true
+  help_text: |
+    Remove all the secrets from the connect cluster.
+
+clear-dns-names:
+  arg_name: clear-dns-names
+  action: store_true
+  help_text: |
+    Remove all the DNS domain names for the connect cluster.
 
 clear-configs:
   arg_name: clear-configs

@@ -337,7 +337,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
         method_id='messagestreams.projects.locations.streams.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['etag', 'requestId'],
+        query_params=['etag', 'force', 'requestId'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='MessagestreamsProjectsLocationsStreamsDeleteRequest',

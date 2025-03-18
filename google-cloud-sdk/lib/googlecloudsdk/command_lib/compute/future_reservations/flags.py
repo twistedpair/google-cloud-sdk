@@ -346,6 +346,20 @@ def GetReservationModeFlag():
   )
 
 
+def GetEnableEmergentMaintenanceFlag():
+  """--emergent-maintenance flag."""
+  help_text = """\
+  Emergent maintenance flag for the reservation, which enrolls all the
+  underlying vms, hosts and SB infrastructure to receive emergent maintenance
+  notifications in advance.
+  """
+  return base.Argument(
+      '--enable-emergent-maintenance',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=help_text,
+  )
+
+
 def AddCreateFlags(
     parser,
     support_location_hint=False,
@@ -461,6 +475,7 @@ def AddUpdateFlags(
     support_require_specific_reservation=False,
     support_gsc=False,
     support_cuds=False,
+    support_emergent_maintenance=False,
 ):
   """Adds all flags needed for the update command."""
 
@@ -542,6 +557,9 @@ def AddUpdateFlags(
 
   if support_cuds:
     AddCommitmentInfoFlags(parser)
+
+  if support_emergent_maintenance:
+    GetEnableEmergentMaintenanceFlag().AddToParser(parser)
 
 
 def AddAutoDeleteFlags(parser, is_update=False):

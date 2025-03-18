@@ -5551,7 +5551,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         method_id='networksecurity.projects.locations.serverTlsPolicies.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1alpha1/{+parent}/serverTlsPolicies',
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsServerTlsPoliciesListRequest',

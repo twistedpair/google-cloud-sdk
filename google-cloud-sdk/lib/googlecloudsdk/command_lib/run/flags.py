@@ -1309,29 +1309,27 @@ def AddSecretsFlags(parser):
   SecretsFlags().AddToParser(parser)
 
 
-def AddConfigMapsFlags(parser):
-  """Adds flags for creating, updating, and deleting config maps."""
-  AddMapFlagsNoFile(
-      parser,
-      group_help=(
-          'Specify config map to mount or provide as environment '
-          "variables. Keys starting with a forward slash '/' are mount "
-          'paths. All other keys correspond to environment variables. '
-          'The values associated with each of these should be in the '
-          'form CONFIG_MAP_NAME:KEY_IN_CONFIG_MAP; you may omit the '
-          'key within the config map to specify a mount of all keys '
-          'within the config map. For example: '
-          "'--update-config-maps=/my/path=myconfig,"
-          "ENV=otherconfig:key.json' "
-          "will create a volume with config map 'myconfig' "
-          "and mount that volume at '/my/path'. Because no config map "
-          "key was specified, all keys in 'myconfig' will be included. "
-          'An environment variable named ENV will also be created '
-          "whose value is the value of 'key.json' in 'otherconfig. Not "
-          'supported on the fully managed version of Cloud Run.'
-      ),
-      flag_name='config-maps',
-  )
+CONFIG_MAP_FLAGS = MapFlagsNoFile(
+    group_help=(
+        'Specify config map to mount or provide as environment '
+        "variables. Keys starting with a forward slash '/' are mount "
+        'paths. All other keys correspond to environment variables. '
+        'The values associated with each of these should be in the '
+        'form CONFIG_MAP_NAME:KEY_IN_CONFIG_MAP; you may omit the '
+        'key within the config map to specify a mount of all keys '
+        'within the config map. For example: '
+        "'--update-config-maps=/my/path=myconfig,"
+        "ENV=otherconfig:key.json' "
+        "will create a volume with config map 'myconfig' "
+        "and mount that volume at '/my/path'. Because no config map "
+        "key was specified, all keys in 'myconfig' will be included. "
+        'An environment variable named ENV will also be created '
+        "whose value is the value of 'key.json' in 'otherconfig. Not "
+        'supported on the fully managed version of Cloud Run.'
+    ),
+    flag_name='config-maps',
+    hidden=True,
+)
 
 
 def AddDescriptionFlag(parser):

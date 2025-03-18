@@ -30,6 +30,10 @@ from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 __protobuf__ = proto.module(
     package='google.logging.v2',
     manifest={
+        'AppHubApplication',
+        'AppHubService',
+        'AppHubWorkload',
+        'AppHub',
         'LogEntry',
         'LogErrorGroup',
         'LogEntryOperation',
@@ -37,6 +41,140 @@ __protobuf__ = proto.module(
         'LogSplit',
     },
 )
+
+
+class AppHubApplication(proto.Message):
+    r"""Resource identifiers associated with an AppHub application AppHub
+    resources are of the form
+    projects/<host_project>/locations//applications/<application_id>
+    projects/<host_project>/locations//applications/<application_id>/services/<service_id>
+    projects/<host_project>/locations//applications/<application_id>/workloads/<workload_id>
+    These resources can be reconstructed from the components below.
+
+    Attributes:
+        container (str):
+            Resource container that owns the application. Example:
+            "projects/management_project".
+        location (str):
+            Location associated with the Application.
+            Example: "us-east1".
+        id (str):
+            Application Id.
+            Example: "my-app".
+    """
+
+    container: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    location: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    id: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+
+
+class AppHubService(proto.Message):
+    r"""Metadata associated with an App Hub service.
+
+    Attributes:
+        id (str):
+            Service Id.
+            Example: "my-service".
+        environment_type (str):
+            Service environment type
+            Example: "DEV".
+        criticality_type (str):
+            Service criticality type
+            Example: "CRITICAL".
+    """
+
+    id: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    environment_type: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    criticality_type: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+
+
+class AppHubWorkload(proto.Message):
+    r"""Metadata associated with an App Hub workload.
+
+    Attributes:
+        id (str):
+            Workload Id.
+            Example: "my-workload".
+        environment_type (str):
+            Workload environment type
+            Example: "DEV".
+        criticality_type (str):
+            Workload criticality type
+            Example: "CRITICAL".
+    """
+
+    id: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    environment_type: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    criticality_type: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+
+
+class AppHub(proto.Message):
+    r"""Metadata associated with App Hub.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        application (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.AppHubApplication):
+            Metadata associated with the application.
+        service (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.AppHubService):
+            Metadata associated with the service.
+
+            This field is a member of `oneof`_ ``AppHubResource``.
+        workload (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.AppHubWorkload):
+            Metadata associated with the workload.
+
+            This field is a member of `oneof`_ ``AppHubResource``.
+    """
+
+    application: 'AppHubApplication' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message='AppHubApplication',
+    )
+    service: 'AppHubService' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        oneof='AppHubResource',
+        message='AppHubService',
+    )
+    workload: 'AppHubWorkload' = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        oneof='AppHubResource',
+        message='AppHubWorkload',
+    )
 
 
 class LogEntry(proto.Message):
@@ -248,6 +386,12 @@ class LogEntry(proto.Message):
 
             This field isn't available during `log
             routing <https://cloud.google.com/logging/docs/routing/overview>`__
+        apphub (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.AppHub):
+            Output only. AppHub application metadata
+            associated with this LogEntry. May be empty if
+            there is no associated AppHub application or
+            multiple associated applications (such as for
+            VPC flow logs)
     """
 
     log_name: str = proto.Field(
@@ -341,6 +485,11 @@ class LogEntry(proto.Message):
         proto.MESSAGE,
         number=36,
         message='LogErrorGroup',
+    )
+    apphub: 'AppHub' = proto.Field(
+        proto.MESSAGE,
+        number=37,
+        message='AppHub',
     )
 
 

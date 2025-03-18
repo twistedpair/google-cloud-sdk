@@ -492,7 +492,7 @@ class Backup(_messages.Message):
   backupApplianceBackupProperties = _messages.MessageField('BackupApplianceBackupProperties', 1)
   backupApplianceLocks = _messages.MessageField('BackupLock', 2, repeated=True)
   backupType = _messages.EnumField('BackupTypeValueValuesEnum', 3)
-  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSQLInstanceBackupProperties', 4)
+  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSqlInstanceBackupProperties', 4)
   computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 5)
   consistencyTime = _messages.StringField(6)
   createTime = _messages.StringField(7)
@@ -2372,8 +2372,18 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudSQLInstanceBackupProperties(_messages.Message):
-  r"""CloudSQLInstanceBackupProperties represents Cloud SQL Instance Backup
+class CloudSqlInstanceBackupPlanAssociationProperties(_messages.Message):
+  r"""Cloud SQL instance's BPA properties.
+
+  Fields:
+    instanceCreateTime: Output only. The time when the instance was created.
+  """
+
+  instanceCreateTime = _messages.StringField(1)
+
+
+class CloudSqlInstanceBackupProperties(_messages.Message):
+  r"""CloudSqlInstanceBackupProperties represents Cloud SQL Instance Backup
   properties. .
 
   Fields:
@@ -2388,8 +2398,8 @@ class CloudSQLInstanceBackupProperties(_messages.Message):
   finalBackup = _messages.BooleanField(3)
 
 
-class CloudSQLInstanceDataSourceProperties(_messages.Message):
-  r"""CloudSQLInstanceDataSourceProperties represents the properties of a
+class CloudSqlInstanceDataSourceProperties(_messages.Message):
+  r"""CloudSqlInstanceDataSourceProperties represents the properties of a
   Cloud SQL resource that are stored in the DataSource. .
 
   Fields:
@@ -2407,8 +2417,8 @@ class CloudSQLInstanceDataSourceProperties(_messages.Message):
   pitrWindows = _messages.MessageField('PitrWindow', 4, repeated=True)
 
 
-class CloudSQLInstanceDataSourceReferenceProperties(_messages.Message):
-  r"""CloudSQLInstanceDataSourceReferenceProperties represents the properties
+class CloudSqlInstanceDataSourceReferenceProperties(_messages.Message):
+  r"""CloudSqlInstanceDataSourceReferenceProperties represents the properties
   of a Cloud SQL resource that are stored in the DataSourceReference. .
 
   Fields:
@@ -2424,16 +2434,6 @@ class CloudSQLInstanceDataSourceReferenceProperties(_messages.Message):
   instanceCreateTime = _messages.StringField(2)
   name = _messages.StringField(3)
   pitrWindows = _messages.MessageField('PitrWindow', 4, repeated=True)
-
-
-class CloudSqlInstanceBackupPlanAssociationProperties(_messages.Message):
-  r"""Cloud SQL instance's BPA properties.
-
-  Fields:
-    instanceCreateTime: Output only. The time when the instance was created.
-  """
-
-  instanceCreateTime = _messages.StringField(1)
 
 
 class ComputeInstanceBackupProperties(_messages.Message):
@@ -2948,7 +2948,7 @@ class DataSourceGcpResource(_messages.Message):
   GcpResourceDataSource or GcpDataSourceResource
 
   Fields:
-    cloudSqlInstanceDatasourceProperties: CloudSQLInstanceDataSourceProperties
+    cloudSqlInstanceDatasourceProperties: CloudSqlInstanceDataSourceProperties
       has a subset of Cloud SQL Instance properties that are useful at the
       Datasource level.
     computeInstanceDatasourceProperties: ComputeInstanceDataSourceProperties
@@ -2961,7 +2961,7 @@ class DataSourceGcpResource(_messages.Message):
       Type, eg. compute.googleapis.com/Instance.
   """
 
-  cloudSqlInstanceDatasourceProperties = _messages.MessageField('CloudSQLInstanceDataSourceProperties', 1)
+  cloudSqlInstanceDatasourceProperties = _messages.MessageField('CloudSqlInstanceDataSourceProperties', 1)
   computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 2)
   gcpResourcename = _messages.StringField(3)
   location = _messages.StringField(4)
@@ -2982,7 +2982,7 @@ class DataSourceGcpResourceInfo(_messages.Message):
       compute.googleapis.com/Instance
   """
 
-  cloudSqlInstanceProperties = _messages.MessageField('CloudSQLInstanceDataSourceReferenceProperties', 1)
+  cloudSqlInstanceProperties = _messages.MessageField('CloudSqlInstanceDataSourceReferenceProperties', 1)
   gcpResourcename = _messages.StringField(2)
   location = _messages.StringField(3)
   type = _messages.StringField(4)

@@ -765,6 +765,26 @@ class DlpOrganizationsLocationsFileStoreDataProfilesListRequest(_messages.Messag
   parent = _messages.StringField(5, required=True)
 
 
+class DlpOrganizationsLocationsInfoTypesListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsInfoTypesListRequest object.
+
+  Fields:
+    filter: filter to only return infoTypes supported by certain parts of the
+      API. Defaults to supported_by=INSPECT.
+    languageCode: BCP-47 language code for localized infoType friendly names.
+      If omitted, or if localized strings are not available, en-US strings
+      will be returned.
+    locationId: Deprecated. This field has no effect.
+    parent: The parent resource name. The format of this value is as follows:
+      `locations/{location_id}`
+  """
+
+  filter = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+  locationId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsInspectTemplatesCreateRequest object.
 
@@ -2581,6 +2601,26 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class DlpProjectsLocationsInfoTypesListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsInfoTypesListRequest object.
+
+  Fields:
+    filter: filter to only return infoTypes supported by certain parts of the
+      API. Defaults to supported_by=INSPECT.
+    languageCode: BCP-47 language code for localized infoType friendly names.
+      If omitted, or if localized strings are not available, en-US strings
+      will be returned.
+    locationId: Deprecated. This field has no effect.
+    parent: The parent resource name. The format of this value is as follows:
+      `locations/{location_id}`
+  """
+
+  filter = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+  locationId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DlpProjectsLocationsInspectTemplatesCreateRequest(_messages.Message):
@@ -4957,6 +4997,83 @@ class GooglePrivacyDlpV2DataProfileConfigSnapshot(_messages.Message):
   inspectTemplateName = _messages.StringField(5)
 
 
+class GooglePrivacyDlpV2DataProfileFinding(_messages.Message):
+  r"""Details about a piece of potentially sensitive information that was
+  detected when the data resource was profiled.
+
+  Enums:
+    ResourceVisibilityValueValuesEnum: How broadly a resource has been shared.
+
+  Fields:
+    dataProfileResourceName: Resource name of the data profile associated with
+      the finding.
+    findingId: A unique identifier for the finding.
+    infotype: The [type of content](https://cloud.google.com/sensitive-data-
+      protection/docs/infotypes-reference) that might have been found.
+    location: Where the content was found.
+    quote: The content that was found. Even if the content is not textual, it
+      may be converted to a textual representation here. If the finding
+      exceeds 4096 bytes in length, the quote may be omitted.
+    quoteInfo: Contains data parsed from quotes. Currently supported
+      infoTypes: DATE, DATE_OF_BIRTH, and TIME.
+    resourceVisibility: How broadly a resource has been shared.
+    timestamp: Timestamp when the finding was detected.
+  """
+
+  class ResourceVisibilityValueValuesEnum(_messages.Enum):
+    r"""How broadly a resource has been shared.
+
+    Values:
+      RESOURCE_VISIBILITY_UNSPECIFIED: Unused.
+      RESOURCE_VISIBILITY_PUBLIC: Visible to any user.
+      RESOURCE_VISIBILITY_INCONCLUSIVE: May contain public items. For example,
+        if a Cloud Storage bucket has uniform bucket level access disabled,
+        some objects inside it may be public, but none are known yet.
+      RESOURCE_VISIBILITY_RESTRICTED: Visible only to specific users.
+    """
+    RESOURCE_VISIBILITY_UNSPECIFIED = 0
+    RESOURCE_VISIBILITY_PUBLIC = 1
+    RESOURCE_VISIBILITY_INCONCLUSIVE = 2
+    RESOURCE_VISIBILITY_RESTRICTED = 3
+
+  dataProfileResourceName = _messages.StringField(1)
+  findingId = _messages.StringField(2)
+  infotype = _messages.MessageField('GooglePrivacyDlpV2InfoType', 3)
+  location = _messages.MessageField('GooglePrivacyDlpV2DataProfileFindingLocation', 4)
+  quote = _messages.StringField(5)
+  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 6)
+  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 7)
+  timestamp = _messages.StringField(8)
+
+
+class GooglePrivacyDlpV2DataProfileFindingLocation(_messages.Message):
+  r"""Location of a data profile finding within a resource.
+
+  Fields:
+    containerName: Name of the container where the finding is located. The
+      top-level name is the source file name or table name. Names of some
+      common storage containers are formatted as follows: * BigQuery tables:
+      `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files:
+      `gs://{bucket}/{path}`
+    dataProfileFindingRecordLocation: Location of a finding within a resource
+      that produces a table data profile.
+  """
+
+  containerName = _messages.StringField(1)
+  dataProfileFindingRecordLocation = _messages.MessageField('GooglePrivacyDlpV2DataProfileFindingRecordLocation', 2)
+
+
+class GooglePrivacyDlpV2DataProfileFindingRecordLocation(_messages.Message):
+  r"""Location of a finding within a resource that produces a table data
+  profile.
+
+  Fields:
+    field: Field ID of the column containing the finding.
+  """
+
+  field = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1)
+
+
 class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
   r"""Configuration for setting up a job to scan resources for profile
   generation. Only one data profile configuration may exist per organization,
@@ -6654,9 +6771,16 @@ class GooglePrivacyDlpV2Export(_messages.Message):
       protection/docs/analyze-data-profiles#use_a_premade_report). If you use
       VPC Service Controls to define security perimeters, then you must use a
       separate table for each boundary.
+    sampleFindingsTable: Store sample data profile findings in an existing
+      table or a new table in an existing dataset. Each regeneration will
+      result in new rows in BigQuery. Data is inserted using [streaming
+      insert](https://cloud.google.com/blog/products/bigquery/life-of-a-
+      bigquery-streaming-insert) and so data may be in the buffer for a period
+      of time after the profile has finished.
   """
 
   profileTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 1)
+  sampleFindingsTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 2)
 
 
 class GooglePrivacyDlpV2Expressions(_messages.Message):
@@ -6901,8 +7025,12 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
     resourceLabels: The labels applied to the resource at the time the profile
       was generated.
     resourceVisibility: How broadly a resource has been shared.
+    sampleFindingsTable: The BigQuery table to which the sample findings are
+      written.
     sensitivityScore: The sensitivity score of this resource.
     state: State of a profile.
+    tags: The tags attached to the resource, including any tags attached
+      during profiling.
   """
 
   class ResourceVisibilityValueValuesEnum(_messages.Enum):
@@ -7012,8 +7140,10 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
   resourceAttributes = _messages.MessageField('ResourceAttributesValue', 20)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 21)
   resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 22)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
+  sampleFindingsTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 23)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  tags = _messages.MessageField('GooglePrivacyDlpV2Tag', 26, repeated=True)
 
 
 class GooglePrivacyDlpV2FileStoreInfoTypeSummary(_messages.Message):
@@ -7759,6 +7889,11 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     example: A sample that is a true positive for this infoType.
     name: Internal name of the infoType.
     sensitivityScore: The default sensitivity of the infoType.
+    specificInfoTypes: If this field is set, this infoType is a general
+      infoType and these specific infoTypes are contained within it. General
+      infoTypes are infoTypes that encompass multiple specific infoTypes. For
+      example, the "GEOGRAPHIC_DATA" general infoType would have set for this
+      field "LOCATION", "LOCATION_COORDINATES", and "STREET_ADDRESS".
     supportedBy: Which parts of the API supports this InfoType.
     versions: A list of available versions for the infotype.
   """
@@ -7781,8 +7916,9 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   example = _messages.StringField(4)
   name = _messages.StringField(5)
   sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 6)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 7, repeated=True)
-  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 8, repeated=True)
+  specificInfoTypes = _messages.StringField(7, repeated=True)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 8, repeated=True)
+  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 9, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLikelihood(_messages.Message):
@@ -10208,11 +10344,16 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     resourceVisibility: How broadly a resource has been shared.
     rowCount: Number of rows in the table when the profile was generated. This
       will not be populated for BigLake tables.
+    sampleFindingsTable: The BigQuery table to which the sample findings are
+      written.
     scannedColumnCount: The number of columns profiled in the table.
     sensitivityScore: The sensitivity score of this table.
     state: State of a profile.
     tableId: The table ID.
     tableSizeBytes: The size of the table when the profile was generated.
+    tags: The tags attached to the table, including any tags attached during
+      profiling. Because tags are attached to Cloud SQL instances rather than
+      Cloud SQL tables, this field is empty for Cloud SQL table profiles.
   """
 
   class EncryptionStatusValueValuesEnum(_messages.Enum):
@@ -10306,11 +10447,13 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 20)
   resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 21)
   rowCount = _messages.IntegerField(22)
-  scannedColumnCount = _messages.IntegerField(23)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  tableId = _messages.StringField(26)
-  tableSizeBytes = _messages.IntegerField(27)
+  sampleFindingsTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 23)
+  scannedColumnCount = _messages.IntegerField(24)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  tableId = _messages.StringField(27)
+  tableSizeBytes = _messages.IntegerField(28)
+  tags = _messages.MessageField('GooglePrivacyDlpV2Tag', 29, repeated=True)
 
 
 class GooglePrivacyDlpV2TableLocation(_messages.Message):
@@ -10352,6 +10495,25 @@ class GooglePrivacyDlpV2TableReference(_messages.Message):
 
   datasetId = _messages.StringField(1)
   tableId = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2Tag(_messages.Message):
+  r"""A tag associated with a resource.
+
+  Fields:
+    key: The key of a tag key-value pair. For Google Cloud resources, this is
+      the resource name of the key, for example, "tagKeys/123456".
+    namespacedTagValue: The namespaced name for the tag value to attach to
+      Google Cloud resources. Must be in the format
+      `{parent_id}/{tag_key_short_name}/{short_name}`, for example,
+      "123456/environment/prod". This is only set for Google Cloud resources.
+    value: The value of a tag key-value pair. For Google Cloud resources, this
+      is the resource name of the value, for example, "tagValues/123456".
+  """
+
+  key = _messages.StringField(1)
+  namespacedTagValue = _messages.StringField(2)
+  value = _messages.StringField(3)
 
 
 class GooglePrivacyDlpV2TagCondition(_messages.Message):

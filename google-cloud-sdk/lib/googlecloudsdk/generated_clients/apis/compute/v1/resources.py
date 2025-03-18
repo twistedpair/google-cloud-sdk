@@ -567,6 +567,14 @@ class Collections(enum.Enum):
       ['project', 'region'],
       True
   )
+  RESERVATIONBLOCKS = (
+      'reservationBlocks',
+      'projects/{project}/zones/{zone}/reservations/{reservation}/'
+      'reservationBlocks/{reservationBlock}',
+      {},
+      ['project', 'zone', 'reservation', 'reservationBlock'],
+      True
+  )
   RESERVATIONS = (
       'reservations',
       'projects/{project}/zones/{zone}/reservations/{reservation}',

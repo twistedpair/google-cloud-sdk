@@ -41,12 +41,12 @@ class CommitResponse(proto.Message):
             The Cloud Spanner timestamp at which the
             transaction committed.
         commit_stats (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.CommitResponse.CommitStats):
-            The statistics about this Commit. Not returned by default.
-            For more information, see
+            The statistics about this ``Commit``. Not returned by
+            default. For more information, see
             [CommitRequest.return_commit_stats][google.spanner.v1.CommitRequest.return_commit_stats].
         precommit_token (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.MultiplexedSessionPrecommitToken):
             If specified, transaction has not committed
-            yet. Clients must retry the commit with the new
+            yet. You must retry the commit with the new
             precommit token.
 
             This field is a member of `oneof`_ ``MultiplexedSessionRetry``.

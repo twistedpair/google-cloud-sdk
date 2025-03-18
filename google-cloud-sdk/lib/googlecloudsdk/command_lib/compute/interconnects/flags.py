@@ -47,6 +47,12 @@ LINK_TYPE_CHOICES = {
     'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.',
 }
 
+_LINK_TYPE_CHOICES_400G = {
+    'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
+    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.',
+    'LINK_TYPE_ETHERNET_400G_LR4': '400Gbps Ethernet, LR4 Optics.',
+}
+
 REQUESTED_FEATURES_CHOICES = {
     'MACSEC': (
         'If specified then the interconnect is created on MACsec capable '
@@ -177,12 +183,12 @@ def GetRequestedFeature(messages, feature_arg):
   return None
 
 
-def AddCreateCommonArgs(parser, required=True):
+def AddCreateCommonArgs(parser, required=True, supports_400g=False):
   """Adds shared flags for create command to the argparse.ArgumentParser."""
   AddAdminEnabled(parser)
   AddDescription(parser)
   AddCustomerName(parser)
-  AddLinkType(parser, required)
+  AddLinkType(parser, required=required, supports_400g=supports_400g)
   AddNocContactEmail(parser)
   AddRequestedLinkCount(parser, required)
   AddRequestedFeatures(parser)
@@ -194,9 +200,9 @@ def AddCreateGaArgs(parser, required=True):
   AddInterconnectTypeGA(parser, required)
 
 
-def AddCreateAlphaBetaArgs(parser):
+def AddCreateAlphaBetaArgs(parser, required=True, supports_400g=False):
   """Adds alpha / beta flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser)
+  AddCreateCommonArgs(parser, required=required, supports_400g=supports_400g)
   AddInterconnectTypeBetaAndAlpha(parser)
 
 
@@ -256,9 +262,11 @@ def AddRequestedFeatures(parser):
   )
 
 
-def AddLinkType(parser, required=True):
+def AddLinkType(parser, required=True, supports_400g=False):
   """Adds link-type flag to the argparse.ArgumentParser."""
   link_types = LINK_TYPE_CHOICES
+  if supports_400g:
+    link_types = _LINK_TYPE_CHOICES_400G
   parser.add_argument(
       '--link-type',
       choices=link_types,

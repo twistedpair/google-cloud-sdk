@@ -48,6 +48,7 @@ _V1_VERSION = 'v1'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
 _V2ALPHA_VERSION = 'v2alpha'
+_V2BETA_VERSION = 'v2beta'
 _TOO_MANY_REQUESTS = 429
 
 # Map of services which should be protected from being disabled by
@@ -60,6 +61,7 @@ _PROTECTED_SERVICES = {
 
 
 class ContainerType(enum.Enum):
+  """Return the container type."""
   PROJECT_SERVICE_RESOURCE = 1
   FOLDER_SERVICE_RESOURCE = 2
   ORG_SERVICE_RESOURCE = 3
@@ -70,6 +72,39 @@ def GetProtectedServiceWarning(service_name):
   return _PROTECTED_SERVICES.get(service_name)
 
 
+def GetConsumerPolicyV2Beta(policy_name):
+  """Make API call to get a consumer policy.
+
+  Args:
+    policy_name: The name of a consumer policy. Currently supported format
+      '{resource_type}/{resource_name}/consumerPolicies/default'. For example,
+      'projects/100/consumerPolicies/default'.
+
+  Raises:
+    exceptions.GetConsumerPolicyPermissionDeniedException: when getting a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    message.GoogleApiServiceusageV2betaConsumerPolicy: The consumer policy
+  """
+  client = _GetClientInstance(version=_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
+
+  try:
+    return client.consumerPolicies.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetConsumerPolicyPermissionDeniedException
+    )
+
+
+# TODO(b/393195807) Remove after the migration is completed.
 def GetConsumerPolicyV2Alpha(policy_name):
   """Make API call to get a consumer policy.
 
@@ -86,7 +121,7 @@ def GetConsumerPolicyV2Alpha(policy_name):
   Returns:
     The consumer policy
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(_V2ALPHA_VERSION)
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
@@ -120,7 +155,7 @@ def TestEnabled(name: str, service: str):
   Returns:
     State of the service.
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(_V2ALPHA_VERSION)
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageTestEnabledRequest(
@@ -137,6 +172,50 @@ def TestEnabled(name: str, service: str):
     exceptions.ReraiseError(e, exceptions.TestEnabledPermissionDeniedException)
 
 
+def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):
+  """Make API call to get a effective policy.
+
+  Args:
+    name: The name of the effective policy.Currently supported format
+      '{resource_type}/{resource_name}/effectivePolicy'. For example,
+      'projects/100/effectivePolicy'.
+    view: The view of the effective policy to use. The default view is 'BASIC'.
+
+  Raises:
+    exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
+      effective policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    mesage.EffectivePolicy: The effective policy
+  """
+  client = _GetClientInstance(version=_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+  if view == 'BASIC':
+    view_type = (
+        messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_BASIC
+    )
+  else:
+    view_type = (
+        messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_FULL
+    )
+
+  request = messages.ServiceusageGetEffectivePolicyRequest(
+      name=name, view=view_type
+  )
+
+  try:
+    return client.v2beta.GetEffectivePolicy(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetEffectiverPolicyPermissionDeniedException
+    )
+
+
+# TODO(b/393195807) Remove after the migration is completed.
 def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
   """Make API call to get a effective policy.
 
@@ -154,7 +233,7 @@ def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
   Returns:
     The Effective Policy
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(_V2ALPHA_VERSION)
   messages = client.MESSAGES_MODULE
   if view == 'BASIC':
     view_type = (

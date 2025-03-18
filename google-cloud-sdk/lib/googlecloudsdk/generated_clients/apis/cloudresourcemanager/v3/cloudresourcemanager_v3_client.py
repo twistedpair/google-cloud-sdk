@@ -44,6 +44,9 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     self.folders_settings = self.FoldersSettingsService(self)
     self.folders = self.FoldersService(self)
     self.liens = self.LiensService(self)
+    self.locations_effectiveTagBindingCollections = self.LocationsEffectiveTagBindingCollectionsService(self)
+    self.locations_tagBindingCollections = self.LocationsTagBindingCollectionsService(self)
+    self.locations = self.LocationsService(self)
     self.operations = self.OperationsService(self)
     self.organizations_effectiveSettings = self.OrganizationsEffectiveSettingsService(self)
     self.organizations_settings = self.OrganizationsSettingsService(self)
@@ -51,6 +54,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     self.projects_effectiveSettings = self.ProjectsEffectiveSettingsService(self)
     self.projects_settings = self.ProjectsSettingsService(self)
     self.projects = self.ProjectsService(self)
+    self.tagBindingCollection = self.TagBindingCollectionService(self)
     self.tagBindings = self.TagBindingsService(self)
     self.tagKeys = self.TagKeysService(self)
     self.tagValues_tagHolds = self.TagValuesTagHoldsService(self)
@@ -666,6 +670,90 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         response_type_name='ListLiensResponse',
         supports_download=False,
     )
+
+  class LocationsEffectiveTagBindingCollectionsService(base_api.BaseApiService):
+    """Service class for the locations_effectiveTagBindingCollections resource."""
+
+    _NAME = 'locations_effectiveTagBindingCollections'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.LocationsEffectiveTagBindingCollectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns effective tag bindings on a GCP resource.
+
+      Args:
+        request: (CloudresourcemanagerLocationsEffectiveTagBindingCollectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveTagBindingCollection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/locations/{locationsId}/effectiveTagBindingCollections/{effectiveTagBindingCollectionsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.locations.effectiveTagBindingCollections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerLocationsEffectiveTagBindingCollectionsGetRequest',
+        response_type_name='EffectiveTagBindingCollection',
+        supports_download=False,
+    )
+
+  class LocationsTagBindingCollectionsService(base_api.BaseApiService):
+    """Service class for the locations_tagBindingCollections resource."""
+
+    _NAME = 'locations_tagBindingCollections'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.LocationsTagBindingCollectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns tag bindings directly attached to a GCP resource.
+
+      Args:
+        request: (CloudresourcemanagerLocationsTagBindingCollectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TagBindingCollection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/locations/{locationsId}/tagBindingCollections/{tagBindingCollectionsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.locations.tagBindingCollections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerLocationsTagBindingCollectionsGetRequest',
+        response_type_name='TagBindingCollection',
+        supports_download=False,
+    )
+
+  class LocationsService(base_api.BaseApiService):
+    """Service class for the locations resource."""
+
+    _NAME = 'locations'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.LocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -1458,6 +1546,43 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         relative_path='v3/{+name}:undelete',
         request_field='undeleteProjectRequest',
         request_type_name='CloudresourcemanagerProjectsUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class TagBindingCollectionService(base_api.BaseApiService):
+    """Service class for the tagBindingCollection resource."""
+
+    _NAME = 'tagBindingCollection'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.TagBindingCollectionService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Patch(self, request, global_params=None):
+      r"""Updates tag bindings directly attached to a GCP resource. Supports standard Patch semantics.
+
+      Args:
+        request: (CloudresourcemanagerTagBindingCollectionPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/tagBindingCollection/{tagBindingCollectionId}',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.tagBindingCollection.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='tagBindingCollection',
+        request_type_name='CloudresourcemanagerTagBindingCollectionPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

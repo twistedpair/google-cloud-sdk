@@ -1120,6 +1120,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
       Consumer VPC and the Producer VPC (defined in the Tenant project) which
       is added to the NCC hub. This peering must be in ACTIVE state.
     producerNetwork: Output only. The URI of the Producer VPC.
+    proposedExcludeExportRanges: Output only. The proposed exclude export IP
+      ranges waiting for hub administration's approval.
     proposedIncludeExportRanges: Optional. The proposed include export IP
       ranges waiting for hub administration's approval.
     serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
@@ -1130,8 +1132,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
   network = _messages.StringField(3)
   peering = _messages.StringField(4)
   producerNetwork = _messages.StringField(5)
-  proposedIncludeExportRanges = _messages.StringField(6, repeated=True)
-  serviceConsumerVpcSpoke = _messages.StringField(7)
+  proposedExcludeExportRanges = _messages.StringField(6, repeated=True)
+  proposedIncludeExportRanges = _messages.StringField(7, repeated=True)
+  serviceConsumerVpcSpoke = _messages.StringField(8)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messages.Message):
@@ -1174,6 +1177,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
       filters do not apply between the service consumer VPC spoke and any of
       its producer VPC spokes. This VPC spoke cannot be deleted as long as any
       of these producer VPC spokes are connected to the NCC Hub.
+    proposedExcludeExportRanges: Output only. The proposed exclude export IP
+      ranges waiting for hub administration's approval.
     proposedIncludeExportRanges: Optional. The proposed include export IP
       ranges waiting for hub administration's approval.
     uri: Required. The URI of the VPC network resource.
@@ -1182,8 +1187,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
   producerVpcSpokes = _messages.StringField(3, repeated=True)
-  proposedIncludeExportRanges = _messages.StringField(4, repeated=True)
-  uri = _messages.StringField(5)
+  proposedExcludeExportRanges = _messages.StringField(4, repeated=True)
+  proposedIncludeExportRanges = _messages.StringField(5, repeated=True)
+  uri = _messages.StringField(6)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
@@ -1467,10 +1473,13 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
 
   Messages:
     LabelsValue: Optional. User-defined labels.
-    ServicesValue: Optional. Map of services and their states for which
-      customer is opting in for Miata. The key is the service name. Example: {
-      "big-query": { "state": "PENDING_ADD", "state_activation_time":
-      "2024-12-12T08:00:00Z", }, "cloud-storage": { "state": "IN_USE" } }
+    ServicesValue: Optional. This map services to either their current or
+      planned states. Service names are keys, and the associated values
+      describe the service's state. If a state change is expected, the value
+      will be the list of ADDING or DELETING states depending on the actions
+      taken. Example: "services": { "big-query": { "states": [ { "state":
+      "ADDING", "effective_time": "2024-12-12T08:00:00Z" }, ] }, "cloud-
+      storage": { "states": [ { "state": "ACTIVE", } ] } }
 
   Fields:
     createTime: Output only. Time when the Miata was created.
@@ -1486,10 +1495,13 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
       configured under the Miata resource.
     name: Identifier. The name of the Miata resource. Format:
       `projects/{project}/locations/{location}/miatas/{miata}`.
-    services: Optional. Map of services and their states for which customer is
-      opting in for Miata. The key is the service name. Example: { "big-
-      query": { "state": "PENDING_ADD", "state_activation_time":
-      "2024-12-12T08:00:00Z", }, "cloud-storage": { "state": "IN_USE" } }
+    services: Optional. This map services to either their current or planned
+      states. Service names are keys, and the associated values describe the
+      service's state. If a state change is expected, the value will be the
+      list of ADDING or DELETING states depending on the actions taken.
+      Example: "services": { "big-query": { "states": [ { "state": "ADDING",
+      "effective_time": "2024-12-12T08:00:00Z" }, ] }, "cloud-storage": {
+      "states": [ { "state": "ACTIVE", } ] } }
     updateTime: Output only. Time when the Miata was updated.
   """
 
@@ -1519,10 +1531,13 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ServicesValue(_messages.Message):
-    r"""Optional. Map of services and their states for which customer is
-    opting in for Miata. The key is the service name. Example: { "big-query":
-    { "state": "PENDING_ADD", "state_activation_time": "2024-12-12T08:00:00Z",
-    }, "cloud-storage": { "state": "IN_USE" } }
+    r"""Optional. This map services to either their current or planned states.
+    Service names are keys, and the associated values describe the service's
+    state. If a state change is expected, the value will be the list of ADDING
+    or DELETING states depending on the actions taken. Example: "services": {
+    "big-query": { "states": [ { "state": "ADDING", "effective_time":
+    "2024-12-12T08:00:00Z" }, ] }, "cloud-storage": { "states": [ { "state":
+    "ACTIVE", } ] } }
 
     Messages:
       AdditionalProperty: An additional property for a ServicesValue object.
@@ -1536,11 +1551,11 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
 
       Fields:
         key: Name of the additional property.
-        value: A GoogleCloudNetworkconnectivityV1betaServiceState attribute.
+        value: A GoogleCloudNetworkconnectivityV1betaStateTimeline attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaServiceState', 2)
+      value = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateTimeline', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -1557,9 +1572,6 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
 
 class GoogleCloudNetworkconnectivityV1betaMiataDestination(_messages.Message):
   r"""The MiataDestination resource.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the MiataDestination.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
@@ -1579,33 +1591,16 @@ class GoogleCloudNetworkconnectivityV1betaMiataDestination(_messages.Message):
     name: Identifier. The name of the MiataDestination resource. Format: `proj
       ects/{project}/locations/{location}/miatas/{miata}/miataDestinations/{mi
       ata_destination}`.
-    state: Output only. The state of the MiataDestination.
-    stateActivationTime: Output only. The time when the state of the
-      MiataDestination will be activated. Example: If state is PENDING_ADD,
-      then this field will be the time when the MiataDestination will be
-      activated or if the state is PENDING_DELETE, then this field will be the
-      time when the MiataDestination will be deleted.
+    stateTimeline: Output only. The timeline of the expected MiataDestination
+      states or the current rest state. If a state change is expected, the
+      value will be the list of ADDING, DELETING or SUSPENDING statesdepending
+      on the actions taken. Example: "state_timeline": { "states": [ {
+      "state": "ADDING", // The time when the MiataDestination will be
+      activated. "effective_time": "2024-12-01T08:00:00Z" }, { "state":
+      "SUSPENDING", // The time when the MiataDestination will be suspended.
+      "effective_time": "2024-12-01T20:00:00Z" } ] }
     updateTime: Output only. Time when the MiataDestination was updated.
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the MiataDestination.
-
-    Values:
-      STATE_UNSPECIFIED: An invalid state as the default case.
-      PENDING_ADD: The MiataDestination is being added.
-      IN_USE: The MiataDestination is in use.
-      PENDING_DELETE: The MiataDestination is being deleted.
-      PENDING_SUSPENSION: The MiataDestination is being suspended.
-      NOT_IN_USE: The MiataDestination is not in use for billing. Used when a
-        user configured MiataDestination is suspended.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING_ADD = 1
-    IN_USE = 2
-    PENDING_DELETE = 3
-    PENDING_SUSPENSION = 4
-    NOT_IN_USE = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1638,9 +1633,8 @@ class GoogleCloudNetworkconnectivityV1betaMiataDestination(_messages.Message):
   ipPrefix = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateActivationTime = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  stateTimeline = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateTimeline', 8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudNetworkconnectivityV1betaNextHopInterconnectAttachment(_messages.Message):
@@ -1959,8 +1953,9 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
       created on behalf of the customer. This field is deprecated. Use address
       instead.
     labels: User-defined labels.
-    name: Output only. The name of a RegionalEndpoint. Format: `projects/{proj
-      ect}/locations/{location}/regionalEndpoints/{regional_endpoint}`.
+    name: Output only. The name of a RegionalEndpoint. Pattern: `projects/{pro
+      ject}/locations/{location}/regionalEndpoints/^[-a-z0-9](?:[-a-z0-
+      9]{0,44})[a-z0-9]$`.
     network: The name of the VPC network for this private regional endpoint.
       Format: `projects/{project}/global/networks/{network}`
     pscForwardingRule: Output only. The resource reference of the PSC
@@ -2379,39 +2374,6 @@ class GoogleCloudNetworkconnectivityV1betaRoutingVPC(_messages.Message):
   uri = _messages.StringField(2)
 
 
-class GoogleCloudNetworkconnectivityV1betaServiceState(_messages.Message):
-  r"""The state of the service.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of the service.
-
-  Fields:
-    state: Output only. The state of the service.
-    stateActivationTime: Output only. The time when the state of the service
-      will be activated. Example: If state is PENDING_ADD, then this field
-      will be the time when the service will be activated or if the state is
-      PENDING_DELETE, then this field will be the time when the service will
-      be deleted.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the service.
-
-    Values:
-      STATE_UNSPECIFIED: An invalid state as the default case.
-      PENDING_ADD: The service is being added.
-      IN_USE: The service is in use.
-      PENDING_DELETE: The service is being deleted.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING_ADD = 1
-    IN_USE = 2
-    PENDING_DELETE = 3
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-  stateActivationTime = _messages.StringField(2)
-
-
 class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
   r"""A Network Connectivity Center spoke represents one or more network
   connectivity resources. When you create a spoke, you associate it with a
@@ -2478,6 +2440,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      GATEWAY: Spokes that are NCC gateways.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -2485,7 +2448,8 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    PRODUCER_VPC_NETWORK = 5
+    GATEWAY = 5
+    PRODUCER_VPC_NETWORK = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -2701,6 +2665,7 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      GATEWAY: Spokes that are NCC gateways.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -2708,10 +2673,49 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    PRODUCER_VPC_NETWORK = 5
+    GATEWAY = 5
+    PRODUCER_VPC_NETWORK = 6
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)
+
+
+class GoogleCloudNetworkconnectivityV1betaStateMetadata(_messages.Message):
+  r"""The state and activation time details of the resource state.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the resource.
+
+  Fields:
+    effectiveTime: Output only. This field will be accompanied only with
+      transient states (PENDING_ADD, PENDING_DELETE, PENDING_SUSPENSION) and
+      denotes the time when the transient state of the resource will be
+      effective. For instance, if the state is "ADDING," this field will show
+      the time the resource transitions to "ACTIVE." Similarly, if the state
+      is "PENDING_DELETE," it will show the deletion time.
+    state: Output only. The state of the resource.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: An invalid state as the default case.
+      ADDING: The resource is being added.
+      ACTIVE: The resource is in use.
+      DELETING: The resource is being deleted.
+      SUSPENDING: The resource is being suspended.
+      SUSPENDED: The resource is not in use for billing and is suspended.
+    """
+    STATE_UNSPECIFIED = 0
+    ADDING = 1
+    ACTIVE = 2
+    DELETING = 3
+    SUSPENDING = 4
+    SUSPENDED = 5
+
+  effectiveTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudNetworkconnectivityV1betaStateReason(_messages.Message):
@@ -2755,6 +2759,17 @@ class GoogleCloudNetworkconnectivityV1betaStateReason(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
   userDetails = _messages.StringField(3)
+
+
+class GoogleCloudNetworkconnectivityV1betaStateTimeline(_messages.Message):
+  r"""The timeline of pending states for a resource.
+
+  Fields:
+    states: Output only. The state and activation time details of the resource
+      state.
+  """
+
+  states = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateMetadata', 1, repeated=True)
 
 
 class GoogleCloudNetworkconnectivityV1betaVirtualMachine(_messages.Message):
@@ -4926,7 +4941,7 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsCreateRequest(_messag
       passed as the request body.
     parent: Required. The parent resource's name of the RegionalEndpoint.
     regionalEndpointId: Required. Unique id of the Regional Endpoint to be
-      created.
+      created. @pattern: ^[-a-z0-9](?:[-a-z0-9]{0,44})[a-z0-9]$
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       knows to ignore the request if it has already been completed. The server

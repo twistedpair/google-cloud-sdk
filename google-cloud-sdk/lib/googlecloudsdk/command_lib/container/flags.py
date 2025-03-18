@@ -1812,6 +1812,22 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
   )
 
 
+def AddDataCacheCountFlag(
+    parser, for_node_pool=False, hidden=False):
+  """Adds a --data-cache-count flag to the given parser."""
+  target = 'node pool' if for_node_pool else 'cluster'
+  help_text = """
+Specifies the number of local SSDs to be utilized for GKE Data Cache in the {}.
+""".format(target)
+  parser.add_argument(
+      '--data-cache-count',
+      help=help_text,
+      hidden=hidden,
+      type=int,
+      default=None,
+  )
+
+
 def AddNodeTaintsFlag(
     parser, for_node_pool=False, for_update=False, hidden=False
 ):
@@ -5213,6 +5229,11 @@ Examples:
 
     kubeletConfig:
       cpuManagerPolicy: static
+      memoryManager:
+        policy: Static
+      topologyManager:
+        policy: BestEffort
+        scope: pod
     linuxConfig:
       sysctl:
         net.core.somaxconn: '2048'
@@ -5229,6 +5250,8 @@ KEY                                 | VALUE
 cpuManagerPolicy                    | either 'static' or 'none'
 cpuCFSQuota                         | true or false (enabled by default)
 cpuCFSQuotaPeriod                   | interval (e.g., '100ms')
+memoryManager                       | specify memory manager policy
+topologyManager                     | specify topology manager policy and scope
 podPidsLimit                        | integer (The value must be greater than or equal to 1024 and less than 4194304.)
 containerLogMaxSize                 | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi.)
 containerLogMaxFiles                | integer (The value must be between [2, 10].)
@@ -5237,6 +5260,18 @@ imageGcHighThresholdPercent         | integer (The value must be between [10, 85
 imageMinimumGcAge                   | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
 imageMaximumGcAge                   | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
 allowedUnsafeSysctls                | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
+
+List of supported keys in memoryManager in 'kubeletConfig'.
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+policy                                     | either 'Static' or 'None'
+
+List of supported keys in topologyManager in 'kubeletConfig'.
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+policy                                     | either 'none' or 'best-effort' or 'single-numa-node' or 'restricted'
+scope                                      | either 'pod' or 'container'
+
 
 List of supported sysctls in 'linuxConfig'.
 
@@ -5251,7 +5286,7 @@ net.core.optmem_max                                | Any positive integer, less 
 net.core.somaxconn                                 | Must be between [128, 2147483647]
 net.ipv4.tcp_rmem                                  | Any positive integer tuple
 net.ipv4.tcp_wmem                                  | Any positive integer tuple
-net.ipv4.tcp_tw_reuse                              | Must be {0, 1}
+net.ipv4.tcp_tw_reuse                              | Must be {0, 1, 2}
 net.netfilter.nf_conntrack_max                     | Must be between [65536, 4194304]
 net.netfilter.nf_conntrack_buckets                 | Must be between [65536, 524288]. Recommend setting: nf_conntrack_max = nf_conntrack_buckets * 4
 net.netfilter.nf_conntrack_tcp_timeout_close_wait  | Must be between [60, 3600]
@@ -5495,6 +5530,36 @@ https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
       default=None,
       hidden=hidden,
       action='store_true',
+  )
+
+
+def AddConfidentialNodeTypeFlag(parser, for_node_pool=False, is_update=False):
+  """Adds --confidential-node-type flag to the parser."""
+  target = 'node pool' if for_node_pool else 'cluster'
+
+  help_text = """\
+Enable confidential nodes for the {}. Enabling Confidential Nodes
+will create nodes using Confidential VM
+https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
+      target
+  )
+
+  if is_update:
+    help_text = """\
+    Recreate all the nodes in the node pool to be confidential VM
+    https://cloud.google.com/compute/confidential-vm/docs/about-cvm."""
+
+  choices = ['sev', 'sev_snp', 'tdx']
+  # This feature can only be disabled on node pool level.
+  if for_node_pool:
+    choices.append('disabled')
+
+  parser.add_argument(
+      '--confidential-node-type',
+      choices=choices,
+      default=None,
+      hidden=True,
+      help=help_text,
   )
 
 

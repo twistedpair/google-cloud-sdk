@@ -79,6 +79,7 @@ provisioning_model:
   arg_name: provisioning-model
   help_text: |
     If provided, the resource will be provisioned with the specified provisioning model.
+    Currently only flex-start and reservation-bound are supported.
 
 max_run_duration:
   arg_name: max-run-duration

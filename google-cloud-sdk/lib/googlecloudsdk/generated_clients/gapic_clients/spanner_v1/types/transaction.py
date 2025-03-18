@@ -64,7 +64,7 @@ class TransactionOptions(proto.Message):
        transactions do not need to be committed. Queries on change
        streams must be performed with the snapshot read-only transaction
        mode, specifying a strong read. See
-       [TransactionOptions.ReadOnly.strong][google.spanner.v1.TransactionOptions.ReadOnly.strong]
+       [TransactionOptions.ReadOnly.strong][google.spanner.v1.TransactionOptions#readonly]
        for more details.
 
     3. Partitioned DML. This type of transaction is used to execute a
@@ -425,7 +425,50 @@ class TransactionOptions(proto.Message):
             ``exclude_txn_from_change_streams`` may only be specified
             for read-write or partitioned-dml transactions, otherwise
             the API will return an ``INVALID_ARGUMENT`` error.
+        isolation_level (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.TransactionOptions.IsolationLevel):
+            Isolation level for the transaction.
     """
+    class IsolationLevel(proto.Enum):
+        r"""``IsolationLevel`` is used when setting ``isolation_level`` for a
+        transaction.
+
+        Values:
+            ISOLATION_LEVEL_UNSPECIFIED (0):
+                Default value.
+
+                If the value is not specified, the ``SERIALIZABLE``
+                isolation level is used.
+            SERIALIZABLE (1):
+                All transactions appear as if they executed
+                in a serial order, even if some of the reads,
+                writes, and other operations of distinct
+                transactions actually occurred in parallel.
+                Spanner assigns commit timestamps that reflect
+                the order of committed transactions to implement
+                this property. Spanner offers a stronger
+                guarantee than serializability called external
+                consistency. For further details, please refer
+                to
+                https://cloud.google.com/spanner/docs/true-time-external-consistency#serializability.
+            REPEATABLE_READ (2):
+                All reads performed during the transaction observe a
+                consistent snapshot of the database, and the transaction
+                will only successfully commit in the absence of conflicts
+                between its updates and any concurrent updates that have
+                occurred since that snapshot. Consequently, in contrast to
+                ``SERIALIZABLE`` transactions, only write-write conflicts
+                are detected in snapshot transactions.
+
+                This isolation level does not support Read-only and
+                Partitioned DML transactions.
+
+                When ``REPEATABLE_READ`` is specified on a read-write
+                transaction, the locking semantics default to
+                ``OPTIMISTIC``.
+        """
+        ISOLATION_LEVEL_UNSPECIFIED = 0
+        SERIALIZABLE = 1
+        REPEATABLE_READ = 2
 
     class ReadWrite(proto.Message):
         r"""Message type to initiate a read-write transaction. Currently
@@ -448,19 +491,38 @@ class TransactionOptions(proto.Message):
                 READ_LOCK_MODE_UNSPECIFIED (0):
                     Default value.
 
-                    If the value is not specified, the pessimistic
-                    read lock is used.
+                    -  If isolation level is
+                       [REPEATABLE_READ][google.spanner.v1.TransactionOptions.IsolationLevel.REPEATABLE_READ],
+                       then it is an error to specify ``read_lock_mode``.
+                       Locking semantics default to ``OPTIMISTIC``. No
+                       validation checks are done for reads, except to validate
+                       that the data that was served at the snapshot time is
+                       unchanged at commit time in the following cases:
+
+                       1. reads done as part of queries that use
+                          ``SELECT FOR UPDATE``
+                       2. reads done as part of statements with a
+                          ``LOCK_SCANNED_RANGES`` hint
+                       3. reads done as part of DML statements
+
+                    -  At all other isolation levels, if ``read_lock_mode`` is
+                       the default value, then pessimistic read locks are used.
                 PESSIMISTIC (1):
                     Pessimistic lock mode.
 
-                    Read locks are acquired immediately on read.
+                    Read locks are acquired immediately on read. Semantics
+                    described only applies to
+                    [SERIALIZABLE][google.spanner.v1.TransactionOptions.IsolationLevel.SERIALIZABLE]
+                    isolation.
                 OPTIMISTIC (2):
                     Optimistic lock mode.
 
-                    Locks for reads within the transaction are not
-                    acquired on read. Instead the locks are acquired
-                    on a commit to validate that read/queried data
-                    has not changed since the transaction started.
+                    Locks for reads within the transaction are not acquired on
+                    read. Instead the locks are acquired on a commit to validate
+                    that read/queried data has not changed since the transaction
+                    started. Semantics described only applies to
+                    [SERIALIZABLE][google.spanner.v1.TransactionOptions.IsolationLevel.SERIALIZABLE]
+                    isolation.
             """
             READ_LOCK_MODE_UNSPECIFIED = 0
             PESSIMISTIC = 1
@@ -620,6 +682,11 @@ class TransactionOptions(proto.Message):
         proto.BOOL,
         number=5,
     )
+    isolation_level: IsolationLevel = proto.Field(
+        proto.ENUM,
+        number=6,
+        enum=IsolationLevel,
+    )
 
 
 class Transaction(proto.Message):
@@ -730,8 +797,11 @@ class TransactionSelector(proto.Message):
 class MultiplexedSessionPrecommitToken(proto.Message):
     r"""When a read-write transaction is executed on a multiplexed session,
     this precommit token is sent back to the client as a part of the
-    [Transaction] message in the BeginTransaction response and also as a
-    part of the [ResultSet] and [PartialResultSet] responses.
+    [Transaction][google.spanner.v1.Transaction] message in the
+    [BeginTransaction][google.spanner.v1.BeginTransactionRequest]
+    response and also as a part of the
+    [ResultSet][google.spanner.v1.ResultSet] and
+    [PartialResultSet][google.spanner.v1.PartialResultSet] responses.
 
     Attributes:
         precommit_token (bytes):

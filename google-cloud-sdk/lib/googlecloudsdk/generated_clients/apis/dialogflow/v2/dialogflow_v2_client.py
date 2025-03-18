@@ -3108,6 +3108,33 @@ class DialogflowV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Generate(self, request, global_params=None):
+      r"""Generates all the suggestions using generators configured in the conversation profile. A generator is used only if its trigger event is matched.
+
+      Args:
+        request: (DialogflowProjectsConversationsSuggestionsGenerateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2GenerateSuggestionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Generate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Generate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/suggestions:generate',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.suggestions.generate',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}/suggestions:generate',
+        request_field='googleCloudDialogflowV2GenerateSuggestionsRequest',
+        request_type_name='DialogflowProjectsConversationsSuggestionsGenerateRequest',
+        response_type_name='GoogleCloudDialogflowV2GenerateSuggestionsResponse',
+        supports_download=False,
+    )
+
     def SearchKnowledge(self, request, global_params=None):
       r"""Get answers for the given query based on knowledge documents.
 
@@ -6483,6 +6510,33 @@ class DialogflowV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Generate(self, request, global_params=None):
+      r"""Generates all the suggestions using generators configured in the conversation profile. A generator is used only if its trigger event is matched.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsSuggestionsGenerateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2GenerateSuggestionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Generate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Generate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/suggestions:generate',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.suggestions.generate',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}/suggestions:generate',
+        request_field='googleCloudDialogflowV2GenerateSuggestionsRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsSuggestionsGenerateRequest',
+        response_type_name='GoogleCloudDialogflowV2GenerateSuggestionsResponse',
+        supports_download=False,
+    )
+
     def SearchKnowledge(self, request, global_params=None):
       r"""Get answers for the given query based on knowledge documents.
 
@@ -6625,6 +6679,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsLocationsConversationsGetRequest',
         response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def IngestContextReferences(self, request, global_params=None):
+      r"""Data ingestion API. Ingests context references for an existing conversation.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsIngestContextReferencesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2IngestContextReferencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('IngestContextReferences')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    IngestContextReferences.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}:ingestContextReferences',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.ingestContextReferences',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}:ingestContextReferences',
+        request_field='googleCloudDialogflowV2IngestContextReferencesRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsIngestContextReferencesRequest',
+        response_type_name='GoogleCloudDialogflowV2IngestContextReferencesResponse',
         supports_download=False,
     )
 

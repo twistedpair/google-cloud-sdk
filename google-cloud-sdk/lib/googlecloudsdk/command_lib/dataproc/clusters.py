@@ -14,10 +14,6 @@
 # limitations under the License.
 """Utilities for building the dataproc clusters CLI."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import collections
 import re
 import textwrap
@@ -66,7 +62,7 @@ def ArgsForClusterRef(
     beta: whether or not this is a beta command (may affect flag visibility)
     alpha: whether or not this is a alpha command (may affect flag visibility)
     include_deprecated: whether deprecated flags should be included
-    include_ttl_config: whether to include Scheduled Delete(TTL) args
+    include_ttl_config: whether to include Scheduled Delete and Stop (TTL) args
     include_gke_platform_args: whether to include GKE-based cluster args
     include_driver_pool_args: whether to include driver pool cluster args
   """
@@ -278,6 +274,14 @@ def ArgsForClusterRef(
       type=ArgMultiValueDict(),
       action=arg_parsers.FlattenAction(),
   )
+
+  parser.add_argument(
+      '--cluster-type',
+      metavar='TYPE',
+      choices=['standard', 'single-node', 'zero-scale'],
+      help='The type of cluster.',
+  )
+
   image_parser = parser.add_mutually_exclusive_group()
   # TODO(b/73291743): Add external doc link to --image
   image_parser.add_argument(
@@ -746,12 +750,24 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   )
 
   if include_ttl_config:
-    parser.add_argument(
+    auto_delete_idle_group = parser.add_mutually_exclusive_group()
+    auto_delete_idle_group.add_argument(
         '--max-idle',
         type=arg_parsers.Duration(),
+        # TODO: b/368979261 - Hide this flag when --delete-max-idle is GA.
+        # hidden=True,
         help="""\
-          The duration before cluster is auto-deleted after last job completes,
-          such as "2h" or "1d".
+          The duration after the last job completes to autto-delete the
+          cluster, such as "2h" or "1d".
+          See $ gcloud topic datetimes for information on duration formats.
+          """,
+    )
+    auto_delete_idle_group.add_argument(
+        '--delete-max-idle',
+        type=arg_parsers.Duration(),
+        help="""\
+          The duration after the last job completes to auto-delete the
+          cluster, such as "2h" or "1d".
           See $ gcloud topic datetimes for information on duration formats.
           """,
     )
@@ -760,9 +776,11 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_group.add_argument(
         '--max-age',
         type=arg_parsers.Duration(),
+        # TODO: b/368979261 - Hide this flag when --delete-max-age is GA.
+        # hidden=True,
         help="""\
-          The lifespan of the cluster before it is auto-deleted, such as
-          "2h" or "1d".
+          The lifespan of the cluster, with auto-deletion upon completion,
+          such as "2h" or "1d".
           See $ gcloud topic datetimes for information on duration formats.
           """,
     )
@@ -770,10 +788,60 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_group.add_argument(
         '--expiration-time',
         type=arg_parsers.Datetime.Parse,
+        # TODO: b/368979261 - Hide this flag when --delete-expiration-time is GA
+        # hidden=True,
         help="""\
-          The time when cluster will be auto-deleted, such as
+          The time when the cluster will be auto-deleted, such as
           "2017-08-29T18:52:51.142Z." See $ gcloud topic datetimes for
           information on time formats.
+          """,
+    )
+
+    auto_delete_group.add_argument(
+        '--delete-max-age',
+        type=arg_parsers.Duration(),
+        help="""\
+          The lifespan of the cluster, with auto-deletion upon completion,
+          such as "2h" or "1d".
+          See $ gcloud topic datetimes for information on duration formats.
+          """,
+    )
+    auto_delete_group.add_argument(
+        '--delete-expiration-time',
+        type=arg_parsers.Datetime.Parse,
+        help="""\
+          The time when the cluster will be auto-deleted, such as
+          "2017-08-29T18:52:51.142Z."
+          See $ gcloud topic datetimes for information on time formats.
+          """,
+    )
+
+    parser.add_argument(
+        '--stop-max-idle',
+        type=arg_parsers.Duration(),
+        help="""\
+          The duration after the last job completes to auto-stop the cluster,
+          such as "2h" or "1d".
+          See $ gcloud topic datetimes for information on duration formats.
+          """,
+    )
+    auto_stop_group = parser.add_mutually_exclusive_group()
+    auto_stop_group.add_argument(
+        '--stop-max-age',
+        type=arg_parsers.Duration(),
+        help="""\
+          The lifespan of the cluster, with auto-stop upon completion,
+          such as "2h" or "1d".
+          See $ gcloud topic datetimes for information on duration formats.
+          """,
+    )
+    auto_stop_group.add_argument(
+        '--stop-expiration-time',
+        type=arg_parsers.Datetime.Parse,
+        help="""\
+          The time when the cluster will be auto-stopped, such as
+          "2017-08-29T18:52:51.142Z."
+          See $ gcloud topic datetimes for information on time formats.
           """,
     )
 
@@ -1350,6 +1418,7 @@ def GetClusterConfig(
   cluster_config = dataproc.messages.ClusterConfig(
       configBucket=args.bucket,
       tempBucket=args.temp_bucket,
+      clusterType=_GetCusterType(dataproc, args.cluster_type),
       gceClusterConfig=gce_cluster_config,
       masterConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_masters,
@@ -1490,7 +1559,8 @@ def GetClusterConfig(
       or args.bigquery_metastore
   ):
     bigquery_metastore_config = GetBigQueryConfig(
-        dataproc, args,
+        dataproc,
+        args,
     )
     cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
         bigqueryMetastoreConfig=bigquery_metastore_config
@@ -1499,6 +1569,9 @@ def GetClusterConfig(
   if include_ttl_config:
     lifecycle_config = dataproc.messages.LifecycleConfig()
     changed_config = False
+    # Flags max_age, expiration_time and max_idle are hidden, but still
+    # supported. They are replaced with new flags delete_max_age,
+    # delete_expiration_time and delete_max_idle.
     if args.max_age is not None:
       lifecycle_config.autoDeleteTtl = six.text_type(args.max_age) + 's'
       changed_config = True
@@ -1510,6 +1583,35 @@ def GetClusterConfig(
     if args.max_idle is not None:
       lifecycle_config.idleDeleteTtl = six.text_type(args.max_idle) + 's'
       changed_config = True
+
+    if args.delete_max_age is not None:
+      lifecycle_config.autoDeleteTtl = (
+          six.text_type(args.delete_max_age) + 's'
+      )
+      changed_config = True
+    if args.delete_expiration_time is not None:
+      lifecycle_config.autoDeleteTime = times.FormatDateTime(
+          args.delete_expiration_time
+      )
+      changed_config = True
+    if args.delete_max_idle is not None:
+      lifecycle_config.idleDeleteTtl = (
+          six.text_type(args.delete_max_idle) + 's'
+      )
+      changed_config = True
+    # Process scheduled stop args.
+    if args.stop_max_age is not None:
+      lifecycle_config.autoStopTtl = six.text_type(args.stop_max_age) + 's'
+      changed_config = True
+    if args.stop_expiration_time is not None:
+      lifecycle_config.autoStopTime = times.FormatDateTime(
+          args.stop_expiration_time
+      )
+      changed_config = True
+    if args.stop_max_idle is not None:
+      lifecycle_config.idleStopTtl = six.text_type(args.stop_max_idle) + 's'
+      changed_config = True
+
     if changed_config:
       cluster_config.lifecycleConfig = lifecycle_config
 
@@ -1774,6 +1876,39 @@ def _GetInstanceGroupPreemptibility(dataproc, secondary_worker_type):
         'SPOT'
     )
   return None
+
+
+def _GetCusterType(dataproc, cluster_type):
+  """Get ClusterType enum value.
+
+  Converts cluster_type argument value to
+  ClusterType API enum value.
+
+  Args:
+    dataproc: Dataproc API definition
+    cluster_type: argument value
+
+  Returns:
+    ClusterType API enum value
+  """
+  if cluster_type == 'standard':
+    return dataproc.messages.ClusterConfig.ClusterTypeValueValuesEnum(
+        'STANDARD'
+    )
+  if cluster_type == 'single-node':
+    return dataproc.messages.ClusterConfig.ClusterTypeValueValuesEnum(
+        'SINGLE_NODE'
+    )
+  if cluster_type == 'zero-scale':
+    return dataproc.messages.ClusterConfig.ClusterTypeValueValuesEnum(
+        'ZERO_SCALE'
+    )
+  if cluster_type is None:
+    return None
+  raise exceptions.ArgumentError(
+      'Unsupported --cluster-type flag value: '
+      + cluster_type
+  )
 
 
 def _GetPrivateIpv6GoogleAccess(dataproc, private_ipv6_google_access_type):

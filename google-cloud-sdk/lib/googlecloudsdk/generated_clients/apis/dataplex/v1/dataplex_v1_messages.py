@@ -5116,9 +5116,8 @@ class GoogleCloudDataplexV1DataDiscoveryResultBigQueryPublishing(_messages.Messa
   r"""Describes BigQuery publishing configurations.
 
   Fields:
-    dataset: Output only. The BigQuery dataset to publish to. It takes the
-      form projects/{project_id}/datasets/{dataset_id}. If not set, the
-      service creates a default publishing dataset.
+    dataset: Output only. The BigQuery dataset the discovered tables are
+      published to.
   """
 
   dataset = _messages.StringField(1)
@@ -5554,9 +5553,9 @@ class GoogleCloudDataplexV1DataQualityDimension(_messages.Message):
   rules specified.
 
   Fields:
-    name: The dimension name a rule belongs to. Supported dimensions are
-      "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
-      "FRESHNESS", "VOLUME"
+    name: Optional. The dimension name a rule belongs to. Custom dimension
+      name is supported with all uppercase letters and maximum length of 30
+      characters.
   """
 
   name = _messages.StringField(1)
@@ -5569,7 +5568,7 @@ class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
   Fields:
     dimension: Output only. The dimension config specified in the
       DataQualitySpec, as is.
-    passed: Whether the dimension passed or failed.
+    passed: Output only. Whether the dimension passed or failed.
     score: Output only. The dimension-level data quality score for this data
       scan job if and only if the 'dimension' field is set.The score ranges
       between 0, 100 (up to two decimal points).
@@ -5587,14 +5586,15 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
     columns: Output only. A list of results at the column level.A column will
       have a corresponding DataQualityColumnResult if and only if there is at
       least one rule with the 'column' field set to it.
-    dimensions: A list of results at the dimension level.A dimension will have
-      a corresponding DataQualityDimensionResult if and only if there is at
-      least one rule with the 'dimension' field set to it.
-    passed: Overall data quality result -- true if all rules passed.
+    dimensions: Output only. A list of results at the dimension level.A
+      dimension will have a corresponding DataQualityDimensionResult if and
+      only if there is at least one rule with the 'dimension' field set to it.
+    passed: Output only. Overall data quality result -- true if all rules
+      passed.
     postScanActionsResult: Output only. The result of post scan actions.
-    rowCount: The count of rows processed.
-    rules: A list of all the rules in a job, and their results.
-    scannedData: The data scanned for this result.
+    rowCount: Output only. The count of rows processed.
+    rules: Output only. A list of all the rules in a job, and their results.
+    scannedData: Output only. The data scanned for this result.
     score: Output only. The overall data quality score.The score ranges
       between 0, 100 (up to two decimal points).
   """
@@ -5762,20 +5762,23 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
     assertionRowCount: Output only. The number of rows returned by the SQL
       statement in a SQL assertion rule.This field is only valid for SQL
       assertion rules.
-    evaluatedCount: The number of rows a rule was evaluated against.This field
-      is only valid for row-level type rules.Evaluated count can be configured
-      to either include all rows (default) - with null rows automatically
-      failing rule evaluation, or exclude null rows from the evaluated_count,
-      by setting ignore_nulls = true.This field is not set for rule
-      SqlAssertion.
-    failingRowsQuery: The query to find rows that did not pass this rule.This
+    evaluatedCount: Output only. The number of rows a rule was evaluated
+      against.This field is only valid for row-level type rules.Evaluated
+      count can be configured to either include all rows (default) - with null
+      rows automatically failing rule evaluation, or exclude null rows from
+      the evaluated_count, by setting ignore_nulls = true.This field is not
+      set for rule SqlAssertion.
+    failingRowsQuery: Output only. The query to find rows that did not pass
+      this rule.This field is only valid for row-level type rules.
+    nullCount: Output only. The number of rows with null values in the
+      specified column.
+    passRatio: Output only. The ratio of passed_count / evaluated_count.This
       field is only valid for row-level type rules.
-    nullCount: The number of rows with null values in the specified column.
-    passRatio: The ratio of passed_count / evaluated_count.This field is only
-      valid for row-level type rules.
-    passed: Whether the rule passed or failed.
-    passedCount: This field is not set for rule SqlAssertion.
-    rule: The rule specified in the DataQualitySpec, as is.
+    passed: Output only. Whether the rule passed or failed.
+    passedCount: Output only. The number of rows which passed a rule
+      evaluation.This field is only valid for row-level type rules.This field
+      is not set for rule SqlAssertion.
+    rule: Output only. The rule specified in the DataQualitySpec, as is.
   """
 
   assertionRowCount = _messages.IntegerField(1)
@@ -7302,6 +7305,35 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
   transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 7)
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class GoogleCloudDataplexV1EntryLinkEvent(_messages.Message):
+  r"""Payload associated with Entry related log events.
+
+  Enums:
+    EventTypeValueValuesEnum: The type of the event.
+
+  Fields:
+    eventType: The type of the event.
+    message: The log message.
+    resource: Name of the resource.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: An unspecified event type.
+      ENTRY_LINK_CREATE: EntryLink create event.
+      ENTRY_LINK_DELETE: EntryLink delete event.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    ENTRY_LINK_CREATE = 1
+    ENTRY_LINK_DELETE = 2
+
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  resource = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1EntrySource(_messages.Message):

@@ -105,7 +105,6 @@ def MakeLocalSsds(messages, ssd_configs):
       messages
       .AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk)
   interface_msg = disk_msg.InterfaceValueValuesEnum
-  total_partitions = 0
   for s in ssd_configs:
     if s['interface'].upper() == 'NVME':
       interface = interface_msg.NVME
@@ -119,21 +118,12 @@ def MakeLocalSsds(messages, ssd_configs):
       )
     m = disk_msg(diskSizeGb=s['size'], interface=interface)
     partitions = s.get('count', 1)
-    if partitions not in range(24 + 1):
+    if partitions < 1:
       raise exceptions.InvalidArgumentException(
           '--local-ssd',
-          'The number of SSDs attached to an instance must be in the range of'
-          ' 1-24.',
+          'Must specify a valid count (>= 1) for SSDs attached to the '
+          'reservation.',
       )
-
-    total_partitions += partitions
-    if total_partitions > 24:
-      raise exceptions.InvalidArgumentException(
-          '--local-ssd',
-          'The total number of SSDs attached to an instance must not'
-          ' exceed 24.',
-      )
-
     local_ssds.extend([m] * partitions)
 
   return local_ssds
@@ -281,6 +271,7 @@ def MakeReservationMessage(
     delete_at_time=None,
     delete_after_duration=None,
     reservation_sharing_policy=None,
+    enable_emergent_maintenance=None,
 ):
   """Constructs a single reservations message object."""
   reservation_message = messages.Reservation(
@@ -307,6 +298,9 @@ def MakeReservationMessage(
             messages, reservation_sharing_policy
         )
     )
+
+  if enable_emergent_maintenance is not None:
+    reservation_message.enableEmergentMaintenance = enable_emergent_maintenance
 
   return reservation_message
 

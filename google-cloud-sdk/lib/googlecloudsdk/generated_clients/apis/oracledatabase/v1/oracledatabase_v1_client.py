@@ -273,6 +273,33 @@ class OracledatabaseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Restart(self, request, global_params=None):
+      r"""Restarts an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restart')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restart.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:restart',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.restart',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:restart',
+        request_field='restartAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restores a single Autonomous Database.
 
@@ -296,6 +323,60 @@ class OracledatabaseV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:restore',
         request_field='restoreAutonomousDatabaseRequest',
         request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Starts an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:start',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:start',
+        request_field='startAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:stop',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:stop',
+        request_field='stopAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest',
         response_type_name='Operation',
         supports_download=False,
     )

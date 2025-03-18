@@ -119,6 +119,247 @@ class Cluster(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class ConnectAccessConfig(_messages.Message):
+  r"""The configuration of access to the Kafka Connect cluster.
+
+  Fields:
+    networkConfigs: Required. Virtual Private Cloud (VPC) networks that must
+      be granted direct access to the Kafka Connect cluster. Minimum of 1
+      network is required. Maximum 10 networks can be specified.
+  """
+
+  networkConfigs = _messages.MessageField('ConnectNetworkConfig', 1, repeated=True)
+
+
+class ConnectCluster(_messages.Message):
+  r"""An Apache Kafka Connect cluster deployed in a location.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the cluster.
+
+  Messages:
+    ConfigValue: Optional. Configurations for the worker that are overridden
+      from the defaults. The key of the map is a Kafka Connect worker property
+      name, for example: `exactly.once.source.support`.
+    LabelsValue: Optional. Labels as key value pairs.
+
+  Fields:
+    capacityConfig: Required. Capacity configuration for the Kafka Connect
+      cluster.
+    config: Optional. Configurations for the worker that are overridden from
+      the defaults. The key of the map is a Kafka Connect worker property
+      name, for example: `exactly.once.source.support`.
+    createTime: Output only. The time when the cluster was created.
+    gcpConfig: Required. Configuration properties for a Kafka Connect cluster
+      deployed to Google Cloud Platform.
+    kafkaCluster: Required. Immutable. The name of the Kafka cluster this
+      Kafka Connect cluster is attached to. Structured like:
+      projects/{project}/locations/{location}/clusters/{cluster}
+    labels: Optional. Labels as key value pairs.
+    name: Identifier. The name of the Kafka Connect cluster. Structured like:
+      projects/{project_number}/locations/{location}/connectClusters/{connect_
+      cluster_id}
+    state: Output only. The current state of the cluster.
+    updateTime: Output only. The time when the cluster was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the cluster.
+
+    Values:
+      STATE_UNSPECIFIED: A state was not specified.
+      CREATING: The cluster is being created.
+      ACTIVE: The cluster is active.
+      DELETING: The cluster is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigValue(_messages.Message):
+    r"""Optional. Configurations for the worker that are overridden from the
+    defaults. The key of the map is a Kafka Connect worker property name, for
+    example: `exactly.once.source.support`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  capacityConfig = _messages.MessageField('CapacityConfig', 1)
+  config = _messages.MessageField('ConfigValue', 2)
+  createTime = _messages.StringField(3)
+  gcpConfig = _messages.MessageField('ConnectGcpConfig', 4)
+  kafkaCluster = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
+class ConnectGcpConfig(_messages.Message):
+  r"""Configuration properties for a Kafka Connect cluster deployed to Google
+  Cloud Platform.
+
+  Fields:
+    accessConfig: Required. Access configuration for the Kafka Connect
+      cluster.
+    secretPaths: Optional. Secrets to load into workers. Exact SecretVersions
+      from Secret Manager must be provided -- aliases are not supported. Up to
+      32 secrets may be loaded into one cluster. Format:
+      projects//secrets//versions/
+  """
+
+  accessConfig = _messages.MessageField('ConnectAccessConfig', 1)
+  secretPaths = _messages.StringField(2, repeated=True)
+
+
+class ConnectNetworkConfig(_messages.Message):
+  r"""The configuration of a Virtual Private Cloud (VPC) network that can
+  access the Kafka Connect cluster.
+
+  Fields:
+    additionalSubnets: Optional. Additional subnets may be specified. They may
+      be in another region, but must be in the same VPC network. The Connect
+      workers can communicate with network endpoints in either the primary or
+      additional subnets.
+    dnsDomainNames: Optional. Additional DNS domain names from the subnet's
+      network to be made visible to the Connect Cluster. When using
+      MirrorMaker2, it's necessary to add the bootstrap address's dns domain
+      name of the target cluster to make it visible to the connector. For
+      example: my-kafka-cluster.us-central1.managedkafka.my-project.cloud.goog
+    primarySubnet: Required. VPC subnet to make available to the Kafka Connect
+      cluster. Structured like:
+      projects/{project}/regions/{region}/subnetworks/{subnet_id} It is used
+      to create a Private Service Connect (PSC) interface for the Kafka
+      Connect workers. It must be located in the same region as the Kafka
+      Connect cluster. The CIDR range of the subnet must be within the IPv4
+      address ranges for private networks, as specified in RFC 1918. The
+      primary subnet CIDR range must have a minimum size of /22 (1024
+      addresses).
+  """
+
+  additionalSubnets = _messages.StringField(1, repeated=True)
+  dnsDomainNames = _messages.StringField(2, repeated=True)
+  primarySubnet = _messages.StringField(3)
+
+
+class Connector(_messages.Message):
+  r"""A Kafka Connect connector in a given ConnectCluster.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the connector.
+
+  Messages:
+    ConfigsValue: Optional. Connector config as keys/values. The keys of the
+      map are connector property names, for example: `connector.class`,
+      `tasks.max`, `key.converter`.
+
+  Fields:
+    configs: Optional. Connector config as keys/values. The keys of the map
+      are connector property names, for example: `connector.class`,
+      `tasks.max`, `key.converter`.
+    name: Identifier. The name of the connector. Structured like: projects/{pr
+      oject}/locations/{location}/connectClusters/{connect_cluster}/connectors
+      /{connector}
+    state: Output only. The current state of the connector.
+    taskRestartPolicy: Optional. Restarts the individual tasks of a Connector.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the connector.
+
+    Values:
+      STATE_UNSPECIFIED: A state was not specified.
+      UNASSIGNED: The connector is not assigned to any tasks, usually
+        transient.
+      RUNNING: The connector is running.
+      PAUSED: The connector has been paused.
+      FAILED: The connector has failed. See logs for why.
+      RESTARTING: The connector is restarting.
+      STOPPED: The connector has been stopped.
+    """
+    STATE_UNSPECIFIED = 0
+    UNASSIGNED = 1
+    RUNNING = 2
+    PAUSED = 3
+    FAILED = 4
+    RESTARTING = 5
+    STOPPED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigsValue(_messages.Message):
+    r"""Optional. Connector config as keys/values. The keys of the map are
+    connector property names, for example: `connector.class`, `tasks.max`,
+    `key.converter`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configs = _messages.MessageField('ConfigsValue', 1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  taskRestartPolicy = _messages.MessageField('TaskRetryPolicy', 4)
+
+
 class ConsumerGroup(_messages.Message):
   r"""A Kafka consumer group in a given cluster.
 
@@ -260,6 +501,36 @@ class ListClustersResponse(_messages.Message):
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListConnectClustersResponse(_messages.Message):
+  r"""Response for ListConnectClusters.
+
+  Fields:
+    connectClusters: The list of Connect clusters in the requested parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page of results. If this field is omitted, there are no more
+      results.
+    unreachable: Locations that could not be reached.
+  """
+
+  connectClusters = _messages.MessageField('ConnectCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListConnectorsResponse(_messages.Message):
+  r"""Response for ListConnectors.
+
+  Fields:
+    connectors: The list of connectors in the requested parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page of results. If this field is omitted, there are no more
+      results.
+  """
+
+  connectors = _messages.MessageField('Connector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListConsumerGroupsResponse(_messages.Message):
@@ -665,6 +936,286 @@ class ManagedkafkaProjectsLocationsClustersTopicsPatchRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsCreateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsCreateRequest
+  object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    connectorId: Required. The ID to use for the connector, which will become
+      the final component of the connector's name. The ID must be 1-63
+      characters long, and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` to comply with RFC 1035. This value is
+      structured like: `my-connector-id`.
+    parent: Required. The parent Connect cluster in which to create the
+      connector. Structured like `projects/{project}/locations/{location}/conn
+      ectClusters/{connect_cluster_id}`.
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  connectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the connector to delete. Structured like: proj
+      ects/{project}/locations/{location}/connectClusters/{connectCluster}/con
+      nectors/{connector}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the connector whose configuration to return.
+      Structured like: projects/{project}/locations/{location}/connectClusters
+      /{connectCluster}/connectors/{connector}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of connectors to return. The
+      service may return fewer than this value. If unspecified, server will
+      pick an appropriate default.
+    pageToken: Optional. A page token, received from a previous
+      `ListConnectors` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListConnectors` must
+      match the call that provided the page token.
+    parent: Required. The parent Connect cluster whose connectors are to be
+      listed. Structured like `projects/{project}/locations/{location}/connect
+      Clusters/{connect_cluster_id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsPatchRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsPatchRequest
+  object.
+
+  Fields:
+    connector: A Connector resource to be passed as the request body.
+    name: Identifier. The name of the connector. Structured like: projects/{pr
+      oject}/locations/{location}/connectClusters/{connect_cluster}/connectors
+      /{connector}
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the cluster resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. The mask is required and
+      a value of * will update all fields.
+  """
+
+  connector = _messages.MessageField('Connector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsPauseRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsPauseRequest
+  object.
+
+  Fields:
+    name: Required. The name of the connector to pause. Structured like: proje
+      cts/{project}/locations/{location}/connectClusters/{connectCluster}/conn
+      ectors/{connector}
+    pauseConnectorRequest: A PauseConnectorRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseConnectorRequest = _messages.MessageField('PauseConnectorRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsRestartRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsRestartRequest
+  object.
+
+  Fields:
+    name: Required. The name of the connector to restart. Structured like: pro
+      jects/{project}/locations/{location}/connectClusters/{connectCluster}/co
+      nnectors/{connector}
+    restartConnectorRequest: A RestartConnectorRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restartConnectorRequest = _messages.MessageField('RestartConnectorRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsResumeRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsResumeRequest
+  object.
+
+  Fields:
+    name: Required. The name of the connector to pause. Structured like: proje
+      cts/{project}/locations/{location}/connectClusters/{connectCluster}/conn
+      ectors/{connector}
+    resumeConnectorRequest: A ResumeConnectorRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeConnectorRequest = _messages.MessageField('ResumeConnectorRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersConnectorsStopRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersConnectorsStopRequest
+  object.
+
+  Fields:
+    name: Required. The name of the connector to stop. Structured like: projec
+      ts/{project}/locations/{location}/connectClusters/{connectCluster}/conne
+      ctors/{connector}
+    stopConnectorRequest: A StopConnectorRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopConnectorRequest = _messages.MessageField('StopConnectorRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersCreateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersCreateRequest object.
+
+  Fields:
+    connectCluster: A ConnectCluster resource to be passed as the request
+      body.
+    connectClusterId: Required. The ID to use for the Connect cluster, which
+      will become the final component of the cluster's name. The ID must be
+      1-63 characters long, and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` to comply with RFC 1035. This value is
+      structured like: `my-cluster-id`.
+    parent: Required. The parent project/location in which to create the Kafka
+      Connect cluster. Structured like
+      `projects/{project}/locations/{location}/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID to avoid duplication of requests. If a request times
+      out or fails, retrying with the same ID allows the server to recognize
+      the previous attempt. For at least 60 minutes, the server ignores
+      duplicate requests bearing the same ID. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID within 60 minutes
+      of the last request, the server checks if an original operation with the
+      same request ID was received. If so, the server ignores the second
+      request. The request ID must be a valid UUID. A zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  connectCluster = _messages.MessageField('ConnectCluster', 1)
+  connectClusterId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Kafka Connect cluster to delete.
+      Structured like `projects/{project}/locations/{location}/connectClusters
+      /{connect_cluster_id}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID to avoid duplication of requests. If a request times
+      out or fails, retrying with the same ID allows the server to recognize
+      the previous attempt. For at least 60 minutes, the server ignores
+      duplicate requests bearing the same ID. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID within 60 minutes
+      of the last request, the server checks if an original operation with the
+      same request ID was received. If so, the server ignores the second
+      request. The request ID must be a valid UUID. A zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersGetRequest object.
+
+  Fields:
+    name: Required. The name of the Kafka Connect cluster whose configuration
+      to return. Structured like `projects/{project}/locations/{location}/conn
+      ectClusters/{connect_cluster_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression for the result.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. The maximum number of Connect clusters to return. The
+      service may return fewer than this value. If unspecified, server will
+      pick an appropriate default.
+    pageToken: Optional. A page token, received from a previous
+      `ListConnectClusters` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListConnectClusters` must match the call that provided the page token.
+    parent: Required. The parent project/location whose Connect clusters are
+      to be listed. Structured like `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ManagedkafkaProjectsLocationsConnectClustersPatchRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsConnectClustersPatchRequest object.
+
+  Fields:
+    connectCluster: A ConnectCluster resource to be passed as the request
+      body.
+    name: Identifier. The name of the Kafka Connect cluster. Structured like:
+      projects/{project_number}/locations/{location}/connectClusters/{connect_
+      cluster_id}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID to avoid duplication of requests. If a request times
+      out or fails, retrying with the same ID allows the server to recognize
+      the previous attempt. For at least 60 minutes, the server ignores
+      duplicate requests bearing the same ID. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID within 60 minutes
+      of the last request, the server checks if an original operation with the
+      same request ID was received. If so, the server ignores the second
+      request. The request ID must be a valid UUID. A zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the cluster resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. The mask is required and
+      a value of * will update all fields.
+  """
+
+  connectCluster = _messages.MessageField('ConnectCluster', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class ManagedkafkaProjectsLocationsGetRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsGetRequest object.
 
@@ -896,6 +1447,14 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PauseConnectorRequest(_messages.Message):
+  r"""Request for PauseConnector."""
+
+
+class PauseConnectorResponse(_messages.Message):
+  r"""Response for PauseConnector."""
+
+
 class RebalanceConfig(_messages.Message):
   r"""Defines rebalancing behavior of a Kafka cluster.
 
@@ -923,6 +1482,22 @@ class RebalanceConfig(_messages.Message):
     AUTO_REBALANCE_ON_SCALE_UP = 2
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
+
+
+class RestartConnectorRequest(_messages.Message):
+  r"""Request for RestartConnector."""
+
+
+class RestartConnectorResponse(_messages.Message):
+  r"""Response for RestartConnector."""
+
+
+class ResumeConnectorRequest(_messages.Message):
+  r"""Request for ResumeConnector."""
+
+
+class ResumeConnectorResponse(_messages.Message):
+  r"""Response for ResumeConnector."""
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1037,6 +1612,33 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopConnectorRequest(_messages.Message):
+  r"""Request for StopConnector."""
+
+
+class StopConnectorResponse(_messages.Message):
+  r"""Response for StopConnector."""
+
+
+class TaskRetryPolicy(_messages.Message):
+  r"""Task Retry Policy is implemented on a best-effort basis. Retry delay
+  will be exponential based on provided minimum and maximum backoffs.
+  https://en.wikipedia.org/wiki/Exponential_backoff. Note that the delay
+  between consecutive task restarts may not always precisely match the
+  configured settings. This can happen when the ConnectCluster is in
+  rebalancing state or if the ConnectCluster is unresponsive etc.
+
+  Fields:
+    maximumBackoff: Optional. The maximum amount of time to wait before
+      retrying a failed task. This sets an upper bound for the backoff delay.
+    minimumBackoff: Optional. The minimum amount of time to wait before
+      retrying a failed task. This sets a lower bound for the backoff delay.
+  """
+
+  maximumBackoff = _messages.StringField(1)
+  minimumBackoff = _messages.StringField(2)
 
 
 class Topic(_messages.Message):

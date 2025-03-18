@@ -443,23 +443,6 @@ namespaced_resource_restore_mode_update:
       in the target cluster, and the original PV can be retained or deleted depending on its reclaim
       policy.
 
-cluster_resource_restore_scope:
-  arg_name: cluster-resource-restore-scope
-  api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
-  action:
-    deprecated:
-      removed: true
-      error: |
-        Flag cluster-resource-restore-scope has been removed.
-          Please use --cluster-resource-scope-selected-group-kinds instead.
-  hidden: true
-  type: arg_list
-  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessClusterResourceRestoreScope
-  help_text: |
-    List of cluster-scoped resource group kinds to restore from the backup. If specified,
-    only the selected resources will be restored. The format of a resource is "<group>/<kind>", e.g.
-    `storage.k8s.io/StorageClass` for StorageClass. Use an empty string for core API group.
-
 cluster_resource_selected_group_kinds:
   arg_name: cluster-resource-scope-selected-group-kinds
   api_field: restorePlan.restoreConfig.clusterResourceRestoreScope

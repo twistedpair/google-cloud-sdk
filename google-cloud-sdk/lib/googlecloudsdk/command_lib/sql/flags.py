@@ -1208,7 +1208,7 @@ def AddStorageSize(parser, hidden=False):
   )
 
 
-def AddStorageProvisionedIops(parser):
+def AddStorageProvisionedIops(parser, hidden=False):
   help_text = (
       'Indicates how many IOPS to provision for the data disk. This sets the'
       ' number of I/O operations per second that the disk can handle.'
@@ -1218,11 +1218,11 @@ def AddStorageProvisionedIops(parser):
       type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
       required=False,
       help=help_text,
-      hidden=True,
+      hidden=hidden,
   )
 
 
-def AddStorageProvisionedThroughput(parser):
+def AddStorageProvisionedThroughput(parser, hidden=False):
   help_text = (
       'Indicates how much throughput to provision for the data disk. This sets'
       ' the throughput in MB per second that the disk can handle.'
@@ -1232,7 +1232,7 @@ def AddStorageProvisionedThroughput(parser):
       type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
       required=False,
       help=help_text,
-      hidden=True,
+      hidden=hidden,
   )
 
 
@@ -2960,19 +2960,20 @@ def AddTdeFlags(parser):
   )
 
 
-def AddRetainBackupsOnDelete(parser):
+def AddRetainBackupsOnDelete(parser, hidden=False):
   """Adds --retain-backups-on-delete flag.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   parser.add_argument(
       '--retain-backups-on-delete',
       required=False,
-      hidden=True,
+      hidden=hidden,
       help=(
-          'Enable retaining existing automated/ondemand backups of the instance'
-          ' even after the instance is deleted.'
+          'Retain automated/ondemand backups of the instance after the instance'
+          ' is deleted.'
       ),
       action=arg_parsers.StoreTrueFalseAction,
   )
@@ -2987,9 +2988,42 @@ def AddEnableConnectionPooling(parser):
   parser.add_argument(
       '--enable-connection-pooling',
       required=False,
-      hidden=True,
+      hidden=False,
       help='Enable connection pooling for the instance.',
       action=arg_parsers.StoreTrueFalseAction,
+  )
+
+
+def AddConnectionPoolFlags(parser, update=False):
+  """Adds the `--connection-pool-flags` flag."""
+  help_ = (
+      'Comma-separated list of connection pool flags to set on the instance'
+      ' connection pool. Use an equals sign to separate flag name and value.'
+      ' View the Instance Resource API for allowed flags. (e.g.,'
+      ' `--connection-pool-flags'
+      ' max_pool_size=1000,max_client_connections=2000`)'
+  )
+  if update:
+    help_ += (
+        '\n\nThe value given for this argument *replaces* the existing list.'
+    )
+  parser.add_argument(
+      '--connection-pool-flags',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='FLAG=VALUE',
+      required=False,
+      help=help_,
+      hidden=False,
+  )
+
+
+def AddClearConnectionPoolFlags(parser):
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--clear-connection-pool-flags',
+      required=False,
+      help='This will clear the connection pool flags set on the instance.',
+      **kwargs
   )
 
 
@@ -3009,6 +3043,14 @@ def AddConnectionPoolingPoolMode(parser):
       default=None,
       help='The pool mode for managed connection pooling.',
       hidden=True,
+      actions=actions.DeprecationAction(
+          '--connection-pooling-pool-mode',
+          error=(
+              'This flag is deprecated. Please use --connection-pool-flags'
+              ' instead.'
+          ),
+          removed=True,
+      ),
   )
 
 
@@ -3025,6 +3067,14 @@ def AddConnectionPoolingPoolSize(parser):
       default=None,
       help='The pool size for managed connection pooling.',
       hidden=True,
+      actions=actions.DeprecationAction(
+          '--connection-pooling-pool-size',
+          error=(
+              'This flag is deprecated. Please use --connection-pool-flags'
+              ' instead.'
+          ),
+          removed=True,
+      ),
   )
 
 
@@ -3041,6 +3091,14 @@ def AddConnectionPoolingMaxClientConnections(parser):
       default=None,
       help='The max client connections for managed connection pooling.',
       hidden=True,
+      actions=actions.DeprecationAction(
+          '--connection-pooling-max-client-connections',
+          error=(
+              'This flag is deprecated. Please use --connection-pool-flags'
+              ' instead.'
+          ),
+          removed=True,
+      ),
   )
 
 
@@ -3056,6 +3114,14 @@ def AddConnectionPoolingClientIdleTimeout(parser):
       default=None,
       help='The client idle timeout for managed connection pooling.',
       hidden=True,
+      actions=actions.DeprecationAction(
+          '--connection-pooling-client-idle-timeout',
+          error=(
+              'This flag is deprecated. Please use --connection-pool-flags'
+              ' instead.'
+          ),
+          removed=True,
+      ),
   )
 
 
@@ -3071,6 +3137,14 @@ def AddConnectionPoolingServerIdleTimeout(parser):
       default=None,
       help='The server idle timeout for managed connection pooling.',
       hidden=True,
+      actions=actions.DeprecationAction(
+          '--connection-pooling-server-idle-timeout',
+          error=(
+              'This flag is deprecated. Please use --connection-pool-flags'
+              ' instead.'
+          ),
+          removed=True,
+      ),
   )
 
 
@@ -3086,6 +3160,14 @@ def AddConnectionPoolingQueryWaitTimeout(parser):
       default=None,
       help='The query wait timeout for managed connection pooling.',
       hidden=True,
+      actions=actions.DeprecationAction(
+          '--connection-pooling-query-wait-timeout',
+          error=(
+              'This flag is deprecated. Please use --connection-pool-flags'
+              ' instead.'
+          ),
+          removed=True,
+      ),
   )
 
 

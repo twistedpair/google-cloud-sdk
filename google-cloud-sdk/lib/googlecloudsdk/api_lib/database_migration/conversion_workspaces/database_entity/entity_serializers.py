@@ -89,6 +89,7 @@ def GetIssues(
             value=entity_obj.entity_type,
             prefix="DATABASE_ENTITY_TYPE_",
         ),
+        "issueId": issue.id,
         "issueType": string_utils.RemovePrefix(
             value=str(issue.type),
             prefix="ISSUE_TYPE_",

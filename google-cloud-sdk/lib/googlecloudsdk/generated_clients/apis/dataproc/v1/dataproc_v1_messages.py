@@ -674,7 +674,7 @@ class AutoscalingPolicy(_messages.Message):
     Values:
       CLUSTER_TYPE_UNSPECIFIED: Not set.
       STANDARD: Standard dataproc cluster with minimum 2 primary workers.
-      ZERO_SCALE: Clusters that could be scaled down to zero worker nodes.
+      ZERO_SCALE: Clusters that can be scaled down to zero worker nodes.
     """
     CLUSTER_TYPE_UNSPECIFIED = 0
     STANDARD = 1
@@ -739,12 +739,16 @@ class AutotuningConfig(_messages.Message):
       BHJ: Adding hints for potential relation broadcasts.
       BROADCAST_HASH_JOIN: Adding hints for potential relation broadcasts.
       MEMORY: Memory management for workloads.
+      NONE: No autotuning.
+      AUTO: Automatic selection of scenarios.
     """
     SCENARIO_UNSPECIFIED = 0
     SCALING = 1
     BHJ = 2
     BROADCAST_HASH_JOIN = 3
     MEMORY = 4
+    NONE = 5
+    AUTO = 6
 
   cohort = _messages.StringField(1)
   scenarios = _messages.EnumField('ScenariosValueListEntryValuesEnum', 2, repeated=True)
@@ -1321,11 +1325,12 @@ class ClusterConfig(_messages.Message):
 
     Values:
       CLUSTER_TYPE_UNSPECIFIED: Not set.
-      STANDARD: Standard dataproc cluster with minimum 2 primary workers.
+      STANDARD: Standard dataproc cluster with a minimum of two primary
+        workers.
       SINGLE_NODE:
         https://cloud.google.com/dataproc/docs/concepts/configuring-
         clusters/single-node-clusters
-      ZERO_SCALE: Clusters that could be scaled down to zero worker nodes.
+      ZERO_SCALE: Clusters that can be scaled down to zero worker nodes.
     """
     CLUSTER_TYPE_UNSPECIFIED = 0
     STANDARD = 1
@@ -4032,6 +4037,23 @@ class DataprocProjectsRegionsClustersNodeGroupsUpdateLabelsRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   updateLabelsNodeGroupRequest = _messages.MessageField('UpdateLabelsNodeGroupRequest', 2)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsUpdateMetadataConfigRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsUpdateMetadataConfigRequest
+  object.
+
+  Fields:
+    name: Required. The name of the node group for updating the config.
+      Format: projects/{project}/regions/{region}/clusters/{cluster}/nodeGroup
+      s/{nodeGroup}
+    updateMetadataConfigNodeGroupRequest: A
+      UpdateMetadataConfigNodeGroupRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMetadataConfigNodeGroupRequest = _messages.MessageField('UpdateMetadataConfigNodeGroupRequest', 2)
 
 
 class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
@@ -7000,10 +7022,11 @@ class LifecycleConfig(_messages.Message):
       JSON representation of Timestamp
       (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     autoStopTtl: Optional. The lifetime duration of the cluster. The cluster
-      will be auto-stopped at the end of this period calculated from the
-      cluster creation time. Minimum value is 10 minutes; maximum value is 14
-      days (see JSON representation of Duration
-      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
+      will be auto-stopped at the end of this period calculated from the time
+      of submission of the create or update cluster request. Minimum value is
+      10 minutes; maximum value is 14 days (see JSON representation of
+      Duration (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).
     idleDeleteTtl: Optional. The duration to keep the cluster alive while
       idling (when no jobs are running). Passing this threshold will cause the
       cluster to be deleted. Minimum value is 5 minutes; maximum value is 14
@@ -7596,6 +7619,11 @@ class NodeGroupOperationMetadata(_messages.Message):
       UPDATE_LABELS: Update node group label operation type.
       START: Start node group operation type.
       STOP: Stop node group operation type.
+      UPDATE_METADATA_CONFIG: This operation type is used to update the
+        metadata config of a node group. We update the metadata of the VMs in
+        the node group and await for intended config change to be completed at
+        the node group level. Currently, only the identity config update is
+        supported.
     """
     NODE_GROUP_OPERATION_TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -7606,6 +7634,7 @@ class NodeGroupOperationMetadata(_messages.Message):
     UPDATE_LABELS = 6
     START = 7
     STOP = 8
+    UPDATE_METADATA_CONFIG = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -9934,6 +9963,7 @@ class SoftwareConfig(_messages.Message):
       ZOOKEEPER: The Zookeeper service.
       DASK: Dask
       GPU_DRIVER: Nvidia GPU driver.
+      JUPYTER_KERNEL_GATEWAY: The Jupyter Kernel Gateway.
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -9956,6 +9986,7 @@ class SoftwareConfig(_messages.Message):
     ZOOKEEPER = 18
     DASK = 19
     GPU_DRIVER = 20
+    JUPYTER_KERNEL_GATEWAY = 21
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -12091,6 +12122,91 @@ class UpdateLabelsNodeGroupRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class UpdateMetadataConfigNodeGroupRequest(_messages.Message):
+  r"""A request to update the config of a node group.
+
+  Enums:
+    UpdateMetadataConfigTypeValueValuesEnum: Required. The type of metadata
+      config update to perform. Currently only
+      CLUSTER_MULTITENANCY_USER_MAPPING is supported.
+
+  Messages:
+    MetadataConfigMapValue: Required. The metadata config to associate with
+      this Node Group. This is a patch on top of the metadata that is defined
+      in the NodeGroup's InstanceTemplate, which itself is derived from the
+      Cluster's initial configuration. This will include the metadata key
+      value pairs to be added on the VMs in the node group.
+
+  Fields:
+    metadataConfigMap: Required. The metadata config to associate with this
+      Node Group. This is a patch on top of the metadata that is defined in
+      the NodeGroup's InstanceTemplate, which itself is derived from the
+      Cluster's initial configuration. This will include the metadata key
+      value pairs to be added on the VMs in the node group.
+    parentOperationId: Optional. Operation id of the parent operation sending
+      the update config request.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two UpdateMetadataConfigNodeGroupRequest (https://cloud.
+      google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.c
+      loud.dataproc.v1.UpdateLabelsNodeGroupRequests) with the same ID, the
+      second request is ignored and the first google.longrunning.Operation
+      created and stored in the backend is returned.Recommendation: Set this
+      value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+    updateMetadataConfigType: Required. The type of metadata config update to
+      perform. Currently only CLUSTER_MULTITENANCY_USER_MAPPING is supported.
+  """
+
+  class UpdateMetadataConfigTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of metadata config update to perform. Currently
+    only CLUSTER_MULTITENANCY_USER_MAPPING is supported.
+
+    Values:
+      UNSPECIFIED: Unused.
+      CLUSTER_MULTITENANCY_USER_MAPPING: Update the metadata property(s)
+        related to multitenancy user mapping.
+    """
+    UNSPECIFIED = 0
+    CLUSTER_MULTITENANCY_USER_MAPPING = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataConfigMapValue(_messages.Message):
+    r"""Required. The metadata config to associate with this Node Group. This
+    is a patch on top of the metadata that is defined in the NodeGroup's
+    InstanceTemplate, which itself is derived from the Cluster's initial
+    configuration. This will include the metadata key value pairs to be added
+    on the VMs in the node group.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataConfigMapValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MetadataConfigMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataConfigMapValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadataConfigMap = _messages.MessageField('MetadataConfigMapValue', 1)
+  parentOperationId = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+  updateMetadataConfigType = _messages.EnumField('UpdateMetadataConfigTypeValueValuesEnum', 4)
+
+
 class UsageMetrics(_messages.Message):
   r"""Usage metrics represent approximate total resources consumed by a
   workload.
@@ -12103,15 +12219,19 @@ class UsageMetrics(_messages.Message):
     milliDcuSeconds: Optional. DCU (Dataproc Compute Units) usage in (milliDCU
       x seconds) (see Dataproc Serverless pricing
       (https://cloud.google.com/dataproc-serverless/pricing)).
+    milliSlotSeconds: Optional. Slot usage in (milliSlot x seconds).
     shuffleStorageGbSeconds: Optional. Shuffle storage usage in (GB x seconds)
       (see Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing)).
+    updateTime: Optional. The timestamp of the usage metrics.
   """
 
   acceleratorType = _messages.StringField(1)
   milliAcceleratorSeconds = _messages.IntegerField(2)
   milliDcuSeconds = _messages.IntegerField(3)
-  shuffleStorageGbSeconds = _messages.IntegerField(4)
+  milliSlotSeconds = _messages.IntegerField(4)
+  shuffleStorageGbSeconds = _messages.IntegerField(5)
+  updateTime = _messages.StringField(6)
 
 
 class UsageSnapshot(_messages.Message):
@@ -12129,6 +12249,7 @@ class UsageSnapshot(_messages.Message):
     milliDcuPremium: Optional. Milli (one-thousandth) Dataproc Compute Units
       (DCUs) charged at premium tier (see Dataproc Serverless pricing
       (https://cloud.google.com/dataproc-serverless/pricing)).
+    milliSlot: Optional. Milli (one-thousandth) Slot usage of the workload.
     shuffleStorageGb: Optional. Shuffle Storage in gigabytes (GB). (see
       Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing))
@@ -12142,9 +12263,10 @@ class UsageSnapshot(_messages.Message):
   milliAccelerator = _messages.IntegerField(2)
   milliDcu = _messages.IntegerField(3)
   milliDcuPremium = _messages.IntegerField(4)
-  shuffleStorageGb = _messages.IntegerField(5)
-  shuffleStorageGbPremium = _messages.IntegerField(6)
-  snapshotTime = _messages.StringField(7)
+  milliSlot = _messages.IntegerField(5)
+  shuffleStorageGb = _messages.IntegerField(6)
+  shuffleStorageGbPremium = _messages.IntegerField(7)
+  snapshotTime = _messages.StringField(8)
 
 
 class ValueInfo(_messages.Message):

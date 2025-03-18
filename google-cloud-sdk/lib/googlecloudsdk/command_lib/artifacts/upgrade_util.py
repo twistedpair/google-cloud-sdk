@@ -447,6 +447,13 @@ def analyze_iam_policy(permissions, resource, scope):
             scope=scope,
         )
     )
+  except apitools_exceptions.HttpError as e:
+    if e.status_code == 429:
+      raise ar_exceptions.ArtifactRegistryError(
+          "Insufficient quota for AnalyzeIamPolicy. Use --no-use-analyze-iam to"
+          " generate IAM policies without using AnalyzeIamPolicy."
+      )
+    raise
   except ResourceExhausted:
     raise ar_exceptions.ArtifactRegistryError(
         "Insufficient quota for AnalyzeIamPolicy. Use --no-use-analyze-iam to"

@@ -27,7 +27,6 @@ from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
-CLUSTER_RESOURCE_RESTORE_SCOPE = 'cluster_resource_restore_scope'
 CLUSTER_RESOURCE_SELECTED_GROUP_KINDS = 'cluster_resource_selected_group_kinds'
 CLUSTER_RESOURCE_EXCLUDED_GROUP_KINDS = 'cluster_resource_excluded_group_kinds'
 CLUSTER_RESOURCE_ALL_GROUP_KINDS = 'cluster_resource_all_group_kinds'
@@ -44,7 +43,7 @@ def AddForceToDeleteRequest(ref, args, request):
   return request
 
 
-def ParseGroupKinds(group_kinds, flag='--cluster-resource-restore-scope'):
+def ParseGroupKinds(group_kinds, flag):
   """Process list of group kinds."""
   if not group_kinds:
     return None
@@ -61,12 +60,12 @@ def ParseGroupKinds(group_kinds, flag='--cluster-resource-restore-scope'):
       else:
         raise exceptions.InvalidArgumentException(
             flag,
-            'Cluster resource restore scope is invalid.',
+            'Cluster resource scope selected group kinds is invalid.',
         )
       if not kind:
         raise exceptions.InvalidArgumentException(
             flag,
-            'Cluster resource restore scope kind is empty.')
+            'Cluster resource scope selected group kinds is empty.')
       gk = message.GroupKind()
       gk.resourceGroup = group
       gk.resourceKind = kind
@@ -75,14 +74,7 @@ def ParseGroupKinds(group_kinds, flag='--cluster-resource-restore-scope'):
   except ValueError:
     raise exceptions.InvalidArgumentException(
         flag,
-        'Cluster resource restore scope is invalid.')
-
-
-def ProcessClusterResourceRestoreScope(group_kinds):
-  message = api_util.GetMessagesModule()
-  crrs = message.ClusterResourceRestoreScope()
-  crrs.selectedGroupKinds.extend(ParseGroupKinds(group_kinds))
-  return crrs
+        'Cluster resource scope selected group kinds is invalid.')
 
 
 def ProcessSelectedGroupKinds(group_kinds):
@@ -238,12 +230,6 @@ def PreprocessUpdateRestorePlan(ref, args, request):
   del ref
 
   # Guarded by argparser group with mutex=true.
-  if hasattr(args, CLUSTER_RESOURCE_RESTORE_SCOPE) and args.IsSpecified(
-      CLUSTER_RESOURCE_RESTORE_SCOPE
-  ):
-    request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
-        ProcessClusterResourceRestoreScope(args.cluster_resource_restore_scope)
-    )
   if hasattr(
       args, CLUSTER_RESOURCE_SELECTED_GROUP_KINDS
   ) and args.IsSpecified(CLUSTER_RESOURCE_SELECTED_GROUP_KINDS):

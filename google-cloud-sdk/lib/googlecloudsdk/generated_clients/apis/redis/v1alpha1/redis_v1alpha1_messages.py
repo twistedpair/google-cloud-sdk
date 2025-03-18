@@ -1220,6 +1220,10 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         resource
       SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
         inefficient queries detected.
+      SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD: Indicates that the instance has
+        read intensive workload.
+      SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
+        limit.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1309,6 +1313,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
+    SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
+    SIGNAL_TYPE_MEMORY_LIMIT = 89
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1882,6 +1888,10 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         resource
       SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
         inefficient queries detected.
+      SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD: Indicates that the instance has
+        read intensive workload.
+      SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
+        limit.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1971,6 +1981,8 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
+    SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
+    SIGNAL_TYPE_MEMORY_LIMIT = 89
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

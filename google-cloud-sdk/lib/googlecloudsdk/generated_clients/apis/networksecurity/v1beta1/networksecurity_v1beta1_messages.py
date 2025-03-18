@@ -1565,9 +1565,8 @@ class InterceptDeployment(_messages.Message):
     description: Optional. User-provided description of the deployment. Used
       as additional context for the deployment.
     forwardingRule: Required. Immutable. The regional forwarding rule that
-      fronts the intercept collectors, for example:
-      `projects/123456789/regions/us-central1/forwardingRules/my-rule`. See
-      https://google.aip.dev/124.
+      fronts the interceptors, for example: `projects/123456789/regions/us-
+      central1/forwardingRules/my-rule`. See https://google.aip.dev/124.
     interceptDeploymentGroup: Required. Immutable. The deployment group that
       this deployment is a part of, for example:
       `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
@@ -1824,8 +1823,8 @@ class InterceptEndpointGroup(_messages.Message):
       https://google.aip.dev/148#timestamps.
     description: Optional. User-provided description of the endpoint group.
       Used as additional context for the endpoint group.
-    interceptDeploymentGroup: Immutable. The deployment group that this
-      endpoint group is connected to, for example:
+    interceptDeploymentGroup: Required. Immutable. The deployment group that
+      this endpoint group is connected to, for example:
       `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
       See https://google.aip.dev/124.
     labels: Optional. Labels are key/value pairs that help to organize and
@@ -1930,7 +1929,7 @@ class InterceptEndpointGroupAssociation(_messages.Message):
   Fields:
     createTime: Output only. The timestamp when the resource was created. See
       https://google.aip.dev/148#timestamps.
-    interceptEndpointGroup: Immutable. The endpoint group that this
+    interceptEndpointGroup: Required. Immutable. The endpoint group that this
       association is connected to, for example:
       `projects/123456789/locations/global/interceptEndpointGroups/my-eg`. See
       https://google.aip.dev/124.
@@ -1946,8 +1945,8 @@ class InterceptEndpointGroupAssociation(_messages.Message):
       association, for example: `projects/123456789/locations/global/intercept
       EndpointGroupAssociations/my-eg-association`. See
       https://google.aip.dev/122 for more details.
-    network: Immutable. The VPC network that is associated. for example:
-      `projects/123456789/global/networks/my-network`. See
+    network: Required. Immutable. The VPC network that is associated. for
+      example: `projects/123456789/global/networks/my-network`. See
       https://google.aip.dev/124.
     reconciling: Output only. The current state of the resource does not match
       the user's intended state, and the system is working to reconcile them.
@@ -2518,10 +2517,14 @@ class ListServerTlsPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serverTlsPolicies: List of ServerTlsPolicy resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      `return_partial_success` and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTlsInspectionPoliciesResponse(_messages.Message):
@@ -5967,11 +5970,18 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesListRequest(_messages.Mes
     parent: Required. The project and location from which the
       ServerTlsPolicies should be listed, specified in the format
       `projects/*/locations/{location}`.
+    returnPartialSuccess: Optional. Setting this field to `true` will opt the
+      request into returning the resources that are reachable, and into
+      including the names of those that were unreachable in the
+      [ListServerTlsPoliciesResponse.unreachable] field. This can only be
+      `true` when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworksecurityProjectsLocationsServerTlsPoliciesPatchRequest(_messages.Message):

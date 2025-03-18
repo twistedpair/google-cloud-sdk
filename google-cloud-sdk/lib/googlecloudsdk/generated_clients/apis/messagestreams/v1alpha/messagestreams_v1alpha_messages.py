@@ -791,6 +791,9 @@ class MessagestreamsProjectsLocationsStreamsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. If provided, the stream will only be deleted if the etag
       matches the current etag on the resource.
+    force: Optional. If set to true, any retry policies from this stream will
+      also be deleted. Followed the best practice from
+      https://aip.dev/135#cascading-delete
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -806,8 +809,9 @@ class MessagestreamsProjectsLocationsStreamsDeleteRequest(_messages.Message):
   """
 
   etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class MessagestreamsProjectsLocationsStreamsGetRequest(_messages.Message):

@@ -181,6 +181,17 @@ class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
         return m.groupdict() if m else {}
 
     @staticmethod
+    def log_view_path(project: str,location: str,bucket: str,view: str,) -> str:
+        """Returns a fully-qualified log_view string."""
+        return "projects/{project}/locations/{location}/buckets/{bucket}/views/{view}".format(project=project, location=location, bucket=bucket, view=view, )
+
+    @staticmethod
+    def parse_log_view_path(path: str) -> Dict[str,str]:
+        """Parses a log_view path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/buckets/(?P<bucket>.+?)/views/(?P<view>.+?)$", path)
+        return m.groupdict() if m else {}
+
+    @staticmethod
     def common_billing_account_path(billing_account: str, ) -> str:
         """Returns a fully-qualified billing_account string."""
         return "billingAccounts/{billing_account}".format(billing_account=billing_account, )

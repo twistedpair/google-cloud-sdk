@@ -2084,10 +2084,14 @@ class GoogleChannelConfig(_messages.Message):
   configured, first-party event data will be protected using the specified
   custom managed encryption key instead of Google-managed encryption keys.
 
+  Messages:
+    LabelsValue: Optional. Resource labels.
+
   Fields:
     cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
       user) used to encrypt/decrypt their event data. It must match the
       pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    labels: Optional. Resource labels.
     name: Required. The resource name of the config. Must be in the format of,
       `projects/{project}/locations/{location}/googleChannelConfig`. In API
       responses, the config name always includes the projectID, regardless of
@@ -2095,9 +2099,34 @@ class GoogleChannelConfig(_messages.Message):
     updateTime: Output only. The last-modified time.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   cryptoKeyName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudEventarcV1PipelineDestination(_messages.Message):

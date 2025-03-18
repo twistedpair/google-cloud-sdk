@@ -83,14 +83,23 @@ class BackupVaultsClient(object):
     return self.WaitForOperation(operation_ref)
 
   def ParseBackupVault(
-      self, name=None, description=None, labels=None
+      self,
+      name=None,
+      backup_vault_type=None,
+      backup_region=None,
+      description=None,
+      labels=None,
+      backup_retention_policy=None,
   ):
     """Parses the command line arguments for Create BackupVault into a message.
 
     Args:
       name: The name of the Backup Vault.
+      backup_vault_type: The type of the Backup Vault.
+      backup_region: The location of the Backup Vault.
       description: The description of the Backup Vault.
       labels: The parsed labels value.
+      backup_retention_policy: The backup retention policy of the Backup Vault.
 
     Returns:
       The configuration that will be used ass the request body for creating a
@@ -98,8 +107,16 @@ class BackupVaultsClient(object):
     """
     backup_vault = self.messages.BackupVault()
     backup_vault.name = name
+    if backup_vault_type is not None:
+      backup_vault.backupVaultType = backup_vault_type
+    if backup_region is not None:
+      backup_vault.backupRegion = backup_region
     backup_vault.description = description
     backup_vault.labels = labels
+    if backup_retention_policy is not None:
+      backup_vault.backupRetentionPolicy = self.ParseBackupRetentionPolicy(
+          backup_retention_policy
+      )
     return backup_vault
 
   def ListBackupVaults(self, location_ref, limit=None):
@@ -175,14 +192,39 @@ class BackupVaultsClient(object):
     return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedBackupVault(
-      self, backup_vault, description=None, labels=None
+      self,
+      backup_vault,
+      description=None,
+      labels=None,
+      backup_retention_policy=None
   ):
     """Parses updates into an kms config."""
     return self._adapter.ParseUpdatedBackupVault(
         backup_vault=backup_vault,
         description=description,
         labels=labels,
+        backup_retention_policy=backup_retention_policy,
     )
+
+  def ParseBackupRetentionPolicy(self, backup_retention_policy):
+    """Parses the command line arguments for Backup Vault Policy into a message."""
+    backup_retention_policy_message = self.messages.BackupRetentionPolicy()
+    backup_retention_policy_message.backupMinimumEnforcedRetentionDays = (
+        backup_retention_policy.get('backup-minimum-enforced-retention-days')
+    )
+    backup_retention_policy_message.dailyBackupImmutable = (
+        backup_retention_policy.get('daily-backup-immutable')
+        )
+    backup_retention_policy_message.weeklyBackupImmutable = (
+        backup_retention_policy.get('weekly-backup-immutable')
+    )
+    backup_retention_policy_message.monthlyBackupImmutable = (
+        backup_retention_policy.get('monthly-backup-immutable')
+    )
+    backup_retention_policy_message.manualBackupImmutable = (
+        backup_retention_policy.get('manual-backup-immutable')
+    )
+    return backup_retention_policy_message
 
 
 class BackupVaultsAdapter(object):
@@ -198,13 +240,21 @@ class BackupVaultsAdapter(object):
     )
 
   def ParseUpdatedBackupVault(
-      self, backup_vault, description=None, labels=None
+      self,
+      backup_vault,
+      description=None,
+      labels=None,
+      backup_retention_policy=None
   ):
     """Parses updates into a new Backup Vault."""
     if description is not None:
       backup_vault.description = description
     if labels is not None:
       backup_vault.labels = labels
+    if backup_retention_policy is not None:
+      backup_vault.backupRetentionPolicy = self.ParseBackupRetentionPolicy(
+          backup_retention_policy
+      )
     return backup_vault
 
   def UpdateBackupVault(self, backupvault_ref, backup_vault, update_mask):
@@ -217,6 +267,26 @@ class BackupVaultsAdapter(object):
     return self.client.projects_locations_backupVaults.Patch(
         update_request
     )
+
+  def ParseBackupRetentionPolicy(self, backup_retention_policy):
+    """Parses the command line arguments for Backup Vault Policy into a message."""
+    backup_retention_policy_message = self.messages.BackupRetentionPolicy()
+    backup_retention_policy_message.backupMinimumEnforcedRetentionDays = (
+        backup_retention_policy.get('backup-minimum-enforced-retention-days')
+    )
+    backup_retention_policy_message.dailyBackupImmutable = (
+        backup_retention_policy.get('daily-backup-immutable')
+        )
+    backup_retention_policy_message.weeklyBackupImmutable = (
+        backup_retention_policy.get('weekly-backup-immutable')
+    )
+    backup_retention_policy_message.monthlyBackupImmutable = (
+        backup_retention_policy.get('monthly-backup-immutable')
+    )
+    backup_retention_policy_message.manualBackupImmutable = (
+        backup_retention_policy.get('manual-backup-immutable')
+    )
+    return backup_retention_policy_message
 
 
 class BetaBackupVaultsAdapter(BackupVaultsAdapter):

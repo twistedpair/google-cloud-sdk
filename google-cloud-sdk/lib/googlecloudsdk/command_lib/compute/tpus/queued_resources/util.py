@@ -278,26 +278,31 @@ def SetProvisioningModel(api_version):
       if request.queuedResource is None:
         request.queuedResource = tpu_messages.QueuedResource()
       try:
+        # Per gcloud style guidance, standard choice flag options are lower
+        # case with dashes but we also support underscores and upper case.
+        normalized_candidate = args.provisioning_model.replace('-', '_').upper()
         candidate_enum = (
             tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum(
-                args.provisioning_model)
+                normalized_candidate
+            )
         )
       except TypeError as e:
         raise exceptions.InvalidArgumentException(
             '--provisioning-model',
-            f'{args.provisioning_model} is not a valid provisioning model',
+            f'{args.provisioning_model} is not a valid provisioning model, only'
+            ' flex-start and reservation-bound are supported',
         ) from e
-      flex_start_enum = (
-          tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.FLEX_START
-      )
-      if candidate_enum != flex_start_enum:
+      model_enums = tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum
+      if (
+          candidate_enum != model_enums.FLEX_START
+          and candidate_enum != model_enums.RESERVATION_BOUND
+      ):
         raise exceptions.InvalidArgumentException(
             '--provisioning-model',
-            'Only FLEX_START is supported for provisioning model',
+            'Only flex-start and reservation-bound are supported for'
+            ' provisioning model',
         )
-      request.queuedResource.provisioningModel = (
-          tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.FLEX_START
-      )
+      request.queuedResource.provisioningModel = candidate_enum
     return request
   return Process
 

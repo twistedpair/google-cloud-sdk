@@ -867,6 +867,99 @@ def add_management_hub_filter_flags(parser):
   )
 
 
+def add_storage_intelligence_configs_level_flags(parser):
+  """Adds the GCP resource hierarchy level flag for storage intelligence-configs commands."""
+
+  storage_intelligence_configs_level_group = parser.add_group(
+      category='LEVEL', mutex=True, required=True
+  )
+
+  storage_intelligence_configs_level_group.add_argument(
+      '--organization',
+      help='Specifies organization id for the storage intelligence config.',
+      metavar='ORGANIZATION',
+      type=str,
+  )
+  storage_intelligence_configs_level_group.add_argument(
+      '--project',
+      help='Specifies project for the storage intelligence config.',
+      type=str,
+      metavar='PROJECT',
+  )
+  storage_intelligence_configs_level_group.add_argument(
+      '--sub-folder',
+      help='Specifies sub-folder id for the storage intelligence config.',
+      type=str,
+      metavar='SUB_FOLDER',
+  )
+
+
+def add_storage_intelligence_configs_filter_flags(parser):
+  """Adds the filter flags for storage intelligence-configs commands."""
+  storage_intelligence_configs_localtion_filter_group = parser.add_group(
+      category='LOCATION', mutex=True
+  )
+
+  storage_intelligence_configs_localtion_filter_group.add_argument(
+      '--exclude-locations',
+      help=(
+          'Comma separated list of'
+          ' [locations](https://cloud.google.com/storage/docs/locations#available-locations)'
+          ' to exclude in storage intelligence filter. To clear excluded'
+          ' locations, provide flag with empty list. e.g'
+          ' `--exclude-locations=""` or `--exclude-locations=` .'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='EXCLUDE_LOCATIONS',
+  )
+  storage_intelligence_configs_localtion_filter_group.add_argument(
+      '--include-locations',
+      help=(
+          'Comma separated list of'
+          ' [locations](https://cloud.google.com/storage/docs/locations#available-locations)'
+          ' to include in storage intelligence filter. To clear included'
+          ' locations, provide flag with empty list. e.g'
+          ' `--include-locations=""` or `--include-locations=` .'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='INCLUDE_LOCATIONS',
+  )
+
+  storage_intelligence_configs_bucket_filter_group = parser.add_group(
+      category='BUCKET_FILTER', mutex=True
+  )
+
+  storage_intelligence_configs_bucket_filter_group.add_argument(
+      '--include-bucket-id-regexes',
+      help=(
+          'Sets filter for bucket id regexes to include. Accepts list of bucket'
+          ' id regexes in comma separated format. If the regex contains special'
+          ' characters that may have a specific meaning in the shell,'
+          ' escape them using backslashes(\\). To clear'
+          ' bucket id regexes list, provide flag with empty list. e.g'
+          ' `--include-bucket-id-regexes=""` or'
+          ' `--include-bucket-id-regexes=` .'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='INCLUDE_BUCKET_ID_REGEXES',
+  )
+
+  storage_intelligence_configs_bucket_filter_group.add_argument(
+      '--exclude-bucket-id-regexes',
+      help=(
+          'Sets filter for bucket id regexes to exclude. Accepts list of bucket'
+          ' id regexes in comma separated format. If the regex contains special'
+          ' characters that may have a specific meaning in the shell,'
+          ' escape them using backslashes(\\). To clear bucket id'
+          ' regexes list, provide flag with an empty list. e.g'
+          ' `--exclude-bucket-id-regexes=""` or'
+          ' `--exclude-bucket-id-regexes=` .'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='EXCLUDE_BUCKET_ID_REGEXES',
+  )
+
+
 def check_if_use_gsutil_style(args):
   """Check if format output using gsutil style.
 

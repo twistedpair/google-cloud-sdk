@@ -2452,13 +2452,17 @@ def EnableUpgradeRedirection(unused_ref, args):
   if not MaybeCreateMissingRepos([project], False, dry_run):
     return None
 
+  con = console_attr.GetConsoleAttr()
   update = console_io.PromptContinue(
       "\nThis action will redirect all Container Registry traffic to Artifact "
-      "Registry for project {}."
-      " After enabling redirection, you can route traffic back to Container "
-      "Registry if needed."
-      .format(project),
-      default=True)
+      + f"Registry for project {project}."
+      + con.Colorize(
+          " Your existing images and IAM policies will NOT be copied.\n", "red"
+      )
+      + "To preserve existing GCR behavior, consider running `gcloud artifacts"
+      f" docker upgrade migrate --project={project}` instead.",
+      default=True,
+  )
   if not update:
     log.status.Print("No changes made.")
     return None

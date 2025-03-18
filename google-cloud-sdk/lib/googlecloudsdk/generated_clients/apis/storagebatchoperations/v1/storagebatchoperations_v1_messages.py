@@ -87,7 +87,9 @@ class DeleteObject(_messages.Message):
       already noncurrent will be skipped. This setting doesn't have any impact
       on the Soft Delete feature. All objects deleted by this service can be
       be restored for the duration of the Soft Delete retention duration if
-      enabled.
+      enabled. If enabled and the manifest doesn't specify an object's
+      generation, a GetObjectMetadata call (a Class B operation) will be made
+      to determine the live object generation.
   """
 
   permanentObjectDeletionEnabled = _messages.BooleanField(1)

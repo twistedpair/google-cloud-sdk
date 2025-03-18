@@ -3828,9 +3828,13 @@ class MachineConfig(_messages.Message):
 
   Fields:
     cpuCount: The number of CPU's in the VM instance.
+    machineType: Optional. Machine type of the VM instance. E.g.
+      "n2-highmem-4", "n2-highmem-8", "c4a-highmem-4-lssd". cpu_count must
+      match the number of vCPUs in the machine type.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(2)
 
 
 class MappingRule(_messages.Message):

@@ -42,6 +42,8 @@ class ManagedkafkaV1(base_api.BaseApiClient):
     self.projects_locations_clusters_consumerGroups = self.ProjectsLocationsClustersConsumerGroupsService(self)
     self.projects_locations_clusters_topics = self.ProjectsLocationsClustersTopicsService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
+    self.projects_locations_connectClusters_connectors = self.ProjectsLocationsConnectClustersConnectorsService(self)
+    self.projects_locations_connectClusters = self.ProjectsLocationsConnectClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -450,6 +452,404 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='cluster',
         request_type_name='ManagedkafkaProjectsLocationsClustersPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConnectClustersConnectorsService(base_api.BaseApiService):
+    """Service class for the projects_locations_connectClusters_connectors resource."""
+
+    _NAME = 'projects_locations_connectClusters_connectors'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsConnectClustersConnectorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new connector in a given Connect cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connector) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectorId'],
+        relative_path='v1/{+parent}/connectors',
+        request_field='connector',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsCreateRequest',
+        response_type_name='Connector',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a connector.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the properties of a single connector.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connector) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsGetRequest',
+        response_type_name='Connector',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the connectors in a given Connect cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/connectors',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsListRequest',
+        response_type_name='ListConnectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the properties of a connector.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Connector) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}',
+        http_method='PATCH',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='connector',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsPatchRequest',
+        response_type_name='Connector',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses the connector and its tasks.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PauseConnectorResponse) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}:pause',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.pause',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:pause',
+        request_field='pauseConnectorRequest',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsPauseRequest',
+        response_type_name='PauseConnectorResponse',
+        supports_download=False,
+    )
+
+    def Restart(self, request, global_params=None):
+      r"""Restarts the connector.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsRestartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RestartConnectorResponse) The response message.
+      """
+      config = self.GetMethodConfig('Restart')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restart.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}:restart',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.restart',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:restart',
+        request_field='restartConnectorRequest',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsRestartRequest',
+        response_type_name='RestartConnectorResponse',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resumes the connector and its tasks.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResumeConnectorResponse) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}:resume',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.resume',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:resume',
+        request_field='resumeConnectorRequest',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsResumeRequest',
+        response_type_name='ResumeConnectorResponse',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops the connector.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersConnectorsStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StopConnectorResponse) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}/connectors/{connectorsId}:stop',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.connectClusters.connectors.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:stop',
+        request_field='stopConnectorRequest',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersConnectorsStopRequest',
+        response_type_name='StopConnectorResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConnectClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_connectClusters resource."""
+
+    _NAME = 'projects_locations_connectClusters'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsConnectClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Kafka Connect cluster in a given project and location.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.connectClusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['connectClusterId', 'requestId'],
+        relative_path='v1/{+parent}/connectClusters',
+        request_field='connectCluster',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Connect cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.connectClusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the properties of a single Kafka Connect cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConnectCluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.connectClusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersGetRequest',
+        response_type_name='ConnectCluster',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Kafka Connect clusters in a given project and location.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.connectClusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/connectClusters',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersListRequest',
+        response_type_name='ListConnectClustersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the properties of a single Kafka Connect cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsConnectClustersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connectClusters/{connectClustersId}',
+        http_method='PATCH',
+        method_id='managedkafka.projects.locations.connectClusters.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='connectCluster',
+        request_type_name='ManagedkafkaProjectsLocationsConnectClustersPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

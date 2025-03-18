@@ -3698,6 +3698,12 @@ class ServiceMeshCondition(_messages.Message):
       QUOTA_EXCEEDED_TCP_FILTERS: TCPFilter quota exceeded error code.
       QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS: NetworkEndpointGroup quota
         exceeded error code.
+      LEGACY_MC_SECRETS: Legacy istio secrets found for multicluster error
+        code
+      WORKLOAD_IDENTITY_REQUIRED: Workload identity required error code
+      NON_STANDARD_BINARY_USAGE: Non-standard binary usage error code
+      UNSUPPORTED_GATEWAY_CLASS: Unsupported gateway class error code
+      MANAGED_CNI_NOT_ENABLED: Managed CNI not enabled error code
       MODERNIZATION_SCHEDULED: Modernization is scheduled for a cluster.
       MODERNIZATION_IN_PROGRESS: Modernization is in progress for a cluster.
       MODERNIZATION_COMPLETED: Modernization is completed for a cluster.
@@ -3737,11 +3743,16 @@ class ServiceMeshCondition(_messages.Message):
     QUOTA_EXCEEDED_HTTP_FILTERS = 29
     QUOTA_EXCEEDED_TCP_FILTERS = 30
     QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 31
-    MODERNIZATION_SCHEDULED = 32
-    MODERNIZATION_IN_PROGRESS = 33
-    MODERNIZATION_COMPLETED = 34
-    MODERNIZATION_ABORTED = 35
-    MODERNIZATION_WILL_BE_SCHEDULED = 36
+    LEGACY_MC_SECRETS = 32
+    WORKLOAD_IDENTITY_REQUIRED = 33
+    NON_STANDARD_BINARY_USAGE = 34
+    UNSUPPORTED_GATEWAY_CLASS = 35
+    MANAGED_CNI_NOT_ENABLED = 36
+    MODERNIZATION_SCHEDULED = 37
+    MODERNIZATION_IN_PROGRESS = 38
+    MODERNIZATION_COMPLETED = 39
+    MODERNIZATION_ABORTED = 40
+    MODERNIZATION_WILL_BE_SCHEDULED = 41
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.

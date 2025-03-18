@@ -2944,6 +2944,60 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Assemble(self, request, global_params=None):
+      r"""Assembles each row of a multimodal dataset and writes the result into a BigQuery table.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsAssembleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Assemble')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Assemble.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:assemble',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.datasets.assemble',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:assemble',
+        request_field='googleCloudAiplatformV1beta1AssembleDataRequest',
+        request_type_name='AiplatformProjectsLocationsDatasetsAssembleRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Assess(self, request, global_params=None):
+      r"""Assesses the state or validity of the dataset with respect to a given use case.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsAssessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Assess')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Assess.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:assess',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.datasets.assess',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:assess',
+        request_field='googleCloudAiplatformV1beta1AssessDataRequest',
+        request_type_name='AiplatformProjectsLocationsDatasetsAssessRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a Dataset.
 

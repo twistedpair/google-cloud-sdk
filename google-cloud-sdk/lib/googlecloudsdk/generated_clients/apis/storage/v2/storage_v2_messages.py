@@ -669,6 +669,7 @@ class IntelligenceConfig(_messages.Message):
     stats: Output only. Stats from the evaluvation of `IntelligenceConfig`
       resource. The evaluation is triggered when `edition_config` is set to
       `EVALUATE`.
+    trialConfig: The trial configuration of the `IntelligenceConfig` resource.
     updateTime: Output only. The time at which the `IntelligenceConfig`
       resource is last updated.
   """
@@ -700,19 +701,26 @@ class IntelligenceConfig(_messages.Message):
         the evaluation results through the `GET` method of the
         `IntelligenceConfig` resource. You can refine the evaluation by using
         filters to specify which buckets you want to include in the analysis.
+      TRIAL: The `IntelligenceConfig` resource is available in `TRIAL`
+        edition. During the trial period, Cloud Storage does not charge for
+        Storage Intelligence usage. You can specify the buckets to include in
+        the trial period by using filters. At the end of the trial period, the
+        `IntelligenceConfig` resource is upgraded to `STANDARD` edition.
     """
     EDITION_CONFIG_UNSPECIFIED = 0
     INHERIT = 1
     DISABLED = 2
     STANDARD = 3
     EVALUATE = 4
+    TRIAL = 5
 
   editionConfig = _messages.EnumField('EditionConfigValueValuesEnum', 1)
   effectiveIntelligenceConfig = _messages.MessageField('EffectiveIntelligenceConfig', 2)
   filter = _messages.MessageField('Filter', 3)
   name = _messages.StringField(4)
   stats = _messages.MessageField('Stats', 5)
-  updateTime = _messages.StringField(6)
+  trialConfig = _messages.MessageField('TrialConfig', 6)
+  updateTime = _messages.StringField(7)
 
 
 class Lifecycle(_messages.Message):
@@ -779,6 +787,8 @@ class ManagementHub(_messages.Message):
       `projects/{project_number}/locations/global/managementHub` * For
       organization: `organizations/{org_id}/locations/global/managementHub` *
       For folder: `folders/{folder_id}/locations/global/managementHub`
+    trialConfig: Output only. The trial configuration of the `ManagementHub`
+      resource.
     updateTime: Output only. The time at which the `ManagementHub` resource is
       last updated.
   """
@@ -809,19 +819,26 @@ class ManagementHub(_messages.Message):
         resource. You can refine the evaluation by using filters to specify
         which buckets you want to include in the analysis. Filters are
         applicable.
+      TRIAL: The `ManagementHub` resource is available in `TRIAL` edition.
+        During the trial period, Cloud Storage does not charge for Storage
+        Management Hub usage. You can specify the buckets to include in the
+        trial period by using filters. At the end of the trial period, the
+        `ManagementHub` resource is upgraded to `STANDARD` edition.
     """
     EDITION_CONFIG_UNSPECIFIED = 0
     INHERIT = 1
     DISABLED = 2
     STANDARD = 3
     EVALUATE = 4
+    TRIAL = 5
 
   editionConfig = _messages.EnumField('EditionConfigValueValuesEnum', 1)
   effectiveManagementHubEdition = _messages.MessageField('EffectiveManagementHubEdition', 2)
   filter = _messages.MessageField('ManagementHubFilter', 3)
   managementHubStats = _messages.MessageField('ManagementHubStats', 4)
   name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  trialConfig = _messages.MessageField('ManagementHubTrialConfig', 6)
+  updateTime = _messages.StringField(7)
 
 
 class ManagementHubFilter(_messages.Message):
@@ -902,6 +919,16 @@ class ManagementHubStats(_messages.Message):
   processingState = _messages.EnumField('ProcessingStateValueValuesEnum', 3)
   projectCount = _messages.IntegerField(4)
   snapshotTime = _messages.StringField(5)
+
+
+class ManagementHubTrialConfig(_messages.Message):
+  r"""The trial configuration of the `ManagementHub` resource.
+
+  Fields:
+    expireTime: Output only. The time at which the trial expires.
+  """
+
+  expireTime = _messages.StringField(1)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1721,6 +1748,16 @@ class StorageProjectsLocationsUpdateManagementHubRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class TrialConfig(_messages.Message):
+  r"""The trial configuration of the `IntelligenceConfig` resource.
+
+  Fields:
+    expireTime: Output only. The time at which the trial expires.
+  """
+
+  expireTime = _messages.StringField(1)
 
 
 class UniformBucketLevelAccess(_messages.Message):

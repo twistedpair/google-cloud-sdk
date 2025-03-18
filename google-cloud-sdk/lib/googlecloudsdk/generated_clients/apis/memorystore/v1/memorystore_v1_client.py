@@ -216,6 +216,33 @@ class MemorystoreV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RescheduleMaintenance(self, request, global_params=None):
+      r"""Reschedules upcoming maintenance event.
+
+      Args:
+        request: (MemorystoreProjectsLocationsInstancesRescheduleMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RescheduleMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RescheduleMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rescheduleMaintenance',
+        http_method='POST',
+        method_id='memorystore.projects.locations.instances.rescheduleMaintenance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rescheduleMaintenance',
+        request_field='rescheduleMaintenanceRequest',
+        request_type_name='MemorystoreProjectsLocationsInstancesRescheduleMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

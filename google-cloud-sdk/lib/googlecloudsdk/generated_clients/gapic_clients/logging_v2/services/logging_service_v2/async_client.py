@@ -56,6 +56,8 @@ class LoggingServiceV2AsyncClient:
 
     log_path = staticmethod(LoggingServiceV2Client.log_path)
     parse_log_path = staticmethod(LoggingServiceV2Client.parse_log_path)
+    log_view_path = staticmethod(LoggingServiceV2Client.log_view_path)
+    parse_log_view_path = staticmethod(LoggingServiceV2Client.parse_log_view_path)
     common_billing_account_path = staticmethod(LoggingServiceV2Client.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(LoggingServiceV2Client.parse_common_billing_account_path)
     common_folder_path = staticmethod(LoggingServiceV2Client.common_folder_path)

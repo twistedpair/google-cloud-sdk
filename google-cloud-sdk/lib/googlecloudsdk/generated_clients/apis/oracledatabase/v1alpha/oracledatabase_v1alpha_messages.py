@@ -1102,10 +1102,14 @@ class CloudExadataInfrastructureProperties(_messages.Message):
       allocated to the Exadata Infrastructure resource, in gigabytes (GB).
     computeCount: Optional. The number of compute servers for the Exadata
       Infrastructure.
+    computeModel: Output only. The compute model of the Exadata
+      Infrastructure.
     cpuCount: Output only. The number of enabled CPU cores.
     customerContacts: Optional. The list of customer contacts.
     dataStorageSizeTb: Output only. Size, in terabytes, of the DATA disk
       group.
+    databaseServerType: Output only. The database server type of the Exadata
+      Infrastructure.
     dbNodeStorageSizeGb: Output only. The local node storage allocated in GBs.
     dbServerVersion: Output only. The software version of the database servers
       (dom0) in the Exadata Infrastructure.
@@ -1136,6 +1140,8 @@ class CloudExadataInfrastructureProperties(_messages.Message):
       Infrastructure.
     storageCount: Optional. The number of Cloud Exadata storage servers for
       the Exadata Infrastructure.
+    storageServerType: Output only. The storage server type of the Exadata
+      Infrastructure.
     storageServerVersion: Output only. The software version of the storage
       servers (cells) in the Exadata Infrastructure.
     totalStorageSizeGb: Optional. The total storage allocated to the Exadata
@@ -1169,29 +1175,32 @@ class CloudExadataInfrastructureProperties(_messages.Message):
   additionalStorageCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   availableStorageSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   computeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  cpuCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  customerContacts = _messages.MessageField('CustomerContact', 6, repeated=True)
-  dataStorageSizeTb = _messages.FloatField(7)
-  dbNodeStorageSizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  dbServerVersion = _messages.StringField(9)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 10)
-  maxCpuCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  maxDataStorageTb = _messages.FloatField(12)
-  maxDbNodeStorageSizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  maxMemoryGb = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  memorySizeGb = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  monthlyDbServerVersion = _messages.StringField(16)
-  monthlyStorageServerVersion = _messages.StringField(17)
-  nextMaintenanceRunId = _messages.StringField(18)
-  nextMaintenanceRunTime = _messages.StringField(19)
-  nextSecurityMaintenanceRunTime = _messages.StringField(20)
-  ociUrl = _messages.StringField(21)
-  ocid = _messages.StringField(22)
-  shape = _messages.StringField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  storageCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  storageServerVersion = _messages.StringField(26)
-  totalStorageSizeGb = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  computeModel = _messages.StringField(5)
+  cpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  customerContacts = _messages.MessageField('CustomerContact', 7, repeated=True)
+  dataStorageSizeTb = _messages.FloatField(8)
+  databaseServerType = _messages.StringField(9)
+  dbNodeStorageSizeGb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  dbServerVersion = _messages.StringField(11)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 12)
+  maxCpuCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  maxDataStorageTb = _messages.FloatField(14)
+  maxDbNodeStorageSizeGb = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  maxMemoryGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  memorySizeGb = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  monthlyDbServerVersion = _messages.StringField(18)
+  monthlyStorageServerVersion = _messages.StringField(19)
+  nextMaintenanceRunId = _messages.StringField(20)
+  nextMaintenanceRunTime = _messages.StringField(21)
+  nextSecurityMaintenanceRunTime = _messages.StringField(22)
+  ociUrl = _messages.StringField(23)
+  ocid = _messages.StringField(24)
+  shape = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  storageCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  storageServerType = _messages.StringField(28)
+  storageServerVersion = _messages.StringField(29)
+  totalStorageSizeGb = _messages.IntegerField(30, variant=_messages.Variant.INT32)
 
 
 class CloudVmCluster(_messages.Message):

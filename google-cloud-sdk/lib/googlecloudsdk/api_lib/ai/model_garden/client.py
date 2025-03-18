@@ -32,9 +32,9 @@ _VERIFIED_DEPLOYMENT_FILTER = (
 )
 
 
-def _IsHuggingFaceModel(model_name: str) -> bool:
+def IsHuggingFaceModel(model_name: str) -> bool:
   """Returns whether the model is a Hugging Face model."""
-  return re.match(r'^[^/]+/[^/@]+$', model_name)
+  return bool(re.match(r'^[^/]+/[^/@]+$', model_name))
 
 
 class ModelGardenClient(object):
@@ -54,6 +54,7 @@ class ModelGardenClient(object):
       model_name,
       is_hugging_face_model=False,
       include_equivalent_model_garden_model_deployment_configs=True,
+      hugging_face_token=None,
   ):
     """Get a publisher model.
 
@@ -64,6 +65,8 @@ class ModelGardenClient(object):
       include_equivalent_model_garden_model_deployment_configs: Whether to
         include equivalent Model Garden model deployment configs for Hugging
         Face models.
+      hugging_face_token: The Hugging Face access token to access the model
+        artifacts for gated models unverified by Model Garden.
 
     Returns:
       A publisher model.
@@ -72,6 +75,7 @@ class ModelGardenClient(object):
         name=model_name,
         isHuggingFaceModel=is_hugging_face_model,
         includeEquivalentModelGardenModelDeploymentConfigs=include_equivalent_model_garden_model_deployment_configs,
+        huggingFaceToken=hugging_face_token,
     )
     return self._publishers_models_service.Get(request)
 
@@ -372,7 +376,7 @@ class ModelGardenClient(object):
             )
         )
 
-    if _IsHuggingFaceModel(model):
+    if IsHuggingFaceModel(model):
       deploy_request = self._messages.GoogleCloudAiplatformV1beta1DeployRequest(
           huggingFaceModelId=model
       )

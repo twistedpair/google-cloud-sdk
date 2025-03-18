@@ -2483,6 +2483,22 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    restartAutonomousDatabaseRequest: A RestartAutonomousDatabaseRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restartAutonomousDatabaseRequest = _messages.MessageField('RestartAutonomousDatabaseRequest', 2)
+
+
 class OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest
   object.
@@ -2497,6 +2513,36 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest(_messages
 
   name = _messages.StringField(1, required=True)
   restoreAutonomousDatabaseRequest = _messages.MessageField('RestoreAutonomousDatabaseRequest', 2)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    startAutonomousDatabaseRequest: A StartAutonomousDatabaseRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startAutonomousDatabaseRequest = _messages.MessageField('StartAutonomousDatabaseRequest', 2)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    stopAutonomousDatabaseRequest: A StopAutonomousDatabaseRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopAutonomousDatabaseRequest = _messages.MessageField('StopAutonomousDatabaseRequest', 2)
 
 
 class OracledatabaseProjectsLocationsAutonomousDbVersionsListRequest(_messages.Message):
@@ -2861,6 +2907,10 @@ class OracledatabaseProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class RestartAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Restart`."""
+
+
 class RestoreAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.Restore`.
 
@@ -2974,6 +3024,10 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Start`."""
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -3023,6 +3077,10 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Stop`."""
 
 
 class TimeOfDay(_messages.Message):

@@ -14,6 +14,8 @@
 # limitations under the License.
 """A library used to support Managed Service for Apache Kafka commands."""
 
+import re
+
 from apitools.base.py import encoding
 from googlecloudsdk import core
 from googlecloudsdk.api_lib.util import apis
@@ -171,6 +173,164 @@ def UpdateTopics(_, args, request):
       )
   }
   request.updateMask = "topics"
+  return request
+
+
+def MapConnectParamsToNetworkConfig(_, args, request):
+  """Maps subnets and DNS names to the network config API field.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+    The updated request with networkConfig in the JSON format.
+  """
+  # If no network config flags are provided (such as in the case of an update),
+  # we don't need to create a network config.
+  if not args.primary_subnet and not args.dns_name:
+    return request
+  # Reference the existing GCP config if already created for the request.
+  if not request.connectCluster.gcpConfig:
+    request.connectCluster.gcpConfig = {}
+  request.connectCluster.gcpConfig.accessConfig = {"networkConfigs": []}
+  # Subnets may not be provided during update
+  if not args.primary_subnet:
+    network_config = {"dns_domain_names": []}
+  else:
+    network_config = {
+        "primary_subnet": args.primary_subnet,
+        "additional_subnets": [],
+        "dns_domain_names": [],
+    }
+  if not args.additional_subnet:
+    args.additional_subnet = []
+  network_config["additional_subnets"] = list(args.additional_subnet)
+  if not args.dns_name:
+    args.dns_name = []
+  network_config["dns_domain_names"] = list(args.dns_name)
+  request.connectCluster.gcpConfig.accessConfig.networkConfigs.append(
+      encoding.DictToMessage(network_config, _MESSAGE.ConnectNetworkConfig)
+  )
+  if isinstance(
+      # (if the request is an update)
+      request,
+      _MESSAGE.ManagedkafkaProjectsLocationsConnectClustersPatchRequest,
+  ):
+    request.updateMask = re.sub(
+        r"gcpConfig\.accessConfig\.networkConfigs\.dnsDomainNames",
+        "gcpConfig.accessConfig.networkConfigs",
+        request.updateMask,
+    )
+    request.updateMask = re.sub(
+        r"gcpConfig\.accessConfig\.networkConfigs\.primarySubnet",
+        "gcpConfig.accessConfig.networkConfigs",
+        request.updateMask,
+    )
+    request.updateMask = re.sub(
+        r"gcpConfig\.accessConfig\.networkConfigs\.additionalSubnets",
+        "gcpConfig.accessConfig.networkConfigs",
+        request.updateMask,
+    )
+  return request
+
+
+def PrepareConnectClusterCreate(_, args, request):
+  """Load the config JSON from the argument to the request and build the kafka cluster resource path.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+  """
+  if args.config_file:
+    config = core.yaml.load(args.config_file)
+    request.connectCluster.config = encoding.DictToMessage(
+        config, _MESSAGE.ConnectCluster.ConfigValue
+    )
+  project = args.project or core.properties.VALUES.core.project.Get()
+  # If the user provides the full path, we don't need to build it.
+  kafka_cluster_path = args.kafka_cluster
+  if not re.match(r"projects/.+/locations/.+/clusters/.+", args.kafka_cluster):
+    location = args.location or args.connect_cluster.split("/")[3]
+    kafka_cluster_path = (
+        f"projects/{project}/locations/{location}/clusters/{args.kafka_cluster}"
+    )
+  request.connectCluster.kafkaCluster = kafka_cluster_path
+  return request
+
+
+def PrepareConnectClusterUpdate(_, args, request):
+  """Map the update flags to the request and update mask.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+  """
+  if args.config_file:
+    config = core.yaml.load(args.config_file)
+    request.connectCluster.config = encoding.DictToMessage(
+        config, _MESSAGE.ConnectCluster.ConfigValue
+    )
+    request.updateMask = AppendUpdateMask(request.updateMask, "config")
+  if args.clear_configs:
+    request.updateMask = AppendUpdateMask(request.updateMask, "config")
+  if args.clear_dns_names:
+    request.updateMask = AppendUpdateMask(
+        request.updateMask,
+        "gcpConfig.accessConfig.networkConfigs.dnsDomainNames",
+    )
+  if args.clear_secrets:
+    request.updateMask = AppendUpdateMask(
+        request.updateMask, "gcpConfig.secretPaths"
+    )
+  if args.clear_labels:
+    request.updateMask = AppendUpdateMask(request.updateMask, "labels")
+  return request
+
+
+def ConnectorCreateReadConfigFile(_, args, request):
+  """Load the config JSON from the argument to the request.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+  """
+  if args.config_file:
+    request.connector = {}
+    config = core.yaml.load(args.config_file)
+    request.connector.configs = encoding.DictToMessage(
+        config, _MESSAGE.Connector.ConfigsValue
+    )
+  return request
+
+
+def ConnectorUpdateReadConfigFile(_, args, request):
+  """Load the config JSON from the argument to the request.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+  """
+  if args.config_file:
+    request.connector = {}
+    config = core.yaml.load(args.config_file)
+    request.connector.configs = encoding.DictToMessage(
+        config, _MESSAGE.Connector.ConfigsValue
+    )
+    request.updateMask = AppendUpdateMask(request.updateMask, "configs")
   return request
 
 

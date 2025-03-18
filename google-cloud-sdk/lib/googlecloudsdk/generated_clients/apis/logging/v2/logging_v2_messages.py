@@ -193,6 +193,67 @@ class AnalyticsQuery(_messages.Message):
   querySteps = _messages.MessageField('QueryStep', 1, repeated=True)
 
 
+class AppHub(_messages.Message):
+  r"""Metadata associated with App Hub.
+
+  Fields:
+    application: Metadata associated with the application.
+    service: Metadata associated with the service.
+    workload: Metadata associated with the workload.
+  """
+
+  application = _messages.MessageField('AppHubApplication', 1)
+  service = _messages.MessageField('AppHubService', 2)
+  workload = _messages.MessageField('AppHubWorkload', 3)
+
+
+class AppHubApplication(_messages.Message):
+  r"""Resource identifiers associated with an AppHub application AppHub
+  resources are of the form projects//locations//applications/
+  projects//locations//applications//services/
+  projects//locations//applications//workloads/ These resources can be
+  reconstructed from the components below.
+
+  Fields:
+    container: Resource container that owns the application. Example:
+      "projects/management_project"
+    id: Application Id. Example: "my-app"
+    location: Location associated with the Application. Example: "us-east1"
+  """
+
+  container = _messages.StringField(1)
+  id = _messages.StringField(2)
+  location = _messages.StringField(3)
+
+
+class AppHubService(_messages.Message):
+  r"""Metadata associated with an App Hub service.
+
+  Fields:
+    criticalityType: Service criticality type Example: "CRITICAL"
+    environmentType: Service environment type Example: "DEV"
+    id: Service Id. Example: "my-service"
+  """
+
+  criticalityType = _messages.StringField(1)
+  environmentType = _messages.StringField(2)
+  id = _messages.StringField(3)
+
+
+class AppHubWorkload(_messages.Message):
+  r"""Metadata associated with an App Hub workload.
+
+  Fields:
+    criticalityType: Workload criticality type Example: "CRITICAL"
+    environmentType: Workload environment type Example: "DEV"
+    id: Workload Id. Example: "my-workload"
+  """
+
+  criticalityType = _messages.StringField(1)
+  environmentType = _messages.StringField(2)
+  id = _messages.StringField(3)
+
+
 class ApproveRedactionOperationResponse(_messages.Message):
   r"""Response type for ApproveRedaction method."""
 
@@ -1871,6 +1932,9 @@ class LogEntry(_messages.Message):
       "type.googleapis.com/google.appengine.logging.v1.RequestLog"
 
   Fields:
+    apphub: Output only. AppHub application metadata associated with this
+      LogEntry. May be empty if there is no associated AppHub application or
+      multiple associated applications (such as for VPC flow logs)
     errorGroups: Output only. The Error Reporting
       (https://cloud.google.com/error-reporting) error groups associated with
       this LogEntry. Error Reporting sets the values for this field during
@@ -2102,25 +2166,26 @@ class LogEntry(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  errorGroups = _messages.MessageField('LogErrorGroup', 1, repeated=True)
-  httpRequest = _messages.MessageField('HttpRequest', 2)
-  insertId = _messages.StringField(3)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  logName = _messages.StringField(6)
-  metadata = _messages.MessageField('MonitoredResourceMetadata', 7)
-  operation = _messages.MessageField('LogEntryOperation', 8)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 9)
-  receiveTimestamp = _messages.StringField(10)
-  resource = _messages.MessageField('MonitoredResource', 11)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 13)
-  spanId = _messages.StringField(14)
-  split = _messages.MessageField('LogSplit', 15)
-  textPayload = _messages.StringField(16)
-  timestamp = _messages.StringField(17)
-  trace = _messages.StringField(18)
-  traceSampled = _messages.BooleanField(19)
+  apphub = _messages.MessageField('AppHub', 1)
+  errorGroups = _messages.MessageField('LogErrorGroup', 2, repeated=True)
+  httpRequest = _messages.MessageField('HttpRequest', 3)
+  insertId = _messages.StringField(4)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  logName = _messages.StringField(7)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 8)
+  operation = _messages.MessageField('LogEntryOperation', 9)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 10)
+  receiveTimestamp = _messages.StringField(11)
+  resource = _messages.MessageField('MonitoredResource', 12)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 13)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 14)
+  spanId = _messages.StringField(15)
+  split = _messages.MessageField('LogSplit', 16)
+  textPayload = _messages.StringField(17)
+  timestamp = _messages.StringField(18)
+  trace = _messages.StringField(19)
+  traceSampled = _messages.BooleanField(20)
 
 
 class LogEntryOperation(_messages.Message):

@@ -1260,6 +1260,18 @@ class Backup(_messages.Message):
   updateTime = _messages.StringField(25)
 
 
+class BackupDrBackupSource(_messages.Message):
+  r"""Message describing a BackupDrBackupSource.
+
+  Fields:
+    backup: Required. The name of the backup resource with the format: * proje
+      cts/{project}/locations/{location}/backupVaults/{backupvault_id}/dataSou
+      rces/{datasource_id}/backups/{backup_id}
+  """
+
+  backup = _messages.StringField(1)
+
+
 class BackupSource(_messages.Message):
   r"""Message describing a BackupSource.
 
@@ -2005,14 +2017,13 @@ class DenyMaintenancePeriod(_messages.Message):
 
   Fields:
     endDate: Deny period end date. This can be: * A full date, with non-zero
-      year, month and day values. * A month and day value, with a zero year
-      for recurring. Date matching this period will have to be before the end.
+      year, month and day values OR * A month and day value, with a zero year
+      for recurring
     startDate: Deny period start date. This can be: * A full date, with non-
-      zero year, month and day values. * A month and day value, with a zero
-      year for recurring. Date matching this period will have to be the same
-      or after the start.
+      zero year, month and day values OR * A month and day value, with a zero
+      year for recurring
     time: Time in UTC when the deny period starts on start_date and ends on
-      end_date. This can be: * Full time. * All zeros for 00:00:00 UTC
+      end_date. This can be: * Full time OR * All zeros for 00:00:00 UTC
   """
 
   endDate = _messages.MessageField('GoogleTypeDate', 1)
@@ -2729,11 +2740,17 @@ class InstanceNetworkConfig(_messages.Message):
     enableOutboundPublicIp: Optional. Enabling an outbound public IP address
       to support a database server sending requests out into the internet.
     enablePublicIp: Optional. Enabling public ip for the instance.
+    network: Output only. The resource link for the VPC network in which
+      instance resources are created and from which they are accessible via
+      Private IP. This will be the same value as the parent cluster's network.
+      It is specified in the form: //
+      `projects/{project_number}/global/networks/{network_id}`.
   """
 
   authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
   enableOutboundPublicIp = _messages.BooleanField(2)
   enablePublicIp = _messages.BooleanField(3)
+  network = _messages.StringField(4)
 
 
 class InstanceUpgradeDetails(_messages.Message):
@@ -2899,7 +2916,8 @@ class MachineConfig(_messages.Message):
   Fields:
     cpuCount: The number of CPU's in the VM instance.
     machineType: Machine type of the VM instance. E.g. "n2-highmem-4",
-      "n2-highmem-8-lssd"
+      "n2-highmem-8", "c4a-highmem-4-lssd". cpu_count must match the number of
+      vCPUs in the machine type.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3053,6 +3071,8 @@ class ObservabilityInstanceConfig(_messages.Message):
   r"""Observability Instance specific configuration.
 
   Fields:
+    assistiveExperiencesEnabled: Whether assistive experiences are enabled for
+      this AlloyDB instance.
     enabled: Observability feature status for an instance. This flag is turned
       "off" by default.
     maxQueryStringLength: Query string length. The default value is 10k.
@@ -3074,14 +3094,15 @@ class ObservabilityInstanceConfig(_messages.Message):
       observability enabled flag is also turned on.
   """
 
-  enabled = _messages.BooleanField(1)
-  maxQueryStringLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  preserveComments = _messages.BooleanField(3)
-  queryPlansPerMinute = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  recordApplicationTags = _messages.BooleanField(5)
-  trackActiveQueries = _messages.BooleanField(6)
-  trackWaitEventTypes = _messages.BooleanField(7)
-  trackWaitEvents = _messages.BooleanField(8)
+  assistiveExperiencesEnabled = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  maxQueryStringLength = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  preserveComments = _messages.BooleanField(4)
+  queryPlansPerMinute = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  recordApplicationTags = _messages.BooleanField(6)
+  trackActiveQueries = _messages.BooleanField(7)
+  trackWaitEventTypes = _messages.BooleanField(8)
+  trackWaitEvents = _messages.BooleanField(9)
 
 
 class Operation(_messages.Message):
@@ -3453,6 +3474,7 @@ class RestoreClusterRequest(_messages.Message):
 
   Fields:
     backupSource: Backup source.
+    backupdrBackupSource: BackupDR backup source.
     cluster: Required. The resource being created
     clusterId: Required. ID of the requesting object.
     continuousBackupSource: ContinuousBackup source. Continuous backup needs
@@ -3474,11 +3496,12 @@ class RestoreClusterRequest(_messages.Message):
   """
 
   backupSource = _messages.MessageField('BackupSource', 1)
-  cluster = _messages.MessageField('Cluster', 2)
-  clusterId = _messages.StringField(3)
-  continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 4)
-  requestId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  backupdrBackupSource = _messages.MessageField('BackupDrBackupSource', 2)
+  cluster = _messages.MessageField('Cluster', 3)
+  clusterId = _messages.StringField(4)
+  continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 5)
+  requestId = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class RestoreFromCloudSQLRequest(_messages.Message):
@@ -4352,6 +4375,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         resource
       SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
         inefficient queries detected.
+      SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD: Indicates that the instance has
+        read intensive workload.
+      SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
+        limit.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4441,6 +4468,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
+    SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
+    SIGNAL_TYPE_MEMORY_LIMIT = 89
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -5014,6 +5043,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         resource
       SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
         inefficient queries detected.
+      SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD: Indicates that the instance has
+        read intensive workload.
+      SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
+        limit.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5103,6 +5136,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
+    SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
+    SIGNAL_TYPE_MEMORY_LIMIT = 89
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

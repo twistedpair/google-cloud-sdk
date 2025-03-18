@@ -84,6 +84,20 @@ def AwaitBackup(operation_ref, message):
   )
 
 
+def AwaitLogicalView(operation_ref, message):
+  """Waits for logical view long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances_logicalViews, operation_ref, message)
+
+
+def AwaitMaterializedView(operation_ref, message):
+  """Waits for materialized view long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(
+      client.projects_instances_materializedViews, operation_ref, message
+  )
+
+
 def GetAppProfileRef(instance, app_profile):
   """Get a resource reference to an app profile."""
   return resources.REGISTRY.Parse(
@@ -105,6 +119,18 @@ def GetClusterRef(instance, cluster):
           'instancesId': instance,
       },
       collection='bigtableadmin.projects.instances.clusters',
+  )
+
+
+def GetLogicalViewRef(instance, logical_view):
+  """Get a resource reference to a logical view."""
+  return resources.REGISTRY.Parse(
+      logical_view,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='bigtableadmin.projects.instances.logicalViews',
   )
 
 

@@ -317,6 +317,9 @@ Invalid format '{topology}' for argument --tpu-topology. Must provide 2-3 intege
 MACHINE_TYPE_INCORRECT_FORMAT_ERROR_MSG = """\
 Invalid machine type '{machine_type}' for argument --machine-type. Unable to parse the number of chips.
 """
+CONFIDENTIAL_NODE_TYPE_NOT_SUPPORTED = """\
+Invalid type '{type}' for '--confidential-node-type' (must be one of {choices}).
+"""
 
 DEFAULT_MAX_NODES_PER_POOL = 1000
 
@@ -603,6 +606,7 @@ class CreateClusterOptions(object):
       local_nvme_ssd_block=None,
       ephemeral_storage=None,
       ephemeral_storage_local_ssd=None,
+      data_cache_count=None,
       boot_disk_kms_key=None,
       node_pool_name=None,
       tags=None,
@@ -731,6 +735,7 @@ class CreateClusterOptions(object):
       autopilot=None,
       private_ipv6_google_access_type=None,
       enable_confidential_nodes=None,
+      confidential_node_type=None,
       enable_confidential_storage=None,
       cluster_dns=None,
       cluster_dns_scope=None,
@@ -833,6 +838,7 @@ class CreateClusterOptions(object):
     self.istio_config = istio_config
     self.cloud_run_config = cloud_run_config
     self.local_ssd_count = local_ssd_count
+    self.data_cache_count = data_cache_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
     self.ephemeral_storage = ephemeral_storage
     self.ephemeral_storage_local_ssd = ephemeral_storage_local_ssd
@@ -969,6 +975,7 @@ class CreateClusterOptions(object):
     self.autopilot = autopilot
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.confidential_node_type = confidential_node_type
     self.enable_confidential_storage = enable_confidential_storage
     self.storage_pools = storage_pools
     self.local_ssd_encryption_mode = local_ssd_encryption_mode
@@ -1530,6 +1537,7 @@ class CreateNodePoolOptions(object):
       maintenance_interval=None,
       network_performance_config=None,
       enable_confidential_nodes=None,
+      confidential_node_type=None,
       enable_confidential_storage=None,
       disable_pod_cidr_overprovision=None,
       enable_fast_socket=None,
@@ -1549,6 +1557,7 @@ class CreateNodePoolOptions(object):
       secondary_boot_disks=None,
       storage_pools=None,
       local_ssd_encryption_mode=None,
+      data_cache_count=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1556,6 +1565,7 @@ class CreateNodePoolOptions(object):
     self.node_version = node_version
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
+    self.data_cache_count = data_cache_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
     self.ephemeral_storage = ephemeral_storage
     self.ephemeral_storage_local_ssd = ephemeral_storage_local_ssd
@@ -1621,6 +1631,7 @@ class CreateNodePoolOptions(object):
     self.maintenance_interval = maintenance_interval
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.confidential_node_type = confidential_node_type
     self.enable_confidential_storage = enable_confidential_storage
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.enable_fast_socket = enable_fast_socket
@@ -1675,6 +1686,7 @@ class UpdateNodePoolOptions(object):
                autoscaled_rollout_policy=None,
                network_performance_config=None,
                enable_confidential_nodes=None,
+               confidential_node_type=None,
                enable_fast_socket=None,
                logging_variant=None,
                accelerators=None,
@@ -1720,6 +1732,7 @@ class UpdateNodePoolOptions(object):
     self.autoscaled_rollout_policy = autoscaled_rollout_policy
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.confidential_node_type = confidential_node_type
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
     self.windows_os_version = windows_os_version
@@ -1767,6 +1780,7 @@ class UpdateNodePoolOptions(object):
             self.standard_rollout_policy is not None or
             self.network_performance_config is not None or
             self.enable_confidential_nodes is not None or
+            self.confidential_node_type is not None or
             self.enable_fast_socket is not None or
             self.logging_variant is not None or
             self.windows_os_version is not None or
@@ -2378,6 +2392,14 @@ class APIAdapter(object):
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
+
+    if options.confidential_node_type is not None:
+      cluster.confidentialNodes = self.messages.ConfidentialNodes(
+          enabled=options.enable_confidential_nodes,
+          confidentialInstanceType=_ConfidentialNodeTypeEnumFromString(
+              options, self.messages
+          ),
+      )
 
     if options.private_ipv6_google_access_type is not None:
       if cluster.networkConfig is None:
@@ -4768,14 +4790,27 @@ class APIAdapter(object):
         localSsdCount=count)
 
   def _AddEphemeralStorageLocalSsdToNodeConfig(self, node_config, options):
-    if options.ephemeral_storage_local_ssd is None:
+    """Add EphemeralStorageLocalSsdConfig to nodeConfig."""
+    # pylint: disable=line-too-long
+    if options.ephemeral_storage_local_ssd is None and options.data_cache_count is None:
+      return
+    elif options.ephemeral_storage_local_ssd is None and options.data_cache_count is not None:
+      node_config.ephemeralStorageLocalSsdConfig = (
+          self.messages.EphemeralStorageLocalSsdConfig(
+              dataCacheCount=int(options.data_cache_count))
+      )
       return
     config = options.ephemeral_storage_local_ssd
     count = None
     if 'count' in config:
       count = config['count']
-    node_config.ephemeralStorageLocalSsdConfig = self.messages.EphemeralStorageLocalSsdConfig(
-        localSsdCount=count)
+    dcount = None
+    if options.data_cache_count is not None:
+      dcount = int(options.data_cache_count)
+    node_config.ephemeralStorageLocalSsdConfig = (
+        self.messages.EphemeralStorageLocalSsdConfig(localSsdCount=count, dataCacheCount=dcount)
+    )
+    # pylint: enable=line-too-long
 
   def _AddLocalNvmeSsdBlockToNodeConfig(self, node_config, options):
     if options.local_nvme_ssd_block is None:
@@ -5099,6 +5134,15 @@ class APIAdapter(object):
     if options.enable_confidential_nodes:
       confidential_nodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
+      node_config.confidentialNodes = confidential_nodes
+
+    if options.confidential_node_type is not None:
+      confidential_nodes = self.messages.ConfidentialNodes(
+          enabled=options.enable_confidential_nodes,
+          confidentialInstanceType=_ConfidentialNodeTypeEnumFromString(
+              options, self.messages, for_node_pool=True
+          ),
+      )
       node_config.confidentialNodes = confidential_nodes
 
     if options.enable_fast_socket is not None:
@@ -5578,6 +5622,13 @@ class APIAdapter(object):
     elif options.enable_confidential_nodes is not None:
       confidential_nodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
+      update_request.confidentialNodes = confidential_nodes
+    elif options.confidential_node_type is not None:
+      confidential_nodes = self.messages.ConfidentialNodes(
+          confidentialInstanceType=_ConfidentialNodeTypeEnumFromString(
+              options, self.messages, for_node_pool=True
+          )
+      )
       update_request.confidentialNodes = confidential_nodes
     elif options.enable_fast_socket is not None:
       fast_socket = self.messages.FastSocket(enabled=options.enable_fast_socket)
@@ -8409,3 +8460,32 @@ def _GetDesiredEnterpriseConfig(options, messages):
       )
     desired_enterprise_config.desiredTier = tiers[options.tier]
   return desired_enterprise_config
+
+
+def _ConfidentialNodeTypeEnumFromString(options, messages, for_node_pool=False):
+  """Converts a confidential node type string to an enum value."""
+  if options.confidential_node_type.lower() == 'sev':
+    return (
+        messages.ConfidentialNodes.ConfidentialInstanceTypeValueValuesEnum.SEV
+    )
+  elif options.confidential_node_type.lower() == 'sev_snp':
+    return (
+        messages.ConfidentialNodes.ConfidentialInstanceTypeValueValuesEnum.SEV_SNP
+    )
+  elif options.confidential_node_type.lower() == 'tdx':
+    return (
+        messages.ConfidentialNodes.ConfidentialInstanceTypeValueValuesEnum.TDX
+    )
+  elif options.confidential_node_type.lower() == 'disabled':
+    return (
+        messages.ConfidentialNodes.ConfidentialInstanceTypeValueValuesEnum.CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED
+    )
+  else:
+    choices = ['sev', 'sev_snp', 'tdx']
+    if for_node_pool:
+      choices.append('disabled')
+    raise util.Error(
+        CONFIDENTIAL_NODE_TYPE_NOT_SUPPORTED.format(
+            type=options.confidential_node_type.lower(), choices=choices
+        )
+    )

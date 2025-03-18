@@ -2838,6 +2838,8 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. Represents the state of the plugin.
+      Note this field will not be set for plugins developed via plugin
+      framework as the state will be managed at plugin instance level.
 
   Fields:
     description: Optional. The plugin description. Max length is 2000
@@ -2846,18 +2848,23 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
       characters (Unicode code points).
     name: Identifier. The name of the plugin. Format:
       `projects/{project}/locations/{location}/plugins/{plugin}`
-    state: Output only. Represents the state of the plugin.
-    type: Required. The type of the API. This maps to the following system
+    state: Output only. Represents the state of the plugin. Note this field
+      will not be set for plugins developed via plugin framework as the state
+      will be managed at plugin instance level.
+    type: Optional. The type of the API. This maps to the following system
       defined attribute:
       `projects/{project}/locations/{location}/attributes/system-plugin-type`
       attribute. The number of allowed values for this attribute will be based
       on the cardinality of the attribute. The same can be retrieved via
       GetAttribute API. All values should be from the list of allowed values
-      defined for the attribute.
+      defined for the attribute. Note this field is not required for plugins
+      developed via plugin framework.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Represents the state of the plugin.
+    r"""Output only. Represents the state of the plugin. Note this field will
+    not be set for plugins developed via plugin framework as the state will be
+    managed at plugin instance level.
 
     Values:
       STATE_UNSPECIFIED: The default value. This value is used if the state is

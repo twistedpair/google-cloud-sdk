@@ -559,6 +559,37 @@ class CloudresourcemanagerLiensListRequest(_messages.Message):
   parent = _messages.StringField(3)
 
 
+class CloudresourcemanagerLocationsEffectiveTagBindingCollectionsGetRequest(_messages.Message):
+  r"""A CloudresourcemanagerLocationsEffectiveTagBindingCollectionsGetRequest
+  object.
+
+  Fields:
+    name: Required. The full name of the EffectiveTagBindingCollection in
+      format: `locations/{location}/effectiveTagBindingCollections/{encoded-
+      full-resource-name}` where the encoded-full-resource-name is the UTF-8
+      encoded name of the resource the TagBindings are bound to. E.g. "locatio
+      ns/global/effectiveTagBindingCollections/%2f%2fcloudresourcemanager.goog
+      leapis.com%2fprojects%2f123"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudresourcemanagerLocationsTagBindingCollectionsGetRequest(_messages.Message):
+  r"""A CloudresourcemanagerLocationsTagBindingCollectionsGetRequest object.
+
+  Fields:
+    name: Required. The full name of the TagBindingCollection in format:
+      `locations/{location}/tagBindingCollections/{encoded-full-resource-
+      name}` where the enoded-full-resource-name is the UTF-8 encoded name of
+      the resource the TagBindings are bound to. E.g. "locations/global/tagBin
+      dingCollections/%2f%2fcloudresourcemanager.googleapis.com%2fprojects%2f1
+      23"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudresourcemanagerOperationsGetRequest(_messages.Message):
   r"""A CloudresourcemanagerOperationsGetRequest object.
 
@@ -973,6 +1004,26 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteProjectRequest = _messages.MessageField('UndeleteProjectRequest', 2)
+
+
+class CloudresourcemanagerTagBindingCollectionPatchRequest(_messages.Message):
+  r"""A CloudresourcemanagerTagBindingCollectionPatchRequest object.
+
+  Fields:
+    name: Identifier. The name of the TagBindingCollection, following the
+      convention: `locations/{location}/tagBindingCollections/{encoded-full-
+      resource-name}` where the encoded-full-resource-name is the UTF-8
+      encoded name of the GCP resource the TagBindings are bound to. "location
+      s/global/tagBindingCollections/%2f%2fcloudresourcemanager.googleapis.com
+      %2fprojects%2f123"
+    tagBindingCollection: A TagBindingCollection resource to be passed as the
+      request body.
+    updateMask: Optional. An update mask to selectively update fields.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tagBindingCollection = _messages.MessageField('TagBindingCollection', 2)
+  updateMask = _messages.StringField(3)
 
 
 class CloudresourcemanagerTagBindingsCreateRequest(_messages.Message):
@@ -1495,6 +1546,61 @@ class EffectiveTag(_messages.Message):
   tagKey = _messages.StringField(4)
   tagKeyParentName = _messages.StringField(5)
   tagValue = _messages.StringField(6)
+
+
+class EffectiveTagBindingCollection(_messages.Message):
+  r"""Represents a collection of effective tag bindings for a GCP resource.
+
+  Messages:
+    EffectiveTagsValue: Tag keys/values effectively bound to this resource,
+      specified in namespaced format. For example: "123/environment":
+      "production", "email": "xyz@email.com"
+
+  Fields:
+    effectiveTags: Tag keys/values effectively bound to this resource,
+      specified in namespaced format. For example: "123/environment":
+      "production", "email": "xyz@email.com"
+    fullResourceName: The full resource name of the resource the TagBindings
+      are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
+    name: Identifier. The name of the EffectiveTagBindingCollection, following
+      the convention:
+      `locations/{location}/effectiveTagBindingCollections/{encoded-full-
+      resource-name}` where the encoded-full-resource-name is the UTF-8
+      encoded name of the GCP resource the TagBindings are bound to. E.g. "loc
+      ations/global/effectiveTagBindingCollections/%2f%2fcloudresourcemanager.
+      googleapis.com%2fprojects%2f123"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EffectiveTagsValue(_messages.Message):
+    r"""Tag keys/values effectively bound to this resource, specified in
+    namespaced format. For example: "123/environment": "production", "email":
+    "xyz@email.com"
+
+    Messages:
+      AdditionalProperty: An additional property for a EffectiveTagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EffectiveTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EffectiveTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  effectiveTags = _messages.MessageField('EffectiveTagsValue', 1)
+  fullResourceName = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -2679,6 +2785,59 @@ class TagBinding(_messages.Message):
   parent = _messages.StringField(2)
   tagValue = _messages.StringField(3)
   tagValueNamespacedName = _messages.StringField(4)
+
+
+class TagBindingCollection(_messages.Message):
+  r"""Represents a collection of tags directly bound to a GCP resource.
+
+  Messages:
+    TagsValue: Tag keys/values directly bound to this resource, specified in
+      namespaced format. For example: "123/environment": "production",
+      "email": "xyz@email.com"
+
+  Fields:
+    fullResourceName: The full resource name of the resource the TagBindings
+      are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
+    name: Identifier. The name of the TagBindingCollection, following the
+      convention: `locations/{location}/tagBindingCollections/{encoded-full-
+      resource-name}` where the encoded-full-resource-name is the UTF-8
+      encoded name of the GCP resource the TagBindings are bound to. "location
+      s/global/tagBindingCollections/%2f%2fcloudresourcemanager.googleapis.com
+      %2fprojects%2f123"
+    tags: Tag keys/values directly bound to this resource, specified in
+      namespaced format. For example: "123/environment": "production",
+      "email": "xyz@email.com"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Tag keys/values directly bound to this resource, specified in
+    namespaced format. For example: "123/environment": "production", "email":
+    "xyz@email.com"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  fullResourceName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
 
 
 class TagHold(_messages.Message):

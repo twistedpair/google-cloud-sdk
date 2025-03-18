@@ -1875,6 +1875,27 @@ class CsvImportOptions(_messages.Message):
   table = _messages.StringField(5)
 
 
+class DenyMaintenancePeriod(_messages.Message):
+  r"""DenyMaintenancePeriod definition. Excepting emergencies, maintenance
+  will not be scheduled to start within this deny period. The start_date must
+  be less than the end_date.
+
+  Fields:
+    endDate: Deny period end date. This can be: * A full date, with non-zero
+      year, month and day values OR * A month and day value, with a zero year
+      for recurring
+    startDate: Deny period start date. This can be: * A full date, with non-
+      zero year, month and day values OR * A month and day value, with a zero
+      year for recurring
+    time: Time in UTC when the deny period starts on start_date and ends on
+      end_date. This can be: * Full time OR * All zeros for 00:00:00 UTC
+  """
+
+  endDate = _messages.MessageField('GoogleTypeDate', 1)
+  startDate = _messages.MessageField('GoogleTypeDate', 2)
+  time = _messages.MessageField('GoogleTypeTimeOfDay', 3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2087,6 +2108,32 @@ class GoogleCloudLocationLocation(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class GoogleTypeDate(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleTypeTimeOfDay(_messages.Message):
@@ -2493,11 +2540,17 @@ class InstanceNetworkConfig(_messages.Message):
     enableOutboundPublicIp: Optional. Enabling an outbound public IP address
       to support a database server sending requests out into the internet.
     enablePublicIp: Optional. Enabling public ip for the instance.
+    network: Output only. The resource link for the VPC network in which
+      instance resources are created and from which they are accessible via
+      Private IP. This will be the same value as the parent cluster's network.
+      It is specified in the form: //
+      `projects/{project_number}/global/networks/{network_id}`.
   """
 
   authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
   enableOutboundPublicIp = _messages.BooleanField(2)
   enablePublicIp = _messages.BooleanField(3)
+  network = _messages.StringField(4)
 
 
 class InstanceUpgradeDetails(_messages.Message):
@@ -2662,9 +2715,13 @@ class MachineConfig(_messages.Message):
 
   Fields:
     cpuCount: The number of CPU's in the VM instance.
+    machineType: Machine type of the VM instance. E.g. "n2-highmem-4",
+      "n2-highmem-8", "c4a-highmem-4-lssd". cpu_count must match the number of
+      vCPUs in the machine type.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(2)
 
 
 class MaintenanceSchedule(_messages.Message):
@@ -2685,11 +2742,14 @@ class MaintenanceUpdatePolicy(_messages.Message):
   r"""MaintenanceUpdatePolicy defines the policy for system updates.
 
   Fields:
+    denyMaintenancePeriods: Periods to deny maintenance. Currently limited to
+      1.
     maintenanceWindows: Preferred windows to perform maintenance. Currently
       limited to 1.
   """
 
-  maintenanceWindows = _messages.MessageField('MaintenanceWindow', 1, repeated=True)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 1, repeated=True)
+  maintenanceWindows = _messages.MessageField('MaintenanceWindow', 2, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -4110,6 +4170,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         resource
       SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
         inefficient queries detected.
+      SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD: Indicates that the instance has
+        read intensive workload.
+      SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
+        limit.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4199,6 +4263,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
+    SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
+    SIGNAL_TYPE_MEMORY_LIMIT = 89
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4772,6 +4838,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         resource
       SIGNAL_TYPE_INEFFICIENT_QUERY: Indicates that the instance has
         inefficient queries detected.
+      SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD: Indicates that the instance has
+        read intensive workload.
+      SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
+        limit.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4861,6 +4931,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_NO_MAINTENANCE_POLICY_CONFIGURED = 85
     SIGNAL_TYPE_NO_DELETION_PROTECTION = 86
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
+    SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
+    SIGNAL_TYPE_MEMORY_LIMIT = 89
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

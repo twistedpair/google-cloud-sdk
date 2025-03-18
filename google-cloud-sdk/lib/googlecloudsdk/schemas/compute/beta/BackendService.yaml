@@ -111,6 +111,13 @@ properties:
       An optional description of this resource. Provide this
       property when you create the resource.
     type: string
+  dynamicForwarding:
+    description: |-
+      Dynamic forwarding configuration. This field is used to
+      configure the backend service with dynamic forwarding
+      feature which together with Service Extension allows
+      customized and complex routing logic.
+    $ref: BackendServiceDynamicForwarding.yaml
   edgeSecurityPolicy:
     description: |-
       [Output Only] The resource URL for the edge security
@@ -341,6 +348,11 @@ properties:
       service belongs. This field can only be specified
       when the load balancing scheme is set to INTERNAL.
     type: string
+  networkPassThroughLbTrafficPolicy:
+    description: |-
+      Configures traffic steering properties of internal
+      passthrough Network Load Balancers.
+    $ref: BackendServiceNetworkPassThroughLbTrafficPolicy.yaml
   outlierDetection:
     description: |-
       Settings controlling the ejection of unhealthy

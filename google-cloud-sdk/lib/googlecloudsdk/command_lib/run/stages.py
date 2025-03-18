@@ -23,6 +23,7 @@ from googlecloudsdk.core.console import progress_tracker
 
 READY = 'Ready'
 SERVICE_IAM_POLICY_SET = 'IamPolicySet'
+SERVICE_IAP_ENABLE = 'IapEnable'
 SERVICE_ROUTES_READY = 'RoutesReady'
 SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 BUILD_READY = 'BuildReady'
@@ -85,6 +86,7 @@ def ServiceStages(
     include_build=False,
     include_create_repo=False,
     include_create_revision=True,
+    include_iap=False,
 ):
   """Return the progress tracker Stages for conditions of a Service."""
   stages = []
@@ -109,6 +111,13 @@ def ServiceStages(
             'Setting IAM Policy...', key=SERVICE_IAM_POLICY_SET
         )
     )
+  if include_iap:
+    stages.append(
+        progress_tracker.Stage(
+            'Setting IAP service agent...', key=SERVICE_IAP_ENABLE
+        )
+    )
+
   return stages
 
 

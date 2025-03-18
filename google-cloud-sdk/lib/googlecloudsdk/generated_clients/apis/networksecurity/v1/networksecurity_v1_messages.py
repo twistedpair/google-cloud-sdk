@@ -1729,10 +1729,14 @@ class ListServerTlsPoliciesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     serverTlsPolicies: List of ServerTlsPolicy resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      `return_partial_success` and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTlsInspectionPoliciesResponse(_messages.Message):
@@ -4657,11 +4661,18 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesListRequest(_messages.Mes
     parent: Required. The project and location from which the
       ServerTlsPolicies should be listed, specified in the format
       `projects/*/locations/{location}`.
+    returnPartialSuccess: Optional. Setting this field to `true` will opt the
+      request into returning the resources that are reachable, and into
+      including the names of those that were unreachable in the
+      [ListServerTlsPoliciesResponse.unreachable] field. This can only be
+      `true` when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworksecurityProjectsLocationsServerTlsPoliciesPatchRequest(_messages.Message):

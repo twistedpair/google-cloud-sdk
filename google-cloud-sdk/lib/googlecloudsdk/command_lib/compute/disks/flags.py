@@ -381,6 +381,22 @@ def AddKeepOldDiskArgs(parser):
   )
 
 
+def AddGuestOsFeatureArgs(parser, messages):
+  group = parser.add_group()
+  guest_os_feature_choices = [
+      messages.GuestOsFeature.TypeValueValuesEnum.GVNIC.name
+  ]
+  group.add_argument(
+      '--add-guest-os-features',
+      choices=guest_os_feature_choices,
+      help=(
+          'Specifies guest OS features to add to the disk. Refer to'
+          ' https://cloud.google.com/compute/docs/images/create-custom#guest-os-features'
+          ' for a list of available options.'
+      ),
+  )
+
+
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
     completer=SnapshotsCompleter,

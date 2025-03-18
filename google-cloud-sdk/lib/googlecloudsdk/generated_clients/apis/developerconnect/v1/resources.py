@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ACCOUNTCONNECTORS = (
+      'projects.locations.accountConnectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'accountConnectors/{accountConnectorsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CONNECTIONS = (
       'projects.locations.connections',
       '{+name}',

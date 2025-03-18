@@ -74,10 +74,23 @@ def AddUpdateIncludeExportRangesFlag(
       default=None,
       metavar='CIDR_RANGE',
       hidden=hide_include_export_ranges_flag,
-      help="""\
-      Only allows adding `ALL_IPV6_RANGES` to include export ranges or removing
-      `ALL_IPV6_RANGES` from include export ranges.
-      """,
+      help="""New include export ranges of the spoke.""",
+  )
+
+
+def AddUpdateExcludeExportRangesFlag(
+    parser, hide_exclude_export_ranges_flag
+):
+  """Adds the --exclude-export-ranges argument to the update operation parser."""
+
+  parser.add_argument(
+      '--exclude-export-ranges',
+      required=False,
+      type=arg_parsers.ArgList(),
+      default=None,
+      metavar='CIDR_RANGE',
+      hidden=hide_exclude_export_ranges_flag,
+      help="""New exclude export ranges of the spoke.""",
   )
 
 
@@ -131,7 +144,7 @@ def AddAsyncFlag(parser):
 
 def AddHubFlag(parser):
   """Adds the --hub argument to the given parser."""
-  # TODO(b/233653552) Parse this with a resouce argument.
+  # TODO(b/233653552) Parse this with a resource argument.
   parser.add_argument(
       '--hub',
       required=True,
@@ -156,7 +169,7 @@ def AddSpokeEtagFlag(parser, help_text):
 
 def AddGroupFlag(parser, required=False):
   """Adds the --group argument to the given parser."""
-  # TODO(b/233653552) Parse this with a resouce argument.
+  # TODO(b/233653552) Parse this with a resource argument.
   if required:
     parser.add_argument(
         '--group',

@@ -1525,6 +1525,33 @@ class AppengineV1beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified Application resource. You can update the following fields: auth_domain - Google authentication domain for controlling user access to the application. default_cookie_expiration - Cookie expiration policy for the application. iap - Identity-Aware Proxy properties for the application.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}',
+        http_method='PATCH',
+        method_id='appengine.projects.locations.applications.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='application',
+        request_type_name='AppengineProjectsLocationsApplicationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

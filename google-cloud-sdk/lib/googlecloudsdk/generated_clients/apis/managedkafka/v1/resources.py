@@ -74,6 +74,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CONNECTCLUSTERS = (
+      'projects.locations.connectClusters',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/connectClusters/'
+              '{connectClustersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONNECTCLUSTERS_CONNECTORS = (
+      'projects.locations.connectClusters.connectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/connectClusters/'
+              '{connectClustersId}/connectors/{connectorsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

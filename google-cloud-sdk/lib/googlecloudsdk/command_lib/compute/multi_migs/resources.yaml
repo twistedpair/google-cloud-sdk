@@ -29,5 +29,17 @@ multi_mig:
   - *region
   - &multi_mig
     parameter_name: multiMig
-    attribute_name: multi_mig
+    attribute_name: multi-mig
     help: The name of the Google Compute Multi-MIG.
+
+member:
+  name: member
+  collection: compute.regionMultiMigMembers
+  attributes:
+  - *project
+  - *region
+  - *multi_mig
+  - &member
+    parameter_name: multiMigMember
+    attribute_name: member
+    help: The name of the Google Compute Multi-MIG member.

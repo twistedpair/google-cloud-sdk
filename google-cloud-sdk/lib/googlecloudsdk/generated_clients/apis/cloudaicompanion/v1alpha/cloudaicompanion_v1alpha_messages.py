@@ -858,6 +858,16 @@ class IntegrationSkeleton(_messages.Message):
   tag = _messages.StringField(4)
 
 
+class IntegrationSkeletonsRequest(_messages.Message):
+  r"""The request containing a list of integrations.
+
+  Fields:
+    copilotEnabled: The list of integration skeletons returned by Duet AI.
+  """
+
+  copilotEnabled = _messages.BooleanField(1)
+
+
 class IntegrationSkeletonsResponse(_messages.Message):
   r"""The response containing a list of integrations.
 

@@ -1000,6 +1000,38 @@ class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsWaitRequest(_m
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsDatasetsAssembleRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsAssembleRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1AssembleDataRequest: A
+      GoogleCloudAiplatformV1beta1AssembleDataRequest resource to be passed as
+      the request body.
+    name: Required. The name of the Dataset resource (used only for MULTIMODAL
+      datasets). Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
+  """
+
+  googleCloudAiplatformV1beta1AssembleDataRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1AssembleDataRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsAssessRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsAssessRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1AssessDataRequest: A
+      GoogleCloudAiplatformV1beta1AssessDataRequest resource to be passed as
+      the request body.
+    name: Required. The name of the Dataset resource. Used only for MULTIMODAL
+      datasets. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
+  """
+
+  googleCloudAiplatformV1beta1AssessDataRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1AssessDataRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsDatasetsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsCreateRequest object.
 
@@ -12196,6 +12228,74 @@ class GoogleCloudAiplatformV1beta1ArtifactTypeSchema(_messages.Message):
   schemaVersion = _messages.StringField(4)
 
 
+class GoogleCloudAiplatformV1beta1AssembleDataRequest(_messages.Message):
+  r"""Request message for DatasetService.AssembleData. Used only for
+  MULTIMODAL datasets.
+
+  Fields:
+    geminiTemplateConfig: Optional. Config for assembling templates with a
+      Gemini API structure.
+  """
+
+  geminiTemplateConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GeminiTemplateConfig', 1)
+
+
+class GoogleCloudAiplatformV1beta1AssessDataRequest(_messages.Message):
+  r"""Request message for DatasetService.AssessData. Used only for MULTIMODAL
+  datasets.
+
+  Fields:
+    geminiTemplateConfig: Optional. Config for assembling templates with a
+      Gemini API structure to assess assembled data.
+    tuningResourceUsageAssessmentConfig: Optional. Configuration for the
+      tuning resource usage assessment.
+    tuningValidationAssessmentConfig: Optional. Configuration for the tuning
+      validation assessment.
+  """
+
+  geminiTemplateConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GeminiTemplateConfig', 1)
+  tuningResourceUsageAssessmentConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AssessDataRequestTuningResourceUsageAssessmentConfig', 2)
+  tuningValidationAssessmentConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AssessDataRequestTuningValidationAssessmentConfig', 3)
+
+
+class GoogleCloudAiplatformV1beta1AssessDataRequestTuningResourceUsageAssessmentConfig(_messages.Message):
+  r"""Configuration for the tuning resource usage assessment.
+
+  Fields:
+    modelName: Required. The name of the model used for tuning.
+  """
+
+  modelName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1AssessDataRequestTuningValidationAssessmentConfig(_messages.Message):
+  r"""Configuration for the tuning validation assessment.
+
+  Enums:
+    DatasetUsageValueValuesEnum: Required. The dataset usage (e.g.
+      training/validation).
+
+  Fields:
+    datasetUsage: Required. The dataset usage (e.g. training/validation).
+    modelName: Required. The name of the model used for tuning.
+  """
+
+  class DatasetUsageValueValuesEnum(_messages.Enum):
+    r"""Required. The dataset usage (e.g. training/validation).
+
+    Values:
+      DATASET_USAGE_UNSPECIFIED: Default value. Should not be used.
+      SFT_TRAINING: Supervised fine-tuning training dataset.
+      SFT_VALIDATION: Supervised fine-tuning validation dataset.
+    """
+    DATASET_USAGE_UNSPECIFIED = 0
+    SFT_TRAINING = 1
+    SFT_VALIDATION = 2
+
+  datasetUsage = _messages.EnumField('DatasetUsageValueValuesEnum', 1)
+  modelName = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1AssignNotebookRuntimeOperationMetadata(_messages.Message):
   r"""Metadata information for NotebookService.AssignNotebookRuntime.
 
@@ -20846,6 +20946,9 @@ class GoogleCloudAiplatformV1beta1FunctionCall(_messages.Message):
     args: Optional. Required. The function parameters and values in JSON
       object format. See [FunctionDeclaration.parameters] for parameter
       details.
+    id: Optional. The unique id of the function call. If populated, the client
+      to execute the `function_call` and return the response with the matching
+      `id`.
     name: Required. The name of the function to call. Matches
       [FunctionDeclaration.name].
   """
@@ -20876,7 +20979,8 @@ class GoogleCloudAiplatformV1beta1FunctionCall(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   args = _messages.MessageField('ArgsValue', 1)
-  name = _messages.StringField(2)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1FunctionCallingConfig(_messages.Message):
@@ -20966,6 +21070,8 @@ class GoogleCloudAiplatformV1beta1FunctionResponse(_messages.Message):
       whole "response" is treated as function output.
 
   Fields:
+    id: Optional. The id of the function call this response is for. Populated
+      by the client to match the corresponding function call `id`.
     name: Required. The name of the function to call. Matches
       [FunctionDeclaration.name] and [FunctionCall.name].
     response: Required. The function response in JSON object format. Use
@@ -21001,8 +21107,9 @@ class GoogleCloudAiplatformV1beta1FunctionResponse(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  name = _messages.StringField(1)
-  response = _messages.MessageField('ResponseValue', 2)
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  response = _messages.MessageField('ResponseValue', 3)
 
 
 class GoogleCloudAiplatformV1beta1GcsDestination(_messages.Message):
@@ -21038,6 +21145,136 @@ class GoogleCloudAiplatformV1beta1GdceConfig(_messages.Message):
   """
 
   zone = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1GeminiExample(_messages.Message):
+  r"""Format for Gemini examples used for Vertex Multimodal datasets.
+
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request. It is used for billing and reporting only. Label keys and
+      values can be no longer than 63 characters (Unicode codepoints) and can
+      only contain lowercase letters, numeric characters, underscores, and
+      dashes. International characters are allowed. Label values are optional.
+      Label keys must start with a letter.
+
+  Fields:
+    cachedContent: Optional. The name of the cached content used as context to
+      serve the prediction. Note: only used in explicit caching, where users
+      can have control over caching (e.g. what content to cache) and enjoy
+      guaranteed cost savings. Format:
+      `projects/{project}/locations/{location}/cachedContents/{cachedContent}`
+    contents: Required. The content of the current conversation with the
+      model. For single-turn queries, this is a single instance. For multi-
+      turn queries, this is a repeated field that contains conversation
+      history + latest request.
+    generationConfig: Optional. Generation config.
+    labels: Optional. The labels with user-defined metadata for the request.
+      It is used for billing and reporting only. Label keys and values can be
+      no longer than 63 characters (Unicode codepoints) and can only contain
+      lowercase letters, numeric characters, underscores, and dashes.
+      International characters are allowed. Label values are optional. Label
+      keys must start with a letter.
+    model: Optional. The fully qualified name of the publisher model or tuned
+      model endpoint to use. Publisher model format:
+      `projects/{project}/locations/{location}/publishers/*/models/*` Tuned
+      model endpoint format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    safetySettings: Optional. Per request settings for blocking unsafe
+      content. Enforced on GenerateContentResponse.candidates.
+    systemInstruction: Optional. The user provided system instructions for the
+      model. Note: only text should be used in parts and content in each part
+      will be in a separate paragraph.
+    toolConfig: Optional. Tool config. This config is shared for all tools
+      provided in the request.
+    tools: Optional. A list of `Tools` the model may use to generate the next
+      response. A `Tool` is a piece of code that enables the system to
+      interact with external systems to perform an action, or set of actions,
+      outside of knowledge and scope of the model.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request. It is
+    used for billing and reporting only. Label keys and values can be no
+    longer than 63 characters (Unicode codepoints) and can only contain
+    lowercase letters, numeric characters, underscores, and dashes.
+    International characters are allowed. Label values are optional. Label
+    keys must start with a letter.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cachedContent = _messages.StringField(1)
+  contents = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 2, repeated=True)
+  generationConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerationConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  model = _messages.StringField(5)
+  safetySettings = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetySetting', 6, repeated=True)
+  systemInstruction = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 7)
+  toolConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolConfig', 8)
+  tools = _messages.MessageField('GoogleCloudAiplatformV1beta1Tool', 9, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1GeminiTemplateConfig(_messages.Message):
+  r"""Template configuration to create Gemini examples from a multimodal
+  dataset.
+
+  Messages:
+    FieldMappingValue: Required. Map of template params to the columns in the
+      dataset table.
+
+  Fields:
+    fieldMapping: Required. Map of template params to the columns in the
+      dataset table.
+    geminiExample: Required. The template that will be used for assembling the
+      request to use for downstream applications.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FieldMappingValue(_messages.Message):
+    r"""Required. Map of template params to the columns in the dataset table.
+
+    Messages:
+      AdditionalProperty: An additional property for a FieldMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FieldMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FieldMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  fieldMapping = _messages.MessageField('FieldMappingValue', 1)
+  geminiExample = _messages.MessageField('GoogleCloudAiplatformV1beta1GeminiExample', 2)
 
 
 class GoogleCloudAiplatformV1beta1GenAiAdvancedFeaturesConfig(_messages.Message):
@@ -22093,6 +22330,13 @@ class GoogleCloudAiplatformV1beta1ImportRagFilesConfig(_messages.Message):
       `gs://bucket_name/my_directory`
     googleDriveSource: Google Drive location. Supports importing individual
       files as well as Google Drive folders.
+    importResultBigquerySink: The BigQuery destination to write import result
+      to. It should be a bigquery table resource name (e.g.
+      "bq://projectId.bqDatasetId.bqTableId"). The dataset must exist. If the
+      table does not exist, it will be created with the expected schema. If
+      the table exists, the schema will be validated and data will be added to
+      this existing table.
+    importResultGcsSink: The Cloud Storage path to write import result to.
     jiraSource: Jira queries with their corresponding authentication.
     maxEmbeddingRequestsPerMin: Optional. The max number of queries per minute
       that this job is allowed to make to the embedding model specified on the
@@ -22120,15 +22364,17 @@ class GoogleCloudAiplatformV1beta1ImportRagFilesConfig(_messages.Message):
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
   googleDriveSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GoogleDriveSource', 2)
-  jiraSource = _messages.MessageField('GoogleCloudAiplatformV1beta1JiraSource', 3)
-  maxEmbeddingRequestsPerMin = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  partialFailureBigquerySink = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQueryDestination', 5)
-  partialFailureGcsSink = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 6)
-  ragFileChunkingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileChunkingConfig', 7)
-  ragFileParsingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfig', 8)
-  ragFileTransformationConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileTransformationConfig', 9)
-  sharePointSources = _messages.MessageField('GoogleCloudAiplatformV1beta1SharePointSources', 10)
-  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 11)
+  importResultBigquerySink = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQueryDestination', 3)
+  importResultGcsSink = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 4)
+  jiraSource = _messages.MessageField('GoogleCloudAiplatformV1beta1JiraSource', 5)
+  maxEmbeddingRequestsPerMin = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  partialFailureBigquerySink = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQueryDestination', 7)
+  partialFailureGcsSink = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 8)
+  ragFileChunkingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileChunkingConfig', 9)
+  ragFileParsingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfig', 10)
+  ragFileTransformationConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileTransformationConfig', 11)
+  sharePointSources = _messages.MessageField('GoogleCloudAiplatformV1beta1SharePointSources', 12)
+  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 13)
 
 
 class GoogleCloudAiplatformV1beta1ImportRagFilesRequest(_messages.Message):
@@ -23683,6 +23929,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_L4: Nvidia L4 GPU.
       NVIDIA_H100_80GB: Nvidia H100 80Gb GPU.
       NVIDIA_H100_MEGA_80GB: Nvidia H100 Mega 80Gb GPU.
+      NVIDIA_H200_141GB: Nvidia H200 141Gb GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
       TPU_V4_POD: TPU v4.
@@ -23699,10 +23946,11 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_L4 = 8
     NVIDIA_H100_80GB = 9
     NVIDIA_H100_MEGA_80GB = 10
-    TPU_V2 = 11
-    TPU_V3 = 12
-    TPU_V4_POD = 13
-    TPU_V5_LITEPOD = 14
+    NVIDIA_H200_141GB = 11
+    TPU_V2 = 12
+    TPU_V3 = 13
+    TPU_V4_POD = 14
+    TPU_V5_LITEPOD = 15
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -27124,6 +27372,7 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
       INVALID_TOKEN_VALUE: Token restrict value is invalid.
       INVALID_SPARSE_EMBEDDING: Invalid sparse embedding.
       INVALID_EMBEDDING: Invalid dense embedding.
+      INVALID_EMBEDDING_METADATA: Invalid embedding metadata.
     """
     ERROR_TYPE_UNSPECIFIED = 0
     EMPTY_LINE = 1
@@ -27143,6 +27392,7 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
     INVALID_TOKEN_VALUE = 15
     INVALID_SPARSE_EMBEDDING = 16
     INVALID_EMBEDDING = 17
+    INVALID_EMBEDDING_METADATA = 18
 
   embeddingId = _messages.StringField(1)
   errorMessage = _messages.StringField(2)
@@ -29221,7 +29471,7 @@ class GoogleCloudAiplatformV1beta1PostStartupScriptConfig(_messages.Message):
     postStartupScriptBehavior: Optional. Post startup script behavior that
       defines download and execution behavior.
     postStartupScriptUrl: Optional. Post startup script url to download.
-      Example: https://bucket/script.sh
+      Example: `gs://bucket/script.sh`
   """
 
   class PostStartupScriptBehaviorValueValuesEnum(_messages.Enum):
@@ -31353,7 +31603,7 @@ class GoogleCloudAiplatformV1beta1ReasoningEngine(_messages.Message):
     etag: Optional. Used to perform consistent read-modify-write updates. If
       not set, a blind "overwrite" update happens.
     name: Identifier. The resource name of the ReasoningEngine.
-    spec: Required. Configurations of the ReasoningEngine
+    spec: Optional. Configurations of the ReasoningEngine
     updateTime: Output only. Timestamp when this ReasoningEngine was most
       recently updated.
   """
@@ -31374,11 +31624,17 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
     ClassMethodsValueListEntry: A ClassMethodsValueListEntry object.
 
   Fields:
+    agentFramework: Optional. The OSS agent framework used to develop the
+      agent. Currently supported values: "langchain", "langgraph", "ag2",
+      "custom".
     classMethods: Optional. Declarations for object class methods in OpenAPI
       specification format.
     deploymentSpec: Optional. The specification of a Reasoning Engine
       deployment.
-    packageSpec: Required. User provided package spec of the ReasoningEngine.
+    packageSpec: Optional. User provided package spec of the ReasoningEngine.
+      Ignored when users directly specify a deployment image through
+      `deployment_spec.first_party_image_override`, but keeping the
+      field_behavior to avoid introducing breaking changes.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -31406,9 +31662,10 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  classMethods = _messages.MessageField('ClassMethodsValueListEntry', 1, repeated=True)
-  deploymentSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecDeploymentSpec', 2)
-  packageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecPackageSpec', 3)
+  agentFramework = _messages.StringField(1)
+  classMethods = _messages.MessageField('ClassMethodsValueListEntry', 2, repeated=True)
+  deploymentSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecDeploymentSpec', 3)
+  packageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngineSpecPackageSpec', 4)
 
 
 class GoogleCloudAiplatformV1beta1ReasoningEngineSpecDeploymentSpec(_messages.Message):

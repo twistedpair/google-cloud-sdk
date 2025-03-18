@@ -14,6 +14,10 @@
 # limitations under the License.
 #
 from .log_entry import (
+    AppHub,
+    AppHubApplication,
+    AppHubService,
+    AppHubWorkload,
     LogEntry,
     LogEntryOperation,
     LogEntrySourceLocation,
@@ -119,6 +123,10 @@ from .logging_metrics import (
 )
 
 __all__ = (
+    'AppHub',
+    'AppHubApplication',
+    'AppHubService',
+    'AppHubWorkload',
     'LogEntry',
     'LogEntryOperation',
     'LogEntrySourceLocation',

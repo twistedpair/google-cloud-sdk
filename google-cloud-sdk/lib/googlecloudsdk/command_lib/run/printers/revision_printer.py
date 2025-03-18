@@ -104,6 +104,10 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return record.annotations.get(revision.SESSION_AFFINITY_ANNOTATION, '')
 
   @staticmethod
+  def GetThreatDetectionEnabled(record):
+    return k8s_util.GetThreatDetectionEnabled(record)
+
+  @staticmethod
   def TransformSpec(
       record: revision.Revision, manual_scaling_enabled=False
   ) -> cp.Lines:
@@ -134,6 +138,7 @@ class RevisionPrinter(cp.CustomPrinterBase):
             RevisionPrinter.GetSessionAffinity(record),
         ),
         ('Volumes', container_util.GetVolumes(record)),
+        ('Threat Detection', RevisionPrinter.GetThreatDetectionEnabled(record))
     ])
     return cp.Lines([container_util.GetContainers(record), cp.Labeled(labels)])
 

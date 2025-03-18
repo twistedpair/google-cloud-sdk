@@ -14,7 +14,7 @@
 # limitations under the License.
 """Bigtable logical-views API helper."""
 
-
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.bigtable import util
 
 
@@ -72,3 +72,55 @@ def Describe(logical_view_ref):
       name=logical_view_ref.RelativeName()
   )
   return client.projects_instances_logicalViews.Get(msg)
+
+
+def List(instance_ref):
+  """List logical views.
+
+  Args:
+    instance_ref: A resource reference of the instance to list logical views
+      for.
+
+  Returns:
+    Generator of logical view resource objects.
+  """
+  client = util.GetAdminClient()
+  msg = util.GetAdminMessages().BigtableadminProjectsInstancesLogicalViewsListRequest(
+      parent=instance_ref.RelativeName()
+  )
+  return list_pager.YieldFromList(
+      client.projects_instances_logicalViews,
+      msg,
+      field='logicalViews',
+      batch_size_attribute=None,
+  )
+
+
+def Update(logical_view_ref, query):
+  """Update a logical view.
+
+  Args:
+    logical_view_ref: A resource reference to the logical view to update.
+    query: The new query of the logical view.
+
+  Returns:
+    Long running operation.
+  """
+
+  client = util.GetAdminClient()
+  msgs = util.GetAdminMessages()
+
+  changed_fields = []
+  logical_view = msgs.LogicalView()
+
+  if query:
+    changed_fields.append('query')
+    logical_view.query = query
+
+  msg = msgs.BigtableadminProjectsInstancesLogicalViewsPatchRequest(
+      logicalView=logical_view,
+      name=logical_view_ref.RelativeName(),
+      updateMask=','.join(changed_fields),
+  )
+
+  return client.projects_instances_logicalViews.Patch(msg)

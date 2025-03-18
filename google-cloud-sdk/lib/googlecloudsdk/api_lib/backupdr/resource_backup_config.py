@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Resource Backup Configs API Client for Protection Summary."""
+
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.backupdr import util
+from googlecloudsdk.calliope import exceptions
 
 
 class ResourceBackupConfigClient(util.BackupDrClientBase):
@@ -33,14 +36,18 @@ class ResourceBackupConfigClient(util.BackupDrClientBase):
             orderBy=order_by,
         )
     )
-    return list_pager.YieldFromList(
-        self.service,
-        request,
-        batch_size_attribute='pageSize',
-        batch_size=page_size,
-        limit=limit,
-        field='resourceBackupConfigs',
-    )
+    try:
+      for resource in list_pager.YieldFromList(
+          self.service,
+          request,
+          batch_size_attribute='pageSize',
+          batch_size=page_size,
+          limit=limit,
+          field='resourceBackupConfigs',
+      ):
+        yield resource
+    except apitools_exceptions.HttpError as e:
+      raise exceptions.HttpException(e, util.HTTP_ERROR_FORMAT)
 
   def Get(self, name):
     request = (

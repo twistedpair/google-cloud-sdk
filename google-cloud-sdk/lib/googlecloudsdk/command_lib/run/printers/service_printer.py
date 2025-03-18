@@ -90,6 +90,10 @@ class ServicePrinter(cp.CustomPrinterBase):
           ('Description', description),
       ])
       labels.append(description_label)
+
+    labels.append(cp.Labeled([
+        ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record)),
+    ]))
     return cp.Section(labels)
 
   def BuildHeader(self, record):

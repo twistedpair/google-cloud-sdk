@@ -2416,6 +2416,38 @@ class Empty(_messages.Message):
 
 
 
+class ExcludedCluster(_messages.Message):
+  r"""An excluded cluster from the rollout.
+
+  Enums:
+    ReasonValueValuesEnum: Output only. The reason for excluding the cluster
+      from the rollout.
+
+  Fields:
+    membership: Output only. The name of the fleet Membership resource
+      associated to the excluded cluster.
+    reason: Output only. The reason for excluding the cluster from the
+      rollout.
+  """
+
+  class ReasonValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason for excluding the cluster from the rollout.
+
+    Values:
+      REASON_UNSPECIFIED: Default value.
+      EXCLUDED_BY_FILTER: The cluster was excluded by the rollout filter.
+      ALREADY_UPGRADED: The cluster was already upgraded.
+      VERSION_TOO_OLD: The cluster version is too old.
+    """
+    REASON_UNSPECIFIED = 0
+    EXCLUDED_BY_FILTER = 1
+    ALREADY_UPGRADED = 2
+    VERSION_TOO_OLD = 3
+
+  membership = _messages.StringField(1)
+  reason = _messages.EnumField('ReasonValueValuesEnum', 2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -7539,6 +7571,8 @@ class Rollout(_messages.Message):
     deleteTime: Output only. The timestamp at the Rollout was deleted.
     displayName: Optional. Human readable display name of the Rollout.
     etag: Output only. etag of the Rollout Ex. abc1234
+    excludedClusters: Optional. Output only. The excluded clusters from the
+      rollout.
     feature: Optional. Feature config to use for Rollout.
     labels: Optional. Labels for this Rollout.
     lastPauseTime: Output only. The timestamp at which the Rollout was last
@@ -7636,18 +7670,19 @@ class Rollout(_messages.Message):
   deleteTime = _messages.StringField(5)
   displayName = _messages.StringField(6)
   etag = _messages.StringField(7)
-  feature = _messages.MessageField('FeatureUpdate', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  lastPauseTime = _messages.StringField(10)
-  managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 11)
-  name = _messages.StringField(12)
-  schedule = _messages.MessageField('Schedule', 13)
-  scheduledStartTime = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateReason = _messages.StringField(16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  versionUpgrade = _messages.MessageField('VersionUpgrade', 19)
+  excludedClusters = _messages.MessageField('ExcludedCluster', 8, repeated=True)
+  feature = _messages.MessageField('FeatureUpdate', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  lastPauseTime = _messages.StringField(11)
+  managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 12)
+  name = _messages.StringField(13)
+  schedule = _messages.MessageField('Schedule', 14)
+  scheduledStartTime = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateReason = _messages.StringField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  versionUpgrade = _messages.MessageField('VersionUpgrade', 20)
 
 
 class Rule(_messages.Message):
@@ -8069,6 +8104,12 @@ class ServiceMeshCondition(_messages.Message):
       QUOTA_EXCEEDED_TCP_FILTERS: TCPFilter quota exceeded error code.
       QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS: NetworkEndpointGroup quota
         exceeded error code.
+      LEGACY_MC_SECRETS: Legacy istio secrets found for multicluster error
+        code
+      WORKLOAD_IDENTITY_REQUIRED: Workload identity required error code
+      NON_STANDARD_BINARY_USAGE: Non-standard binary usage error code
+      UNSUPPORTED_GATEWAY_CLASS: Unsupported gateway class error code
+      MANAGED_CNI_NOT_ENABLED: Managed CNI not enabled error code
       MODERNIZATION_SCHEDULED: Modernization is scheduled for a cluster.
       MODERNIZATION_IN_PROGRESS: Modernization is in progress for a cluster.
       MODERNIZATION_COMPLETED: Modernization is completed for a cluster.
@@ -8108,11 +8149,16 @@ class ServiceMeshCondition(_messages.Message):
     QUOTA_EXCEEDED_HTTP_FILTERS = 29
     QUOTA_EXCEEDED_TCP_FILTERS = 30
     QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 31
-    MODERNIZATION_SCHEDULED = 32
-    MODERNIZATION_IN_PROGRESS = 33
-    MODERNIZATION_COMPLETED = 34
-    MODERNIZATION_ABORTED = 35
-    MODERNIZATION_WILL_BE_SCHEDULED = 36
+    LEGACY_MC_SECRETS = 32
+    WORKLOAD_IDENTITY_REQUIRED = 33
+    NON_STANDARD_BINARY_USAGE = 34
+    UNSUPPORTED_GATEWAY_CLASS = 35
+    MANAGED_CNI_NOT_ENABLED = 36
+    MODERNIZATION_SCHEDULED = 37
+    MODERNIZATION_IN_PROGRESS = 38
+    MODERNIZATION_COMPLETED = 39
+    MODERNIZATION_ABORTED = 40
+    MODERNIZATION_WILL_BE_SCHEDULED = 41
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.

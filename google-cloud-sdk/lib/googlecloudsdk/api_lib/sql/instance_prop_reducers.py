@@ -14,6 +14,7 @@
 # limitations under the License.
 """Reducer functions to generate instance props from prior state and flags."""
 
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
@@ -76,15 +77,18 @@ def SqlServerAuditConfig(sql_messages,
   return config
 
 
-def BackupConfiguration(sql_messages,
-                        instance=None,
-                        backup_enabled=None,
-                        backup_location=None,
-                        backup_start_time=None,
-                        enable_bin_log=None,
-                        enable_point_in_time_recovery=None,
-                        retained_backups_count=None,
-                        retained_transaction_log_days=None):
+def BackupConfiguration(
+    sql_messages,
+    instance=None,
+    backup_enabled=None,
+    backup_location=None,
+    backup_start_time=None,
+    enable_bin_log=None,
+    enable_point_in_time_recovery=None,
+    retained_backups_count=None,
+    retained_transaction_log_days=None,
+    patch_request=False,
+):
   """Generates the backup configuration for the instance.
 
   Args:
@@ -100,6 +104,7 @@ def BackupConfiguration(sql_messages,
     retained_backups_count: int, how many backups to keep stored.
     retained_transaction_log_days: int, how many days of transaction logs to
       keep stored.
+    patch_request: boolean, True if this is a patch request.
 
   Returns:
     sql_messages.BackupConfiguration object, or None
@@ -127,6 +132,17 @@ def BackupConfiguration(sql_messages,
         enabled=backup_enabled)
   else:
     backup_config = instance.settings.backupConfiguration
+
+  gcbdr_managed = (
+      backup_config.backupTier
+      == sql_messages.BackupConfiguration.BackupTierValueValuesEnum.ENHANCED
+  )
+
+  if patch_request and gcbdr_managed:
+    raise sql_exceptions.ArgumentError(
+        'Backup configuration cannot be changed for instances with a BackupDR'
+        ' backup plan attached.'
+    )
 
   if backup_location is not None:
     backup_config.location = backup_location
@@ -171,8 +187,11 @@ def BackupConfiguration(sql_messages,
 
   # retainedTransactionLogDays is only valid when we have transaction logs,
   # i.e, have binlog or pitr.
-  if (retained_transaction_log_days and not backup_config.binaryLogEnabled and
-      not backup_config.pointInTimeRecoveryEnabled):
+  if (
+      retained_transaction_log_days
+      and not backup_config.binaryLogEnabled
+      and not backup_config.pointInTimeRecoveryEnabled
+  ):
     raise sql_exceptions.ArgumentError(
         'Argument --retained-transaction-log-days only valid when '
         'transaction logs are enabled. To enable transaction logs, use '
@@ -431,52 +450,34 @@ def InsightsConfig(sql_messages,
 def ConnectionPoolConfig(
     sql_messages,
     enable_connection_pooling=None,
-    connection_pooling_pool_mode=None,
-    connection_pooling_pool_size=None,
-    connection_pooling_max_client_connections=None,
-    connection_pooling_client_idle_timeout=None,
-    connection_pooling_server_idle_timeout=None,
-    connection_pooling_query_wait_timeout=None,
+    connection_pool_flags=None,
+    clear_connection_pool_flags=None,
+    current_config=None,
 ):
   """Generates the connection pooling config for the instance."""
 
-  should_generate_config = any([
-      enable_connection_pooling is not None,
-      connection_pooling_pool_mode is not None,
-      connection_pooling_pool_size is not None,
-      connection_pooling_max_client_connections is not None,
-      connection_pooling_client_idle_timeout is not None,
-      connection_pooling_server_idle_timeout is not None,
-      connection_pooling_query_wait_timeout is not None,
-  ])
-
-  if not should_generate_config:
+  # Skip generate new config if no config field is requested to be updated.
+  if all([
+      enable_connection_pooling is None,
+      connection_pool_flags is None,
+      clear_connection_pool_flags is None,
+  ]):
     return None
-  connection_pool_config = sql_messages.ConnectionPoolConfig()
+
+  connection_pool_config = current_config or sql_messages.ConnectionPoolConfig()
   if enable_connection_pooling is not None:
     connection_pool_config.connectionPoolingEnabled = enable_connection_pooling
-  if connection_pooling_pool_mode is not None:
-    connection_pool_config.poolMode = sql_messages.ConnectionPoolConfig.PoolModeValueValuesEnum.lookup_by_name(
-        connection_pooling_pool_mode
-    )
-  if connection_pooling_pool_size is not None:
-    connection_pool_config.connPoolSize = connection_pooling_pool_size
-  if connection_pooling_max_client_connections is not None:
-    connection_pool_config.maxClientConnections = (
-        connection_pooling_max_client_connections
-    )
-  if connection_pooling_client_idle_timeout is not None:
-    connection_pool_config.clientConnectionIdleTimeout = (
-        connection_pooling_client_idle_timeout
-    )
-  if connection_pooling_server_idle_timeout is not None:
-    connection_pool_config.serverConnectionIdleTimeout = (
-        connection_pooling_server_idle_timeout
-    )
-  if connection_pooling_query_wait_timeout is not None:
-    connection_pool_config.queryWaitTimeout = (
-        connection_pooling_query_wait_timeout
-    )
+
+  if connection_pool_flags is not None:
+    updated_flags = []
+    for name, value in sorted(connection_pool_flags.items()):
+      updated_flags.append(
+          sql_messages.ConnectionPoolFlags(name=name, value=value)
+      )
+    connection_pool_config.flags = updated_flags
+  elif clear_connection_pool_flags:
+    connection_pool_config.flags = []
+
   return connection_pool_config
 
 

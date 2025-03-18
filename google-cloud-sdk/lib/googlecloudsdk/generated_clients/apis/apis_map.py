@@ -2520,6 +2520,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'lustre': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.lustre.v1',
+                    client_classpath='lustre_v1_client.LustreV1',
+                    base_url='https://lustre.googleapis.com/',
+                    messages_modulepath='lustre_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3536,6 +3546,16 @@ MAP = {
                     base_url='https://saasservicemgmt.googleapis.com/',
                     messages_modulepath='saasservicemgmt_v1alpha1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.saasservicemgmt.v1beta1',
+                    client_classpath='saasservicemgmt_v1beta1_client.SaasservicemgmtV1beta1',
+                    base_url='https://saasservicemgmt.googleapis.com/',
+                    messages_modulepath='saasservicemgmt_v1beta1_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

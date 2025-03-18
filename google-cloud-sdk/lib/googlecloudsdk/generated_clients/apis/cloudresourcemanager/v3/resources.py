@@ -64,6 +64,35 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS = (
+      'locations',
+      'locations/{locationsId}',
+      {},
+      ['locationsId'],
+      True
+  )
+  LOCATIONS_EFFECTIVETAGBINDINGCOLLECTIONS = (
+      'locations.effectiveTagBindingCollections',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/effectiveTagBindingCollections/'
+              '{effectiveTagBindingCollectionsId}',
+      },
+      ['name'],
+      True
+  )
+  LOCATIONS_TAGBINDINGCOLLECTIONS = (
+      'locations.tagBindingCollections',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/tagBindingCollections/'
+              '{tagBindingCollectionsId}',
+      },
+      ['name'],
+      True
+  )
   OPERATIONS = (
       'operations',
       '{+name}',

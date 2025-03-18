@@ -392,10 +392,20 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field is subject to following limitations:
+      * The total size of the metadata must be less than 1KiB. * The total
+      number of keys in the metadata must be less than 20. * The length of
+      each key must be less than 64 characters. * The length of each value
+      must be less than 1024 characters. * All values must be strings. This
+      field is not supported for plugin extensions. Setting it results in a
+      validation error.
 
   Fields:
+    allowDynamicForwarding: Optional. When set to `TRUE`, the response from an
+      extension service is allowed to set the
+      `com.google.envoy.dynamic_forwarding` namespace in the dynamic metadata.
+      This field is not supported for plugin extensions. Setting it results in
+      a validation error.
     authority: Optional. The `:authority` header in the gRPC request sent from
       Envoy to the extension service. Required for Callout extensions. This
       field is not supported for plugin extensions. Setting it results in a
@@ -420,8 +430,13 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field is subject to following limitations:
+      * The total size of the metadata must be less than 1KiB. * The total
+      number of keys in the metadata must be less than 20. * The length of
+      each key must be less than 64 characters. * The length of each value
+      must be less than 1024 characters. * All values must be strings. This
+      field is not supported for plugin extensions. Setting it results in a
+      validation error.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
@@ -444,8 +459,9 @@ class ExtensionChainExtension(_messages.Message):
       `LbTrafficExtension` and the `LbRouteExtension` resources.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
-      for the `LbTrafficExtension` resource. It must not be set for the
-      `LbRouteExtension` resource, otherwise a validation error is returned.
+      for the `LbTrafficExtension` resource. It is optional for the
+      `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
+      assumed as supported.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between `10`-`1000` milliseconds.
       Required for callout extensions. This field is not supported for plugin
@@ -487,8 +503,12 @@ class ExtensionChainExtension(_messages.Message):
     `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
     following variables are supported in the metadata: `{forwarding_rule_id}`
     - substituted with the forwarding rule's fully qualified resource name.
-    This field is not supported for plugin extensions. Setting it results in a
-    validation error.
+    This field is subject to following limitations: * The total size of the
+    metadata must be less than 1KiB. * The total number of keys in the
+    metadata must be less than 20. * The length of each key must be less than
+    64 characters. * The length of each value must be less than 1024
+    characters. * All values must be strings. This field is not supported for
+    plugin extensions. Setting it results in a validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -510,14 +530,15 @@ class ExtensionChainExtension(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  authority = _messages.StringField(1)
-  failOpen = _messages.BooleanField(2)
-  forwardHeaders = _messages.StringField(3, repeated=True)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-  service = _messages.StringField(6)
-  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 7, repeated=True)
-  timeout = _messages.StringField(8)
+  allowDynamicForwarding = _messages.BooleanField(1)
+  authority = _messages.StringField(2)
+  failOpen = _messages.BooleanField(3)
+  forwardHeaders = _messages.StringField(4, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 5)
+  name = _messages.StringField(6)
+  service = _messages.StringField(7)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 8, repeated=True)
+  timeout = _messages.StringField(9)
 
 
 class ExtensionChainMatchCondition(_messages.Message):
@@ -2016,10 +2037,14 @@ class ListEndpointPoliciesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   endpointPolicies = _messages.MessageField('EndpointPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGatewayRouteViewsResponse(_messages.Message):
@@ -2065,10 +2090,14 @@ class ListGrpcRoutesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   grpcRoutes = _messages.MessageField('GrpcRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListHttpRoutesResponse(_messages.Message):
@@ -2080,10 +2109,14 @@ class ListHttpRoutesResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLbRouteExtensionsResponse(_messages.Message):
@@ -2365,10 +2398,14 @@ class ListTcpRoutesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     tcpRoutes: List of TcpRoute resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   tcpRoutes = _messages.MessageField('TcpRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTlsRoutesResponse(_messages.Message):
@@ -2380,10 +2417,14 @@ class ListTlsRoutesResponse(_messages.Message):
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     tlsRoutes: List of TlsRoute resources.
+    unreachable: Unreachable resources. Populated when the request opts into
+      return_partial_success and reading across collections e.g. when
+      attempting to list all resources across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   tlsRoutes = _messages.MessageField('TlsRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListWasmPluginVersionsResponse(_messages.Message):
@@ -3610,11 +3651,15 @@ class NetworkservicesProjectsLocationsEndpointPoliciesListRequest(_messages.Mess
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the EndpointPolicies
       should be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Message):
@@ -3797,11 +3842,15 @@ class NetworkservicesProjectsLocationsGrpcRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the GrpcRoutes
       should be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
@@ -3870,11 +3919,15 @@ class NetworkservicesProjectsLocationsHttpRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the HttpRoutes
       should be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
@@ -5710,11 +5763,15 @@ class NetworkservicesProjectsLocationsTcpRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the TcpRoutes should
       be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
@@ -5783,11 +5840,15 @@ class NetworkservicesProjectsLocationsTlsRoutesListRequest(_messages.Message):
       and that the system should return the next page of data.
     parent: Required. The project and location from which the TlsRoutes should
       be listed, specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests. Otherwise if one of the
+      locations is down or unreachable, the Aggregated List request will fail.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  returnPartialSuccess = _messages.BooleanField(4)
 
 
 class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
@@ -6129,9 +6190,9 @@ class RetryFilterPerRouteConfig(_messages.Message):
 
 class ServiceBinding(_messages.Message):
   r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
-  used in a BackendService resource. - Bind a Private Service Connect producer
-  service to be used in consumer Cloud Service Mesh or Application Load
-  Balancers.
+  used in a BackendService resource. This feature will be deprecated soon. -
+  Bind a Private Service Connect producer service to be used in consumer Cloud
+  Service Mesh or Application Load Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -6146,12 +6207,13 @@ class ServiceBinding(_messages.Message):
     name: Identifier. Name of the ServiceBinding resource. It matches pattern
       `projects/*/locations/*/serviceBindings/`.
     service: Optional. The full Service Directory Service name of the format
-      `projects/*/locations/*/namespaces/*/services/*`. This field must be
-      set.
+      `projects/*/locations/*/namespaces/*/services/*`. This field is for
+      Service Directory integration which will be deprecated soon.
     serviceId: Output only. The unique identifier of the Service Directory
       Service against which the ServiceBinding resource is validated. This is
       populated when the Service Binding resource is used in another resource
-      (like Backend Service). This is of the UUID4 format.
+      (like Backend Service). This is of the UUID4 format. This field is for
+      Service Directory integration which will be deprecated soon.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 

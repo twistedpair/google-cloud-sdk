@@ -3238,6 +3238,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
 
   Fields:
     additionalExperiments: Additional experiment flags for the job.
+    additionalPipelineOptions: Optional. Additional pipeline option flags for
+      the job.
     additionalUserLabels: Additional user labels to be specified for the job.
       Keys and values must follow the restrictions specified in the [labeling
       restrictions](https://cloud.google.com/compute/docs/labeling-
@@ -3405,30 +3407,31 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   additionalExperiments = _messages.StringField(1, repeated=True)
-  additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
-  autoscalingAlgorithm = _messages.EnumField('AutoscalingAlgorithmValueValuesEnum', 3)
-  diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  dumpHeapOnOom = _messages.BooleanField(5)
-  enableLauncherVmSerialPortLogging = _messages.BooleanField(6)
-  enableStreamingEngine = _messages.BooleanField(7)
-  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 8)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 9)
-  kmsKeyName = _messages.StringField(10)
-  launcherMachineType = _messages.StringField(11)
-  machineType = _messages.StringField(12)
-  maxWorkers = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  network = _messages.StringField(14)
-  numWorkers = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  saveHeapDumpsToGcsPath = _messages.StringField(16)
-  sdkContainerImage = _messages.StringField(17)
-  serviceAccountEmail = _messages.StringField(18)
-  stagingLocation = _messages.StringField(19)
-  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 20)
-  subnetwork = _messages.StringField(21)
-  tempLocation = _messages.StringField(22)
-  workerRegion = _messages.StringField(23)
-  workerZone = _messages.StringField(24)
-  zone = _messages.StringField(25)
+  additionalPipelineOptions = _messages.StringField(2, repeated=True)
+  additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 3)
+  autoscalingAlgorithm = _messages.EnumField('AutoscalingAlgorithmValueValuesEnum', 4)
+  diskSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  dumpHeapOnOom = _messages.BooleanField(6)
+  enableLauncherVmSerialPortLogging = _messages.BooleanField(7)
+  enableStreamingEngine = _messages.BooleanField(8)
+  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 9)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 10)
+  kmsKeyName = _messages.StringField(11)
+  launcherMachineType = _messages.StringField(12)
+  machineType = _messages.StringField(13)
+  maxWorkers = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  network = _messages.StringField(15)
+  numWorkers = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  saveHeapDumpsToGcsPath = _messages.StringField(17)
+  sdkContainerImage = _messages.StringField(18)
+  serviceAccountEmail = _messages.StringField(19)
+  stagingLocation = _messages.StringField(20)
+  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 21)
+  subnetwork = _messages.StringField(22)
+  tempLocation = _messages.StringField(23)
+  workerRegion = _messages.StringField(24)
+  workerZone = _messages.StringField(25)
+  zone = _messages.StringField(26)
 
 
 class FloatingPointList(_messages.Message):
@@ -4906,7 +4909,7 @@ class MetricStructuredName(_messages.Message):
 
 
 class MetricUpdate(_messages.Message):
-  r"""Describes the state of a metric. Next ID: 14
+  r"""Describes the state of a metric.
 
   Fields:
     cumulative: True if this metric is reported as the total cumulative
@@ -6037,6 +6040,8 @@ class RuntimeEnvironment(_messages.Message):
   Fields:
     additionalExperiments: Optional. Additional experiment flags for the job,
       specified with the `--experiments` option.
+    additionalPipelineOptions: Optional. Additional pipeline option flags for
+      the job.
     additionalUserLabels: Optional. Additional user labels to be specified for
       the job. Keys and values should follow the restrictions specified in the
       [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
@@ -6161,23 +6166,24 @@ class RuntimeEnvironment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   additionalExperiments = _messages.StringField(1, repeated=True)
-  additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
-  bypassTempDirValidation = _messages.BooleanField(3)
-  diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  enableStreamingEngine = _messages.BooleanField(5)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 6)
-  kmsKeyName = _messages.StringField(7)
-  machineType = _messages.StringField(8)
-  maxWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  network = _messages.StringField(10)
-  numWorkers = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(12)
-  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 13)
-  subnetwork = _messages.StringField(14)
-  tempLocation = _messages.StringField(15)
-  workerRegion = _messages.StringField(16)
-  workerZone = _messages.StringField(17)
-  zone = _messages.StringField(18)
+  additionalPipelineOptions = _messages.StringField(2, repeated=True)
+  additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 3)
+  bypassTempDirValidation = _messages.BooleanField(4)
+  diskSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  enableStreamingEngine = _messages.BooleanField(6)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 7)
+  kmsKeyName = _messages.StringField(8)
+  machineType = _messages.StringField(9)
+  maxWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  network = _messages.StringField(11)
+  numWorkers = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(13)
+  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 14)
+  subnetwork = _messages.StringField(15)
+  tempLocation = _messages.StringField(16)
+  workerRegion = _messages.StringField(17)
+  workerZone = _messages.StringField(18)
+  zone = _messages.StringField(19)
 
 
 class RuntimeMetadata(_messages.Message):

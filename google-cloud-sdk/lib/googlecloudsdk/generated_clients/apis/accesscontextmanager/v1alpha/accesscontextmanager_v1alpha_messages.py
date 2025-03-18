@@ -33,6 +33,8 @@ class AccessLevel(_messages.Message):
   be applied.
 
   Fields:
+    accessLevelFeatures: Output only. Access level features that are used to
+      determine the behavior of the access level.
     basic: A `BasicLevel` composed of `Conditions`.
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
@@ -45,11 +47,27 @@ class AccessLevel(_messages.Message):
     title: Human readable title. Must be unique within the Policy.
   """
 
-  basic = _messages.MessageField('BasicLevel', 1)
-  custom = _messages.MessageField('CustomLevel', 2)
-  description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  title = _messages.StringField(5)
+  accessLevelFeatures = _messages.MessageField('AccessLevelFeatures', 1)
+  basic = _messages.MessageField('BasicLevel', 2)
+  custom = _messages.MessageField('CustomLevel', 3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  title = _messages.StringField(6)
+
+
+class AccessLevelFeatures(_messages.Message):
+  r"""Fields capturing features about the access level. Output only.
+
+  Fields:
+    canBeNested: Output only. Indicates that the access level is able to be
+      nested in other access levels.
+    hasRemediations: Output only. Indicates whether there is a remediation
+      defined within access level conditions. Set to false if deny is the only
+      configured result for all conditions.
+  """
+
+  canBeNested = _messages.BooleanField(1)
+  hasRemediations = _messages.BooleanField(2)
 
 
 class AccessPolicy(_messages.Message):
@@ -1127,6 +1145,11 @@ class Condition(_messages.Message):
       which does not exist is an error. All access levels listed must be
       granted for the Condition to be true. Example:
       "`accessPolicies/MY_POLICY/accessLevels/LEVEL_NAME"`
+    risk: The request must have acceptable risk profile. Following constraints
+      apply to its use: - It cannot be negated and cannot be nested. - If set,
+      no other attributes can be applied within a Condition. - If set, you may
+      optionally specify a remediation result.
+    unsatisfiedResult: The result to apply if the condition is not met.
     vpcNetworkSources: The request must originate from one of the provided VPC
       networks in Google Cloud. Cannot specify this field together with
       `ip_subnetworks`.
@@ -1138,7 +1161,9 @@ class Condition(_messages.Message):
   negate = _messages.BooleanField(4)
   regions = _messages.StringField(5, repeated=True)
   requiredAccessLevels = _messages.StringField(6, repeated=True)
-  vpcNetworkSources = _messages.MessageField('VpcNetworkSource', 7, repeated=True)
+  risk = _messages.MessageField('Risk', 7)
+  unsatisfiedResult = _messages.MessageField('UnsatisfiedResult', 8)
+  vpcNetworkSources = _messages.MessageField('VpcNetworkSource', 9, repeated=True)
 
 
 class CustomLevel(_messages.Message):
@@ -2037,6 +2062,39 @@ class ReplaceServicePerimetersResponse(_messages.Message):
   servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
 
 
+class Risk(_messages.Message):
+  r"""Risk-based access level.
+
+  Fields:
+    userManagedRisk: The user managed risk associated with the access level.
+  """
+
+  userManagedRisk = _messages.MessageField('UserManagedRisk', 1)
+
+
+class RiskType(_messages.Message):
+  r"""The type of the risk used to calculate the access level risk score.
+
+  Fields:
+    atypicalLocation: The request is from an identity that has issued requests
+      from atypical locations.
+    identityReputation: The request is from an identity that has a low
+      reputation (e.g. due to dormancy).
+    maliciousActivity: The request is from an identity that has performed
+      potentially malicious activity (e.g. mass deletion of backups).
+    maliciousSource: The request is associated with signals (e.g. network)
+      that indicate a malicious source.
+    repeatAction: The request is from an identity that has issued repeated,
+      suspicious requests (e.g. too many requests with permission denied).
+  """
+
+  atypicalLocation = _messages.BooleanField(1)
+  identityReputation = _messages.BooleanField(2)
+  maliciousActivity = _messages.BooleanField(3)
+  maliciousSource = _messages.BooleanField(4)
+  repeatAction = _messages.BooleanField(5)
+
+
 class ScopedAccessSettings(_messages.Message):
   r"""A relationship between access settings and its scope.
 
@@ -2484,6 +2542,48 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UnsatisfiedResult(_messages.Message):
+  r"""The result to apply if the condition is not met. By default, the result
+  is deny.
+
+  Enums:
+    ResultTypeValueValuesEnum: The type of result to apply if the condition is
+      not met.
+
+  Fields:
+    remediations: List of remediations to apply if the condition is not met.
+      If ALL remediations are satisfied, the condition is as well. For
+      example, a successful user reauthentication may resolve a failing risk
+      condition. - It applies only when result_type == REMEDIATION - Only a
+      single remediation i.e. "remediation.reauth" is allowed today.
+    resultType: The type of result to apply if the condition is not met.
+  """
+
+  class ResultTypeValueValuesEnum(_messages.Enum):
+    r"""The type of result to apply if the condition is not met.
+
+    Values:
+      DENY: Default type of result.
+      REMEDIATION: The result is remediation. Currently, the only supported
+        remediation is reauth.
+    """
+    DENY = 0
+    REMEDIATION = 1
+
+  remediations = _messages.StringField(1, repeated=True)
+  resultType = _messages.EnumField('ResultTypeValueValuesEnum', 2)
+
+
+class UserManagedRisk(_messages.Message):
+  r"""User managed risk associated with the access level.
+
+  Fields:
+    riskType: The type of the risks associated with the access level.
+  """
+
+  riskType = _messages.MessageField('RiskType', 1)
 
 
 class VpcAccessibleServices(_messages.Message):

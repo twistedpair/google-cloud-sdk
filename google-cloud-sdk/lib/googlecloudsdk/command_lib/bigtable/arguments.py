@@ -365,6 +365,17 @@ class ArgAdder(object):
     )
     return self
 
+  def AddDeletionProtection(self, required: bool = False):
+    """Add argument for deletion protection to the parser."""
+    self.parser.add_argument(
+        '--deletion-protection',
+        type=arg_parsers.ArgBoolean(),
+        help='Whether the view is protected from deletion.',
+        required=required,
+        default=False,
+    )
+    return self
+
   def AddIsolation(self):
     """Add argument for isolating this app profile's traffic to parser."""
     isolation_group = self.parser.add_mutually_exclusive_group()
@@ -758,6 +769,17 @@ def GetLogicalViewResourceSpec():
   )
 
 
+def GetMaterializedViewResourceSpec() -> concepts.ResourceSpec:
+  """Return the resource specification for a Bigtable materialized view."""
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances.materializedViews',
+      resource_name='materialized view',
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
 def GetKmsKeyResourceSpec():
   return concepts.ResourceSpec(
       'cloudkms.projects.locations.keyRings.cryptoKeys',
@@ -841,6 +863,16 @@ def AddLogicalViewResourceArg(parser, verb):
       'logical_view',
       GetLogicalViewResourceSpec(),
       f'The logical view {verb}.',
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddMaterializedViewResourceArg(parser, verb: str) -> None:
+  """Add materialized view positional resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'materialized_view',
+      GetMaterializedViewResourceSpec(),
+      f'The materialized view {verb}.',
       required=True,
   ).AddToParser(parser)
 

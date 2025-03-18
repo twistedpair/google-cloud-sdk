@@ -47,8 +47,8 @@ properties:
   forwardingRules:
     description: |-
       A list of references to the forwarding rules to which this service
-      extension is attached to. At least one forwarding rule is required.
-      There can be only one `LbRouteExtension` resource per forwarding rule.
+      extension is attached. At least one forwarding rule is required. There
+      can be only one `LbRouteExtension` resource per forwarding rule.
     type: array
     items:
       type: string
@@ -81,7 +81,8 @@ properties:
       `com.google.lb_route_extension.`. The following variables are
       supported in the metadata Struct: `{forwarding_rule_id}` -
       substituted with the forwarding rule's fully qualified resource
-      name.
+      name. This field is not supported for plugin extensions. Setting
+      it results in a validation error.
     type: object
   name:
     description: |-

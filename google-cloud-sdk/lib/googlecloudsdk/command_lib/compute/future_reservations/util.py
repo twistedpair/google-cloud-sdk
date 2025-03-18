@@ -111,6 +111,12 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
         messages, getattr(args, 'reservation_mode', None)
     )
 
+  enable_emergent_maintenance = None
+  if args.IsKnownAndSpecified('enable_emergent_maintenance'):
+    enable_emergent_maintenance = getattr(
+        args, 'enable_emergent_maintenance', None
+    )
+
   return MakeFutureReservationMessage(
       messages,
       future_reservation_ref.Name(),
@@ -127,7 +133,8 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       deployment_type,
       commitment_info,
       scheduling_type,
-      reservation_mode
+      reservation_mode,
+      enable_emergent_maintenance,
   )
 
 
@@ -366,6 +373,7 @@ def MakeFutureReservationMessage(
     commitment_info=None,
     scheduling_type=None,
     reservation_mode=None,
+    enable_emergent_maintenance=None,
 ):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
@@ -412,5 +420,9 @@ def MakeFutureReservationMessage(
     future_reservation_message.schedulingType = scheduling_type
   if reservation_mode is not None:
     future_reservation_message.reservationMode = reservation_mode
+  if enable_emergent_maintenance is not None:
+    future_reservation_message.enableEmergentMaintenance = (
+        enable_emergent_maintenance
+    )
 
   return future_reservation_message

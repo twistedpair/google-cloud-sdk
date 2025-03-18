@@ -5,6 +5,108 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 515.0.0 (2025-03-18)
+
+### AI
+
+* Added `gcloud beta ai model-garden` command group, which supports deploying models in Model Garden.
+  * Added `gcloud beta ai model-garden models deploy` command to deploy a model from Model Garden.
+  * Added `gcloud beta ai model-garden models list` command to find models that support deployment.
+  * Added `gcloud beta ai model-garden models list-deployment-config` command to find supported deployment configurations for each model.
+* Added `--list-model-garden-endpoints-only` flag to `gcloud beta ai endpoints list` command.
+
+### AlloyDB
+
+* Added support for `--machine-type` in `gcloud alloydb instances create` and `gcloud alloydb instances update` commands.
+
+### Artifact Registry
+
+* Added `gcloud artifacts attachments describe` command.
+
+### Certificate Manager
+
+* The default value of the `location` flag for the list commands is changed from `global` to `-` (all locations) for all Certificate Manager resources that support both global and regional locations.
+
+### Cloud IAM
+
+*    Fixed example commands for `gcloud iam roles undelete`.
+*    Fixed example commands for `gcloud iam roles update`.
+
+### Cloud Managed Kafka
+
+* Add Alpha Connectors and Connect-Clusters commands for Managed Kafka Connect.
+
+### Cloud NetApp
+
+* Updated `gcloud netapp backup-vaults create`.
+
+### Cloud Run
+
+* Promoted `--startup-probe` and `--liveness-probe` flags to GA in
+  `gcloud run deploy` and `gcloud run services update`.
+
+### Cloud SQL
+
+*  Added `--[no-]retain-backups-on-delete` flag to
+    `gcloud sql instances create` and `gcloud sql instances patch` to support
+    retaining backups after instance delete for Cloud SQL.
+*  Promoted `--server-ca-pool` flag of `gcloud sql instances create` to GA for
+    creation of instances using customer-managed CAS server CA.
+*  Added `--[no-]enable-connection-pooling flag to
+    `gcloud sql instances create` and `gcloud sql instances patch` to support
+    enabling connection pooling for Cloud SQL instance.
+*  Added `--[clear-]connection-pool-flags flag to
+    `gcloud sql instances create` and `gcloud sql instances patch` to support
+    adding or clearing connection pooling pool configuration flags for Cloud
+    SQL instance.
+*  Added `--storage-provisioned-iops` and `--storage-provisioned-throughput`
+   flags to `gcloud sql instances create`, `gcloud sql instances patch` and
+   `gcloud sql backups restore` to support storage performance provisioning
+   while creating / patching a Cloud SQL instance or while restoring a backup.
+
+### Cloud Spanner
+
+*  Added support for WITH_STATS and WITH_PLAN_AND_STATS query modes in `gcloud spanner databases execute-sql`.
+
+### Compute Engine
+
+* Promoted `gcloud compute instances report-host-as-faulty` to beta and GA.
+* Added `--gpu-topology` support to `gcloud compute resource-policies create`.
+* Added `--ip-port-dynamic-routing` support to
+  `gcloud compute backend-services create/update` alpha and beta.
+* Added `--ip-collection` flag to
+  `gcloud beta compute networks subnets create` and
+  `gcloud beta compute networks subnets update`.
+* Added `--ip-collection` flag to
+  `gcloud compute networks subnets create` and
+  `gcloud compute networks subnets update`.
+* Support `--mode=external-ipv6-subnetwork-creation` in
+  `gcloud beta compute public-delegated-prefixes create` and
+  `gcloud beta compute public-delegated-prefixes delegated-sub-prefixes create`
+  commands.
+* Support `--mode=external-ipv6-subnetwork-creation` in
+  `gcloud compute public-delegated-prefixes create` and
+  `gcloud compute public-delegated-prefixes delegated-sub-prefixes create`
+  commands.
+* Added support for `gcloud connect_to_serial_port` to read auto host keys.
+* Added `COUNT` option to `--local-ssd` flag of `gcloud
+  compute reservations create` to support specifying the
+  number of local-ssd to attach.
+
+### Kubernetes Engine
+
+* Added `--auto-monitoring-scope` flag to `gcloud container clusters create`, `gcloud container clusters create-auto`, and `gcloud container clusters update` for standard or autopilot clusters.
+
+### Network Connectivity
+
+* Added `gcloud network-connectivity hubs accept-spoke-update` and `gcloud network-connectivity hubs reject-spoke-update` commands.
+* Added `--exclude-export-ranges` flag to `gcloud network-connectivity spokes linked-vpc-network update` and `gcloud network-connectivity spokes linked-producer-vpc-network update` commands.
+* Added `--producer-instance-location` and `--allowed-google-producers-resource-hierarchy-level` to `gcloud network-connectvity service-connection-policies update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 514.0.0 (2025-03-11)
 
 ### Artifact Registry

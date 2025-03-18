@@ -98,7 +98,7 @@ def ExecuteSql(sql, query_mode, session_ref, read_only_options=None,
   Args:
     sql: String, The SQL to execute.
     query_mode: String, The mode in which to run the query. Must be one of
-      'NORMAL', 'PLAN', or 'PROFILE'
+      'NORMAL', 'PLAN', 'PROFILE', 'WITH_STATS', or 'WITH_PLAN_AND_STATS'.
     session_ref: Session, Indicates that the repo should be created if it does
       not exist.
     read_only_options: The ReadOnly message for a read-only request. It is
@@ -161,7 +161,7 @@ def _GetQueryRequest(sql,
   Args:
     sql: String, The SQL to execute.
     query_mode: String, The mode in which to run the query. Must be one of
-      'NORMAL', 'PLAN', or 'PROFILE'
+      'NORMAL', 'PLAN', 'PROFILE', 'WITH_STATS', or 'WITH_PLAN_AND_STATS'.
     session_ref: Reference to the session.
     read_only_options: The ReadOnly message for a read-only request. It is
       ignored in a DML request.

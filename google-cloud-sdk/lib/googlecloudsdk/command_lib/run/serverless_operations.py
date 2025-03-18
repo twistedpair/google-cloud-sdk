@@ -817,6 +817,7 @@ class ServerlessOperations(object):
       is_verbose=False,
       source_bucket=None,
       kms_key=None,
+      iap_enabled=None,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -863,6 +864,8 @@ class ServerlessOperations(object):
       is_verbose: Print verbose output. Forces polling instead of waiting.
       source_bucket: The bucket to use for source uploads.
       kms_key: The KMS key to use for the deployment.
+      iap_enabled: If true, assign run.invoker access to IAP P4SA, if false,
+        remove run.invoker access from IAP P4SA.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -879,6 +882,7 @@ class ServerlessOperations(object):
               include_validate_service=should_validate_service,
               include_build=build_source is not None,
               include_create_repo=repo_to_create is not None,
+              include_iap=iap_enabled is not None,
           ),
           interruptable=True,
           aborted_message='aborted',
@@ -977,6 +981,8 @@ class ServerlessOperations(object):
         service_ref, allow_unauthenticated, allow_unauth_regions, tracker
     )
 
+    self._HandleIap(service_ref, iap_enabled, updated_service, tracker)
+
     if not asyn and not dry_run:
       if updated_service.conditions.IsReady():
         return updated_service
@@ -1071,6 +1077,51 @@ class ServerlessOperations(object):
       tracker.CompleteStageWithWarning(
           stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message
       )
+
+  def _HandleIap(self, service_ref, iap_enabled, updated_service, tracker):
+    """Handle IAP changes."""
+    iap_service_agent = (
+        'serviceAccount:service-%s@gcp-sa-iap.iam.gserviceaccount.com'
+        % updated_service.namespace
+    )
+    if iap_enabled is not None:
+      try:
+        tracker.StartStage(stages.SERVICE_IAP_ENABLE)
+        tracker.UpdateStage(stages.SERVICE_IAP_ENABLE, '')
+        if iap_enabled:
+          self.AddOrRemoveIamPolicyBinding(
+              service_ref,
+              True,
+              iap_service_agent,
+              ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+          )
+        else:
+          self.AddOrRemoveIamPolicyBinding(
+              service_ref,
+              False,
+              iap_service_agent,
+              ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+          )
+        tracker.CompleteStage(stages.SERVICE_IAP_ENABLE)
+      except api_exceptions.HttpError:
+        warning_message = (
+            'Setting IAM policy failed, if P4SA is not created then try "gcloud'
+            ' beta services identity create'
+            ' --service=iap.{endpoint}'
+            ' --project={project}", once P4SA is created then try "gcloud beta'
+            ' run services {}-iam-policy-binding --region={region}'
+            ' --member={member} --role=roles/run.invoker {service}"'.format(
+                'add' if iap_enabled else 'remove',
+                project=updated_service.namespace,
+                endpoint=properties.VALUES.core.universe_domain.Get(),
+                region=self._region,
+                member=iap_service_agent,
+                service=service_ref.servicesId,
+            )
+        )
+        tracker.CompleteStageWithWarning(
+            stages.SERVICE_IAP_ENABLE, warning_message=warning_message
+        )
 
   # TODO(b/322180968): Once Worker API is ready, factor out worker related
   # operations wired up to the API in a separate file.

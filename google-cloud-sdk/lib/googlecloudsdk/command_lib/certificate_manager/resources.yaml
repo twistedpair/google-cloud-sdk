@@ -21,6 +21,20 @@ location:
     - hook: googlecloudsdk.command_lib.certificate_manager.hooks:GetLocation
       hint: default value of location is [global]
 
+allDefaultLocation:
+  name: location
+  collection: certificatemanager.projects.locations
+  attributes:
+  - *project
+  - &allDefaultLocation
+    parameter_name: locationsId
+    attribute_name: location
+    help: Certificate Manager location.
+    fallthroughs:
+    - value: "-"
+      hint: |-
+        if left empty, will use the wildcard '-' to list all locations
+
 operation:
   name: operation
   collection: certificatemanager.projects.locations.operations

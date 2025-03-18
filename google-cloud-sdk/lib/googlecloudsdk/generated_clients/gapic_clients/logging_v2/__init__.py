@@ -25,6 +25,10 @@ from .services.logging_service_v2 import LoggingServiceV2AsyncClient
 from .services.metrics_service_v2 import MetricsServiceV2Client
 from .services.metrics_service_v2 import MetricsServiceV2AsyncClient
 
+from .types.log_entry import AppHub
+from .types.log_entry import AppHubApplication
+from .types.log_entry import AppHubService
+from .types.log_entry import AppHubWorkload
 from .types.log_entry import LogEntry
 from .types.log_entry import LogEntryOperation
 from .types.log_entry import LogEntrySourceLocation
@@ -126,6 +130,10 @@ __all__ = (
     'ConfigServiceV2AsyncClient',
     'LoggingServiceV2AsyncClient',
     'MetricsServiceV2AsyncClient',
+'AppHub',
+'AppHubApplication',
+'AppHubService',
+'AppHubWorkload',
 'BigQueryDataset',
 'BigQueryOptions',
 'BucketMetadata',

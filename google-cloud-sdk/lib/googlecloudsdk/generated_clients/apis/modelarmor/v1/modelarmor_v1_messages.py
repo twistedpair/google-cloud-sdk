@@ -133,7 +133,7 @@ class FilterResult(_messages.Message):
   r"""Filter Result obtained after Sanitization operations.
 
   Fields:
-    csamFilterResult: CSAM filter results.
+    csamFilterFilterResult: CSAM filter results.
     maliciousUriFilterResult: Malicious URI filter results.
     piAndJailbreakFilterResult: Prompt injection and Jailbreak filter results.
     raiFilterResult: Responsible AI filter results.
@@ -141,7 +141,7 @@ class FilterResult(_messages.Message):
     virusScanFilterResult: Virus scan results.
   """
 
-  csamFilterResult = _messages.MessageField('CsamFilterResult', 1)
+  csamFilterFilterResult = _messages.MessageField('CsamFilterResult', 1)
   maliciousUriFilterResult = _messages.MessageField('MaliciousUriFilterResult', 2)
   piAndJailbreakFilterResult = _messages.MessageField('PiAndJailbreakFilterResult', 3)
   raiFilterResult = _messages.MessageField('RaiFilterResult', 4)

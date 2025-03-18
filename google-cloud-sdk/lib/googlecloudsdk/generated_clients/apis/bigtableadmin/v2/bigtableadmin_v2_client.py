@@ -1841,7 +1841,7 @@ class BigtableadminV2(base_api.BaseApiClient):
         method_id='bigtableadmin.projects.instances.tables.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['updateMask'],
+        query_params=['ignoreWarnings', 'updateMask'],
         relative_path='v2/{+name}',
         request_field='table',
         request_type_name='BigtableadminProjectsInstancesTablesPatchRequest',

@@ -1789,6 +1789,8 @@ class InstancesBulkInsertOperationMetadata(_messages.Message):
       key). Example key: zones/us-central1-a
 
   Fields:
+    machineType: [Output Only] The machine type of the VMs that were created
+      used internally only by KCP flex bulk insert.
     perLocationStatus: Status information per location (location name is key).
       Example key: zones/us-central1-a
   """
@@ -1820,7 +1822,8 @@ class InstancesBulkInsertOperationMetadata(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  perLocationStatus = _messages.MessageField('PerLocationStatusValue', 1)
+  machineType = _messages.StringField(1)
+  perLocationStatus = _messages.MessageField('PerLocationStatusValue', 2)
 
 
 class LocalizedMessage(_messages.Message):

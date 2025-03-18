@@ -103,3 +103,28 @@ proto_bundle:
     attribute_name: proto_bundle
     help: Name of the Bigtable proto bundle.
   disable_auto_completers: false
+
+logical_view:
+  name: logical-view
+  collection: bigtableadmin.projects.instances.logicalViews
+  request_id_field: logicalViewId
+  attributes:
+  - *project
+  - *instance
+  - &logicalView
+    parameter_name: logicalViewsId
+    attribute_name: logical_view
+    help: Name of the Bigtable logical view.
+  disable_auto_completers: false
+
+materialized_view:
+  name: materialized-view
+  collection: bigtableadmin.projects.instances.materializedViews
+  attributes:
+  - *project
+  - *instance
+  - &materializedView
+    parameter_name: materializedViewsId
+    attribute_name: materialized_view
+    help: Name of the Bigtable materialized view.
+  disable_auto_completers: false

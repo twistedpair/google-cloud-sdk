@@ -96,7 +96,7 @@ class Client:
         labels=labels,
         network=network,
     )
-    # TODO(b/381836581): Remove this check once the field is
+    # TODO(b/391304673): Remove this check once the field is
     # available in V1.
     if hasattr(deployment_group, 'description'):
       deployment_group.description = description
@@ -142,7 +142,7 @@ class Client:
         labels=update_fields.get('labels', None),
     )
 
-    # TODO(b/381836581): Remove this check once the field is
+    # TODO(b/391304673): Remove this check once the field is
     # available in V1.
     if hasattr(dg, 'description'):
       dg.description = description

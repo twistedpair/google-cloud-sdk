@@ -31,7 +31,7 @@ class CertificateMapClient(object):
     self._service = self._client.projects_locations_certificateMaps
     self.messages = messages or self._client.MESSAGES_MODULE
 
-  def Create(self, parent_ref, map_id, description='', labels=None):
+  def Create(self, parent_ref, map_id, description='', labels=None, tags=None):
     """Creates a certificate map.
 
     Args:
@@ -41,6 +41,7 @@ class CertificateMapClient(object):
       map_id: str, the ID of the map to create.
       description: str, user-provided description.
       labels: Unified GCP Labels for the resource.
+      tags: Unified GCP Tags for the resource.
 
     Returns:
       Operation: the long running operation to create a map.
@@ -51,6 +52,7 @@ class CertificateMapClient(object):
         certificateMap=self.messages.CertificateMap(
             labels=labels,
             description=description,
+            tags=tags,
         ))
 
     return self._service.Create(req)

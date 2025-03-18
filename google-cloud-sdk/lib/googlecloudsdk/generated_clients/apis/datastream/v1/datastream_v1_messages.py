@@ -1461,6 +1461,9 @@ class MysqlProfile(_messages.Message):
     password: Optional. Input only. Password for the MySQL connection.
       Mutually exclusive with the `secret_manager_stored_password` field.
     port: Port for the MySQL connection, default value is 3306.
+    secretManagerStoredPassword: Optional. A reference to a Secret Manager
+      resource name storing the MySQL connection password. Mutually exclusive
+      with the `password` field.
     sslConfig: SSL configuration for the MySQL connection.
     username: Required. Username for the MySQL connection.
   """
@@ -1468,8 +1471,9 @@ class MysqlProfile(_messages.Message):
   hostname = _messages.StringField(1)
   password = _messages.StringField(2)
   port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  sslConfig = _messages.MessageField('MysqlSslConfig', 4)
-  username = _messages.StringField(5)
+  secretManagerStoredPassword = _messages.StringField(4)
+  sslConfig = _messages.MessageField('MysqlSslConfig', 5)
+  username = _messages.StringField(6)
 
 
 class MysqlRdbms(_messages.Message):
@@ -1523,7 +1527,6 @@ class MysqlSslConfig(_messages.Message):
     clientKey: Optional. Input only. PEM-encoded private key associated with
       the Client Certificate. If this field is used then the
       'client_certificate' and the 'ca_certificate' fields are mandatory.
-      Mutually exclusive with the `secret_manager_stored_client_key` field.
     clientKeySet: Output only. Indicates whether the client_key field is set.
   """
 
@@ -1723,8 +1726,12 @@ class OracleAsmConfig(_messages.Message):
     connectionAttributes: Optional. Connection string attributes
     hostname: Required. Hostname for the Oracle ASM connection.
     oracleSslConfig: Optional. SSL configuration for the Oracle connection.
-    password: Optional. Password for the Oracle ASM connection.
+    password: Optional. Password for the Oracle ASM connection. Mutually
+      exclusive with the `secret_manager_stored_password` field.
     port: Required. Port for the Oracle ASM connection.
+    secretManagerStoredPassword: Optional. A reference to a Secret Manager
+      resource name storing the Oracle ASM connection password. Mutually
+      exclusive with the `password` field.
     username: Required. Username for the Oracle ASM connection.
   """
 
@@ -1760,7 +1767,8 @@ class OracleAsmConfig(_messages.Message):
   oracleSslConfig = _messages.MessageField('OracleSslConfig', 4)
   password = _messages.StringField(5)
   port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  username = _messages.StringField(7)
+  secretManagerStoredPassword = _messages.StringField(7)
+  username = _messages.StringField(8)
 
 
 class OracleAsmLogFileAccess(_messages.Message):
@@ -1995,6 +2003,9 @@ class PostgresqlProfile(_messages.Message):
     password: Optional. Password for the PostgreSQL connection. Mutually
       exclusive with the `secret_manager_stored_password` field.
     port: Port for the PostgreSQL connection, default value is 5432.
+    secretManagerStoredPassword: Optional. A reference to a Secret Manager
+      resource name storing the PostgreSQL connection password. Mutually
+      exclusive with the `password` field.
     sslConfig: Optional. SSL configuration for the PostgreSQL connection. In
       case PostgresqlSslConfig is not set, the connection will use the default
       SSL mode, which is `prefer` (i.e. this mode will only use encryption if
@@ -2007,8 +2018,9 @@ class PostgresqlProfile(_messages.Message):
   hostname = _messages.StringField(2)
   password = _messages.StringField(3)
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sslConfig = _messages.MessageField('PostgresqlSslConfig', 5)
-  username = _messages.StringField(6)
+  secretManagerStoredPassword = _messages.StringField(5)
+  sslConfig = _messages.MessageField('PostgresqlSslConfig', 6)
+  username = _messages.StringField(7)
 
 
 class PostgresqlRdbms(_messages.Message):
@@ -2336,8 +2348,7 @@ class ServerAndClientVerification(_messages.Message):
     clientKey: Optional. Input only. PEM-encoded private key associated with
       the client certificate. This value will be used during the SSL/TLS
       handshake, allowing the PostgreSQL server to authenticate the client's
-      identity, i.e. identity of the Datastream. Mutually exclusive with the
-      `secret_manager_stored_client_key` field.
+      identity, i.e. identity of the Datastream.
   """
 
   caCertificate = _messages.StringField(1)
@@ -2497,6 +2508,9 @@ class SqlServerProfile(_messages.Message):
     password: Optional. Password for the SQLServer connection. Mutually
       exclusive with the `secret_manager_stored_password` field.
     port: Port for the SQLServer connection, default value is 1433.
+    secretManagerStoredPassword: Optional. A reference to a Secret Manager
+      resource name storing the SQLServer connection password. Mutually
+      exclusive with the `password` field.
     username: Required. Username for the SQLServer connection.
   """
 
@@ -2504,7 +2518,8 @@ class SqlServerProfile(_messages.Message):
   hostname = _messages.StringField(2)
   password = _messages.StringField(3)
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  username = _messages.StringField(5)
+  secretManagerStoredPassword = _messages.StringField(5)
+  username = _messages.StringField(6)
 
 
 class SqlServerRdbms(_messages.Message):

@@ -55,7 +55,7 @@ class LustreV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Instance in a given project and location.
+      r"""Creates a new instance in a given project and location.
 
       Args:
         request: (LustreProjectsLocationsInstancesCreateRequest) input message
@@ -82,7 +82,7 @@ class LustreV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Instance.
+      r"""Deletes a single instance.
 
       Args:
         request: (LustreProjectsLocationsInstancesDeleteRequest) input message
@@ -109,7 +109,7 @@ class LustreV1alpha(base_api.BaseApiClient):
     )
 
     def ExportData(self, request, global_params=None):
-      r"""Exports data from Lustre to Cloud Storage.
+      r"""Exports data from a Managed Lustre instance to Cloud Storage.
 
       Args:
         request: (LustreProjectsLocationsInstancesExportDataRequest) input message
@@ -136,7 +136,7 @@ class LustreV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Instance.
+      r"""Gets details of a single instance.
 
       Args:
         request: (LustreProjectsLocationsInstancesGetRequest) input message
@@ -163,7 +163,7 @@ class LustreV1alpha(base_api.BaseApiClient):
     )
 
     def ImportData(self, request, global_params=None):
-      r"""Imports data from Cloud Storage to Lustre.
+      r"""Imports data from Cloud Storage to a Managed Lustre instance.
 
       Args:
         request: (LustreProjectsLocationsInstancesImportDataRequest) input message
@@ -190,7 +190,7 @@ class LustreV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Instances in a given project and location.
+      r"""Lists instances in a given project and location.
 
       Args:
         request: (LustreProjectsLocationsInstancesListRequest) input message
@@ -217,7 +217,7 @@ class LustreV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Instance.
+      r"""Updates the parameters of a single instance.
 
       Args:
         request: (LustreProjectsLocationsInstancesPatchRequest) input message

@@ -567,7 +567,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.flags.list',
         ordered_params=[],
         path_params=[],
-        query_params=['databaseVersion'],
+        query_params=['databaseVersion', 'flagScope'],
         relative_path='sql/v1beta4/flags',
         request_field='',
         request_type_name='SqlFlagsListRequest',

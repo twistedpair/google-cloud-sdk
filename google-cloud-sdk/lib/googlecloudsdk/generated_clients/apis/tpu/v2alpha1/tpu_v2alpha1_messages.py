@@ -1457,12 +1457,15 @@ class SchedulingConfig(_messages.Message):
       should be provisioned.
     reserved: Whether the node is created under a reservation.
     spot: Optional. Defines whether the node is Spot VM.
+    terminationTimestamp: Output only. The time at which the node will be
+      terminated.
   """
 
   preemptible = _messages.BooleanField(1)
   reservationName = _messages.StringField(2)
   reserved = _messages.BooleanField(3)
   spot = _messages.BooleanField(4)
+  terminationTimestamp = _messages.StringField(5)
 
 
 class ServiceAccount(_messages.Message):
