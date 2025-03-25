@@ -63,6 +63,20 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_NETWORKS = (
+      'projects.networks',
+      'projects/{projectsId}/global/networks/{networksId}',
+      {},
+      ['projectsId', 'networksId'],
+      True
+  )
+  PROJECTS_SERVICEACCOUNTS = (
+      'projects.serviceAccounts',
+      'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
+      {},
+      ['projectsId', 'serviceAccountsId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

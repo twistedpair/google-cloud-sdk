@@ -894,6 +894,21 @@ def add_storage_intelligence_configs_level_flags(parser):
   )
 
 
+def add_storage_intelligence_configs_settings_flags(parser):
+  """Adds the settings flags for storage intelligence-configs commands."""
+  parser.add_argument(
+      '--trial-edition',
+      action='store_true',
+      help=(
+          'Enables Storage Intelligence for TRIAL edition.'
+      ),
+  )
+  filters = parser.add_group(
+      category='FILTERS'
+  )
+  add_storage_intelligence_configs_filter_flags(filters)
+
+
 def add_storage_intelligence_configs_filter_flags(parser):
   """Adds the filter flags for storage intelligence-configs commands."""
   storage_intelligence_configs_localtion_filter_group = parser.add_group(

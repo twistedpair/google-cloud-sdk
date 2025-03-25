@@ -17,7 +17,9 @@
 import os
 import subprocess
 import tempfile
+from typing import Tuple
 
+from googlecloudsdk.api_lib.scc.remediation_intents import const
 from googlecloudsdk.core.util import files
 
 
@@ -143,7 +145,9 @@ def push_commit(files_data, commit_message, remote_name, branch_name):
   )
 
 
-def create_pr(title, desc, remote_name, branch_name, base_branch):
+def create_pr(
+    title, desc, remote_name, branch_name, base_branch
+) -> Tuple[bool, str]:
   """Creates a PR for the given branch to the main base branch.
 
   Args:
@@ -152,8 +156,15 @@ def create_pr(title, desc, remote_name, branch_name, base_branch):
     remote_name: Name of the remote of the repo at which to check.
     branch_name: The branch from which PR needs to be created.
     base_branch: The main branch name to be which PR needs to be merged.
+
+  Returns:
+    Boolean indicating whether the PR was created successfully or not.
+    PR link if created successfully, otherwise error message.
   """
-  worktree_dir = get_working_tree_dir(remote_name, branch_name)
+  worktree_dir = get_working_tree_dir(
+      remote_name=remote_name,
+      branch_name=branch_name
+  )
   pr_command = [
       'gh', 'pr', 'create',
       '--base', base_branch,
@@ -161,14 +172,21 @@ def create_pr(title, desc, remote_name, branch_name, base_branch):
       '--title', title,
       '--body', desc,
   ]
-  subprocess.run(
-      pr_command, shell=True,
-      check=False, cwd=worktree_dir,
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-  )
+  try:
+    p = subprocess.run(   # If successful, output will be the PR link.
+        pr_command, shell=True,
+        check=True, cwd=worktree_dir,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    pr_link = p.stdout.strip()
+  except subprocess.CalledProcessError as e:
+    return False, const.PR_FAILURE_MSG.format(
+        stdout=e.stdout, stderr=e.stderr
+    )
 
   subprocess.run(  # cleanup the worktree
       ['git', 'worktree', 'remove', '--force', worktree_dir],
       check=False, cwd=worktree_dir,
       stdout=subprocess.PIPE, stderr=subprocess.PIPE,
   )
+  return True, pr_link

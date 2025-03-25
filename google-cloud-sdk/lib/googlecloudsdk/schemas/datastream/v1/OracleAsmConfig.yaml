@@ -43,11 +43,18 @@ properties:
     description: SSL configuration for the Oracle connection.
     $ref: OracleSslConfig.yaml
   password:
-    description: Password for the Oracle ASM connection.
+    description: |-
+      Password for the Oracle ASM connection. Mutually exclusive with the
+      `secret_manager_stored_password` field.
     type: string
   port:
     description: Port for the Oracle ASM connection.
     type: integer
+  secretManagerStoredPassword:
+    description: |-
+      A reference to a Secret Manager resource name storing the Oracle ASM
+      connection password. Mutually exclusive with the `password` field.
+    type: string
   username:
     description: Username for the Oracle ASM connection.
     type: string

@@ -132,6 +132,7 @@ def AddUpdateArgs(
     parser,
     include_alpha_logging,
     include_external_ipv6_prefix,
+    include_internal_ipv6_prefix,
     include_allow_cidr_routes_overlap,
     api_version,
     update_purpose_to_private,
@@ -142,6 +143,7 @@ def AddUpdateArgs(
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_external_ipv6_prefix: Inlcude user assigned external IPv6 prefix.
+    include_internal_ipv6_prefix: Include user assigned internal IPv6 prefix.
     include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
     update_purpose_to_private: Allow updating purpose to private.
@@ -198,6 +200,17 @@ def AddUpdateArgs(
 
         For example, `--external-ipv6-prefix 2600:1901:0:0:0:0:0:0/64`
         """))
+
+  if include_internal_ipv6_prefix:
+    parser.add_argument(
+        '--internal-ipv6-prefix',
+        help=("""
+        Set internal IPv6 prefix to be allocated for this subnetwork.
+        When ULA is enabled, the prefix will be ignored.
+
+        For example, `--internal-ipv6-prefix 2600:1901:0:0:0:0:0:0/64`
+        """),
+    )
 
   updated_field.add_argument(
       '--remove-secondary-ranges',

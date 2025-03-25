@@ -6,7 +6,6 @@ type: object
 required:
 - databaseService
 - hostname
-- password
 - username
 additionalProperties: false
 properties:
@@ -39,15 +38,25 @@ properties:
   hostname:
     description: Hostname for the Oracle connection.
     type: string
+  oracleAsmConfig:
+    description: Configuration for Oracle ASM connection.
+    $ref: OracleAsmConfig.yaml
   oracleSslConfig:
     description: SSL configuration for the Oracle connection.
     $ref: OracleSslConfig.yaml
   password:
-    description: Password for the Oracle connection.
+    description: |-
+      Password for the Oracle connection. Mutually exclusive with the
+      `secret_manager_stored_password` field.
     type: string
   port:
     description: Port for the Oracle connection, default value is 1521.
     type: integer
+  secretManagerStoredPassword:
+    description: |-
+      A reference to a Secret Manager resource name storing the Oracle
+      connection password. Mutually exclusive with the `password` field.
+    type: string
   username:
     description: Username for the Oracle connection.
     type: string

@@ -55,11 +55,20 @@ def AddMysqlProfileGroup(parser, required=True):
           Password for the user that Datastream will be using to
           connect to the database.
           This field is not returned on request, and the value is encrypted
-          when stored in Datastream.""")
+          when stored in Datastream.""",
+      default='')
   password_group.add_argument(
       '--mysql-prompt-for-password',
       action='store_true',
       help='Prompt for the password used to connect to the database.')
+  password_group.add_argument(
+      '--mysql-secret-manager-stored-password',
+      help=(
+          'Path to secret manager, storing the password for the user used to'
+          ' connect to the database.'
+      ),
+      default='',
+  )
   ssl_config = mysql_profile.add_group()
   ssl_config.add_argument(
       '--ca-certificate',
@@ -109,11 +118,20 @@ def AddOracleProfileGroup(parser, required=True):
           Password for the user that Datastream will be using to
           connect to the database.
           This field is not returned on request, and the value is encrypted
-          when stored in Datastream.""")
+          when stored in Datastream.""",
+      default='')
   password_group.add_argument(
       '--oracle-prompt-for-password',
       action='store_true',
       help='Prompt for the password used to connect to the database.')
+  password_group.add_argument(
+      '--oracle-secret-manager-stored-password',
+      help=(
+          'Path to secret manager, storing the password for the user used to'
+          ' connect to the database.'
+      ),
+      default='',
+  )
 
 
 def AddPostgresqlProfileGroup(parser, required=True):
@@ -143,11 +161,20 @@ def AddPostgresqlProfileGroup(parser, required=True):
           Password for the user that Datastream will be using to
           connect to the database.
           This field is not returned on request, and the value is encrypted
-          when stored in Datastream.""")
+          when stored in Datastream.""",
+      default='')
   password_group.add_argument(
       '--postgresql-prompt-for-password',
       action='store_true',
       help='Prompt for the password used to connect to the database.')
+  password_group.add_argument(
+      '--postgresql-secret-manager-stored-password',
+      help=(
+          'Path to secret manager, storing the password for the user used to'
+          ' connect to the database.'
+      ),
+      default='',
+  )
 
   ssl_config = postgresql_profile.add_group()
   ssl_config.add_argument(
@@ -205,11 +232,20 @@ def AddSqlServerProfileGroup(parser, required=True):
           connect to the database.
           This field is not returned on request, and the value is encrypted
           when stored in Datastream.""",
+      default='',
   )
   password_group.add_argument(
       '--sqlserver-prompt-for-password',
       action='store_true',
       help='Prompt for the password used to connect to the database.',
+  )
+  password_group.add_argument(
+      '--sqlserver-secret-manager-stored-password',
+      help=(
+          'Path to secret manager, storing the password for the user used to'
+          ' connect to the database.'
+      ),
+      default='',
   )
 
 
@@ -254,8 +290,8 @@ def AddSalesforceProfileGroup(parser, required=True):
   password_group.add_argument(
       '--salesforce-secret-manager-stored-password',
       help=(
-          'Path to secret manager, storing the password used to connect to'
-          ' Salesforce.'
+          'Path to secret manager, storing the password for the user used to'
+          ' connect to Salesforce.'
       ),
       default='',
   )

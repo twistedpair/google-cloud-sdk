@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CLUSTERS_ACLS = (
+      'projects.locations.clusters.acls',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/clusters/'
+              '{clustersId}/acls/{aclsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CLUSTERS_CONSUMERGROUPS = (
       'projects.locations.clusters.consumerGroups',
       '{+name}',

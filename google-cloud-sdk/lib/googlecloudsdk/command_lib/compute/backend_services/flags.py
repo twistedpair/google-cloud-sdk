@@ -18,12 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Any
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.network_security import completers as network_security_completers
 from googlecloudsdk.command_lib.network_services import completers as network_services_completers
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -1263,12 +1266,46 @@ def AddNetwork(parser):
   NETWORK_ARG.AddArgument(parser)
 
 
+def AddBackendServiceTlsSettings(
+    parser: Any, add_clear_argument: bool = False
+) -> None:
+  """Adds a --tls-settings flag to the given parser."""
+  group = parser.add_mutually_exclusive_group()
+  help_text = """\
+  Configuration for Backend Authenticated TLS and mTLS. May only be specified
+  when the backend protocol is SSL, HTTPS or HTTP2.
+
+  Example:
+    $ {command} --tls-settings='sni=example.com,authenticationConfig=${AUTH_CONFIG_NAME}'"""
+  group.add_argument(
+      '--tls-settings',
+      type=arg_parsers.ArgDict(
+          spec={
+              'sni': str,
+              'authenticationConfig': str,
+          },
+          required_keys=['authenticationConfig'],
+      ),
+      completer=network_security_completers.BackendAuthenticationConfigsCompleter(),
+      default=None,
+      help=help_text,
+  )
+  if add_clear_argument:
+    group.add_argument(
+        '--no-tls-settings',
+        required=False,
+        action='store_true',
+        default=None,
+        help='Clears currently set backend service TLS settings.',
+    )
+
+
 def AddBackendServiceCustomMetrics(parser, add_clear_argument=False):
   """Adds a --custom-metrics flag to the given parser."""
   group = parser.add_mutually_exclusive_group()
   help_text = """\
   List of custom metrics that are used for
-  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+  WEIGHTED_ROUND_ROBIN locality load balancing policy.
 
   Example:
 
@@ -1291,7 +1328,7 @@ def AddBackendServiceCustomMetrics(parser, add_clear_argument=False):
   )
   help_text_file = """\
   File path to json file with custom metrics that are used for
-  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+  WEIGHTED_ROUND_ROBIN locality load balancing policy.
 
   Example:
 

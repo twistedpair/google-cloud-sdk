@@ -241,6 +241,7 @@ def GenerateUpdateMask(api_version='v2'):
       )
       if api_version == 'v2alpha1':
         disk_to_attach.workerIds = sorted(worker)
+        PreprocessDiskToAttach(request.node.dataDisks, disk_to_attach)
       request.node.dataDisks.append(disk_to_attach)
       update_mask.add('data_disks')
 
@@ -249,6 +250,8 @@ def GenerateUpdateMask(api_version='v2'):
       if not args.IsKnownAndSpecified('worker'):
         args.worker = ['all']
       is_all_workers_specified = ValidateWorkerIdsField(args)
+      if is_all_workers_specified:
+        args.worker = []
 
       if not request.node.dataDisks:
         raise DetachDiskError(
@@ -261,14 +264,16 @@ def GenerateUpdateMask(api_version='v2'):
       for i, source_disk in enumerate(source_disk_list):
         if args.detach_disk != source_disk:
           continue
-        if args.detach_disk == source_disk:
-          if is_all_workers_specified:
-            del request.node.dataDisks[i]
-          else:
-            worker_diff = set(
-                request.node.dataDisks[i].workerIds) - set(args.worker)
-            request.node.dataDisks[i].workerIds = sorted(worker_diff)
+        if is_all_workers_specified:
+          del request.node.dataDisks[i]
           break
+        worker_diff = set(
+            request.node.dataDisks[i].workerIds) - set(args.worker)
+        if not worker_diff:
+          del request.node.dataDisks[i]
+          break
+        request.node.dataDisks[i].workerIds = sorted(worker_diff)
+        break
       else:
         raise DetachDiskError(
             'argument --detach-disk: The specified data disk '
@@ -385,6 +390,46 @@ def TransformGuestAttributes(response, args):
       lst.append(
           GuestAttributesListEntry(i, entry.namespace, entry.key, entry.value))
   return lst
+
+
+def PreprocessDiskToAttach(current_data_disks_list, disk_to_attach):
+  """Preprocesses and validates the disk to attach.
+
+  Validates the disk to attach is not already attached to the TPU VM with
+  different mode or same mode and worker.
+  Deletes the disk from the current_data_disks_list if it is already attached
+  to the TPU VM with same mode but different worker.
+  If the disk is currently attached to the TPU VM with same mode,
+  joins the current worker list and the new worker list.
+
+  Args:
+    current_data_disks_list: the list of data disks currently attached to the
+      TPU VM.
+    disk_to_attach: the disk to attach to the TPU VM.
+
+  Raises:
+    AttachDiskError: if the disk is already attached to the TPU VM
+      with different mode.
+    AttachDiskError: if the disk is already attached to the TPU VM with same
+      mode and worker.
+  """
+  for i, disk in enumerate(current_data_disks_list):
+    if disk.sourceDisk != disk_to_attach.sourceDisk:
+      continue
+    if (disk.mode != disk_to_attach.mode):
+      raise AttachDiskError(
+          'argument --attach-disk: the disk is already attached to the TPU '
+          'VM with different mode.'
+      )
+    if not (set(disk_to_attach.workerIds) - set(disk.workerIds)):
+      raise AttachDiskError(
+          'argument --attach-disk: the disk is already attached to '
+          'the same set of workers of TPU VM.'
+      )
+    disk_to_attach.workerIds = sorted(
+        set(disk.workerIds + disk_to_attach.workerIds))
+    # To avoid disk with same name appear twice in the list.
+    del current_data_disks_list[i]
 
 
 def ValidateWorkerIdsField(args):

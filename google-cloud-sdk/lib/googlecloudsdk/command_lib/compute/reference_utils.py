@@ -50,6 +50,29 @@ def BuildFullResourceUrlForOrgBasedResource(base_uri, org_id, collection_name,
                               collection_name, resource_name)
 
 
+def BuildBackendAuthenticationConfigUrl(
+    project_name: str, location: str, bac_name: str, release_track: str
+) -> str:
+  """Builds the URL for a BackendAuthenticationConfig resource.
+
+  Args:
+    project_name: The project name of the BackendAuthenticationConfig.
+    location: The location of the BackendAuthenticationConfig.
+    bac_name: The name of the BackendAuthenticationConfig.
+    release_track: The release track of the BackendAuthenticationConfig.
+
+  Returns:
+    The URL for the BackendAuthenticationConfig resource.
+  """
+  return BuildFullResourceUrlForProjectBasedResource(
+      base_uri=network_security.GetApiBaseUrl(release_track),
+      project_name=project_name,
+      location=location,
+      collection_name='backendAuthenticationConfigs',
+      resource_name=bac_name,
+  )
+
+
 def BuildServerTlsPolicyUrl(project_name, location, policy_name):
   return BuildFullResourceUrlForProjectBasedResource(
       base_uri=network_security.GetApiBaseUrl(),

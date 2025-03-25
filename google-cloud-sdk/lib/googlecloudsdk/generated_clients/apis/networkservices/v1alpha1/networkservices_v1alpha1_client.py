@@ -50,6 +50,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_grpcRoutes = self.ProjectsLocationsGrpcRoutesService(self)
     self.projects_locations_httpFilters = self.ProjectsLocationsHttpFiltersService(self)
     self.projects_locations_httpRoutes = self.ProjectsLocationsHttpRoutesService(self)
+    self.projects_locations_lbEdgeExtensions = self.ProjectsLocationsLbEdgeExtensionsService(self)
     self.projects_locations_lbObservabilityExtensions = self.ProjectsLocationsLbObservabilityExtensionsService(self)
     self.projects_locations_lbRouteExtensions = self.ProjectsLocationsLbRouteExtensionsService(self)
     self.projects_locations_lbTrafficExtensions = self.ProjectsLocationsLbTrafficExtensionsService(self)
@@ -1777,6 +1778,151 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='httpRoute',
         request_type_name='NetworkservicesProjectsLocationsHttpRoutesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLbEdgeExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lbEdgeExtensions resource."""
+
+    _NAME = 'projects_locations_lbEdgeExtensions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsLbEdgeExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `LbEdgeExtension` resource in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbEdgeExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbEdgeExtensions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.lbEdgeExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['lbEdgeExtensionId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/lbEdgeExtensions',
+        request_field='lbEdgeExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbEdgeExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified `LbEdgeExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbEdgeExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbEdgeExtensions/{lbEdgeExtensionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.lbEdgeExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbEdgeExtensionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of the specified `LbEdgeExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbEdgeExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LbEdgeExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbEdgeExtensions/{lbEdgeExtensionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbEdgeExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbEdgeExtensionsGetRequest',
+        response_type_name='LbEdgeExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `LbEdgeExtension` resources in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbEdgeExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLbEdgeExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbEdgeExtensions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.lbEdgeExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/lbEdgeExtensions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsLbEdgeExtensionsListRequest',
+        response_type_name='ListLbEdgeExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of the specified `LbEdgeExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsLbEdgeExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/lbEdgeExtensions/{lbEdgeExtensionsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.lbEdgeExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='lbEdgeExtension',
+        request_type_name='NetworkservicesProjectsLocationsLbEdgeExtensionsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -5273,7 +5419,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         method_id='networkservices.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+name}/locations',
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsListRequest',

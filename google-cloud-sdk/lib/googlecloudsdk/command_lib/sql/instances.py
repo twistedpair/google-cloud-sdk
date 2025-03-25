@@ -208,6 +208,14 @@ def _ParseEdition(sql_messages, edition):
   return None
 
 
+def _ParseInstanceType(sql_messages, instance_type):
+  if instance_type:
+    return sql_messages.DatabaseInstance.InstanceTypeValueValuesEnum.lookup_by_name(
+        instance_type.replace('-', '_').upper()
+    )
+  return None
+
+
 # The caller must make sure that the connector_enforcement is specified.
 def _ParseConnectorEnforcement(sql_messages, connector_enforcement):
   return (
@@ -1030,6 +1038,14 @@ class _BaseInstances(object):
           ]
       )
 
+    if IsBetaOrNewer(release_track):
+      if args.IsKnownAndSpecified('instance_type'):
+        instance_resource.instanceType = _ParseInstanceType(
+            sql_messages, args.instance_type
+        )
+      if args.IsKnownAndSpecified('node_count'):
+        instance_resource.nodeCount = args.node_count
+
     return instance_resource
 
   @classmethod
@@ -1092,6 +1108,14 @@ class _BaseInstances(object):
       instance_resource.includeReplicasForMajorVersionUpgrade = (
           args.include_replicas_for_major_version_upgrade
       )
+
+    if IsBetaOrNewer(release_track):
+      if args.IsKnownAndSpecified('instance_type'):
+        instance_resource.instanceType = _ParseInstanceType(
+            sql_messages, args.instance_type
+        )
+      if args.IsKnownAndSpecified('node_count'):
+        instance_resource.nodeCount = args.node_count
 
     return instance_resource
 

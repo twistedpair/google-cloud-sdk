@@ -5,6 +5,107 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 516.0.0 (2025-03-25)
+
+### Breaking Changes
+
+*   **(Anthos Multi-Cloud)** Deprecated `gcloud container aws` command group. See <https://cloud.google.com/kubernetes-engine/multi-cloud/docs/aws/deprecations/deprecation-announcement> for more details.
+*   **(Anthos Multi-Cloud)** Deprecated `gcloud container azure` command group. See <https://cloud.google.com/kubernetes-engine/multi-cloud/docs/azure/deprecations/deprecation-announcement> for more details.
+
+
+### AlloyDB
+
+* Fix `--no-enable-connection-pooling` to actually disable the managed
+connection pooling feature in `alloydb instances update`.
+
+### BigQuery
+
+* Promoted `gcloud bq migration-workflows` to beta.
+
+### Cloud Datastream
+
+* Update Datastream schema files.
+* Support secret manager stored passwords.
+* Add support for PSC Interface Private Connection.
+
+### Cloud Interconnect
+
+* Promoted the `LINK_TYPE_ETHERNET_400G_LR4` value of the `compute interconnects create --link_type` flag to GA.
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager tags bindings list` to change the backend call from ListTagBinding, ListEffectiveTagBinding RPC to GetTagBindingCollection, GetEffectiveTagBindingCollection RPCs for ALPHA release.
+
+### Cloud Run
+
+* Promoted `--gpu` and `--gpu-type` flags to GA for `gcloud run deploy` and
+  `gcloud run services update` commands.
+* Added `--(no)-gpu-zonal-redundancy` flag to `gcloud beta run deploy` and
+  `gcloud beta run services update` commands to allow setting zonal redundancy
+  for Cloud Run Services using GPU.
+* Added `--gpu` and `--gpu-type` flags to `gcloud beta run jobs` command group
+  to allow creating and updating Cloud Run Jobs using GPU.
+
+### Cloud Storage
+
+* Promoted `gcloud storage batch_operations` group to GA.
+
+### Compute Engine
+
+* Added and promoted flags related to tls-settings to beta:
+    - `--tls-settings` of `gcloud compute backend-service create`.
+    - `--tls-settings` of `gcloud compute backend-service update`.
+    - `--no-tls-settings` of `gcloud compute backend-service update`.
+* Add `report-host-as-faulty` command to `gcloud compute instances`.
+* Promoted `--action-on-vm-failed-health-check` flag of `compute instance-groups managed create` and `compute instance-groups managed update` to beta.
+* Added workload-policy creation using `gcloud beta compute resource-policies create workload-policy`.
+* Promoted flags related to custom-metrics to v1:
+    - `--custom-metrics` of `gcloud compute backend-service create`.
+    - `--custom-metrics-file` of `gcloud compute backend-service create`.
+    - `--custom-metrics` of `gcloud compute backend-service update`.
+    - `--custom-metrics-file` of `gcloud compute backend-service update`.
+    - `--clear-custom-metrics` of `gcloud compute backend-service update`.
+    - `--custom-metrics` of `gcloud compute backend-service add-backend`.
+    - `--custom-metrics-file` of `gcloud compute backend-service add-backend`.
+    - `--custom-metrics` of `gcloud compute backend-service update-backend`.
+    - `--custom-metrics-file` of `gcloud compute backend-service update-backend`.
+    - `--clear-custom-metrics` of `gcloud compute backend-service update-backend`.
+
+### Database Migration
+
+* Added `--database`, `--host` and `--port` flags to `gcloud database-migration connection-profiles create sqlserver` and `gcloud database-migration connection-profiles update`.
+* Added `--ca-certificate` flag to `gcloud database-migration connection-profiles create sqlserver`.
+* Updated `gcloud database-migration connection-profiles create sqlserver` to support connectivity methods for SQL Server connection profiles.
+
+### Eventarc
+
+* Added `--update-labels`, `--remove-labels`, `--clear-labels` in `gcloud eventarc google-channels update`.
+
+### GKE Hub
+
+* Added support for overriding Deployment resource requests and limits to `gcloud beta container fleet config-management apply` through the new `deploymentOverrides` field in `--config` flag file.
+
+### Kubernetes Engine
+
+* Added `--flex-start` flag to `gcloud container node-pools create|update`
+commands to indicate the node pool should use Flex Start provisioning model.
+
+### Network Connectivity
+
+* Fixed the issue that the user needs to set both `--include-export-ranges` and `--exclude-export-ranges` when they run `gcloud network-connectivity spokes linked-vpc-network update` and `gcloud network-connectivity spokes linked-producer-vpc-network update` commands.
+
+### SaaS Runtime
+
+*   Added `gcloud beta saas-runtime` command group.
+
+### Security Command Center
+
+* Added `cloud-run-threat-detection` service to the `SUPPORTED_SERVICES` list.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 515.0.0 (2025-03-18)
 
 ### AI
@@ -187,7 +288,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 *   Added the ability to create Beam YAML templates via
     `gcloud flex-template build`.
 * Added support for `--update` and `--transform-name-mappings` flags to
-`gcloud dataflow jobs run"` command to support update for streaming classic
+`gcloud dataflow jobs run` command to support update for streaming classic
 template jobs.
 
 ### Cloud Datastream

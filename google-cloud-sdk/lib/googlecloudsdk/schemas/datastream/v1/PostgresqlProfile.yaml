@@ -6,7 +6,6 @@ type: object
 required:
 - database
 - hostname
-- password
 - username
 additionalProperties: false
 properties:
@@ -37,11 +36,18 @@ properties:
     description: Hostname for the PostgreSQL connection.
     type: string
   password:
-    description: Password for the PostgreSQL connection.
+    description: |-
+      Password for the PostgreSQL connection. Mutually exclusive with the
+      `secret_manager_stored_password` field.
     type: string
   port:
     description: Port for the PostgreSQL connection, default value is 5432.
     type: integer
+  secretManagerStoredPassword:
+    description: |-
+      A reference to a Secret Manager resource name storing the PostgreSQL
+      connection password. Mutually exclusive with the `password` field.
+    type: string
   sslConfig:
     description: |-
       SSL configuration for the PostgreSQL connection. In case

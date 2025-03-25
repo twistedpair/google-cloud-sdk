@@ -216,6 +216,15 @@ def _FormatVolume(volume):
           ('read-only', volume.csi.readOnly),
           ('mount-options', mount_options),
       ])
+    elif volume.csi.driver == 'cloudsql.run.googleapis.com':
+      instances = None
+      for prop in volume.csi.volumeAttributes.additionalProperties:
+        if prop.key == 'instances':
+          instances = prop.value
+      return cp.Labeled([
+          ('type', 'cloudsql'),
+          ('instances', instances),
+      ])
 
 
 def GetConfigMaps(container: container_resource.Container) -> cp.Table:

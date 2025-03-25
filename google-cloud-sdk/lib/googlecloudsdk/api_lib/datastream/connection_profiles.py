@@ -88,6 +88,7 @@ class ConnectionProfilesClient:
         port=args.mysql_port,
         username=args.mysql_username,
         password=args.mysql_password,
+        secretManagerStoredPassword=args.mysql_secret_manager_stored_password,
         sslConfig=ssl_config)
 
   def _GetOracleProfile(self, args):
@@ -96,6 +97,7 @@ class ConnectionProfilesClient:
         port=args.oracle_port,
         username=args.oracle_username,
         password=args.oracle_password,
+        secretManagerStoredPassword=args.oracle_secret_manager_stored_password,
         databaseService=args.database_service)
 
   def _GetPostgresqlSslConfig(self, args):
@@ -123,6 +125,7 @@ class ConnectionProfilesClient:
         port=args.postgresql_port,
         username=args.postgresql_username,
         password=args.postgresql_password,
+        secretManagerStoredPassword=args.postgresql_secret_manager_stored_password,
         database=args.postgresql_database,
         sslConfig=ssl_config)
 
@@ -132,6 +135,7 @@ class ConnectionProfilesClient:
         port=args.sqlserver_port,
         username=args.sqlserver_username,
         password=args.sqlserver_password,
+        secretManagerStoredPassword=args.sqlserver_secret_manager_stored_password,
         database=args.sqlserver_database,
     )
 
@@ -409,9 +413,15 @@ class ConnectionProfilesClient:
     if args.IsSpecified('oracle_username'):
       connection_profile.oracleProfile.username = args.oracle_username
       update_fields.append('oracleProfile.username')
-    if args.IsSpecified('oracle_password'):
+    if args.IsSpecified('oracle_password') or args.IsSpecified(
+        'oracle_secret_manager_stored_password'
+    ):
       connection_profile.oracleProfile.password = args.oracle_password
+      connection_profile.oracleProfile.secretManagerStoredPassword = (
+          args.oracle_secret_manager_stored_password
+      )
       update_fields.append('oracleProfile.password')
+      update_fields.append('oracleProfile.secretManagerStoredPassword')
     if args.IsSpecified('database_service'):
       connection_profile.oracleProfile.databaseService = args.database_service
       update_fields.append('oracleProfile.databaseService')
@@ -443,9 +453,15 @@ class ConnectionProfilesClient:
     if args.IsSpecified('mysql_username'):
       connection_profile.mysqlProfile.username = args.mysql_username
       update_fields.append('mysqlProfile.username')
-    if args.IsSpecified('mysql_password'):
+    if args.IsSpecified('mysql_password') or args.IsSpecified(
+        'mysql_secret_manager_stored_password'
+    ):
       connection_profile.mysqlProfile.password = args.mysql_password
+      connection_profile.mysqlProfile.secretManagerStoredPassword = (
+          args.mysql_secret_manager_stored_password
+      )
       update_fields.append('mysqlProfile.password')
+      update_fields.append('mysqlProfile.secretManagerStoredPassword')
 
     self._UpdateMysqlSslConfig(connection_profile, args, update_fields)
 
@@ -494,9 +510,15 @@ class ConnectionProfilesClient:
     if args.IsSpecified('postgresql_username'):
       connection_profile.postgresqlProfile.username = args.postgresql_username
       update_fields.append('postgresqlProfile.username')
-    if args.IsSpecified('postgresql_password'):
+    if args.IsSpecified('postgresql_password') or args.IsSpecified(
+        'postgresql_secret_manager_stored_password'
+    ):
       connection_profile.postgresqlProfile.password = args.postgresql_password
+      connection_profile.postgresqlProfile.secretManagerStoredPassword = (
+          args.postgresql_secret_manager_stored_password
+      )
       update_fields.append('postgresqlProfile.password')
+      update_fields.append('postgresqlProfile.secretManagerStoredPassword')
     if args.IsSpecified('postgresql_database'):
       connection_profile.postgresqlProfile.database = args.postgresql_database
       update_fields.append('postgresqlProfile.database')
@@ -514,9 +536,15 @@ class ConnectionProfilesClient:
     if args.IsSpecified('sqlserver_username'):
       connection_profile.sqlServerProfile.username = args.sqlserver_username
       update_fields.append('sqlServerProfile.username')
-    if args.IsSpecified('sqlserver_password'):
+    if args.IsSpecified('sqlserver_password') or args.IsSpecified(
+        'sqlserver_secret_manager_stored_password'
+    ):
       connection_profile.sqlServerProfile.password = args.sqlserver_password
+      connection_profile.sqlServerProfile.secretManagerStoredPassword = (
+          args.sqlserver_secret_manager_stored_password
+      )
       update_fields.append('sqlServerProfile.password')
+      update_fields.append('sqlServerProfile.secretManagerStoredPassword')
     if args.IsSpecified('sqlserver_database'):
       connection_profile.sqlServerProfile.database = args.sqlserver_database
       update_fields.append('sqlServerProfile.database')

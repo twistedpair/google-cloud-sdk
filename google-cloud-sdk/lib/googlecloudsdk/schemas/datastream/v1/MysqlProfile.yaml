@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - hostname
-- password
 - username
 additionalProperties: false
 properties:
@@ -33,11 +32,18 @@ properties:
     description: Hostname for the MySQL connection.
     type: string
   password:
-    description: Input only. Password for the MySQL connection.
+    description: |-
+      Input only. Password for the MySQL connection. Mutually exclusive with the
+      `secret_manager_stored_password` field.
     type: string
   port:
     description: Port for the MySQL connection, default value is 3306.
     type: integer
+  secretManagerStoredPassword:
+    description: |-
+      A reference to a Secret Manager resource name storing the MySQL connection
+      password. Mutually exclusive with the `password` field.
+    type: string
   sslConfig:
     description: SSL configuration for the MySQL connection.
     $ref: MysqlSslConfig.yaml

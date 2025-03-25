@@ -25,6 +25,7 @@ import subprocess
 from typing import Dict, List, Any
 
 from googlecloudsdk.api_lib.scc.remediation_intents import const
+from googlecloudsdk.api_lib.scc.remediation_intents import parsers
 from googlecloudsdk.command_lib.code import run_subprocess
 from googlecloudsdk.command_lib.scc.remediation_intents import errors
 from googlecloudsdk.core.util import files
@@ -186,3 +187,36 @@ def get_resources_from_tfstate(
   root_module = tfstate_json.get("values", {}).get("root_module", {})
   traverse(root_module)
   return all_resources
+
+
+def parse_tf_file(dir_path: str, finding_data) -> str:
+  """Parses the tfstate file for the given finding.
+
+  Args:
+    dir_path: The path of the directory to parse the tfstate file from.
+    finding_data: SCC Finding data in form of class
+      (securityposture.messages.Finding).
+
+  Returns:
+    The structured data depending on the finding category, in string format. If
+    the finding category is not supported, returns an empty string.
+  """
+  tftstate_json = fetch_tfstate(dir_path)
+  resources = get_resources_from_tfstate(tftstate_json)
+
+  # Mapping of finding category to the parser function.
+  parser_map = {  # category: parser_function
+      **{
+          category: parsers.iam_recommender_parser
+          for category in const.IAM_RECOMMENDER_FINDINGS
+      },
+      **{
+          category: parsers.firewall_parser
+          for category in const.FIREWALL_FINDINGS
+      },
+  }
+  # Each parser function takes the list of resources and the finding data as
+  # input and returns the structured data in string format.
+  if finding_data.category in parser_map:
+    return parser_map[finding_data.category](resources, finding_data)
+  return ""

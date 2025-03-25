@@ -18,10 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Any
+
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import reference_utils
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -787,6 +790,48 @@ def ApplyLogConfigArgs(
       if not args.logging_optional_fields and cleared_fields is not None:
         cleared_fields.append('logConfig.optionalFields')
     backend_service.logConfig = log_config
+
+
+def ApplyTlsSettingsArgs(
+    client: Any,
+    args: Any,
+    backend_service: Any,
+    project_name: str,
+    location: str,
+    release_track: str,
+) -> None:
+  """Applies the TlsSettings arguments to the specified backend service.
+
+  If there are no arguments related to TlsSettings, the backend service remains
+  unmodified.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service proto message object.
+    project_name: The project name of the backend service.
+    location: The location of the backend service.
+    release_track: The release track of the backend service.
+  """
+  if args.tls_settings:
+    tls_settings = client.messages.BackendServiceTlsSettings()
+    for key, value in args.tls_settings.items():
+      if key == 'authenticationConfig':
+        tls_settings.authenticationConfig = (
+            reference_utils.BuildBackendAuthenticationConfigUrl(
+                project_name=project_name,
+                location=location,
+                bac_name=value,
+                release_track=release_track,
+            )
+        )
+      elif key == 'sni':
+        tls_settings.sni = value
+      else:
+        raise exceptions.InvalidArgumentException(
+            '--tls-settings', 'Invalid key: %s' % key
+        )
+    backend_service.tlsSettings = tls_settings
 
 
 def ApplyCustomMetrics(args, backend_service):

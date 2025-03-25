@@ -87,17 +87,22 @@ class GoogleChannelConfigClientV1(EventarcClientBase):
         updateMask=update_mask)
     return self._service.UpdateGoogleChannelConfig(update_req)
 
-  def BuildGoogleChannelConfig(self, google_channel_config_name,
-                               crypto_key_name):
+  def BuildGoogleChannelConfig(
+      self, google_channel_config_name, crypto_key_name, labels
+  ):
     return self._messages.GoogleChannelConfig(
-        name=google_channel_config_name, cryptoKeyName=crypto_key_name)
+        name=google_channel_config_name,
+        cryptoKeyName=crypto_key_name,
+        labels=labels,
+    )
 
-  def BuildUpdateMask(self, crypto_key, clear_crypto_key):
+  def BuildUpdateMask(self, crypto_key, clear_crypto_key, labels):
     """Builds an update mask for updating a channel.
 
     Args:
       crypto_key: bool, whether to update the crypto key.
       clear_crypto_key: bool, whether to clear the crypto key.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -110,7 +115,13 @@ class GoogleChannelConfigClientV1(EventarcClientBase):
       update_mask.append('cryptoKeyName')
     if clear_crypto_key:
       update_mask.append('cryptoKeyName')
+    if labels:
+      update_mask.append('labels')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
+
+  def LabelsValueClass(self):
+    """Returns the labels value class."""
+    return self._messages.GoogleChannelConfig.LabelsValue

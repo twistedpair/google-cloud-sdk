@@ -27,3 +27,27 @@ TF_VALIDATE_ERROR_MSG = (
     "\n STDOUT: {stdout}"
     "\n STDERR: {stderr}"
 )
+
+BLOCK_SEPARATOR = "---------------------------------------------------------\n"
+
+PR_FAILURE_MSG = (
+    "Following error occurred while creating the PR: "
+    "\n STDOUT: {stdout}"
+    "\n STDERR: {stderr}"
+)
+
+IAM_RECOMMENDER_FINDINGS = (
+    # go/keep-sorted start
+    "IAM_ROLE_HAS_EXCESSIVE_PERMISSIONS",
+    "IAM_ROLE_REPLACEMENT",
+    "SERVICE_AGENT_GRANTED_BASIC_ROLE",
+    "SERVICE_AGENT_ROLE_REPLACED_WITH_BASIC_ROLE",
+    "UNUSED_IAM_ROLE",
+    # go/keep-sorted end
+)
+
+FIREWALL_FINDINGS = (
+    # go/keep-sorted start
+    "OPEN_FIREWALL",
+    # go/keep-sorted end
+)

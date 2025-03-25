@@ -31,9 +31,9 @@ implement their own calls to fetch / update the descriptors.
 
 import json
 import logging
-import os
 import sqlite3
 from typing import Any, Dict, List, Mapping, Set, TypedDict
+from urllib import parse
 
 from cloudsdk.google.protobuf import json_format
 from googlecloudsdk.core import config
@@ -343,10 +343,8 @@ class UniverseDescriptor:
     universe_short_name = active_domain_udd.get('universeShortName', '')
     # step 3: Find the recommended primary domain with the same
     # universeShortName.
-    recommended_domain_udd = (
-        self._GetDescriptorFileFromBucket(
-            universe_domain, universe_short_name
-        )
+    recommended_domain_udd = self._GetDescriptorFileFromBucket(
+        universe_domain, universe_short_name
     )
     recommended_primary_domain = recommended_domain_udd.get(
         'universeDomain', ''
@@ -558,8 +556,9 @@ class UniverseDescriptor:
           return _GetDescriptorFromJsonList(json_obj)
       return json_obj
 
-    descriptor_data_uri = (
-        f'https://storage.{os.path.join(universe_domain, DESCRIPTOR_DATA_BUCKET_NAME, DESCRIPTOR_DATA_FILE_NAME)}'
+    descriptor_data_uri = parse.urljoin(
+        f'https://storage.{universe_domain}',
+        f'{DESCRIPTOR_DATA_BUCKET_NAME}/{DESCRIPTOR_DATA_FILE_NAME}',
     )
     try:
       try:
@@ -567,8 +566,9 @@ class UniverseDescriptor:
         return _GetDescriptorFromJson(response.json())
       except Exception:  # pylint: disable=broad-except
         # Try backup bucket
-        descriptor_data_uri = (
-            f'https://storage.{os.path.join(universe_domain, DESCRIPTOR_DATA_BUCKET_BACKUP_NAME, DESCRIPTOR_DATA_FILE_NAME)}'
+        descriptor_data_uri = parse.urljoin(
+            f'https://storage.{universe_domain}',
+            f'{DESCRIPTOR_DATA_BUCKET_BACKUP_NAME}/{DESCRIPTOR_DATA_FILE_NAME}',
         )
         response = requests.get(descriptor_data_uri)
         return _GetDescriptorFromJson(response.json())

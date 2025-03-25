@@ -3,8 +3,6 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: networkservices v1alpha1 ServiceLbPolicy export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
-required:
-- name
 additionalProperties: false
 properties:
   COMMENT:
@@ -39,6 +37,11 @@ properties:
   failoverConfig:
     description: Configuration related to health based failover.
     $ref: ServiceLbPolicyFailoverConfig.yaml
+  isolationConfig:
+    description: |-
+      Configuration to provide isolation support for the associated Backend
+      Service.
+    $ref: ServiceLbPolicyIsolationConfig.yaml
   labels:
     description: Set of label tags associated with the ServiceLbPolicy resource.
     $ref: LabelsValue.yaml
@@ -55,7 +58,7 @@ properties:
     - WATERFALL_BY_ZONE
   name:
     description: |-
-      Name of the ServiceLbPolicy resource. It matches pattern `
-      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
-      licy_name}`.
+      Identifier. Name of the ServiceLbPolicy resource. It matches pattern
+      `projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_p
+      olicy_name}`.
     type: string

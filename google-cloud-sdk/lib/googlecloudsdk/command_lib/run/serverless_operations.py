@@ -1103,22 +1103,27 @@ class ServerlessOperations(object):
               ALLOW_UNAUTH_POLICY_BINDING_ROLE,
           )
         tracker.CompleteStage(stages.SERVICE_IAP_ENABLE)
-      except api_exceptions.HttpError:
-        warning_message = (
-            'Setting IAM policy failed, if P4SA is not created then try "gcloud'
-            ' beta services identity create'
-            ' --service=iap.{endpoint}'
-            ' --project={project}", once P4SA is created then try "gcloud beta'
-            ' run services {}-iam-policy-binding --region={region}'
-            ' --member={member} --role=roles/run.invoker {service}"'.format(
-                'add' if iap_enabled else 'remove',
-                project=updated_service.namespace,
-                endpoint=properties.VALUES.core.universe_domain.Get(),
-                region=self._region,
-                member=iap_service_agent,
-                service=service_ref.servicesId,
-            )
-        )
+      except api_exceptions.HttpError as e:
+        if (
+            iap_enabled and e.status_code == 400
+        ):  # IAP service agent not ready yet.
+          warning_message = (
+              'IAP has not been successfully enabled. If this is the first time'
+              " you're enabling IAP in this project, please wait a few minutes"
+              ' for the service agent to propagate, then try enabling IAP again'
+              ' on this service.'
+          )
+        else:
+          warning_message = (
+              'Setting IAM policy failed, try "gcloud run services'
+              ' {}-iam-policy-binding --region={region} --member={member}'
+              ' --role=roles/run.invoker {service}"'.format(
+                  'add' if iap_enabled else 'remove',
+                  region=self._region,
+                  member=iap_service_agent,
+                  service=service_ref.servicesId,
+              )
+          )
         tracker.CompleteStageWithWarning(
             stages.SERVICE_IAP_ENABLE, warning_message=warning_message
         )
@@ -1983,9 +1988,7 @@ class ServerlessOperations(object):
         service.RUN_FUNCTIONS_BUILD_NAME_ANNOTATION: build_name,
         service.RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION: image_uri,
         service.RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION: source_path,
-        service.RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION: (
-            function_target
-        ),
+        service.RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION: function_target,
         service.RUN_FUNCTIONS_BUILD_ENABLE_AUTOMATIC_UPDATES: (
             'true' if enable_automatic_updates else 'false'
         ),

@@ -57,6 +57,20 @@ def EffectiveTagsService():
   return client.effectiveTags
 
 
+# TODO(b/404505614): Refactor the code following abstraction to avoid
+# duplication.
+def TagBindingsCollectionService():
+  """Returns the tag bindings collection class."""
+  client = TagClient()
+  return client.locations_tagBindingCollections
+
+
+def EffectiveTagsCollectionService():
+  """Returns the effective tags collection class."""
+  client = TagClient()
+  return client.locations_effectiveTagBindingCollections
+
+
 def TagHoldsService():
   """Returns the tag holds service class."""
   client = TagClient()

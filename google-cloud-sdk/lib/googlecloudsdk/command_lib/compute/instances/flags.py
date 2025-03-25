@@ -347,6 +347,7 @@ def AddImageArgs(
     enable_snapshots=False,
     support_image_family_scope=False,
     enable_instant_snapshots=False,
+    support_source_snapshot_region=False,
 ):
   """Adds arguments related to images for instances and instance-templates."""
 
@@ -408,6 +409,15 @@ def AddImageArgs(
     )
   if support_image_family_scope:
     image_utils.AddImageFamilyScopeFlag(image_parent_group)
+
+  if support_source_snapshot_region:
+    image_parent_group.add_argument(
+        '--source-snapshot-region',
+        metavar='SOURCE_SNAPSHOT_REGION',
+        help="""\
+        Sets the scope for the `--source-snapshot` flag. By default, when
+        specifying an snapshot, the global snapshot scope is used. Use this flag to override this behavior to use regional snapshots.""",
+    )
 
 
 def AddCanIpForwardArgs(parser):
@@ -779,6 +789,7 @@ def AddCreateDiskArgs(
     enable_source_instant_snapshots=False,
     enable_confidential_compute=False,
     support_disk_labels=False,
+    support_source_snapshot_region=False,
 ):
   """Adds create-disk argument for instances and instance-templates."""
 
@@ -1054,6 +1065,14 @@ def AddCreateDiskArgs(
         VALUE_FORMAT_HELP=labels_util.VALUE_FORMAT_HELP,
     )
     spec['labels'] = arg_parsers.ArgList(min_length=1, custom_delim_char=':')
+
+  if support_source_snapshot_region:
+    disk_help += """
+      *source-snapshot-region*::: The region of the source snapshot that
+      will be used to create the disk. You can provide region name to use
+      regional snapshot as the source snapshot.
+      """
+    spec['source-snapshot-region'] = str
 
   parser.add_argument(
       '--create-disk',
@@ -2235,6 +2254,14 @@ def ValidateInstanceScheduling(args, support_max_run_duration=False):
       raise exceptions.RequiredArgumentException(
           '--provisioning-model',
           'required with argument `--instance-termination-action`.')
+
+    if (args.IsSpecified('provisioning_model') and
+        args.provisioning_model == 'RESERVATION_BOUND' and
+        args.instance_termination_action == 'DELETE'):
+      raise compute_exceptions.ArgumentError(
+          'Instance termination action of DELETE is not supported for '
+          'RESERVATION_BOUND VMs.'
+      )
 
   if support_max_run_duration and args.IsSpecified(
       'termination_time') and args.IsSpecified('max_run_duration'):

@@ -27,6 +27,7 @@ class Error(exceptions.Error):
 
 
 class ServerTlsPoliciesCompleter(completers.MultiResourceCompleter):
+  """Completer for ServerTlsPolicies."""
 
   def __init__(self, **kwargs):
     super(ServerTlsPoliciesCompleter, self).__init__(
@@ -39,6 +40,7 @@ class ServerTlsPoliciesCompleter(completers.MultiResourceCompleter):
 
 
 class GlobalServerTlsPoliciesCompleter(completers.ListCommandCompleter):
+  """Completer for Global ServerTlsPolicies."""
 
   def __init__(self, **kwargs):
     super(GlobalServerTlsPoliciesCompleter, self).__init__(
@@ -52,6 +54,7 @@ class GlobalServerTlsPoliciesCompleter(completers.ListCommandCompleter):
 
 
 class RegionServerTlsPoliciesCompleter(completers.ListCommandCompleter):
+  """Completer for Regional ServerTlsPolicies."""
 
   def __init__(self, **kwargs):
     super(RegionServerTlsPoliciesCompleter, self).__init__(
@@ -59,6 +62,61 @@ class RegionServerTlsPoliciesCompleter(completers.ListCommandCompleter):
         api_version='v1alpha1',
         list_command=(
             'network-security server-tls-policies list --filter=region:* --uri'
+        ),
+        **kwargs
+    )
+
+
+class BackendAuthenticationConfigsCompleter(completers.MultiResourceCompleter):
+  """Completer for BackendAuthenticationConfigs.
+
+  This is used to automatically complete the backend authentication
+  config name in the tls-settings flag.
+  """
+
+  def __init__(self, **kwargs):
+    super(BackendAuthenticationConfigsCompleter, self).__init__(
+        completers=[
+            GlobalBackendAuthenticationConfigsCompleter,
+            RegionBackendAuthenticationConfigsCompleter,
+        ],
+        **kwargs
+    )
+
+
+class GlobalBackendAuthenticationConfigsCompleter(
+    completers.ListCommandCompleter
+):
+  """Completer for Global BackendAuthenticationConfigs."""
+
+  def __init__(self, **kwargs):
+    super(GlobalBackendAuthenticationConfigsCompleter, self).__init__(
+        collection=(
+            'networksecurity.projects.locations.backendAuthenticationConfigs'
+        ),
+        api_version='v1alpha1',
+        list_command=(
+            'network-security backend-authentication-configs list'
+            ' --location=global --uri'
+        ),
+        **kwargs
+    )
+
+
+class RegionBackendAuthenticationConfigsCompleter(
+    completers.ListCommandCompleter
+):
+  """Completer for Regional BackendAuthenticationConfigs."""
+
+  def __init__(self, **kwargs):
+    super(RegionBackendAuthenticationConfigsCompleter, self).__init__(
+        collection=(
+            'networksecurity.projects.locations.backendAuthenticationConfigs'
+        ),
+        api_version='v1alpha1',
+        list_command=(
+            'network-security backend-authentication-configs list'
+            ' --filter=region:* --uri'
         ),
         **kwargs
     )

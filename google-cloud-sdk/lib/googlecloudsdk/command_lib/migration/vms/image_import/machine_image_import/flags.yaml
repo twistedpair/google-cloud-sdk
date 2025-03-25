@@ -33,7 +33,7 @@ skip_os_adaptation:
   type: bool
   action: store_true
   default: null
-  processor: googlecloudsdk.command_lib.migration.vms.hooks:GetSkipOsAdaptationTransform
+  processor: googlecloudsdk.command_lib.migration.vms.image_import.hooks:GetSkipOsAdaptationTransform
   help_text: |
     If true, skip OS adaptation. Default false.
 

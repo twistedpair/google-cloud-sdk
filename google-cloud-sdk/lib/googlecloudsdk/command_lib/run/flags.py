@@ -4827,10 +4827,36 @@ def BuildServiceAccountMutexGroup():
   return group
 
 
+def ServiceAccount(value: str):
+  """Define a Service acccount type which needs to follow the pattern projects/<projectId>/serviceAccounts/<serviceAccount>.
+
+  Args:
+    value: The service account provided by the user. Empty string is allowed
+      which means build service account will be cleared.
+
+  Returns:
+    The service account provided by the user after validation.
+  Raises:
+    ArgumentError if the service account value does not follow the pattern
+    projects/<projectId>/serviceAccounts/<serviceAccount>.
+  """
+  service_account_regex = re.compile(
+      r'^projects\/[^/]+\/serviceAccounts\/[^/]+$'
+  )
+  if value and not service_account_regex.match(value):
+    raise serverless_exceptions.ArgumentError(
+        'Invalid service account value [{}]. The service account value must '
+        'follow the pattern '
+        'projects/<projectId>/serviceAccounts/<serviceAccount>.'.format(value)
+    )
+  return value
+
+
 def BuildServiceAccountFlag():
   """Adds flag to specify a service account to use for the build for source deploy builds."""
   return base.Argument(
       '--build-service-account',
+      type=ServiceAccount,
       help="""\
       Specifies the service account to use to execute the build. Applies only
       to source deploy builds using the Build API.

@@ -45,11 +45,6 @@ _INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {
 LINK_TYPE_CHOICES = {
     'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
     'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.',
-}
-
-_LINK_TYPE_CHOICES_400G = {
-    'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
-    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.',
     'LINK_TYPE_ETHERNET_400G_LR4': '400Gbps Ethernet, LR4 Optics.',
 }
 
@@ -183,12 +178,12 @@ def GetRequestedFeature(messages, feature_arg):
   return None
 
 
-def AddCreateCommonArgs(parser, required=True, supports_400g=False):
+def AddCreateCommonArgs(parser, required=True):
   """Adds shared flags for create command to the argparse.ArgumentParser."""
   AddAdminEnabled(parser)
   AddDescription(parser)
   AddCustomerName(parser)
-  AddLinkType(parser, required=required, supports_400g=supports_400g)
+  AddLinkType(parser, required=required)
   AddNocContactEmail(parser)
   AddRequestedLinkCount(parser, required)
   AddRequestedFeatures(parser)
@@ -200,9 +195,9 @@ def AddCreateGaArgs(parser, required=True):
   AddInterconnectTypeGA(parser, required)
 
 
-def AddCreateAlphaBetaArgs(parser, required=True, supports_400g=False):
+def AddCreateAlphaBetaArgs(parser, required=True):
   """Adds alpha / beta flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser, required=required, supports_400g=supports_400g)
+  AddCreateCommonArgs(parser, required=required)
   AddInterconnectTypeBetaAndAlpha(parser)
 
 
@@ -262,14 +257,11 @@ def AddRequestedFeatures(parser):
   )
 
 
-def AddLinkType(parser, required=True, supports_400g=False):
+def AddLinkType(parser, required=True):
   """Adds link-type flag to the argparse.ArgumentParser."""
-  link_types = LINK_TYPE_CHOICES
-  if supports_400g:
-    link_types = _LINK_TYPE_CHOICES_400G
   parser.add_argument(
       '--link-type',
-      choices=link_types,
+      choices=LINK_TYPE_CHOICES,
       required=required,
       help="""\
       Type of the link for the interconnect.

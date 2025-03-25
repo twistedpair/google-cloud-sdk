@@ -173,11 +173,22 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
   configure_maintenance_window = (
       args.maintenance_window_day or args.maintenance_window_hour
   )
-  if configure_maintenance_window:
+  configure_deny_period = (
+      args.deny_maintenance_period_start_date
+      or args.deny_maintenance_period_end_date
+      or args.deny_maintenance_period_time
+  )
+  if configure_maintenance_window or configure_deny_period:
     cluster.maintenanceUpdatePolicy = alloydb_messages.MaintenanceUpdatePolicy()
+  if configure_maintenance_window:
     cluster.maintenanceUpdatePolicy.maintenanceWindows = (
         _ConstructMaintenanceWindows(alloydb_messages, args)
     )
+  if configure_deny_period:
+    cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
+        _ConstructDenyPeriods(alloydb_messages, args)
+    )
+
   cluster.subscriptionType = args.subscription_type
   cluster.tags = flags.GetTagsFromArgs(args, alloydb_messages.Cluster.TagsValue)
   return cluster
@@ -210,19 +221,6 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
           cluster.continuousBackupConfig, args
       )
   )
-  configure_deny_period = (
-      args.deny_maintenance_period_start_date
-      or args.deny_maintenance_period_end_date
-      or args.deny_maintenance_period_time
-  )
-  if configure_deny_period:
-    if cluster.maintenanceUpdatePolicy is None:
-      cluster.maintenanceUpdatePolicy = (
-          alloydb_messages.MaintenanceUpdatePolicy()
-      )
-    cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
-        _ConstructDenyPeriods(alloydb_messages, args)
-    )
 
   return cluster
 
@@ -471,12 +469,24 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
       or args.maintenance_window_day
       or args.maintenance_window_hour
   )
-  if update_maintenance_window:
+  update_deny_period = (
+      args.remove_deny_maintenance_period
+      or args.deny_maintenance_period_start_date
+      or args.deny_maintenance_period_end_date
+      or args.deny_maintenance_period_time
+  )
+  if update_maintenance_window or update_deny_period:
     cluster.maintenanceUpdatePolicy = alloydb_messages.MaintenanceUpdatePolicy()
+  if update_maintenance_window:
     cluster.maintenanceUpdatePolicy.maintenanceWindows = (
         _ConstructMaintenanceWindows(alloydb_messages, args, update=True)
     )
     update_masks.append('maintenance_update_policy.maintenance_windows')
+  if update_deny_period:
+    cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
+        _ConstructDenyPeriods(alloydb_messages, args, update=True)
+    )
+    update_masks.append('maintenance_update_policy.deny_maintenance_periods')
 
   if args.subscription_type is not None:
     cluster.subscriptionType = args.subscription_type
@@ -512,21 +522,6 @@ def _ConstructClusterAndMaskForPatchRequestBeta(alloydb_messages, args):
             cluster.continuousBackupConfig, args
         )
     )
-  update_deny_period = (
-      args.remove_deny_maintenance_period
-      or args.deny_maintenance_period_start_date
-      or args.deny_maintenance_period_end_date
-      or args.deny_maintenance_period_time
-  )
-  if update_deny_period:
-    if cluster.maintenanceUpdatePolicy is None:
-      cluster.maintenanceUpdatePolicy = (
-          alloydb_messages.MaintenanceUpdatePolicy()
-      )
-    cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
-        _ConstructDenyPeriods(alloydb_messages, args, update=True)
-    )
-    update_masks.append('maintenance_update_policy.deny_maintenance_periods')
 
   return cluster, update_masks
 

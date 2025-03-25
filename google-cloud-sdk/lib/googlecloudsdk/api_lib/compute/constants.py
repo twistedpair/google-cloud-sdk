@@ -200,6 +200,7 @@ PUBLIC_IMAGE_PROJECTS = BASE_PUBLIC_IMAGE_PROJECTS + [
     'centos-cloud',
     'fedora-coreos-cloud',
     'opensuse-cloud',
+    'oracle-linux-cloud',
     'rhel-cloud',
     'rhel-sap-cloud',
     'suse-cloud',

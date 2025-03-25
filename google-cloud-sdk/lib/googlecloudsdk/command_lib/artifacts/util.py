@@ -1729,7 +1729,11 @@ def MigrateToArtifactRegistry(unused_ref, args):
       sys.exit(1)
 
   # Exit early if all projects are migrated
-  if len(enabled_projects) == len(projects):
+  if (
+      len(enabled_projects) == len(projects)
+      and canary_reads != 100
+      and canary_reads != 0
+  ):
     log.status.Print(
         "Artifact Registry is already handling all requests for *gcr.io repos"
         " for the provided projects. If there are images you still need to"

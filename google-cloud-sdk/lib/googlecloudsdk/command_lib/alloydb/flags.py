@@ -33,6 +33,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import datetime
 import re
 
 from googlecloudsdk.calliope import arg_parsers
@@ -1801,7 +1802,7 @@ def _GetDate(alloydb_message):
   """returns google.type.Date date."""
 
   def Parse(value):
-    full_match = re.match(r'^\d{4}-\d{2}-\d{2}', value)
+    full_match = re.fullmatch(r'^\d{4}-\d{2}-\d{2}', value)
     if full_match:
       ymd = full_match.group().split('-')
       year = int(ymd[0])
@@ -1810,7 +1811,7 @@ def _GetDate(alloydb_message):
       _ValidateMonthAndDay(month, day, value)
       return alloydb_message.GoogleTypeDate(year=year, month=month, day=day)
 
-    no_year_match = re.match(r'\d{2}-\d{2}', value)
+    no_year_match = re.fullmatch(r'\d{2}-\d{2}', value)
     if no_year_match:
       ymd = no_year_match.group().split('-')
       month = int(ymd[0])
@@ -1826,25 +1827,20 @@ def _GetDate(alloydb_message):
 
 
 def _GetTimeOfDay(alloydb_message):
-  """returns google.type.TimeOfDay time of day."""
+  """returns google.type.TimeOfDay time of day from HH:MM format."""
 
   def Parse(value):
-    hour_min_sec = value.split(':')
-    if len(hour_min_sec) != 3 or not all(
-        [item.isdigit() for item in hour_min_sec]
-    ):
-      raise arg_parsers.ArgumentTypeError(
-          """Failed to parse time of day: {0}, expected format HH:MM:SS.
-        """.format(value)
+    try:
+      dt = datetime.datetime.strptime(value, '%H:%M')
+      hour, minute = dt.hour, dt.minute
+      return alloydb_message.GoogleTypeTimeOfDay(
+          hours=hour,
+          minutes=minute,
       )
-    hour = int(hour_min_sec[0])
-    minute = int(hour_min_sec[1])
-    second = int(hour_min_sec[2])
-    return alloydb_message.GoogleTypeTimeOfDay(
-        hours=hour,
-        minutes=minute,
-        seconds=second,
-    )
+    except ValueError:
+      raise arg_parsers.ArgumentTypeError(
+          f'Failed to parse time of day: {value!r}, expected format HH:MM.'
+      )
 
   return Parse
 
@@ -1857,7 +1853,7 @@ def _AddRemoveDenyMaintenancePeriod(group):
       hidden=True,
       action='store_true',
       default=False,
-      help='Remove the user-specified maintenance deny period.',
+      help='Remove the deny maintenance period.',
   )
 
 
@@ -1890,7 +1886,7 @@ def _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages):
       type=_GetTimeOfDay(alloydb_messages),
       help=(
           'Time when the deny maintenance period starts and ends, for example'
-          ' 05:00:00, in UTC time zone.'
+          ' 05:00, in UTC time zone.'
       ),
   )
 

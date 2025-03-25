@@ -617,6 +617,8 @@ def AddMigForceUpdateOnRepairFlags(parser):
 def AddMigDefaultActionOnVmFailure(parser, release_track):
   if release_track == base.ReleaseTrack.ALPHA:
     AddMigDefaultActionOnVmFailureAlpha(parser)
+  elif release_track == base.ReleaseTrack.BETA:
+    AddMigDefaultActionOnVmFailureBeta(parser)
   else:
     AddMigDefaultActionOnVmFailureGA(parser)
 
@@ -632,6 +634,30 @@ def AddMigDefaultActionOnVmFailureGA(parser):
       'repair': 'MIG automatically repairs a failed or an unhealthy VM.',
       'do-nothing': 'MIG does not repair a failed or an unhealthy VM.',
   }
+
+  parser.add_argument(
+      '--default-action-on-vm-failure',
+      metavar='ACTION_ON_VM_FAILURE',
+      type=arg_utils.EnumNameToChoice,
+      choices=choices,
+      help=help_text,
+  )
+
+
+def AddMigDefaultActionOnVmFailureBeta(parser):
+  """Add default action on VM failure to the parser."""
+  help_text = """\
+      Specifies the action that a MIG performs on a failed VM. If the value of
+      the onFailedHealthCheck field is `DEFAULT_ACTION`, then the same action
+      also applies to the VMs on which your application fails a health check.
+      By default, the value of the flag is set to ``repair''."""
+  choices = collections.OrderedDict([
+      (
+          'repair',
+          '(Default) MIG automatically repairs a failed VM by recreating it.',
+      ),
+      ('do-nothing', 'MIG does not repair a failed VM.'),
+  ])
 
   parser.add_argument(
       '--default-action-on-vm-failure',

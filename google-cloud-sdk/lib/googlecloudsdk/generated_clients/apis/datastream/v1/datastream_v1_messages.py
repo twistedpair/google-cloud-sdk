@@ -570,6 +570,9 @@ class DatastreamProjectsLocationsPrivateConnectionsCreateRequest(_messages.Messa
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. When supplied with PSC Interface config, will
+      get/create the tenant project required for the customer to allow list
+      and won't actually create the private connection.
   """
 
   force = _messages.BooleanField(1)
@@ -577,6 +580,7 @@ class DatastreamProjectsLocationsPrivateConnectionsCreateRequest(_messages.Messa
   privateConnection = _messages.MessageField('PrivateConnection', 3)
   privateConnectionId = _messages.StringField(4)
   requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class DatastreamProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Message):
@@ -2113,6 +2117,7 @@ class PrivateConnection(_messages.Message):
       friendly format.
     labels: Labels.
     name: Output only. Identifier. The resource's name.
+    pscInterfaceConfig: PSC Interface Config.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The state of the Private Connection.
@@ -2170,11 +2175,12 @@ class PrivateConnection(_messages.Message):
   error = _messages.MessageField('Error', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  satisfiesPzi = _messages.BooleanField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 10)
+  pscInterfaceConfig = _messages.MessageField('PscInterfaceConfig', 6)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 11)
 
 
 class PrivateConnectivity(_messages.Message):
@@ -2187,6 +2193,19 @@ class PrivateConnectivity(_messages.Message):
   """
 
   privateConnection = _messages.StringField(1)
+
+
+class PscInterfaceConfig(_messages.Message):
+  r"""The PSC Interface configuration is used to create PSC Interface between
+  Datastream and the consumer's PSC.
+
+  Fields:
+    networkAttachment: Required. Fully qualified name of the Network
+      Attachment that Datastream will connect to. Format:
+      `projects/{{project}}/regions/{{region}}/networkAttachments/{{name}}`
+  """
+
+  networkAttachment = _messages.StringField(1)
 
 
 class Route(_messages.Message):

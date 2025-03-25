@@ -26,6 +26,91 @@ class AccessConfig(_messages.Message):
   networkConfigs = _messages.MessageField('NetworkConfig', 1, repeated=True)
 
 
+class Acl(_messages.Message):
+  r"""Represents the set of ACLs for a given Kafka Resource Pattern, which
+  consists of resource_type, resource_name and pattern_type.
+
+  Fields:
+    aclEntries: Required. The ACL entries that apply to the resource pattern.
+      The maximum number of allowed entries 100.
+    etag: Optional. `etag` is used for concurrency control. An `etag` is
+      returned in the response to `GetAcl` and `CreateAcl`. Callers are
+      required to put that etag in the request to `UpdateAcl` to ensure that
+      their change will be applied to the same version of the acl that exists
+      in the Kafka Cluster. A terminal 'T' character in the etag indicates
+      that the AclEntries were truncated; more entries for the Acl exist on
+      the Kafka Cluster, but can't be returned in the Acl due to repeated
+      field limits.
+    name: Identifier. The name for the acl. Represents a single Resource
+      Pattern. Structured like:
+      projects/{project}/locations/{location}/clusters/{cluster}/acls/{acl_id}
+      The structure of `acl_id` defines the Resource Pattern (resource_type,
+      resource_name, pattern_type) of the acl. `acl_id` is structured like one
+      of the following: For acls on the cluster: `cluster` For acls on a
+      single resource within the cluster: `topic/{resource_name}`
+      `consumerGroup/{resource_name}` `transactionalId/{resource_name}` For
+      acls on all resources that match a prefix:
+      `topicPrefixed/{resource_name}` `consumerGroupPrefixed/{resource_name}`
+      `transactionalIdPrefixed/{resource_name}` For acls on all resources of a
+      given type (i.e. the wildcard literal "*"): `allTopics` (represents
+      `topic/*`) `allConsumerGroups` (represents `consumerGroup/*`)
+      `allTransactionalIds` (represents `transactionalId/*`)
+    patternType: Output only. The ACL pattern type derived from the name. One
+      of: LITERAL, PREFIXED.
+    resourceName: Output only. The ACL resource name derived from the name.
+      For cluster resource_type, this is always "kafka-cluster". Can be the
+      wildcard literal "*".
+    resourceType: Output only. The ACL resource type derived from the name.
+      One of: CLUSTER, TOPIC, GROUP, TRANSACTIONAL_ID.
+  """
+
+  aclEntries = _messages.MessageField('AclEntry', 1, repeated=True)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  patternType = _messages.StringField(4)
+  resourceName = _messages.StringField(5)
+  resourceType = _messages.StringField(6)
+
+
+class AclEntry(_messages.Message):
+  r"""Represents the access granted for a given Resource Pattern in an ACL.
+
+  Fields:
+    host: Required. The host. Must be set to "*" for Managed Service for
+      Apache Kafka.
+    operation: Required. The operation type. Allowed values are (case
+      insensitive): ALL, READ, WRITE, CREATE, DELETE, ALTER, DESCRIBE,
+      CLUSTER_ACTION, DESCRIBE_CONFIGS, ALTER_CONFIGS, and IDEMPOTENT_WRITE.
+      See https://kafka.apache.org/documentation/#operations_resources_and_pro
+      tocols for valid combinations of resource_type and operation for
+      different Kafka API requests.
+    permissionType: Required. The permission type. Accepted values are (case
+      insensitive): ALLOW, DENY.
+    principal: Required. The principal. Specified as Google Cloud account,
+      with the Kafka StandardAuthorizer prefix "User:". For example:
+      "User:test-kafka-client@test-project.iam.gserviceaccount.com". Can be
+      the wildcard "User:*" to refer to all users.
+  """
+
+  host = _messages.StringField(1)
+  operation = _messages.StringField(2)
+  permissionType = _messages.StringField(3)
+  principal = _messages.StringField(4)
+
+
+class AddAclEntryResponse(_messages.Message):
+  r"""Response for AddAclEntry.
+
+  Fields:
+    acl: The updated acl.
+    aclCreated: Whether the acl was created as a result of adding the acl
+      entry.
+  """
+
+  acl = _messages.MessageField('Acl', 1)
+  aclCreated = _messages.BooleanField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -487,6 +572,21 @@ class GcpConfig(_messages.Message):
   kmsKey = _messages.StringField(2)
 
 
+class ListAclsResponse(_messages.Message):
+  r"""Response for ListAcls.
+
+  Fields:
+    acls: The list of acls in the requested parent. The order of the acls is
+      unspecified.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page of results. If this field is omitted, there are no more
+      results.
+  """
+
+  acls = _messages.MessageField('Acl', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response for ListClusters.
 
@@ -667,6 +767,143 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsAddAclEntryRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsAddAclEntryRequest object.
+
+  Fields:
+    acl: Required. The name of the acl to add the acl entry to. Structured
+      like: `projects/{project}/locations/{location}/clusters/{cluster}/acls/{
+      acl_id}`. The structure of `acl_id` defines the Resource Pattern
+      (resource_type, resource_name, pattern_type) of the acl. See `Acl.name`
+      for details.
+    aclEntry: A AclEntry resource to be passed as the request body.
+  """
+
+  acl = _messages.StringField(1, required=True)
+  aclEntry = _messages.MessageField('AclEntry', 2)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsCreateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsCreateRequest object.
+
+  Fields:
+    acl: A Acl resource to be passed as the request body.
+    aclId: Required. The ID to use for the acl, which will become the final
+      component of the acl's name. The structure of `acl_id` defines the
+      Resource Pattern (resource_type, resource_name, pattern_type) of the
+      acl. `acl_id` is structured like one of the following: For acls on the
+      cluster: `cluster` For acls on a single resource within the cluster:
+      `topic/{resource_name}` `consumerGroup/{resource_name}`
+      `transactionalId/{resource_name}` For acls on all resources that match a
+      prefix: `topicPrefixed/{resource_name}`
+      `consumerGroupPrefixed/{resource_name}`
+      `transactionalIdPrefixed/{resource_name}` For acls on all resources of a
+      given type (i.e. the wildcard literal "*"): `allTopics` (represents
+      `topic/*`) `allConsumerGroups` (represents `consumerGroup/*`)
+      `allTransactionalIds` (represents `transactionalId/*`)
+    parent: Required. The parent cluster in which to create the acl.
+      Structured like
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
+  """
+
+  acl = _messages.MessageField('Acl', 1)
+  aclId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the acl to delete. Structured like: `projects/
+      {project}/locations/{location}/clusters/{cluster}/acls/{acl_id}`. The
+      structure of `acl_id` defines the Resource Pattern (resource_type,
+      resource_name, pattern_type) of the acl. See `Acl.name` for details.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsGetRequest object.
+
+  Fields:
+    name: Required. The name of the acl to return. Structured like: `projects/
+      {project}/locations/{location}/clusters/{cluster}/acls/{acl_id}`. The
+      structure of `acl_id` defines the Resource Pattern (resource_type,
+      resource_name, pattern_type) of the acl. See `Acl.name` for details.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of acls to return. The service may
+      return fewer than this value. If unset or zero, all acls for the parent
+      is returned.
+    pageToken: Optional. A page token, received from a previous `ListAcls`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListAcls` must match the call that
+      provided the page token.
+    parent: Required. The parent cluster whose acls are to be listed.
+      Structured like
+      `projects/{project}/locations/{location}/clusters/{cluster}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsPatchRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsPatchRequest object.
+
+  Fields:
+    acl: A Acl resource to be passed as the request body.
+    name: Identifier. The name for the acl. Represents a single Resource
+      Pattern. Structured like:
+      projects/{project}/locations/{location}/clusters/{cluster}/acls/{acl_id}
+      The structure of `acl_id` defines the Resource Pattern (resource_type,
+      resource_name, pattern_type) of the acl. `acl_id` is structured like one
+      of the following: For acls on the cluster: `cluster` For acls on a
+      single resource within the cluster: `topic/{resource_name}`
+      `consumerGroup/{resource_name}` `transactionalId/{resource_name}` For
+      acls on all resources that match a prefix:
+      `topicPrefixed/{resource_name}` `consumerGroupPrefixed/{resource_name}`
+      `transactionalIdPrefixed/{resource_name}` For acls on all resources of a
+      given type (i.e. the wildcard literal "*"): `allTopics` (represents
+      `topic/*`) `allConsumerGroups` (represents `consumerGroup/*`)
+      `allTransactionalIds` (represents `transactionalId/*`)
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Acl resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask.
+  """
+
+  acl = _messages.MessageField('Acl', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsClustersAclsRemoveAclEntryRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersAclsRemoveAclEntryRequest object.
+
+  Fields:
+    acl: Required. The name of the acl to remove the acl entry from.
+      Structured like: `projects/{project}/locations/{location}/clusters/{clus
+      ter}/acls/{acl_id}`. The structure of `acl_id` defines the Resource
+      Pattern (resource_type, resource_name, pattern_type) of the acl. See
+      `Acl.name` for details.
+    aclEntry: A AclEntry resource to be passed as the request body.
+  """
+
+  acl = _messages.StringField(1, required=True)
+  aclEntry = _messages.MessageField('AclEntry', 2)
 
 
 class ManagedkafkaProjectsLocationsClustersConsumerGroupsDeleteRequest(_messages.Message):
@@ -1482,6 +1719,20 @@ class RebalanceConfig(_messages.Message):
     AUTO_REBALANCE_ON_SCALE_UP = 2
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
+
+
+class RemoveAclEntryResponse(_messages.Message):
+  r"""Response for RemoveAclEntry.
+
+  Fields:
+    acl: The updated acl. Returned if the removed acl entry was not the last
+      entry in the acl.
+    aclDeleted: Returned with value true if the removed acl entry was the last
+      entry in the acl, resulting in acl deletion.
+  """
+
+  acl = _messages.MessageField('Acl', 1)
+  aclDeleted = _messages.BooleanField(2)
 
 
 class RestartConnectorRequest(_messages.Message):

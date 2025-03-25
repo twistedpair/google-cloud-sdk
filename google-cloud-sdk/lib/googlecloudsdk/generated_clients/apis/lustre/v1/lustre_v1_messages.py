@@ -19,9 +19,9 @@ class ExportDataRequest(_messages.Message):
   Fields:
     gcsPath: Cloud Storage destination.
     lustrePath: Lustre path source.
-    requestId: Optional. Optional uuid to identify requests.
+    requestId: Optional. UUID to identify requests.
     serviceAccount: Optional. User-specified service account used to perform
-      the transfer. If unspecified, the default Lustre P4SA will be used.
+      the transfer. If unspecified, the Managed Lustre service agent is used.
   """
 
   gcsPath = _messages.MessageField('GcsPath', 1)
@@ -56,9 +56,9 @@ class ImportDataRequest(_messages.Message):
     gcsPath: The Cloud Storage source bucket and, optionally, path inside the
       bucket.
     lustrePath: Lustre path destination.
-    requestId: Optional. Optional uuid to identify requests.
+    requestId: Optional. UUID to identify requests.
     serviceAccount: Optional. User-specified service account used to perform
-      the transfer. If unspecified, the default Lustre P4 Service Account will
+      the transfer. If unspecified, the default Lustre P4 service account will
       be used.
   """
 
@@ -79,13 +79,14 @@ class Instance(_messages.Message):
 
   Fields:
     capacityGib: Required. The storage capacity of the instance in gibibytes
-      (GiB). Allowed values are from 18000 to 954000, in increments of 9000.
+      (GiB). Allowed values are from `18000` to `936000`, in increments of
+      9000.
     createTime: Output only. Timestamp when the instance was created.
     description: Optional. A user-readable description of the instance.
     filesystem: Required. Immutable. The filesystem name for this instance.
       This name is used by client-side tools, including when mounting the
-      instance. Must be 8 characters or less and may only contain letters and
-      numbers.
+      instance. Must be eight characters or less and can only contain letters
+      and numbers.
     gkeSupportEnabled: Optional. Indicates whether you want to enable support
       for GKE clients. By default, GKE clients are not supported.
     labels: Optional. Labels as key value pairs.
@@ -278,11 +279,11 @@ class Location(_messages.Message):
 
 
 class LustrePath(_messages.Message):
-  r"""LustrePath represents a path in the Lustre filesystem.
+  r"""LustrePath represents a path in the Lustre file system.
 
   Fields:
-    path: Optional. Root directory path to the Lustre filesystem, starting
-      with `/`. Defaults to `/` if unset.
+    path: Optional. Root directory path to the Managed Lustre file system,
+      starting with `/`. Defaults to `/` if unset.
   """
 
   path = _messages.StringField(1)
@@ -395,7 +396,7 @@ class LustreProjectsLocationsInstancesListRequest(_messages.Message):
   Fields:
     filter: Optional. Filtering results.
     orderBy: Optional. Desired order of results.
-    pageSize: Optional. Requested page size. Server may return fewer items
+    pageSize: Optional. Requested page size. Server might return fewer items
       than requested. If unspecified, the server will pick an appropriate
       default.
     pageToken: Optional. A token identifying a page of results the server
@@ -447,6 +448,8 @@ class LustreProjectsLocationsListRequest(_messages.Message):
   r"""A LustreProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -457,10 +460,11 @@ class LustreProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LustreProjectsLocationsOperationsCancelRequest(_messages.Message):

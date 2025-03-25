@@ -915,8 +915,17 @@ def ParseAcceleratorType(accelerator_type_name, resource_parser, project,
   return accelerator_type
 
 
-def ResolveSnapshotURI(user_project, snapshot, resource_parser):
+def ResolveSnapshotURI(user_project, snapshot, resource_parser, region=None):
+  """Returns snapshot URI based on location scope."""
   if user_project and snapshot and resource_parser:
+    if region:
+      snapshot_ref = resource_parser.Parse(
+          snapshot,
+          collection='compute.regionSnapshots',
+          params={'project': user_project, 'region': region},
+      )
+      return snapshot_ref.SelfLink()
+
     snapshot_ref = resource_parser.Parse(
         snapshot,
         collection='compute.snapshots',

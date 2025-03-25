@@ -83,6 +83,19 @@ consumer_group:
     help: |
       The consumer group name.
 
+acl:
+  name: acl
+  collection: managedkafka.projects.locations.clusters.acls
+  request_id_field: aclId
+  attributes:
+  - *location
+  - *cluster
+  - &acl
+    parameter_name: aclsId
+    attribute_name: acl
+    help: |
+      The acl name.
+
 operation:
   name: operation
   collection: managedkafka.projects.locations.operations

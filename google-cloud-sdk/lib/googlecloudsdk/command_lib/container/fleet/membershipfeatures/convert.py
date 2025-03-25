@@ -116,6 +116,10 @@ def _ToV2ConfigManagementConfigSync(
   v2_configsync = self.messages_v2.ConfigManagementConfigSync()
   v2_configsync.enabled = v1_configsync.enabled
   v2_configsync.git = _ToV2ConfigManagementGitConfig(self, v1_configsync.git)
+  v2_configsync.deploymentOverrides = [
+      _ToV2ConfigManagementDeploymentOverride(self, deployment_override)
+      for deployment_override in v1_configsync.deploymentOverrides
+  ]
   v2_configsync.metricsGcpServiceAccountEmail = (
       v1_configsync.metricsGcpServiceAccountEmail
   )
@@ -124,6 +128,41 @@ def _ToV2ConfigManagementConfigSync(
   v2_configsync.sourceFormat = v1_configsync.sourceFormat
   v2_configsync.stopSyncing = v1_configsync.stopSyncing
   return v2_configsync
+
+
+def _ToV2ConfigManagementDeploymentOverride(
+    self,
+    v1_deployment_override,
+):
+  """Converts a v1alpha ConfigManagementDeploymentOverride to a v2alpha ConfigManagementDeploymentOverride."""
+  if v1_deployment_override is None:
+    return None
+  v2_deployment_override = self.messages_v2.ConfigManagementDeploymentOverride()
+  v2_deployment_override.deploymentName = v1_deployment_override.deploymentName
+  v2_deployment_override.deploymentNamespace = (
+      v1_deployment_override.deploymentNamespace
+  )
+  v2_deployment_override.containers = [
+      _ToV2ConfigManagementContainerOverride(self, container)
+      for container in v1_deployment_override.containers
+  ]
+  return v2_deployment_override
+
+
+def _ToV2ConfigManagementContainerOverride(
+    self,
+    v1_container,
+):
+  """Converts a v1alpha ConfigManagementContainerOverride to a v2alpha ConfigManagementContainerOverride."""
+  if v1_container is None:
+    return None
+  v2_container = self.messages_v2.ConfigManagementContainerOverride()
+  v2_container.containerName = v1_container.containerName
+  v2_container.cpuRequest = v1_container.cpuRequest
+  v2_container.memoryRequest = v1_container.memoryRequest
+  v2_container.cpuLimit = v1_container.cpuLimit
+  v2_container.memoryLimit = v1_container.memoryLimit
+  return v2_container
 
 
 def _ToV2ConfigManagementGitConfig(

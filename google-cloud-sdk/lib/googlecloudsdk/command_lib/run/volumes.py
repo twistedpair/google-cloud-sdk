@@ -412,5 +412,62 @@ class SecretVolume(_VolumeType):
     new_vol.secret = src
 
 
+@_registered_volume_type
+class CloudSqlInstance(_VolumeType):
+  """Represents a Cloud SQL instance as a volume."""
+
+  @classmethod
+  def release_tracks(cls):
+    return [base.ReleaseTrack.ALPHA]
+
+  @classmethod
+  def name(cls):
+    return 'cloudsql'
+
+  @classmethod
+  def help(cls):
+    return 'Represents a Cloud SQL instance as a volume.'
+
+  @classmethod
+  def validate_fields(cls, volume, release_track):
+    if 'instances' not in volume:
+      raise serverless_exceptions.ConfigurationError(
+          'Cloud SQL volumes must have at least one instance specified'
+      )
+    for instance in volume['instances'].split(';'):
+      instance = instance.strip().split(':')
+      if len(instance) != 3:
+        raise serverless_exceptions.ConfigurationError(
+            'Cloud SQL instances must be in the form'
+            ' project_id:region:instance_id'
+        )
+
+  @classmethod
+  def required_fields(cls, release_track):
+    return {
+        'instances': (
+            'The name of the Cloud SQL instances to mount. Must be in the form'
+            ' project_id:region:instance_id and separated by semicolons.'
+        ),
+    }
+
+  @classmethod
+  def optional_fields(cls, release_track):
+    return {}
+
+  @classmethod
+  def fill_volume(cls, volume, new_vol, messages):
+    src = messages.CSIVolumeSource(driver='cloudsql.run.googleapis.com')
+    src.volumeAttributes = messages.CSIVolumeSource.VolumeAttributesValue()
+    if 'instances' in volume:
+      src.volumeAttributes.additionalProperties.append(
+          messages.CSIVolumeSource.VolumeAttributesValue.AdditionalProperty(
+              key='instances',
+              value=volume['instances'].replace(';', ','),
+          )
+      )
+    new_vol.csi = src
+
+
 def _is_readonly(volume):
   return 'readonly' in volume and volume['readonly'].lower() == 'true'

@@ -331,8 +331,8 @@ def AddCustomMetrics(parser, add_clear_argument=False):
   """Adds a --custom-metrics flag to the given parser."""
   group = parser.add_mutually_exclusive_group()
   help_text = """\
-  List of custom metrics that are used for CUSTOM_METRICS BalancingMode and
-  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+  List of custom metrics that are used for CUSTOM_METRICS balancing mode and
+  WEIGHTED_ROUND_ROBIN locality load balancing policy.
 
   Example:
 
@@ -355,8 +355,8 @@ def AddCustomMetrics(parser, add_clear_argument=False):
       help=help_text,
   )
   help_text_file = """\
-  File path to json file with custom metrics that are used for CUSTOM_METRICS BalancingMode and
-  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+  File path to json file with custom metrics that are used for CUSTOM_METRICS
+  balancing mode and WEIGHTED_ROUND_ROBIN locality load balancing policy.
 
   Example:
 

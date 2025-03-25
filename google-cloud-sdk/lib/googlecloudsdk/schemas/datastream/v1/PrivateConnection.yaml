@@ -33,6 +33,9 @@ properties:
   labels:
     description: Labels.
     $ref: LabelsValue.yaml
+  pscInterfaceConfig:
+    description: PSC Interface Config.
+    $ref: PscInterfaceConfig.yaml
   vpcPeeringConfig:
     description: VPC Peering Config.
     $ref: VpcPeeringConfig.yaml

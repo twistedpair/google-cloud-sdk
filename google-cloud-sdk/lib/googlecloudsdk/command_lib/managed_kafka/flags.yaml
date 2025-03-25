@@ -234,3 +234,84 @@ topics-file:
   help_text: |
     The path to the JSON or YAML file containing the configuration of the topics to be updated for
     the consumer group. This also supports inline JSON or YAML.
+
+acl-entry:
+  arg_name: acl-entry
+  api_field: acl.aclEntries
+  help_text: |
+    The flag is used to create an acl entry. An acl entry grants permissions to a princial for
+    specific operations on a resource. The acl entry is in the format:
+    "principal=<principal>,operation=<operation>,permission_type=<permission_type>,host=<host>"
+    For example:
+    "principal=User:admin@project.iam.gserviceaccount.com,operation=ALL,permission_type=ALLOW,host='*'"
+  type:
+    arg_dict:
+      flatten: false
+      spec:
+      - api_field: principal
+        arg_name: principal
+        type: str
+        required: true
+      - api_field: operation
+        arg_name: operation
+        type: str
+        required: true
+      - api_field: permissionType
+        arg_name: permission_type
+        type: str
+        required: true
+      - api_field: host
+        arg_name: host
+        type: str
+        required: true
+
+acl-entries-from-file:
+  arg_name: acl-entries-from-file
+  api_field: acl
+  type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+  processor: googlecloudsdk.core.yaml:load
+  help_text: |
+    Path to a JSON or YAML file containing the acl entries to create.
+
+etag:
+  arg_name: etag
+  api_field: acl.etag
+  type: str
+  help_text: |
+    etag returned in the response to "GetAcl" and "CreateAcl"
+
+acl-entry-principal:
+  api_field: aclEntry.principal
+  arg_name: principal
+  type: str
+  required: true
+  help_text: |
+    The principal to grant permissions to. The principal is in the format:
+    "User:admin@project.iam.gserviceaccount.com".
+    Can be the wildcard "User:*" to refer to all users.
+
+acl-entry-operation:
+  api_field: aclEntry.operation
+  arg_name: operation
+  type: str
+  required: true
+  help_text: |
+    The operation to grant permissions for. Allowed values are: ALL, READ, WRITE, CREATE,
+    DELETE, ALTER, DESCRIBE, CLUSTER_ACTION, DESCRIBE_CONFIGS, ALTER_CONFIGS,
+    and IDEMPOTENT_WRITE
+
+acl-entry-permission-type:
+  api_field: aclEntry.permissionType
+  arg_name: permission_type
+  type: str
+  required: true
+  help_text: |
+    The permission type to grant. Accepted values are: ALLOW, DENY
+
+acl-entry-host:
+  api_field: aclEntry.host
+  arg_name: host
+  type: str
+  required: true
+  help_text: |
+    The host to grant permissions for. Should be set to "*" for Managed Service for Apache Kafka

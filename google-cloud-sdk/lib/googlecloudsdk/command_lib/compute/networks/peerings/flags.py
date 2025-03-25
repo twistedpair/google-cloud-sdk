@@ -28,7 +28,8 @@ def AddImportCustomRoutesFlag(parser):
       help="""\
         If set, the network will import custom routes from peer network. Use
         --no-import-custom-routes to disable it.
-      """)
+      """,
+  )
 
 
 def AddExportCustomRoutesFlag(parser):
@@ -40,7 +41,8 @@ def AddExportCustomRoutesFlag(parser):
       help="""\
         If set, the network will export custom routes to peer network. Use
         --no-export-custom-routes to disable it.
-      """)
+      """,
+  )
 
 
 def AddImportSubnetRoutesWithPublicIpFlag(parser):
@@ -53,7 +55,8 @@ def AddImportSubnetRoutesWithPublicIpFlag(parser):
         If set, the network will import subnet routes with addresses in the
         public IP ranges from peer network.
         Use --no-import-subnet-routes-with-public-ip to disable it.
-      """)
+      """,
+  )
 
 
 def AddExportSubnetRoutesWithPublicIpFlag(parser):
@@ -66,7 +69,8 @@ def AddExportSubnetRoutesWithPublicIpFlag(parser):
         If set, the network will export subnet routes with addresses in the
         public IP ranges to peer network.
         Use --no-export-subnet-routes-with-public-ip to disable it.
-      """)
+      """,
+  )
 
 
 def AddStackType(parser):
@@ -86,4 +90,25 @@ def AddStackType(parser):
             IPv4 traffic and routes will be exchanged across this peering.
             IPv6 traffic and routes will be exchanged if the matching peering
             configuration also has stack_type set to IPV4_IPV6.
-      """)
+      """,
+  )
+
+
+def AddUpdateStrategy(parser):
+  """Adds updateStrategy flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--update-strategy',
+      default=None,
+      help="""\
+        Update strategy of the peering. If not specified, defaults to INDEPENDENT.
+
+        UPDATE_STRATEGY must be one of:
+
+        INDEPENDENT
+            Either network admin may update or delete the peering connection.
+
+        CONSENSUS
+            Updates and deletes to the peering connection must be agreed upon by
+            both network admins.
+      """,
+  )

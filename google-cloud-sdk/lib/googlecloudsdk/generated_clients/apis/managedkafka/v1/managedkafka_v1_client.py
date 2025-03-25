@@ -39,6 +39,7 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_clusters_acls = self.ProjectsLocationsClustersAclsService(self)
     self.projects_locations_clusters_consumerGroups = self.ProjectsLocationsClustersConsumerGroupsService(self)
     self.projects_locations_clusters_topics = self.ProjectsLocationsClustersTopicsService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
@@ -47,6 +48,205 @@ class ManagedkafkaV1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsClustersAclsService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters_acls resource."""
+
+    _NAME = 'projects_locations_clusters_acls'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsClustersAclsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddAclEntry(self, request, global_params=None):
+      r"""Adds an acl entry to an acl. Creates the acl if it does not exist yet.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsAddAclEntryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AddAclEntryResponse) The response message.
+      """
+      config = self.GetMethodConfig('AddAclEntry')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAclEntry.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls/{aclsId}:addAclEntry',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.clusters.acls.addAclEntry',
+        ordered_params=['acl'],
+        path_params=['acl'],
+        query_params=[],
+        relative_path='v1/{+acl}:addAclEntry',
+        request_field='aclEntry',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsAddAclEntryRequest',
+        response_type_name='AddAclEntryResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new acl in the given project, location, and cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Acl) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.clusters.acls.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['aclId'],
+        relative_path='v1/{+parent}/acls',
+        request_field='acl',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsCreateRequest',
+        response_type_name='Acl',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an acl.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls/{aclsId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.clusters.acls.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the properties of a single acl.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Acl) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls/{aclsId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.clusters.acls.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsGetRequest',
+        response_type_name='Acl',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the acls in a given cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAclsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.clusters.acls.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/acls',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsListRequest',
+        response_type_name='ListAclsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the properties of a single acl.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Acl) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls/{aclsId}',
+        http_method='PATCH',
+        method_id='managedkafka.projects.locations.clusters.acls.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='acl',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsPatchRequest',
+        response_type_name='Acl',
+        supports_download=False,
+    )
+
+    def RemoveAclEntry(self, request, global_params=None):
+      r"""Removes an acl entry from an acl. Deletes the acl if its acl entries become empty (i.e. if the removed entry was the last one in the acl).
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersAclsRemoveAclEntryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RemoveAclEntryResponse) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAclEntry')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAclEntry.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/acls/{aclsId}:removeAclEntry',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.clusters.acls.removeAclEntry',
+        ordered_params=['acl'],
+        path_params=['acl'],
+        query_params=[],
+        relative_path='v1/{+acl}:removeAclEntry',
+        request_field='aclEntry',
+        request_type_name='ManagedkafkaProjectsLocationsClustersAclsRemoveAclEntryRequest',
+        response_type_name='RemoveAclEntryResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsClustersConsumerGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_consumerGroups resource."""

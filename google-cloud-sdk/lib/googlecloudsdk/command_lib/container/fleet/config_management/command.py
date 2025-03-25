@@ -28,6 +28,13 @@ MAP_NODE_EXCEPTION_FORMAT = ('{} must be a YAML mapping node.'
                              ' its value.'
                              ' See --help flag output for links to examples.')
 
+LIST_EXCEPTION_FORMAT = (
+    '{} must be a YAML list.'
+    ' This field should contain indented'
+    ' list elements.'
+    ' See --help flag output for links to examples.'
+)
+
 
 class Common(base.FeatureCommand):
   """Common operations between commands on Config Management surface.
@@ -64,7 +71,7 @@ class Common(base.FeatureCommand):
         hierarchyController=self._parse_hierarchy_controller_config(config),
         management=self._parse_upgrades(config),
         cluster=config.get('spec', {}).get('cluster', ''),
-        version=config['spec'].get(utils.VERSION)
+        version=config['spec'].get(utils.VERSION),
     )
 
   def _parse_config_sync(self, configmanagement):
@@ -102,6 +109,14 @@ class Common(base.FeatureCommand):
       ))
 
     config_sync = self.messages.ConfigManagementConfigSync()
+    if utils.DEPLOYMENT_OVERRIDES in spec_source:
+      setattr(
+          config_sync,
+          utils.DEPLOYMENT_OVERRIDES,
+          self._parse_deployment_overrides(
+              spec_source[utils.DEPLOYMENT_OVERRIDES]
+          ),
+      )
     # missing `enabled: true` will enable configSync
     config_sync.enabled = True
     if 'enabled' in spec_source:
@@ -129,8 +144,90 @@ class Common(base.FeatureCommand):
       config_sync.metricsGcpServiceAccountEmail = spec_source[
           'metricsGcpServiceAccountEmail'
       ]
-
     return config_sync
+
+  def _parse_deployment_overrides(self, spec_deployment_overrides):
+    """Load DeploymentOverrides with the parsed config-management.yaml."""
+    if not isinstance(spec_deployment_overrides, list):
+      raise exceptions.Error(
+          LIST_EXCEPTION_FORMAT.format(
+              '.spec.configSync.' + utils.DEPLOYMENT_OVERRIDES
+          )
+      )
+    deployment_overrides = []
+    for deployment_override in spec_deployment_overrides:
+      illegal_fields = _find_unknown_fields(
+          deployment_override,
+          {
+              'name',
+              'namespace',
+              utils.CONTAINER_OVERRIDES,
+          },
+      )
+      if illegal_fields:
+        raise exceptions.Error(
+            'Please remove illegal field(s) {}'.format(
+                ', '.join([
+                    '.spec.configSync.deploymentOverrides.' + f
+                    for f in illegal_fields
+                ])
+            )
+        )
+      deployment_overrides.append(
+          self.messages.ConfigManagementDeploymentOverride(
+              deploymentName=deployment_override.get('name', ''),
+              deploymentNamespace=deployment_override.get(
+                  'namespace', ''
+              ),
+              containers=self._parse_containers(
+                  deployment_override.get(utils.CONTAINER_OVERRIDES, [])
+              ),
+          )
+      )
+    return deployment_overrides
+
+  def _parse_containers(self, spec_containers):
+    """Load Containers with the parsed config-management.yaml."""
+    if not isinstance(spec_containers, list):
+      raise exceptions.Error(
+          LIST_EXCEPTION_FORMAT.format(
+              '.spec.configSync.'
+              + utils.DEPLOYMENT_OVERRIDES
+              + '.'
+              + utils.CONTAINER_OVERRIDES
+          )
+      )
+    containers = []
+    for container in spec_containers:
+      illegal_fields = _find_unknown_fields(
+          container,
+          {
+              'name',
+              'cpuRequest',
+              'memoryRequest',
+              'cpuLimit',
+              'memoryLimit',
+          },
+      )
+      if illegal_fields:
+        raise exceptions.Error(
+            'Please remove illegal field(s) {}'.format(
+                ', '.join([
+                    '.spec.configSync.deploymentOverrides.containers.' + f
+                    for f in illegal_fields
+                ])
+            )
+        )
+      containers.append(
+          self.messages.ConfigManagementContainerOverride(
+              containerName=container.get('name', ''),
+              cpuRequest=container.get('cpuRequest', ''),
+              memoryRequest=container.get('memoryRequest', ''),
+              cpuLimit=container.get('cpuLimit', ''),
+              memoryLimit=container.get('memoryLimit', ''),
+          )
+      )
+    return containers
 
   def _parse_git_config(self, spec_source):
     """Load GitConfig with the parsed config_sync yaml.

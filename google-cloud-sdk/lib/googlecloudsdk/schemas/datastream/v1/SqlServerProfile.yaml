@@ -6,7 +6,6 @@ type: object
 required:
 - database
 - hostname
-- password
 - username
 additionalProperties: false
 properties:
@@ -37,11 +36,18 @@ properties:
     description: Hostname for the SQLServer connection.
     type: string
   password:
-    description: Password for the SQLServer connection.
+    description: |-
+      Password for the SQLServer connection. Mutually exclusive with the
+      `secret_manager_stored_password` field.
     type: string
   port:
     description: Port for the SQLServer connection, default value is 1433.
     type: integer
+  secretManagerStoredPassword:
+    description: |-
+      A reference to a Secret Manager resource name storing the SQLServer
+      connection password. Mutually exclusive with the `password` field.
+    type: string
   username:
     description: Username for the SQLServer connection.
     type: string

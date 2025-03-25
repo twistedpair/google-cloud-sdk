@@ -610,10 +610,10 @@ def AddHPAProfilesFlag(parser, hidden=False):
       required=False,
       default=None,
       help="""\
-         Setting Horizontal Pod Autoscaler behavior, which is none by default.
+         Set Horizontal Pod Autoscaler behavior. Accepted values are: none, performance.
+         For more information, see https://cloud.google.com/kubernetes-engine/docs/how-to/horizontal-pod-autoscaling#hpa-profile.
       """,
       hidden=hidden,
-      choices=['none', 'performance'],
   )
 
 
@@ -2037,6 +2037,23 @@ def AddMaxRunDurationFlag(parser, hidden=False):
           $ {command} node-pool-1 --cluster=example-cluster --max-run-duration=3600s
         """),
       hidden=hidden,
+  )
+
+
+def AddFlexStartFlag(parser, hidden=False):
+  """Adds a --flex-start flag to parser."""
+  parser.add_argument(
+      '--flex-start',
+      default=None,
+      help=textwrap.dedent("""\
+        Start the node pool with Flex Start provisioning model.
+
+         $ {command} node-pool-1 --cluster=example-cluster --flex-start
+         and other required parameters, for more details see:
+         https://cloud.google.com/kubernetes-engine/docs/how-to/provisioningrequest
+        """),
+      hidden=hidden,
+      action='store_true',
   )
 
 

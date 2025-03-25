@@ -3185,3 +3185,42 @@ def AddServerCaPool(parser):
       help=help_text,
       hidden=False,
   )
+
+
+def AddInstanceType(parser):
+  """Adds --instance-type flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--instance-type',
+      choices={
+          'CLOUD_SQL_INSTANCE': 'A primary instance.',
+          'READ_REPLICA_INSTANCE': 'A read replica.',
+          'READ_POOL_INSTANCE': 'A read pool.',
+      },
+      required=False,
+      default=None,
+      help='The type of the instance.',
+      hidden=False,
+  )
+
+
+def AddNodeCount(parser):
+  """Adds --node-count flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--node-count',
+      required=False,
+      default=None,
+      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      help=(
+          'The number of nodes in the pool. This option is only available for'
+          ' read pools.'
+      ),
+      hidden=False,
+  )

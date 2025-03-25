@@ -151,6 +151,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LBEDGEEXTENSIONS = (
+      'projects.locations.lbEdgeExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'lbEdgeExtensions/{lbEdgeExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_LBOBSERVABILITYEXTENSIONS = (
       'projects.locations.lbObservabilityExtensions',
       '{+name}',

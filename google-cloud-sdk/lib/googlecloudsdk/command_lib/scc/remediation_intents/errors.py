@@ -43,3 +43,24 @@ class TfStateFetchingError(Error):
       super(Error, self).__init__(
           f'An error occurred while fetching the TfState data: {error_message}'
       )
+
+
+class APICallError(Error):
+  """An error occurred while calling the RemediationIntent API."""
+
+  def __init__(self, method_name: str, error_message: str):
+    """Initializes the APICallError.
+
+    Args:
+      method_name: The name of the API method that failed.
+      error_message: The error message to be included in the exception.
+    """
+    if error_message is None or method_name is None:
+      super(Error, self).__init__(
+          'An Internal service error occurred while calling the method'
+      )
+    else:
+      super(Error, self).__init__(
+          'An Internal service error occurred while calling the method'
+          f' {method_name}, detailed error: {error_message}'
+      )

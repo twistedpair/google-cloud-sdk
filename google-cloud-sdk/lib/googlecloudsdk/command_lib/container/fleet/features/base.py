@@ -112,7 +112,6 @@ class EnableCommandMixin(FeatureCommand):
     if exc_type != apitools_exceptions.HttpBadRequestError:
       return False
     error = core_api_exceptions.HttpErrorPayload(exc_value)
-    # TODO(b/188807249): Add a reference to this error in the error package.
     if not (error.status_description == 'FAILED_PRECONDITION' and
             self.feature.api in error.message and
             'is not enabled' in error.message):

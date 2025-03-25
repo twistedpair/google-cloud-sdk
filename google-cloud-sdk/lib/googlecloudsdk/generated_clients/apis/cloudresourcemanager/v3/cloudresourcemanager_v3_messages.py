@@ -1560,6 +1560,8 @@ class EffectiveTagBindingCollection(_messages.Message):
     effectiveTags: Tag keys/values effectively bound to this resource,
       specified in namespaced format. For example: "123/environment":
       "production", "email": "xyz@email.com"
+    etag: Optional. Entity tag which users can pass to prevent race
+      conditions. This field is always set in server responses.
     fullResourceName: The full resource name of the resource the TagBindings
       are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     name: Identifier. The name of the EffectiveTagBindingCollection, following
@@ -1599,8 +1601,9 @@ class EffectiveTagBindingCollection(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   effectiveTags = _messages.MessageField('EffectiveTagsValue', 1)
-  fullResourceName = _messages.StringField(2)
-  name = _messages.StringField(3)
+  etag = _messages.StringField(2)
+  fullResourceName = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -2796,6 +2799,8 @@ class TagBindingCollection(_messages.Message):
       "email": "xyz@email.com"
 
   Fields:
+    etag: Optional. Entity tag which users can pass to prevent race
+      conditions. This field is always set in server responses.
     fullResourceName: The full resource name of the resource the TagBindings
       are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     name: Identifier. The name of the TagBindingCollection, following the
@@ -2835,9 +2840,10 @@ class TagBindingCollection(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  fullResourceName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  tags = _messages.MessageField('TagsValue', 3)
+  etag = _messages.StringField(1)
+  fullResourceName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  tags = _messages.MessageField('TagsValue', 4)
 
 
 class TagHold(_messages.Message):

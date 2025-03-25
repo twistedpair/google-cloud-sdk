@@ -482,6 +482,8 @@ apis:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         wireGroups:
           path: projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}
+        zones:
+          path: projects/{project}/zones/{zone}
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
@@ -857,6 +859,10 @@ apis:
   gkeonprem:
     v1:
       discovery_doc: gkeonprem_v1.json
+  gkerecommender:
+    v1alpha1:
+      discovery_doc: gkerecommender_v1alpha1.json
+      default: true
   gsuiteaddons:
     v1:
       discovery_doc: gsuiteaddons_v1.json
@@ -939,6 +945,21 @@ apis:
           path: organizations/{organizationsId}/locations/global
     v2beta:
       discovery_doc: osconfig_v2beta.json
+      resources:
+        projects:
+          path: projects/{projectsId}
+        projects.locations.global:
+          path: projects/{projectsId}/locations/global
+        folders:
+          path: folders/{foldersId}
+        folders.locations.global:
+          path: folders/{foldersId}/locations/global
+        organizations:
+          path: organizations/{organizationsId}
+        organizations.locations.global:
+          path: organizations/{organizationsId}/locations/global
+    v2:
+      discovery_doc: osconfig_v2.json
       resources:
         projects:
           path: projects/{projectsId}
@@ -1046,9 +1067,19 @@ apis:
   lustre:
     v1:
       discovery_doc: lustre_v1.json
+      resources:
+        projects.serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
+        projects.networks:
+          path: projects/{projectsId}/global/networks/{networksId}
     v1alpha:
       discovery_doc: lustre_v1alpha.json
       default: true
+      resources:
+        projects.serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
+        projects.networks:
+          path: projects/{projectsId}/global/networks/{networksId}
   managedflink:
     v1alpha:
       discovery_doc: managedflink_v1alpha.json
@@ -1661,6 +1692,13 @@ apis:
   websecurityscanner:
     v1beta:
       discovery_doc: websecurityscanner_v1beta.json
+      default: true
+      resources:
+        projects.scanConfigs.scanRuns.crawledUrls:
+          path: projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}
+          enable_uri_parsing: false
+    v1:
+      discovery_doc: websecurityscanner_v1.json
       resources:
         projects.scanConfigs.scanRuns.crawledUrls:
           path: projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}
@@ -2104,6 +2142,9 @@ canonical_surfaces:
       'command groups.'
   gkeonprem:
     name: gkeonprem
+    hidden: true
+  gkerecommender:
+    name: gkerecommender
     hidden: true
   healthcare:
     name: healthcare

@@ -46,6 +46,15 @@ spec:
     syncRev: HEAD
     gcpServiceAccountEmail:
     metricsGcpServiceAccountEmail:
+    deploymentOverrides:
+      name:
+      namespace:
+      containers:
+        name:
+        cpuRequest:
+        memoryRequest:
+        cpuLimit:
+        memoryLimit:
   policyController:
     enabled: false
     referentialRulesEnabled: false
@@ -69,6 +78,8 @@ MANAGEMENT_MANUAL = 'MANAGEMENT_MANUAL'
 CLUSTER = 'cluster'
 VERSION = 'version'
 CONFIG_SYNC = 'configSync'
+DEPLOYMENT_OVERRIDES = 'deploymentOverrides'
+CONTAINER_OVERRIDES = 'containers'
 POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'
 PREVENT_DRIFT_VERSION = '1.10.0'

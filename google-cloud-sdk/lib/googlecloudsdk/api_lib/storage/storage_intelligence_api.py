@@ -63,6 +63,7 @@ class StorageIntelligenceApi:
       self,
       intelligence_config,
       inherit_from_parent=False,
+      trial_edition=False,
       include_locations=None,
       exclude_locations=None,
       include_bucket_id_regexes=None,
@@ -73,6 +74,7 @@ class StorageIntelligenceApi:
     Args:
       intelligence_config: The Intelligence Config object to be updated.
       inherit_from_parent: Whether to inherit config from the parent.
+      trial_edition: Whether to enable Storage Intelligence for TRIAL edition.
       include_locations: List of locations to be included in the filter.
       exclude_locations: List of locations to be excluded in the filter.
       include_bucket_id_regexes: List of bucket id regexes to be included in the
@@ -95,7 +97,9 @@ class StorageIntelligenceApi:
       return update_mask+",filter"
 
     intelligence_config.editionConfig = (
-        self.messages.IntelligenceConfig.EditionConfigValueValuesEnum.STANDARD
+        self.messages.IntelligenceConfig.EditionConfigValueValuesEnum.TRIAL
+        if trial_edition
+        else self.messages.IntelligenceConfig.EditionConfigValueValuesEnum.STANDARD
     )
 
     # Set the locations filter.
@@ -131,7 +135,8 @@ class StorageIntelligenceApi:
   def _update_intelligence_config(
       self,
       full_id=None,
-      inherit_from_parent=None,
+      inherit_from_parent=False,
+      trial_edition=False,
       include_locations=None,
       exclude_locations=None,
       include_bucket_id_regexes=None,
@@ -146,6 +151,7 @@ class StorageIntelligenceApi:
     update_mask = self._set_intelligence_filter(
         intelligence_config,
         inherit_from_parent,
+        trial_edition,
         include_locations,
         exclude_locations,
         include_bucket_id_regexes,
@@ -278,7 +284,8 @@ class StorageIntelligenceApi:
   def update_project_intelligence_config(
       self,
       project,
-      inherit_from_parent=None,
+      inherit_from_parent=False,
+      trial_edition=False,
       include_locations=None,
       exclude_locations=None,
       include_bucket_id_regexes=None,
@@ -287,9 +294,9 @@ class StorageIntelligenceApi:
     """Updates the Intelligence Config for the given GCP project.
 
     Args:
-
       project: Name of the GCP project.
       inherit_from_parent: Whether to inherit config from the parent.
+      trial_edition: Whether to enable Storage Intelligence for TRIAL edition.
       include_locations: List of locations to be included in the filter.
       exclude_locations: List of locations to be excluded in the filter.
       include_bucket_id_regexes: List of bucket id regexes to be included in the
@@ -308,6 +315,7 @@ class StorageIntelligenceApi:
     return self._update_intelligence_config(
         full_name,
         inherit_from_parent,
+        trial_edition,
         include_locations,
         exclude_locations,
         include_bucket_id_regexes,
@@ -319,7 +327,8 @@ class StorageIntelligenceApi:
   def update_sub_folder_intelligence_config(
       self,
       sub_folder,
-      inherit_from_parent=None,
+      inherit_from_parent=False,
+      trial_edition=False,
       include_locations=None,
       exclude_locations=None,
       include_bucket_id_regexes=None,
@@ -328,9 +337,9 @@ class StorageIntelligenceApi:
     """Updates the Intelligence Config for the given GCP sub folder.
 
     Args:
-
       sub_folder: The GCP sub folder name.
       inherit_from_parent: Whether to inherit config from the parent.
+      trial_edition: Whether to enable Storage Intelligence for TRIAL edition.
       include_locations: List of locations to be included in the filter.
       exclude_locations: List of locations to be excluded in the filter.
       include_bucket_id_regexes: List of bucket id regexes to be included in the
@@ -348,6 +357,7 @@ class StorageIntelligenceApi:
     return self._update_intelligence_config(
         full_name,
         inherit_from_parent,
+        trial_edition,
         include_locations,
         exclude_locations,
         include_bucket_id_regexes,
@@ -359,7 +369,8 @@ class StorageIntelligenceApi:
   def update_organization_intelligence_config(
       self,
       organization,
-      inherit_from_parent=None,
+      inherit_from_parent=False,
+      trial_edition=False,
       include_locations=None,
       exclude_locations=None,
       include_bucket_id_regexes=None,
@@ -368,9 +379,9 @@ class StorageIntelligenceApi:
     """Updates the Intelligence Config for the given GCP organization.
 
     Args:
-
       organization: The GCP organization name.
       inherit_from_parent: Whether to inherit config from the parent.
+      trial_edition: Whether to enable Storage Intelligence for TRIAL edition.
       include_locations: List of locations to be included in the filter.
       exclude_locations: List of locations to be excluded in the filter.
       include_bucket_id_regexes: List of bucket id regexes to be included in the
@@ -388,6 +399,7 @@ class StorageIntelligenceApi:
     return self._update_intelligence_config(
         full_name,
         inherit_from_parent,
+        trial_edition,
         include_locations,
         exclude_locations,
         include_bucket_id_regexes,

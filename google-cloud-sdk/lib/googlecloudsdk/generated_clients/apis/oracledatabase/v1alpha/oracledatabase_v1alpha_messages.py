@@ -64,14 +64,14 @@ class AutonomousDatabase(_messages.Message):
     network: Optional. The name of the VPC network used by the Autonomous
       Database in the following format:
       projects/{project}/global/networks/{network}
-    odbNetwork: Optional. The name of the OdbNetwork used by the Autonomous
-      Database in the following format:
+    odbNetwork: Optional. The name of the OdbNetwork associated with the
+      Autonomous Database. Format:
       projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
-      optioanl but if specified, this should match the parent ODBNetwork of
+      optional but if specified, this should match the parent ODBNetwork of
       the OdbSubnet.
-    odbSubnet: Optional. The name of the OdbSubnet used by the Autonomous
-      Database in the following format: projects/{project}/locations/{location
-      }/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    odbSubnet: Optional. The name of the OdbSubnet associated with the
+      Autonomous Database. Format: projects/{project}/locations/{location}/odb
+      Networks/{odb_network}/odbSubnets/{odb_subnet}
     peerAutonomousDatabases: Output only. The peer Autonomous Database names
       of the given Autonomous Database.
     properties: Optional. The properties of the Autonomous Database.
@@ -1090,6 +1090,8 @@ class CloudExadataInfrastructureProperties(_messages.Message):
   r"""Various properties of Exadata Infrastructure.
 
   Enums:
+    ComputeModelValueValuesEnum: Output only. The compute model of the Exadata
+      Infrastructure.
     StateValueValuesEnum: Output only. The current lifecycle state of the
       Exadata Infrastructure.
 
@@ -1148,6 +1150,21 @@ class CloudExadataInfrastructureProperties(_messages.Message):
       Infrastructure resource, in gigabytes (GB).
   """
 
+  class ComputeModelValueValuesEnum(_messages.Enum):
+    r"""Output only. The compute model of the Exadata Infrastructure.
+
+    Values:
+      COMPUTE_MODEL_UNSPECIFIED: Unspecified compute model.
+      COMPUTE_MODEL_ECPU: Abstract measure of compute resources. ECPUs are
+        based on the number of cores elastically allocated from a pool of
+        compute and storage servers.
+      COMPUTE_MODEL_OCPU: Physical measure of compute resources. OCPUs are
+        based on the physical core of a processor.
+    """
+    COMPUTE_MODEL_UNSPECIFIED = 0
+    COMPUTE_MODEL_ECPU = 1
+    COMPUTE_MODEL_OCPU = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of the Exadata
     Infrastructure.
@@ -1175,7 +1192,7 @@ class CloudExadataInfrastructureProperties(_messages.Message):
   additionalStorageCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   availableStorageSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   computeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  computeModel = _messages.StringField(5)
+  computeModel = _messages.EnumField('ComputeModelValueValuesEnum', 5)
   cpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   customerContacts = _messages.MessageField('CustomerContact', 7, repeated=True)
   dataStorageSizeTb = _messages.FloatField(8)
@@ -1211,6 +1228,9 @@ class CloudVmCluster(_messages.Message):
     LabelsValue: Optional. Labels or tags associated with the VM Cluster.
 
   Fields:
+    backupOdbSubnet: Optional. The name of the backup OdbSubnet associated
+      with the VM Cluster. Format: projects/{project}/locations/{location}/odb
+      Networks/{odb_network}/odbSubnets/{odb_subnet}
     backupSubnetCidr: Required. CIDR range of the backup subnet.
     cidr: Required. Network settings. CIDR to use for cluster IP allocation.
     createTime: Output only. The date and time that the VM cluster was
@@ -1228,6 +1248,14 @@ class CloudVmCluster(_messages.Message):
       projects/{project}/locations/{region}/cloudVmClusters/{cloud_vm_cluster}
     network: Required. The name of the VPC network. Format:
       projects/{project}/global/networks/{network}
+    odbNetwork: Optional. The name of the OdbNetwork associated with the VM
+      Cluster. Format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
+      optional but if specified, this should match the parent ODBNetwork of
+      the odb_subnet and backup_odb_subnet.
+    odbSubnet: Optional. The name of the OdbSubnet associated with the VM
+      Cluster for IP allocation. Format: projects/{project}/locations/{locatio
+      n}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
     properties: Optional. Various properties of the VM Cluster.
   """
 
@@ -1255,22 +1283,27 @@ class CloudVmCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupSubnetCidr = _messages.StringField(1)
-  cidr = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  exadataInfrastructure = _messages.StringField(5)
-  gcpOracleZone = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  properties = _messages.MessageField('CloudVmClusterProperties', 10)
+  backupOdbSubnet = _messages.StringField(1)
+  backupSubnetCidr = _messages.StringField(2)
+  cidr = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  exadataInfrastructure = _messages.StringField(6)
+  gcpOracleZone = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  odbNetwork = _messages.StringField(11)
+  odbSubnet = _messages.StringField(12)
+  properties = _messages.MessageField('CloudVmClusterProperties', 13)
 
 
 class CloudVmClusterProperties(_messages.Message):
   r"""Various properties and settings associated with Exadata VM cluster.
 
   Enums:
+    ComputeModelValueValuesEnum: Output only. The compute model of the VM
+      Cluster.
     DiskRedundancyValueValuesEnum: Optional. The type of redundancy.
     LicenseTypeValueValuesEnum: Required. License type of VM Cluster.
     StateValueValuesEnum: Output only. State of the cluster.
@@ -1278,6 +1311,7 @@ class CloudVmClusterProperties(_messages.Message):
   Fields:
     clusterName: Optional. OCI Cluster name.
     compartmentId: Output only. Compartment ID of cluster.
+    computeModel: Output only. The compute model of the VM Cluster.
     cpuCoreCount: Required. Number of enabled CPU cores.
     dataStorageSizeTb: Optional. The data disk group size to be allocated in
       TBs.
@@ -1316,6 +1350,21 @@ class CloudVmClusterProperties(_messages.Message):
     timeZone: Optional. Time zone of VM Cluster to set. Defaults to UTC if not
       specified.
   """
+
+  class ComputeModelValueValuesEnum(_messages.Enum):
+    r"""Output only. The compute model of the VM Cluster.
+
+    Values:
+      COMPUTE_MODEL_UNSPECIFIED: Unspecified compute model.
+      COMPUTE_MODEL_ECPU: Abstract measure of compute resources. ECPUs are
+        based on the number of cores elastically allocated from a pool of
+        compute and storage servers.
+      COMPUTE_MODEL_OCPU: Physical measure of compute resources. OCPUs are
+        based on the physical core of a processor.
+    """
+    COMPUTE_MODEL_UNSPECIFIED = 0
+    COMPUTE_MODEL_ECPU = 1
+    COMPUTE_MODEL_OCPU = 2
 
   class DiskRedundancyValueValuesEnum(_messages.Enum):
     r"""Optional. The type of redundancy.
@@ -1366,36 +1415,37 @@ class CloudVmClusterProperties(_messages.Message):
 
   clusterName = _messages.StringField(1)
   compartmentId = _messages.StringField(2)
-  cpuCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  dataStorageSizeTb = _messages.FloatField(4)
-  dbNodeStorageSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  dbServerOcids = _messages.StringField(6, repeated=True)
-  diagnosticsDataCollectionOptions = _messages.MessageField('DataCollectionOptions', 7)
-  diskRedundancy = _messages.EnumField('DiskRedundancyValueValuesEnum', 8)
-  dnsListenerIp = _messages.StringField(9)
-  domain = _messages.StringField(10)
-  giVersion = _messages.StringField(11)
-  hostname = _messages.StringField(12)
-  hostnamePrefix = _messages.StringField(13)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 14)
-  localBackupEnabled = _messages.BooleanField(15)
-  memorySizeGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  nodeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  ociUrl = _messages.StringField(18)
-  ocid = _messages.StringField(19)
-  ocpuCount = _messages.FloatField(20, variant=_messages.Variant.FLOAT)
-  scanDns = _messages.StringField(21)
-  scanDnsRecordId = _messages.StringField(22)
-  scanIpIds = _messages.StringField(23, repeated=True)
-  scanListenerPortTcp = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  scanListenerPortTcpSsl = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  shape = _messages.StringField(26)
-  sparseDiskgroupEnabled = _messages.BooleanField(27)
-  sshPublicKeys = _messages.StringField(28, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  storageSizeGb = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  systemVersion = _messages.StringField(31)
-  timeZone = _messages.MessageField('TimeZone', 32)
+  computeModel = _messages.EnumField('ComputeModelValueValuesEnum', 3)
+  cpuCoreCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  dataStorageSizeTb = _messages.FloatField(5)
+  dbNodeStorageSizeGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  dbServerOcids = _messages.StringField(7, repeated=True)
+  diagnosticsDataCollectionOptions = _messages.MessageField('DataCollectionOptions', 8)
+  diskRedundancy = _messages.EnumField('DiskRedundancyValueValuesEnum', 9)
+  dnsListenerIp = _messages.StringField(10)
+  domain = _messages.StringField(11)
+  giVersion = _messages.StringField(12)
+  hostname = _messages.StringField(13)
+  hostnamePrefix = _messages.StringField(14)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 15)
+  localBackupEnabled = _messages.BooleanField(16)
+  memorySizeGb = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  ociUrl = _messages.StringField(19)
+  ocid = _messages.StringField(20)
+  ocpuCount = _messages.FloatField(21, variant=_messages.Variant.FLOAT)
+  scanDns = _messages.StringField(22)
+  scanDnsRecordId = _messages.StringField(23)
+  scanIpIds = _messages.StringField(24, repeated=True)
+  scanListenerPortTcp = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  scanListenerPortTcpSsl = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  shape = _messages.StringField(27)
+  sparseDiskgroupEnabled = _messages.BooleanField(28)
+  sshPublicKeys = _messages.StringField(29, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  storageSizeGb = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  systemVersion = _messages.StringField(32)
+  timeZone = _messages.MessageField('TimeZone', 33)
 
 
 class CustomerContact(_messages.Message):

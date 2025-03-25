@@ -62,7 +62,7 @@ def AddCloudSqlInstanceFlags(parser):
 
 def AddDestinationOrHeterogeneousSourceDetailsFlag(parser):
   """Adds the destination connection profile parameters to the given parser."""
-  hetero_cp_params_group = parser.add_group(hidden=True)
+  hetero_cp_params_group = parser.add_group()
   cp_flags.AddHostFlag(hetero_cp_params_group, required=True)
   cp_flags.AddPortFlag(hetero_cp_params_group, required=True)
 
@@ -120,5 +120,4 @@ def AddDatabaseFlag(parser):
   parser.add_argument(
       '--database',
       required=False,
-      hidden=True,
       help='The specific database within the host.')

@@ -751,6 +751,7 @@ def _ConnectionPoolConfig(**kwargs):
   alloydb_messages = kwargs.get('alloydb_messages')
   config = alloydb_messages.ConnectionPoolConfig()
   config.enable = enable_connection_pooling
+  config.enabled = enable_connection_pooling
   if pool_mode is not None:
     config.poolMode = _ParsePoolMode(alloydb_messages, pool_mode)
   if min_pool_size is not None:
@@ -965,6 +966,7 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
   )
 
   if args.enable_connection_pooling is not None:
+    paths.append('connectionPoolConfig.enabled')
     paths.append('connectionPoolConfig.enable')
   if args.connection_pooling_pool_mode is not None:
     paths.append('connectionPoolConfig.poolMode')

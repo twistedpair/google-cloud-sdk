@@ -55,3 +55,9 @@ properties:
       the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     type: string
+  validateOnly:
+    description: |-
+      When supplied with PSC Interface config, will get/create the tenant
+      project required for the customer to allow list and won't actually create
+      the private connection.
+    type: boolean

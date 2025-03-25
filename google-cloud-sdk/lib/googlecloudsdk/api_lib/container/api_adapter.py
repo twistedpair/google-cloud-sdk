@@ -634,6 +634,7 @@ class CreateClusterOptions(object):
       placement_policy=None,
       enable_queued_provisioning=None,
       max_run_duration=None,
+      flex_start=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -869,6 +870,7 @@ class CreateClusterOptions(object):
     self.placement_policy = placement_policy
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.flex_start = flex_start
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -1501,6 +1503,7 @@ class CreateNodePoolOptions(object):
       tpu_topology=None,
       enable_queued_provisioning=None,
       max_run_duration=None,
+      flex_start=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -1593,6 +1596,7 @@ class CreateNodePoolOptions(object):
     self.tpu_topology = tpu_topology
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.flex_start = flex_start
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -1700,6 +1704,7 @@ class UpdateNodePoolOptions(object):
                disk_size_gb=None,
                enable_queued_provisioning=None,
                max_run_duration=None,
+               flex_start=None,
                storage_pools=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -1746,6 +1751,7 @@ class UpdateNodePoolOptions(object):
     self.disk_size_gb = disk_size_gb
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.flex_start = flex_start
     self.storage_pools = storage_pools
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port
@@ -1792,6 +1798,7 @@ class UpdateNodePoolOptions(object):
             self.disk_size_gb is not None or
             self.enable_queued_provisioning is not None or
             self.max_run_duration is not None or
+            self.flex_start is not None or
             self.storage_pools is not None)
 
 
@@ -2961,6 +2968,9 @@ class APIAdapter(object):
 
     if options.max_run_duration is not None:
       node_config.maxRunDuration = options.max_run_duration
+
+    if options.flex_start is not None:
+      node_config.flexStart = options.flex_start
 
     return node_config
 
@@ -5131,6 +5141,9 @@ class APIAdapter(object):
     if options.max_run_duration is not None:
       node_config.maxRunDuration = options.max_run_duration
 
+    if options.flex_start is not None:
+      node_config.flexStart = options.flex_start
+
     if options.enable_confidential_nodes:
       confidential_nodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
@@ -5610,6 +5623,8 @@ class APIAdapter(object):
       update_request.gvnic = gvnic
     elif options.max_run_duration is not None:
       update_request.maxRunDuration = options.max_run_duration
+    elif options.flex_start is not None:
+      update_request.flexStart = options.flex_start
     elif options.enable_image_streaming is not None:
       gcfs_config = self.messages.GcfsConfig(
           enabled=options.enable_image_streaming)

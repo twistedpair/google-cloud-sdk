@@ -335,7 +335,7 @@ def AddSqlServerConnectionProfileResourceArg(parser,
   else:
     name = '--connection-profile'
 
-  connectivity_parser = parser.add_group(mutex=True, hidden=True)
+  connectivity_parser = parser.add_group(mutex=True)
   connectivity_parser.add_argument(
       '--static-ip-connectivity',
       action='store_true',

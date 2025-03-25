@@ -2243,6 +2243,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'gkerecommender': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.gkerecommender.v1alpha1',
+                    client_classpath='gkerecommender_v1alpha1_client.GkerecommenderV1alpha1',
+                    base_url='https://gkerecommender.googleapis.com/',
+                    messages_modulepath='gkerecommender_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'gsuiteaddons': {
         'v1':
             APIDef(
@@ -3075,6 +3087,16 @@ MAP = {
                     client_classpath='osconfig_v1beta_client.OsconfigV1beta',
                     base_url='https://osconfig.googleapis.com/',
                     messages_modulepath='osconfig_v1beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.osconfig.v2',
+                    client_classpath='osconfig_v2_client.OsconfigV2',
+                    base_url='https://osconfig.googleapis.com/',
+                    messages_modulepath='osconfig_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -4214,6 +4236,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'websecurityscanner': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.websecurityscanner.v1',
+                    client_classpath='websecurityscanner_v1_client.WebsecurityscannerV1',
+                    base_url='https://websecurityscanner.googleapis.com/',
+                    messages_modulepath='websecurityscanner_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1beta':
             APIDef(
                 apitools=ApitoolsClientDef(
