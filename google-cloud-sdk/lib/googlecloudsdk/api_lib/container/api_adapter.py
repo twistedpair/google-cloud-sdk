@@ -4598,17 +4598,33 @@ class APIAdapter(object):
       )
 
     if options.service_account_verification_keys is not None:
-      update = self.messages.ClusterUpdate(
-          userManagedKeysConfig=self.messages.UserManagedKeysConfig(
-              serviceAccountVerificationKeys=options.service_account_verification_keys
-          )
+      cluster = self.GetCluster(cluster_ref)
+      updated_user_managed_keys_config = self.messages.UserManagedKeysConfig()
+      if cluster.userManagedKeysConfig is not None:
+        updated_user_managed_keys_config = (
+            cluster.userManagedKeysConfig
+        )
+      updated_user_managed_keys_config.serviceAccountVerificationKeys = (
+          options.service_account_verification_keys
       )
+      update = self.messages.ClusterUpdate(
+          userManagedKeysConfig=updated_user_managed_keys_config
+      )
+
     if options.service_account_signing_keys is not None:
-      update = self.messages.ClusterUpdate(
-          userManagedKeysConfig=self.messages.UserManagedKeysConfig(
-              serviceAccountSigningKeys=options.service_account_signing_keys
-          )
+      cluster = self.GetCluster(cluster_ref)
+      updated_user_managed_keys_config = self.messages.UserManagedKeysConfig()
+      if cluster.userManagedKeysConfig is not None:
+        updated_user_managed_keys_config = (
+            cluster.userManagedKeysConfig
+        )
+      updated_user_managed_keys_config.serviceAccountSigningKeys = (
+          options.service_account_signing_keys
       )
+      update = self.messages.ClusterUpdate(
+          userManagedKeysConfig=updated_user_managed_keys_config
+      )
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):

@@ -121,7 +121,7 @@ class Backup(_messages.Message):
     BackupKindValueValuesEnum: Output only. Specifies the kind of backup,
       PHYSICAL or DEFAULT_SNAPSHOT.
     DatabaseVersionValueValuesEnum: Output only. The database version of the
-      instance of when this backup was made.
+      instance of at the time this backup was made.
     StateValueValuesEnum: Output only. The state of this backup.
     TypeValueValuesEnum: Output only. The type of this backup. The type can be
       "AUTOMATED", "ON_DEMAND", or "FINAL".
@@ -134,8 +134,8 @@ class Backup(_messages.Message):
       DEFAULT_SNAPSHOT.
     backupRun: Output only. The mapping to backup run resource used for IAM
       validations.
-    databaseVersion: Output only. The database version of the instance of when
-      this backup was made.
+    databaseVersion: Output only. The database version of the instance of at
+      the time this backup was made.
     description: The description of this backup.
     error: Output only. Information about why the backup operation fails (for
       example, when the backup state fails).
@@ -189,9 +189,8 @@ class Backup(_messages.Message):
     PHYSICAL = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""Output only.
-
-    The database version of the instance of when this backup was made.
+    r"""Output only. The database version of the instance of at the time this
+    backup was made.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -226,8 +225,6 @@ class Backup(_messages.Message):
         version is 36.
       MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
         version is 37.
-      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
-        version is 38.
       MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
@@ -265,7 +262,6 @@ class Backup(_messages.Message):
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
     """
-
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
     MYSQL_5_5 = 2
@@ -285,33 +281,32 @@ class Backup(_messages.Message):
     MYSQL_8_0_35 = 16
     MYSQL_8_0_36 = 17
     MYSQL_8_0_37 = 18
-    MYSQL_8_0_38 = 19
-    MYSQL_8_0_39 = 20
-    MYSQL_8_0_40 = 21
-    MYSQL_8_0_41 = 22
-    MYSQL_8_0_42 = 23
-    MYSQL_8_4 = 24
-    SQLSERVER_2017_STANDARD = 25
-    SQLSERVER_2017_ENTERPRISE = 26
-    SQLSERVER_2017_EXPRESS = 27
-    SQLSERVER_2017_WEB = 28
-    POSTGRES_9_6 = 29
-    POSTGRES_10 = 30
-    POSTGRES_11 = 31
-    POSTGRES_12 = 32
-    POSTGRES_13 = 33
-    POSTGRES_14 = 34
-    POSTGRES_15 = 35
-    POSTGRES_16 = 36
-    POSTGRES_17 = 37
-    SQLSERVER_2019_STANDARD = 38
-    SQLSERVER_2019_ENTERPRISE = 39
-    SQLSERVER_2019_EXPRESS = 40
-    SQLSERVER_2019_WEB = 41
-    SQLSERVER_2022_STANDARD = 42
-    SQLSERVER_2022_ENTERPRISE = 43
-    SQLSERVER_2022_EXPRESS = 44
-    SQLSERVER_2022_WEB = 45
+    MYSQL_8_0_39 = 19
+    MYSQL_8_0_40 = 20
+    MYSQL_8_0_41 = 21
+    MYSQL_8_0_42 = 22
+    MYSQL_8_4 = 23
+    SQLSERVER_2017_STANDARD = 24
+    SQLSERVER_2017_ENTERPRISE = 25
+    SQLSERVER_2017_EXPRESS = 26
+    SQLSERVER_2017_WEB = 27
+    POSTGRES_9_6 = 28
+    POSTGRES_10 = 29
+    POSTGRES_11 = 30
+    POSTGRES_12 = 31
+    POSTGRES_13 = 32
+    POSTGRES_14 = 33
+    POSTGRES_15 = 34
+    POSTGRES_16 = 35
+    POSTGRES_17 = 36
+    SQLSERVER_2019_STANDARD = 37
+    SQLSERVER_2019_ENTERPRISE = 38
+    SQLSERVER_2019_EXPRESS = 39
+    SQLSERVER_2019_WEB = 40
+    SQLSERVER_2022_STANDARD = 41
+    SQLSERVER_2022_ENTERPRISE = 42
+    SQLSERVER_2022_EXPRESS = 43
+    SQLSERVER_2022_WEB = 44
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this backup.
@@ -533,7 +528,7 @@ class BackupRun(_messages.Message):
     BackupKindValueValuesEnum: Specifies the kind of backup, PHYSICAL or
       DEFAULT_SNAPSHOT.
     DatabaseVersionValueValuesEnum: Output only. The instance database version
-      when this backup was made.
+      at the time this backup was made.
     StatusValueValuesEnum: The status of this run.
     TypeValueValuesEnum: The type of this run; can be either "AUTOMATED" or
       "ON_DEMAND" or "FINAL". This field defaults to "ON_DEMAND" and is
@@ -544,8 +539,8 @@ class BackupRun(_messages.Message):
       version on the instance, including minor versions, such as
       `MYSQL_8_0_18`.
     backupKind: Specifies the kind of backup, PHYSICAL or DEFAULT_SNAPSHOT.
-    databaseVersion: Output only. The instance database version when this
-      backup was made.
+    databaseVersion: Output only. The instance database version at the time
+      this backup was made.
     description: The description of this run, only applicable to on-demand
       backups.
     diskEncryptionConfiguration: Encryption configuration specific to a
@@ -594,7 +589,8 @@ class BackupRun(_messages.Message):
     PHYSICAL = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""Output only. The instance database version when this backup was made.
+    r"""Output only. The instance database version at the time this backup was
+    made.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -629,8 +625,6 @@ class BackupRun(_messages.Message):
         version is 36.
       MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
         version is 37.
-      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
-        version is 38.
       MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
@@ -668,7 +662,6 @@ class BackupRun(_messages.Message):
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
     """
-
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
     MYSQL_5_5 = 2
@@ -688,33 +681,32 @@ class BackupRun(_messages.Message):
     MYSQL_8_0_35 = 16
     MYSQL_8_0_36 = 17
     MYSQL_8_0_37 = 18
-    MYSQL_8_0_38 = 19
-    MYSQL_8_0_39 = 20
-    MYSQL_8_0_40 = 21
-    MYSQL_8_0_41 = 22
-    MYSQL_8_0_42 = 23
-    MYSQL_8_4 = 24
-    SQLSERVER_2017_STANDARD = 25
-    SQLSERVER_2017_ENTERPRISE = 26
-    SQLSERVER_2017_EXPRESS = 27
-    SQLSERVER_2017_WEB = 28
-    POSTGRES_9_6 = 29
-    POSTGRES_10 = 30
-    POSTGRES_11 = 31
-    POSTGRES_12 = 32
-    POSTGRES_13 = 33
-    POSTGRES_14 = 34
-    POSTGRES_15 = 35
-    POSTGRES_16 = 36
-    POSTGRES_17 = 37
-    SQLSERVER_2019_STANDARD = 38
-    SQLSERVER_2019_ENTERPRISE = 39
-    SQLSERVER_2019_EXPRESS = 40
-    SQLSERVER_2019_WEB = 41
-    SQLSERVER_2022_STANDARD = 42
-    SQLSERVER_2022_ENTERPRISE = 43
-    SQLSERVER_2022_EXPRESS = 44
-    SQLSERVER_2022_WEB = 45
+    MYSQL_8_0_39 = 19
+    MYSQL_8_0_40 = 20
+    MYSQL_8_0_41 = 21
+    MYSQL_8_0_42 = 22
+    MYSQL_8_4 = 23
+    SQLSERVER_2017_STANDARD = 24
+    SQLSERVER_2017_ENTERPRISE = 25
+    SQLSERVER_2017_EXPRESS = 26
+    SQLSERVER_2017_WEB = 27
+    POSTGRES_9_6 = 28
+    POSTGRES_10 = 29
+    POSTGRES_11 = 30
+    POSTGRES_12 = 31
+    POSTGRES_13 = 32
+    POSTGRES_14 = 33
+    POSTGRES_15 = 34
+    POSTGRES_16 = 35
+    POSTGRES_17 = 36
+    SQLSERVER_2019_STANDARD = 37
+    SQLSERVER_2019_ENTERPRISE = 38
+    SQLSERVER_2019_EXPRESS = 39
+    SQLSERVER_2019_WEB = 40
+    SQLSERVER_2022_STANDARD = 41
+    SQLSERVER_2022_ENTERPRISE = 42
+    SQLSERVER_2022_EXPRESS = 43
+    SQLSERVER_2022_WEB = 44
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of this run.
@@ -765,9 +757,7 @@ class BackupRun(_messages.Message):
   backupKind = _messages.EnumField('BackupKindValueValuesEnum', 2)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 3)
   description = _messages.StringField(4)
-  diskEncryptionConfiguration = _messages.MessageField(
-      'DiskEncryptionConfiguration', 5
-  )
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 5)
   diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 6)
   endTime = _messages.StringField(7)
   enqueuedTime = _messages.StringField(8)
@@ -993,8 +983,6 @@ class ConnectSettings(_messages.Message):
         version is 36.
       MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
         version is 37.
-      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
-        version is 38.
       MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
@@ -1051,33 +1039,32 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_35 = 16
     MYSQL_8_0_36 = 17
     MYSQL_8_0_37 = 18
-    MYSQL_8_0_38 = 19
-    MYSQL_8_0_39 = 20
-    MYSQL_8_0_40 = 21
-    MYSQL_8_0_41 = 22
-    MYSQL_8_0_42 = 23
-    MYSQL_8_4 = 24
-    SQLSERVER_2017_STANDARD = 25
-    SQLSERVER_2017_ENTERPRISE = 26
-    SQLSERVER_2017_EXPRESS = 27
-    SQLSERVER_2017_WEB = 28
-    POSTGRES_9_6 = 29
-    POSTGRES_10 = 30
-    POSTGRES_11 = 31
-    POSTGRES_12 = 32
-    POSTGRES_13 = 33
-    POSTGRES_14 = 34
-    POSTGRES_15 = 35
-    POSTGRES_16 = 36
-    POSTGRES_17 = 37
-    SQLSERVER_2019_STANDARD = 38
-    SQLSERVER_2019_ENTERPRISE = 39
-    SQLSERVER_2019_EXPRESS = 40
-    SQLSERVER_2019_WEB = 41
-    SQLSERVER_2022_STANDARD = 42
-    SQLSERVER_2022_ENTERPRISE = 43
-    SQLSERVER_2022_EXPRESS = 44
-    SQLSERVER_2022_WEB = 45
+    MYSQL_8_0_39 = 19
+    MYSQL_8_0_40 = 20
+    MYSQL_8_0_41 = 21
+    MYSQL_8_0_42 = 22
+    MYSQL_8_4 = 23
+    SQLSERVER_2017_STANDARD = 24
+    SQLSERVER_2017_ENTERPRISE = 25
+    SQLSERVER_2017_EXPRESS = 26
+    SQLSERVER_2017_WEB = 27
+    POSTGRES_9_6 = 28
+    POSTGRES_10 = 29
+    POSTGRES_11 = 30
+    POSTGRES_12 = 31
+    POSTGRES_13 = 32
+    POSTGRES_14 = 33
+    POSTGRES_15 = 34
+    POSTGRES_16 = 35
+    POSTGRES_17 = 36
+    SQLSERVER_2019_STANDARD = 37
+    SQLSERVER_2019_ENTERPRISE = 38
+    SQLSERVER_2019_EXPRESS = 39
+    SQLSERVER_2019_WEB = 40
+    SQLSERVER_2022_STANDARD = 41
+    SQLSERVER_2022_ENTERPRISE = 42
+    SQLSERVER_2022_EXPRESS = 43
+    SQLSERVER_2022_WEB = 44
 
   class ServerCaModeValueValuesEnum(_messages.Enum):
     r"""Specify what type of CA is used for the server certificate.
@@ -1424,8 +1411,6 @@ class DatabaseInstance(_messages.Message):
         version is 36.
       MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
         version is 37.
-      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
-        version is 38.
       MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
@@ -1482,33 +1467,32 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_35 = 16
     MYSQL_8_0_36 = 17
     MYSQL_8_0_37 = 18
-    MYSQL_8_0_38 = 19
-    MYSQL_8_0_39 = 20
-    MYSQL_8_0_40 = 21
-    MYSQL_8_0_41 = 22
-    MYSQL_8_0_42 = 23
-    MYSQL_8_4 = 24
-    SQLSERVER_2017_STANDARD = 25
-    SQLSERVER_2017_ENTERPRISE = 26
-    SQLSERVER_2017_EXPRESS = 27
-    SQLSERVER_2017_WEB = 28
-    POSTGRES_9_6 = 29
-    POSTGRES_10 = 30
-    POSTGRES_11 = 31
-    POSTGRES_12 = 32
-    POSTGRES_13 = 33
-    POSTGRES_14 = 34
-    POSTGRES_15 = 35
-    POSTGRES_16 = 36
-    POSTGRES_17 = 37
-    SQLSERVER_2019_STANDARD = 38
-    SQLSERVER_2019_ENTERPRISE = 39
-    SQLSERVER_2019_EXPRESS = 40
-    SQLSERVER_2019_WEB = 41
-    SQLSERVER_2022_STANDARD = 42
-    SQLSERVER_2022_ENTERPRISE = 43
-    SQLSERVER_2022_EXPRESS = 44
-    SQLSERVER_2022_WEB = 45
+    MYSQL_8_0_39 = 19
+    MYSQL_8_0_40 = 20
+    MYSQL_8_0_41 = 21
+    MYSQL_8_0_42 = 22
+    MYSQL_8_4 = 23
+    SQLSERVER_2017_STANDARD = 24
+    SQLSERVER_2017_ENTERPRISE = 25
+    SQLSERVER_2017_EXPRESS = 26
+    SQLSERVER_2017_WEB = 27
+    POSTGRES_9_6 = 28
+    POSTGRES_10 = 29
+    POSTGRES_11 = 30
+    POSTGRES_12 = 31
+    POSTGRES_13 = 32
+    POSTGRES_14 = 33
+    POSTGRES_15 = 34
+    POSTGRES_16 = 35
+    POSTGRES_17 = 36
+    SQLSERVER_2019_STANDARD = 37
+    SQLSERVER_2019_ENTERPRISE = 38
+    SQLSERVER_2019_EXPRESS = 39
+    SQLSERVER_2019_WEB = 40
+    SQLSERVER_2022_STANDARD = 41
+    SQLSERVER_2022_ENTERPRISE = 42
+    SQLSERVER_2022_EXPRESS = 43
+    SQLSERVER_2022_WEB = 44
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1547,8 +1531,6 @@ class DatabaseInstance(_messages.Message):
         version is 36.
       MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
         version is 37.
-      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
-        version is 38.
       MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
@@ -1605,33 +1587,32 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_35 = 16
     MYSQL_8_0_36 = 17
     MYSQL_8_0_37 = 18
-    MYSQL_8_0_38 = 19
-    MYSQL_8_0_39 = 20
-    MYSQL_8_0_40 = 21
-    MYSQL_8_0_41 = 22
-    MYSQL_8_0_42 = 23
-    MYSQL_8_4 = 24
-    SQLSERVER_2017_STANDARD = 25
-    SQLSERVER_2017_ENTERPRISE = 26
-    SQLSERVER_2017_EXPRESS = 27
-    SQLSERVER_2017_WEB = 28
-    POSTGRES_9_6 = 29
-    POSTGRES_10 = 30
-    POSTGRES_11 = 31
-    POSTGRES_12 = 32
-    POSTGRES_13 = 33
-    POSTGRES_14 = 34
-    POSTGRES_15 = 35
-    POSTGRES_16 = 36
-    POSTGRES_17 = 37
-    SQLSERVER_2019_STANDARD = 38
-    SQLSERVER_2019_ENTERPRISE = 39
-    SQLSERVER_2019_EXPRESS = 40
-    SQLSERVER_2019_WEB = 41
-    SQLSERVER_2022_STANDARD = 42
-    SQLSERVER_2022_ENTERPRISE = 43
-    SQLSERVER_2022_EXPRESS = 44
-    SQLSERVER_2022_WEB = 45
+    MYSQL_8_0_39 = 19
+    MYSQL_8_0_40 = 20
+    MYSQL_8_0_41 = 21
+    MYSQL_8_0_42 = 22
+    MYSQL_8_4 = 23
+    SQLSERVER_2017_STANDARD = 24
+    SQLSERVER_2017_ENTERPRISE = 25
+    SQLSERVER_2017_EXPRESS = 26
+    SQLSERVER_2017_WEB = 27
+    POSTGRES_9_6 = 28
+    POSTGRES_10 = 29
+    POSTGRES_11 = 30
+    POSTGRES_12 = 31
+    POSTGRES_13 = 32
+    POSTGRES_14 = 33
+    POSTGRES_15 = 34
+    POSTGRES_16 = 35
+    POSTGRES_17 = 36
+    SQLSERVER_2019_STANDARD = 37
+    SQLSERVER_2019_ENTERPRISE = 38
+    SQLSERVER_2019_EXPRESS = 39
+    SQLSERVER_2019_WEB = 40
+    SQLSERVER_2022_STANDARD = 41
+    SQLSERVER_2022_ENTERPRISE = 42
+    SQLSERVER_2022_EXPRESS = 43
+    SQLSERVER_2022_WEB = 44
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1786,9 +1767,7 @@ class DatabaseInstance(_messages.Message):
   name = _messages.StringField(26)
   nodeCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
   nodes = _messages.MessageField('PoolNodeConfig', 28, repeated=True)
-  onPremisesConfiguration = _messages.MessageField(
-      'OnPremisesConfiguration', 29
-  )
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 29)
   outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 30)
   primaryDnsName = _messages.StringField(31)
   project = _messages.StringField(32)
@@ -1806,18 +1785,12 @@ class DatabaseInstance(_messages.Message):
   serverCaCert = _messages.MessageField('SslCert', 44)
   serviceAccountEmailAddress = _messages.StringField(45)
   settings = _messages.MessageField('Settings', 46)
-  sqlNetworkArchitecture = _messages.EnumField(
-      'SqlNetworkArchitectureValueValuesEnum', 47
-  )
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 47)
   state = _messages.EnumField('StateValueValuesEnum', 48)
-  suspensionReason = _messages.EnumField(
-      'SuspensionReasonValueListEntryValuesEnum', 49, repeated=True
-  )
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 49, repeated=True)
   switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(50)
   tags = _messages.MessageField('TagsValue', 51)
-  upgradableDatabaseVersions = _messages.MessageField(
-      'AvailableDatabaseVersion', 52, repeated=True
-  )
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 52, repeated=True)
   writeEndpoint = _messages.StringField(53)
 
 
@@ -2012,6 +1985,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExportContext(_messages.Message):
   r"""Database instance export context.
 
@@ -2046,7 +2020,7 @@ class ExportContext(_messages.Message):
       `BAK`.
     fileType: The file type for the specified uri.
     kind: This is always `sql#exportContext`.
-    offload: Option for export offload.
+    offload: Whether to perform a serverless export.
     sqlExportOptions: Options for exporting data as SQL statements.
     tdeExportOptions: Optional. Export parameters specific to SQL Server TDE
       certificates
@@ -2189,9 +2163,9 @@ class ExportContext(_messages.Message):
       r"""Options for exporting from a Cloud SQL for PostgreSQL instance.
 
       Fields:
-        clean: Optional. Use this option to include DROP SQL statements. These
-          statements are used to delete database objects before running the
-          import operation.
+        clean: Optional. Use this option to include DROP <object> SQL
+          statements. Use these statements to delete database objects before
+          running the import operation.
         ifExists: Optional. Option to include an IF EXISTS SQL statement with
           each DROP statement produced by clean.
       """
@@ -2339,8 +2313,6 @@ class Flag(_messages.Message):
         version is 36.
       MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
         version is 37.
-      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
-        version is 38.
       MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
@@ -2397,33 +2369,32 @@ class Flag(_messages.Message):
     MYSQL_8_0_35 = 16
     MYSQL_8_0_36 = 17
     MYSQL_8_0_37 = 18
-    MYSQL_8_0_38 = 19
-    MYSQL_8_0_39 = 20
-    MYSQL_8_0_40 = 21
-    MYSQL_8_0_41 = 22
-    MYSQL_8_0_42 = 23
-    MYSQL_8_4 = 24
-    SQLSERVER_2017_STANDARD = 25
-    SQLSERVER_2017_ENTERPRISE = 26
-    SQLSERVER_2017_EXPRESS = 27
-    SQLSERVER_2017_WEB = 28
-    POSTGRES_9_6 = 29
-    POSTGRES_10 = 30
-    POSTGRES_11 = 31
-    POSTGRES_12 = 32
-    POSTGRES_13 = 33
-    POSTGRES_14 = 34
-    POSTGRES_15 = 35
-    POSTGRES_16 = 36
-    POSTGRES_17 = 37
-    SQLSERVER_2019_STANDARD = 38
-    SQLSERVER_2019_ENTERPRISE = 39
-    SQLSERVER_2019_EXPRESS = 40
-    SQLSERVER_2019_WEB = 41
-    SQLSERVER_2022_STANDARD = 42
-    SQLSERVER_2022_ENTERPRISE = 43
-    SQLSERVER_2022_EXPRESS = 44
-    SQLSERVER_2022_WEB = 45
+    MYSQL_8_0_39 = 19
+    MYSQL_8_0_40 = 20
+    MYSQL_8_0_41 = 21
+    MYSQL_8_0_42 = 22
+    MYSQL_8_4 = 23
+    SQLSERVER_2017_STANDARD = 24
+    SQLSERVER_2017_ENTERPRISE = 25
+    SQLSERVER_2017_EXPRESS = 26
+    SQLSERVER_2017_WEB = 27
+    POSTGRES_9_6 = 28
+    POSTGRES_10 = 29
+    POSTGRES_11 = 30
+    POSTGRES_12 = 31
+    POSTGRES_13 = 32
+    POSTGRES_14 = 33
+    POSTGRES_15 = 34
+    POSTGRES_16 = 35
+    POSTGRES_17 = 36
+    SQLSERVER_2019_STANDARD = 37
+    SQLSERVER_2019_ENTERPRISE = 38
+    SQLSERVER_2019_EXPRESS = 39
+    SQLSERVER_2019_WEB = 40
+    SQLSERVER_2022_STANDARD = 41
+    SQLSERVER_2022_ENTERPRISE = 42
+    SQLSERVER_2022_EXPRESS = 43
+    SQLSERVER_2022_WEB = 44
 
   class FlagScopeValueValuesEnum(_messages.Enum):
     r"""Scope of flag.
@@ -2433,7 +2404,6 @@ class Flag(_messages.Message):
       SQL_FLAG_SCOPE_DATABASE: database flags
       SQL_FLAG_SCOPE_CONNECTION_POOL: connection pool configuration flags
     """
-
     SQL_FLAG_SCOPE_UNSPECIFIED = 0
     SQL_FLAG_SCOPE_DATABASE = 1
     SQL_FLAG_SCOPE_CONNECTION_POOL = 2
@@ -3494,11 +3464,10 @@ class Operation(_messages.Message):
     REPLICA_INCLUDED_SELF_SERVICE_MAINTENANCE = 4
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the operation.
-
-    Valid values are: * `CREATE` * `DELETE` * `UPDATE` * `RESTART` * `IMPORT` *
-    `EXPORT` * `BACKUP_VOLUME` * `RESTORE_VOLUME` * `CREATE_USER` *
-    `DELETE_USER` * `CREATE_DATABASE` * `DELETE_DATABASE`
+    r"""The type of the operation. Valid values are: * `CREATE` * `DELETE` *
+    `UPDATE` * `RESTART` * `IMPORT` * `EXPORT` * `BACKUP_VOLUME` *
+    `RESTORE_VOLUME` * `CREATE_USER` * `DELETE_USER` * `CREATE_DATABASE` *
+    `DELETE_DATABASE`
 
     Values:
       SQL_OPERATION_TYPE_UNSPECIFIED: Unknown operation type.
@@ -3877,7 +3846,6 @@ class PoolNodeConfig(_messages.Message):
       REPAIRING: (Applicable to read pool nodes only.) The read pool node
         needs to be repaired. The database might be unavailable.
     """
-
     SQL_INSTANCE_STATE_UNSPECIFIED = 0
     RUNNABLE = 1
     SUSPENDED = 2
@@ -3931,6 +3899,10 @@ class PscConfig(_messages.Message):
       connected to with PSC from any network in these projects. Each consumer
       project in this list may be represented by a project number (numeric) or
       by a project id (alphanumeric).
+    networkAttachmentUri: Optional. The network attachment of the consumer
+      network that the Private Service Connect enabled Cloud SQL instance is
+      authorized to connect via PSC interface. format:
+      projects/PROJECT/regions/REGION/networkAttachments/ID
     pscAutoConnections: Optional. The list of settings for requested Private
       Service Connect consumer endpoints that can be used to connect to this
       Cloud SQL instance.
@@ -3938,8 +3910,9 @@ class PscConfig(_messages.Message):
   """
 
   allowedConsumerProjects = _messages.StringField(1, repeated=True)
-  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 2, repeated=True)
-  pscEnabled = _messages.BooleanField(3)
+  networkAttachmentUri = _messages.StringField(2)
+  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 3, repeated=True)
+  pscEnabled = _messages.BooleanField(4)
 
 
 class ReplicaConfiguration(_messages.Message):
@@ -4894,17 +4867,14 @@ class SqlFlagsListRequest(_messages.Message):
   """
 
   class FlagScopeValueValuesEnum(_messages.Enum):
-    r"""Optional.
-
-    Specify the scope of flags to be returned by SqlFlagsListService. Return
-    list of database flags if unspecified.
+    r"""Optional. Specify the scope of flags to be returned by
+    SqlFlagsListService. Return list of database flags if unspecified.
 
     Values:
       SQL_FLAG_SCOPE_UNSPECIFIED: Assume database flags if unspecified
       SQL_FLAG_SCOPE_DATABASE: database flags
       SQL_FLAG_SCOPE_CONNECTION_POOL: connection pool configuration flags
     """
-
     SQL_FLAG_SCOPE_UNSPECIFIED = 0
     SQL_FLAG_SCOPE_DATABASE = 1
     SQL_FLAG_SCOPE_CONNECTION_POOL = 2
@@ -6287,6 +6257,8 @@ class User(_messages.Message):
 
   Enums:
     DualPasswordTypeValueValuesEnum: Dual password status for the user.
+    IamStatusValueValuesEnum: Indicates if user is active for IAM
+      Authentication.
     TypeValueValuesEnum: The user type. It determines the method to
       authenticate the user during login. The default is the database's built-
       in user type.
@@ -6302,6 +6274,7 @@ class User(_messages.Message):
       PostgreSQL or SQL Server instance, it's optional.
     iamEmail: The full email for an IAM user. For normal database users, this
       will not be filled. Only applicable to MySQL database users.
+    iamStatus: Indicates if user is active for IAM Authentication.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID. Can be omitted for *update* because it is already specified
       on the URL.
@@ -6333,6 +6306,20 @@ class User(_messages.Message):
     NO_DUAL_PASSWORD = 2
     DUAL_PASSWORD = 3
 
+  class IamStatusValueValuesEnum(_messages.Enum):
+    r"""Indicates if user is active for IAM Authentication.
+
+    Values:
+      IAM_STATUS_UNSPECIFIED: The default value for users that are not of type
+        CLOUD_IAM_GROUP. Only CLOUD_IAM_GROUP users will be inactive/active.
+        Will not display any value in UI.
+      INACTIVE: User is not available for IAM Authentication.
+      ACTIVE: User is available for IAM Authentication.
+    """
+    IAM_STATUS_UNSPECIFIED = 0
+    INACTIVE = 1
+    ACTIVE = 2
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""The user type. It determines the method to authenticate the user
     during login. The default is the database's built-in user type.
@@ -6358,14 +6345,15 @@ class User(_messages.Message):
   etag = _messages.StringField(2)
   host = _messages.StringField(3)
   iamEmail = _messages.StringField(4)
-  instance = _messages.StringField(5)
-  kind = _messages.StringField(6)
-  name = _messages.StringField(7)
-  password = _messages.StringField(8)
-  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 9)
-  project = _messages.StringField(10)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  iamStatus = _messages.EnumField('IamStatusValueValuesEnum', 5)
+  instance = _messages.StringField(6)
+  kind = _messages.StringField(7)
+  name = _messages.StringField(8)
+  password = _messages.StringField(9)
+  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 10)
+  project = _messages.StringField(11)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class UserPasswordValidationPolicy(_messages.Message):

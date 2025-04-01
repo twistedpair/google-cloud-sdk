@@ -167,11 +167,7 @@ def AddIapIamResourceArgs(
     group.add_argument(
         '--resource-type',
         choices=IAM_RESOURCE_TYPE_ENUM_ALPHA_BETA,
-        help=(
-            'Resource type of the IAP resource. `--resource-type=cloud-run` is '
-            ' in private preview and reach out to IAP team in case of '
-            ' any queries.'
-        ),
+        help='Resource type of the IAP resource.',
     )
   else:
     group.add_argument(
@@ -255,8 +251,6 @@ def AddIapSettingArg(
         help=(
             'Resource type of the IAP resource. For Backend Services, you can'
             ' use both `compute` and `backend-services` as resource type.'
-            ' `--resource-type=cloud-run` is in private preview and reach out '
-            'to IAP team in case of any queries.'
         ),
     )
   else:

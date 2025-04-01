@@ -1076,11 +1076,6 @@ class DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest(_messages.Mes
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the InsightsConfig resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
     validateOnly: Optional. If set, validate the request, but do not actually
       post it.
   """
@@ -1089,14 +1084,15 @@ class DeveloperconnectProjectsLocationsInsightsConfigsPatchRequest(_messages.Mes
   insightsConfig = _messages.MessageField('InsightsConfig', 2)
   name = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  validateOnly = _messages.BooleanField(5)
 
 
 class DeveloperconnectProjectsLocationsListRequest(_messages.Message):
   r"""A DeveloperconnectProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1107,10 +1103,11 @@ class DeveloperconnectProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DeveloperconnectProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1295,13 +1292,10 @@ class GKEWorkload(_messages.Message):
     deployment: Output only. The name of the GKE deployment. Format: `projects
       /{project}/locations/{location}/clusters/{cluster}/namespaces/{namespace
       }/deployments/{deployment}`.
-    errors: Output only. Any errors that occurred while setting up to listen
-      to GKE workload.
   """
 
   cluster = _messages.StringField(1)
   deployment = _messages.StringField(2)
-  errors = _messages.MessageField('Status', 3, repeated=True)
 
 
 class GitHubConfig(_messages.Message):
@@ -1552,14 +1546,11 @@ class GoogleArtifactAnalysis(_messages.Message):
   r"""Google Artifact Analysis configurations.
 
   Fields:
-    errors: Output only. Any errors that occurred while setting up to listen
-      Google Artifact Analysis.
     projectId: Required. The project id of the project where the provenance is
       stored.
   """
 
-  errors = _messages.MessageField('Status', 1, repeated=True)
-  projectId = _messages.StringField(2)
+  projectId = _messages.StringField(1)
 
 
 class GoogleArtifactRegistry(_messages.Message):
@@ -1568,14 +1559,11 @@ class GoogleArtifactRegistry(_messages.Message):
   Fields:
     artifactRegistryPackage: Required. Immutable. The name of the artifact
       registry package.
-    errors: Output only. Any errors that occurred while setting up to listen
-      Google Artifact Registry.
     projectId: Required. The host project of Artifact Registry.
   """
 
   artifactRegistryPackage = _messages.StringField(1)
-  errors = _messages.MessageField('Status', 2, repeated=True)
-  projectId = _messages.StringField(3)
+  projectId = _messages.StringField(2)
 
 
 class HttpBody(_messages.Message):
@@ -2233,11 +2221,18 @@ class ProviderOAuthConfig(_messages.Message):
 
     Values:
       SYSTEM_PROVIDER_UNSPECIFIED: No system provider specified.
-      GITHUB: GitHub provider.
-      GITLAB: GitLab provider.
-      GOOGLE: Google provider.
-      SENTRY: Sentry provider.
-      ROVO: Rovo provider.
+      GITHUB: GitHub provider. Scopes can be found at
+        https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-
+        for-oauth-apps#available-scopes
+      GITLAB: GitLab provider. Scopes can be found at
+        https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
+        access-token-scopes
+      GOOGLE: Google provider. Recommended scopes:
+        "https://www.googleapis.com/auth/drive.readonly",
+        "https://www.googleapis.com/auth/documents.readonly"
+      SENTRY: Sentry provider. Scopes can be found at
+        https://docs.sentry.io/api/permissions/
+      ROVO: Rovo provider. Must select the "rovo" scope.
     """
     SYSTEM_PROVIDER_UNSPECIFIED = 0
     GITHUB = 1
@@ -2304,8 +2299,6 @@ class SourceConnection(_messages.Message):
       connection.
 
   Fields:
-    errors: Output only. Any errors that occurred while setting up to listen
-      to this connection.
     gitRepositoryLink: Required. Immutable. Developer Connect git repository
       link name. Format:
       `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
@@ -2328,9 +2321,8 @@ class SourceConnection(_messages.Message):
     GITLAB = 3
     GITLAB_ENTERPRISE = 4
 
-  errors = _messages.MessageField('Status', 1, repeated=True)
-  gitRepositoryLink = _messages.StringField(2)
-  provider = _messages.EnumField('ProviderValueValuesEnum', 3)
+  gitRepositoryLink = _messages.StringField(1)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 2)
 
 
 class SourceRepository(_messages.Message):

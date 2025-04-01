@@ -64,3 +64,39 @@ class APICallError(Error):
           'An Internal service error occurred while calling the method'
           f' {method_name}, detailed error: {error_message}'
       )
+
+
+class InvalidGitConfigError(Error):
+  """An error representing missing field in the git config file."""
+
+  def __init__(self, missing_field: str = None):
+    """Initializes the InvalidGitConfigError.
+
+    Args:
+      missing_field: The name of the missing field in the git config file.
+    """
+    if missing_field is None:
+      super(Error, self).__init__('Missing git config field name.')
+    else:
+      super(Error, self).__init__(
+          f'Field missing from the git config file: {missing_field}.'
+      )
+
+
+class InvalidDirectoryPathError(Error):
+  """An error representing an invalid relative directory path."""
+
+  def __init__(self, dir_path: str, error_message: str):
+    """Initializes the InvalidDirectoryPathError.
+
+    Args:
+      dir_path: The invalid relative directory path.
+      error_message: The error message to be included in the exception.
+    """
+    if dir_path is None:
+      super().__init__('Invalid relative directory path.')
+    else:
+      super().__init__(
+          f'Invalid relative directory path: {dir_path}. Detailed error:'
+          f' {error_message}'
+      )

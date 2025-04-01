@@ -657,35 +657,33 @@ class ArgAdder(object):
 
 
 def InstanceAttributeConfig():
-  # TODO: b/400682775 - Change help text for this file from Cloud Bigtable to
-  # Bigtable and rerun help text generation.
   return concepts.ResourceParameterAttributeConfig(
-      name='instance', help_text='Cloud Bigtable instance for the {resource}.'
+      name='instance', help_text='Bigtable instance for the {resource}.'
   )
 
 
 def TableAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='table', help_text='Cloud Bigtable table for the {resource}.'
+      name='table', help_text='Bigtable table for the {resource}.'
   )
 
 
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='Cloud Bigtable cluster for the {resource}.'
+      name='cluster', help_text='Bigtable cluster for the {resource}.'
   )
 
 
 def AppProfileAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='app profile',
-      help_text='Cloud Bigtable application profile for the {resource}.',
+      help_text='Bigtable application profile for the {resource}.',
   )
 
 
 def BackupAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='backup', help_text='Cloud Bigtable backup for the {resource}.'
+      name='backup', help_text='Bigtable backup for the {resource}.'
   )
 
 

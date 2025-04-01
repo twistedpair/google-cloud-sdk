@@ -1659,6 +1659,118 @@ class FirestoreProjectsDatabasesRestoreRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class FirestoreProjectsDatabasesUserCredsCreateRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsCreateRequest object.
+
+  Fields:
+    googleFirestoreAdminV1UserCreds: A GoogleFirestoreAdminV1UserCreds
+      resource to be passed as the request body.
+    parent: Required. A parent name of the form
+      `projects/{project_id}/databases/{database_id}`
+    userCredsId: Required. The ID to use for the user creds, which will become
+      the final component of the user creds's resource name. This value should
+      be 4-63 characters. Valid characters are /a-z-/ with first character a
+      letter and the last a letter or a number. Must not be UUID-like
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/.
+  """
+
+  googleFirestoreAdminV1UserCreds = _messages.MessageField('GoogleFirestoreAdminV1UserCreds', 1)
+  parent = _messages.StringField(2, required=True)
+  userCredsId = _messages.StringField(3)
+
+
+class FirestoreProjectsDatabasesUserCredsDeleteRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}/userCreds/{user_creds_id}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsDatabasesUserCredsDisableRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsDisableRequest object.
+
+  Fields:
+    googleFirestoreAdminV1DisableUserCredsRequest: A
+      GoogleFirestoreAdminV1DisableUserCredsRequest resource to be passed as
+      the request body.
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}/userCreds/{user_creds_id}
+      `
+  """
+
+  googleFirestoreAdminV1DisableUserCredsRequest = _messages.MessageField('GoogleFirestoreAdminV1DisableUserCredsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class FirestoreProjectsDatabasesUserCredsEnableRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsEnableRequest object.
+
+  Fields:
+    googleFirestoreAdminV1EnableUserCredsRequest: A
+      GoogleFirestoreAdminV1EnableUserCredsRequest resource to be passed as
+      the request body.
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}/userCreds/{user_creds_id}
+      `
+  """
+
+  googleFirestoreAdminV1EnableUserCredsRequest = _messages.MessageField('GoogleFirestoreAdminV1EnableUserCredsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class FirestoreProjectsDatabasesUserCredsGetRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsGetRequest object.
+
+  Fields:
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}/userCreds/{user_creds_id}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FirestoreProjectsDatabasesUserCredsListRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of user creds to return. The
+      service may return fewer than this value. If unspecified, the server
+      will use a sensible default.
+    pageToken: Optional. A page token, received from a previous
+      `ListUserCredsRequest` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to `ListUserCreds`
+      must match the call that provided the page token.
+    parent: Required. A parent database name of the form
+      `projects/{project_id}/databases/{database_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class FirestoreProjectsDatabasesUserCredsResetPasswordRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesUserCredsResetPasswordRequest object.
+
+  Fields:
+    googleFirestoreAdminV1ResetUserPasswordRequest: A
+      GoogleFirestoreAdminV1ResetUserPasswordRequest resource to be passed as
+      the request body.
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}/userCreds/{user_creds_id}
+      `
+  """
+
+  googleFirestoreAdminV1ResetUserPasswordRequest = _messages.MessageField('GoogleFirestoreAdminV1ResetUserPasswordRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class FirestoreProjectsLocationsBackupsDeleteRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsBackupsDeleteRequest object.
 
@@ -2127,6 +2239,14 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
   r"""Metadata related to the delete database operation."""
+
+
+class GoogleFirestoreAdminV1DisableUserCredsRequest(_messages.Message):
+  r"""The request for FirestoreAdmin.DisableUserCreds."""
+
+
+class GoogleFirestoreAdminV1EnableUserCredsRequest(_messages.Message):
+  r"""The request for FirestoreAdmin.EnableUserCreds."""
 
 
 class GoogleFirestoreAdminV1EncryptionConfig(_messages.Message):
@@ -2760,6 +2880,16 @@ class GoogleFirestoreAdminV1ListIndexesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleFirestoreAdminV1ListUserCredsResponse(_messages.Message):
+  r"""The response for FirestoreAdmin.ListUserCreds.
+
+  Fields:
+    userCreds: The user creds for the database.
+  """
+
+  userCreds = _messages.MessageField('GoogleFirestoreAdminV1UserCreds', 1, repeated=True)
+
+
 class GoogleFirestoreAdminV1LocationMetadata(_messages.Message):
   r"""The metadata message for google.cloud.location.Location.metadata."""
 
@@ -2775,6 +2905,21 @@ class GoogleFirestoreAdminV1Progress(_messages.Message):
 
   completedWork = _messages.IntegerField(1)
   estimatedWork = _messages.IntegerField(2)
+
+
+class GoogleFirestoreAdminV1ResetUserPasswordRequest(_messages.Message):
+  r"""The request for FirestoreAdmin.ResetUserPassword."""
+
+
+class GoogleFirestoreAdminV1ResourceIdentity(_messages.Message):
+  r"""Describes a Resource Identity principal.
+
+  Fields:
+    principal: Output only. Principal identifier string. See:
+      https://cloud.google.com/iam/docs/principal-identifiers
+  """
+
+  principal = _messages.StringField(1)
 
 
 class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
@@ -2958,6 +3103,47 @@ class GoogleFirestoreAdminV1TtlConfigDelta(_messages.Message):
 
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
   r"""Metadata related to the update database operation."""
+
+
+class GoogleFirestoreAdminV1UserCreds(_messages.Message):
+  r"""A Cloud Firestore User Creds.
+
+  Enums:
+    StateValueValuesEnum: Output only. Whether the user creds are enabled or
+      disabled. Defaults to ENABLED on creation.
+
+  Fields:
+    createTime: Output only. The time the user creds were created.
+    name: Identifier. The resource name of the UserCreds. Format:
+      `projects/{project}/databases/{database}/userCreds/{user_creds}`
+    resourceIdentity: Resource Identity descriptor.
+    securePassword: Output only. The plaintext server-generated password for
+      the user creds. Only populated in responses for CreateUserCreds and
+      ResetUserPassword.
+    state: Output only. Whether the user creds are enabled or disabled.
+      Defaults to ENABLED on creation.
+    updateTime: Output only. The time the user creds were last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether the user creds are enabled or disabled. Defaults
+    to ENABLED on creation.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. Should not be used.
+      ENABLED: The user creds are enabled.
+      DISABLED: The user creds are disabled.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  resourceIdentity = _messages.MessageField('GoogleFirestoreAdminV1ResourceIdentity', 3)
+  securePassword = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleFirestoreAdminV1VectorConfig(_messages.Message):

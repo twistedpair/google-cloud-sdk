@@ -46,12 +46,13 @@ def AddCollectionIdsFlag(parser):
   )
 
 
-def AddDatabaseIdFlag(parser, required=False):
+def AddDatabaseIdFlag(parser, required=False, hidden=False):
   """Adds flag for database id to the given parser.
 
   Args:
     parser: The argparse parser.
     required: Whether the flag must be set for running the command, a bool.
+    hidden: Whether the flag is hidden, a bool.
   """
   if not required:
     helper_text = """\
@@ -75,6 +76,7 @@ def AddDatabaseIdFlag(parser, required=False):
       type=str,
       default='(default)' if not required else None,
       required=required,
+      hidden=hidden,
       help=helper_text,
   )
 
@@ -339,4 +341,25 @@ def AddKmsKeyNameFlag(parser, additional_help_text=None):
       required=False,
       default=None,
       help=help_text,
+  )
+
+
+def AddUserCredsIdArg(parser):
+  """Adds positional arg for user creds id to the given parser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      'user_creds',
+      metavar='USER_CREDS',
+      type=str,
+      hidden=True,
+      help="""
+      The user creds to operate on.
+
+      For example, to operate on user creds `creds-name-1`:
+
+        $ {command} creds-name-1
+      """,
   )

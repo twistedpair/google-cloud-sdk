@@ -863,6 +863,21 @@ def AddTargetSizePolicyModeFlag(parser):
   )
 
 
+def AddWorkloadPolicyFlag(parser):
+  """Add workload policy flag."""
+  parser.add_argument(
+      '--workload-policy',
+      type=str,
+      metavar='WORKLOAD_POLICY',
+      help=(
+          'Specifies the workload policy for the managed instance group. It '
+          'can be a full or partial URL to the resource policies containing '
+          'the workload policy.'
+      ),
+      hidden=True,
+  )
+
+
 class ArgMultiValueDict:
   """Converts argument values into multi-valued mappings.
 

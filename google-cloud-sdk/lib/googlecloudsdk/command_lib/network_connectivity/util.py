@@ -46,17 +46,18 @@ LIST_FORMAT = """
       hub.basename(),
       group.basename(),
       format(
-        "{0}{1}{2}{3}",
+        "{0}{1}{2}{3}{4}",
         linkedVpnTunnels.yesno(yes="VPN tunnel", no=""),
         linkedInterconnectAttachments.yesno(yes="VLAN attachment", no=""),
         linkedRouterApplianceInstances.yesno(yes="Router appliance", no=""),
-        linkedVpcNetwork.yesno(yes="VPC network", no="")
+        linkedVpcNetwork.yesno(yes="VPC network", no=""),
+        gateway.yesno(yes="Gateway", no="")
       ):label=TYPE,
-      firstof(linkedVpnTunnels.uris, linkedInterconnectAttachments.uris, linkedRouterApplianceInstances.instances, linkedVpcNetwork).len():label="RESOURCE COUNT",
+      firstof(linkedVpnTunnels.uris, linkedInterconnectAttachments.uris, linkedRouterApplianceInstances.instances).len().yesno(no="1"):label="RESOURCE COUNT",
       format(
         "{0}{1}",
         linkedVpcNetwork.yesno(yes="N/A", no=""),
-        firstof(linkedVpnTunnels.siteToSiteDataTransfer, linkedInterconnectAttachments.siteToSiteDataTransfer, linkedRouterApplianceInstances.siteToSiteDataTransfer).yesno(yes="On", no="")
+        firstof(linkedVpnTunnels.siteToSiteDataTransfer, linkedInterconnectAttachments.siteToSiteDataTransfer, linkedRouterApplianceInstances.siteToSiteDataTransfer, Gateway).yesno(yes="On", no="")
       ).yesno(no="Off"):label="DATA TRANSFER",
       description
     )

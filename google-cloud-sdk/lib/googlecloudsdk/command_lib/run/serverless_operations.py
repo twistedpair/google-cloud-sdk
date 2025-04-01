@@ -785,7 +785,7 @@ class ServerlessOperations(object):
     tracker.StartStage(stages.VALIDATE_SERVICE)
     tracker.UpdateHeaderMessage('Validating Service...')
     self._UpdateOrCreateService(
-        service_ref, config_changes, True, svc, dry_run=True
+        service_ref, validate_config_changes, True, svc, dry_run=True
     )
     tracker.CompleteStage(stages.VALIDATE_SERVICE)
 

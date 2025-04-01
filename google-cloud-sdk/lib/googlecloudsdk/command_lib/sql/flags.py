@@ -2831,7 +2831,8 @@ def AddEnableGoogleMLIntegration(parser, hidden=False):
       hidden=hidden,
       help=(
           'Enable Vertex AI integration for Google Cloud SQL. '
-          'Currently, only PostgreSQL is supported.'
+          'You can integrate Vertex AI with Cloud SQL for MySQL and Cloud SQL '
+          'for PostgreSQL instances only.'
       ),
       action=arg_parsers.StoreTrueFalseAction,
   )

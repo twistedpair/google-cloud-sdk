@@ -265,3 +265,52 @@ def _GetGceInstanceCanonicalName(
   if errors_to_collect:
     raise core_exceptions.MultiError(errors_to_collect)
   return str(instances[0].id)
+
+
+def ParseTagGroup(args, original):
+  """Parses the tag keys and values into a map to be used for update."""
+
+  if args.IsSpecified('clear_tags'):
+    return {}
+
+  tags_map_to_update = {}
+
+  if args.IsSpecified('update_tags'):
+    tags_dict = args.update_tags
+
+    tag_group = ExtractExistingTags(original, {})
+
+    for tag_key, tag_value in tags_dict.items():
+      tag_group[tag_key] = tag_value
+
+    tags_map_to_update = tag_group
+
+  if args.IsSpecified('remove_tags'):
+    tags_list = args.remove_tags
+    tag_group = tags_map_to_update
+
+    tag_group = ExtractExistingTags(original, tag_group)
+
+    for tag_key in tags_list:
+      if tag_key in tag_group:
+        unused_removed_tag = tag_group.pop(tag_key)
+        # remove the tag from the original tags
+    tags_map_to_update.update(tag_group)
+
+  if args.IsSpecified('replace_tags'):
+    tags_dict = args.replace_tags
+    tag_group = {}
+    for tag_key, tag_value in tags_dict.items():
+      tag_group[tag_key] = tag_value
+    tags_map_to_update = tag_group
+
+  return tags_map_to_update
+
+
+def ExtractExistingTags(original, tag_group):
+  """Extracts the existing tags from the original tags."""
+  if original.tags:
+    additional_property = original.tags.additionalProperties
+    for property_item in additional_property:
+      tag_group[property_item.key] = property_item.value
+  return tag_group

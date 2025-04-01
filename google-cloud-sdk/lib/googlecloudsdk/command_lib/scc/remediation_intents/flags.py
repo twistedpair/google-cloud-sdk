@@ -120,3 +120,31 @@ UPDATE_MASK_FLAG = base.Argument(
               Format: field1,field2.""",
     required=False,
 )
+
+GIT_CONFIG_FILE_PATH_FLAG = base.Argument(
+    '--git-config-path',
+    help=""" Path to the git config file in YAML format to raise the PR.
+            Format: /path/to/file.yaml. Sample Config file:\n
+              remote: origin
+              main-branch-name: master
+              branch-prefix: iac-remediation-
+              reviewers: reviewer1,reviewer2
+            """,
+    metavar='GIT_SETTINGS',
+    type=arg_parsers.YAMLFileContents(),
+    required=True,
+)
+
+ORG_ID_FLAG = base.Argument(
+    '--org-id',
+    help=""" The Google Cloud organization ID""",
+    required=True,
+)
+
+ROOT_DIR_PATH_FLAG = base.Argument(
+    '--root-dir-path',
+    help=""" The relative path to the root directory for the terraform
+    repository.\n If not specified, the default value
+    is assumed to be the current directory.""",
+    required=False,
+)

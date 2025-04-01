@@ -679,7 +679,24 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
         "dataFreshness": "3600s"
       }
       ```
-        """,
+
+      BigQuery configuration with Big Lake table configuration:
+      ```
+      {
+        "singleTargetDataset": {
+          "datasetId": "projectId:datasetId"
+        },
+        "appendOnly": {},
+        "blmtConfig": {
+          "bucket": "bucketName",
+          "tableFormat": "ICEBERG",
+          "fileFormat": "PARQUET",
+          "connectionName": "projectId.region.connectionName",
+          "rootPath": "/root"
+        }
+      }
+      ```
+      """,
   )
 
   source_field = 'source'

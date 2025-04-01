@@ -45,6 +45,7 @@ class FirestoreV1(base_api.BaseApiClient):
     self.projects_databases_collectionGroups = self.ProjectsDatabasesCollectionGroupsService(self)
     self.projects_databases_documents = self.ProjectsDatabasesDocumentsService(self)
     self.projects_databases_operations = self.ProjectsDatabasesOperationsService(self)
+    self.projects_databases_userCreds = self.ProjectsDatabasesUserCredsService(self)
     self.projects_databases = self.ProjectsDatabasesService(self)
     self.projects_locations_backups = self.ProjectsLocationsBackupsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -998,6 +999,205 @@ class FirestoreV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='FirestoreProjectsDatabasesOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsDatabasesUserCredsService(base_api.BaseApiService):
+    """Service class for the projects_databases_userCreds resource."""
+
+    _NAME = 'projects_databases_userCreds'
+
+    def __init__(self, client):
+      super(FirestoreV1.ProjectsDatabasesUserCredsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a user creds.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1UserCreds) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds',
+        http_method='POST',
+        method_id='firestore.projects.databases.userCreds.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['userCredsId'],
+        relative_path='v1/{+parent}/userCreds',
+        request_field='googleFirestoreAdminV1UserCreds',
+        request_type_name='FirestoreProjectsDatabasesUserCredsCreateRequest',
+        response_type_name='GoogleFirestoreAdminV1UserCreds',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a user creds.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds/{userCredsId}',
+        http_method='DELETE',
+        method_id='firestore.projects.databases.userCreds.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesUserCredsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Disable(self, request, global_params=None):
+      r"""Disables a user creds. No-op if the user creds are already disabled.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1UserCreds) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds/{userCredsId}:disable',
+        http_method='POST',
+        method_id='firestore.projects.databases.userCreds.disable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:disable',
+        request_field='googleFirestoreAdminV1DisableUserCredsRequest',
+        request_type_name='FirestoreProjectsDatabasesUserCredsDisableRequest',
+        response_type_name='GoogleFirestoreAdminV1UserCreds',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""Enables a user creds. No-op if the user creds are already enabled.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1UserCreds) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds/{userCredsId}:enable',
+        http_method='POST',
+        method_id='firestore.projects.databases.userCreds.enable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enable',
+        request_field='googleFirestoreAdminV1EnableUserCredsRequest',
+        request_type_name='FirestoreProjectsDatabasesUserCredsEnableRequest',
+        response_type_name='GoogleFirestoreAdminV1UserCreds',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a user creds resource. Note that the returned resource does not contain the secret value itself.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1UserCreds) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds/{userCredsId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.userCreds.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesUserCredsGetRequest',
+        response_type_name='GoogleFirestoreAdminV1UserCreds',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all user creds in the database. Note that the returned resource does not contain the secret value itself.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1ListUserCredsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds',
+        http_method='GET',
+        method_id='firestore.projects.databases.userCreds.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/userCreds',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesUserCredsListRequest',
+        response_type_name='GoogleFirestoreAdminV1ListUserCredsResponse',
+        supports_download=False,
+    )
+
+    def ResetPassword(self, request, global_params=None):
+      r"""Resets the password of a user creds.
+
+      Args:
+        request: (FirestoreProjectsDatabasesUserCredsResetPasswordRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1UserCreds) The response message.
+      """
+      config = self.GetMethodConfig('ResetPassword')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResetPassword.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}/userCreds/{userCredsId}:resetPassword',
+        http_method='POST',
+        method_id='firestore.projects.databases.userCreds.resetPassword',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:resetPassword',
+        request_field='googleFirestoreAdminV1ResetUserPasswordRequest',
+        request_type_name='FirestoreProjectsDatabasesUserCredsResetPasswordRequest',
+        response_type_name='GoogleFirestoreAdminV1UserCreds',
         supports_download=False,
     )
 

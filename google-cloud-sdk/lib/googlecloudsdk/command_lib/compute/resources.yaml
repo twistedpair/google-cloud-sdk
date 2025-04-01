@@ -356,3 +356,12 @@ vpn_tunnel:
   - parameter_name: vpnTunnel
     attribute_name: vpn_tunnel
     help: The name of the Google Compute Engine VPN tunnel.
+
+reliability_risk:
+  name: Reliability Risk
+  collection: compute.reliabilityRisks
+  attributes:
+  - *compute_project
+  - parameter_name: reliabilityRisk
+    attribute_name: reliability_risk
+    help: The name of the Google Compute reliability risk.

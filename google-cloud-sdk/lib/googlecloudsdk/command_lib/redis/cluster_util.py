@@ -74,6 +74,10 @@ def ParseTimeOfDayBeta(start_time):
   return ParseTimeOfDay(start_time, 'v1beta1')
 
 
+def ParseTimeOfDayGa(start_time):
+  return ParseTimeOfDay(start_time, 'v1')
+
+
 def ParseTimeOfDay(start_time, api_version):
   m = re.match(r'^(\d?\d):00$', start_time)
   if m:

@@ -1458,6 +1458,15 @@ def CreateInstanceFlexibilityPolicy(args, messages, igm_resource=None):
   return ValueOrNone(instance_flexibility_policy)
 
 
+def CreateResourcePolicies(messages, args):
+  """Creates resource policies from args."""
+  policy = messages.InstanceGroupManagerResourcePolicies()
+  if args.IsKnownAndSpecified('workload_policy'):
+    policy.workloadPolicy = args.workload_policy
+
+  return ValueOrNone(policy)
+
+
 def CreateInstanceSelections(args, messages, igm_resource):
   """Build a list of InstanceSelection from the given flags."""
   instance_selections = []

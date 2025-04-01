@@ -653,8 +653,8 @@ def ListRepositories(args):
       )
     except apitools_exceptions.HttpError as e:
       if e.status_code > 500:
-        log.warning.Print(
-            "WARNING: Failed to list repositories for project {}".format(
+        log.warning(
+            "Failed to list repositories for project {}".format(
                 project
             )
         )

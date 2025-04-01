@@ -103,19 +103,19 @@ def _GetResourceLimitsChanges(args, non_ingress_type=False):
 
 def _GetLabelChanges(args):
   """Returns the label changes for the given args."""
-  additions = (
-      args.labels
-      if flags.FlagIsExplicitlySet(args, 'labels')
-      else args.update_labels
-  )
+  additions = {}
+  if flags.FlagIsExplicitlySet(args, 'labels'):
+    additions = args.labels
+  elif flags.FlagIsExplicitlySet(args, 'update_labels'):
+    additions = args.update_labels
   subtractions = (
       args.remove_labels
       if flags.FlagIsExplicitlySet(args, 'remove_labels')
       else []
   )
   return config_changes.LabelChange(
-      additions,
-      subtractions,
+      additions=additions,
+      subtractions=subtractions,
       clear_labels=args.clear_labels if 'clear_labels' in args else False,
   )
 

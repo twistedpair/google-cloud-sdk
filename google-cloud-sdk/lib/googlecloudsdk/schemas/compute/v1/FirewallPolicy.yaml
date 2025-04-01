@@ -1,0 +1,42 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute v1 FirewallPolicy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  packetMirroringRules:
+    description: |-
+      A list of packet mirroring rules that belong to this policy.
+    type: array
+    items:
+      $ref: FirewallPolicyRule.yaml
+  rules:
+    description: |-
+      A list of rules that belong to this policy. There must always be a
+      default rule (rule with priority 2147483647 and match "*"). If no
+      rules are provided when creating a firewall policy, a default rule
+      with action "allow" will be added.
+    type: array
+    items:
+      $ref: FirewallPolicyRule.yaml

@@ -131,7 +131,6 @@ def SubnetworkResolver():
 def AddUpdateArgs(
     parser,
     include_alpha_logging,
-    include_external_ipv6_prefix,
     include_internal_ipv6_prefix,
     include_allow_cidr_routes_overlap,
     api_version,
@@ -142,7 +141,6 @@ def AddUpdateArgs(
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
-    include_external_ipv6_prefix: Inlcude user assigned external IPv6 prefix.
     include_internal_ipv6_prefix: Include user assigned internal IPv6 prefix.
     include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
@@ -192,14 +190,17 @@ def AddUpdateArgs(
        """,
   )
 
-  if include_external_ipv6_prefix:
-    parser.add_argument(
-        '--external-ipv6-prefix',
-        help=("""
-        Set external IPv6 prefix to be allocated for this subnetwork.
+  parser.add_argument(
+      '--external-ipv6-prefix',
+      help=("""
+      The /64 external IPv6 CIDR range to assign to this subnet. The range must
+      be associated with an IPv6 BYOIP sub-prefix that is defined by the
+      --ip-collection flag. If you specify --ip-collection but not
+      --external-ipv6-prefix, a random /64 range is allocated from
+      the sub-prefix.
 
-        For example, `--external-ipv6-prefix 2600:1901:0:0:0:0:0:0/64`
-        """))
+      For example, `--external-ipv6-prefix=2600:1901:0:0:0:0:0:0/64`
+      """))
 
   if include_internal_ipv6_prefix:
     parser.add_argument(

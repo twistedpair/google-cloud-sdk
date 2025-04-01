@@ -54,14 +54,12 @@ class GkerecommenderAcceleratorsListRequest(_messages.Message):
     modelServerVersion: A string attribute.
     performanceRequirements_maxNtpotMilliseconds: The max normalized time per
       output token.
-    performanceRequirements_maxTpotMilliseconds: A integer attribute.
   """
 
   modelName = _messages.StringField(1)
   modelServerName = _messages.StringField(2, default='ANY')
   modelServerVersion = _messages.StringField(3, default='LATEST')
   performanceRequirements_maxNtpotMilliseconds = _messages.IntegerField(4, variant=_messages.Variant.INT32, default=999999)
-  performanceRequirements_maxTpotMilliseconds = _messages.IntegerField(5, variant=_messages.Variant.INT32, default=999999)
 
 
 class GkerecommenderModelServersListRequest(_messages.Message):
@@ -116,7 +114,6 @@ class GkerecommenderOptimizedManifestRequest(_messages.Message):
     modelAndModelServerInfo_modelServerVersion: A string attribute.
     targetNtpotMilliseconds: The target number of normalized time per output
       token.
-    targetTpotMilliseconds: A integer attribute.
   """
 
   acceleratorType = _messages.StringField(1)
@@ -125,7 +122,6 @@ class GkerecommenderOptimizedManifestRequest(_messages.Message):
   modelAndModelServerInfo_modelServerName = _messages.StringField(4)
   modelAndModelServerInfo_modelServerVersion = _messages.StringField(5, default='LATEST')
   targetNtpotMilliseconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  targetTpotMilliseconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class K8SManifest(_messages.Message):
@@ -149,20 +145,16 @@ class ListCompatibleAcceleratorProfilesResponse(_messages.Message):
     acceleratorOptions: A AcceleratorOption attribute.
     maxNtpotMilliseconds: A integer attribute.
     maxThroughputTokensPerSecond: A integer attribute.
-    maxTpotMilliseconds: A integer attribute.
     minNtpotMilliseconds: The minimum and maximum normalized time per output
       token.
     minThroughputTokensPerSecond: A integer attribute.
-    minTpotMilliseconds: A integer attribute.
   """
 
   acceleratorOptions = _messages.MessageField('AcceleratorOption', 1, repeated=True)
   maxNtpotMilliseconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   maxThroughputTokensPerSecond = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxTpotMilliseconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minNtpotMilliseconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minThroughputTokensPerSecond = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minTpotMilliseconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  minNtpotMilliseconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minThroughputTokensPerSecond = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class ListModelAndServerCombinationsResponse(_messages.Message):
@@ -226,13 +218,11 @@ class PerformanceStats(_messages.Message):
     ntpotMilliseconds: normalized time per output token.
     outputTokensPerSecond: A integer attribute.
     queriesPerSecond: A integer attribute.
-    tpotMilliseconds: A integer attribute.
   """
 
   ntpotMilliseconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   outputTokensPerSecond = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   queriesPerSecond = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  tpotMilliseconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ResourcesUsed(_messages.Message):
@@ -322,8 +312,6 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
 encoding.AddCustomJsonFieldMapping(
     GkerecommenderAcceleratorsListRequest, 'performanceRequirements_maxNtpotMilliseconds', 'performanceRequirements.maxNtpotMilliseconds')
-encoding.AddCustomJsonFieldMapping(
-    GkerecommenderAcceleratorsListRequest, 'performanceRequirements_maxTpotMilliseconds', 'performanceRequirements.maxTpotMilliseconds')
 encoding.AddCustomJsonFieldMapping(
     GkerecommenderOptimizedManifestRequest, 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo.modelName')
 encoding.AddCustomJsonFieldMapping(

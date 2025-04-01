@@ -154,6 +154,14 @@ class NoTLSError(exceptions.Error):
 class HttpError(exceptions_util.HttpException):
   """More prettily prints apitools HttpError."""
 
+  REDEPLOY_ERROR_MESSAGE = (
+      'You could deploy using GPUs without zonal redundancy instead.'
+  )
+  REDEPLOY_WITH_FLAG_ERROR_MESSAGE = (
+      'You could deploy with --no-gpu-zonal-redundancy flag attached to your'
+      ' command.\n'
+  )
+
   def __init__(self, error):
     super(HttpError, self).__init__(error)
     if self.payload.field_violations:
@@ -161,6 +169,15 @@ class HttpError(exceptions_util.HttpException):
           '{0}: {{field_violations.{0}}}'.format(k)
           for k in self.payload.field_violations.keys()
       ])
+      # Temporarily replace the deploy with NZR message with gcloud flag.
+      for k in self.payload.field_violations.keys():
+        if self.REDEPLOY_ERROR_MESSAGE in self.payload.field_violations[k]:
+          self.payload.field_violations[k] = self.payload.field_violations[
+              k
+          ].replace(
+              self.REDEPLOY_ERROR_MESSAGE,
+              self.REDEPLOY_WITH_FLAG_ERROR_MESSAGE,
+          )
 
 
 class FieldMismatchError(exceptions.Error):

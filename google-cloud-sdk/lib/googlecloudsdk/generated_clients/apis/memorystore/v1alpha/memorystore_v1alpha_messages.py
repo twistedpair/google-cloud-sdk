@@ -43,6 +43,183 @@ class AOFConfig(_messages.Message):
   appendFsync = _messages.EnumField('AppendFsyncValueValuesEnum', 1)
 
 
+class AutomatedBackupConfig(_messages.Message):
+  r"""The automated backup config for an instance.
+
+  Enums:
+    AutomatedBackupModeValueValuesEnum: Optional. The automated backup mode.
+      If the mode is disabled, the other fields will be ignored.
+
+  Fields:
+    automatedBackupMode: Optional. The automated backup mode. If the mode is
+      disabled, the other fields will be ignored.
+    fixedFrequencySchedule: Optional. Trigger automated backups at a fixed
+      frequency.
+    retention: Optional. How long to keep automated backups before the backups
+      are deleted. The value should be between 1 day and 365 days. If not
+      specified, the default value is 35 days.
+  """
+
+  class AutomatedBackupModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The automated backup mode. If the mode is disabled, the
+    other fields will be ignored.
+
+    Values:
+      AUTOMATED_BACKUP_MODE_UNSPECIFIED: Default value. Automated backup
+        config is not specified.
+      DISABLED: Automated backup config disabled.
+      ENABLED: Automated backup config enabled.
+    """
+    AUTOMATED_BACKUP_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  automatedBackupMode = _messages.EnumField('AutomatedBackupModeValueValuesEnum', 1)
+  fixedFrequencySchedule = _messages.MessageField('FixedFrequencySchedule', 2)
+  retention = _messages.StringField(3)
+
+
+class Backup(_messages.Message):
+  r"""Backup of an instance.
+
+  Enums:
+    BackupTypeValueValuesEnum: Output only. Type of the backup.
+    NodeTypeValueValuesEnum: Output only. Node type of the instance.
+    StateValueValuesEnum: Output only. State of the backup.
+
+  Fields:
+    backupFiles: Output only. List of backup files of the backup.
+    backupType: Output only. Type of the backup.
+    createTime: Output only. The time when the backup was created.
+    engineVersion: Output only. valkey-7.5/valkey-8.0, etc.
+    expireTime: Output only. The time when the backup will expire.
+    instance: Output only. Instance resource path of this backup.
+    instanceUid: Output only. Instance uid of this backup.
+    name: Identifier. Full resource path of the backup. the last part of the
+      name is the backup id with the following format:
+      [YYYYMMDDHHMMSS]_[Shorted Instance UID] OR customer specified while
+      backup instance. Example: 20240515123000_1234
+    nodeType: Output only. Node type of the instance.
+    replicaCount: Output only. Number of replicas for the instance.
+    shardCount: Output only. Number of shards for the instance.
+    state: Output only. State of the backup.
+    totalSizeBytes: Output only. Total size of the backup in bytes.
+    uid: Output only. System assigned unique identifier of the backup.
+  """
+
+  class BackupTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the backup.
+
+    Values:
+      BACKUP_TYPE_UNSPECIFIED: The default value, not set.
+      ON_DEMAND: On-demand backup.
+      AUTOMATED: Automated backup.
+    """
+    BACKUP_TYPE_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    AUTOMATED = 2
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Node type of the instance.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: Not set.
+      SHARED_CORE_NANO: Shared core nano.
+      HIGHMEM_MEDIUM: High memory medium.
+      HIGHMEM_XLARGE: High memory extra large.
+      STANDARD_SMALL: Standard small.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    SHARED_CORE_NANO = 1
+    HIGHMEM_MEDIUM = 2
+    HIGHMEM_XLARGE = 3
+    STANDARD_SMALL = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The default value, not set.
+      CREATING: The backup is being created.
+      ACTIVE: The backup is active to be used.
+      DELETING: The backup is being deleted.
+      SUSPENDED: The backup is currently suspended due to reasons like project
+        deletion, billing account closure, etc.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    SUSPENDED = 4
+
+  backupFiles = _messages.MessageField('BackupFile', 1, repeated=True)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  engineVersion = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  instance = _messages.StringField(6)
+  instanceUid = _messages.StringField(7)
+  name = _messages.StringField(8)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
+  replicaCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  totalSizeBytes = _messages.IntegerField(13)
+  uid = _messages.StringField(14)
+
+
+class BackupCollection(_messages.Message):
+  r"""BackupCollection of an instance.
+
+  Fields:
+    createTime: Output only. The time when the backup collection was created.
+    instance: Output only. The full resource path of the instance the backup
+      collection belongs to. Example:
+      projects/{project}/locations/{location}/instances/{instance}
+    instanceUid: Output only. The instance uid of the backup collection.
+    kmsKey: Output only. The KMS key used to encrypt the backups under this
+      backup collection.
+    name: Identifier. Full resource path of the backup collection.
+    uid: Output only. System assigned unique identifier of the backup
+      collection.
+  """
+
+  createTime = _messages.StringField(1)
+  instance = _messages.StringField(2)
+  instanceUid = _messages.StringField(3)
+  kmsKey = _messages.StringField(4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
+
+
+class BackupFile(_messages.Message):
+  r"""Backup is consisted of multiple backup files.
+
+  Fields:
+    createTime: Output only. The time when the backup file was created.
+    fileName: Output only. e.g: .rdb
+    sizeBytes: Output only. Size of the backup file in bytes.
+  """
+
+  createTime = _messages.StringField(1)
+  fileName = _messages.StringField(2)
+  sizeBytes = _messages.IntegerField(3)
+
+
+class BackupInstanceRequest(_messages.Message):
+  r"""Request for [BackupInstance].
+
+  Fields:
+    backupId: Optional. The id of the backup to be created. If not specified,
+      the default value ([YYYYMMDDHHMMSS]_[Shortened Instance UID] is used.
+    ttl: Optional. TTL for the backup to expire. Value range is 1 day to 100
+      years. If not specified, the default value is 100 years.
+  """
+
+  backupId = _messages.StringField(1)
+  ttl = _messages.StringField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -168,6 +345,40 @@ class Empty(_messages.Message):
 
 
 
+class ExportBackupRequest(_messages.Message):
+  r"""Request for [ExportBackup].
+
+  Fields:
+    gcsBucket: Google Cloud Storage bucket, like "my-bucket".
+  """
+
+  gcsBucket = _messages.StringField(1)
+
+
+class FixedFrequencySchedule(_messages.Message):
+  r"""This schedule allows the backup to be triggered at a fixed frequency
+  (currently only daily is supported).
+
+  Fields:
+    startTime: Required. The start time of every automated backup in UTC. It
+      must be set to the start of an hour. This field is required.
+  """
+
+  startTime = _messages.MessageField('TimeOfDay', 1)
+
+
+class GcsBackupSource(_messages.Message):
+  r"""Backups that stored in Cloud Storage buckets. The Cloud Storage buckets
+  need to be the same region as the instances.
+
+  Fields:
+    uris: Optional. Example: gs://bucket1/object1,
+      gs://bucket2/folder2/object2
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+
+
 class Instance(_messages.Message):
   r"""A Memorystore instance.
 
@@ -193,22 +404,34 @@ class Instance(_messages.Message):
       before the forwarding rules in the instance endpoint are deleted.
     authorizationMode: Optional. Immutable. Authorization mode of the
       instance.
+    automatedBackupConfig: Optional. The automated backup config for the
+      instance.
+    backupCollection: Output only. The backup collection full resource name.
+      Example:
+      projects/{project}/locations/{location}/backupCollections/{collection}
     createTime: Output only. Creation timestamp of the instance.
     crossInstanceReplicationConfig: Optional. The config for cross instance
       replication.
     deletionProtectionEnabled: Optional. If set to true deletion of the
       instance will fail.
-    discoveryEndpoints: Output only. Endpoints clients can connect to the
-      instance through. Currently only one discovery endpoint is supported.
+    discoveryEndpoints: Output only. Deprecated: Use the
+      endpoints.connections.psc_auto_connection or
+      endpoints.connections.psc_connection values instead.
     endpoints: Optional. Endpoints for the instance.
     engineConfigs: Optional. User-provided engine configurations for the
       instance.
     engineVersion: Optional. Engine version of the instance.
+    gcsSource: Optional. Immutable. Backups that stored in Cloud Storage
+      buckets. The Cloud Storage buckets need to be the same region as the
+      instances. Read permission is required to import from the provided Cloud
+      Storage Objects.
     labels: Optional. Labels to represent user-provided metadata.
     maintenancePolicy: Optional. The maintenance policy for the instance. If
       not provided, the maintenance event will be performed based on
       Memorystore internal rollout schedule.
     maintenanceSchedule: Output only. Published maintenance schedule.
+    managedBackupSource: Optional. Immutable. Backups that generated and
+      managed by memorystore service.
     mode: Optional. The mode config for the instance.
     name: Identifier. Unique name of the instance. Format:
       projects/{project}/locations/{location}/instances/{instance}
@@ -220,8 +443,8 @@ class Instance(_messages.Message):
     persistenceConfig: Optional. Persistence configuration of the instance.
     pscAttachmentDetails: Output only. Service attachment details to configure
       PSC connections.
-    pscAutoConnections: Optional. Immutable. User inputs and resource details
-      of the auto-created PSC connections.
+    pscAutoConnections: Optional. Immutable. Deprecated: Use the
+      endpoints.connections.psc_auto_connection value instead.
     replicaCount: Optional. Number of replica nodes per shard. If omitted the
       default is 0 replicas.
     shardCount: Optional. Number of shards for the instance.
@@ -358,32 +581,36 @@ class Instance(_messages.Message):
 
   asyncInstanceEndpointsDeletionEnabled = _messages.BooleanField(1)
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  crossInstanceReplicationConfig = _messages.MessageField('CrossInstanceReplicationConfig', 4)
-  deletionProtectionEnabled = _messages.BooleanField(5)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 6, repeated=True)
-  endpoints = _messages.MessageField('InstanceEndpoint', 7, repeated=True)
-  engineConfigs = _messages.MessageField('EngineConfigsValue', 8)
-  engineVersion = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 11)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 12)
-  mode = _messages.EnumField('ModeValueValuesEnum', 13)
-  name = _messages.StringField(14)
-  nodeConfig = _messages.MessageField('NodeConfig', 15)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 16)
-  ondemandMaintenance = _messages.BooleanField(17)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 18)
-  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 19, repeated=True)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 20, repeated=True)
-  replicaCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  stateInfo = _messages.MessageField('StateInfo', 24)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 28)
+  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 3)
+  backupCollection = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  crossInstanceReplicationConfig = _messages.MessageField('CrossInstanceReplicationConfig', 6)
+  deletionProtectionEnabled = _messages.BooleanField(7)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 8, repeated=True)
+  endpoints = _messages.MessageField('InstanceEndpoint', 9, repeated=True)
+  engineConfigs = _messages.MessageField('EngineConfigsValue', 10)
+  engineVersion = _messages.StringField(11)
+  gcsSource = _messages.MessageField('GcsBackupSource', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 14)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 15)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 16)
+  mode = _messages.EnumField('ModeValueValuesEnum', 17)
+  name = _messages.StringField(18)
+  nodeConfig = _messages.MessageField('NodeConfig', 19)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 20)
+  ondemandMaintenance = _messages.BooleanField(21)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 22)
+  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 23, repeated=True)
+  pscAutoConnections = _messages.MessageField('PscAutoConnection', 24, repeated=True)
+  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  stateInfo = _messages.MessageField('StateInfo', 28)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 29)
+  uid = _messages.StringField(30)
+  updateTime = _messages.StringField(31)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 32)
 
 
 class InstanceEndpoint(_messages.Message):
@@ -397,6 +624,44 @@ class InstanceEndpoint(_messages.Message):
   """
 
   connections = _messages.MessageField('ConnectionDetail', 1, repeated=True)
+
+
+class ListBackupCollectionsResponse(_messages.Message):
+  r"""Response for [ListBackupCollections].
+
+  Fields:
+    backupCollections: A list of backupCollections in the project. If the
+      `location_id` in the parent field of the request is "-", all regions
+      available to the project are queried, and the results aggregated. If in
+      such an aggregated query a location is unavailable, a placeholder
+      backupCollection entry is included in the response with the `name` field
+      set to a value of the form
+      `projects/{project_id}/locations/{location_id}/backupCollections/`- and
+      the `status` field set to ERROR and `status_message` field set to
+      "location not available for ListBackupCollections".
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupCollections = _messages.MessageField('BackupCollection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""Response for [ListBackups].
+
+  Fields:
+    backups: A list of backups in the project.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Backups that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -552,6 +817,21 @@ class MaintenanceSchedule(_messages.Message):
   startTime = _messages.StringField(2)
 
 
+class ManagedBackupSource(_messages.Message):
+  r"""Backups that generated and managed by memorystore.
+
+  Fields:
+    backup: Optional. Example: //memorystore.googleapis.com/projects/{project}
+      /locations/{location}/backupCollections/{collection}/backups/{backup} A
+      shorter version (without the prefix) of the backup name is also
+      supported, like projects/{project}/locations/{location}/backupCollection
+      s/{collection}/backups/{backup_id} In this case, it assumes the backup
+      is under memorystore.googleapis.com.
+  """
+
+  backup = _messages.StringField(1)
+
+
 class ManagedCertificateAuthority(_messages.Message):
   r"""A managed certificate authority.
 
@@ -578,6 +858,104 @@ class Membership(_messages.Message):
   secondaryInstances = _messages.MessageField('RemoteInstance', 2, repeated=True)
 
 
+class MemorystoreProjectsLocationsBackupCollectionsBackupsDeleteRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsBackupCollectionsBackupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Instance backup resource name using the form: `projects/{p
+      roject_id}/locations/{location_id}/backupCollections/{backup_collection_
+      id}/backups/{backup_id}`
+    requestId: Optional. Idempotent request UUID.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class MemorystoreProjectsLocationsBackupCollectionsBackupsExportRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsBackupCollectionsBackupsExportRequest
+  object.
+
+  Fields:
+    exportBackupRequest: A ExportBackupRequest resource to be passed as the
+      request body.
+    name: Required. Instance backup resource name using the form: `projects/{p
+      roject_id}/locations/{location_id}/backupCollections/{backup_collection_
+      id}/backups/{backup_id}`
+  """
+
+  exportBackupRequest = _messages.MessageField('ExportBackupRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class MemorystoreProjectsLocationsBackupCollectionsBackupsGetRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsBackupCollectionsBackupsGetRequest object.
+
+  Fields:
+    name: Required. Instance backup resource name using the form: `projects/{p
+      roject_id}/locations/{location_id}/backupCollections/{backup_collection_
+      id}/backups/{backup_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MemorystoreProjectsLocationsBackupCollectionsBackupsListRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsBackupCollectionsBackupsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's `next_page_token` to
+      determine if there are more clusters left to be queried.
+    pageToken: Optional. The `next_page_token` value returned from a previous
+      [ListBackupCollections] request, if any.
+    parent: Required. The resource name of the backupCollection using the
+      form: `projects/{project_id}/locations/{location_id}/backupCollections/{
+      backup_collection_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class MemorystoreProjectsLocationsBackupCollectionsGetRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsBackupCollectionsGetRequest object.
+
+  Fields:
+    name: Required. Instance backupCollection resource name using the form: `p
+      rojects/{project_id}/locations/{location_id}/backupCollections/{backup_c
+      ollection_id}` where `location_id` refers to a Google Cloud region.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MemorystoreProjectsLocationsBackupCollectionsListRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsBackupCollectionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's `next_page_token` to
+      determine if there are more clusters left to be queried.
+    pageToken: Optional. The `next_page_token` value returned from a previous
+      [ListBackupCollections] request, if any.
+    parent: Required. The resource name of the backupCollection location using
+      the form: `projects/{project_id}/locations/{location_id}` where
+      `location_id` refers to a Google Cloud region.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class MemorystoreProjectsLocationsGetRequest(_messages.Message):
   r"""A MemorystoreProjectsLocationsGetRequest object.
 
@@ -586,6 +964,21 @@ class MemorystoreProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class MemorystoreProjectsLocationsInstancesBackupRequest(_messages.Message):
+  r"""A MemorystoreProjectsLocationsInstancesBackupRequest object.
+
+  Fields:
+    backupInstanceRequest: A BackupInstanceRequest resource to be passed as
+      the request body.
+    name: Required. Instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a Google Cloud region.
+  """
+
+  backupInstanceRequest = _messages.MessageField('BackupInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class MemorystoreProjectsLocationsInstancesCreateRequest(_messages.Message):
@@ -735,6 +1128,8 @@ class MemorystoreProjectsLocationsListRequest(_messages.Message):
   r"""A MemorystoreProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -745,10 +1140,11 @@ class MemorystoreProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class MemorystoreProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1110,6 +1506,8 @@ class PscConnection(_messages.Message):
       forwarding rule.
     network: Required. The consumer network where the IP address resides, in
       the form of projects/{project_id}/global/networks/{network_id}.
+    port: Optional. port will only be set for Primary/Reader or Discovery
+      endpoint.
     projectId: Output only. The consumer project_id where the forwarding rule
       is created from.
     pscConnectionId: Required. The PSC connection id of the forwarding rule
@@ -1160,10 +1558,11 @@ class PscConnection(_messages.Message):
   forwardingRule = _messages.StringField(2)
   ipAddress = _messages.StringField(3)
   network = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  pscConnectionId = _messages.StringField(6)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 7)
-  serviceAttachment = _messages.StringField(8)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(6)
+  pscConnectionId = _messages.StringField(7)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 8)
+  serviceAttachment = _messages.StringField(9)
 
 
 class RDBConfig(_messages.Message):

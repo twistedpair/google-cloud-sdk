@@ -964,12 +964,17 @@ class CustomMirroringProfile(_messages.Message):
   (mirroring). It is used by mirroring rules with a MIRROR action.
 
   Fields:
+    mirroringDeploymentGroups: Optional. The target downstream
+      MirroringDeploymentGroups. This field is used for Packet Broker
+      mirroring endpoint groups to specify the deployment groups that the
+      packet should be mirrored to by the broker.
     mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
       a mirroring rule with this security profile attached matches a packet, a
       replica will be mirrored to the location-local target in this group.
   """
 
-  mirroringEndpointGroup = _messages.StringField(1)
+  mirroringDeploymentGroups = _messages.StringField(1, repeated=True)
+  mirroringEndpointGroup = _messages.StringField(2)
 
 
 class Destination(_messages.Message):
@@ -3517,6 +3522,9 @@ class MirroringEndpoint(_messages.Message):
       additional context for the endpoint.
     labels: Optional. Labels are key/value pairs that help to organize and
       filter resources.
+    mirroringEndpointGroup: Required. Immutable. The endpoint group that this
+      endpoint belongs to. Format is: `projects/{project}/locations/{location}
+      /mirroringEndpointGroups/{mirroringEndpointGroup}`
     name: Immutable. Identifier. The resource name of this endpoint, for
       example: `projects/123456789/locations/us-
       central1-a/mirroringEndpoints/my-endpoint`. See
@@ -3579,10 +3587,11 @@ class MirroringEndpoint(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  mirroringEndpointGroup = _messages.StringField(4)
+  name = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MirroringEndpointGroup(_messages.Message):
@@ -6394,6 +6403,8 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -6404,10 +6415,11 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest(_messages.Message):
@@ -8587,7 +8599,7 @@ class PartnerSSEGateway(_messages.Message):
       with Symantec today.
     sseSubnetRange: Optional. Subnet range where SSE GW instances are
       deployed. Default value is set to "100.88.255.0/24". The CIDR suffix
-      should be less than or equal to 24.
+      should be less than or equal to 25.
     sseTargetIp: Output only. [Output Only] Target IP that belongs to
       sse_subnet_range where partner should send the traffic to reach the
       customer networks.

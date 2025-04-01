@@ -142,6 +142,7 @@ class JobPrinter(cp.CustomPrinterBase):
             'Volumes',
             container_util.GetVolumes(record.template),
         ),
+        ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record)),
     ])
 
   @staticmethod
@@ -329,6 +330,7 @@ class ExecutionPrinter(cp.CustomPrinterBase):
             'Volumes',
             container_util.GetVolumes(record.template),
         ),
+        ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record))
     ])
 
   @staticmethod

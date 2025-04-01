@@ -1,0 +1,54 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute v1 FirewallPolicyAssociation export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  attachmentTarget:
+    description: The target that the firewall policy is attached to.
+    type: string
+  displayName:
+    description: |-
+      [Output Only] Deprecated, please use short name instead. The display name
+      of the firewall policy of the association.
+    type: string
+  firewallPolicyId:
+    description: '[Output Only] The firewall policy ID of the association.'
+    type: string
+  name:
+    description: The name for an association.
+    type: string
+  priority:
+    description: |-
+      An integer indicating the priority of an association. The priority must be
+      a positive value between 1 and 2147483647. Firewall Policies are evaluated
+      from highest to lowest priority where 1 is the highest priority and
+      2147483647 is the lowest priority. The default value is `1000`. If two
+      associations have the same priority then lexicographical order on
+      association names is applied.
+    type: integer
+  shortName:
+    description: |-
+      [Output Only] The short name of the firewall policy of the association.
+    type: string

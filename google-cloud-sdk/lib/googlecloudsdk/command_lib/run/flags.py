@@ -276,7 +276,6 @@ def AddIapFlag(parser):
       '--iap',
       action=arg_parsers.StoreTrueFalseAction,
       required=False,
-      hidden=True,
       help='Whether to enable IAP for the Service.',
   )
 
@@ -1581,6 +1580,7 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
           ' {split_type} split changes. Use "default" to unset the limit and'
           ' use the platform default.'.format(split_type=split_type)
       ),
+      hidden=True,
   )
 
 
@@ -1620,6 +1620,7 @@ def AddMaxUnavailableFlag(parser, resource_kind='service'):
           ' {split_type} split changes. Use "default" to unset the limit and'
           ' use the platform default.'.format(split_type=split_type)
       ),
+      hidden=True,
   )
 
 

@@ -39,10 +39,194 @@ class MemorystoreV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_backupCollections_backups = self.ProjectsLocationsBackupCollectionsBackupsService(self)
+    self.projects_locations_backupCollections = self.ProjectsLocationsBackupCollectionsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsBackupCollectionsBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupCollections_backups resource."""
+
+    _NAME = 'projects_locations_backupCollections_backups'
+
+    def __init__(self, client):
+      super(MemorystoreV1.ProjectsLocationsBackupCollectionsBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specific backup.
+
+      Args:
+        request: (MemorystoreProjectsLocationsBackupCollectionsBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='memorystore.projects.locations.backupCollections.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='MemorystoreProjectsLocationsBackupCollectionsBackupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Export(self, request, global_params=None):
+      r"""Exports a specific backup to a customer target Cloud Storage URI.
+
+      Args:
+        request: (MemorystoreProjectsLocationsBackupCollectionsBackupsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups/{backupsId}:export',
+        http_method='POST',
+        method_id='memorystore.projects.locations.backupCollections.backups.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:export',
+        request_field='exportBackupRequest',
+        request_type_name='MemorystoreProjectsLocationsBackupCollectionsBackupsExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a specific backup.
+
+      Args:
+        request: (MemorystoreProjectsLocationsBackupCollectionsBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='memorystore.projects.locations.backupCollections.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='MemorystoreProjectsLocationsBackupCollectionsBackupsGetRequest',
+        response_type_name='Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all backups owned by a backup collection.
+
+      Args:
+        request: (MemorystoreProjectsLocationsBackupCollectionsBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups',
+        http_method='GET',
+        method_id='memorystore.projects.locations.backupCollections.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backups',
+        request_field='',
+        request_type_name='MemorystoreProjectsLocationsBackupCollectionsBackupsListRequest',
+        response_type_name='ListBackupsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupCollectionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupCollections resource."""
+
+    _NAME = 'projects_locations_backupCollections'
+
+    def __init__(self, client):
+      super(MemorystoreV1.ProjectsLocationsBackupCollectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a backup collection.
+
+      Args:
+        request: (MemorystoreProjectsLocationsBackupCollectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupCollection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}',
+        http_method='GET',
+        method_id='memorystore.projects.locations.backupCollections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='MemorystoreProjectsLocationsBackupCollectionsGetRequest',
+        response_type_name='BackupCollection',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all backup collections owned by a consumer project in either the specified location (region) or all locations. If `location_id` is specified as `-` (wildcard), then all regions available to the project are queried, and the results are aggregated.
+
+      Args:
+        request: (MemorystoreProjectsLocationsBackupCollectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupCollectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections',
+        http_method='GET',
+        method_id='memorystore.projects.locations.backupCollections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupCollections',
+        request_field='',
+        request_type_name='MemorystoreProjectsLocationsBackupCollectionsListRequest',
+        response_type_name='ListBackupCollectionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
@@ -53,6 +237,33 @@ class MemorystoreV1(base_api.BaseApiClient):
       super(MemorystoreV1.ProjectsLocationsInstancesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Backup(self, request, global_params=None):
+      r"""Backup Instance. If this is the first time a backup is being created, a backup collection will be created at the backend, and this backup belongs to this collection. Both collection and backup will have a resource name. Backup will be executed for each shard. A replica (primary if nonHA) will be selected to perform the execution. Backup call will be rejected if there is an ongoing backup or update operation. Be aware that during preview, if the instance's internal software version is too old, critical update will be performed before actual backup. Once the internal software version is updated to the minimum version required by the backup feature, subsequent backups will not require critical update. After preview, there will be no critical update needed for backup.
+
+      Args:
+        request: (MemorystoreProjectsLocationsInstancesBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Backup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Backup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:backup',
+        http_method='POST',
+        method_id='memorystore.projects.locations.instances.backup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:backup',
+        request_field='backupInstanceRequest',
+        request_type_name='MemorystoreProjectsLocationsInstancesBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new Instance in a given project and location.
@@ -417,7 +628,7 @@ class MemorystoreV1(base_api.BaseApiClient):
         method_id='memorystore.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='MemorystoreProjectsLocationsListRequest',

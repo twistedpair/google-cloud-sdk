@@ -17,9 +17,10 @@
 import os
 import subprocess
 import tempfile
-from typing import Tuple
+from typing import List, Mapping, Tuple
 
 from googlecloudsdk.api_lib.scc.remediation_intents import const
+from googlecloudsdk.command_lib.code import run_subprocess
 from googlecloudsdk.core.util import files
 
 
@@ -83,7 +84,7 @@ def get_working_tree_dir(*, remote_name, branch_name):
       ['git', 'worktree', 'list']  # output format is: <path> <branch>
   ).decode('utf-8')
   for line in existing_worktrees.splitlines():
-    if branch_name in line.split()[1]:
+    if branch_name in line:
       # If worktree found for the branch, set it
       worktree_dir = line.split()[0]
       break
@@ -115,38 +116,62 @@ def push_commit(files_data, commit_message, remote_name, branch_name):
 
   Args:
     files_data: Dictionary of file path (relative path of the files in original
-    repo) and file data in string format to be written
+      repo) and file data in string format to be written
     commit_message: Message to be added to the commit.
     remote_name: Name of the remote of the repo at which to check.
     branch_name: Name of the branch where commit needs to be pushed.
   """
   worktree_dir = get_working_tree_dir(
-      remote_name=remote_name, branch_name=branch_name)
+      remote_name=remote_name, branch_name=branch_name
+  )
   # Overwrite the files in the worktree dir's for the branch.
   for file_path, file_data in files_data.items():
     abs_file_path = os.path.join(worktree_dir, file_path)
     files.WriteFileContents(abs_file_path, file_data)
     subprocess.run(  # add them to the git index
         ['git', 'add', abs_file_path],
-        check=True, cwd=worktree_dir,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        check=True,
+        cwd=worktree_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
 
   subprocess.run(
       ['git', 'commit', '-m', commit_message],
-      check=False, cwd=worktree_dir,
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+      check=False,
+      cwd=worktree_dir,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
   )
   # Push the commit.
   subprocess.run(
       ['git', 'push'],
-      check=False, cwd=worktree_dir,
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+      check=False,
+      cwd=worktree_dir,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
   )
 
 
+def get_file_modifiers(files_data: Mapping[str, str]) -> List[str]:
+  """Returns the file modifiers for the given files data.
+
+  Args:
+    files_data: Dictionary of file path and file data.
+  """
+  log_command = ['git', 'log', '-s', '-n1', '--pretty=format:%ae%n']
+  for file_path, _ in files_data.items():
+    log_command.append(file_path)
+  try:
+    return run_subprocess.GetOutputLines(
+        log_command, timeout_sec=const.TF_CMD_TIMEOUT, strip_output=True
+    )
+  except Exception:  # pylint: disable=broad-exception-caught
+    return None
+
+
 def create_pr(
-    title, desc, remote_name, branch_name, base_branch
+    title, desc, remote_name, branch_name, base_branch, reviewers
 ) -> Tuple[bool, str]:
   """Creates a PR for the given branch to the main base branch.
 
@@ -156,6 +181,7 @@ def create_pr(
     remote_name: Name of the remote of the repo at which to check.
     branch_name: The branch from which PR needs to be created.
     base_branch: The main branch name to be which PR needs to be merged.
+    reviewers: List of reviewers to be added to the PR.
 
   Returns:
     Boolean indicating whether the PR was created successfully or not.
@@ -166,17 +192,27 @@ def create_pr(
       branch_name=branch_name
   )
   pr_command = [
-      'gh', 'pr', 'create',
-      '--base', base_branch,
-      '--head', branch_name,
-      '--title', title,
-      '--body', desc,
+      'gh',
+      'pr',
+      'create',
+      '--base',
+      base_branch,
+      '--head',
+      branch_name,
+      '--title',
+      title,
+      '--body',
+      desc,
+      '--assignee',
+      reviewers,
   ]
   try:
-    p = subprocess.run(   # If successful, output will be the PR link.
-        pr_command, shell=True,
-        check=True, cwd=worktree_dir,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    p = subprocess.run(  # If successful, output will be the PR link.
+        pr_command,
+        check=True,
+        cwd=worktree_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     pr_link = p.stdout.strip()
   except subprocess.CalledProcessError as e:

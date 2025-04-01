@@ -54,6 +54,9 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
     description: Detailed description of what this constraint controls as well
       as how and where it is enforced. Mutable.
     displayName: The human readable name. Mutable.
+    equivalentConstraint: Managed constraint and canned constraint sometimes
+      can have equivalents. This field is used to store the equivalent
+      constraint name.
     listConstraint: Defines this constraint as being a list constraint.
     name: Immutable. The resource name of the constraint. Must be in one of
       the following forms: *
@@ -85,10 +88,11 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
   constraintDefault = _messages.EnumField('ConstraintDefaultValueValuesEnum', 2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  listConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintListConstraint', 5)
-  name = _messages.StringField(6)
-  supportsDryRun = _messages.BooleanField(7)
-  supportsSimulation = _messages.BooleanField(8)
+  equivalentConstraint = _messages.StringField(5)
+  listConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintListConstraint', 6)
+  name = _messages.StringField(7)
+  supportsDryRun = _messages.BooleanField(8)
+  supportsSimulation = _messages.BooleanField(9)
 
 
 class GoogleCloudOrgpolicyV2ConstraintBooleanConstraint(_messages.Message):

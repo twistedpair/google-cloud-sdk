@@ -1962,8 +1962,7 @@ def AddPreemptibleVmArgs(parser, is_update=False):
         '--preemptible', action='store_true', default=False, help=help_text)
 
 
-def AddProvisioningModelVmArgs(
-    parser, support_reservation_bound=False, support_flex_start=False):
+def AddProvisioningModelVmArgs(parser, support_flex_start=False):
   """Set arguments for specifing provisioning model for instances."""
   choices = {
       'SPOT': (
@@ -1975,14 +1974,13 @@ def AddProvisioningModelVmArgs(
           'The default option. The STANDARD provisioning model gives you full '
           "control over your VM instances' runtime."
       ),
+      'RESERVATION_BOUND': (
+          'The VM instances run for the entire duration of their associated'
+          ' reservation. You can only specify this provisioning model if you'
+          ' want your VM instances to consume a specific reservation with'
+          ' either a calendar reservation mode or a dense deployment type.'
+      ),
   }
-  if support_reservation_bound:
-    choices['RESERVATION_BOUND'] = (
-        'The VM instances run for the entire duration of their associated'
-        ' reservation. You can only specify this provisioning model if you want'
-        ' your VM instances to consume a specific reservation with either a'
-        ' calendar reservation mode or a dense deployment type.'
-    )
   if support_flex_start:
     choices['FLEX_START'] = (
         'Instance is provisioned using the Flex Start provisioning model and'
@@ -2254,14 +2252,6 @@ def ValidateInstanceScheduling(args, support_max_run_duration=False):
       raise exceptions.RequiredArgumentException(
           '--provisioning-model',
           'required with argument `--instance-termination-action`.')
-
-    if (args.IsSpecified('provisioning_model') and
-        args.provisioning_model == 'RESERVATION_BOUND' and
-        args.instance_termination_action == 'DELETE'):
-      raise compute_exceptions.ArgumentError(
-          'Instance termination action of DELETE is not supported for '
-          'RESERVATION_BOUND VMs.'
-      )
 
   if support_max_run_duration and args.IsSpecified(
       'termination_time') and args.IsSpecified('max_run_duration'):

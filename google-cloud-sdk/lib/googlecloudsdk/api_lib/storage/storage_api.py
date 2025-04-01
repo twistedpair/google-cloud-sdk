@@ -349,6 +349,7 @@ class StorageClient(object):
       location=None,
       check_ownership=True,
       enable_uniform_level_access=None,
+      enable_public_access_prevention=None,
       soft_delete_duration=None,
       cors=None,
   ):
@@ -367,8 +368,13 @@ class StorageClient(object):
         guessed and claimed ahead of time by another user as it enables a name
         squatting exploit.
       enable_uniform_level_access: bool, to enable uniform bucket level access.
-        If None, the iamConfiguration object will not be created in the bucket
-        creation request, which means that it will use the default values.
+        If None, the uniformBucketLevelAccess field will be set to None in the
+        bucket creation request, which means that it will use the default
+        values.
+      enable_public_access_prevention: bool, to enable public access prevention.
+        If None, the publicAccessPrevention field will be set to None in the
+        bucket creation request, which means that it will use the default
+        values.
       soft_delete_duration: int, the soft delete duration in seconds.
       cors: list, A list of CorsValueListEntry objects. The bucket's
         Cross-Origin Resource Sharing (CORS) configuration. If None, no CORS
@@ -400,12 +406,21 @@ class StorageClient(object):
               project=project,
               bucket=self.messages.Bucket(name=bucket,
                                           location=location)))
+      iam_configuration = self.messages.Bucket.IamConfigurationValue()
       if enable_uniform_level_access is not None:
+        iam_configuration.uniformBucketLevelAccess = self.messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
+            enabled=enable_uniform_level_access
+        )
+      if enable_public_access_prevention is not None:
+        if enable_public_access_prevention:
+          iam_configuration.publicAccessPrevention = 'enforced'
+        else:
+          iam_configuration.publicAccessPrevention = 'inherited'
+      # Only set iam_configuration on the new bucket if it has some data in it.
+      if iam_configuration != self.messages.Bucket.IamConfigurationValue():
         storage_buckets_insert_request.bucket.iamConfiguration = (
-            self.messages.Bucket.IamConfigurationValue(
-                uniformBucketLevelAccess=(
-                    self.messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
-                        enabled=enable_uniform_level_access))))
+            iam_configuration
+        )
       if cors is not None:
         storage_buckets_insert_request.bucket.cors = cors
       if soft_delete_duration is not None:

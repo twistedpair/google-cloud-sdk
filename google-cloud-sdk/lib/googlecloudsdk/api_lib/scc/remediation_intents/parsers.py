@@ -69,7 +69,7 @@ def iam_recommender_parser(
           ):
             is_relevant_resource = True
             break
-    # Add resource+separator to the data blocks if it's relevant.
+      # Add resource+separator to the data blocks if it's relevant.
       if is_relevant_resource:
         data_blocks.append(json.dumps(resource, indent=2))
         data_blocks.append(const.BLOCK_SEPARATOR)

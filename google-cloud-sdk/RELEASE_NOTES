@@ -5,6 +5,122 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 517.0.0 (2025-04-01)
+
+### AlloyDB
+
+* Fix the following flags to actually update an AlloyDB instance on subsequent
+`alloydb instances update` calls:
+  * `--connection-pooling-pool-mode`
+  * `--connection-pooling-min-pool-size`
+  * `--connection-pooling-max-pool-size`
+  * `--connection-pooling-max-client-connections`
+  * `--connection-pooling-server-idle-timeout`
+  * `--connection-pooling-query-wait-timeout`
+  * `--connection-pooling-stats-users`
+  * `--connection-pooling-ignore-startup-parameters`
+
+### Cloud Bigtable
+
+*    Promoted `gcloud bigtable logical-views create|describe|list|update|delete` commands to GA.
+
+### Cloud Dataflow
+
+* Added support for `--additional-pipeline-options` flag to
+`gcloud dataflow flex-template run"` command to support common runtime pipeline
+option assignments.
+* Fixed potential TypeError when executing YAML pipelines via `gcloud dataflow yaml run`
+
+### Cloud Datastream
+
+* Added BlmtConfig to `--bigquery-destination-config` in `gcloud datastream streams create` commands to support BigLake Managed Tables (BLMT).
+
+### Cloud Deploy
+
+* Modified `gcloud deploy releases create` to enable [public access
+  prevention](https://cloud.google.com/storage/docs/using-public-access-prevention)
+  on the Cloud Storage buckets it creates.
+
+### Cloud Firestore
+
+* Promoted `gcloud firestore bulk-delete` command to GA.
+
+### Cloud Identity-Aware Proxy
+
+* Promoted `gcloud iap settings --resource-type=cloud-run` and `gcloud iap web ***-iam-policy --resource-type=cloud-run` to beta.
+
+### Cloud Memorystore
+
+* Promote `gcloud redis clusters` backup feature related commands to GA track.
+
+### Cloud Resource Manager
+
+* Added `gcloud resource-manager tags bindings update` to update the tags attached to the resource with the help of UpdateTagBindingCollection RPCs for ALPHA release.
+
+### Cloud Run
+
+* Added `--[no-]iap` flag to beta service command groups to allow enabling and
+  disabling IAP.
+* Promoted `--container` flag to GA for `gcloud run jobs` command groups.
+* Fixed URLs displayed on `multi-region-services replace` success.
+
+### Cloud SQL
+
+* Added `gcloud` support for integrating Vertex AI with Cloud SQL for MySQL
+  instances.
+
+### Compute Engine
+
+* Promoted `--provisoining-model=RESERVATION_BOUND` to v1 for `gcloud compute instances create`, `gcloud compute instances bulk create`, and `gcloud compute instance-templates create` commands.
+* Added `--external-ipv6-prefix` flag to
+  `gcloud beta compute networks subnets create` and
+  `gcloud beta compute networks subnets update`.
+* Added `--external-ipv6-prefix` flag to
+  `gcloud compute networks subnets create` and
+  `gcloud compute networks subnets update`.
+* Added `--workload-policy` flag to
+  `gcloud beta compute instance-groups managed create`.
+
+### Compute Firewall Policy Rules
+
+*   Promoted `--src-network-type` flag of `gcloud compute firewall-policies rules` to beta.
+*   Promoted `--dest-network-type` flag of `gcloud compute firewall-policies rules` to beta.
+*   Promoted `--src-network-type` flag of `gcloud compute network-firewall-policies rules` to beta.
+*   Promoted `--dest-network-type` flag of `gcloud compute network-firewall-policies rules` to beta.
+*  Promote `gcloud compute firewall-policies export-rules` to GA.
+*  Promote `gcloud compute firewall-policies import-rules` to GA.
+*  Promote `gcloud compute network-firewall-policies export-rules` to GA.
+*  Promote `gcloud compute network-firewall-policies import-rules` to GA.
+
+### Compute OS Config
+
+* Promoted `gcloud os-config policy-orchestrators` to GA.
+
+### Developer Connect
+
+* Add account-connectors group.
+
+### Kubernetes Engine
+
+* Added flag option `--hpa-profile` to
+  `gcloud container clusters create`, `gcloud container clusters create-auto`
+  and `gcloud container clusters update` commands. Accepted values are: NONE,
+  PERFORMANCE. This flag allows specifying a Horizontal Pod Autoscaling profile
+  for a cluster. For more information, see
+  <https://cloud.google.com/kubernetes-engine/docs/how-to/horizontal-pod-autoscaling#hpa-profile>.
+
+### Memorystore
+
+* Add `gcloud memorystore` backup feature related commands.
+
+### Parametermanager
+
+* `gcloud parametermanager [beta]` is now publicly available.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 516.0.0 (2025-03-25)
 
 ### Breaking Changes

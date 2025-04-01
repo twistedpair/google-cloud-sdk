@@ -74,6 +74,7 @@ def fetch_tfstate(dir_path: str)-> json:
   # 1. Run terraform init command to initialize the terraform directory.
   # 2. Run terraform show command to fetch the tfstate data.
   try:
+    org_dir = os.getcwd()
     os.chdir(dir_path)
     cmd = ["terraform", "init"]  # Step 1
     run_subprocess.GetOutputLines(cmd, timeout_sec=const.TF_CMD_TIMEOUT)
@@ -84,17 +85,16 @@ def fetch_tfstate(dir_path: str)-> json:
     tfstate_data = run_subprocess.GetOutputLines(
         cmd, timeout_sec=const.TF_CMD_TIMEOUT, strip_output=True
     )
-    return json.loads(tfstate_data)
+    os.chdir(org_dir)
+    return json.loads(tfstate_data[0])
   except Exception as e:
     raise errors.TfStateFetchingError(str(e))
 
 
-def validate_tf_files(dir_path: str, modified_tf_files: Dict[str, str]) -> str:
+def validate_tf_files(modified_tf_files: Dict[str, str]) -> str:
   """Validates the given TF files and returns the appropriate error message if any.
 
   Args:
-    dir_path: The path of the main directory from where the TF files are
-      modified.
     modified_tf_files: The dictionary of the modified TF files {path: contents}.
 
   Returns:
@@ -111,9 +111,11 @@ def validate_tf_files(dir_path: str, modified_tf_files: Dict[str, str]) -> str:
     try:
       cmd = ["terraform", "fmt", "-write=true", file_path]
       _ = subprocess.run(
-          cmd, text=True,
-          cwd=dir_path, check=True,
-          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+          cmd,
+          text=True,
+          check=True,
+          stdout=subprocess.PIPE,
+          stderr=subprocess.PIPE,
       )
     except subprocess.CalledProcessError as e:
       # Restore the original contents of the files in case of error.
@@ -130,8 +132,11 @@ def validate_tf_files(dir_path: str, modified_tf_files: Dict[str, str]) -> str:
   cmd = ["terraform", "validate"]
   try:
     _ = subprocess.run(
-        cmd, text=True, cwd=dir_path, check=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        cmd,
+        text=True,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
   except subprocess.CalledProcessError as e:
     # Restore the original contents of the files in case of error.

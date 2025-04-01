@@ -426,6 +426,7 @@ def _SetSource(
         location=location,
         check_ownership=default_gcs_source,
         enable_uniform_level_access=True,
+        enable_public_access_prevention=True,
     )
   except storage_api.BucketInWrongProjectError:
     # If we're using the default bucket but it already exists in a different

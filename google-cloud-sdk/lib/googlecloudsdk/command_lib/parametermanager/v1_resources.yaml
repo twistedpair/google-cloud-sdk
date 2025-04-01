@@ -43,15 +43,15 @@ projects_locations_parameters:
     help: The parameter id of the {resource} resource.
   disable_auto_completers: true
 projects_locations_parameters_versions:
-  name: parameterVersion
+  name: version
   plural_name: versions
   collection: parametermanager.projects.locations.parameters.versions
   attributes:
   - *project
   - *location
   - *parameter
-  - &parameterVersion
+  - &version
     parameter_name: versionsId
-    attribute_name: parameter_version
-    help: The parameterVersion id of the {resource} resource.
+    attribute_name: version
+    help: The version id of the {resource} resource.
   disable_auto_completers: false

@@ -212,4 +212,62 @@ def AddEffectiveArgToParser(parser, message):
     message: String, help text for flag.
   """
   parser.add_argument(
-      "--effective", action="store_true", required=False, help=message)
+      "--effective", action="store_true", required=False, help=message
+  )
+
+
+def UpdateTagGroup(parser):
+  """Adds flags for the specifying tags to update for a resource."""
+  group = parser.add_group(
+      mutex=True, help="Tags to update for a resource.", required=True
+  )
+  subgroup = group.add_group(
+      mutex=False, help="Tags to add/remove for a resource."
+  )
+  group.add_argument(
+      "--clear-tags",
+      action="store_true",
+      required=False,
+      help="Clear all tags on the resource.",
+  )
+  group.add_argument(
+      "--replace-tags",
+      type=arg_parsers.ArgObject(key_type=str, value_type=str),
+      required=False,
+      metavar="REPLACE_TAGS",
+      action=arg_parsers.UpdateAction,
+      help=(
+          "Replace all existing tags on the resource with the specified"
+          " key-value pairs."
+      ),
+  )
+  subgroup.add_argument(
+      "--remove-tags",
+      type=arg_parsers.ArgList(min_length=1),
+      metavar="REMOVE_TAGS",
+      required=False,
+      help="Remove the specified tags from the resource.",
+  )
+  subgroup.add_argument(
+      "--update-tags",
+      metavar="UPDATE_TAGS",
+      required=False,
+      type=arg_parsers.ArgObject(key_type=str, value_type=str),
+      action=arg_parsers.UpdateAction,
+      help="Add/update tags to the resource.",
+  )
+
+
+def AddUpdateResourceNameArgToParser(parser, required=True, message=""):
+  """Adds argument for the UpdateTagBindings resource name to the parser.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+    required: Boolean, to enforce --parent as a required flag.
+    message: String, replacement help text for flag.
+  """
+  parser.add_argument(
+      "--resource-name",
+      metavar="RESOURCE_NAME",
+      required=required,
+      help=message if message else ("Name of the resource."))

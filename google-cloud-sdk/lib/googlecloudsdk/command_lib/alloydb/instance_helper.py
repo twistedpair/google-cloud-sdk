@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.alloydb import api_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.parser_errors import DetailedArgumentError
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
@@ -771,6 +773,114 @@ def _ConnectionPoolConfig(**kwargs):
   return config
 
 
+def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
+  """Updates the connection pooling config for the instance.
+
+  Args:
+    instance_ref: A reference to the instance to be updated.
+    **kwargs: A map of the managed connection pooling flags and their values to
+      be updated.
+
+  Returns:
+    alloydb_messages.ConnectionPoolConfig
+  """
+  enable_connection_pooling = kwargs.get('enable_connection_pooling')
+  pool_mode = kwargs.get('connection_pooling_pool_mode')
+  min_pool_size = kwargs.get('connection_pooling_min_pool_size')
+  default_pool_size = kwargs.get('connection_pooling_max_pool_size')
+  max_client_conn = kwargs.get('connection_pooling_max_client_conn')
+  server_idle_timeout = kwargs.get('connection_pooling_server_idle_timeout')
+  query_wait_timeout = kwargs.get('connection_pooling_query_wait_timeout')
+  stats_users = kwargs.get('connection_pooling_stats_users')
+  ignore_startup_parameters = kwargs.get(
+      'connection_pooling_ignore_startup_parameters'
+  )
+  alloydb_messages = kwargs.get('alloydb_messages')
+
+  should_update_config = any([
+      enable_connection_pooling is not None,
+      pool_mode is not None,
+      min_pool_size is not None,
+      default_pool_size is not None,
+      max_client_conn is not None,
+      server_idle_timeout is not None,
+      query_wait_timeout is not None,
+      stats_users is not None,
+      ignore_startup_parameters is not None,
+  ])
+  if not should_update_config:
+    return None
+
+  config = alloydb_messages.ConnectionPoolConfig()
+
+  # Disabling managed connection pooling should set all other connection pooling
+  # settings to None.
+  if not enable_connection_pooling and enable_connection_pooling is not None:
+    config.enable = False
+    config.enabled = False
+    return config
+
+  # Build the connection pooling config based on the existing values that are
+  # set in the instance, if they aren't specified in the update.
+  client = api_util.AlloyDBClient(base.ReleaseTrack.ALPHA)
+  alloydb_client = client.alloydb_client
+  req = alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest(
+      name=instance_ref.RelativeName()
+  )
+  existing_instance = (
+      alloydb_client.projects_locations_clusters_instances.Get(req)
+  )
+
+  if enable_connection_pooling is not None:
+    config.enable = enable_connection_pooling
+    config.enabled = enable_connection_pooling
+  else:
+    config.enable = existing_instance.connectionPoolConfig.enable
+    config.enabled = existing_instance.connectionPoolConfig.enabled
+
+  if pool_mode is not None:
+    config.poolMode = _ParsePoolMode(alloydb_messages, pool_mode)
+  else:
+    config.poolMode = existing_instance.connectionPoolConfig.poolMode
+  if min_pool_size is not None:
+    config.minPoolSize = min_pool_size
+  else:
+    config.minPoolSize = existing_instance.connectionPoolConfig.minPoolSize
+  if default_pool_size is not None:
+    config.defaultPoolSize = default_pool_size
+  else:
+    config.defaultPoolSize = (
+        existing_instance.connectionPoolConfig.defaultPoolSize
+    )
+  if max_client_conn is not None:
+    config.maxClientConn = max_client_conn
+  else:
+    config.maxClientConn = existing_instance.connectionPoolConfig.maxClientConn
+  if server_idle_timeout is not None:
+    config.serverIdleTimeout = server_idle_timeout
+  else:
+    config.serverIdleTimeout = (
+        existing_instance.connectionPoolConfig.serverIdleTimeout
+    )
+  if query_wait_timeout is not None:
+    config.queryWaitTimeout = query_wait_timeout
+  else:
+    config.queryWaitTimeout = (
+        existing_instance.connectionPoolConfig.queryWaitTimeout
+    )
+  if stats_users is not None:
+    config.statsUsers = stats_users
+  else:
+    config.statsUsers = existing_instance.connectionPoolConfig.statsUsers
+  if ignore_startup_parameters is not None:
+    config.ignoreStartupParameters = ignore_startup_parameters
+  else:
+    config.ignoreStartupParameters = (
+        existing_instance.connectionPoolConfig.ignoreStartupParameters
+    )
+  return config
+
+
 def PscInstanceConfig(**kwargs):
   """Generates the PSC instance config for the instance."""
   alloydb_messages = kwargs.get('alloydb_messages')
@@ -965,27 +1075,22 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
       alloydb_messages, instance_ref, args
   )
 
-  if args.enable_connection_pooling is not None:
-    paths.append('connectionPoolConfig.enabled')
-    paths.append('connectionPoolConfig.enable')
-  if args.connection_pooling_pool_mode is not None:
-    paths.append('connectionPoolConfig.poolMode')
-  if args.connection_pooling_min_pool_size is not None:
-    paths.append('connectionPoolConfig.minPoolSize')
-  if args.connection_pooling_max_pool_size is not None:
-    paths.append('connectionPoolConfig.defaultPoolSize')
-  if args.connection_pooling_max_client_connections is not None:
-    paths.append('connectionPoolConfig.maxClientConn')
-  if args.connection_pooling_server_idle_timeout is not None:
-    paths.append('connectionPoolConfig.serverIdleTimeout')
-  if args.connection_pooling_query_wait_timeout is not None:
-    paths.append('connectionPoolConfig.queryWaitTimeout')
-  if args.connection_pooling_stats_users is not None:
-    paths.append('connectionPoolConfig.statsUsers')
-  if args.connection_pooling_ignore_startup_parameters is not None:
-    paths.append('connectionPoolConfig.ignoreStartupParameters')
+  # We update the whole connection pool config if any of the connection pooling
+  # flags are set. Unforunately, we can't update individual fields within the
+  # connection pool config due to a bug in the API so this is a workaround.
+  if (args.enable_connection_pooling is not None
+      or args.connection_pooling_pool_mode is not None
+      or args.connection_pooling_min_pool_size is not None
+      or args.connection_pooling_max_pool_size is not None
+      or args.connection_pooling_max_client_connections is not None
+      or args.connection_pooling_server_idle_timeout is not None
+      or args.connection_pooling_query_wait_timeout is not None
+      or args.connection_pooling_stats_users is not None
+      or args.connection_pooling_ignore_startup_parameters is not None):
+    paths.append('connectionPoolConfig')
 
-  instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
+  instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
+      instance_ref,
       alloydb_messages=alloydb_messages,
       enable_connection_pooling=args.enable_connection_pooling,
       connection_pooling_pool_mode=args.connection_pooling_pool_mode,

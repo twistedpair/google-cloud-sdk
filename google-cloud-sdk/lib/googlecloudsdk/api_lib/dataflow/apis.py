@@ -345,6 +345,7 @@ class TemplateArguments:
   worker_zone = None
   enable_streaming_engine = None
   additional_experiments = None
+  additional_pipeline_options = None
   additional_user_labels = None
   streaming_update = None
   transform_name_mappings = None
@@ -372,6 +373,7 @@ class TemplateArguments:
                worker_zone=None,
                enable_streaming_engine=None,
                additional_experiments=None,
+               additional_pipeline_options=None,
                additional_user_labels=None,
                streaming_update=None,
                transform_name_mappings=None,
@@ -397,6 +399,7 @@ class TemplateArguments:
     self.worker_zone = worker_zone
     self.enable_streaming_engine = enable_streaming_engine
     self.additional_experiments = additional_experiments
+    self.additional_pipeline_options = additional_pipeline_options
     self.additional_user_labels = additional_user_labels
     self.streaming_update = streaming_update
     self.transform_name_mappings = transform_name_mappings
@@ -507,9 +510,16 @@ class Templates:
             workerRegion=template_args.worker_region,
             workerZone=template_args.worker_zone,
             enableStreamingEngine=template_args.enable_streaming_engine,
-            additionalExperiments=(template_args.additional_experiments
-                                   if template_args.additional_experiments else
-                                   [])),
+            additionalExperiments=(
+                template_args.additional_experiments
+                if template_args.additional_experiments else
+                []
+            ),
+            additionalPipelineOptions=(
+                template_args.additional_pipeline_options
+                if template_args.additional_pipeline_options
+                else []
+            )),
         parameters=Templates.PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(

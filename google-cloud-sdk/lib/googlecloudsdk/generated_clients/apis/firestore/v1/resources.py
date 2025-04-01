@@ -104,6 +104,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_DATABASES_USERCREDS = (
+      'projects.databases.userCreds',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/databases/{databasesId}/userCreds/'
+              '{userCredsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       '{+name}',

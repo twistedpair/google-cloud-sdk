@@ -310,7 +310,7 @@ def GetSchedulingTypeFlag():
       choices={
           'GROUPED': (
               'In GROUPED mode, maintenance on all reserved instances is'
-              'synchronized.'
+              ' synchronized.'
           ),
           'INDEPENDENT': (
               'In INDEPENDENT mode, maintenance is not synchronized for this'

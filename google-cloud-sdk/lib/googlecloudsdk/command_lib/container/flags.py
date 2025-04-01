@@ -5736,7 +5736,7 @@ def AddPerformanceMonitoringUnit(parser, hidden=True):
       Sets the Performance Monitoring Unit level.
       Valid values are `architectural`, `standard` and `enhanced`
     """
-  parser.add_argument(
+  return parser.add_argument(
       '--performance-monitoring-unit',
       choices=_PMU_LEVEL,
       help=help_text,

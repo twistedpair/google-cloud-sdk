@@ -14,6 +14,9 @@
 # limitations under the License.
 """Constants used in the Remediation Intent related commands."""
 
+# Max retry count for doing the remediation of the intents.
+REMEDIATION_RETRY_COUNT = 3
+
 TF_CMD_TIMEOUT = 10
 
 TF_FMT_ERROR_MSG = (
@@ -50,4 +53,9 @@ FIREWALL_FINDINGS = (
     # go/keep-sorted start
     "OPEN_FIREWALL",
     # go/keep-sorted end
+)
+
+GIT_MSG = (
+    "[Gemini Generated] [SCC] Remediation for finding: {finding_id}, Project:"
+    " {project_id}, Category {category}"
 )

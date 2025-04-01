@@ -63,7 +63,6 @@ class ExtendedSPSClient():
     request = self.messages.SecuritypostureOrganizationsLocationsRemediationIntentsListRequest(
         parent=f'organizations/{self.org_id}/locations/global',
         filter='state : REMEDIATION_INTENT_ENQUEUED',
-        pageSize=1,   # Request just one resource.
     )
     try:
       response = (  # List API call.
