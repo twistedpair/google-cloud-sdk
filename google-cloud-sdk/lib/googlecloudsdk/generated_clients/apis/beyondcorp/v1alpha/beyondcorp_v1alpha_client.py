@@ -77,33 +77,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new BrowserDlpRule in a given organization and PartnerTenant.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/browserDlpRules',
-        http_method='POST',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.browserDlpRules.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+parent}/browserDlpRules',
-        request_field='googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def Delete(self, request, global_params=None):
       r"""Deletes an existing BrowserDlpRule.
 
@@ -158,60 +131,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""Lists BrowserDlpRules for PartnerTenant in a given organization.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpPartnerservicesV1alphaListBrowserDlpRulesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/browserDlpRules',
-        http_method='GET',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.browserDlpRules.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}/browserDlpRules',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesListRequest',
-        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaListBrowserDlpRulesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Update an existing BrowserDlpRule in a given organization and PartnerTenant.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/browserDlpRules/{browserDlpRulesId}',
-        http_method='PATCH',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.browserDlpRules.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
@@ -249,141 +168,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new BeyondCorp Enterprise ProxyConfig in a given organization and PartnerTenant. Can only be called by on onboarded Beyondcorp Enterprise partner.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/proxyConfigs',
-        http_method='POST',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.proxyConfigs.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+parent}/proxyConfigs',
-        request_field='googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single ProxyConfig.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/proxyConfigs/{proxyConfigsId}',
-        http_method='DELETE',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.proxyConfigs.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single ProxyConfig.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/proxyConfigs/{proxyConfigsId}',
-        http_method='GET',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.proxyConfigs.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest',
-        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists ProxyConfigs for PartnerTenant in a given organization.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/proxyConfigs',
-        http_method='GET',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.proxyConfigs.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/proxyConfigs',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest',
-        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a single proxy config.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/proxyConfigs/{proxyConfigsId}',
-        http_method='PATCH',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.proxyConfigs.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
@@ -420,33 +204,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       super(BeyondcorpV1alpha.OrganizationsLocationsGlobalPartnerTenantsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new BeyondCorp Enterprise partnerTenant in a given organization and can only be called by onboarded BeyondCorp Enterprise partner.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants',
-        http_method='POST',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+parent}/partnerTenants',
-        request_field='googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes a single PartnerTenant.
@@ -526,33 +283,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest',
         response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a single PartnerTenant.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}',
-        http_method='PATCH',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1696,33 +1426,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='BeyondcorpProjectsLocationsAppGatewaysSetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
-        supports_download=False,
-    )
-
-    def ShouldThrottle(self, request, global_params=None):
-      r"""Calls the Bouncer method ShouldThrottle to check if a request should be throttled.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsAppGatewaysShouldThrottleRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ShouldThrottleResponse) The response message.
-      """
-      config = self.GetMethodConfig('ShouldThrottle')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ShouldThrottle.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/appGateways/{appGatewaysId}:shouldThrottle',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.appGateways.shouldThrottle',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['port', 'requestedAmount'],
-        relative_path='v1alpha/{+name}:shouldThrottle',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsAppGatewaysShouldThrottleRequest',
-        response_type_name='ShouldThrottleResponse',
         supports_download=False,
     )
 
@@ -3316,7 +3019,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         method_id='beyondcorp.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+name}/locations',
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsListRequest',

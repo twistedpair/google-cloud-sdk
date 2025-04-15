@@ -43,7 +43,9 @@ class Job(k8s_object.KubernetesObject):
 
   @property
   def template(self):
-    return self.execution_template.template
+    return execution.Execution.TaskTemplateSpec.SpecAndParitialMetadataOnly(
+        self.execution_template
+    )
 
   @property
   def author(self):

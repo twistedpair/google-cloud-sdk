@@ -1932,7 +1932,21 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.Me
       der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
       cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
       rator_id}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. The list of fields to merge into the existing policy
+      orchestrator. A special ["*"] field mask can be used to simply replace
+      the entire resource. Otherwise, for all paths referenced in the mask,
+      following merge rules are used: * output only fields are ignored, *
+      primitive fields are replaced, * repeated fields are replaced, * map
+      fields are merged key by key, * message fields are cleared if not set in
+      the request, otherwise they are merged recursively (in particular -
+      message fields set to an empty message has no side effects) If field
+      mask is not specified, it is automatically inferred from the request
+      using following rules: * primitive fields are listed, if set to a non-
+      default value (as there is no way to distinguish between default and
+      unset value), * map and repeated fields are listed, *
+      `google.protobuf.Any` fields are listed, * other message fields are
+      traversed recursively. Note: implicit mask does not allow clearing
+      fields.
   """
 
   googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
@@ -1976,6 +1990,8 @@ class OsconfigFoldersLocationsListRequest(_messages.Message):
   r"""A OsconfigFoldersLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1988,11 +2004,12 @@ class OsconfigFoldersLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class OsconfigFoldersLocationsOperationsCancelRequest(_messages.Message):
@@ -2162,7 +2179,21 @@ class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsPatchRequest(_messa
       der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
       cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
       rator_id}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. The list of fields to merge into the existing policy
+      orchestrator. A special ["*"] field mask can be used to simply replace
+      the entire resource. Otherwise, for all paths referenced in the mask,
+      following merge rules are used: * output only fields are ignored, *
+      primitive fields are replaced, * repeated fields are replaced, * map
+      fields are merged key by key, * message fields are cleared if not set in
+      the request, otherwise they are merged recursively (in particular -
+      message fields set to an empty message has no side effects) If field
+      mask is not specified, it is automatically inferred from the request
+      using following rules: * primitive fields are listed, if set to a non-
+      default value (as there is no way to distinguish between default and
+      unset value), * map and repeated fields are listed, *
+      `google.protobuf.Any` fields are listed, * other message fields are
+      traversed recursively. Note: implicit mask does not allow clearing
+      fields.
   """
 
   googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
@@ -2208,6 +2239,8 @@ class OsconfigOrganizationsLocationsListRequest(_messages.Message):
   r"""A OsconfigOrganizationsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2220,11 +2253,12 @@ class OsconfigOrganizationsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class OsconfigOrganizationsLocationsOperationsCancelRequest(_messages.Message):
@@ -2511,7 +2545,21 @@ class OsconfigProjectsLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.M
       der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
       cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
       rator_id}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. The list of fields to merge into the existing policy
+      orchestrator. A special ["*"] field mask can be used to simply replace
+      the entire resource. Otherwise, for all paths referenced in the mask,
+      following merge rules are used: * output only fields are ignored, *
+      primitive fields are replaced, * repeated fields are replaced, * map
+      fields are merged key by key, * message fields are cleared if not set in
+      the request, otherwise they are merged recursively (in particular -
+      message fields set to an empty message has no side effects) If field
+      mask is not specified, it is automatically inferred from the request
+      using following rules: * primitive fields are listed, if set to a non-
+      default value (as there is no way to distinguish between default and
+      unset value), * map and repeated fields are listed, *
+      `google.protobuf.Any` fields are listed, * other message fields are
+      traversed recursively. Note: implicit mask does not allow clearing
+      fields.
   """
 
   googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
@@ -2556,6 +2604,8 @@ class OsconfigProjectsLocationsListRequest(_messages.Message):
   r"""A OsconfigProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2568,11 +2618,12 @@ class OsconfigProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class OsconfigProjectsLocationsOperationsCancelRequest(_messages.Message):

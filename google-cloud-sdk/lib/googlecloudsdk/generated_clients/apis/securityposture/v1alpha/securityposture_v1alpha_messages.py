@@ -1798,6 +1798,8 @@ class PredictionMetadata(_messages.Message):
       FILTERING_POLICIES: Operation is filtering policies.
       GENERATING_PREDICTION: Operation is generating prediction.
       PREDICTION_GENERATED: Operation has generated prediction.
+      ADDING_POLICIES: Operation is adding policies for natural language
+        query.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     ENQUEUED = 1
@@ -1810,6 +1812,7 @@ class PredictionMetadata(_messages.Message):
     FILTERING_POLICIES = 8
     GENERATING_PREDICTION = 9
     PREDICTION_GENERATED = 10
+    ADDING_POLICIES = 11
 
   environmentOptions = _messages.MessageField('EnvironmentOptions', 1)
   operationState = _messages.EnumField('OperationStateValueValuesEnum', 2)

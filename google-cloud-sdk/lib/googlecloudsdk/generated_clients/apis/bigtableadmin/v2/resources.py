@@ -128,13 +128,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_INSTANCES_TABLES_PROTOBUNDLES = (
-      'projects.instances.tables.protoBundles',
+  PROJECTS_INSTANCES_TABLES_SCHEMABUNDLES = (
+      'projects.instances.tables.schemaBundles',
       '{+name}',
       {
           '':
               'projects/{projectsId}/instances/{instancesId}/tables/'
-              '{tablesId}/protoBundles/{protoBundlesId}',
+              '{tablesId}/schemaBundles/{schemaBundlesId}',
       },
       ['name'],
       True

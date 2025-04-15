@@ -881,6 +881,7 @@ class GoogleCloudBigqueryMigrationV2FinishMigrationTaskOrchestrationRequest(_mes
     StateValueValuesEnum: Required. The terminal state of the subtask.
 
   Fields:
+    metrics: Optional. Metrics to be set for the orchestrated task.
     migrationSubtasks: Optional. A list of subtasks that the service shall
       create before transitioning the task to RUNNING. The operation will fail
       if creating any of the subtasks fails.
@@ -910,13 +911,14 @@ class GoogleCloudBigqueryMigrationV2FinishMigrationTaskOrchestrationRequest(_mes
     SUCCEEDED = 1
     FAILED = 2
 
-  migrationSubtasks = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationSubtask', 1, repeated=True)
-  migrationWorkflow = _messages.StringField(2)
-  orchestratorId = _messages.StringField(3)
-  processingError = _messages.MessageField('GoogleRpcErrorInfo', 4)
-  result = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTaskResult', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  taskId = _messages.StringField(7)
+  metrics = _messages.MessageField('GoogleCloudBigqueryMigrationV2TimeSeries', 1, repeated=True)
+  migrationSubtasks = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationSubtask', 2, repeated=True)
+  migrationWorkflow = _messages.StringField(3)
+  orchestratorId = _messages.StringField(4)
+  processingError = _messages.MessageField('GoogleRpcErrorInfo', 5)
+  result = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTaskResult', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  taskId = _messages.StringField(8)
 
 
 class GoogleCloudBigqueryMigrationV2FinishSubtaskRequest(_messages.Message):
@@ -1248,9 +1250,9 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
       Translation_Oracle2BQ, Translation_HiveQL2BQ, Translation_SparkSQL2BQ,
       Translation_Snowflake2BQ, Translation_Netezza2BQ,
       Translation_AzureSynapse2BQ, Translation_Vertica2BQ,
-      Translation_SQLServer2BQ, Translation_Presto2BQ, Translation_MySQL2BQ,
-      Translation_Postgresql2BQ, Translation_SQLite2BQ,
-      Translation_Greenplum2BQ.
+      Translation_SQLServer2BQ, Translation_SQLServer2Postgresql,
+      Translation_Presto2BQ, Translation_MySQL2BQ, Translation_Postgresql2BQ,
+      Translation_SQLite2BQ, Translation_Greenplum2BQ.
   """
 
   class StateValueValuesEnum(_messages.Enum):

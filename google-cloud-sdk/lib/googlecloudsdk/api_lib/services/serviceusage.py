@@ -153,9 +153,9 @@ def TestEnabled(name: str, service: str):
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    State of the service.
+    Message.State: The state of the service.
   """
-  client = _GetClientInstance(_V2ALPHA_VERSION)
+  client = _GetClientInstance(_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageTestEnabledRequest(
@@ -164,12 +164,12 @@ def TestEnabled(name: str, service: str):
   )
 
   try:
-    return client.v2alpha.TestEnabled(request)
+    return client.v2beta.TestEnabled(request)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(e, exceptions.TestEnabledPermissionDeniedException)
+    exceptions.ReraiseError(e, exceptions.TestEnabledException)
 
 
 def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):

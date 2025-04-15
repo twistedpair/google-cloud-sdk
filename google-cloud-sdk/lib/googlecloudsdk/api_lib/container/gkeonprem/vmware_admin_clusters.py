@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from typing import Generator
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
@@ -88,9 +89,17 @@ class AdminClustersClient(client.ClientBase):
     dummy_request = messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
         parent=parent,
     )
-    _ = self._client.projects_locations_vmwareClusters.QueryVersionConfig(
-        dummy_request
-    )
+    try:
+      _ = self._client.projects_locations_vmwareClusters.QueryVersionConfig(
+          dummy_request
+      )
+    except (
+        apitools_exceptions.HttpUnauthorizedError,
+        apitools_exceptions.HttpForbiddenError,
+    ):
+      # Ignore unauthorized or forbidden errors. This may happen during the
+      # support case when googler inspect customer's project via Google Admin.
+      pass
 
     if (
         'location' not in args.GetSpecifiedArgsDict()

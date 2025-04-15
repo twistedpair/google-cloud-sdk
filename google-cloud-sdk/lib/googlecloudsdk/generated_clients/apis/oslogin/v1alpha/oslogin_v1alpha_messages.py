@@ -29,16 +29,13 @@ class GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest(_mess
     appEngineInstance: The App Engine instance to sign the SSH public key for.
       Expected format:
       services/{service}/versions/{version}/instances/{instance}
-    computeInstance: The compute instance to sign the SSH public key for.
+    computeInstance: The Compute instance to sign the SSH public key for.
       Expected format:
       projects/{project}/zones/{zone}/instances/{numeric_instance_id}
-    serviceAccount: Optional. The service account for the Compute instance. If
-      the instance in question does not have a service account, this field
-      should be left empty. If the wrong service account is provided, this
-      operation will return a signed certificate that will not be accepted by
-      the VM. During rollout of the new regionalized SignSshPublicKey API,
-      this field will be required for all requests, but the VM will not
-      initially carry out the
+    serviceAccount: Optional. The service account for the instance. If the
+      instance in question does not have a service account, this field should
+      be left empty. If the wrong service account is provided, this operation
+      will return a signed certificate that will not be accepted by the VM.
     sshPublicKey: Required. The SSH public key to sign.
   """
 
@@ -450,7 +447,8 @@ class SshPublicKey(_messages.Message):
   Fields:
     expirationTimeUsec: An expiration time in microseconds since epoch.
     fingerprint: Output only. The SHA-256 fingerprint of the SSH public key.
-    key: Public key text in SSH format, defined by RFC4253 section 6.6.
+    key: Required. Public key text in SSH format, defined by
+      [RFC4253](https://www.ietf.org/rfc/rfc4253.txt) section 6.6.
     name: Output only. The canonical resource name.
   """
 

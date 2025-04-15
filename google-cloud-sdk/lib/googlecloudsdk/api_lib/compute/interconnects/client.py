@@ -14,10 +14,11 @@
 # limitations under the License.
 """Interconnect."""
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
+import dataclasses
 
 
 class Interconnect(object):
@@ -127,22 +128,27 @@ class Interconnect(object):
               project=self.ref.project,
           ),
       )
-    return (self._client.interconnects, 'Patch',
-            self._messages.ComputeInterconnectsPatchRequest(
-                interconnect=self.ref.Name(),
-                interconnectResource=self._messages.Interconnect(
-                    name=None,
-                    description=description,
-                    interconnectType=interconnect_type,
-                    linkType=link_type,
-                    nocContactEmail=noc_contact_email,
-                    requestedLinkCount=requested_link_count,
-                    location=location,
-                    adminEnabled=admin_enabled,
-                    macsecEnabled=macsec_enabled,
-                    macsec=macsec,
-                    **kwargs),
-                project=self.ref.project))
+    return (
+        self._client.interconnects,
+        'Patch',
+        self._messages.ComputeInterconnectsPatchRequest(
+            interconnect=self.ref.Name(),
+            interconnectResource=self._messages.Interconnect(
+                name=None,
+                description=description,
+                interconnectType=interconnect_type,
+                linkType=link_type,
+                nocContactEmail=noc_contact_email,
+                requestedLinkCount=requested_link_count,
+                location=location,
+                adminEnabled=admin_enabled,
+                macsecEnabled=macsec_enabled,
+                macsec=macsec,
+                **kwargs
+            ),
+            project=self.ref.project,
+        ),
+    )
 
   def _MakeDeleteRequestTuple(self):
     return (self._client.interconnects, 'Delete',
@@ -227,6 +233,31 @@ class Interconnect(object):
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]
+    return requests
+
+  def GetApplicationAwarenessConfig(self, only_generate_request=False):
+    # pylint: disable=missing-function-docstring
+    requests = [self._MakeDescribeRequestTuple()]
+
+    @dataclasses.dataclass(frozen=True)
+    class AaiState:
+      """Encapsulates application awareness enabled status and config.
+
+      Attr:
+        aai_enabled: indicates where AAI is enabled.
+        aai_config: AAI policy.
+      """
+
+      aai_enabled: bool
+      aai_config: self._messages.InterconnectApplicationAwareInterconnect
+
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+
+      return AaiState(
+          getattr(resources[0], 'aaiEnabled', None),
+          getattr(resources[0], 'applicationAwareInterconnect', None),
+      )
     return requests
 
   def Patch(

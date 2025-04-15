@@ -46,11 +46,13 @@ class ApihubV1(base_api.BaseApiClient):
     self.projects_locations_apis_versions = self.ProjectsLocationsApisVersionsService(self)
     self.projects_locations_apis = self.ProjectsLocationsApisService(self)
     self.projects_locations_attributes = self.ProjectsLocationsAttributesService(self)
+    self.projects_locations_curations = self.ProjectsLocationsCurationsService(self)
     self.projects_locations_dependencies = self.ProjectsLocationsDependenciesService(self)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_externalApis = self.ProjectsLocationsExternalApisService(self)
     self.projects_locations_hostProjectRegistrations = self.ProjectsLocationsHostProjectRegistrationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_plugins_instances = self.ProjectsLocationsPluginsInstancesService(self)
     self.projects_locations_plugins_styleGuide = self.ProjectsLocationsPluginsStyleGuideService(self)
     self.projects_locations_plugins = self.ProjectsLocationsPluginsService(self)
     self.projects_locations_runtimeProjectAttachments = self.ProjectsLocationsRuntimeProjectAttachmentsService(self)
@@ -90,6 +92,33 @@ class ApihubV1(base_api.BaseApiClient):
         relative_path='v1/{+parent}/apiHubInstances',
         request_field='googleCloudApihubV1ApiHubInstance',
         request_type_name='ApihubProjectsLocationsApiHubInstancesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the API hub instance.
+
+      Args:
+        request: (ApihubProjectsLocationsApiHubInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/apiHubInstances/{apiHubInstancesId}',
+        http_method='DELETE',
+        method_id='apihub.projects.locations.apiHubInstances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsApiHubInstancesDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
@@ -195,6 +224,60 @@ class ApihubV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create an apiOperation in an API version. An apiOperation can be created only if the version has no apiOperations which were created by parsing a spec.
+
+      Args:
+        request: (ApihubProjectsLocationsApisVersionsOperationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ApiOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/versions/{versionsId}/operations',
+        http_method='POST',
+        method_id='apihub.projects.locations.apis.versions.operations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['apiOperationId'],
+        relative_path='v1/{+parent}/operations',
+        request_field='googleCloudApihubV1ApiOperation',
+        request_type_name='ApihubProjectsLocationsApisVersionsOperationsCreateRequest',
+        response_type_name='GoogleCloudApihubV1ApiOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an operation in an API version and we can delete only the operations created via create API. If the operation was created by parsing the spec, then it can be deleted by editing or deleting the spec.
+
+      Args:
+        request: (ApihubProjectsLocationsApisVersionsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/versions/{versionsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='apihub.projects.locations.apis.versions.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsApisVersionsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get details about a particular operation in API version.
 
@@ -246,6 +329,33 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApihubProjectsLocationsApisVersionsOperationsListRequest',
         response_type_name='GoogleCloudApihubV1ListApiOperationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update an operation in an API version. The following fields in the ApiOperation resource can be updated: * details.description * details.documentation * details.http_operation.path * details.http_operation.method * details.deprecated * attributes The update_mask should be used to specify the fields being updated. An operation can be updated only if the operation was created via CreateApiOperation API. If the operation was created by parsing the spec, then it can be edited by updating the spec.
+
+      Args:
+        request: (ApihubProjectsLocationsApisVersionsOperationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ApiOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/apis/{apisId}/versions/{versionsId}/operations/{operationsId}',
+        http_method='PATCH',
+        method_id='apihub.projects.locations.apis.versions.operations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApihubV1ApiOperation',
+        request_type_name='ApihubProjectsLocationsApisVersionsOperationsPatchRequest',
+        response_type_name='GoogleCloudApihubV1ApiOperation',
         supports_download=False,
     )
 
@@ -880,6 +990,151 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='googleCloudApihubV1Attribute',
         request_type_name='ApihubProjectsLocationsAttributesPatchRequest',
         response_type_name='GoogleCloudApihubV1Attribute',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCurationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_curations resource."""
+
+    _NAME = 'projects_locations_curations'
+
+    def __init__(self, client):
+      super(ApihubV1.ProjectsLocationsCurationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a curation resource in the API hub. Once a curation resource is created, plugin instances can start using it.
+
+      Args:
+        request: (ApihubProjectsLocationsCurationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1Curation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/curations',
+        http_method='POST',
+        method_id='apihub.projects.locations.curations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['curationId'],
+        relative_path='v1/{+parent}/curations',
+        request_field='googleCloudApihubV1Curation',
+        request_type_name='ApihubProjectsLocationsCurationsCreateRequest',
+        response_type_name='GoogleCloudApihubV1Curation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a curation resource in the API hub. A curation can only be deleted if it's not being used by any plugin instance.
+
+      Args:
+        request: (ApihubProjectsLocationsCurationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/curations/{curationsId}',
+        http_method='DELETE',
+        method_id='apihub.projects.locations.curations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsCurationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get curation resource details.
+
+      Args:
+        request: (ApihubProjectsLocationsCurationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1Curation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/curations/{curationsId}',
+        http_method='GET',
+        method_id='apihub.projects.locations.curations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsCurationsGetRequest',
+        response_type_name='GoogleCloudApihubV1Curation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List curation resources in the API hub.
+
+      Args:
+        request: (ApihubProjectsLocationsCurationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ListCurationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/curations',
+        http_method='GET',
+        method_id='apihub.projects.locations.curations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/curations',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsCurationsListRequest',
+        response_type_name='GoogleCloudApihubV1ListCurationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a curation resource in the API hub. The following fields in the curation can be updated: * display_name * description The update_mask should be used to specify the fields being updated.
+
+      Args:
+        request: (ApihubProjectsLocationsCurationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1Curation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/curations/{curationsId}',
+        http_method='PATCH',
+        method_id='apihub.projects.locations.curations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApihubV1Curation',
+        request_type_name='ApihubProjectsLocationsCurationsPatchRequest',
+        response_type_name='GoogleCloudApihubV1Curation',
         supports_download=False,
     )
 
@@ -1527,6 +1782,205 @@ class ApihubV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsPluginsInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_plugins_instances resource."""
+
+    _NAME = 'projects_locations_plugins_instances'
+
+    def __init__(self, client):
+      super(ApihubV1.ProjectsLocationsPluginsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Plugin instance in the API hub.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances',
+        http_method='POST',
+        method_id='apihub.projects.locations.plugins.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pluginInstanceId'],
+        relative_path='v1/{+parent}/instances',
+        request_field='googleCloudApihubV1PluginInstance',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a plugin instance in the API hub.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='apihub.projects.locations.plugins.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DisableAction(self, request, global_params=None):
+      r"""Disables a plugin instance in the API hub.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesDisableActionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('DisableAction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableAction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}:disableAction',
+        http_method='POST',
+        method_id='apihub.projects.locations.plugins.instances.disableAction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:disableAction',
+        request_field='googleCloudApihubV1DisablePluginInstanceActionRequest',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesDisableActionRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def EnableAction(self, request, global_params=None):
+      r"""Enables a plugin instance in the API hub.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesEnableActionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('EnableAction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableAction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}:enableAction',
+        http_method='POST',
+        method_id='apihub.projects.locations.plugins.instances.enableAction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enableAction',
+        request_field='googleCloudApihubV1EnablePluginInstanceActionRequest',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesEnableActionRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ExecuteAction(self, request, global_params=None):
+      r"""Executes a plugin instance in the API hub.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesExecuteActionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteAction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteAction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}:executeAction',
+        http_method='POST',
+        method_id='apihub.projects.locations.plugins.instances.executeAction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:executeAction',
+        request_field='googleCloudApihubV1ExecutePluginInstanceActionRequest',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesExecuteActionRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an API Hub plugin instance.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1PluginInstance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='apihub.projects.locations.plugins.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesGetRequest',
+        response_type_name='GoogleCloudApihubV1PluginInstance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all the plugins in a given project and location. `-` can be used as wildcard value for {plugin_id}.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ListPluginInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances',
+        http_method='GET',
+        method_id='apihub.projects.locations.plugins.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instances',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesListRequest',
+        response_type_name='GoogleCloudApihubV1ListPluginInstancesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPluginsStyleGuideService(base_api.BaseApiService):
     """Service class for the projects_locations_plugins_styleGuide resource."""
 
@@ -1573,6 +2027,60 @@ class ApihubV1(base_api.BaseApiClient):
       super(ApihubV1.ProjectsLocationsPluginsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Create an API Hub plugin resource in the API hub. Once a plugin is created, it can be used to create plugin instances.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1Plugin) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins',
+        http_method='POST',
+        method_id='apihub.projects.locations.plugins.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pluginId'],
+        relative_path='v1/{+parent}/plugins',
+        request_field='googleCloudApihubV1Plugin',
+        request_type_name='ApihubProjectsLocationsPluginsCreateRequest',
+        response_type_name='GoogleCloudApihubV1Plugin',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Plugin in API hub. Note, only user owned plugins can be deleted via this method.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}',
+        http_method='DELETE',
+        method_id='apihub.projects.locations.plugins.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsPluginsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def Disable(self, request, global_params=None):
       r"""Disables a plugin. The `state` of the plugin after disabling is `DISABLED`.
@@ -1679,6 +2187,33 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApihubProjectsLocationsPluginsGetStyleGuideRequest',
         response_type_name='GoogleCloudApihubV1StyleGuide',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all the plugins in a given project and location.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1ListPluginsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins',
+        http_method='GET',
+        method_id='apihub.projects.locations.plugins.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/plugins',
+        request_field='',
+        request_type_name='ApihubProjectsLocationsPluginsListRequest',
+        response_type_name='GoogleCloudApihubV1ListPluginsResponse',
         supports_download=False,
     )
 
@@ -1837,6 +2372,33 @@ class ApihubV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CollectApiData(self, request, global_params=None):
+      r"""Collect API data from a source and push it to Hub's collect layer.
+
+      Args:
+        request: (ApihubProjectsLocationsCollectApiDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('CollectApiData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CollectApiData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:collectApiData',
+        http_method='POST',
+        method_id='apihub.projects.locations.collectApiData',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1/{+location}:collectApiData',
+        request_field='googleCloudApihubV1CollectApiDataRequest',
+        request_type_name='ApihubProjectsLocationsCollectApiDataRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 
@@ -1883,7 +2445,7 @@ class ApihubV1(base_api.BaseApiClient):
         method_id='apihub.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='ApihubProjectsLocationsListRequest',

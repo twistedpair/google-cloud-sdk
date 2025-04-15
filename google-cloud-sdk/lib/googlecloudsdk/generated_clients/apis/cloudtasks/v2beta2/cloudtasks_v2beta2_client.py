@@ -762,7 +762,7 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
         method_id='cloudtasks.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v2beta2/{+name}/locations',
         request_field='',
         request_type_name='CloudtasksProjectsLocationsListRequest',

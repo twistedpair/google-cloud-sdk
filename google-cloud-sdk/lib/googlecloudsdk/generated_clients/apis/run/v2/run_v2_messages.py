@@ -1767,6 +1767,8 @@ class GoogleCloudRunV2Revision(_messages.Message):
       Delete request.
     generation: Output only. A number that monotonically increases every time
       the user modifies the desired state.
+    gpuZonalRedundancyDisabled: Optional. Output only. True if GPU zonal
+      redundancy is disabled on this revision.
     labels: Output only. Unstructured key value map that can be used to
       organize and categorize objects. User-provided labels are shared with
       Google's billing system, so they can be used to filter, or break down
@@ -1959,26 +1961,27 @@ class GoogleCloudRunV2Revision(_messages.Message):
   executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 11)
   expireTime = _messages.StringField(12)
   generation = _messages.IntegerField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 15)
-  logUri = _messages.StringField(16)
-  maxInstanceRequestConcurrency = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  name = _messages.StringField(18)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 19)
-  observedGeneration = _messages.IntegerField(20)
-  reconciling = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 23)
-  scalingStatus = _messages.MessageField('GoogleCloudRunV2RevisionScalingStatus', 24)
-  service = _messages.StringField(25)
-  serviceAccount = _messages.StringField(26)
-  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 27)
-  sessionAffinity = _messages.BooleanField(28)
-  timeout = _messages.StringField(29)
-  uid = _messages.StringField(30)
-  updateTime = _messages.StringField(31)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 32, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 33)
+  gpuZonalRedundancyDisabled = _messages.BooleanField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 16)
+  logUri = _messages.StringField(17)
+  maxInstanceRequestConcurrency = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  name = _messages.StringField(19)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 20)
+  observedGeneration = _messages.IntegerField(21)
+  reconciling = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 24)
+  scalingStatus = _messages.MessageField('GoogleCloudRunV2RevisionScalingStatus', 25)
+  service = _messages.StringField(26)
+  serviceAccount = _messages.StringField(27)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 28)
+  sessionAffinity = _messages.BooleanField(29)
+  timeout = _messages.StringField(30)
+  uid = _messages.StringField(31)
+  updateTime = _messages.StringField(32)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 33, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 34)
 
 
 class GoogleCloudRunV2RevisionScaling(_messages.Message):
@@ -2063,6 +2066,8 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       shutting down all instances. The minimum increment is 1 hour.
     executionEnvironment: Optional. The sandbox environment to host this
       Revision.
+    gpuZonalRedundancyDisabled: Optional. True if GPU zonal redundancy is
+      disabled on this revision.
     healthCheckDisabled: Optional. Disables health checking containers during
       deployment.
     labels: Optional. Unstructured key value map that can be used to organize
@@ -2196,18 +2201,19 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
   encryptionKeyRevocationAction = _messages.EnumField('EncryptionKeyRevocationActionValueValuesEnum', 4)
   encryptionKeyShutdownDuration = _messages.StringField(5)
   executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 6)
-  healthCheckDisabled = _messages.BooleanField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maxInstanceRequestConcurrency = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 10)
-  revision = _messages.StringField(11)
-  scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 12)
-  serviceAccount = _messages.StringField(13)
-  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 14)
-  sessionAffinity = _messages.BooleanField(15)
-  timeout = _messages.StringField(16)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 17, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 18)
+  gpuZonalRedundancyDisabled = _messages.BooleanField(7)
+  healthCheckDisabled = _messages.BooleanField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maxInstanceRequestConcurrency = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 11)
+  revision = _messages.StringField(12)
+  scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 13)
+  serviceAccount = _messages.StringField(14)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 15)
+  sessionAffinity = _messages.BooleanField(16)
+  timeout = _messages.StringField(17)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 18, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 19)
 
 
 class GoogleCloudRunV2RunJobRequest(_messages.Message):
@@ -2362,13 +2368,13 @@ class GoogleCloudRunV2Service(_messages.Message):
       the user modifies the desired state. Please note that unlike v1, this is
       an int64 value. As with most Google APIs, its JSON representation will
       be a `string` instead of an `integer`.
+    iapEnabled: Optional. IAP settings on the Service.
     ingress: Optional. Provides the ingress settings for this Service. On
       output, returns the currently observed ingress settings, or
       INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
     invokerIamDisabled: Optional. Disables IAM permission check for
-      run.routes.invoke for callers of this service. This feature is available
-      by invitation only. For more information, visit
-      https://cloud.google.com/run/docs/securing/managing-
+      run.routes.invoke for callers of this service. For more information,
+      visit https://cloud.google.com/run/docs/securing/managing-
       access#invoker_check.
     labels: Optional. Unstructured key value map that can be used to organize
       and categorize objects. User-provided labels are shared with Google's
@@ -2433,6 +2439,8 @@ class GoogleCloudRunV2Service(_messages.Message):
       its readiness status, and detailed error information in case it did not
       reach a serving state. See comments in `reconciling` for additional
       information on reconciliation process in Cloud Run.
+    threatDetectionEnabled: Output only. True if Cloud Run Threat Detection
+      monitoring is enabled for the parent project of this Service.
     traffic: Optional. Specifies how to distribute traffic over a collection
       of Revisions belonging to the Service. If traffic is empty or not
       provided, defaults to 100% traffic to the latest `Ready` Revision.
@@ -2597,26 +2605,28 @@ class GoogleCloudRunV2Service(_messages.Message):
   etag = _messages.StringField(13)
   expireTime = _messages.StringField(14)
   generation = _messages.IntegerField(15)
-  ingress = _messages.EnumField('IngressValueValuesEnum', 16)
-  invokerIamDisabled = _messages.BooleanField(17)
-  labels = _messages.MessageField('LabelsValue', 18)
-  lastModifier = _messages.StringField(19)
-  latestCreatedRevision = _messages.StringField(20)
-  latestReadyRevision = _messages.StringField(21)
-  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 22)
-  name = _messages.StringField(23)
-  observedGeneration = _messages.IntegerField(24)
-  reconciling = _messages.BooleanField(25)
-  satisfiesPzs = _messages.BooleanField(26)
-  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 27)
-  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 28)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 29)
-  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 30, repeated=True)
-  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 31, repeated=True)
-  uid = _messages.StringField(32)
-  updateTime = _messages.StringField(33)
-  uri = _messages.StringField(34)
-  urls = _messages.StringField(35, repeated=True)
+  iapEnabled = _messages.BooleanField(16)
+  ingress = _messages.EnumField('IngressValueValuesEnum', 17)
+  invokerIamDisabled = _messages.BooleanField(18)
+  labels = _messages.MessageField('LabelsValue', 19)
+  lastModifier = _messages.StringField(20)
+  latestCreatedRevision = _messages.StringField(21)
+  latestReadyRevision = _messages.StringField(22)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 23)
+  name = _messages.StringField(24)
+  observedGeneration = _messages.IntegerField(25)
+  reconciling = _messages.BooleanField(26)
+  satisfiesPzs = _messages.BooleanField(27)
+  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 28)
+  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 29)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 30)
+  threatDetectionEnabled = _messages.BooleanField(31)
+  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 32, repeated=True)
+  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 33, repeated=True)
+  uid = _messages.StringField(34)
+  updateTime = _messages.StringField(35)
+  uri = _messages.StringField(36)
+  urls = _messages.StringField(37, repeated=True)
 
 
 class GoogleCloudRunV2ServiceMesh(_messages.Message):
@@ -2796,6 +2806,8 @@ class GoogleCloudRunV2Task(_messages.Message):
       Delete request.
     generation: Output only. A number that monotonically increases every time
       the user modifies the desired state.
+    gpuZonalRedundancyDisabled: Optional. Output only. True if GPU zonal
+      redundancy is disabled on this task.
     index: Output only. Index of the Task, unique per execution, and beginning
       at 0.
     job: Output only. The name of the parent Job.
@@ -2926,26 +2938,27 @@ class GoogleCloudRunV2Task(_messages.Message):
   executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 10)
   expireTime = _messages.StringField(11)
   generation = _messages.IntegerField(12)
-  index = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  job = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  lastAttemptResult = _messages.MessageField('GoogleCloudRunV2TaskAttemptResult', 16)
-  logUri = _messages.StringField(17)
-  maxRetries = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  name = _messages.StringField(19)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 20)
-  observedGeneration = _messages.IntegerField(21)
-  reconciling = _messages.BooleanField(22)
-  retried = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(24)
-  scheduledTime = _messages.StringField(25)
-  serviceAccount = _messages.StringField(26)
-  startTime = _messages.StringField(27)
-  timeout = _messages.StringField(28)
-  uid = _messages.StringField(29)
-  updateTime = _messages.StringField(30)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 31, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 32)
+  gpuZonalRedundancyDisabled = _messages.BooleanField(13)
+  index = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  job = _messages.StringField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  lastAttemptResult = _messages.MessageField('GoogleCloudRunV2TaskAttemptResult', 17)
+  logUri = _messages.StringField(18)
+  maxRetries = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  name = _messages.StringField(20)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 21)
+  observedGeneration = _messages.IntegerField(22)
+  reconciling = _messages.BooleanField(23)
+  retried = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(25)
+  scheduledTime = _messages.StringField(26)
+  serviceAccount = _messages.StringField(27)
+  startTime = _messages.StringField(28)
+  timeout = _messages.StringField(29)
+  uid = _messages.StringField(30)
+  updateTime = _messages.StringField(31)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 32, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 33)
 
 
 class GoogleCloudRunV2TaskAttemptResult(_messages.Message):
@@ -3686,20 +3699,6 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
       scaling mode.
     maxInstanceCount: Optional. The maximum count of instances distributed
       among revisions based on the specified instance split percentages.
-    maxSurge: Optional. A maximum percentage of instances that will be moved
-      in each step of traffic split changes. When set to a positive value, the
-      server will bring up, at most, that percentage of new instances at a
-      time before moving traffic to them. After moving traffic, the server
-      will bring down instances of the old revision. This can reduce a spike
-      of total active instances during changes from one revision to another
-      but specifying how many extra instances can be brought up at a time.
-    maxUnavailable: Optional. A maximum percentage of instances that may be
-      unavailable during changes from one revision to another. When set to a
-      positive value, the server may bring down instances before bringing up
-      new instances. This can prevent a spike of total active instances during
-      changes from one revision by reducing the pool of instances before
-      bringing up new ones. Some requests may be slow or fail to serve during
-      the transition.
     minInstanceCount: Optional. The minimum count of instances distributed
       among revisions based on the specified instance split percentages.
     scalingMode: Optional. The scaling mode for the worker pool.
@@ -3719,10 +3718,8 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
 
   manualInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxSurge = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 6)
+  minInstanceCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 4)
 
 
 class GoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):
@@ -5787,7 +5784,17 @@ class GoogleTypeExpr(_messages.Message):
 
 
 class Proto2BridgeMessageSet(_messages.Message):
-  r"""This is proto2's version of MessageSet."""
+  r"""This is proto2's version of MessageSet. DEPRECATED: DO NOT USE FOR NEW
+  FIELDS. If you are using editions or proto2, please make your own extendable
+  messages for your use case. If you are using proto3, please use `Any`
+  instead. MessageSet was the implementation of extensions for proto1. When
+  proto2 was introduced, extensions were implemented as a first-class feature.
+  This schema for MessageSet was meant to be a "bridge" solution to migrate
+  MessageSet-bearing messages from proto1 to proto2. This schema has been
+  open-sourced only to facilitate the migration of Google products with
+  MessageSet-bearing messages to open-source environments.
+  """
+
 
 
 class RunProjectsLocationsBuildsSubmitRequest(_messages.Message):

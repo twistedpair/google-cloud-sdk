@@ -40,6 +40,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.effectiveTags = self.EffectiveTagsService(self)
+    self.folders_capabilities = self.FoldersCapabilitiesService(self)
     self.folders_effectiveSettings = self.FoldersEffectiveSettingsService(self)
     self.folders_settings = self.FoldersSettingsService(self)
     self.folders = self.FoldersService(self)
@@ -93,6 +94,70 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudresourcemanagerEffectiveTagsListRequest',
         response_type_name='ListEffectiveTagsResponse',
+        supports_download=False,
+    )
+
+  class FoldersCapabilitiesService(base_api.BaseApiService):
+    """Service class for the folders_capabilities resource."""
+
+    _NAME = 'folders_capabilities'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.FoldersCapabilitiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the Capability identified by the supplied resource name.
+
+      Args:
+        request: (CloudresourcemanagerFoldersCapabilitiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Capability) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/capabilities/{capabilitiesId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.folders.capabilities.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerFoldersCapabilitiesGetRequest',
+        response_type_name='Capability',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the Capability.
+
+      Args:
+        request: (CloudresourcemanagerFoldersCapabilitiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/capabilities/{capabilitiesId}',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.folders.capabilities.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='capability',
+        request_type_name='CloudresourcemanagerFoldersCapabilitiesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

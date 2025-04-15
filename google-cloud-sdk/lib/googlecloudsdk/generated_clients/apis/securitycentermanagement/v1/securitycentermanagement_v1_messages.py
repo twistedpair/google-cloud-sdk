@@ -87,6 +87,10 @@ class BillingMetadata(_messages.Message):
 
   Fields:
     billingTier: The billing tier of the resource.
+    name: Identifier. The full resource name of the billingMetadata, in one of
+      the following formats: *
+      `organizations/{organization}/locations/{location}/billingMetadata` *
+      `projects/{project}/locations/{location}/billingMetadata`
   """
 
   class BillingTierValueValuesEnum(_messages.Enum):
@@ -104,6 +108,7 @@ class BillingMetadata(_messages.Message):
     ENTERPRISE = 3
 
   billingTier = _messages.EnumField('BillingTierValueValuesEnum', 1)
+  name = _messages.StringField(2)
 
 
 class CelPolicySpec(_messages.Message):
@@ -1002,7 +1007,7 @@ class SecurityCenterService(_messages.Message):
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws`
+      threat-detection-aws` * `cloud-run-threat-detection`
     serviceConfig: Optional. Additional service-specific configuration. Not
       all services will utilize this field.
     updateTime: Output only. The time the service was last updated. This could
@@ -1435,7 +1440,7 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_
       The following values are valid for `{service}`: * `container-threat-
       detection` * `event-threat-detection` * `security-health-analytics` *
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
-      aws`
+      aws` * `cloud-run-threat-detection`
     showEligibleModulesOnly: Set to `true` to show only modules that are in
       scope. By default, all modules are shown.
   """
@@ -1486,7 +1491,7 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws`
+      threat-detection-aws` * `cloud-run-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Required. The fields to update. Accepts the following values:
@@ -1938,7 +1943,7 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetReq
       The following values are valid for `{service}`: * `container-threat-
       detection` * `event-threat-detection` * `security-health-analytics` *
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
-      aws`
+      aws` * `cloud-run-threat-detection`
     showEligibleModulesOnly: Set to `true` to show only modules that are in
       scope. By default, all modules are shown.
   """
@@ -1987,7 +1992,7 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws`
+      threat-detection-aws` * `cloud-run-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Required. The fields to update. Accepts the following values:
@@ -2439,6 +2444,8 @@ class SecuritycentermanagementProjectsLocationsListRequest(_messages.Message):
   r"""A SecuritycentermanagementProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2449,10 +2456,11 @@ class SecuritycentermanagementProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(_messages.Message):
@@ -2469,7 +2477,7 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(
       The following values are valid for `{service}`: * `container-threat-
       detection` * `event-threat-detection` * `security-health-analytics` *
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
-      aws`
+      aws` * `cloud-run-threat-detection`
     showEligibleModulesOnly: Set to `true` to show only modules that are in
       scope. By default, all modules are shown.
   """
@@ -2520,7 +2528,7 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
       ce}` The following values are valid for `{service}`: * `container-
       threat-detection` * `event-threat-detection` * `security-health-
       analytics` * `vm-threat-detection` * `web-security-scanner` * `vm-
-      threat-detection-aws`
+      threat-detection-aws` * `cloud-run-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
     updateMask: Required. The fields to update. Accepts the following values:
@@ -2797,6 +2805,8 @@ class SimulatedFinding(_messages.Message):
         in the security posture.
       TOXIC_COMBINATION: Describes a combination of security issues that
         represent a more severe security problem when taken together.
+      CHOKEPOINT: Describes a resource or resource group where high risk
+        attack paths converge, based on attack path simulations (APS).
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -2806,6 +2816,7 @@ class SimulatedFinding(_messages.Message):
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
     TOXIC_COMBINATION = 7
+    CHOKEPOINT = 8
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that

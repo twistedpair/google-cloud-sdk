@@ -48,6 +48,7 @@ def CreateDatabase(
     location,
     database,
     database_type,
+    database_edition,
     delete_protection_state,
     pitr_state,
     cmek_config,
@@ -59,6 +60,7 @@ def CreateDatabase(
     location: the database location to create, a string.
     database: the database id to create, a string.
     database_type: the database type, an Enum.
+    database_edition: the database edition, an Enum.
     delete_protection_state: the value for deleteProtectionState, an Enum.
     pitr_state: the value for PitrState, an Enum.
     cmek_config: the CMEK config used to encrypt the database, an object
@@ -73,6 +75,7 @@ def CreateDatabase(
           databaseId=database,
           googleFirestoreAdminV1Database=messages.GoogleFirestoreAdminV1Database(
               type=database_type,
+              databaseEdition=database_edition,
               locationId=location,
               deleteProtectionState=delete_protection_state,
               pointInTimeRecoveryEnablement=pitr_state,

@@ -14,6 +14,94 @@ from apitools.base.py import extra_types
 package = 'developerconnect'
 
 
+class AccountConnector(_messages.Message):
+  r"""AccountConnector encapsulates what a platform administrator needs to
+  configure for users to connect to the service providers, which includes,
+  among other fields, the OAuth client ID, client secret, and authorization
+  and token endpoints.
+
+  Messages:
+    AnnotationsValue: Optional. Allows users to store small amounts of
+      arbitrary data.
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    annotations: Optional. Allows users to store small amounts of arbitrary
+      data.
+    createTime: Output only. The timestamp when the accountConnector was
+      created.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    labels: Optional. Labels as key value pairs
+    name: Identifier. The resource name of the accountConnector, in the format
+      `projects/{project}/locations/{location}/accountConnectors/{account_conn
+      ector_id}`.
+    oauthStartUri: Output only. Start OAuth flow by clicking on this URL.
+    providerOauthConfig: Provider OAuth config.
+    updateTime: Output only. The timestamp when the accountConnector was
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Allows users to store small amounts of arbitrary data.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  oauthStartUri = _messages.StringField(6)
+  providerOauthConfig = _messages.MessageField('ProviderOAuthConfig', 7)
+  updateTime = _messages.StringField(8)
+
+
 class BitbucketCloudConfig(_messages.Message):
   r"""Configuration for connections to an instance of Bitbucket Cloud.
 
@@ -201,6 +289,232 @@ class CryptoKeyConfig(_messages.Message):
   """
 
   keyReference = _messages.StringField(1)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsCreateRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsCreateRequest
+  object.
+
+  Fields:
+    accountConnector: A AccountConnector resource to be passed as the request
+      body.
+    accountConnectorId: Required. The ID to use for the AccountConnector,
+      which will become the final component of the AccountConnector's resource
+      name. Its format should adhere to https://google.aip.dev/122#resource-
+      id-segments Names must be unique per-project per-location.
+    parent: Required. Location resource name as the account_connector's
+      parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  accountConnector = _messages.MessageField('AccountConnector', 1)
+  accountConnectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsDeleteRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The current etag of the AccountConnectorn. If an etag is
+      provided and does not match the current etag of the AccountConnector,
+      deletion will be blocked and an ABORTED error will be returned.
+    force: Optional. If set to true, any Users from this AccountConnector will
+      also be deleted. (Otherwise, the request will only work if the
+      AccountConnector has no Users.)
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsGetRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsListRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListAccountConnectorsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsPatchRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsPatchRequest object.
+
+  Fields:
+    accountConnector: A AccountConnector resource to be passed as the request
+      body.
+    allowMissing: Optional. If set to true, and the accountConnector is not
+      found a new accountConnector will be created. In this situation
+      `update_mask` is ignored. The creation will succeed only if the input
+      accountConnector has all the necessary
+    name: Identifier. The resource name of the accountConnector, in the format
+      `projects/{project}/locations/{location}/accountConnectors/{account_conn
+      ector_id}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The list of fields to be updated.
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  accountConnector = _messages.MessageField('AccountConnector', 1)
+  allowMissing = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersDeleteRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsUsersDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request, but do not actually
+      post it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersDeleteSelfRequest(_messages.Message):
+  r"""A
+  DeveloperconnectProjectsLocationsAccountConnectorsUsersDeleteSelfRequest
+  object.
+
+  Fields:
+    name: Required. Name of the AccountConnector resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersFetchAccessTokenRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsUsersFetchAccessToke
+  nRequest object.
+
+  Fields:
+    accountConnector: Required. The resource name of the AccountConnector in
+      the format `projects/*/locations/*/accountConnectors/*`.
+    fetchAccessTokenRequest: A FetchAccessTokenRequest resource to be passed
+      as the request body.
+  """
+
+  accountConnector = _messages.StringField(1, required=True)
+  fetchAccessTokenRequest = _messages.MessageField('FetchAccessTokenRequest', 2)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersFetchSelfRequest(_messages.Message):
+  r"""A
+  DeveloperconnectProjectsLocationsAccountConnectorsUsersFetchSelfRequest
+  object.
+
+  Fields:
+    name: Required. Name of the AccountConnector resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DeveloperconnectProjectsLocationsAccountConnectorsUsersListRequest(_messages.Message):
+  r"""A DeveloperconnectProjectsLocationsAccountConnectorsUsersListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListUsersRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DeveloperconnectProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -614,6 +928,41 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class ExchangeError(_messages.Message):
+  r"""Message for representing an error from exchanging OAuth tokens.
+
+  Fields:
+    code: https://datatracker.ietf.org/doc/html/rfc6749#section-5.2 - error
+    description: https://datatracker.ietf.org/doc/html/rfc6749#section-5.2 -
+      error_description
+  """
+
+  code = _messages.StringField(1)
+  description = _messages.StringField(2)
+
+
+class FetchAccessTokenRequest(_messages.Message):
+  r"""Message for fetching an OAuth access token."""
+
+
+class FetchAccessTokenResponse(_messages.Message):
+  r"""Message for responding to getting an OAuth access token.
+
+  Fields:
+    exchangeError: The error resulted from exchanging OAuth tokens from the
+      service provider.
+    expirationTime: Expiration timestamp. Can be empty if unknown or non-
+      expiring.
+    scopes: The scopes of the access token.
+    token: The token content.
+  """
+
+  exchangeError = _messages.MessageField('ExchangeError', 1)
+  expirationTime = _messages.StringField(2)
+  scopes = _messages.StringField(3, repeated=True)
+  token = _messages.StringField(4)
 
 
 class FetchGitHubInstallationsResponse(_messages.Message):
@@ -1068,6 +1417,21 @@ class LinkableGitRepository(_messages.Message):
   cloneUri = _messages.StringField(1)
 
 
+class ListAccountConnectorsResponse(_messages.Message):
+  r"""Message for response to listing AccountConnectors
+
+  Fields:
+    accountConnectors: The list of AccountConnectors
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  accountConnectors = _messages.MessageField('AccountConnector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListConnectionsResponse(_messages.Message):
   r"""Message for response to listing Connections
 
@@ -1096,6 +1460,21 @@ class ListGitRepositoryLinksResponse(_messages.Message):
   gitRepositoryLinks = _messages.MessageField('GitRepositoryLink', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListUsersResponse(_messages.Message):
+  r"""Message for response to listing Users
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+    users: The list of Users
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  users = _messages.MessageField('User', 3, repeated=True)
 
 
 class OAuthCredential(_messages.Message):
@@ -1302,6 +1681,53 @@ class ProcessGitLabWebhookRequest(_messages.Message):
   body = _messages.MessageField('HttpBody', 1)
 
 
+class ProviderOAuthConfig(_messages.Message):
+  r"""ProviderOAuthConfig is the OAuth config for a provider.
+
+  Enums:
+    SystemProviderIdValueValuesEnum: Immutable. Developer Connect provided
+      OAuth.
+
+  Fields:
+    scopes: Required. User selected scopes to apply to the Oauth config In the
+      event of changing scopes, user records under AccountConnector will be
+      deleted and users will re-auth again.
+    systemProviderId: Immutable. Developer Connect provided OAuth.
+  """
+
+  class SystemProviderIdValueValuesEnum(_messages.Enum):
+    r"""Immutable. Developer Connect provided OAuth.
+
+    Values:
+      SYSTEM_PROVIDER_UNSPECIFIED: No system provider specified.
+      GITHUB: GitHub provider. Scopes can be found at
+        https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-
+        for-oauth-apps#available-scopes
+      GITLAB: GitLab provider. Scopes can be found at
+        https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
+        access-token-scopes
+      GOOGLE: Google provider. Recommended scopes:
+        "https://www.googleapis.com/auth/drive.readonly",
+        "https://www.googleapis.com/auth/documents.readonly"
+      SENTRY: Sentry provider. Scopes can be found at
+        https://docs.sentry.io/api/permissions/
+      ROVO: Rovo provider. Must select the "rovo" scope.
+      NEW_RELIC: New Relic provider. No scopes are allowed.
+      DATASTAX: Datastax provider. No scopes are allowed.
+    """
+    SYSTEM_PROVIDER_UNSPECIFIED = 0
+    GITHUB = 1
+    GITLAB = 2
+    GOOGLE = 3
+    SENTRY = 4
+    ROVO = 5
+    NEW_RELIC = 6
+    DATASTAX = 7
+
+  scopes = _messages.StringField(1, repeated=True)
+  systemProviderId = _messages.EnumField('SystemProviderIdValueValuesEnum', 2)
+
+
 class ServiceDirectoryConfig(_messages.Message):
   r"""ServiceDirectoryConfig represents Service Directory configuration for a
   connection.
@@ -1426,6 +1852,26 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class User(_messages.Message):
+  r"""User represents a user connected to the service providers through a
+  AccountConnector.
+
+  Fields:
+    createTime: Output only. The timestamp when the user was created.
+    displayName: Output only. Developer Connect automatically converts user
+      identity to some human readable description, e.g., email address.
+    lastTokenRequestTime: Output only. The timestamp when the token was last
+      requested.
+    name: Identifier. Resource name of the user, in the format
+      `projects/*/locations/*/accountConnectors/*/users/*`.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  lastTokenRequestTime = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class UserCredential(_messages.Message):

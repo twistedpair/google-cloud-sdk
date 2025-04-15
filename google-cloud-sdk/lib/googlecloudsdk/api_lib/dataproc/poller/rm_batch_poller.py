@@ -29,7 +29,10 @@ from googlecloudsdk.core import log
 
 
 class RmBatchPoller(waiter.OperationPoller):
-  """Poller for RM batch workload."""
+  """Poller for resource manager batches.
+
+  This should be used for spark version 3+, and Ray version 1+.
+  """
 
   def __init__(self, dataproc):
     self.dataproc = dataproc

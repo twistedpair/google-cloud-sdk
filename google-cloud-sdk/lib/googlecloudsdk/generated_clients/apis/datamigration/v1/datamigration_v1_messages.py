@@ -2186,6 +2186,8 @@ class DatamigrationProjectsLocationsListRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2196,10 +2198,11 @@ class DatamigrationProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DatamigrationProjectsLocationsMigrationJobsCreateRequest(_messages.Message):
@@ -4105,6 +4108,8 @@ class MigrationJob(_messages.Message):
     sourceDatabase: The database engine type and provider of the source.
     sqlserverHomogeneousMigrationJobConfig: Optional. Configuration for SQL
       Server homogeneous migration.
+    sqlserverToPostgresConfig: Configuration for heterogeneous **SQL Server to
+      Cloud SQL for PostgreSQL** migrations.
     state: The current migration job state.
     staticIpConnectivity: static ip connectivity data (default, no additional
       details needed).
@@ -4254,11 +4259,12 @@ class MigrationJob(_messages.Message):
   source = _messages.StringField(23)
   sourceDatabase = _messages.MessageField('DatabaseType', 24)
   sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 27)
-  type = _messages.EnumField('TypeValueValuesEnum', 28)
-  updateTime = _messages.StringField(29)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 30)
+  sqlserverToPostgresConfig = _messages.MessageField('SqlServerToPostgresConfig', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 28)
+  type = _messages.EnumField('TypeValueValuesEnum', 29)
+  updateTime = _messages.StringField(30)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 31)
 
 
 class MigrationJobObject(_messages.Message):
@@ -6012,6 +6018,39 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
   databaseDetails = _messages.MessageField('DatabaseDetailsValue', 3)
   promoteWhenReady = _messages.BooleanField(4)
   useDiffBackup = _messages.BooleanField(5)
+
+
+class SqlServerSourceConfig(_messages.Message):
+  r"""Configuration for SQL Server as a source in a migration.
+
+  Fields:
+    cdcStartPosition: Optional. The log sequence number (LSN) to start CDC
+      data migration from.
+    maxConcurrentCdcConnections: Optional. Maximum number of connections
+      Database Migration Service will open to the source for CDC phase.
+    maxConcurrentFullDumpConnections: Optional. Maximum number of connections
+      Database Migration Service will open to the source for full dump phase.
+    skipFullDump: Optional. Whether to skip full dump or not.
+  """
+
+  cdcStartPosition = _messages.StringField(1)
+  maxConcurrentCdcConnections = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxConcurrentFullDumpConnections = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  skipFullDump = _messages.BooleanField(4)
+
+
+class SqlServerToPostgresConfig(_messages.Message):
+  r"""Configuration for heterogeneous **SQL Server to Cloud SQL for
+  PostgreSQL** migrations.
+
+  Fields:
+    postgresDestinationConfig: Optional. Configuration for Postgres
+      destination.
+    sqlserverSourceConfig: Optional. Configuration for SQL Server source.
+  """
+
+  postgresDestinationConfig = _messages.MessageField('PostgresDestinationConfig', 1)
+  sqlserverSourceConfig = _messages.MessageField('SqlServerSourceConfig', 2)
 
 
 class SshScript(_messages.Message):

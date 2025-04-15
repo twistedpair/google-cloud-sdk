@@ -39,131 +39,12 @@ class SddcV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_clusterGroupBackups = self.ProjectsLocationsClusterGroupBackupsService(self)
     self.projects_locations_clusterGroups_clusters = self.ProjectsLocationsClusterGroupsClustersService(self)
     self.projects_locations_clusterGroups_ipAddresses = self.ProjectsLocationsClusterGroupsIpAddressesService(self)
     self.projects_locations_clusterGroups = self.ProjectsLocationsClusterGroupsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsClusterGroupBackupsService(base_api.BaseApiService):
-    """Service class for the projects_locations_clusterGroupBackups resource."""
-
-    _NAME = 'projects_locations_clusterGroupBackups'
-
-    def __init__(self, client):
-      super(SddcV1alpha1.ProjectsLocationsClusterGroupBackupsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""`ClusterGroupBackup` is functional. A completed `longrunning.Operation` contains the new `ClusterGroupBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
-
-      Args:
-        request: (SddcProjectsLocationsClusterGroupBackupsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroupBackups',
-        http_method='POST',
-        method_id='sddc.projects.locations.clusterGroupBackups.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['clusterGroupBackupId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/clusterGroupBackups',
-        request_field='clusterGroupBackup',
-        request_type_name='SddcProjectsLocationsClusterGroupBackupsCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a `ClusterGroupBackup`.
-
-      Args:
-        request: (SddcProjectsLocationsClusterGroupBackupsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroupBackups/{clusterGroupBackupsId}',
-        http_method='DELETE',
-        method_id='sddc.projects.locations.clusterGroupBackups.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='SddcProjectsLocationsClusterGroupBackupsDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single `ClusterGroupBackup`.
-
-      Args:
-        request: (SddcProjectsLocationsClusterGroupBackupsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ClusterGroupBackup) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroupBackups/{clusterGroupBackupsId}',
-        http_method='GET',
-        method_id='sddc.projects.locations.clusterGroupBackups.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='SddcProjectsLocationsClusterGroupBackupsGetRequest',
-        response_type_name='ClusterGroupBackup',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists `ClusterGroupBackup` objects in a given project and location (region).
-
-      Args:
-        request: (SddcProjectsLocationsClusterGroupBackupsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListClusterGroupBackupsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroupBackups',
-        http_method='GET',
-        method_id='sddc.projects.locations.clusterGroupBackups.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/clusterGroupBackups',
-        request_field='',
-        request_type_name='SddcProjectsLocationsClusterGroupBackupsListRequest',
-        response_type_name='ListClusterGroupBackupsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsClusterGroupsClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_clusterGroups_clusters resource."""
@@ -546,33 +427,6 @@ class SddcV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GenerateSupportBundle(self, request, global_params=None):
-      r"""Consumer API (private) to generate support bundles of VMware stack.
-
-      Args:
-        request: (SddcProjectsLocationsClusterGroupsGenerateSupportBundleRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('GenerateSupportBundle')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateSupportBundle.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}:generateSupportBundle',
-        http_method='POST',
-        method_id='sddc.projects.locations.clusterGroups.generateSupportBundle',
-        ordered_params=['clusterGroup'],
-        path_params=['clusterGroup'],
-        query_params=[],
-        relative_path='v1alpha1/{+clusterGroup}:generateSupportBundle',
-        request_field='generateSupportBundleRequest',
-        request_type_name='SddcProjectsLocationsClusterGroupsGenerateSupportBundleRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details of a single `ClusterGroup`.
 
@@ -936,7 +790,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         method_id='sddc.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+name}/locations',
         request_field='',
         request_type_name='SddcProjectsLocationsListRequest',

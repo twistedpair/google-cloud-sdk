@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import itertools
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
@@ -254,6 +255,7 @@ def AddNetwork(parser, required=False):
           ' [Learn more]'
           ' (https://cloud.google.com/vpc/docs/configure-private-services-access)'
       ),
+      action=actions.DeprecationAction('--network', removed=False),
   )
 
 
@@ -428,14 +430,14 @@ def AddEnforcedRetention(parser, required):
 
 def AddBackupEnforcedRetentionEndTime(parser):
   """Adds the --enforced-retention-end-time flag to the given parser."""
-  help_text = ("""
+  help_text = """
    Backups cannot be deleted until this time or later. This period can be extended, but not shortened.
    It should be specified in the format of "YYYY-MM-DD".
 
    * For backup configured with a backup appliance, there are additional restrictions:
      1. Enforced retention cannot be extended past the expiry time.
      2. Enforced retention can only be updated for finalized backups.
-  """)
+  """
 
   parser.add_argument(
       '--enforced-retention-end-time',
@@ -641,7 +643,7 @@ def AddBackupRule(parser, required=True):
               'backup-window-start': arg_parsers.BoundedInt(0, 23),
               'backup-window-end': arg_parsers.BoundedInt(1, 24),
               'time-zone': str,
-              'hourly-frequency': arg_parsers.BoundedInt(4, 23),
+              'hourly-frequency': int,
               'days-of-week': ArgListParser(
                   util.OptionsMapValidator(day_options).Parse
               ),

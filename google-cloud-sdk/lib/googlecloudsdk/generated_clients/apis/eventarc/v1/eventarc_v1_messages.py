@@ -426,8 +426,8 @@ class Enrollment(_messages.Message):
       requests to ensure that the client has an up-to-date value before
       proceeding.
     labels: Optional. Resource labels.
-    messageBus: Required. Resource name of the message bus identifying the
-      source of the messages. It matches the form
+    messageBus: Required. Immutable. Resource name of the message bus
+      identifying the source of the messages. It matches the form
       projects/{project}/locations/{location}/messageBuses/{messageBus}.
     name: Identifier. Resource name of the form
       projects/{project}/locations/{location}/enrollments/{enrollment}
@@ -1293,6 +1293,8 @@ class EventarcProjectsLocationsListRequest(_messages.Message):
   r"""A EventarcProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1303,10 +1305,11 @@ class EventarcProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class EventarcProjectsLocationsMessageBusesCreateRequest(_messages.Message):
@@ -3513,7 +3516,11 @@ class SaslAuthConfig(_messages.Message):
       be loaded from Secret Manager. Supported Format: 1-
       "projects/{project}/secrets/{secret}/versions/{version}" 2- "projects/{p
       roject}/locations/{location}/secrets/{secret}/versions/{version}"
-    username: Required. The SASL authentication identity (username).
+    username: Optional. The SASL authentication identity (username).
+    usernameSecret: Optional. The username for the authentication identity may
+      be loaded from Secret Manager. Supported Format: 1-
+      "projects/{project}/secrets/{secret}/versions/{version}" 2- "projects/{p
+      roject}/locations/{location}/secrets/{secret}/versions/{version}"
   """
 
   class MechanismValueValuesEnum(_messages.Enum):
@@ -3533,6 +3540,7 @@ class SaslAuthConfig(_messages.Message):
   mechanism = _messages.EnumField('MechanismValueValuesEnum', 1)
   passwordSecret = _messages.StringField(2)
   username = _messages.StringField(3)
+  usernameSecret = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

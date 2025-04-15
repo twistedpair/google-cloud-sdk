@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.api_lib.dataproc.poller import gce_batch_poller
 from googlecloudsdk.api_lib.dataproc.poller import rm_batch_poller
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.dataproc.batches import batch_version_util
 from googlecloudsdk.command_lib.dataproc.batches import (
     batches_create_request_factory)
 from googlecloudsdk.core import log
@@ -65,12 +66,10 @@ def Submit(batch_workload_message, dataproc, args):
             name=batch_ref
         )
     )
-    if batch.runtimeConfig.version.startswith(
-        '1'
-    ) or batch.runtimeConfig.version.startswith('2'):
-      poller = gce_batch_poller.GceBatchPoller(dataproc)
-    else:
+    if batch_version_util.is_rm_batch(batch):
       poller = rm_batch_poller.RmBatchPoller(dataproc)
+    else:
+      poller = gce_batch_poller.GceBatchPoller(dataproc)
 
     waiter.WaitFor(
         poller,

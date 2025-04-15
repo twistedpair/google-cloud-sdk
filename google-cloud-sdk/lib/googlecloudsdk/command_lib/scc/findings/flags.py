@@ -127,6 +127,11 @@ STATE_FLAG = base.ChoiceArgument(
     choices=['active', 'inactive', 'state-unspecified'],
 )
 
+FINDING_FLAG = base.Argument(
+    'finding',
+    help='ID of the finding or fully qualified identifier for the finding.'
+)
+
 
 def CreateFindingArg():
   """Create finding as positional resource."""
@@ -198,3 +203,22 @@ def ConvertSourceProperties(source_properties_dict):
   return encoding.DictToMessage(
       source_properties_dict, messages.Finding.SourcePropertiesValue
   )
+
+
+def AddParentGroup(parser):
+  """Adds a parent group to the parser."""
+  parent_group = parser.add_mutually_exclusive_group(required=False)
+  parent_group.add_argument(
+      '--organization',
+      help='The organization ID (e.g., 123) that contains the finding.',
+  )
+
+  parent_group.add_argument(
+      '--folder',
+      help='The folder ID (e.g., 456) that contains the finding.',
+  )
+  parent_group.add_argument(
+      '--project',
+      help='The project ID (e.g., example-project) that contains the finding.',
+  )
+  return parser

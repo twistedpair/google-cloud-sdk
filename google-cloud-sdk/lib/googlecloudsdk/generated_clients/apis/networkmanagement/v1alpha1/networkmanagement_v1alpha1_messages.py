@@ -1396,18 +1396,20 @@ class Endpoint(_messages.Message):
       URI.
     appEngineVersion: An [App Engine](https://cloud.google.com/appengine)
       [service version](https://cloud.google.com/appengine/docs/admin-
-      api/reference/rest/v1/apps.services.versions).
+      api/reference/rest/v1/apps.services.versions). Applicable only to source
+      endpoint.
     cloudFunction: A [Cloud Function](https://cloud.google.com/functions).
+      Applicable only to source endpoint.
     cloudRunRevision: A [Cloud Run](https://cloud.google.com/run) [revision](h
       ttps://cloud.google.com/run/docs/reference/rest/v1/namespaces.revisions/
-      get)
+      get) Applicable only to source endpoint.
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
     forwardingRule: A forwarding rule and its corresponding IP address
       represent the frontend configuration of a Google Cloud load balancer.
       Forwarding rules are also used for protocol forwarding, Private Service
       Connect and other network services to provide forwarding information in
-      the control plane. Format:
+      the control plane. Applicable only to destination endpoint. Format:
       projects/{project}/global/forwardingRules/{id} or
       projects/{project}/regions/{region}/forwardingRules/{id}
     forwardingRuleTarget: Output only. Specifies the type of the target of the
@@ -1427,23 +1429,25 @@ class Endpoint(_messages.Message):
       points to. Empty for forwarding rules not related to load balancers.
     loadBalancerType: Output only. Type of the load balancer the forwarding
       rule points to.
-    network: A Compute Engine network URI.
+    network: A VPC network URI.
     networkType: Type of the network where the endpoint is located. Applicable
       only to source endpoint, as destination network type can be inferred
       from the source.
     port: The IP protocol port of the endpoint. Only applicable when protocol
       is TCP or UDP.
-    projectId: Project ID where the endpoint is located. The Project ID can be
-      derived from the URI if you provide a VM instance or network URI. The
-      following are two cases where you must provide the project ID: 1. Only
-      the IP address is specified, and the IP address is within a Google Cloud
-      project. 2. When you are using Shared VPC and the IP address that you
-      provide is from the service project. In this case, the network that the
-      IP address resides in is defined in the host project.
+    projectId: Project ID where the endpoint is located. The project ID can be
+      derived from the URI if you provide a endpoint or network URI. The
+      following are two cases where you may need to provide the project ID: 1.
+      Only the IP address is specified, and the IP address is within a Google
+      Cloud project. 2. When you are using Shared VPC and the IP address that
+      you provide is from the service project. In this case, the network that
+      the IP address resides in is defined in the host project.
     redisCluster: A [Redis
       Cluster](https://cloud.google.com/memorystore/docs/cluster) URI.
+      Applicable only to destination endpoint.
     redisInstance: A [Redis
       Instance](https://cloud.google.com/memorystore/docs/redis) URI.
+      Applicable only to destination endpoint.
   """
 
   class ForwardingRuleTargetValueValuesEnum(_messages.Enum):
@@ -1505,7 +1509,8 @@ class Endpoint(_messages.Message):
         detailed output, specify the URI for the source or destination
         network.
       NON_GCP_NETWORK: A network hosted outside of Google Cloud. This can be
-        an on-premises network, or a network hosted by another cloud provider.
+        an on-premises network, an internet resource or a network hosted by
+        another cloud provider.
     """
     NETWORK_TYPE_UNSPECIFIED = 0
     GCP_NETWORK = 1
@@ -2416,6 +2421,8 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2428,11 +2435,12 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class NetworkmanagementProjectsLocationsOperationsCancelRequest(_messages.Message):

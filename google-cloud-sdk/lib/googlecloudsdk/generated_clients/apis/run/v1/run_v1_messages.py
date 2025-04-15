@@ -3130,6 +3130,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
@@ -3177,6 +3178,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
@@ -3250,15 +3252,15 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
     `run.googleapis.com/encryption-key`: Revision, Execution. *
     `run.googleapis.com/execution-environment`: Revision, Execution. *
-    `run.googleapis.com/gc-traffic-tags`: Service. *
-    `run.googleapis.com/health-check-disabled`: Revision. *
-    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-    stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
-    `run.googleapis.com/network-interfaces`: Revision, Execution. *
-    `run.googleapis.com/post-key-revocation-action-type`: Revision. *
-    `run.googleapis.com/secrets`: Revision, Execution. *
-    `run.googleapis.com/secure-session-agent`: Revision. *
-    `run.googleapis.com/sessionAffinity`: Revision. *
+    `run.googleapis.com/gc-traffic-tags`: Service. * `run.googleapis.com/gpu-
+    zonal-redundancy-disabled`: Revision. * `run.googleapis.com/health-check-
+    disabled`: Revision. * `run.googleapis.com/ingress`: Service. *
+    `run.googleapis.com/launch-stage`: Service, Job. *
+    `run.googleapis.com/minScale`: Service * `run.googleapis.com/network-
+    interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
+    revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
+    Revision, Execution. * `run.googleapis.com/secure-session-agent`:
+    Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
     `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
     `run.googleapis.com/vpc-access-egress`: Revision, Execution.
@@ -3658,9 +3660,9 @@ class RevisionSpec(_messages.Message):
       identity of the running revision, and determines what permissions the
       revision has. If not provided, the revision will use the project's
       default service account.
-    timeoutSeconds: TimeoutSeconds holds the max duration the instance is
-      allowed for responding to a request. Cloud Run: defaults to 300 seconds
-      (5 minutes). Maximum allowed value is 3600 seconds (1 hour).
+    timeoutSeconds: Optional. TimeoutSeconds holds the max duration the
+      instance is allowed for responding to a request. Cloud Run: defaults to
+      300 seconds (5 minutes). Maximum allowed value is 3600 seconds (1 hour).
     volumes: A Volume attribute.
   """
 
@@ -4662,6 +4664,8 @@ class RunProjectsLocationsListRequest(_messages.Message):
   r"""A RunProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -4672,10 +4676,11 @@ class RunProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class RunProjectsLocationsOperationsDeleteRequest(_messages.Message):

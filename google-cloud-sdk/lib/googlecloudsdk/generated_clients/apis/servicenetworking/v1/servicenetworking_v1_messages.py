@@ -132,16 +132,15 @@ class AddSubnetworkRequest(_messages.Message):
     checkServiceNetworkingUsePermission: Optional. The IAM permission check
       determines whether the consumer project has
       'servicenetworking.services.use' permission or not.
-    computeIdempotencyWindow: Optional. Specifies a custom time bucket for
-      Arcus subnetwork request idempotency. If two equivalent concurrent
-      requests are made, Arcus will know to ignore the request if it has
-      already been completed or is in progress. Only requests with matching
+    computeIdempotencyWindow: Optional. Specifies a custom time bucket for GCE
+      subnetwork request idempotency. If two equivalent concurrent requests
+      are made, GCE will know to ignore the request if it has already been
+      completed or is in progress. Only requests with matching
       compute_idempotency_window have guaranteed idempotency. Changing this
       time window between requests results in undefined behavior. Zero (or
       empty) value with custom_compute_idempotency_window=true specifies no
-      idempotency (i.e. no request ID is provided to Arcus). Maximum value of
-      14 days (enforced by Arcus limit). For more information on how to use,
-      see: go/revisit-sn-idempotency-window
+      idempotency (i.e. no request ID is provided to GCE). Maximum value of 14
+      days (enforced by GCE limit).
     consumer: Required. A resource that represents the service consumer, such
       as `projects/123456`. The project number can be different from the value
       in the consumer network parameter. For example, the network might be
@@ -209,11 +208,10 @@ class AddSubnetworkRequest(_messages.Message):
     subnetworkUsers: A list of members that are granted the
       `roles/servicenetworking.subnetworkAdmin` role on the subnet.
     useCustomComputeIdempotencyWindow: Optional. Specifies if Service
-      Networking should use a custom time bucket for Arcus idempotency. If
-      false, Service Networking uses a 300 second (5 minute) Arcus idempotency
+      Networking should use a custom time bucket for GCE idempotency. If
+      false, Service Networking uses a 300 second (5 minute) GCE idempotency
       window. If true, Service Networking uses a custom idempotency window
-      provided by the user in field compute_idempotency_window. For more
-      information on how to use, see: go/revisit-sn-idempotency-window
+      provided by the user in field compute_idempotency_window.
   """
 
   allowSubnetCidrRoutesOverlap = _messages.BooleanField(1)
@@ -1887,8 +1885,9 @@ class JavaSettings(_messages.Message):
       option set in the protobuf. This should be used **only** by APIs who
       have already set the language_settings.java.package_name" field in
       gapic.yaml. API teams should use the protobuf java_package option where
-      possible. Example of a YAML configuration:: publishing: java_settings:
-      library_package: com.google.cloud.pubsub.v1
+      possible. Example of a YAML configuration:: publishing:
+      library_settings: java_settings: library_package:
+      com.google.cloud.pubsub.v1
     serviceClassNames: Configure the Java class name to use instead of the
       service's for its corresponding generated GAPIC client. Keys are fully-
       qualified service names as they appear in the protobuf (including the

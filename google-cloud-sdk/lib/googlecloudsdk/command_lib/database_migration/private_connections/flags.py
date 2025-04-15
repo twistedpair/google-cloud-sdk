@@ -35,3 +35,15 @@ def AddDisplayNameFlag(parser):
       ' letter. The maximum length allowed is 60 characters.'
   )
   parser.add_argument('--display-name', help=help_text, required=True)
+
+
+def AddSkipValidationFlag(parser):
+  """Adds a --skip-validation flag to the given parser."""
+  help_text = """\
+    Creates the private connection without running prior verifications.
+    """
+  parser.add_argument(
+      '--skip-validation',
+      action='store_true',
+      help=help_text,
+  )

@@ -29,6 +29,7 @@ class BackfillAllStrategy(_messages.Message):
   Specific objects can be excluded.
 
   Fields:
+    mongodbExcludedObjects: MongoDB data source objects to avoid backfilling
     mysqlExcludedObjects: MySQL data source objects to avoid backfilling.
     oracleExcludedObjects: Oracle data source objects to avoid backfilling.
     postgresqlExcludedObjects: PostgreSQL data source objects to avoid
@@ -39,11 +40,12 @@ class BackfillAllStrategy(_messages.Message):
       backfilling
   """
 
-  mysqlExcludedObjects = _messages.MessageField('MysqlRdbms', 1)
-  oracleExcludedObjects = _messages.MessageField('OracleRdbms', 2)
-  postgresqlExcludedObjects = _messages.MessageField('PostgresqlRdbms', 3)
-  salesforceExcludedObjects = _messages.MessageField('SalesforceOrg', 4)
-  sqlServerExcludedObjects = _messages.MessageField('SqlServerRdbms', 5)
+  mongodbExcludedObjects = _messages.MessageField('MongodbCluster', 1)
+  mysqlExcludedObjects = _messages.MessageField('MysqlRdbms', 2)
+  oracleExcludedObjects = _messages.MessageField('OracleRdbms', 3)
+  postgresqlExcludedObjects = _messages.MessageField('PostgresqlRdbms', 4)
+  salesforceExcludedObjects = _messages.MessageField('SalesforceOrg', 5)
+  sqlServerExcludedObjects = _messages.MessageField('SqlServerRdbms', 6)
 
 
 class BackfillJob(_messages.Message):
@@ -236,6 +238,7 @@ class ConnectionProfile(_messages.Message):
     forwardSshConnectivity: Forward SSH tunnel connectivity.
     gcsProfile: Cloud Storage ConnectionProfile configuration.
     labels: Labels.
+    mongodbProfile: MongoDB Connection Profile configuration.
     mysqlProfile: MySQL ConnectionProfile configuration.
     name: Output only. Identifier. The resource's name.
     oracleProfile: Oracle ConnectionProfile configuration.
@@ -279,17 +282,18 @@ class ConnectionProfile(_messages.Message):
   forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 4)
   gcsProfile = _messages.MessageField('GcsProfile', 5)
   labels = _messages.MessageField('LabelsValue', 6)
-  mysqlProfile = _messages.MessageField('MysqlProfile', 7)
-  name = _messages.StringField(8)
-  oracleProfile = _messages.MessageField('OracleProfile', 9)
-  postgresqlProfile = _messages.MessageField('PostgresqlProfile', 10)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 11)
-  salesforceProfile = _messages.MessageField('SalesforceProfile', 12)
-  satisfiesPzi = _messages.BooleanField(13)
-  satisfiesPzs = _messages.BooleanField(14)
-  sqlServerProfile = _messages.MessageField('SqlServerProfile', 15)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 16)
-  updateTime = _messages.StringField(17)
+  mongodbProfile = _messages.MessageField('MongodbProfile', 7)
+  mysqlProfile = _messages.MessageField('MysqlProfile', 8)
+  name = _messages.StringField(9)
+  oracleProfile = _messages.MessageField('OracleProfile', 10)
+  postgresqlProfile = _messages.MessageField('PostgresqlProfile', 11)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 12)
+  salesforceProfile = _messages.MessageField('SalesforceProfile', 13)
+  satisfiesPzi = _messages.BooleanField(14)
+  satisfiesPzs = _messages.BooleanField(15)
+  sqlServerProfile = _messages.MessageField('SqlServerProfile', 16)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 17)
+  updateTime = _messages.StringField(18)
 
 
 class DatasetTemplate(_messages.Message):
@@ -484,6 +488,8 @@ class DatastreamProjectsLocationsListRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -494,10 +500,11 @@ class DatastreamProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DatastreamProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -960,10 +967,14 @@ class DiscoverConnectionProfileRequest(_messages.Message):
       (TRUE) or only the current level (FALSE).
     hierarchyDepth: The number of hierarchy levels below the current level to
       be retrieved.
+    mongodbCluster: MongoDB cluster to enrich with child data objects and
+      metadata.
     mysqlRdbms: MySQL RDBMS to enrich with child data objects and metadata.
     oracleRdbms: Oracle RDBMS to enrich with child data objects and metadata.
     postgresqlRdbms: PostgreSQL RDBMS to enrich with child data objects and
       metadata.
+    salesforceOrg: Salesforce organization to enrich with child data objects
+      and metadata.
     sqlServerRdbms: SQLServer RDBMS to enrich with child data objects and
       metadata.
   """
@@ -972,26 +983,32 @@ class DiscoverConnectionProfileRequest(_messages.Message):
   connectionProfileName = _messages.StringField(2)
   fullHierarchy = _messages.BooleanField(3)
   hierarchyDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  mysqlRdbms = _messages.MessageField('MysqlRdbms', 5)
-  oracleRdbms = _messages.MessageField('OracleRdbms', 6)
-  postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 7)
-  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 8)
+  mongodbCluster = _messages.MessageField('MongodbCluster', 5)
+  mysqlRdbms = _messages.MessageField('MysqlRdbms', 6)
+  oracleRdbms = _messages.MessageField('OracleRdbms', 7)
+  postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 8)
+  salesforceOrg = _messages.MessageField('SalesforceOrg', 9)
+  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 10)
 
 
 class DiscoverConnectionProfileResponse(_messages.Message):
   r"""Response from a discover request.
 
   Fields:
+    mongodbCluster: Enriched MongoDB cluster.
     mysqlRdbms: Enriched MySQL RDBMS object.
     oracleRdbms: Enriched Oracle RDBMS object.
     postgresqlRdbms: Enriched PostgreSQL RDBMS object.
+    salesforceOrg: Enriched Salesforce organization.
     sqlServerRdbms: Enriched SQLServer RDBMS object.
   """
 
-  mysqlRdbms = _messages.MessageField('MysqlRdbms', 1)
-  oracleRdbms = _messages.MessageField('OracleRdbms', 2)
-  postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 3)
-  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 4)
+  mongodbCluster = _messages.MessageField('MongodbCluster', 1)
+  mysqlRdbms = _messages.MessageField('MysqlRdbms', 2)
+  oracleRdbms = _messages.MessageField('OracleRdbms', 3)
+  postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 4)
+  salesforceOrg = _messages.MessageField('SalesforceOrg', 5)
+  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 6)
 
 
 class DropLargeObjects(_messages.Message):
@@ -1119,6 +1136,19 @@ class GcsProfile(_messages.Message):
 
 class Gtid(_messages.Message):
   r"""Use GTID based replication."""
+
+
+class HostAddress(_messages.Message):
+  r"""A HostAddress represents a transport end point, which is the combination
+  of an IP address or hostname and a port number.
+
+  Fields:
+    hostname: Required. Hostname for the connection.
+    port: Optional. Port for the connection.
+  """
+
+  hostname = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class JsonFileFormat(_messages.Message):
@@ -1374,6 +1404,100 @@ class Merge(_messages.Message):
   destination table.
   """
 
+
+
+class MongodbCluster(_messages.Message):
+  r"""MongoDB Cluster structure.
+
+  Fields:
+    databases: MongoDB databases in the cluster.
+  """
+
+  databases = _messages.MessageField('MongodbDatabase', 1, repeated=True)
+
+
+class MongodbCollection(_messages.Message):
+  r"""MongoDB Collection.
+
+  Fields:
+    collection: Collection name.
+    fields: Fields in the collection.
+  """
+
+  collection = _messages.StringField(1)
+  fields = _messages.MessageField('MongodbField', 2, repeated=True)
+
+
+class MongodbDatabase(_messages.Message):
+  r"""MongoDB Database.
+
+  Fields:
+    collections: Collections in the database.
+    database: Database name.
+  """
+
+  collections = _messages.MessageField('MongodbCollection', 1, repeated=True)
+  database = _messages.StringField(2)
+
+
+class MongodbField(_messages.Message):
+  r"""MongoDB Field.
+
+  Fields:
+    field: Field name.
+  """
+
+  field = _messages.StringField(1)
+
+
+class MongodbObjectIdentifier(_messages.Message):
+  r"""MongoDB data source object identifier.
+
+  Fields:
+    collection: Required. The collection name.
+    database: Required. The database name.
+  """
+
+  collection = _messages.StringField(1)
+  database = _messages.StringField(2)
+
+
+class MongodbProfile(_messages.Message):
+  r"""MongoDB profile.
+
+  Fields:
+    hostAddresses: Required. List of host addresses for a MongoDB cluster.
+    password: Optional. Password for the MongoDB connection. Mutually
+      exclusive with the `secret_manager_stored_password` field.
+    replicaSet: Optional. Name of the replica set. Only needed for self hosted
+      replica set type MongoDB cluster.
+    secretManagerStoredPassword: Optional. A reference to a Secret Manager
+      resource name storing the SQLServer connection password. Mutually
+      exclusive with the `password` field.
+    srvConnectionFormat: Srv connection format.
+    standardConnectionFormat: Standard connection format.
+    username: Required. Username for the MongoDB connection.
+  """
+
+  hostAddresses = _messages.MessageField('HostAddress', 1, repeated=True)
+  password = _messages.StringField(2)
+  replicaSet = _messages.StringField(3)
+  secretManagerStoredPassword = _messages.StringField(4)
+  srvConnectionFormat = _messages.MessageField('SrvConnectionFormat', 5)
+  standardConnectionFormat = _messages.MessageField('StandardConnectionFormat', 6)
+  username = _messages.StringField(7)
+
+
+class MongodbSourceConfig(_messages.Message):
+  r"""MongoDB source configuration.
+
+  Fields:
+    excludeObjects: MongoDB collections to exclude from the stream.
+    includeObjects: MongoDB collections to include in the stream.
+  """
+
+  excludeObjects = _messages.MessageField('MongodbCluster', 1)
+  includeObjects = _messages.MessageField('MongodbCluster', 2)
 
 
 class MostRecentStartPosition(_messages.Message):
@@ -2404,6 +2528,7 @@ class SourceConfig(_messages.Message):
   r"""The configuration of the stream source.
 
   Fields:
+    mongodbSourceConfig: MongoDB data source configuration.
     mysqlSourceConfig: MySQL data source configuration.
     oracleSourceConfig: Oracle data source configuration.
     postgresqlSourceConfig: PostgreSQL data source configuration.
@@ -2414,12 +2539,13 @@ class SourceConfig(_messages.Message):
     sqlServerSourceConfig: SQLServer data source configuration.
   """
 
-  mysqlSourceConfig = _messages.MessageField('MysqlSourceConfig', 1)
-  oracleSourceConfig = _messages.MessageField('OracleSourceConfig', 2)
-  postgresqlSourceConfig = _messages.MessageField('PostgresqlSourceConfig', 3)
-  salesforceSourceConfig = _messages.MessageField('SalesforceSourceConfig', 4)
-  sourceConnectionProfile = _messages.StringField(5)
-  sqlServerSourceConfig = _messages.MessageField('SqlServerSourceConfig', 6)
+  mongodbSourceConfig = _messages.MessageField('MongodbSourceConfig', 1)
+  mysqlSourceConfig = _messages.MessageField('MysqlSourceConfig', 2)
+  oracleSourceConfig = _messages.MessageField('OracleSourceConfig', 3)
+  postgresqlSourceConfig = _messages.MessageField('PostgresqlSourceConfig', 4)
+  salesforceSourceConfig = _messages.MessageField('SalesforceSourceConfig', 5)
+  sourceConnectionProfile = _messages.StringField(6)
+  sqlServerSourceConfig = _messages.MessageField('SqlServerSourceConfig', 7)
 
 
 class SourceHierarchyDatasets(_messages.Message):
@@ -2437,6 +2563,7 @@ class SourceObjectIdentifier(_messages.Message):
   r"""Represents an identifier of an object in the data source.
 
   Fields:
+    mongodbIdentifier: MongoDB data source object identifier.
     mysqlIdentifier: Mysql data source object identifier.
     oracleIdentifier: Oracle data source object identifier.
     postgresqlIdentifier: PostgreSQL data source object identifier.
@@ -2444,11 +2571,12 @@ class SourceObjectIdentifier(_messages.Message):
     sqlServerIdentifier: SQLServer data source object identifier.
   """
 
-  mysqlIdentifier = _messages.MessageField('MysqlObjectIdentifier', 1)
-  oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 2)
-  postgresqlIdentifier = _messages.MessageField('PostgresqlObjectIdentifier', 3)
-  salesforceIdentifier = _messages.MessageField('SalesforceObjectIdentifier', 4)
-  sqlServerIdentifier = _messages.MessageField('SqlServerObjectIdentifier', 5)
+  mongodbIdentifier = _messages.MessageField('MongodbObjectIdentifier', 1)
+  mysqlIdentifier = _messages.MessageField('MysqlObjectIdentifier', 2)
+  oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 3)
+  postgresqlIdentifier = _messages.MessageField('PostgresqlObjectIdentifier', 4)
+  salesforceIdentifier = _messages.MessageField('SalesforceObjectIdentifier', 5)
+  sqlServerIdentifier = _messages.MessageField('SqlServerObjectIdentifier', 6)
 
 
 class SpecificStartPosition(_messages.Message):
@@ -2598,6 +2726,14 @@ class SqlServerTable(_messages.Message):
 
 class SqlServerTransactionLogs(_messages.Message):
   r"""Configuration to use Transaction Logs CDC read method."""
+
+
+class SrvConnectionFormat(_messages.Message):
+  r"""Srv connection format."""
+
+
+class StandardConnectionFormat(_messages.Message):
+  r"""Standard connection format."""
 
 
 class StandardQueryParameters(_messages.Message):

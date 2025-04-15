@@ -1257,8 +1257,16 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
   return tree
 
 
-def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
-                   force=False, verbose=False, warn_on_exceptions=False):
+def UpdateCliTrees(
+    cli=None,
+    commands=None,
+    directory=None,
+    tarball=None,
+    force=False,
+    verbose=False,
+    warn_on_exceptions=False,
+    skip_completions=False,
+):
   """(re)generates the CLI trees in directory if non-existent or out of date.
 
   This function uses the progress tracker because some of the updates can
@@ -1267,16 +1275,17 @@ def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
   Args:
     cli: The default CLI. If not None then the default CLI is also updated.
     commands: Update only the commands in this list.
-    directory: The directory containing the CLI tree JSON files. If None
-      then the default installation directories are used.
-    tarball: For packaging CLI trees. --commands specifies one command that is
-      a relative path in this tarball. The tarball is extracted to a temporary
+    directory: The directory containing the CLI tree JSON files. If None then
+      the default installation directories are used.
+    tarball: For packaging CLI trees. --commands specifies one command that is a
+      relative path in this tarball. The tarball is extracted to a temporary
       directory and the command path is adjusted to point to the temporary
       directory.
     force: Update all exitsing trees by forcing them to be out of date if True.
     verbose: Display a status line for up to date CLI trees if True.
     warn_on_exceptions: Emits warning messages in lieu of exceptions. Used
       during installation.
+    skip_completions: Skip updating the static completion CLI tree.
 
   Raises:
     CliTreeGenerationError: CLI tree generation failed for a command in
@@ -1313,18 +1322,19 @@ def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
       # Update the static completion CLI tree if older than the CLI tree. To
       # keep static completion startup lightweight we don't track the release
       # in the tree data. Using the modify time is a minimal sanity check.
-      completion_tree_path = lookup.CompletionCliTreePath(
-          directory=directories[0])
-      cli_tree_mtime = _Mtime(cli_tree_path)
-      completion_tree_mtime = _Mtime(completion_tree_path)
-      if (force or not completion_tree_mtime or
-          completion_tree_mtime < cli_tree_mtime):
-        files.MakeDir(os.path.dirname(completion_tree_path))
-        with files.FileWriter(completion_tree_path) as f:
-          generate_static.ListCompletionTree(cli, out=f)
-      elif verbose:
-        log.status.Print(
-            '[{}] static completion CLI tree is up to date.'.format(command))
+      if not skip_completions:
+        completion_tree_path = lookup.CompletionCliTreePath(
+            directory=directories[0])
+        cli_tree_mtime = _Mtime(cli_tree_path)
+        completion_tree_mtime = _Mtime(completion_tree_path)
+        if (force or not completion_tree_mtime or
+            completion_tree_mtime < cli_tree_mtime):
+          files.MakeDir(os.path.dirname(completion_tree_path))
+          with files.FileWriter(completion_tree_path) as f:
+            generate_static.ListCompletionTree(cli, out=f)
+        elif verbose:
+          log.status.Print(
+              '[{}] static completion CLI tree is up to date.'.format(command))
 
   if failed:
     message = 'CLI tree generation failed for [{}].'.format(

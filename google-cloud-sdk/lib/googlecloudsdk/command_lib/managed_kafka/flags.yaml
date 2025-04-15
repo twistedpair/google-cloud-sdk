@@ -19,10 +19,10 @@ subnets:
   type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
   help_text: |
     VPC subnets from which the cluster is accessible. Both broker and bootstrap server
-    IP addresses and DNS entries are automatically created in each subnet. The subnet must be
-    located in the same region as the cluster. The project may differ. A minimum of 1 subnet is
-    required. A maximum of 10 subnets can be specified. Use commas to separate multiple subnets.
-    The name of the subnet must be in the format
+    IP addresses and DNS entries are automatically created in each subnet. Only one subnet per
+    network is allowed, and the subnet must be located in the same region as the cluster.
+    The project may differ. A minimum of 1 subnet is required. A maximum of 10 subnets can be
+    specified. Use commas to separate multiple subnets. The name of the subnet must be in the format
     projects/``PROJECT_ID''/regions/``REGION''/subnetworks/``SUBNET''.
 
 labels:

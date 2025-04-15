@@ -402,3 +402,94 @@ def AddRestartFailedObjectsFlag(parser):
       action='store_true',
       help=help_text,
   )
+
+
+def AddHeterogeneousMigrationConfigFlag(parser):
+  """Adds heterogeneous migration flag group to the given parser."""
+  heterogeneous_migration_config = parser.add_group(
+      (
+          'The heterogeneous migration config. This is used only for'
+          ' Oracle to Cloud SQL for PostgreSQL and SQL Server to Cloud SQL for'
+          ' PostgreSQL migrations.'
+      ),
+  )
+  AddHeterogeneousMigrationSourceConfigFlags(heterogeneous_migration_config)
+  AddHeterogeneousMigrationDestinationConfigFlags(
+      heterogeneous_migration_config
+  )
+
+
+def AddHeterogeneousMigrationDestinationConfigFlags(parser):
+  """Adds heterogeneous migration destination config flag to the parser."""
+  destination_config = parser.add_group(
+      (
+          'Configuration for Postgres as a destination in a heterogeneous'
+          ' migration.'
+      ),
+  )
+  destination_config.add_argument(
+      '--max-concurrent-destination-connections',
+      help="""\
+        Maximum number of concurrent connections Database Migration Service will
+        open to the destination for data migration.
+        """,
+      type=int,
+  )
+  destination_config.add_argument(
+      '--transaction-timeout',
+      help="""Timeout for data migration transactions.""",
+      type=arg_parsers.Duration(lower_bound='30s', upper_bound='300s'),
+  )
+
+
+def AddHeterogeneousMigrationSourceConfigFlags(parser):
+  """Adds heterogeneous migration source config flag group to the parser."""
+  source_config = parser.add_group(
+      (
+          'Configuration for Oracle or SQL Server as a source in a'
+          ' heterogeneous migration.'
+      ),
+  )
+  source_config.add_argument(
+      '--max-concurrent-full-dump-connections',
+      help="""\
+        Maximum number of connections Database Migration Service will open to
+        the source for full dump phase.
+        """,
+      type=int,
+  )
+  source_config.add_argument(
+      '--max-concurrent-cdc-connections',
+      help="""\
+        Maximum number of connections Database Migration Service will open to
+        the source for CDC phase.
+        """,
+      type=int,
+  )
+  skip_full_dump_group = source_config.add_group(
+      'Configuration for skipping full dump.',
+  )
+  skip_full_dump_group.add_argument(
+      '--skip-full-dump',
+      help="""\
+        Whether to skip full dump or not.
+        """,
+      action='store_true',
+  )
+  cdc_start_position_group = skip_full_dump_group.add_group(
+      'Configuration for CDC start position.',
+      mutex=True,
+  )
+  cdc_start_position_group.add_argument(
+      '--oracle-cdc-start-position',
+      help="""\
+        Oracle schema change number (SCN) to start CDC data migration from.
+        """,
+      type=int,
+  )
+  cdc_start_position_group.add_argument(
+      '--sqlserver-cdc-start-position',
+      help="""\
+        Sqlserver log squence number (LSN) to start CDC data migration from.
+        """
+  )

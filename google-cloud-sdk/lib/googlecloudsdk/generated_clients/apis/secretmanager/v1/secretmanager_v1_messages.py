@@ -636,6 +636,11 @@ class Secret(_messages.Message):
       long, have a UTF-8 encoding of maximum 128 bytes, and must conform to
       the following PCRE regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}` No
       more than 64 labels can be assigned to a given resource.
+    TagsValue: Optional. Input only. Immutable. Mapping of Tag keys/values
+      directly bound to this resource. For example: "123/environment":
+      "production", "123/costCenter": "marketing" Tags are used to organize
+      and group resources. Tags can be used to control policy evaluation for
+      the resource.
     VersionAliasesValue: Optional. Mapping from version alias to version name.
       A version alias is a string with a maximum length of 63 characters and
       can contain uppercase and lowercase letters, numerals, and the hyphen
@@ -678,6 +683,11 @@ class Secret(_messages.Message):
       after the Secret has been created.
     rotation: Optional. Rotation policy attached to the Secret. May be
       excluded if there is no rotation policy.
+    tags: Optional. Input only. Immutable. Mapping of Tag keys/values directly
+      bound to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing" Tags are used to organize and group
+      resources. Tags can be used to control policy evaluation for the
+      resource.
     topics: Optional. A list of up to 10 Pub/Sub topics to which messages are
       published when control plane operations are called on the secret or its
       versions.
@@ -760,6 +770,33 @@ class Secret(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Mapping of Tag keys/values directly
+    bound to this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing" Tags are used to organize and group
+    resources. Tags can be used to control policy evaluation for the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class VersionAliasesValue(_messages.Message):
     r"""Optional. Mapping from version alias to version name. A version alias
     is a string with a maximum length of 63 characters and can contain
@@ -800,10 +837,11 @@ class Secret(_messages.Message):
   name = _messages.StringField(7)
   replication = _messages.MessageField('Replication', 8)
   rotation = _messages.MessageField('Rotation', 9)
-  topics = _messages.MessageField('Topic', 10, repeated=True)
-  ttl = _messages.StringField(11)
-  versionAliases = _messages.MessageField('VersionAliasesValue', 12)
-  versionDestroyTtl = _messages.StringField(13)
+  tags = _messages.MessageField('TagsValue', 10)
+  topics = _messages.MessageField('Topic', 11, repeated=True)
+  ttl = _messages.StringField(12)
+  versionAliases = _messages.MessageField('VersionAliasesValue', 13)
+  versionDestroyTtl = _messages.StringField(14)
 
 
 class SecretPayload(_messages.Message):
@@ -898,6 +936,8 @@ class SecretmanagerProjectsLocationsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -908,10 +948,11 @@ class SecretmanagerProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class SecretmanagerProjectsLocationsSecretsAddVersionRequest(_messages.Message):

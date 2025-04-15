@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://storagebatchoperations.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/storage/docs/metadata'
+DOCS_URL = 'https://cloud.google.com/storage/docs/batch-operations/overview'
 
 
 class Collections(enum.Enum):

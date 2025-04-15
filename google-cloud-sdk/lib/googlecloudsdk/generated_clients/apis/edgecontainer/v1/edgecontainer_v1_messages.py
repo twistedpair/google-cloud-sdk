@@ -89,6 +89,8 @@ class Cluster(_messages.Message):
       node used if a maximum value is not specified explicitly for a node pool
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
+    enableClusterIsolation: Optional. This denotes if the cluster is required
+      to be isolated. go/cluster-isolation-in-gdcc-cluster
     endpoint: Output only. The IP address of the Kubernetes API server.
     externalLoadBalancerAddressPools: Optional. External load balancer pools
       for cluster.
@@ -186,25 +188,26 @@ class Cluster(_messages.Message):
   controlPlaneVersion = _messages.StringField(7)
   createTime = _messages.StringField(8)
   defaultMaxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(10)
-  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 11, repeated=True)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(12, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(13, repeated=True)
-  fleet = _messages.MessageField('Fleet', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 16, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 17)
-  name = _messages.StringField(18)
-  networking = _messages.MessageField('ClusterNetworking', 19)
-  nodeVersion = _messages.StringField(20)
-  port = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 24)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 25)
-  targetVersion = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 28)
+  enableClusterIsolation = _messages.BooleanField(10)
+  endpoint = _messages.StringField(11)
+  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 12, repeated=True)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(13, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(14, repeated=True)
+  fleet = _messages.MessageField('Fleet', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 17, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 18)
+  name = _messages.StringField(19)
+  networking = _messages.MessageField('ClusterNetworking', 20)
+  nodeVersion = _messages.StringField(21)
+  port = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 25)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 26)
+  targetVersion = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 29)
 
 
 class ClusterNetworking(_messages.Message):
@@ -654,6 +657,8 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -664,10 +669,11 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class EdgecontainerProjectsLocationsMachinesGetRequest(_messages.Message):

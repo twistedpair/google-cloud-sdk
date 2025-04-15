@@ -121,6 +121,16 @@ class AdaptiveProtection(_messages.Message):
   confidence = _messages.FloatField(1)
 
 
+class AffectedResources(_messages.Message):
+  r"""Details about resources affected by this finding.
+
+  Fields:
+    count: The count of resources affected by the finding.
+  """
+
+  count = _messages.IntegerField(1)
+
+
 class Allowed(_messages.Message):
   r"""Allowed IP rule.
 
@@ -407,6 +417,21 @@ class BackupDisasterRecovery(_messages.Message):
   policyOptions = _messages.StringField(8, repeated=True)
   profile = _messages.StringField(9)
   storagePool = _messages.StringField(10)
+
+
+class Chokepoint(_messages.Message):
+  r"""Contains details about a chokepoint, which is a resource or resource
+  group where high-risk attack paths converge, based on [attack path
+  simulations] (https://cloud.google.com/security-command-center/docs/attack-
+  exposure-learn#attack_path_simulations).
+
+  Fields:
+    relatedFindings: List of resource names of findings associated with this
+      chokepoint. For example, organizations/123/sources/456/findings/789.
+      This list will have at most 100 findings.
+  """
+
+  relatedFindings = _messages.StringField(1, repeated=True)
 
 
 class CloudArmor(_messages.Message):
@@ -1601,6 +1626,7 @@ class Finding(_messages.Message):
   Fields:
     access: Access details associated with the finding, such as more
       information on the caller, which method was accessed, and from where.
+    affectedResources: AffectedResources associated with the finding.
     application: Represents an application associated with the finding.
     attackExposure: The results of an attack path simulation relevant to this
       finding.
@@ -1614,6 +1640,11 @@ class Finding(_messages.Message):
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
+    chokepoint: Contains details about a chokepoint, which is a resource or
+      resource group where high-risk attack paths converge, based on [attack
+      path simulations] (https://cloud.google.com/security-command-
+      center/docs/attack-exposure-learn#attack_path_simulations). This field
+      cannot be updated. Its value is ignored in all update requests.
     cloudArmor: Fields related to Cloud Armor findings.
     cloudDlpDataProfile: Cloud DLP data profile that is associated with the
       finding.
@@ -1756,6 +1787,8 @@ class Finding(_messages.Message):
         combination.
       SENSITIVE_DATA_RISK: Describes a potential security risk to data assets
         that contain sensitive data.
+      CHOKEPOINT: Describes a resource or resource group where high risk
+        attack paths converge, based on attack path simulations (APS).
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -1766,6 +1799,7 @@ class Finding(_messages.Message):
     POSTURE_VIOLATION = 6
     TOXIC_COMBINATION = 7
     SENSITIVE_DATA_RISK = 8
+    CHOKEPOINT = 9
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -1930,62 +1964,64 @@ class Finding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   access = _messages.MessageField('Access', 1)
-  application = _messages.MessageField('Application', 2)
-  attackExposure = _messages.MessageField('AttackExposure', 3)
-  backupDisasterRecovery = _messages.MessageField('BackupDisasterRecovery', 4)
-  canonicalName = _messages.StringField(5)
-  category = _messages.StringField(6)
-  cloudArmor = _messages.MessageField('CloudArmor', 7)
-  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 8)
-  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 9)
-  compliances = _messages.MessageField('Compliance', 10, repeated=True)
-  connections = _messages.MessageField('Connection', 11, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 12)
-  containers = _messages.MessageField('Container', 13, repeated=True)
-  createTime = _messages.StringField(14)
-  dataAccessEvents = _messages.MessageField('DataAccessEvent', 15, repeated=True)
-  dataFlowEvents = _messages.MessageField('DataFlowEvent', 16, repeated=True)
-  dataRetentionDeletionEvents = _messages.MessageField('DataRetentionDeletionEvent', 17, repeated=True)
-  database = _messages.MessageField('Database', 18)
-  description = _messages.StringField(19)
-  disk = _messages.MessageField('Disk', 20)
-  eventTime = _messages.StringField(21)
-  exfiltration = _messages.MessageField('Exfiltration', 22)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 23)
-  externalUri = _messages.StringField(24)
-  files = _messages.MessageField('File', 25, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 26)
-  groupMemberships = _messages.MessageField('GroupMembership', 27, repeated=True)
-  iamBindings = _messages.MessageField('IamBinding', 28, repeated=True)
-  indicator = _messages.MessageField('Indicator', 29)
-  ipRules = _messages.MessageField('IpRules', 30)
-  job = _messages.MessageField('Job', 31)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 32)
-  kubernetes = _messages.MessageField('Kubernetes', 33)
-  loadBalancers = _messages.MessageField('LoadBalancer', 34, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 35, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 36)
-  moduleName = _messages.StringField(37)
-  mute = _messages.EnumField('MuteValueValuesEnum', 38)
-  muteInfo = _messages.MessageField('MuteInfo', 39)
-  muteInitiator = _messages.StringField(40)
-  muteUpdateTime = _messages.StringField(41)
-  name = _messages.StringField(42)
-  networks = _messages.MessageField('Network', 43, repeated=True)
-  nextSteps = _messages.StringField(44)
-  notebook = _messages.MessageField('Notebook', 45)
-  orgPolicies = _messages.MessageField('OrgPolicy', 46, repeated=True)
-  parent = _messages.StringField(47)
-  parentDisplayName = _messages.StringField(48)
-  processes = _messages.MessageField('Process', 49, repeated=True)
-  resourceName = _messages.StringField(50)
-  securityMarks = _messages.MessageField('SecurityMarks', 51)
-  securityPosture = _messages.MessageField('SecurityPosture', 52)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 53)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 54)
-  state = _messages.EnumField('StateValueValuesEnum', 55)
-  toxicCombination = _messages.MessageField('ToxicCombination', 56)
-  vulnerability = _messages.MessageField('Vulnerability', 57)
+  affectedResources = _messages.MessageField('AffectedResources', 2)
+  application = _messages.MessageField('Application', 3)
+  attackExposure = _messages.MessageField('AttackExposure', 4)
+  backupDisasterRecovery = _messages.MessageField('BackupDisasterRecovery', 5)
+  canonicalName = _messages.StringField(6)
+  category = _messages.StringField(7)
+  chokepoint = _messages.MessageField('Chokepoint', 8)
+  cloudArmor = _messages.MessageField('CloudArmor', 9)
+  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 10)
+  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 11)
+  compliances = _messages.MessageField('Compliance', 12, repeated=True)
+  connections = _messages.MessageField('Connection', 13, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 14)
+  containers = _messages.MessageField('Container', 15, repeated=True)
+  createTime = _messages.StringField(16)
+  dataAccessEvents = _messages.MessageField('DataAccessEvent', 17, repeated=True)
+  dataFlowEvents = _messages.MessageField('DataFlowEvent', 18, repeated=True)
+  dataRetentionDeletionEvents = _messages.MessageField('DataRetentionDeletionEvent', 19, repeated=True)
+  database = _messages.MessageField('Database', 20)
+  description = _messages.StringField(21)
+  disk = _messages.MessageField('Disk', 22)
+  eventTime = _messages.StringField(23)
+  exfiltration = _messages.MessageField('Exfiltration', 24)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 25)
+  externalUri = _messages.StringField(26)
+  files = _messages.MessageField('File', 27, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 28)
+  groupMemberships = _messages.MessageField('GroupMembership', 29, repeated=True)
+  iamBindings = _messages.MessageField('IamBinding', 30, repeated=True)
+  indicator = _messages.MessageField('Indicator', 31)
+  ipRules = _messages.MessageField('IpRules', 32)
+  job = _messages.MessageField('Job', 33)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 34)
+  kubernetes = _messages.MessageField('Kubernetes', 35)
+  loadBalancers = _messages.MessageField('LoadBalancer', 36, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 37, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 38)
+  moduleName = _messages.StringField(39)
+  mute = _messages.EnumField('MuteValueValuesEnum', 40)
+  muteInfo = _messages.MessageField('MuteInfo', 41)
+  muteInitiator = _messages.StringField(42)
+  muteUpdateTime = _messages.StringField(43)
+  name = _messages.StringField(44)
+  networks = _messages.MessageField('Network', 45, repeated=True)
+  nextSteps = _messages.StringField(46)
+  notebook = _messages.MessageField('Notebook', 47)
+  orgPolicies = _messages.MessageField('OrgPolicy', 48, repeated=True)
+  parent = _messages.StringField(49)
+  parentDisplayName = _messages.StringField(50)
+  processes = _messages.MessageField('Process', 51, repeated=True)
+  resourceName = _messages.StringField(52)
+  securityMarks = _messages.MessageField('SecurityMarks', 53)
+  securityPosture = _messages.MessageField('SecurityPosture', 54)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 55)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 56)
+  state = _messages.EnumField('StateValueValuesEnum', 57)
+  toxicCombination = _messages.MessageField('ToxicCombination', 58)
+  vulnerability = _messages.MessageField('Vulnerability', 59)
 
 
 class Folder(_messages.Message):
@@ -3192,6 +3228,16 @@ class GoogleCloudSecuritycenterV2AdaptiveProtection(_messages.Message):
   confidence = _messages.FloatField(1)
 
 
+class GoogleCloudSecuritycenterV2AffectedResources(_messages.Message):
+  r"""Details about resources affected by this finding.
+
+  Fields:
+    count: The count of resources affected by the finding.
+  """
+
+  count = _messages.IntegerField(1)
+
+
 class GoogleCloudSecuritycenterV2Allowed(_messages.Message):
   r"""Allowed IP rule.
 
@@ -3551,6 +3597,21 @@ class GoogleCloudSecuritycenterV2Binding(_messages.Message):
 
 class GoogleCloudSecuritycenterV2BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
+
+
+class GoogleCloudSecuritycenterV2Chokepoint(_messages.Message):
+  r"""Contains details about a chokepoint, which is a resource or resource
+  group where high-risk attack paths converge, based on [attack path
+  simulations] (https://cloud.google.com/security-command-center/docs/attack-
+  exposure-learn#attack_path_simulations).
+
+  Fields:
+    relatedFindings: List of resource names of findings associated with this
+      chokepoint. For example, organizations/123/sources/456/findings/789.
+      This list will have at most 100 findings.
+  """
+
+  relatedFindings = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudSecuritycenterV2CloudArmor(_messages.Message):
@@ -4458,6 +4519,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   Fields:
     access: Access details associated with the finding, such as more
       information on the caller, which method was accessed, and from where.
+    affectedResources: AffectedResources associated with the finding.
     application: Represents an application associated with the finding.
     attackExposure: The results of an attack path simulation relevant to this
       finding.
@@ -4475,6 +4537,11 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       associated with the finding.
     category: Immutable. The additional taxonomy group within findings from a
       given source. Example: "XSS_FLASH_INJECTION"
+    chokepoint: Contains details about a chokepoint, which is a resource or
+      resource group where high-risk attack paths converge, based on [attack
+      path simulations] (https://cloud.google.com/security-command-
+      center/docs/attack-exposure-learn#attack_path_simulations). This field
+      cannot be updated. Its value is ignored in all update requests.
     cloudArmor: Fields related to Cloud Armor findings.
     cloudDlpDataProfile: Cloud DLP data profile that is associated with the
       finding.
@@ -4626,6 +4693,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
         represent a more severe security problem when taken together.
       SENSITIVE_DATA_RISK: Describes a potential security risk to data assets
         that contain sensitive data.
+      CHOKEPOINT: Describes a resource or resource group where high risk
+        attack paths converge, based on attack path simulations (APS).
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -4636,6 +4705,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     POSTURE_VIOLATION = 6
     TOXIC_COMBINATION = 7
     SENSITIVE_DATA_RISK = 8
+    CHOKEPOINT = 9
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -4800,62 +4870,64 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   access = _messages.MessageField('GoogleCloudSecuritycenterV2Access', 1)
-  application = _messages.MessageField('GoogleCloudSecuritycenterV2Application', 2)
-  attackExposure = _messages.MessageField('GoogleCloudSecuritycenterV2AttackExposure', 3)
-  backupDisasterRecovery = _messages.MessageField('GoogleCloudSecuritycenterV2BackupDisasterRecovery', 4)
-  canonicalName = _messages.StringField(5)
-  category = _messages.StringField(6)
-  cloudArmor = _messages.MessageField('GoogleCloudSecuritycenterV2CloudArmor', 7)
-  cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 8)
-  cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 9)
-  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 10, repeated=True)
-  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 11, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 12)
-  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 13, repeated=True)
-  createTime = _messages.StringField(14)
-  dataAccessEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataAccessEvent', 15, repeated=True)
-  dataFlowEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataFlowEvent', 16, repeated=True)
-  dataRetentionDeletionEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataRetentionDeletionEvent', 17, repeated=True)
-  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 18)
-  description = _messages.StringField(19)
-  disk = _messages.MessageField('GoogleCloudSecuritycenterV2Disk', 20)
-  eventTime = _messages.StringField(21)
-  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 22)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 23)
-  externalUri = _messages.StringField(24)
-  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 25, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 26)
-  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 27, repeated=True)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 28, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 29)
-  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRules', 30)
-  job = _messages.MessageField('GoogleCloudSecuritycenterV2Job', 31)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 32)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 33)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 34, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 35, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 36)
-  moduleName = _messages.StringField(37)
-  mute = _messages.EnumField('MuteValueValuesEnum', 38)
-  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 39)
-  muteInitiator = _messages.StringField(40)
-  muteUpdateTime = _messages.StringField(41)
-  name = _messages.StringField(42)
-  networks = _messages.MessageField('GoogleCloudSecuritycenterV2Network', 43, repeated=True)
-  nextSteps = _messages.StringField(44)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 45)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 46, repeated=True)
-  parent = _messages.StringField(47)
-  parentDisplayName = _messages.StringField(48)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 49, repeated=True)
-  resourceName = _messages.StringField(50)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 51)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 52)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 53)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 54)
-  state = _messages.EnumField('StateValueValuesEnum', 55)
-  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 56)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 57)
+  affectedResources = _messages.MessageField('GoogleCloudSecuritycenterV2AffectedResources', 2)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV2Application', 3)
+  attackExposure = _messages.MessageField('GoogleCloudSecuritycenterV2AttackExposure', 4)
+  backupDisasterRecovery = _messages.MessageField('GoogleCloudSecuritycenterV2BackupDisasterRecovery', 5)
+  canonicalName = _messages.StringField(6)
+  category = _messages.StringField(7)
+  chokepoint = _messages.MessageField('GoogleCloudSecuritycenterV2Chokepoint', 8)
+  cloudArmor = _messages.MessageField('GoogleCloudSecuritycenterV2CloudArmor', 9)
+  cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 10)
+  cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 11)
+  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 12, repeated=True)
+  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 13, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 14)
+  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 15, repeated=True)
+  createTime = _messages.StringField(16)
+  dataAccessEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataAccessEvent', 17, repeated=True)
+  dataFlowEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataFlowEvent', 18, repeated=True)
+  dataRetentionDeletionEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataRetentionDeletionEvent', 19, repeated=True)
+  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 20)
+  description = _messages.StringField(21)
+  disk = _messages.MessageField('GoogleCloudSecuritycenterV2Disk', 22)
+  eventTime = _messages.StringField(23)
+  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 24)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 25)
+  externalUri = _messages.StringField(26)
+  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 27, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 28)
+  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 29, repeated=True)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 30, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 31)
+  ipRules = _messages.MessageField('GoogleCloudSecuritycenterV2IpRules', 32)
+  job = _messages.MessageField('GoogleCloudSecuritycenterV2Job', 33)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 34)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 35)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 36, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 37, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 38)
+  moduleName = _messages.StringField(39)
+  mute = _messages.EnumField('MuteValueValuesEnum', 40)
+  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 41)
+  muteInitiator = _messages.StringField(42)
+  muteUpdateTime = _messages.StringField(43)
+  name = _messages.StringField(44)
+  networks = _messages.MessageField('GoogleCloudSecuritycenterV2Network', 45, repeated=True)
+  nextSteps = _messages.StringField(46)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 47)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 48, repeated=True)
+  parent = _messages.StringField(49)
+  parentDisplayName = _messages.StringField(50)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 51, repeated=True)
+  resourceName = _messages.StringField(52)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 53)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 54)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 55)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 56)
+  state = _messages.EnumField('StateValueValuesEnum', 57)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 58)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 59)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -4900,9 +4972,11 @@ class GoogleCloudSecuritycenterV2GroupMembership(_messages.Message):
     Values:
       GROUP_TYPE_UNSPECIFIED: Default value.
       GROUP_TYPE_TOXIC_COMBINATION: Group represents a toxic combination.
+      GROUP_TYPE_CHOKEPOINT: Group represents a chokepoint.
     """
     GROUP_TYPE_UNSPECIFIED = 0
     GROUP_TYPE_TOXIC_COMBINATION = 1
+    GROUP_TYPE_CHOKEPOINT = 2
 
   groupId = _messages.StringField(1)
   groupType = _messages.EnumField('GroupTypeValueValuesEnum', 2)
@@ -5581,7 +5655,13 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
 
     Values:
       TECHNIQUE_UNSPECIFIED: Unspecified value.
+      DATA_OBFUSCATION: T1001
+      DATA_OBFUSCATION_STEGANOGRAPHY: T1001.002
       AUTOMATED_EXFILTRATION: T1020
+      OBFUSCATED_FILES_OR_INFO: T1027
+      STEGANOGRAPHY: T1027.003
+      COMPILE_AFTER_DELIVERY: T1027.004
+      COMMAND_OBFUSCATION: T1027.010
       MASQUERADING: T1036
       MATCH_LEGITIMATE_NAME_OR_LOCATION: T1036.005
       BOOT_OR_LOGON_INITIALIZATION_SCRIPTS: T1037
@@ -5610,18 +5690,24 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       ADDITIONAL_CLOUD_ROLES: T1098.003
       SSH_AUTHORIZED_KEYS: T1098.004
       ADDITIONAL_CONTAINER_CLUSTER_ROLES: T1098.006
+      MULTI_STAGE_CHANNELS: T1104
       INGRESS_TOOL_TRANSFER: T1105
       NATIVE_API: T1106
       BRUTE_FORCE: T1110
       SHARED_MODULES: T1129
+      DATA_ENCODING: T1132
+      STANDARD_ENCODING: T1132.001
       ACCESS_TOKEN_MANIPULATION: T1134
       TOKEN_IMPERSONATION_OR_THEFT: T1134.001
+      CREATE_ACCOUNT: T1136
+      LOCAL_ACCOUNT: T1136.001
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       USER_EXECUTION: T1204
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
       SERVICE_STOP: T1489
       INHIBIT_SYSTEM_RECOVERY: T1490
+      FIRMWARE_CORRUPTION: T1495
       RESOURCE_HIJACKING: T1496
       NETWORK_DENIAL_OF_SERVICE: T1498
       CLOUD_SERVICE_DISCOVERY: T1526
@@ -5630,11 +5716,17 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
       EVENT_TRIGGERED_EXECUTION: T1546
+      BOOT_OR_LOGON_AUTOSTART_EXECUTION: T1547
+      KERNEL_MODULES_AND_EXTENSIONS: T1547.006
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
+      COMPROMISE_HOST_SOFTWARE_BINARY: T1554
       MODIFY_AUTHENTICATION_PROCESS: T1556
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
+      HIDE_ARTIFACTS: T1564
+      HIDDEN_FILES_AND_DIRECTORIES: T1564.001
+      HIDDEN_USERS: T1564.002
       EXFILTRATION_OVER_WEB_SERVICE: T1567
       EXFILTRATION_TO_CLOUD_STORAGE: T1567.002
       DYNAMIC_RESOLUTION: T1568
@@ -5645,6 +5737,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       OBTAIN_CAPABILITIES: T1588
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
+      STAGE_CAPABILITIES: T1608
       CONTAINER_ADMINISTRATION_COMMAND: T1609
       DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
@@ -5652,75 +5745,94 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
     """
     TECHNIQUE_UNSPECIFIED = 0
-    AUTOMATED_EXFILTRATION = 1
-    MASQUERADING = 2
-    MATCH_LEGITIMATE_NAME_OR_LOCATION = 3
-    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 4
-    STARTUP_ITEMS = 5
-    NETWORK_SERVICE_DISCOVERY = 6
-    PROCESS_DISCOVERY = 7
-    COMMAND_AND_SCRIPTING_INTERPRETER = 8
-    UNIX_SHELL = 9
-    PYTHON = 10
-    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 11
-    PERMISSION_GROUPS_DISCOVERY = 12
-    CLOUD_GROUPS = 13
-    INDICATOR_REMOVAL_FILE_DELETION = 14
-    APPLICATION_LAYER_PROTOCOL = 15
-    DNS = 16
-    SOFTWARE_DEPLOYMENT_TOOLS = 17
-    VALID_ACCOUNTS = 18
-    DEFAULT_ACCOUNTS = 19
-    LOCAL_ACCOUNTS = 20
-    CLOUD_ACCOUNTS = 21
-    PROXY = 22
-    EXTERNAL_PROXY = 23
-    MULTI_HOP_PROXY = 24
-    ACCOUNT_MANIPULATION = 25
-    ADDITIONAL_CLOUD_CREDENTIALS = 26
-    ADDITIONAL_CLOUD_ROLES = 27
-    SSH_AUTHORIZED_KEYS = 28
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 29
-    INGRESS_TOOL_TRANSFER = 30
-    NATIVE_API = 31
-    BRUTE_FORCE = 32
-    SHARED_MODULES = 33
-    ACCESS_TOKEN_MANIPULATION = 34
-    TOKEN_IMPERSONATION_OR_THEFT = 35
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 36
-    USER_EXECUTION = 37
-    DOMAIN_POLICY_MODIFICATION = 38
-    DATA_DESTRUCTION = 39
-    SERVICE_STOP = 40
-    INHIBIT_SYSTEM_RECOVERY = 41
-    RESOURCE_HIJACKING = 42
-    NETWORK_DENIAL_OF_SERVICE = 43
-    CLOUD_SERVICE_DISCOVERY = 44
-    STEAL_APPLICATION_ACCESS_TOKEN = 45
-    ACCOUNT_ACCESS_REMOVAL = 46
-    STEAL_WEB_SESSION_COOKIE = 47
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 48
-    EVENT_TRIGGERED_EXECUTION = 49
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 50
-    UNSECURED_CREDENTIALS = 51
-    MODIFY_AUTHENTICATION_PROCESS = 52
-    IMPAIR_DEFENSES = 53
-    DISABLE_OR_MODIFY_TOOLS = 54
-    EXFILTRATION_OVER_WEB_SERVICE = 55
-    EXFILTRATION_TO_CLOUD_STORAGE = 56
-    DYNAMIC_RESOLUTION = 57
-    LATERAL_TOOL_TRANSFER = 58
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 59
-    CREATE_SNAPSHOT = 60
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 61
-    OBTAIN_CAPABILITIES = 62
-    ACTIVE_SCANNING = 63
-    SCANNING_IP_BLOCKS = 64
-    CONTAINER_ADMINISTRATION_COMMAND = 65
-    DEPLOY_CONTAINER = 66
-    ESCAPE_TO_HOST = 67
-    CONTAINER_AND_RESOURCE_DISCOVERY = 68
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 69
+    DATA_OBFUSCATION = 1
+    DATA_OBFUSCATION_STEGANOGRAPHY = 2
+    AUTOMATED_EXFILTRATION = 3
+    OBFUSCATED_FILES_OR_INFO = 4
+    STEGANOGRAPHY = 5
+    COMPILE_AFTER_DELIVERY = 6
+    COMMAND_OBFUSCATION = 7
+    MASQUERADING = 8
+    MATCH_LEGITIMATE_NAME_OR_LOCATION = 9
+    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 10
+    STARTUP_ITEMS = 11
+    NETWORK_SERVICE_DISCOVERY = 12
+    PROCESS_DISCOVERY = 13
+    COMMAND_AND_SCRIPTING_INTERPRETER = 14
+    UNIX_SHELL = 15
+    PYTHON = 16
+    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 17
+    PERMISSION_GROUPS_DISCOVERY = 18
+    CLOUD_GROUPS = 19
+    INDICATOR_REMOVAL_FILE_DELETION = 20
+    APPLICATION_LAYER_PROTOCOL = 21
+    DNS = 22
+    SOFTWARE_DEPLOYMENT_TOOLS = 23
+    VALID_ACCOUNTS = 24
+    DEFAULT_ACCOUNTS = 25
+    LOCAL_ACCOUNTS = 26
+    CLOUD_ACCOUNTS = 27
+    PROXY = 28
+    EXTERNAL_PROXY = 29
+    MULTI_HOP_PROXY = 30
+    ACCOUNT_MANIPULATION = 31
+    ADDITIONAL_CLOUD_CREDENTIALS = 32
+    ADDITIONAL_CLOUD_ROLES = 33
+    SSH_AUTHORIZED_KEYS = 34
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 35
+    MULTI_STAGE_CHANNELS = 36
+    INGRESS_TOOL_TRANSFER = 37
+    NATIVE_API = 38
+    BRUTE_FORCE = 39
+    SHARED_MODULES = 40
+    DATA_ENCODING = 41
+    STANDARD_ENCODING = 42
+    ACCESS_TOKEN_MANIPULATION = 43
+    TOKEN_IMPERSONATION_OR_THEFT = 44
+    CREATE_ACCOUNT = 45
+    LOCAL_ACCOUNT = 46
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 47
+    USER_EXECUTION = 48
+    DOMAIN_POLICY_MODIFICATION = 49
+    DATA_DESTRUCTION = 50
+    SERVICE_STOP = 51
+    INHIBIT_SYSTEM_RECOVERY = 52
+    FIRMWARE_CORRUPTION = 53
+    RESOURCE_HIJACKING = 54
+    NETWORK_DENIAL_OF_SERVICE = 55
+    CLOUD_SERVICE_DISCOVERY = 56
+    STEAL_APPLICATION_ACCESS_TOKEN = 57
+    ACCOUNT_ACCESS_REMOVAL = 58
+    STEAL_WEB_SESSION_COOKIE = 59
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 60
+    EVENT_TRIGGERED_EXECUTION = 61
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 62
+    KERNEL_MODULES_AND_EXTENSIONS = 63
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 64
+    UNSECURED_CREDENTIALS = 65
+    COMPROMISE_HOST_SOFTWARE_BINARY = 66
+    MODIFY_AUTHENTICATION_PROCESS = 67
+    IMPAIR_DEFENSES = 68
+    DISABLE_OR_MODIFY_TOOLS = 69
+    HIDE_ARTIFACTS = 70
+    HIDDEN_FILES_AND_DIRECTORIES = 71
+    HIDDEN_USERS = 72
+    EXFILTRATION_OVER_WEB_SERVICE = 73
+    EXFILTRATION_TO_CLOUD_STORAGE = 74
+    DYNAMIC_RESOLUTION = 75
+    LATERAL_TOOL_TRANSFER = 76
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 77
+    CREATE_SNAPSHOT = 78
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 79
+    OBTAIN_CAPABILITIES = 80
+    ACTIVE_SCANNING = 81
+    SCANNING_IP_BLOCKS = 82
+    STAGE_CAPABILITIES = 83
+    CONTAINER_ADMINISTRATION_COMMAND = 84
+    DEPLOY_CONTAINER = 85
+    ESCAPE_TO_HOST = 86
+    CONTAINER_AND_RESOURCE_DISCOVERY = 87
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 88
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -5764,7 +5876,13 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
 
     Values:
       TECHNIQUE_UNSPECIFIED: Unspecified value.
+      DATA_OBFUSCATION: T1001
+      DATA_OBFUSCATION_STEGANOGRAPHY: T1001.002
       AUTOMATED_EXFILTRATION: T1020
+      OBFUSCATED_FILES_OR_INFO: T1027
+      STEGANOGRAPHY: T1027.003
+      COMPILE_AFTER_DELIVERY: T1027.004
+      COMMAND_OBFUSCATION: T1027.010
       MASQUERADING: T1036
       MATCH_LEGITIMATE_NAME_OR_LOCATION: T1036.005
       BOOT_OR_LOGON_INITIALIZATION_SCRIPTS: T1037
@@ -5793,18 +5911,24 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       ADDITIONAL_CLOUD_ROLES: T1098.003
       SSH_AUTHORIZED_KEYS: T1098.004
       ADDITIONAL_CONTAINER_CLUSTER_ROLES: T1098.006
+      MULTI_STAGE_CHANNELS: T1104
       INGRESS_TOOL_TRANSFER: T1105
       NATIVE_API: T1106
       BRUTE_FORCE: T1110
       SHARED_MODULES: T1129
+      DATA_ENCODING: T1132
+      STANDARD_ENCODING: T1132.001
       ACCESS_TOKEN_MANIPULATION: T1134
       TOKEN_IMPERSONATION_OR_THEFT: T1134.001
+      CREATE_ACCOUNT: T1136
+      LOCAL_ACCOUNT: T1136.001
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       USER_EXECUTION: T1204
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
       SERVICE_STOP: T1489
       INHIBIT_SYSTEM_RECOVERY: T1490
+      FIRMWARE_CORRUPTION: T1495
       RESOURCE_HIJACKING: T1496
       NETWORK_DENIAL_OF_SERVICE: T1498
       CLOUD_SERVICE_DISCOVERY: T1526
@@ -5813,11 +5937,17 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
       EVENT_TRIGGERED_EXECUTION: T1546
+      BOOT_OR_LOGON_AUTOSTART_EXECUTION: T1547
+      KERNEL_MODULES_AND_EXTENSIONS: T1547.006
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
+      COMPROMISE_HOST_SOFTWARE_BINARY: T1554
       MODIFY_AUTHENTICATION_PROCESS: T1556
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
+      HIDE_ARTIFACTS: T1564
+      HIDDEN_FILES_AND_DIRECTORIES: T1564.001
+      HIDDEN_USERS: T1564.002
       EXFILTRATION_OVER_WEB_SERVICE: T1567
       EXFILTRATION_TO_CLOUD_STORAGE: T1567.002
       DYNAMIC_RESOLUTION: T1568
@@ -5828,6 +5958,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       OBTAIN_CAPABILITIES: T1588
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
+      STAGE_CAPABILITIES: T1608
       CONTAINER_ADMINISTRATION_COMMAND: T1609
       DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
@@ -5835,75 +5966,94 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
     """
     TECHNIQUE_UNSPECIFIED = 0
-    AUTOMATED_EXFILTRATION = 1
-    MASQUERADING = 2
-    MATCH_LEGITIMATE_NAME_OR_LOCATION = 3
-    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 4
-    STARTUP_ITEMS = 5
-    NETWORK_SERVICE_DISCOVERY = 6
-    PROCESS_DISCOVERY = 7
-    COMMAND_AND_SCRIPTING_INTERPRETER = 8
-    UNIX_SHELL = 9
-    PYTHON = 10
-    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 11
-    PERMISSION_GROUPS_DISCOVERY = 12
-    CLOUD_GROUPS = 13
-    INDICATOR_REMOVAL_FILE_DELETION = 14
-    APPLICATION_LAYER_PROTOCOL = 15
-    DNS = 16
-    SOFTWARE_DEPLOYMENT_TOOLS = 17
-    VALID_ACCOUNTS = 18
-    DEFAULT_ACCOUNTS = 19
-    LOCAL_ACCOUNTS = 20
-    CLOUD_ACCOUNTS = 21
-    PROXY = 22
-    EXTERNAL_PROXY = 23
-    MULTI_HOP_PROXY = 24
-    ACCOUNT_MANIPULATION = 25
-    ADDITIONAL_CLOUD_CREDENTIALS = 26
-    ADDITIONAL_CLOUD_ROLES = 27
-    SSH_AUTHORIZED_KEYS = 28
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 29
-    INGRESS_TOOL_TRANSFER = 30
-    NATIVE_API = 31
-    BRUTE_FORCE = 32
-    SHARED_MODULES = 33
-    ACCESS_TOKEN_MANIPULATION = 34
-    TOKEN_IMPERSONATION_OR_THEFT = 35
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 36
-    USER_EXECUTION = 37
-    DOMAIN_POLICY_MODIFICATION = 38
-    DATA_DESTRUCTION = 39
-    SERVICE_STOP = 40
-    INHIBIT_SYSTEM_RECOVERY = 41
-    RESOURCE_HIJACKING = 42
-    NETWORK_DENIAL_OF_SERVICE = 43
-    CLOUD_SERVICE_DISCOVERY = 44
-    STEAL_APPLICATION_ACCESS_TOKEN = 45
-    ACCOUNT_ACCESS_REMOVAL = 46
-    STEAL_WEB_SESSION_COOKIE = 47
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 48
-    EVENT_TRIGGERED_EXECUTION = 49
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 50
-    UNSECURED_CREDENTIALS = 51
-    MODIFY_AUTHENTICATION_PROCESS = 52
-    IMPAIR_DEFENSES = 53
-    DISABLE_OR_MODIFY_TOOLS = 54
-    EXFILTRATION_OVER_WEB_SERVICE = 55
-    EXFILTRATION_TO_CLOUD_STORAGE = 56
-    DYNAMIC_RESOLUTION = 57
-    LATERAL_TOOL_TRANSFER = 58
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 59
-    CREATE_SNAPSHOT = 60
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 61
-    OBTAIN_CAPABILITIES = 62
-    ACTIVE_SCANNING = 63
-    SCANNING_IP_BLOCKS = 64
-    CONTAINER_ADMINISTRATION_COMMAND = 65
-    DEPLOY_CONTAINER = 66
-    ESCAPE_TO_HOST = 67
-    CONTAINER_AND_RESOURCE_DISCOVERY = 68
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 69
+    DATA_OBFUSCATION = 1
+    DATA_OBFUSCATION_STEGANOGRAPHY = 2
+    AUTOMATED_EXFILTRATION = 3
+    OBFUSCATED_FILES_OR_INFO = 4
+    STEGANOGRAPHY = 5
+    COMPILE_AFTER_DELIVERY = 6
+    COMMAND_OBFUSCATION = 7
+    MASQUERADING = 8
+    MATCH_LEGITIMATE_NAME_OR_LOCATION = 9
+    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 10
+    STARTUP_ITEMS = 11
+    NETWORK_SERVICE_DISCOVERY = 12
+    PROCESS_DISCOVERY = 13
+    COMMAND_AND_SCRIPTING_INTERPRETER = 14
+    UNIX_SHELL = 15
+    PYTHON = 16
+    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 17
+    PERMISSION_GROUPS_DISCOVERY = 18
+    CLOUD_GROUPS = 19
+    INDICATOR_REMOVAL_FILE_DELETION = 20
+    APPLICATION_LAYER_PROTOCOL = 21
+    DNS = 22
+    SOFTWARE_DEPLOYMENT_TOOLS = 23
+    VALID_ACCOUNTS = 24
+    DEFAULT_ACCOUNTS = 25
+    LOCAL_ACCOUNTS = 26
+    CLOUD_ACCOUNTS = 27
+    PROXY = 28
+    EXTERNAL_PROXY = 29
+    MULTI_HOP_PROXY = 30
+    ACCOUNT_MANIPULATION = 31
+    ADDITIONAL_CLOUD_CREDENTIALS = 32
+    ADDITIONAL_CLOUD_ROLES = 33
+    SSH_AUTHORIZED_KEYS = 34
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 35
+    MULTI_STAGE_CHANNELS = 36
+    INGRESS_TOOL_TRANSFER = 37
+    NATIVE_API = 38
+    BRUTE_FORCE = 39
+    SHARED_MODULES = 40
+    DATA_ENCODING = 41
+    STANDARD_ENCODING = 42
+    ACCESS_TOKEN_MANIPULATION = 43
+    TOKEN_IMPERSONATION_OR_THEFT = 44
+    CREATE_ACCOUNT = 45
+    LOCAL_ACCOUNT = 46
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 47
+    USER_EXECUTION = 48
+    DOMAIN_POLICY_MODIFICATION = 49
+    DATA_DESTRUCTION = 50
+    SERVICE_STOP = 51
+    INHIBIT_SYSTEM_RECOVERY = 52
+    FIRMWARE_CORRUPTION = 53
+    RESOURCE_HIJACKING = 54
+    NETWORK_DENIAL_OF_SERVICE = 55
+    CLOUD_SERVICE_DISCOVERY = 56
+    STEAL_APPLICATION_ACCESS_TOKEN = 57
+    ACCOUNT_ACCESS_REMOVAL = 58
+    STEAL_WEB_SESSION_COOKIE = 59
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 60
+    EVENT_TRIGGERED_EXECUTION = 61
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 62
+    KERNEL_MODULES_AND_EXTENSIONS = 63
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 64
+    UNSECURED_CREDENTIALS = 65
+    COMPROMISE_HOST_SOFTWARE_BINARY = 66
+    MODIFY_AUTHENTICATION_PROCESS = 67
+    IMPAIR_DEFENSES = 68
+    DISABLE_OR_MODIFY_TOOLS = 69
+    HIDE_ARTIFACTS = 70
+    HIDDEN_FILES_AND_DIRECTORIES = 71
+    HIDDEN_USERS = 72
+    EXFILTRATION_OVER_WEB_SERVICE = 73
+    EXFILTRATION_TO_CLOUD_STORAGE = 74
+    DYNAMIC_RESOLUTION = 75
+    LATERAL_TOOL_TRANSFER = 76
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 77
+    CREATE_SNAPSHOT = 78
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 79
+    OBTAIN_CAPABILITIES = 80
+    ACTIVE_SCANNING = 81
+    SCANNING_IP_BLOCKS = 82
+    STAGE_CAPABILITIES = 83
+    CONTAINER_ADMINISTRATION_COMMAND = 84
+    DEPLOY_CONTAINER = 85
+    ESCAPE_TO_HOST = 86
+    CONTAINER_AND_RESOURCE_DISCOVERY = 87
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 88
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -6921,9 +7071,11 @@ class GroupMembership(_messages.Message):
     Values:
       GROUP_TYPE_UNSPECIFIED: Default value.
       GROUP_TYPE_TOXIC_COMBINATION: Group represents a toxic combination.
+      GROUP_TYPE_CHOKEPOINT: Group represents a chokepoint.
     """
     GROUP_TYPE_UNSPECIFIED = 0
     GROUP_TYPE_TOXIC_COMBINATION = 1
+    GROUP_TYPE_CHOKEPOINT = 2
 
   groupId = _messages.StringField(1)
   groupType = _messages.EnumField('GroupTypeValueValuesEnum', 2)
@@ -7275,7 +7427,13 @@ class MitreAttack(_messages.Message):
 
     Values:
       TECHNIQUE_UNSPECIFIED: Unspecified value.
+      DATA_OBFUSCATION: T1001
+      DATA_OBFUSCATION_STEGANOGRAPHY: T1001.002
       AUTOMATED_EXFILTRATION: T1020
+      OBFUSCATED_FILES_OR_INFO: T1027
+      STEGANOGRAPHY: T1027.003
+      COMPILE_AFTER_DELIVERY: T1027.004
+      COMMAND_OBFUSCATION: T1027.010
       MASQUERADING: T1036
       MATCH_LEGITIMATE_NAME_OR_LOCATION: T1036.005
       BOOT_OR_LOGON_INITIALIZATION_SCRIPTS: T1037
@@ -7304,18 +7462,24 @@ class MitreAttack(_messages.Message):
       ADDITIONAL_CLOUD_ROLES: T1098.003
       SSH_AUTHORIZED_KEYS: T1098.004
       ADDITIONAL_CONTAINER_CLUSTER_ROLES: T1098.006
+      MULTI_STAGE_CHANNELS: T1104
       INGRESS_TOOL_TRANSFER: T1105
       NATIVE_API: T1106
       BRUTE_FORCE: T1110
       SHARED_MODULES: T1129
+      DATA_ENCODING: T1132
+      STANDARD_ENCODING: T1132.001
       ACCESS_TOKEN_MANIPULATION: T1134
       TOKEN_IMPERSONATION_OR_THEFT: T1134.001
+      CREATE_ACCOUNT: T1136
+      LOCAL_ACCOUNT: T1136.001
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       USER_EXECUTION: T1204
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
       SERVICE_STOP: T1489
       INHIBIT_SYSTEM_RECOVERY: T1490
+      FIRMWARE_CORRUPTION: T1495
       RESOURCE_HIJACKING: T1496
       NETWORK_DENIAL_OF_SERVICE: T1498
       CLOUD_SERVICE_DISCOVERY: T1526
@@ -7324,11 +7488,17 @@ class MitreAttack(_messages.Message):
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
       EVENT_TRIGGERED_EXECUTION: T1546
+      BOOT_OR_LOGON_AUTOSTART_EXECUTION: T1547
+      KERNEL_MODULES_AND_EXTENSIONS: T1547.006
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
+      COMPROMISE_HOST_SOFTWARE_BINARY: T1554
       MODIFY_AUTHENTICATION_PROCESS: T1556
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
+      HIDE_ARTIFACTS: T1564
+      HIDDEN_FILES_AND_DIRECTORIES: T1564.001
+      HIDDEN_USERS: T1564.002
       EXFILTRATION_OVER_WEB_SERVICE: T1567
       EXFILTRATION_TO_CLOUD_STORAGE: T1567.002
       DYNAMIC_RESOLUTION: T1568
@@ -7339,6 +7509,7 @@ class MitreAttack(_messages.Message):
       OBTAIN_CAPABILITIES: T1588
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
+      STAGE_CAPABILITIES: T1608
       CONTAINER_ADMINISTRATION_COMMAND: T1609
       DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
@@ -7346,75 +7517,94 @@ class MitreAttack(_messages.Message):
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
     """
     TECHNIQUE_UNSPECIFIED = 0
-    AUTOMATED_EXFILTRATION = 1
-    MASQUERADING = 2
-    MATCH_LEGITIMATE_NAME_OR_LOCATION = 3
-    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 4
-    STARTUP_ITEMS = 5
-    NETWORK_SERVICE_DISCOVERY = 6
-    PROCESS_DISCOVERY = 7
-    COMMAND_AND_SCRIPTING_INTERPRETER = 8
-    UNIX_SHELL = 9
-    PYTHON = 10
-    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 11
-    PERMISSION_GROUPS_DISCOVERY = 12
-    CLOUD_GROUPS = 13
-    INDICATOR_REMOVAL_FILE_DELETION = 14
-    APPLICATION_LAYER_PROTOCOL = 15
-    DNS = 16
-    SOFTWARE_DEPLOYMENT_TOOLS = 17
-    VALID_ACCOUNTS = 18
-    DEFAULT_ACCOUNTS = 19
-    LOCAL_ACCOUNTS = 20
-    CLOUD_ACCOUNTS = 21
-    PROXY = 22
-    EXTERNAL_PROXY = 23
-    MULTI_HOP_PROXY = 24
-    ACCOUNT_MANIPULATION = 25
-    ADDITIONAL_CLOUD_CREDENTIALS = 26
-    ADDITIONAL_CLOUD_ROLES = 27
-    SSH_AUTHORIZED_KEYS = 28
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 29
-    INGRESS_TOOL_TRANSFER = 30
-    NATIVE_API = 31
-    BRUTE_FORCE = 32
-    SHARED_MODULES = 33
-    ACCESS_TOKEN_MANIPULATION = 34
-    TOKEN_IMPERSONATION_OR_THEFT = 35
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 36
-    USER_EXECUTION = 37
-    DOMAIN_POLICY_MODIFICATION = 38
-    DATA_DESTRUCTION = 39
-    SERVICE_STOP = 40
-    INHIBIT_SYSTEM_RECOVERY = 41
-    RESOURCE_HIJACKING = 42
-    NETWORK_DENIAL_OF_SERVICE = 43
-    CLOUD_SERVICE_DISCOVERY = 44
-    STEAL_APPLICATION_ACCESS_TOKEN = 45
-    ACCOUNT_ACCESS_REMOVAL = 46
-    STEAL_WEB_SESSION_COOKIE = 47
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 48
-    EVENT_TRIGGERED_EXECUTION = 49
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 50
-    UNSECURED_CREDENTIALS = 51
-    MODIFY_AUTHENTICATION_PROCESS = 52
-    IMPAIR_DEFENSES = 53
-    DISABLE_OR_MODIFY_TOOLS = 54
-    EXFILTRATION_OVER_WEB_SERVICE = 55
-    EXFILTRATION_TO_CLOUD_STORAGE = 56
-    DYNAMIC_RESOLUTION = 57
-    LATERAL_TOOL_TRANSFER = 58
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 59
-    CREATE_SNAPSHOT = 60
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 61
-    OBTAIN_CAPABILITIES = 62
-    ACTIVE_SCANNING = 63
-    SCANNING_IP_BLOCKS = 64
-    CONTAINER_ADMINISTRATION_COMMAND = 65
-    DEPLOY_CONTAINER = 66
-    ESCAPE_TO_HOST = 67
-    CONTAINER_AND_RESOURCE_DISCOVERY = 68
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 69
+    DATA_OBFUSCATION = 1
+    DATA_OBFUSCATION_STEGANOGRAPHY = 2
+    AUTOMATED_EXFILTRATION = 3
+    OBFUSCATED_FILES_OR_INFO = 4
+    STEGANOGRAPHY = 5
+    COMPILE_AFTER_DELIVERY = 6
+    COMMAND_OBFUSCATION = 7
+    MASQUERADING = 8
+    MATCH_LEGITIMATE_NAME_OR_LOCATION = 9
+    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 10
+    STARTUP_ITEMS = 11
+    NETWORK_SERVICE_DISCOVERY = 12
+    PROCESS_DISCOVERY = 13
+    COMMAND_AND_SCRIPTING_INTERPRETER = 14
+    UNIX_SHELL = 15
+    PYTHON = 16
+    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 17
+    PERMISSION_GROUPS_DISCOVERY = 18
+    CLOUD_GROUPS = 19
+    INDICATOR_REMOVAL_FILE_DELETION = 20
+    APPLICATION_LAYER_PROTOCOL = 21
+    DNS = 22
+    SOFTWARE_DEPLOYMENT_TOOLS = 23
+    VALID_ACCOUNTS = 24
+    DEFAULT_ACCOUNTS = 25
+    LOCAL_ACCOUNTS = 26
+    CLOUD_ACCOUNTS = 27
+    PROXY = 28
+    EXTERNAL_PROXY = 29
+    MULTI_HOP_PROXY = 30
+    ACCOUNT_MANIPULATION = 31
+    ADDITIONAL_CLOUD_CREDENTIALS = 32
+    ADDITIONAL_CLOUD_ROLES = 33
+    SSH_AUTHORIZED_KEYS = 34
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 35
+    MULTI_STAGE_CHANNELS = 36
+    INGRESS_TOOL_TRANSFER = 37
+    NATIVE_API = 38
+    BRUTE_FORCE = 39
+    SHARED_MODULES = 40
+    DATA_ENCODING = 41
+    STANDARD_ENCODING = 42
+    ACCESS_TOKEN_MANIPULATION = 43
+    TOKEN_IMPERSONATION_OR_THEFT = 44
+    CREATE_ACCOUNT = 45
+    LOCAL_ACCOUNT = 46
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 47
+    USER_EXECUTION = 48
+    DOMAIN_POLICY_MODIFICATION = 49
+    DATA_DESTRUCTION = 50
+    SERVICE_STOP = 51
+    INHIBIT_SYSTEM_RECOVERY = 52
+    FIRMWARE_CORRUPTION = 53
+    RESOURCE_HIJACKING = 54
+    NETWORK_DENIAL_OF_SERVICE = 55
+    CLOUD_SERVICE_DISCOVERY = 56
+    STEAL_APPLICATION_ACCESS_TOKEN = 57
+    ACCOUNT_ACCESS_REMOVAL = 58
+    STEAL_WEB_SESSION_COOKIE = 59
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 60
+    EVENT_TRIGGERED_EXECUTION = 61
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 62
+    KERNEL_MODULES_AND_EXTENSIONS = 63
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 64
+    UNSECURED_CREDENTIALS = 65
+    COMPROMISE_HOST_SOFTWARE_BINARY = 66
+    MODIFY_AUTHENTICATION_PROCESS = 67
+    IMPAIR_DEFENSES = 68
+    DISABLE_OR_MODIFY_TOOLS = 69
+    HIDE_ARTIFACTS = 70
+    HIDDEN_FILES_AND_DIRECTORIES = 71
+    HIDDEN_USERS = 72
+    EXFILTRATION_OVER_WEB_SERVICE = 73
+    EXFILTRATION_TO_CLOUD_STORAGE = 74
+    DYNAMIC_RESOLUTION = 75
+    LATERAL_TOOL_TRANSFER = 76
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 77
+    CREATE_SNAPSHOT = 78
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 79
+    OBTAIN_CAPABILITIES = 80
+    ACTIVE_SCANNING = 81
+    SCANNING_IP_BLOCKS = 82
+    STAGE_CAPABILITIES = 83
+    CONTAINER_ADMINISTRATION_COMMAND = 84
+    DEPLOY_CONTAINER = 85
+    ESCAPE_TO_HOST = 86
+    CONTAINER_AND_RESOURCE_DISCOVERY = 87
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 88
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -7458,7 +7648,13 @@ class MitreAttack(_messages.Message):
 
     Values:
       TECHNIQUE_UNSPECIFIED: Unspecified value.
+      DATA_OBFUSCATION: T1001
+      DATA_OBFUSCATION_STEGANOGRAPHY: T1001.002
       AUTOMATED_EXFILTRATION: T1020
+      OBFUSCATED_FILES_OR_INFO: T1027
+      STEGANOGRAPHY: T1027.003
+      COMPILE_AFTER_DELIVERY: T1027.004
+      COMMAND_OBFUSCATION: T1027.010
       MASQUERADING: T1036
       MATCH_LEGITIMATE_NAME_OR_LOCATION: T1036.005
       BOOT_OR_LOGON_INITIALIZATION_SCRIPTS: T1037
@@ -7487,18 +7683,24 @@ class MitreAttack(_messages.Message):
       ADDITIONAL_CLOUD_ROLES: T1098.003
       SSH_AUTHORIZED_KEYS: T1098.004
       ADDITIONAL_CONTAINER_CLUSTER_ROLES: T1098.006
+      MULTI_STAGE_CHANNELS: T1104
       INGRESS_TOOL_TRANSFER: T1105
       NATIVE_API: T1106
       BRUTE_FORCE: T1110
       SHARED_MODULES: T1129
+      DATA_ENCODING: T1132
+      STANDARD_ENCODING: T1132.001
       ACCESS_TOKEN_MANIPULATION: T1134
       TOKEN_IMPERSONATION_OR_THEFT: T1134.001
+      CREATE_ACCOUNT: T1136
+      LOCAL_ACCOUNT: T1136.001
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
       USER_EXECUTION: T1204
       DOMAIN_POLICY_MODIFICATION: T1484
       DATA_DESTRUCTION: T1485
       SERVICE_STOP: T1489
       INHIBIT_SYSTEM_RECOVERY: T1490
+      FIRMWARE_CORRUPTION: T1495
       RESOURCE_HIJACKING: T1496
       NETWORK_DENIAL_OF_SERVICE: T1498
       CLOUD_SERVICE_DISCOVERY: T1526
@@ -7507,11 +7709,17 @@ class MitreAttack(_messages.Message):
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
       EVENT_TRIGGERED_EXECUTION: T1546
+      BOOT_OR_LOGON_AUTOSTART_EXECUTION: T1547
+      KERNEL_MODULES_AND_EXTENSIONS: T1547.006
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
+      COMPROMISE_HOST_SOFTWARE_BINARY: T1554
       MODIFY_AUTHENTICATION_PROCESS: T1556
       IMPAIR_DEFENSES: T1562
       DISABLE_OR_MODIFY_TOOLS: T1562.001
+      HIDE_ARTIFACTS: T1564
+      HIDDEN_FILES_AND_DIRECTORIES: T1564.001
+      HIDDEN_USERS: T1564.002
       EXFILTRATION_OVER_WEB_SERVICE: T1567
       EXFILTRATION_TO_CLOUD_STORAGE: T1567.002
       DYNAMIC_RESOLUTION: T1568
@@ -7522,6 +7730,7 @@ class MitreAttack(_messages.Message):
       OBTAIN_CAPABILITIES: T1588
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
+      STAGE_CAPABILITIES: T1608
       CONTAINER_ADMINISTRATION_COMMAND: T1609
       DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
@@ -7529,75 +7738,94 @@ class MitreAttack(_messages.Message):
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
     """
     TECHNIQUE_UNSPECIFIED = 0
-    AUTOMATED_EXFILTRATION = 1
-    MASQUERADING = 2
-    MATCH_LEGITIMATE_NAME_OR_LOCATION = 3
-    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 4
-    STARTUP_ITEMS = 5
-    NETWORK_SERVICE_DISCOVERY = 6
-    PROCESS_DISCOVERY = 7
-    COMMAND_AND_SCRIPTING_INTERPRETER = 8
-    UNIX_SHELL = 9
-    PYTHON = 10
-    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 11
-    PERMISSION_GROUPS_DISCOVERY = 12
-    CLOUD_GROUPS = 13
-    INDICATOR_REMOVAL_FILE_DELETION = 14
-    APPLICATION_LAYER_PROTOCOL = 15
-    DNS = 16
-    SOFTWARE_DEPLOYMENT_TOOLS = 17
-    VALID_ACCOUNTS = 18
-    DEFAULT_ACCOUNTS = 19
-    LOCAL_ACCOUNTS = 20
-    CLOUD_ACCOUNTS = 21
-    PROXY = 22
-    EXTERNAL_PROXY = 23
-    MULTI_HOP_PROXY = 24
-    ACCOUNT_MANIPULATION = 25
-    ADDITIONAL_CLOUD_CREDENTIALS = 26
-    ADDITIONAL_CLOUD_ROLES = 27
-    SSH_AUTHORIZED_KEYS = 28
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 29
-    INGRESS_TOOL_TRANSFER = 30
-    NATIVE_API = 31
-    BRUTE_FORCE = 32
-    SHARED_MODULES = 33
-    ACCESS_TOKEN_MANIPULATION = 34
-    TOKEN_IMPERSONATION_OR_THEFT = 35
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 36
-    USER_EXECUTION = 37
-    DOMAIN_POLICY_MODIFICATION = 38
-    DATA_DESTRUCTION = 39
-    SERVICE_STOP = 40
-    INHIBIT_SYSTEM_RECOVERY = 41
-    RESOURCE_HIJACKING = 42
-    NETWORK_DENIAL_OF_SERVICE = 43
-    CLOUD_SERVICE_DISCOVERY = 44
-    STEAL_APPLICATION_ACCESS_TOKEN = 45
-    ACCOUNT_ACCESS_REMOVAL = 46
-    STEAL_WEB_SESSION_COOKIE = 47
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 48
-    EVENT_TRIGGERED_EXECUTION = 49
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 50
-    UNSECURED_CREDENTIALS = 51
-    MODIFY_AUTHENTICATION_PROCESS = 52
-    IMPAIR_DEFENSES = 53
-    DISABLE_OR_MODIFY_TOOLS = 54
-    EXFILTRATION_OVER_WEB_SERVICE = 55
-    EXFILTRATION_TO_CLOUD_STORAGE = 56
-    DYNAMIC_RESOLUTION = 57
-    LATERAL_TOOL_TRANSFER = 58
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 59
-    CREATE_SNAPSHOT = 60
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 61
-    OBTAIN_CAPABILITIES = 62
-    ACTIVE_SCANNING = 63
-    SCANNING_IP_BLOCKS = 64
-    CONTAINER_ADMINISTRATION_COMMAND = 65
-    DEPLOY_CONTAINER = 66
-    ESCAPE_TO_HOST = 67
-    CONTAINER_AND_RESOURCE_DISCOVERY = 68
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 69
+    DATA_OBFUSCATION = 1
+    DATA_OBFUSCATION_STEGANOGRAPHY = 2
+    AUTOMATED_EXFILTRATION = 3
+    OBFUSCATED_FILES_OR_INFO = 4
+    STEGANOGRAPHY = 5
+    COMPILE_AFTER_DELIVERY = 6
+    COMMAND_OBFUSCATION = 7
+    MASQUERADING = 8
+    MATCH_LEGITIMATE_NAME_OR_LOCATION = 9
+    BOOT_OR_LOGON_INITIALIZATION_SCRIPTS = 10
+    STARTUP_ITEMS = 11
+    NETWORK_SERVICE_DISCOVERY = 12
+    PROCESS_DISCOVERY = 13
+    COMMAND_AND_SCRIPTING_INTERPRETER = 14
+    UNIX_SHELL = 15
+    PYTHON = 16
+    EXPLOITATION_FOR_PRIVILEGE_ESCALATION = 17
+    PERMISSION_GROUPS_DISCOVERY = 18
+    CLOUD_GROUPS = 19
+    INDICATOR_REMOVAL_FILE_DELETION = 20
+    APPLICATION_LAYER_PROTOCOL = 21
+    DNS = 22
+    SOFTWARE_DEPLOYMENT_TOOLS = 23
+    VALID_ACCOUNTS = 24
+    DEFAULT_ACCOUNTS = 25
+    LOCAL_ACCOUNTS = 26
+    CLOUD_ACCOUNTS = 27
+    PROXY = 28
+    EXTERNAL_PROXY = 29
+    MULTI_HOP_PROXY = 30
+    ACCOUNT_MANIPULATION = 31
+    ADDITIONAL_CLOUD_CREDENTIALS = 32
+    ADDITIONAL_CLOUD_ROLES = 33
+    SSH_AUTHORIZED_KEYS = 34
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 35
+    MULTI_STAGE_CHANNELS = 36
+    INGRESS_TOOL_TRANSFER = 37
+    NATIVE_API = 38
+    BRUTE_FORCE = 39
+    SHARED_MODULES = 40
+    DATA_ENCODING = 41
+    STANDARD_ENCODING = 42
+    ACCESS_TOKEN_MANIPULATION = 43
+    TOKEN_IMPERSONATION_OR_THEFT = 44
+    CREATE_ACCOUNT = 45
+    LOCAL_ACCOUNT = 46
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 47
+    USER_EXECUTION = 48
+    DOMAIN_POLICY_MODIFICATION = 49
+    DATA_DESTRUCTION = 50
+    SERVICE_STOP = 51
+    INHIBIT_SYSTEM_RECOVERY = 52
+    FIRMWARE_CORRUPTION = 53
+    RESOURCE_HIJACKING = 54
+    NETWORK_DENIAL_OF_SERVICE = 55
+    CLOUD_SERVICE_DISCOVERY = 56
+    STEAL_APPLICATION_ACCESS_TOKEN = 57
+    ACCOUNT_ACCESS_REMOVAL = 58
+    STEAL_WEB_SESSION_COOKIE = 59
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 60
+    EVENT_TRIGGERED_EXECUTION = 61
+    BOOT_OR_LOGON_AUTOSTART_EXECUTION = 62
+    KERNEL_MODULES_AND_EXTENSIONS = 63
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 64
+    UNSECURED_CREDENTIALS = 65
+    COMPROMISE_HOST_SOFTWARE_BINARY = 66
+    MODIFY_AUTHENTICATION_PROCESS = 67
+    IMPAIR_DEFENSES = 68
+    DISABLE_OR_MODIFY_TOOLS = 69
+    HIDE_ARTIFACTS = 70
+    HIDDEN_FILES_AND_DIRECTORIES = 71
+    HIDDEN_USERS = 72
+    EXFILTRATION_OVER_WEB_SERVICE = 73
+    EXFILTRATION_TO_CLOUD_STORAGE = 74
+    DYNAMIC_RESOLUTION = 75
+    LATERAL_TOOL_TRANSFER = 76
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 77
+    CREATE_SNAPSHOT = 78
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 79
+    OBTAIN_CAPABILITIES = 80
+    ACTIVE_SCANNING = 81
+    SCANNING_IP_BLOCKS = 82
+    STAGE_CAPABILITIES = 83
+    CONTAINER_ADMINISTRATION_COMMAND = 84
+    DEPLOY_CONTAINER = 85
+    ESCAPE_TO_HOST = 86
+    CONTAINER_AND_RESOURCE_DISCOVERY = 87
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 88
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -8050,7 +8278,7 @@ class SecurityBulletin(_messages.Message):
 
 
 class SecurityCenterSettings(_messages.Message):
-  r"""Resource capturing the settings for Security Center. Next ID: 12
+  r"""Resource capturing the settings for Security Center.
 
   Fields:
     logSinkProject: The resource name of the project to send logs to. This

@@ -32,6 +32,17 @@ class ApihubProjectsLocationsApiHubInstancesCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ApihubProjectsLocationsApiHubInstancesDeleteRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsApiHubInstancesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Api Hub instance to delete. Format: `proje
+      cts/{project}/locations/{location}/apiHubInstances/{apiHubInstance}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApihubProjectsLocationsApiHubInstancesGetRequest(_messages.Message):
   r"""A ApihubProjectsLocationsApiHubInstancesGetRequest object.
 
@@ -390,6 +401,42 @@ class ApihubProjectsLocationsApisVersionsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class ApihubProjectsLocationsApisVersionsOperationsCreateRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsApisVersionsOperationsCreateRequest object.
+
+  Fields:
+    apiOperationId: Optional. The ID to use for the operation resource, which
+      will become the final component of the operation's resource name. This
+      field is optional. * If provided, the same will be used. The service
+      will throw an error if the specified id is already used by another
+      operation resource in the API hub. * If not provided, a system generated
+      id will be used. This value should be 4-500 characters, overall resource
+      name which will be of format `projects/{project}/locations/{location}/ap
+      is/{api}/versions/{version}/operations/{operation}`, its length is
+      limited to 700 characters, and valid characters are /a-z[0-9]-_/.
+    googleCloudApihubV1ApiOperation: A GoogleCloudApihubV1ApiOperation
+      resource to be passed as the request body.
+    parent: Required. The parent resource for the operation resource. Format:
+      `projects/{project}/locations/{location}/apis/{api}/versions/{version}`
+  """
+
+  apiOperationId = _messages.StringField(1)
+  googleCloudApihubV1ApiOperation = _messages.MessageField('GoogleCloudApihubV1ApiOperation', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApihubProjectsLocationsApisVersionsOperationsDeleteRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsApisVersionsOperationsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the operation resource to delete. Format: `pro
+      jects/{project}/locations/{location}/apis/{api}/versions/{version}/opera
+      tions/{operation}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApihubProjectsLocationsApisVersionsOperationsGetRequest(_messages.Message):
   r"""A ApihubProjectsLocationsApisVersionsOperationsGetRequest object.
 
@@ -479,6 +526,23 @@ class ApihubProjectsLocationsApisVersionsOperationsListRequest(_messages.Message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ApihubProjectsLocationsApisVersionsOperationsPatchRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsApisVersionsOperationsPatchRequest object.
+
+  Fields:
+    googleCloudApihubV1ApiOperation: A GoogleCloudApihubV1ApiOperation
+      resource to be passed as the request body.
+    name: Identifier. The name of the operation. Format: `projects/{project}/l
+      ocations/{location}/apis/{api}/versions/{version}/operations/{operation}
+      `
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudApihubV1ApiOperation = _messages.MessageField('GoogleCloudApihubV1ApiOperation', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApihubProjectsLocationsApisVersionsPatchRequest(_messages.Message):
@@ -780,6 +844,124 @@ class ApihubProjectsLocationsAttributesPatchRequest(_messages.Message):
   """
 
   googleCloudApihubV1Attribute = _messages.MessageField('GoogleCloudApihubV1Attribute', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ApihubProjectsLocationsCollectApiDataRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsCollectApiDataRequest object.
+
+  Fields:
+    googleCloudApihubV1CollectApiDataRequest: A
+      GoogleCloudApihubV1CollectApiDataRequest resource to be passed as the
+      request body.
+    location: Required. The regional location of the API hub instance and its
+      resources. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudApihubV1CollectApiDataRequest = _messages.MessageField('GoogleCloudApihubV1CollectApiDataRequest', 1)
+  location = _messages.StringField(2, required=True)
+
+
+class ApihubProjectsLocationsCurationsCreateRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsCurationsCreateRequest object.
+
+  Fields:
+    curationId: Optional. The ID to use for the curation resource, which will
+      become the final component of the curations's resource name. This field
+      is optional. * If provided, the same will be used. The service will
+      throw an error if the specified ID is already used by another curation
+      resource in the API hub. * If not provided, a system generated ID will
+      be used. This value should be 4-500 characters, and valid characters are
+      /a-z[0-9]-_/.
+    googleCloudApihubV1Curation: A GoogleCloudApihubV1Curation resource to be
+      passed as the request body.
+    parent: Required. The parent resource for the curation resource. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  curationId = _messages.StringField(1)
+  googleCloudApihubV1Curation = _messages.MessageField('GoogleCloudApihubV1Curation', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApihubProjectsLocationsCurationsDeleteRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsCurationsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the curation resource to delete. Format:
+      `projects/{project}/locations/{location}/curations/{curation}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsCurationsGetRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsCurationsGetRequest object.
+
+  Fields:
+    name: Required. The name of the curation resource to retrieve. Format:
+      `projects/{project}/locations/{location}/curations/{curation}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsCurationsListRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsCurationsListRequest object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of curation
+      resources. A filter expression consists of a field name, a comparison
+      operator, and a value for filtering. The value must be a string. The
+      comparison operator must be one of: `<`, `>`, `:` or `=`. Filters are
+      case insensitive. The following fields in the `curation resource` are
+      eligible for filtering: * `create_time` - The time at which the curation
+      was created. The value should be in the
+      (RFC3339)[https://tools.ietf.org/html/rfc3339] format. Allowed
+      comparison operators: `>` and `<`. * `display_name` - The display name
+      of the curation. Allowed comparison operators: `=`. * `state` - The
+      state of the curation. Allowed comparison operators: `=`. Expressions
+      are combined with either `AND` logic operator or `OR` logical operator
+      but not both of them together i.e. only one of the `AND` or `OR`
+      operator can be used throughout the filter string and both the operators
+      cannot be used together. No other logical operators are supported. At
+      most three filter fields are allowed in the filter string and if
+      provided more than that then `INVALID_ARGUMENT` error is returned by the
+      API. Here are a few examples: * `create_time < \"2021-08-15T14:50:00Z\"
+      AND create_time > \"2021-08-10T12:00:00Z\"` - The curation resource was
+      created before _2021-08-15 14:50:00 UTC_ and after _2021-08-10 12:00:00
+      UTC_.
+    pageSize: Optional. The maximum number of curation resources to return.
+      The service may return fewer than this value. If unspecified, at most 50
+      curations will be returned. The maximum value is 1000; values above 1000
+      will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListCurations` call. Provide this to retrieve the subsequent page. When
+      paginating, all other parameters (except page_size) provided to
+      `ListCurations` must match the call that provided the page token.
+    parent: Required. The parent, which owns this collection of curation
+      resources. Format: `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ApihubProjectsLocationsCurationsPatchRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsCurationsPatchRequest object.
+
+  Fields:
+    googleCloudApihubV1Curation: A GoogleCloudApihubV1Curation resource to be
+      passed as the request body.
+    name: Identifier. The name of the curation. Format:
+      `projects/{project}/locations/{location}/curations/{curation}`
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudApihubV1Curation = _messages.MessageField('GoogleCloudApihubV1Curation', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -1212,6 +1394,8 @@ class ApihubProjectsLocationsListRequest(_messages.Message):
   r"""A ApihubProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1222,10 +1406,11 @@ class ApihubProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class ApihubProjectsLocationsLookupRuntimeProjectAttachmentRequest(_messages.Message):
@@ -1290,6 +1475,41 @@ class ApihubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ApihubProjectsLocationsPluginsCreateRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsCreateRequest object.
+
+  Fields:
+    googleCloudApihubV1Plugin: A GoogleCloudApihubV1Plugin resource to be
+      passed as the request body.
+    parent: Required. The parent resource where this plugin will be created.
+      Format: `projects/{project}/locations/{location}`.
+    pluginId: Optional. The ID to use for the Plugin resource, which will
+      become the final component of the Plugin's resource name. This field is
+      optional. * If provided, the same will be used. The service will throw
+      an error if the specified id is already used by another Plugin resource
+      in the API hub instance. * If not provided, a system generated id will
+      be used. This value should be 4-500 characters, overall resource name
+      which will be of format
+      `projects/{project}/locations/{location}/plugins/{plugin}`, its length
+      is limited to 1000 characters and valid characters are /a-z[0-9]-_/.
+  """
+
+  googleCloudApihubV1Plugin = _messages.MessageField('GoogleCloudApihubV1Plugin', 1)
+  parent = _messages.StringField(2, required=True)
+  pluginId = _messages.StringField(3)
+
+
+class ApihubProjectsLocationsPluginsDeleteRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Plugin resource to delete. Format:
+      `projects/{project}/locations/{location}/plugins/{plugin}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApihubProjectsLocationsPluginsDisableRequest(_messages.Message):
   r"""A ApihubProjectsLocationsPluginsDisableRequest object.
 
@@ -1340,6 +1560,173 @@ class ApihubProjectsLocationsPluginsGetStyleGuideRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesCreateRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesCreateRequest object.
+
+  Fields:
+    googleCloudApihubV1PluginInstance: A GoogleCloudApihubV1PluginInstance
+      resource to be passed as the request body.
+    parent: Required. The parent of the plugin instance resource. Format:
+      `projects/{project}/locations/{location}/plugins/{plugin}`
+    pluginInstanceId: Optional. The ID to use for the plugin instance, which
+      will become the final component of the plugin instance's resource name.
+      This field is optional. * If provided, the same will be used. The
+      service will throw an error if the specified id is already used by
+      another plugin instance in the plugin resource. * If not provided, a
+      system generated id will be used. This value should be 4-500 characters,
+      and valid characters are /a-z[0-9]-_/.
+  """
+
+  googleCloudApihubV1PluginInstance = _messages.MessageField('GoogleCloudApihubV1PluginInstance', 1)
+  parent = _messages.StringField(2, required=True)
+  pluginInstanceId = _messages.StringField(3)
+
+
+class ApihubProjectsLocationsPluginsInstancesDeleteRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the plugin instance to delete. Format: `projec
+      ts/{project}/locations/{location}/plugins/{plugin}/instances/{instance}`
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesDisableActionRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesDisableActionRequest object.
+
+  Fields:
+    googleCloudApihubV1DisablePluginInstanceActionRequest: A
+      GoogleCloudApihubV1DisablePluginInstanceActionRequest resource to be
+      passed as the request body.
+    name: Required. The name of the plugin instance to disable. Format: `proje
+      cts/{project}/locations/{location}/plugins/{plugin}/instances/{instance}
+      `
+  """
+
+  googleCloudApihubV1DisablePluginInstanceActionRequest = _messages.MessageField('GoogleCloudApihubV1DisablePluginInstanceActionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesEnableActionRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesEnableActionRequest object.
+
+  Fields:
+    googleCloudApihubV1EnablePluginInstanceActionRequest: A
+      GoogleCloudApihubV1EnablePluginInstanceActionRequest resource to be
+      passed as the request body.
+    name: Required. The name of the plugin instance to enable. Format: `projec
+      ts/{project}/locations/{location}/plugins/{plugin}/instances/{instance}`
+  """
+
+  googleCloudApihubV1EnablePluginInstanceActionRequest = _messages.MessageField('GoogleCloudApihubV1EnablePluginInstanceActionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesExecuteActionRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesExecuteActionRequest object.
+
+  Fields:
+    googleCloudApihubV1ExecutePluginInstanceActionRequest: A
+      GoogleCloudApihubV1ExecutePluginInstanceActionRequest resource to be
+      passed as the request body.
+    name: Required. The name of the plugin instance to execute. Format: `proje
+      cts/{project}/locations/{location}/plugins/{plugin}/instances/{instance}
+      `
+  """
+
+  googleCloudApihubV1ExecutePluginInstanceActionRequest = _messages.MessageField('GoogleCloudApihubV1ExecutePluginInstanceActionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesGetRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesGetRequest object.
+
+  Fields:
+    name: Required. The name of the plugin instance to retrieve. Format: `proj
+      ects/{project}/locations/{location}/plugins/{plugin}/instances/{instance
+      }`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesListRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesListRequest object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of plugin instances.
+      A filter expression consists of a field name, a comparison operator, and
+      a value for filtering. The value must be a string. The comparison
+      operator must be one of: `<`, `>` or `=`. Filters are not case
+      sensitive. The following fields in the `PluginInstances` are eligible
+      for filtering: * `state` - The state of the Plugin Instance. Allowed
+      comparison operators: `=`. Expressions are combined with either `AND`
+      logic operator or `OR` logical operator but not both of them together
+      i.e. only one of the `AND` or `OR` operator can be used throughout the
+      filter string and both the operators cannot be used together. No other
+      logical operators are supported. At most three filter fields are allowed
+      in the filter string and if provided more than that then
+      `INVALID_ARGUMENT` error is returned by the API. Here are a few
+      examples: * `state = ENABLED` - The plugin instance is in enabled state.
+    pageSize: Optional. The maximum number of hub plugins to return. The
+      service may return fewer than this value. If unspecified, at most 50 hub
+      plugins will be returned. The maximum value is 1000; values above 1000
+      will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListPluginInstances` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListPluginInstances` must match the call that provided the page token.
+    parent: Required. The parent resource where this plugin will be created.
+      Format: `projects/{project}/locations/{location}/plugins/{plugin}`. To
+      list plugin instances for multiple plugins, use the - character instead
+      of the plugin ID.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ApihubProjectsLocationsPluginsListRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsListRequest object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of plugins. A filter
+      expression consists of a field name, a comparison operator, and a value
+      for filtering. The value must be a string. The comparison operator must
+      be one of: `<`, `>` or `=`. Filters are not case sensitive. The
+      following fields in the `Plugins` are eligible for filtering: *
+      `plugin_category` - The category of the Plugin. Allowed comparison
+      operators: `=`. Expressions are combined with either `AND` logic
+      operator or `OR` logical operator but not both of them together i.e.
+      only one of the `AND` or `OR` operator can be used throughout the filter
+      string and both the operators cannot be used together. No other logical
+      operators are supported. At most three filter fields are allowed in the
+      filter string and if provided more than that then `INVALID_ARGUMENT`
+      error is returned by the API. Here are a few examples: *
+      `plugin_category = ON_RAMP` - The plugin is of category on ramp.
+    pageSize: Optional. The maximum number of hub plugins to return. The
+      service may return fewer than this value. If unspecified, at most 50 hub
+      plugins will be returned. The maximum value is 1000; values above 1000
+      will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListPlugins`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters (except page_size) provided to `ListPlugins` must match
+      the call that provided the page token.
+    parent: Required. The parent resource where this plugin will be created.
+      Format: `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ApihubProjectsLocationsPluginsStyleGuideGetContentsRequest(_messages.Message):
@@ -1478,6 +1865,39 @@ class Empty(_messages.Message):
 
 
 
+class GoogleCloudApihubV1APIMetadata(_messages.Message):
+  r"""The API metadata.
+
+  Fields:
+    api: Required. The API resource to be pushed to Hub's collect layer. The
+      ID of the API resource will be generated by Hub to ensure uniqueness
+      across all APIs across systems.
+    originalCreateTime: Optional. Timestamp indicating when the API was
+      created at the source.
+    originalId: Optional. The unique identifier of the API in the system where
+      it was originally created.
+    originalUpdateTime: Required. Timestamp indicating when the API was last
+      updated at the source.
+    versions: Optional. The list of versions present in an API resource.
+  """
+
+  api = _messages.MessageField('GoogleCloudApihubV1Api', 1)
+  originalCreateTime = _messages.StringField(2)
+  originalId = _messages.StringField(3)
+  originalUpdateTime = _messages.StringField(4)
+  versions = _messages.MessageField('GoogleCloudApihubV1VersionMetadata', 5, repeated=True)
+
+
+class GoogleCloudApihubV1ActionExecutionDetail(_messages.Message):
+  r"""The details for the action to execute.
+
+  Fields:
+    actionId: Required. The action id of the plugin to execute.
+  """
+
+  actionId = _messages.StringField(1)
+
+
 class GoogleCloudApihubV1AllowedValue(_messages.Message):
   r"""The value that can be assigned to the attribute when the data type is
   enum.
@@ -1514,6 +1934,10 @@ class GoogleCloudApihubV1Api(_messages.Message):
       value is the attribute values associated with the resource.
 
   Fields:
+    apiFunctionalRequirements: Optional. The api functional requirements
+      associated with the API resource. Carinality is 1 for this attribute.
+    apiRequirements: Optional. The api requirement doc associated with the API
+      resource. Carinality is 1 for this attribute.
     apiStyle: Optional. The style of the API. This maps to the following
       system defined attribute:
       `projects/{project}/locations/{location}/attributes/system-api-style`
@@ -1521,6 +1945,8 @@ class GoogleCloudApihubV1Api(_messages.Message):
       cardinality of the attribute. The same can be retrieved via GetAttribute
       API. All values should be from the list of allowed values defined for
       the attribute.
+    apiTechnicalRequirements: Optional. The api technical requirements
+      associated with the API resource. Carinality is 1 for this attribute.
     attributes: Optional. The list of user defined attributes associated with
       the API resource. The key is the attribute name. It will be of the
       format:
@@ -1537,6 +1963,7 @@ class GoogleCloudApihubV1Api(_messages.Message):
     description: Optional. The description of the API resource.
     displayName: Required. The display name of the API resource.
     documentation: Optional. The documentation for the API resource.
+    fingerprint: Optional. Fingerprint of the API resource.
     maturityLevel: Optional. The maturity level of the API. This maps to the
       following system defined attribute:
       `projects/{project}/locations/{location}/attributes/system-maturity-
@@ -1551,6 +1978,8 @@ class GoogleCloudApihubV1Api(_messages.Message):
       can be used when special handling is needed on client side for
       particular version of the API. Format is
       `projects/{project}/locations/{location}/apis/{api}/versions/{version}`
+    sourceMetadata: Output only. The list of sources and metadata from the
+      sources of the API resource.
     targetUser: Optional. The target users for the API. This maps to the
       following system defined attribute:
       `projects/{project}/locations/{location}/attributes/system-target-user`
@@ -1600,21 +2029,36 @@ class GoogleCloudApihubV1Api(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  apiStyle = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 1)
-  attributes = _messages.MessageField('AttributesValue', 2)
-  businessUnit = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 7)
-  maturityLevel = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 8)
-  name = _messages.StringField(9)
-  owner = _messages.MessageField('GoogleCloudApihubV1Owner', 10)
-  selectedVersion = _messages.StringField(11)
-  targetUser = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
-  team = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 13)
-  updateTime = _messages.StringField(14)
-  versions = _messages.StringField(15, repeated=True)
+  apiFunctionalRequirements = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 1)
+  apiRequirements = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 2)
+  apiStyle = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 3)
+  apiTechnicalRequirements = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 4)
+  attributes = _messages.MessageField('AttributesValue', 5)
+  businessUnit = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 10)
+  fingerprint = _messages.StringField(11)
+  maturityLevel = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
+  name = _messages.StringField(13)
+  owner = _messages.MessageField('GoogleCloudApihubV1Owner', 14)
+  selectedVersion = _messages.StringField(15)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 16, repeated=True)
+  targetUser = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 17)
+  team = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 18)
+  updateTime = _messages.StringField(19)
+  versions = _messages.StringField(20, repeated=True)
+
+
+class GoogleCloudApihubV1ApiData(_messages.Message):
+  r"""The API data to be collected.
+
+  Fields:
+    apiMetadataList: Optional. The list of API metadata.
+  """
+
+  apiMetadataList = _messages.MessageField('GoogleCloudApihubV1ApiMetadataList', 1)
 
 
 class GoogleCloudApihubV1ApiHubInstance(_messages.Message):
@@ -1735,6 +2179,59 @@ class GoogleCloudApihubV1ApiHubResource(_messages.Message):
   version = _messages.MessageField('GoogleCloudApihubV1Version', 6)
 
 
+class GoogleCloudApihubV1ApiKeyConfig(_messages.Message):
+  r"""Config for authentication with API key.
+
+  Enums:
+    HttpElementLocationValueValuesEnum: Required. The location of the API key.
+      The default value is QUERY.
+
+  Fields:
+    apiKey: Required. The name of the SecretManager secret version resource
+      storing the API key. Format:
+      `projects/{project}/secrets/{secrete}/versions/{version}`. The
+      `secretmanager.versions.access` permission should be granted to the
+      service account accessing the secret.
+    httpElementLocation: Required. The location of the API key. The default
+      value is QUERY.
+    name: Required. The parameter name of the API key. E.g. If the API request
+      is "https://example.com/act?api_key=", "api_key" would be the parameter
+      name.
+  """
+
+  class HttpElementLocationValueValuesEnum(_messages.Enum):
+    r"""Required. The location of the API key. The default value is QUERY.
+
+    Values:
+      HTTP_ELEMENT_LOCATION_UNSPECIFIED: HTTP element location not specified.
+      QUERY: Element is in the HTTP request query.
+      HEADER: Element is in the HTTP request header.
+      PATH: Element is in the HTTP request path.
+      BODY: Element is in the HTTP request body.
+      COOKIE: Element is in the HTTP request cookie.
+    """
+    HTTP_ELEMENT_LOCATION_UNSPECIFIED = 0
+    QUERY = 1
+    HEADER = 2
+    PATH = 3
+    BODY = 4
+    COOKIE = 5
+
+  apiKey = _messages.MessageField('GoogleCloudApihubV1Secret', 1)
+  httpElementLocation = _messages.EnumField('HttpElementLocationValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudApihubV1ApiMetadataList(_messages.Message):
+  r"""The message to hold repeated API metadata.
+
+  Fields:
+    apiMetadata: Required. The list of API metadata.
+  """
+
+  apiMetadata = _messages.MessageField('GoogleCloudApihubV1APIMetadata', 1, repeated=True)
+
+
 class GoogleCloudApihubV1ApiOperation(_messages.Message):
   r"""Represents an operation contained in an API version in the API Hub. An
   operation is added/updated/deleted in an API version when a new spec is
@@ -1765,6 +2262,8 @@ class GoogleCloudApihubV1ApiOperation(_messages.Message):
     name: Identifier. The name of the operation. Format: `projects/{project}/l
       ocations/{location}/apis/{api}/versions/{version}/operations/{operation}
       `
+    sourceMetadata: Output only. The list of sources and metadata from the
+      sources of the API operation.
     spec: Output only. The name of the spec will be of the format: `projects/{
       project}/locations/{location}/apis/{api}/versions/{version}/specs/{spec}
       ` Note:The name of the spec will be empty if the operation is created
@@ -1803,8 +2302,28 @@ class GoogleCloudApihubV1ApiOperation(_messages.Message):
   createTime = _messages.StringField(2)
   details = _messages.MessageField('GoogleCloudApihubV1OperationDetails', 3)
   name = _messages.StringField(4)
-  spec = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 5, repeated=True)
+  spec = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudApihubV1ApplicationIntegrationEndpointDetails(_messages.Message):
+  r"""The details of the Application Integration endpoint to be triggered for
+  curation.
+
+  Fields:
+    triggerId: Required. The API trigger ID of the Application Integration
+      workflow.
+    uri: Required. The endpoint URI should be a valid REST URI for triggering
+      an Application Integration. Format: `https://integrations.googleapis.com
+      /v1/{name=projects/*/locations/*/integrations/*}:execute` or `https://{l
+      ocation}-
+      integrations.googleapis.com/v1/{name=projects/*/locations/*/integrations
+      /*}:execute`
+  """
+
+  triggerId = _messages.StringField(1)
+  uri = _messages.StringField(2)
 
 
 class GoogleCloudApihubV1Attribute(_messages.Message):
@@ -1853,11 +2372,13 @@ class GoogleCloudApihubV1Attribute(_messages.Message):
       ENUM: Attribute's value is of type enum.
       JSON: Attribute's value is of type json.
       STRING: Attribute's value is of type string.
+      URI: Attribute's value is of type uri.
     """
     DATA_TYPE_UNSPECIFIED = 0
     ENUM = 1
     JSON = 2
     STRING = 3
+    URI = 4
 
   class DefinitionTypeValueValuesEnum(_messages.Enum):
     r"""Output only. The definition type of the attribute.
@@ -1925,12 +2446,140 @@ class GoogleCloudApihubV1AttributeValues(_messages.Message):
       attribute data type is JSON.
     stringValues: The attribute values associated with a resource in case
       attribute data type is string.
+    uriValues: The attribute values associated with a resource in case
+      attribute data type is URL, URI or IP, like gs://bucket-name/object-
+      name.
   """
 
   attribute = _messages.StringField(1)
   enumValues = _messages.MessageField('GoogleCloudApihubV1EnumAttributeValues', 2)
   jsonValues = _messages.MessageField('GoogleCloudApihubV1StringAttributeValues', 3)
   stringValues = _messages.MessageField('GoogleCloudApihubV1StringAttributeValues', 4)
+  uriValues = _messages.MessageField('GoogleCloudApihubV1StringAttributeValues', 5)
+
+
+class GoogleCloudApihubV1AuthConfig(_messages.Message):
+  r"""AuthConfig represents the authentication information.
+
+  Enums:
+    AuthTypeValueValuesEnum: Required. The authentication type.
+
+  Fields:
+    apiKeyConfig: Api Key Config.
+    authType: Required. The authentication type.
+    googleServiceAccountConfig: Google Service Account.
+    oauth2ClientCredentialsConfig: Oauth2.0 Client Credentials.
+    userPasswordConfig: User Password.
+  """
+
+  class AuthTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The authentication type.
+
+    Values:
+      AUTH_TYPE_UNSPECIFIED: Authentication type not specified.
+      NO_AUTH: No authentication.
+      GOOGLE_SERVICE_ACCOUNT: Google service account authentication.
+      USER_PASSWORD: Username and password authentication.
+      API_KEY: API Key authentication.
+      OAUTH2_CLIENT_CREDENTIALS: Oauth 2.0 client credentials grant
+        authentication.
+    """
+    AUTH_TYPE_UNSPECIFIED = 0
+    NO_AUTH = 1
+    GOOGLE_SERVICE_ACCOUNT = 2
+    USER_PASSWORD = 3
+    API_KEY = 4
+    OAUTH2_CLIENT_CREDENTIALS = 5
+
+  apiKeyConfig = _messages.MessageField('GoogleCloudApihubV1ApiKeyConfig', 1)
+  authType = _messages.EnumField('AuthTypeValueValuesEnum', 2)
+  googleServiceAccountConfig = _messages.MessageField('GoogleCloudApihubV1GoogleServiceAccountConfig', 3)
+  oauth2ClientCredentialsConfig = _messages.MessageField('GoogleCloudApihubV1Oauth2ClientCredentialsConfig', 4)
+  userPasswordConfig = _messages.MessageField('GoogleCloudApihubV1UserPasswordConfig', 5)
+
+
+class GoogleCloudApihubV1AuthConfigTemplate(_messages.Message):
+  r"""AuthConfigTemplate represents the authentication template for a plugin.
+
+  Enums:
+    SupportedAuthTypesValueListEntryValuesEnum:
+
+  Fields:
+    serviceAccount: Optional. The service account of the plugin hosting
+      service. This service account should be granted the required permissions
+      on the Auth Config parameters provided while creating the plugin
+      instances corresponding to this plugin. For example, if the plugin
+      instance auth config requires a secret manager secret, the service
+      account should be granted the secretmanager.versions.access permission
+      on the corresponding secret, if the plugin instance auth config contains
+      a service account, the service account should be granted the
+      iam.serviceAccounts.getAccessToken permission on the corresponding
+      service account.
+    supportedAuthTypes: Required. The list of authentication types supported
+      by the plugin.
+  """
+
+  class SupportedAuthTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedAuthTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      AUTH_TYPE_UNSPECIFIED: Authentication type not specified.
+      NO_AUTH: No authentication.
+      GOOGLE_SERVICE_ACCOUNT: Google service account authentication.
+      USER_PASSWORD: Username and password authentication.
+      API_KEY: API Key authentication.
+      OAUTH2_CLIENT_CREDENTIALS: Oauth 2.0 client credentials grant
+        authentication.
+    """
+    AUTH_TYPE_UNSPECIFIED = 0
+    NO_AUTH = 1
+    GOOGLE_SERVICE_ACCOUNT = 2
+    USER_PASSWORD = 3
+    API_KEY = 4
+    OAUTH2_CLIENT_CREDENTIALS = 5
+
+  serviceAccount = _messages.MessageField('GoogleCloudApihubV1GoogleServiceAccountConfig', 1)
+  supportedAuthTypes = _messages.EnumField('SupportedAuthTypesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GoogleCloudApihubV1CollectApiDataRequest(_messages.Message):
+  r"""The CollectApiData method's request.
+
+  Enums:
+    CollectionTypeValueValuesEnum: Required. The type of collection. Applies
+      to all entries in api_data.
+
+  Fields:
+    actionId: Required. The action ID to be used for collecting the API data.
+      This should map to one of the action IDs specified in action configs in
+      the plugin.
+    apiData: Required. The API data to be collected.
+    collectionType: Required. The type of collection. Applies to all entries
+      in api_data.
+    pluginInstance: Required. The plugin instance collecting the API data.
+      Format: `projects/{project}/locations/{location}/plugins/{plugin}/instan
+      ces/{instance}`.
+  """
+
+  class CollectionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of collection. Applies to all entries in api_data.
+
+    Values:
+      COLLECTION_TYPE_UNSPECIFIED: The default value. This value is used if
+        the collection type is omitted.
+      COLLECTION_TYPE_UPSERT: The collection type is upsert. This should be
+        used when an API is created or updated at the source.
+      COLLECTION_TYPE_DELETE: The collection type is delete. This should be
+        used when an API is deleted at the source.
+    """
+    COLLECTION_TYPE_UNSPECIFIED = 0
+    COLLECTION_TYPE_UPSERT = 1
+    COLLECTION_TYPE_DELETE = 2
+
+  actionId = _messages.StringField(1)
+  apiData = _messages.MessageField('GoogleCloudApihubV1ApiData', 2)
+  collectionType = _messages.EnumField('CollectionTypeValueValuesEnum', 3)
+  pluginInstance = _messages.StringField(4)
 
 
 class GoogleCloudApihubV1Config(_messages.Message):
@@ -1974,6 +2623,237 @@ class GoogleCloudApihubV1Config(_messages.Message):
   disableSearch = _messages.BooleanField(2)
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 3)
   vertexLocation = _messages.StringField(4)
+
+
+class GoogleCloudApihubV1ConfigTemplate(_messages.Message):
+  r"""ConfigTemplate represents the configuration template for a plugin.
+
+  Fields:
+    additionalConfigTemplate: Optional. The list of additional configuration
+      variables for the plugin's configuration.
+    authConfigTemplate: Optional. The authentication template for the plugin.
+  """
+
+  additionalConfigTemplate = _messages.MessageField('GoogleCloudApihubV1ConfigVariableTemplate', 1, repeated=True)
+  authConfigTemplate = _messages.MessageField('GoogleCloudApihubV1AuthConfigTemplate', 2)
+
+
+class GoogleCloudApihubV1ConfigValueOption(_messages.Message):
+  r"""ConfigValueOption represents an option for a config variable of type
+  enum or multi select.
+
+  Fields:
+    description: Optional. Description of the option.
+    displayName: Required. Display name of the option.
+    id: Required. Id of the option.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+
+
+class GoogleCloudApihubV1ConfigVariable(_messages.Message):
+  r"""ConfigVariable represents a additional configuration variable present in
+  a PluginInstance Config or AuthConfig, based on a ConfigVariableTemplate.
+
+  Fields:
+    boolValue: Optional. The config variable value in case of config variable
+      of type boolean.
+    enumValue: Optional. The config variable value in case of config variable
+      of type enum.
+    intValue: Optional. The config variable value in case of config variable
+      of type integer.
+    key: Output only. Key will be the id to uniquely identify the config
+      variable.
+    multiIntValues: Optional. The config variable value in case of config
+      variable of type multi integer.
+    multiSelectValues: Optional. The config variable value in case of config
+      variable of type multi select.
+    multiStringValues: Optional. The config variable value in case of config
+      variable of type multi string.
+    secretValue: Optional. The config variable value in case of config
+      variable of type secret.
+    stringValue: Optional. The config variable value in case of config
+      variable of type string.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  enumValue = _messages.MessageField('GoogleCloudApihubV1ConfigValueOption', 2)
+  intValue = _messages.IntegerField(3)
+  key = _messages.StringField(4)
+  multiIntValues = _messages.MessageField('GoogleCloudApihubV1MultiIntValues', 5)
+  multiSelectValues = _messages.MessageField('GoogleCloudApihubV1MultiSelectValues', 6)
+  multiStringValues = _messages.MessageField('GoogleCloudApihubV1MultiStringValues', 7)
+  secretValue = _messages.MessageField('GoogleCloudApihubV1Secret', 8)
+  stringValue = _messages.StringField(9)
+
+
+class GoogleCloudApihubV1ConfigVariableTemplate(_messages.Message):
+  r"""ConfigVariableTemplate represents a configuration variable template
+  present in a Plugin Config.
+
+  Enums:
+    ValueTypeValueValuesEnum: Required. Type of the parameter: string, int,
+      bool etc.
+
+  Fields:
+    description: Optional. Description.
+    enumOptions: Optional. Enum options. To be populated if `ValueType` is
+      `ENUM`.
+    id: Required. ID of the config variable. Must be unique within the
+      configuration.
+    multiSelectOptions: Optional. Multi select options. To be populated if
+      `ValueType` is `MULTI_SELECT`.
+    required: Optional. Flag represents that this `ConfigVariable` must be
+      provided for a PluginInstance.
+    validationRegex: Optional. Regular expression in RE2 syntax used for
+      validating the `value` of a `ConfigVariable`.
+    valueType: Required. Type of the parameter: string, int, bool etc.
+  """
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of the parameter: string, int, bool etc.
+
+    Values:
+      VALUE_TYPE_UNSPECIFIED: Value type is not specified.
+      STRING: Value type is string.
+      INT: Value type is integer.
+      BOOL: Value type is boolean.
+      SECRET: Value type is secret.
+      ENUM: Value type is enum.
+      MULTI_SELECT: Value type is multi select.
+      MULTI_STRING: Value type is multi string.
+      MULTI_INT: Value type is multi int.
+    """
+    VALUE_TYPE_UNSPECIFIED = 0
+    STRING = 1
+    INT = 2
+    BOOL = 3
+    SECRET = 4
+    ENUM = 5
+    MULTI_SELECT = 6
+    MULTI_STRING = 7
+    MULTI_INT = 8
+
+  description = _messages.StringField(1)
+  enumOptions = _messages.MessageField('GoogleCloudApihubV1ConfigValueOption', 2, repeated=True)
+  id = _messages.StringField(3)
+  multiSelectOptions = _messages.MessageField('GoogleCloudApihubV1ConfigValueOption', 4, repeated=True)
+  required = _messages.BooleanField(5)
+  validationRegex = _messages.StringField(6)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 7)
+
+
+class GoogleCloudApihubV1Curation(_messages.Message):
+  r"""A curation resource in the API Hub.
+
+  Enums:
+    LastExecutionErrorCodeValueValuesEnum: Output only. The error code of the
+      last execution of the curation. The error code is populated only when
+      the last execution state is failed.
+    LastExecutionStateValueValuesEnum: Output only. The last execution state
+      of the curation.
+
+  Fields:
+    createTime: Output only. The time at which the curation was created.
+    description: Optional. The description of the curation.
+    displayName: Required. The display name of the curation.
+    endpoint: Required. The endpoint to be triggered for curation.
+    lastExecutionErrorCode: Output only. The error code of the last execution
+      of the curation. The error code is populated only when the last
+      execution state is failed.
+    lastExecutionErrorMessage: Output only. Error message describing the
+      failure, if any, during the last execution of the curation.
+    lastExecutionState: Output only. The last execution state of the curation.
+    name: Identifier. The name of the curation. Format:
+      `projects/{project}/locations/{location}/curations/{curation}`
+    pluginInstanceActions: Output only. The plugin instances and associated
+      actions that are using the curation. Note: A particular curation could
+      be used by multiple plugin instances or multiple actions in a plugin
+      instance.
+    updateTime: Output only. The time at which the curation was last updated.
+  """
+
+  class LastExecutionErrorCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The error code of the last execution of the curation. The
+    error code is populated only when the last execution state is failed.
+
+    Values:
+      ERROR_CODE_UNSPECIFIED: Default unspecified error code.
+      INTERNAL_ERROR: The execution failed due to an internal error.
+      UNAUTHORIZED: The curation is not authorized to trigger the endpoint
+        uri.
+    """
+    ERROR_CODE_UNSPECIFIED = 0
+    INTERNAL_ERROR = 1
+    UNAUTHORIZED = 2
+
+  class LastExecutionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The last execution state of the curation.
+
+    Values:
+      LAST_EXECUTION_STATE_UNSPECIFIED: Default unspecified state.
+      SUCCEEDED: The last curation execution was successful.
+      FAILED: The last curation execution failed.
+    """
+    LAST_EXECUTION_STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  endpoint = _messages.MessageField('GoogleCloudApihubV1Endpoint', 4)
+  lastExecutionErrorCode = _messages.EnumField('LastExecutionErrorCodeValueValuesEnum', 5)
+  lastExecutionErrorMessage = _messages.StringField(6)
+  lastExecutionState = _messages.EnumField('LastExecutionStateValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  pluginInstanceActions = _messages.MessageField('GoogleCloudApihubV1PluginInstanceActionID', 9, repeated=True)
+  updateTime = _messages.StringField(10)
+
+
+class GoogleCloudApihubV1CurationConfig(_messages.Message):
+  r"""The curation information for this plugin instance.
+
+  Enums:
+    CurationTypeValueValuesEnum: Required. The curation type for this plugin
+      instance.
+
+  Fields:
+    curationType: Required. The curation type for this plugin instance.
+    customCuration: Optional. Custom curation information for this plugin
+      instance.
+  """
+
+  class CurationTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The curation type for this plugin instance.
+
+    Values:
+      CURATION_TYPE_UNSPECIFIED: Default unspecified curation type.
+      DEFAULT_CURATION_FOR_API_METADATA: Default curation for API metadata
+        will be used.
+      CUSTOM_CURATION_FOR_API_METADATA: Custom curation for API metadata will
+        be used.
+    """
+    CURATION_TYPE_UNSPECIFIED = 0
+    DEFAULT_CURATION_FOR_API_METADATA = 1
+    CUSTOM_CURATION_FOR_API_METADATA = 2
+
+  curationType = _messages.EnumField('CurationTypeValueValuesEnum', 1)
+  customCuration = _messages.MessageField('GoogleCloudApihubV1CustomCuration', 2)
+
+
+class GoogleCloudApihubV1CustomCuration(_messages.Message):
+  r"""Custom curation information for this plugin instance.
+
+  Fields:
+    curation: Required. The unique name of the curation resource. This will be
+      the name of the curation resource in the format:
+      `projects/{project}/locations/{location}/curations/{curation}`
+  """
+
+  curation = _messages.StringField(1)
 
 
 class GoogleCloudApihubV1Definition(_messages.Message):
@@ -2264,6 +3144,8 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
       cardinality of the attribute. The same can be retrieved via GetAttribute
       API. All values should be from the list of allowed values defined for
       the attribute.
+    sourceMetadata: Output only. The list of sources and metadata from the
+      sources of the deployment.
     updateTime: Output only. The time at which the deployment was last
       updated.
   """
@@ -2307,7 +3189,38 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
   name = _messages.StringField(10)
   resourceUri = _messages.StringField(11)
   slo = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
-  updateTime = _messages.StringField(13)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 13, repeated=True)
+  updateTime = _messages.StringField(14)
+
+
+class GoogleCloudApihubV1DeploymentMetadata(_messages.Message):
+  r"""The metadata associated with a deployment.
+
+  Fields:
+    deployment: Required. The deployment resource to be pushed to Hub's
+      collect layer. The ID of the deployment will be generated by Hub.
+    originalCreateTime: Optional. Timestamp indicating when the deployment was
+      created at the source.
+    originalId: Optional. The unique identifier of the deployment in the
+      system where it was originally created.
+    originalUpdateTime: Required. Timestamp indicating when the deployment was
+      last updated at the source.
+  """
+
+  deployment = _messages.MessageField('GoogleCloudApihubV1Deployment', 1)
+  originalCreateTime = _messages.StringField(2)
+  originalId = _messages.StringField(3)
+  originalUpdateTime = _messages.StringField(4)
+
+
+class GoogleCloudApihubV1DisablePluginInstanceActionRequest(_messages.Message):
+  r"""The DisablePluginInstanceAction method's request.
+
+  Fields:
+    actionId: Required. The action id to disable.
+  """
+
+  actionId = _messages.StringField(1)
 
 
 class GoogleCloudApihubV1DisablePluginRequest(_messages.Message):
@@ -2324,8 +3237,31 @@ class GoogleCloudApihubV1Documentation(_messages.Message):
   externalUri = _messages.StringField(1)
 
 
+class GoogleCloudApihubV1EnablePluginInstanceActionRequest(_messages.Message):
+  r"""The EnablePluginInstanceAction method's request.
+
+  Fields:
+    actionId: Required. The action id to enable.
+  """
+
+  actionId = _messages.StringField(1)
+
+
 class GoogleCloudApihubV1EnablePluginRequest(_messages.Message):
   r"""The EnablePlugin method's request."""
+
+
+class GoogleCloudApihubV1Endpoint(_messages.Message):
+  r"""The endpoint to be triggered for curation. The endpoint will be invoked
+  with a request payload containing ApiMetadata. Response should contain
+  curated data in the form of ApiMetadata.
+
+  Fields:
+    applicationIntegrationEndpointDetails: Required. The details of the
+      Application Integration endpoint to be triggered for curation.
+  """
+
+  applicationIntegrationEndpointDetails = _messages.MessageField('GoogleCloudApihubV1ApplicationIntegrationEndpointDetails', 1)
 
 
 class GoogleCloudApihubV1EnumAttributeValues(_messages.Message):
@@ -2337,6 +3273,46 @@ class GoogleCloudApihubV1EnumAttributeValues(_messages.Message):
   """
 
   values = _messages.MessageField('GoogleCloudApihubV1AllowedValue', 1, repeated=True)
+
+
+class GoogleCloudApihubV1ExecutePluginInstanceActionRequest(_messages.Message):
+  r"""The ExecutePluginInstanceAction method's request.
+
+  Fields:
+    actionExecutionDetail: Required. The execution details for the action to
+      execute.
+  """
+
+  actionExecutionDetail = _messages.MessageField('GoogleCloudApihubV1ActionExecutionDetail', 1)
+
+
+class GoogleCloudApihubV1ExecutionStatus(_messages.Message):
+  r"""The execution status for the plugin instance.
+
+  Enums:
+    CurrentExecutionStateValueValuesEnum: Output only. The current state of
+      the execution.
+
+  Fields:
+    currentExecutionState: Output only. The current state of the execution.
+    lastExecution: Output only. The last execution of the plugin instance.
+  """
+
+  class CurrentExecutionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the execution.
+
+    Values:
+      CURRENT_EXECUTION_STATE_UNSPECIFIED: Default unspecified execution
+        state.
+      RUNNING: The plugin instance is executing.
+      NOT_RUNNING: The plugin instance is not running an execution.
+    """
+    CURRENT_EXECUTION_STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    NOT_RUNNING = 2
+
+  currentExecutionState = _messages.EnumField('CurrentExecutionStateValueValuesEnum', 1)
+  lastExecution = _messages.MessageField('GoogleCloudApihubV1LastExecution', 2)
 
 
 class GoogleCloudApihubV1ExternalApi(_messages.Message):
@@ -2408,6 +3384,19 @@ class GoogleCloudApihubV1ExternalApi(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class GoogleCloudApihubV1GoogleServiceAccountConfig(_messages.Message):
+  r"""Config for Google service account authentication.
+
+  Fields:
+    serviceAccount: Required. The service account to be used for
+      authenticating request. The `iam.serviceAccounts.getAccessToken`
+      permission should be granted on this service account to the impersonator
+      service account.
+  """
+
+  serviceAccount = _messages.StringField(1)
+
+
 class GoogleCloudApihubV1HostProjectRegistration(_messages.Message):
   r"""Host project registration refers to the registration of a Google cloud
   project with Api Hub as a host project. This is the project where Api Hub is
@@ -2430,6 +3419,19 @@ class GoogleCloudApihubV1HostProjectRegistration(_messages.Message):
   createTime = _messages.StringField(1)
   gcpProject = _messages.StringField(2)
   name = _messages.StringField(3)
+
+
+class GoogleCloudApihubV1HostingService(_messages.Message):
+  r"""The information related to the service implemented by the plugin
+  developer, used to invoke the plugin's functionality.
+
+  Fields:
+    serviceUri: Optional. The URI of the service implemented by the plugin
+      developer, used to invoke the plugin's functionality. This information
+      is only required for user defined plugins.
+  """
+
+  serviceUri = _messages.StringField(1)
 
 
 class GoogleCloudApihubV1HttpOperation(_messages.Message):
@@ -2516,6 +3518,41 @@ class GoogleCloudApihubV1Issue(_messages.Message):
   path = _messages.StringField(3, repeated=True)
   range = _messages.MessageField('GoogleCloudApihubV1Range', 4)
   severity = _messages.EnumField('SeverityValueValuesEnum', 5)
+
+
+class GoogleCloudApihubV1LastExecution(_messages.Message):
+  r"""The result of the last execution of the plugin instance.
+
+  Enums:
+    ResultValueValuesEnum: Output only. The result of the last execution of
+      the plugin instance.
+
+  Fields:
+    endTime: Output only. The last execution end time of the plugin instance.
+    errorMessage: Output only. Error message describing the failure, if any,
+      during the last execution.
+    result: Output only. The result of the last execution of the plugin
+      instance.
+    startTime: Output only. The last execution start time of the plugin
+      instance.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""Output only. The result of the last execution of the plugin instance.
+
+    Values:
+      RESULT_UNSPECIFIED: Default unspecified execution result.
+      SUCCEEDED: The plugin instance executed successfully.
+      FAILED: The plugin instance execution failed.
+    """
+    RESULT_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  endTime = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  result = _messages.EnumField('ResultValueValuesEnum', 3)
+  startTime = _messages.StringField(4)
 
 
 class GoogleCloudApihubV1LintResponse(_messages.Message):
@@ -2611,6 +3648,19 @@ class GoogleCloudApihubV1ListAttributesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudApihubV1ListCurationsResponse(_messages.Message):
+  r"""The ListCurations method's response.
+
+  Fields:
+    curations: The curation resources present in the API hub.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  curations = _messages.MessageField('GoogleCloudApihubV1Curation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApihubV1ListDependenciesResponse(_messages.Message):
   r"""The ListDependencies method's response.
 
@@ -2661,6 +3711,32 @@ class GoogleCloudApihubV1ListHostProjectRegistrationsResponse(_messages.Message)
 
   hostProjectRegistrations = _messages.MessageField('GoogleCloudApihubV1HostProjectRegistration', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApihubV1ListPluginInstancesResponse(_messages.Message):
+  r"""The ListPluginInstances method's response.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    pluginInstances: The plugin instances from the specified parent resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pluginInstances = _messages.MessageField('GoogleCloudApihubV1PluginInstance', 2, repeated=True)
+
+
+class GoogleCloudApihubV1ListPluginsResponse(_messages.Message):
+  r"""The ListPlugins method's response.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    plugins: The plugins from the specified parent resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  plugins = _messages.MessageField('GoogleCloudApihubV1Plugin', 2, repeated=True)
 
 
 class GoogleCloudApihubV1ListRuntimeProjectAttachmentsResponse(_messages.Message):
@@ -2722,6 +3798,51 @@ class GoogleCloudApihubV1LookupRuntimeProjectAttachmentResponse(_messages.Messag
   """
 
   runtimeProjectAttachment = _messages.MessageField('GoogleCloudApihubV1RuntimeProjectAttachment', 1)
+
+
+class GoogleCloudApihubV1MultiIntValues(_messages.Message):
+  r"""The config variable value of data type multi int.
+
+  Fields:
+    values: Optional. The config variable value of data type multi int.
+  """
+
+  values = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApihubV1MultiSelectValues(_messages.Message):
+  r"""The config variable value of data type multi select.
+
+  Fields:
+    values: Optional. The config variable value of data type multi select.
+  """
+
+  values = _messages.MessageField('GoogleCloudApihubV1ConfigValueOption', 1, repeated=True)
+
+
+class GoogleCloudApihubV1MultiStringValues(_messages.Message):
+  r"""The config variable value of data type multi string.
+
+  Fields:
+    values: Optional. The config variable value of data type multi string.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudApihubV1Oauth2ClientCredentialsConfig(_messages.Message):
+  r"""Parameters to support Oauth 2.0 client credentials grant authentication.
+  See https://tools.ietf.org/html/rfc6749#section-1.3.4 for more details.
+
+  Fields:
+    clientId: Required. The client identifier.
+    clientSecret: Required. Secret version reference containing the client
+      secret. The `secretmanager.versions.access` permission should be granted
+      to the service account accessing the secret.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.MessageField('GoogleCloudApihubV1Secret', 2)
 
 
 class GoogleCloudApihubV1OpenApiSpecDetails(_messages.Message):
@@ -2837,17 +3958,44 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
   r"""A plugin resource in the API Hub.
 
   Enums:
+    OwnershipTypeValueValuesEnum: Output only. The type of the plugin,
+      indicating whether it is 'SYSTEM_OWNED' or 'USER_OWNED'.
+    PluginCategoryValueValuesEnum: Optional. The category of the plugin,
+      identifying its primary category or purpose. This field is required for
+      all plugins.
     StateValueValuesEnum: Output only. Represents the state of the plugin.
       Note this field will not be set for plugins developed via plugin
       framework as the state will be managed at plugin instance level.
 
   Fields:
+    actionsConfig: Optional. The configuration of actions supported by the
+      plugin.
+    configTemplate: Optional. The configuration template for the plugin.
+    createTime: Output only. Timestamp indicating when the plugin was created.
     description: Optional. The plugin description. Max length is 2000
       characters (Unicode code points).
     displayName: Required. The display name of the plugin. Max length is 50
       characters (Unicode code points).
+    documentation: Optional. The documentation of the plugin, that explains
+      how to set up and use the plugin.
+    hostingService: Optional. This field is optional. It is used to notify the
+      plugin hosting service for any lifecycle changes of the plugin instance
+      and trigger execution of plugin instance actions in case of API hub
+      managed actions. This field should be provided if the plugin instance
+      lifecycle of the developed plugin needs to be managed from API hub.
+      Also, in this case the plugin hosting service interface needs to be
+      implemented. This field should not be provided if the plugin wants to
+      manage plugin instance lifecycle events outside of hub interface and use
+      plugin framework for only registering of plugin and plugin instances to
+      capture the source of data into hub. Note, in this case the plugin
+      hosting service interface is not required to be implemented. Also, the
+      plugin instance lifecycle actions will be disabled from API hub's UI.
     name: Identifier. The name of the plugin. Format:
       `projects/{project}/locations/{location}/plugins/{plugin}`
+    ownershipType: Output only. The type of the plugin, indicating whether it
+      is 'SYSTEM_OWNED' or 'USER_OWNED'.
+    pluginCategory: Optional. The category of the plugin, identifying its
+      primary category or purpose. This field is required for all plugins.
     state: Output only. Represents the state of the plugin. Note this field
       will not be set for plugins developed via plugin framework as the state
       will be managed at plugin instance level.
@@ -2859,7 +4007,39 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
       GetAttribute API. All values should be from the list of allowed values
       defined for the attribute. Note this field is not required for plugins
       developed via plugin framework.
+    updateTime: Output only. Timestamp indicating when the plugin was last
+      updated.
   """
+
+  class OwnershipTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the plugin, indicating whether it is
+    'SYSTEM_OWNED' or 'USER_OWNED'.
+
+    Values:
+      OWNERSHIP_TYPE_UNSPECIFIED: Default unspecified type.
+      SYSTEM_OWNED: System owned plugins are defined by API hub and are
+        available out of the box in API hub.
+      USER_OWNED: User owned plugins are defined by the user and need to be
+        explicitly added to API hub via CreatePlugin method.
+    """
+    OWNERSHIP_TYPE_UNSPECIFIED = 0
+    SYSTEM_OWNED = 1
+    USER_OWNED = 2
+
+  class PluginCategoryValueValuesEnum(_messages.Enum):
+    r"""Optional. The category of the plugin, identifying its primary category
+    or purpose. This field is required for all plugins.
+
+    Values:
+      PLUGIN_CATEGORY_UNSPECIFIED: Default unspecified plugin type.
+      API_GATEWAY: API_GATEWAY plugins represent plugins built for API
+        Gateways like Apigee.
+      API_PRODUCER: API_PRODUCER plugins represent plugins built for API
+        Producers like Cloud Run, Application Integration etc.
+    """
+    PLUGIN_CATEGORY_UNSPECIFIED = 0
+    API_GATEWAY = 1
+    API_PRODUCER = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the state of the plugin. Note this field will
@@ -2876,11 +4056,273 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
     ENABLED = 1
     DISABLED = 2
 
+  actionsConfig = _messages.MessageField('GoogleCloudApihubV1PluginActionConfig', 1, repeated=True)
+  configTemplate = _messages.MessageField('GoogleCloudApihubV1ConfigTemplate', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 6)
+  hostingService = _messages.MessageField('GoogleCloudApihubV1HostingService', 7)
+  name = _messages.StringField(8)
+  ownershipType = _messages.EnumField('OwnershipTypeValueValuesEnum', 9)
+  pluginCategory = _messages.EnumField('PluginCategoryValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
+  updateTime = _messages.StringField(13)
+
+
+class GoogleCloudApihubV1PluginActionConfig(_messages.Message):
+  r"""PluginActionConfig represents the configuration of an action supported
+  by a plugin.
+
+  Enums:
+    TriggerModeValueValuesEnum: Required. The trigger mode supported by the
+      action.
+
+  Fields:
+    description: Required. The description of the operation performed by the
+      action.
+    displayName: Required. The display name of the action.
+    id: Required. The id of the action.
+    triggerMode: Required. The trigger mode supported by the action.
+  """
+
+  class TriggerModeValueValuesEnum(_messages.Enum):
+    r"""Required. The trigger mode supported by the action.
+
+    Values:
+      TRIGGER_MODE_UNSPECIFIED: Default unspecified mode.
+      API_HUB_ON_DEMAND_TRIGGER: This action can be executed by invoking
+        ExecutePluginInstanceAction API with the given action id. To support
+        this, the plugin hosting service should handle this action id as part
+        of execute call.
+      API_HUB_SCHEDULE_TRIGGER: This action will be executed on schedule by
+        invoking ExecutePluginInstanceAction API with the given action id. To
+        set the schedule, the user can provide the cron expression in the
+        PluginAction field for a given plugin instance. To support this, the
+        plugin hosting service should handle this action id as part of execute
+        call. Note, on demand execution will be supported by default in this
+        trigger mode.
+      NON_API_HUB_MANAGED: The execution of this plugin is not handled by API
+        hub. In this case, the plugin hosting service need not handle this
+        action id as part of the execute call.
+    """
+    TRIGGER_MODE_UNSPECIFIED = 0
+    API_HUB_ON_DEMAND_TRIGGER = 1
+    API_HUB_SCHEDULE_TRIGGER = 2
+    NON_API_HUB_MANAGED = 3
+
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  type = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 5)
+  id = _messages.StringField(3)
+  triggerMode = _messages.EnumField('TriggerModeValueValuesEnum', 4)
+
+
+class GoogleCloudApihubV1PluginInstance(_messages.Message):
+  r"""Represents a plugin instance resource in the API Hub. A PluginInstance
+  is a specific instance of a hub plugin with its own configuration, state,
+  and execution details.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the plugin
+      instance (e.g., enabled, disabled, provisioning).
+
+  Messages:
+    AdditionalConfigValue: Optional. The additional information for this
+      plugin instance corresponding to the additional config template of the
+      plugin. This information will be sent to plugin hosting service on each
+      call to plugin hosted service. The key will be the
+      config_variable_template.display_name to uniquely identify the config
+      variable.
+
+  Fields:
+    actions: Required. The action status for the plugin instance.
+    additionalConfig: Optional. The additional information for this plugin
+      instance corresponding to the additional config template of the plugin.
+      This information will be sent to plugin hosting service on each call to
+      plugin hosted service. The key will be the
+      config_variable_template.display_name to uniquely identify the config
+      variable.
+    authConfig: Optional. The authentication information for this plugin
+      instance.
+    createTime: Output only. Timestamp indicating when the plugin instance was
+      created.
+    displayName: Required. The display name for this plugin instance. Max
+      length is 255 characters.
+    errorMessage: Output only. Error message describing the failure, if any,
+      during Create, Delete or ApplyConfig operation corresponding to the
+      plugin instance.This field will only be populated if the plugin instance
+      is in the ERROR or FAILED state.
+    name: Identifier. The unique name of the plugin instance resource. Format:
+      `projects/{project}/locations/{location}/plugins/{plugin}/instances/{ins
+      tance}`
+    state: Output only. The current state of the plugin instance (e.g.,
+      enabled, disabled, provisioning).
+    updateTime: Output only. Timestamp indicating when the plugin instance was
+      last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the plugin instance (e.g., enabled,
+    disabled, provisioning).
+
+    Values:
+      STATE_UNSPECIFIED: Default unspecified state.
+      CREATING: The plugin instance is being created.
+      ACTIVE: The plugin instance is active and ready for executions. This is
+        the only state where executions can run on the plugin instance.
+      APPLYING_CONFIG: The updated config that contains additional_config and
+        auth_config is being applied.
+      ERROR: The ERROR state can come while applying config. Users can
+        retrigger ApplyPluginInstanceConfig to restore the plugin instance
+        back to active state. Note, In case the ERROR state happens while
+        applying config (auth_config, additional_config), the plugin instance
+        will reflect the config which was trying to be applied while error
+        happened. In order to overwrite, trigger ApplyConfig with a new
+        config.
+      FAILED: The plugin instance is in a failed state. This indicates that an
+        unrecoverable error occurred during a previous operation (Create,
+        Delete).
+      DELETING: The plugin instance is being deleted. Delete is only possible
+        if there is no other operation running on the plugin instance and
+        plugin instance action.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    APPLYING_CONFIG = 3
+    ERROR = 4
+    FAILED = 5
+    DELETING = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalConfigValue(_messages.Message):
+    r"""Optional. The additional information for this plugin instance
+    corresponding to the additional config template of the plugin. This
+    information will be sent to plugin hosting service on each call to plugin
+    hosted service. The key will be the config_variable_template.display_name
+    to uniquely identify the config variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AdditionalConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApihubV1ConfigVariable attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApihubV1ConfigVariable', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  actions = _messages.MessageField('GoogleCloudApihubV1PluginInstanceAction', 1, repeated=True)
+  additionalConfig = _messages.MessageField('AdditionalConfigValue', 2)
+  authConfig = _messages.MessageField('GoogleCloudApihubV1AuthConfig', 3)
+  createTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  errorMessage = _messages.StringField(6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudApihubV1PluginInstanceAction(_messages.Message):
+  r"""PluginInstanceAction represents an action which can be executed in the
+  plugin instance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the plugin action
+      in the plugin instance.
+
+  Fields:
+    actionId: Required. This should map to one of the action id specified in
+      actions_config in the plugin.
+    curationConfig: Optional. This configuration should be provided if the
+      plugin action is publishing data to API hub curate layer.
+    hubInstanceAction: Optional. The execution information for the plugin
+      instance action done corresponding to an API hub instance.
+    scheduleCronExpression: Optional. The schedule for this plugin instance
+      action. This can only be set if the plugin supports
+      API_HUB_SCHEDULE_TRIGGER mode for this action.
+    scheduleTimeZone: Optional. The time zone for the schedule cron
+      expression. If not provided, UTC will be used.
+    state: Output only. The current state of the plugin action in the plugin
+      instance.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the plugin action in the plugin
+    instance.
+
+    Values:
+      STATE_UNSPECIFIED: Default unspecified state.
+      ENABLED: The action is enabled in the plugin instance i.e., executions
+        can be triggered for this action.
+      DISABLED: The action is disabled in the plugin instance i.e., no
+        executions can be triggered for this action. This state indicates that
+        the user explicitly disabled the instance, and no further action is
+        needed unless the user wants to re-enable it.
+      ENABLING: The action in the plugin instance is being enabled.
+      DISABLING: The action in the plugin instance is being disabled.
+      ERROR: The ERROR state can come while enabling/disabling plugin instance
+        action. Users can retrigger enable, disable via
+        EnablePluginInstanceAction and DisablePluginInstanceAction to restore
+        the action back to enabled/disabled state. Note enable/disable on
+        actions can only be triggered if plugin instance is in Active state.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    ENABLING = 3
+    DISABLING = 4
+    ERROR = 5
+
+  actionId = _messages.StringField(1)
+  curationConfig = _messages.MessageField('GoogleCloudApihubV1CurationConfig', 2)
+  hubInstanceAction = _messages.MessageField('GoogleCloudApihubV1ExecutionStatus', 3)
+  scheduleCronExpression = _messages.StringField(4)
+  scheduleTimeZone = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleCloudApihubV1PluginInstanceActionID(_messages.Message):
+  r"""The plugin instance and associated action that is using the curation.
+
+  Fields:
+    actionId: Output only. The action ID that is using the curation. This
+      should map to one of the action IDs specified in action configs in the
+      plugin.
+    pluginInstance: Output only. Plugin instance that is using the curation.
+      Format is `projects/{project}/locations/{location}/plugins/{plugin}/inst
+      ances/{instance}`
+  """
+
+  actionId = _messages.StringField(1)
+  pluginInstance = _messages.StringField(2)
+
+
+class GoogleCloudApihubV1PluginInstanceActionSource(_messages.Message):
+  r"""PluginInstanceActionSource represents the plugin instance action source.
+
+  Fields:
+    actionId: Output only. The id of the plugin instance action.
+    pluginInstance: Output only. The resource name of the source plugin
+      instance. Format is `projects/{project}/locations/{location}/plugins/{pl
+      ugin}/instances/{instance}`
+  """
+
+  actionId = _messages.StringField(1)
+  pluginInstance = _messages.StringField(2)
 
 
 class GoogleCloudApihubV1Point(_messages.Message):
@@ -3009,6 +4451,52 @@ class GoogleCloudApihubV1SearchResult(_messages.Message):
   resource = _messages.MessageField('GoogleCloudApihubV1ApiHubResource', 1)
 
 
+class GoogleCloudApihubV1Secret(_messages.Message):
+  r"""Secret provides a reference to entries in Secret Manager.
+
+  Fields:
+    secretVersion: Required. The resource name of the secret version in the
+      format, format as: `projects/*/secrets/*/versions/*`.
+  """
+
+  secretVersion = _messages.StringField(1)
+
+
+class GoogleCloudApihubV1SourceMetadata(_messages.Message):
+  r"""SourceMetadata represents the metadata for a resource at the source.
+
+  Enums:
+    SourceTypeValueValuesEnum: Output only. The type of the source.
+
+  Fields:
+    originalResourceCreateTime: Output only. The time at which the resource
+      was created at the source.
+    originalResourceId: Output only. The unique identifier of the resource at
+      the source.
+    originalResourceUpdateTime: Output only. The time at which the resource
+      was last updated at the source.
+    pluginInstanceActionSource: Output only. The source of the resource is a
+      plugin instance action.
+    sourceType: Output only. The type of the source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the source.
+
+    Values:
+      SOURCE_TYPE_UNSPECIFIED: Source type not specified.
+      PLUGIN: Source type plugin.
+    """
+    SOURCE_TYPE_UNSPECIFIED = 0
+    PLUGIN = 1
+
+  originalResourceCreateTime = _messages.StringField(1)
+  originalResourceId = _messages.StringField(2)
+  originalResourceUpdateTime = _messages.StringField(3)
+  pluginInstanceActionSource = _messages.MessageField('GoogleCloudApihubV1PluginInstanceActionSource', 4)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 5)
+
+
 class GoogleCloudApihubV1Spec(_messages.Message):
   r"""Represents a spec associated with an API version in the API Hub. Note
   that specs of various types can be uploaded, however parsing of details is
@@ -3041,6 +4529,8 @@ class GoogleCloudApihubV1Spec(_messages.Message):
       ons/{location}/apis/{api}/versions/{version}/specs/{spec}`
     parsingMode: Optional. Input only. Enum specifying the parsing mode for
       OpenAPI Specification (OAS) parsing.
+    sourceMetadata: Output only. The list of sources and metadata from the
+      sources of the spec.
     sourceUri: Optional. The URI of the spec source in case file is uploaded
       from an external version control system.
     specType: Required. The type of spec. The value should be one of the
@@ -3103,9 +4593,10 @@ class GoogleCloudApihubV1Spec(_messages.Message):
   lintResponse = _messages.MessageField('GoogleCloudApihubV1LintResponse', 7)
   name = _messages.StringField(8)
   parsingMode = _messages.EnumField('ParsingModeValueValuesEnum', 9)
-  sourceUri = _messages.StringField(10)
-  specType = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 11)
-  updateTime = _messages.StringField(12)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 10, repeated=True)
+  sourceUri = _messages.StringField(11)
+  specType = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudApihubV1SpecContents(_messages.Message):
@@ -3133,6 +4624,26 @@ class GoogleCloudApihubV1SpecDetails(_messages.Message):
 
   description = _messages.StringField(1)
   openApiSpecDetails = _messages.MessageField('GoogleCloudApihubV1OpenApiSpecDetails', 2)
+
+
+class GoogleCloudApihubV1SpecMetadata(_messages.Message):
+  r"""The metadata associated with a spec of the API version.
+
+  Fields:
+    originalCreateTime: Optional. Timestamp indicating when the spec was
+      created at the source.
+    originalId: Optional. The unique identifier of the spec in the system
+      where it was originally created.
+    originalUpdateTime: Required. Timestamp indicating when the spec was last
+      updated at the source.
+    spec: Required. The spec resource to be pushed to Hub's collect layer. The
+      ID of the spec will be generated by Hub.
+  """
+
+  originalCreateTime = _messages.StringField(1)
+  originalId = _messages.StringField(2)
+  originalUpdateTime = _messages.StringField(3)
+  spec = _messages.MessageField('GoogleCloudApihubV1Spec', 4)
 
 
 class GoogleCloudApihubV1StringAttributeValues(_messages.Message):
@@ -3220,6 +4731,20 @@ class GoogleCloudApihubV1SummaryEntry(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
 
 
+class GoogleCloudApihubV1UserPasswordConfig(_messages.Message):
+  r"""Parameters to support Username and Password Authentication.
+
+  Fields:
+    password: Required. Secret version reference containing the password. The
+      `secretmanager.versions.access` permission should be granted to the
+      service account accessing the secret.
+    username: Required. Username.
+  """
+
+  password = _messages.MessageField('GoogleCloudApihubV1Secret', 1)
+  username = _messages.StringField(2)
+
+
 class GoogleCloudApihubV1Version(_messages.Message):
   r"""Represents a version of the API resource in API hub. This is also
   referred to as the API version.
@@ -3280,6 +4805,8 @@ class GoogleCloudApihubV1Version(_messages.Message):
       resource. This can be used when special handling is needed on client
       side for a particular deployment linked to the version. Format is
       `projects/{project}/locations/{location}/deployments/{deployment}`
+    sourceMetadata: Output only. The list of sources and metadata from the
+      sources of the version.
     specs: Output only. The specs associated with this version. Note that an
       API version can be associated with multiple specs. Format is `projects/{
       project}/locations/{location}/apis/{api}/versions/{version}/specs/{spec}
@@ -3327,8 +4854,36 @@ class GoogleCloudApihubV1Version(_messages.Message):
   lifecycle = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 11)
   name = _messages.StringField(12)
   selectedDeployment = _messages.StringField(13)
-  specs = _messages.StringField(14, repeated=True)
-  updateTime = _messages.StringField(15)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 14, repeated=True)
+  specs = _messages.StringField(15, repeated=True)
+  updateTime = _messages.StringField(16)
+
+
+class GoogleCloudApihubV1VersionMetadata(_messages.Message):
+  r"""The metadata associated with a version of the API resource.
+
+  Fields:
+    deployments: Optional. The deployments linked to this API version. Note: A
+      particular API version could be deployed to multiple deployments (for
+      dev deployment, UAT deployment, etc.)
+    originalCreateTime: Optional. Timestamp indicating when the version was
+      created at the source.
+    originalId: Optional. The unique identifier of the version in the system
+      where it was originally created.
+    originalUpdateTime: Required. Timestamp indicating when the version was
+      last updated at the source.
+    specs: Optional. The specs associated with this version. Note that an API
+      version can be associated with multiple specs.
+    version: Required. Represents a version of the API resource in API hub.
+      The ID of the version will be generated by Hub.
+  """
+
+  deployments = _messages.MessageField('GoogleCloudApihubV1DeploymentMetadata', 1, repeated=True)
+  originalCreateTime = _messages.StringField(2)
+  originalId = _messages.StringField(3)
+  originalUpdateTime = _messages.StringField(4)
+  specs = _messages.MessageField('GoogleCloudApihubV1SpecMetadata', 5, repeated=True)
+  version = _messages.MessageField('GoogleCloudApihubV1Version', 6)
 
 
 class GoogleCloudCommonOperationMetadata(_messages.Message):

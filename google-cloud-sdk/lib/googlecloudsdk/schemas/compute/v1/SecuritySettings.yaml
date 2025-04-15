@@ -25,9 +25,6 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  authentication:
-    description: '[Deprecated] Use clientTlsPolicy instead.'
-    type: string
   awsV4Authentication:
     description: |-
       The configuration needed to generate a signature for access to private

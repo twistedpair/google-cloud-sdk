@@ -480,7 +480,7 @@ def AddSrcRegionCodes(parser, support_network_scopes=False):
   if support_network_scopes:
     help_text += (
         ' Cannot be specified when the source network'
-        ' scope is NON_INTERNET, VPC_NETWORK or INTRA_VPC.'
+        ' type is NON_INTERNET, VPC_NETWORK or INTRA_VPC.'
     )
   parser.add_argument(
       '--src-region-codes',
@@ -672,5 +672,36 @@ def AddDestNetworkType(parser, required=False):
           ' non-internet traffic. It applies to destination traffic for egress'
           ' rules. Valid values are INTERNET and NON_INTERNET. Use'
           ' empty string to clear the field.'
+      ),
+  )
+
+
+def AddTargetType(parser, required=False):
+  """Adds target type to this rule."""
+  parser.add_argument(
+      '--target-type',
+      required=required,
+      choices=['INSTANCES', 'INTERNAL_MANAGED_LB'],
+      help=(
+          'Target type of the rule. By default a rule applies to VM instances'
+          ' (target-type = INSTANCES). Use INTERNAL_MANAGED_LB value to apply'
+          ' the rule to load balancers.'
+      ),
+  )
+
+
+def AddTargetForwardingRules(parser, required=False):
+  """Adds target forwarding rules to this rule."""
+  parser.add_argument(
+      '--target-forwarding-rules',
+      required=required,
+      type=arg_parsers.ArgList(),
+      metavar='TARGET_FORWARDING_RULES',
+      help=(
+          'A list of forwarding rules to which this rule applies. This field'
+          ' allows you to control which load balancers get this rule. If not'
+          ' specified, the rule applies to all load balancers. This field is'
+          ' only applicable when --target-type is INTERNAL_MANAGED_LB. It'
+          ' accepts full or partial resourceURLs.'
       ),
   )

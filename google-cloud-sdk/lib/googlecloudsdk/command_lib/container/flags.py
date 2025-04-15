@@ -3642,6 +3642,7 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
           api_adapter.APPLICATIONMANAGER,
           api_adapter.STATEFULHA,
           api_adapter.HIGHSCALECHECKPOINTING,
+          api_adapter.LUSTRECSIDRIVER,
       ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
@@ -5792,6 +5793,45 @@ The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
   )
 
 
+def AddOpportunisticMaintenanceFlag(parser):
+  """Adds a --opportunistic-maintenance flag to the given parser."""
+  spec = {'node-idle-time': str, 'window': str, 'min-nodes': int}
+
+  opportunistic_maintenance_help = """\
+Opportunistic maintenance options.
+
+node-idle-time: Time to be spent waiting for node to be idle
+before starting maintenance, ending with 's'. Example: "3.5s"
+
+window: The window of time that opportunistic maintenance can run, ending with 's'.
+  Example: A setting of 14 days (1209600s) implies that opportunistic maintenance can only be
+    ran in the 2 weeks leading up to the scheduled maintenance date.
+    Setting 28 days(2419200s) allows opportunistic maintenance to run at any time in the scheduled
+    maintenance window.
+
+min-nodes: Minimum number of nodes in the node pool to be available during the opportunistic
+    triggered maintenance.
+
+  $ {command} example-cluster\
+  --opportunistic-maintenance=node-idle-time=600s,window=600s,min-nodes=2
+"""
+
+  parser.add_argument(
+      '--opportunistic-maintenance',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=[
+              'node-idle-time',
+              'window',
+              'min-nodes',
+          ],
+          max_length=len(spec),
+      ),
+      help=opportunistic_maintenance_help,
+      metavar='node-idle-time=NODE_IDLE_TIME,window=WINDOW,min-nodes=MIN_NODES',
+  )
+
+
 def AddEnableGcfsFlag(parser, for_node_pool=False, hidden=True):
   """Adds the argument to handle GCFS configurations."""
   target = 'node pool' if for_node_pool else 'default initial node pool'
@@ -6850,7 +6890,7 @@ def AddSecretManagerEnableFlagGroup(
         action='store_true',
         default=None,
         help=help_text,
-        hidden=True,
+        hidden=False,
     )
 
     help_text = textwrap.dedent("""\
@@ -6861,7 +6901,7 @@ def AddSecretManagerEnableFlagGroup(
         '--secret-manager-rotation-interval',
         default=None,
         help=help_text,
-        hidden=True,
+        hidden=False,
     )
 
 
@@ -7229,5 +7269,23 @@ def AddServiceAccountVerificationKeysFlag(parser):
           max_length=2,
       ),
       metavar='KEY_VERSION',
+  )
+
+
+def AddPatchUpdateFlag(parser):
+  """Adds the --patch-update flag to parser."""
+  help_text = """\
+  The patch update to use for the cluster.
+  """
+  return parser.add_argument(
+      '--patch-update',
+      required=False,
+      hidden=True,
+      help=help_text,
+      type=arg_parsers.ArgList(
+          choices=['accelerated', 'default'],
+          max_length=1,
+      ),
+      metavar='PATCH_UPDATE',
   )
 

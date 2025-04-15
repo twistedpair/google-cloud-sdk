@@ -952,7 +952,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         method_id='servicedirectory.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+name}/locations',
         request_field='',
         request_type_name='ServicedirectoryProjectsLocationsListRequest',

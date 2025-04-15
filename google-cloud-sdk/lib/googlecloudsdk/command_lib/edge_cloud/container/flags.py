@@ -520,3 +520,12 @@ def AddContainerDefaultRuntimeClass(parser):
       RUNC and GVISOR.
       """,
   )
+
+
+def AddEnableClusterIsolation(parser):
+  parser.add_argument(
+      '--enable-cluster-isolation',
+      help="""
+      If set, the cluster will be created in a secure cluster isolation mode.
+      """,
+  )

@@ -364,10 +364,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_EXAMPLESTORES = (
       'projects.locations.exampleStores',
-      'projects/{projectsId}/locations/{locationsId}/exampleStores/'
-      '{exampleStoresId}',
-      {},
-      ['projectsId', 'locationsId', 'exampleStoresId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/exampleStores/'
+              '{exampleStoresId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_EXAMPLESTORES_OPERATIONS = (
@@ -1147,6 +1150,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REASONINGENGINES_SESSIONS = (
+      'projects.locations.reasoningEngines.sessions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SCHEDULES = (
       'projects.locations.schedules',
       '{+name}',
@@ -1176,6 +1190,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'serverlessRayJobs/{serverlessRayJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SESSIONS = (
+      'projects.locations.sessions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sessions/'
+              '{sessionsId}',
       },
       ['name'],
       True

@@ -588,7 +588,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -1739,20 +1738,11 @@ class FirestoreProjectsDatabasesUserCredsListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesUserCredsListRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of user creds to return. The
-      service may return fewer than this value. If unspecified, the server
-      will use a sensible default.
-    pageToken: Optional. A page token, received from a previous
-      `ListUserCredsRequest` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to `ListUserCreds`
-      must match the call that provided the page token.
     parent: Required. A parent database name of the form
       `projects/{project_id}/databases/{database_id}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(1, required=True)
 
 
 class FirestoreProjectsDatabasesUserCredsResetPasswordRequest(_messages.Message):
@@ -1828,6 +1818,8 @@ class FirestoreProjectsLocationsListRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1838,10 +1830,11 @@ class FirestoreProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GoogleFirestoreAdminV1Backup(_messages.Message):
@@ -2067,7 +2060,6 @@ class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   """
 
 
-
 class GoogleFirestoreAdminV1Database(_messages.Message):
   r"""A Cloud Firestore Database.
 
@@ -2076,6 +2068,7 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       to use for this database.
     ConcurrencyModeValueValuesEnum: The concurrency control mode to use for
       this database.
+    DatabaseEditionValueValuesEnum: Immutable. The edition of the database.
     DeleteProtectionStateValueValuesEnum: State of delete protection for the
       database.
     PointInTimeRecoveryEnablementValueValuesEnum: Whether to enable the PITR
@@ -2092,6 +2085,7 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     concurrencyMode: The concurrency control mode to use for this database.
     createTime: Output only. The timestamp at which this database was created.
       Databases created before 2016 do not populate create_time.
+    databaseEdition: Immutable. The edition of the database.
     deleteProtectionState: State of delete protection for the database.
     deleteTime: Output only. The timestamp at which this database was deleted.
       Only set if the database has been deleted.
@@ -2105,6 +2099,15 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
+    freeTier: Output only. Background: Free tier is the ability of a Firestore
+      database to use a small amount of resources every day without being
+      charged. Once usage exceeds the free tier limit further usage is
+      charged. Whether this database can make use of the free tier. Only one
+      database per project can be eligible for the free tier. The first (or
+      next) database that is created in a project without a free tier database
+      will be marked as eligible for the free tier. Databases that are created
+      while there is a free tier database will not be eligible for the free
+      tier.
     keyPrefix: Output only. The key_prefix for this database. This key_prefix
       is used, in combination with the project ID ("~") to construct the
       application ID that is returned from the Cloud Datastore APIs in Google
@@ -2172,6 +2175,20 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     PESSIMISTIC = 2
     OPTIMISTIC_WITH_ENTITY_GROUPS = 3
 
+  class DatabaseEditionValueValuesEnum(_messages.Enum):
+    r"""Immutable. The edition of the database.
+
+    Values:
+      DATABASE_EDITION_UNSPECIFIED: Not used.
+      STANDARD: Standard edition. This is the default setting if not
+        specified.
+      ENTERPRISE: Enterprise edition.
+    """
+
+    DATABASE_EDITION_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
+
   class DeleteProtectionStateValueValuesEnum(_messages.Enum):
     r"""State of delete protection for the database.
 
@@ -2221,20 +2238,26 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   cmekConfig = _messages.MessageField('GoogleFirestoreAdminV1CmekConfig', 2)
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 3)
   createTime = _messages.StringField(4)
-  deleteProtectionState = _messages.EnumField('DeleteProtectionStateValueValuesEnum', 5)
-  deleteTime = _messages.StringField(6)
-  earliestVersionTime = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  keyPrefix = _messages.StringField(9)
-  locationId = _messages.StringField(10)
-  name = _messages.StringField(11)
-  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 12)
-  previousId = _messages.StringField(13)
-  sourceInfo = _messages.MessageField('GoogleFirestoreAdminV1SourceInfo', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  versionRetentionPeriod = _messages.StringField(18)
+  databaseEdition = _messages.EnumField('DatabaseEditionValueValuesEnum', 5)
+  deleteProtectionState = _messages.EnumField(
+      'DeleteProtectionStateValueValuesEnum', 6
+  )
+  deleteTime = _messages.StringField(7)
+  earliestVersionTime = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  freeTier = _messages.BooleanField(10)
+  keyPrefix = _messages.StringField(11)
+  locationId = _messages.StringField(12)
+  name = _messages.StringField(13)
+  pointInTimeRecoveryEnablement = _messages.EnumField(
+      'PointInTimeRecoveryEnablementValueValuesEnum', 14
+  )
+  previousId = _messages.StringField(15)
+  sourceInfo = _messages.MessageField('GoogleFirestoreAdminV1SourceInfo', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  versionRetentionPeriod = _messages.StringField(20)
 
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
@@ -2467,7 +2490,6 @@ class GoogleFirestoreAdminV1FlatIndex(_messages.Message):
   """
 
 
-
 class GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions(_messages.Message):
   r"""The configuration options for using Google default encryption."""
 
@@ -2550,10 +2572,12 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
 
 class GoogleFirestoreAdminV1Index(_messages.Message):
   r"""Cloud Firestore indexes enable simple and complex queries against
+
   documents in a database.
 
   Enums:
     ApiScopeValueValuesEnum: The API scope supported by this index.
+    DensityValueValuesEnum: Immutable. The density configuration of the index.
     QueryScopeValueValuesEnum: Indexes with a collection query scope specified
       allow queries against a collection that is the child of a specific
       document, specified at query time, and that has the same collection ID.
@@ -2564,6 +2588,7 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
 
   Fields:
     apiScope: The API scope supported by this index.
+    density: Immutable. The density configuration of the index.
     fields: The fields supported by this index. For composite indexes, this
       requires a minimum of 2 and a maximum of 100 fields. The last field
       entry is always for the field path `__name__`. If, on creation,
@@ -2573,6 +2598,13 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
       `__name__` will be ordered ASCENDING (unless explicitly specified). For
       single field indexes, this will always be exactly one entry with a field
       path equal to the field path of the associated field.
+    multikey: Optional. Whether the index is multikey. By default, the index
+      is not multikey. For non-multikey indexes, none of the paths in the
+      index definition reach or traverse an array, except via an explicit
+      array index. For multikey indexes, at most one of the paths in the index
+      definition reach or traverse an array, except via an explicit array
+      index. Violations will result in errors. Note this field only applies to
+      index with MONGODB_COMPATIBLE_API ApiScope.
     name: Output only. A server defined name for this index. The form of this
       name for composite indexes will be: `projects/{project_id}/databases/{da
       tabase_id}/collectionGroups/{collection_id}/indexes/{composite_index_id}
@@ -2583,6 +2615,7 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
       collection group query scope specified allow queries against all
       collections descended from a specific document, specified at query time,
       and that have the same collection ID as this index.
+    shardCount: Optional. The number of shards for the index.
     state: Output only. The serving state of the index.
   """
 
@@ -2594,9 +2627,35 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
         This is the default.
       DATASTORE_MODE_API: The index can only be used by the Firestore in
         Datastore Mode query API.
+      MONGODB_COMPATIBLE_API: The index can only be used by the
+        MONGODB_COMPATIBLE_API.
     """
     ANY_API = 0
     DATASTORE_MODE_API = 1
+    MONGODB_COMPATIBLE_API = 2
+
+  class DensityValueValuesEnum(_messages.Enum):
+    r"""Immutable. The density configuration of the index.
+
+    Values:
+      DENSITY_UNSPECIFIED: Unspecified. It will use database default setting.
+        This value is input only.
+      SPARSE_ALL: In order for an index entry to be added, the document must
+        contain all fields specified in the index. This is the only allowed
+        value for indexes having ApiScope `ANY_API` and `DATASTORE_MODE_API`.
+      SPARSE_ANY: In order for an index entry to be added, the document must
+        contain at least one of the fields specified in the index. Non-
+        existent fields are treated as having a NULL value when generating
+        index entries.
+      DENSE: An index entry will be added regardless of whether the document
+        contains any of the fields specified in the index. Non-existent fields
+        are treated as having a NULL value when generating index entries.
+    """
+
+    DENSITY_UNSPECIFIED = 0
+    SPARSE_ALL = 1
+    SPARSE_ANY = 2
+    DENSE = 3
 
   class QueryScopeValueValuesEnum(_messages.Enum):
     r"""Indexes with a collection query scope specified allow queries against
@@ -2648,10 +2707,15 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
     NEEDS_REPAIR = 3
 
   apiScope = _messages.EnumField('ApiScopeValueValuesEnum', 1)
-  fields = _messages.MessageField('GoogleFirestoreAdminV1IndexField', 2, repeated=True)
-  name = _messages.StringField(3)
-  queryScope = _messages.EnumField('QueryScopeValueValuesEnum', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  density = _messages.EnumField('DensityValueValuesEnum', 2)
+  fields = _messages.MessageField(
+      'GoogleFirestoreAdminV1IndexField', 3, repeated=True
+  )
+  multikey = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  queryScope = _messages.EnumField('QueryScopeValueValuesEnum', 6)
+  shardCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class GoogleFirestoreAdminV1IndexConfig(_messages.Message):
@@ -3001,7 +3065,6 @@ class GoogleFirestoreAdminV1SourceEncryptionOptions(_messages.Message):
   r"""The configuration options for using the same encryption method as the
   source.
   """
-
 
 
 class GoogleFirestoreAdminV1SourceInfo(_messages.Message):

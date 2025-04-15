@@ -34,6 +34,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_CAPABILITIES = (
+      'folders.capabilities',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/capabilities/{capabilitiesId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_EFFECTIVESETTINGS = (
       'folders.effectiveSettings',
       '{+name}',

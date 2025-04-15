@@ -77,6 +77,43 @@ FILE_TIER_TO_TYPE = {
     'REGIONAL': 'REGIONAL',
 }
 
+_LDAP_HELP_TEXT = """\
+        LDAP configuration for an instance. Specifies the domain name, servers,
+        users_ou, and groups_ou to be created by the filestore instance. users_ou
+        and groups_ou are optional.
+
+         domain
+            The desired domain name. i.e.:
+            'my-domain.com'
+
+          Servers
+            The desired LDAP servers. i.e.:
+            'ldap.example.com', 'ldap2.example.com'
+
+          Usersou
+            The desired usersou.
+
+          Groups_ou
+            The desired groups_ou.
+
+          Use the following format to specify the LDAP configuration:
+            --ldap=^:^domain=my-domain.com:servers=ldap.example.com,ldap2.example.com:users_ou=users:groups_ou=groups
+  """
+
+_MANAGED_AD_HELP_TEXT = """\
+        Managed Active Directory configuration for an instance. Specifies both
+        the domain name and a computer name (unique to the domain) to be created
+        by the filestore instance.
+
+         domain
+            The desired domain full uri. i.e.:
+            projects/PROJECT/locations/global/domains/DOMAIN
+
+         computer
+            The desired active directory computer name to be created by
+            the filestore instance when connecting to the domain.
+  """
+
 
 def AddAsyncFlag(parser):
   help_text = """Return immediately, without waiting for the operation
@@ -281,27 +318,57 @@ def AddConnectManagedActiveDirectoryArg(parser):
       'computer': str,
   }
 
-  managed_ad_help = """\
-        Managed Active Directory configuration for an instance. Specifies both
-        the domain name and a computer name (unique to the domain) to be created
-        by the filestore instance.
-
-         domain
-            The desired domain full uri. i.e:
-            projects/PROJECT/locations/global/domains/DOMAIN
-
-         computer
-            The desired active directory computer name to be created by
-            the filestore instance when connecting to the domain.
-  """
-
   parser.add_argument(
       '--managed-ad',
       type=arg_parsers.ArgDict(
           spec=managed_ad_arg_spec, required_keys=['domain', 'computer']
       ),
       required=False,
-      help=managed_ad_help,
+      help=_MANAGED_AD_HELP_TEXT,
+  )
+
+
+def AddDirectoryServicesArg(parser):
+  """Adds a --ldap flag to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+  group = parser.add_group(
+      help='Directory services configuration for an instance.',
+      required=False,
+      mutex=True,
+  )
+
+  managed_ad_arg_spec = {
+      'domain': str,
+      'computer': str,
+  }
+  group.add_argument(
+      '--managed-ad',
+      type=arg_parsers.ArgDict(
+          spec=managed_ad_arg_spec, required_keys=['domain', 'computer']
+      ),
+      required=False,
+      help=_MANAGED_AD_HELP_TEXT,
+  )
+
+  ldap_arg_spec = {
+      'domain': str,
+      'servers': str,
+      'users_ou': str,
+      'groups_ou': str,
+  }
+
+  group.add_argument(
+      '--ldap',
+      metavar='^:^domain=DOMAIN:servers=SERVER1,SERVER2:users_ou=USERSOU:groups_ou=GROUPSOU',
+      type=arg_parsers.ArgDict(
+          spec=ldap_arg_spec,
+          required_keys=['domain', 'servers'],
+      ),
+      required=False,
+      help=_LDAP_HELP_TEXT,
   )
 
 
@@ -697,7 +764,7 @@ def AddInstanceCreateArgs(parser, api_version):
   GetTierArg(messages).choice_arg.AddToParser(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
-    AddConnectManagedActiveDirectoryArg(parser)
+    AddDirectoryServicesArg(parser)
   AddFileShareArg(
       parser,
       api_version,

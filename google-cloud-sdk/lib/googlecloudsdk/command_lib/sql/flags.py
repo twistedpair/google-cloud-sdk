@@ -3225,3 +3225,29 @@ def AddNodeCount(parser):
       ),
       hidden=False,
   )
+
+
+def AddPSCNetworkAttachmentUri(parser, hidden=False):
+  """Adds the `--psc-network-attachment-uri` flag to the parser."""
+  parser.add_argument(
+      '--psc-network-attachment-uri',
+      required=False,
+      hidden=hidden,
+      type=str,
+      help=(
+          'Full URI of the network attachment that is configured to '
+          'support outbound connectivity from a Cloud SQL instance which '
+          'uses Private Service Connect (PSC). '
+          'For example, this would be of the form:'
+          '`--psc-network-attachment-uri=projects/test-project/regions/us-central1/networkAttachments/my-na`'
+      ),
+  )
+
+
+def AddClearPSCNetworkAttachmentUri(parser, hidden=False):
+  parser.add_argument(
+      '--clear-psc-network-attachment-uri',
+      action='store_true',
+      hidden=hidden,
+      help="""Disable outbound connectivity from a Cloud SQL instance which uses Private Service Connect (PSC).""",
+  )

@@ -2564,6 +2564,9 @@ class GoogleCloudDatacatalogV1MigrationConfig(_messages.Message):
     catalogUiExperience: Opt-in status for the UI switch to Dataplex.
     tagTemplateMigration: Opt-in status for the migration of Tag Templates to
       Dataplex.
+    templateMigrationEnabledTime: The time when the Tag Template migration was
+      enabled. If the Tag Template migration is not enabled, this field is not
+      set.
   """
 
   class CatalogUiExperienceValueValuesEnum(_messages.Enum):
@@ -2596,6 +2599,7 @@ class GoogleCloudDatacatalogV1MigrationConfig(_messages.Message):
 
   catalogUiExperience = _messages.EnumField('CatalogUiExperienceValueValuesEnum', 1)
   tagTemplateMigration = _messages.EnumField('TagTemplateMigrationValueValuesEnum', 2)
+  templateMigrationEnabledTime = _messages.StringField(3)
 
 
 class GoogleCloudDatacatalogV1ModelSpec(_messages.Message):

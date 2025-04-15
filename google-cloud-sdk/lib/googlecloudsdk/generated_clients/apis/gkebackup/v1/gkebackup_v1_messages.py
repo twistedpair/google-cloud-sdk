@@ -587,6 +587,8 @@ class BackupPlanBinding(_messages.Message):
     backupPlan: Output only. Immutable. The fully qualified name of the
       BackupPlan bound with the parent BackupChannel.
       `projects/*/locations/*/backupPlans/{backup_plan}`
+    backupPlanDetails: Output only. Contains details about the backup
+      plan/backup.
     cluster: Output only. Immutable. The fully qualified name of the cluster
       that is being backed up Valid formats: -
       `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
@@ -608,12 +610,66 @@ class BackupPlanBinding(_messages.Message):
   """
 
   backupPlan = _messages.StringField(1)
-  cluster = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  backupPlanDetails = _messages.MessageField('BackupPlanDetails', 2)
+  cluster = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class BackupPlanDetails(_messages.Message):
+  r"""Contains metadata about the backup plan/backup.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the BackupPlan.
+
+  Fields:
+    lastSuccessfulBackup: Output only. The fully qualified name of the last
+      successful Backup created under this BackupPlan.
+      `projects/*/locations/*/backupPlans/*/backups/*`
+    lastSuccessfulBackupTime: Output only. Completion time of the last
+      successful Backup. This is sourced from a successful Backup's
+      complete_time field.
+    nextScheduledBackupTime: Output only. Start time of next scheduled backup
+      under this BackupPlan by either cron_schedule or rpo config. This is
+      sourced from BackupPlan.
+    protectedPodCount: Output only. The number of Kubernetes Pods backed up in
+      the last successful Backup created via this BackupPlan.
+    rpoRiskLevel: Output only. A number that represents the current risk level
+      of this BackupPlan from RPO perspective with 1 being no risk and 5 being
+      highest risk.
+    state: Output only. State of the BackupPlan.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the BackupPlan.
+
+    Values:
+      STATE_UNSPECIFIED: Default first value for Enums.
+      CLUSTER_PENDING: Waiting for cluster state to be RUNNING.
+      PROVISIONING: The BackupPlan is in the process of being created.
+      READY: The BackupPlan has successfully been created and is ready for
+        Backups.
+      FAILED: BackupPlan creation has failed.
+      DEACTIVATED: The BackupPlan has been deactivated.
+      DELETING: The BackupPlan is in the process of being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CLUSTER_PENDING = 1
+    PROVISIONING = 2
+    READY = 3
+    FAILED = 4
+    DEACTIVATED = 5
+    DELETING = 6
+
+  lastSuccessfulBackup = _messages.StringField(1)
+  lastSuccessfulBackupTime = _messages.StringField(2)
+  nextScheduledBackupTime = _messages.StringField(3)
+  protectedPodCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rpoRiskLevel = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class Binding(_messages.Message):
@@ -967,7 +1023,7 @@ class GetBackupIndexDownloadUrlResponse(_messages.Message):
   r"""Response message for GetBackupIndexDownloadUrl.
 
   Fields:
-    signedUrl: A string attribute.
+    signedUrl: Required. The signed URL for downloading the backup index.
   """
 
   signedUrl = _messages.StringField(1)
@@ -1599,6 +1655,8 @@ class GkebackupProjectsLocationsListRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1609,10 +1667,11 @@ class GkebackupProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GkebackupProjectsLocationsOperationsCancelRequest(_messages.Message):

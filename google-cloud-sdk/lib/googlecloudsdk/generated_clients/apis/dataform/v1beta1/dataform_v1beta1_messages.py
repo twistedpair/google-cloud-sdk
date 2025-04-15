@@ -15,6 +15,66 @@ from apitools.base.py import extra_types
 package = 'dataform'
 
 
+class ActionErrorTable(_messages.Message):
+  r"""Error table information, used to write error data into a BigQuery table.
+
+  Fields:
+    retentionDays: Error table partition expiration in days. Only positive
+      values are allowed.
+    target: Error Table target.
+  """
+
+  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  target = _messages.MessageField('Target', 2)
+
+
+class ActionIncrementalLoadMode(_messages.Message):
+  r"""Load definition for incremental load modes
+
+  Fields:
+    column: Column name for incremental load modes
+  """
+
+  column = _messages.StringField(1)
+
+
+class ActionLoadConfig(_messages.Message):
+  r"""Simplified load configuration for actions
+
+  Fields:
+    append: Append into destination table
+    maximum: Insert records where the value exceeds the previous maximum value
+      for a column in the destination table
+    replace: Replace destination table
+    unique: Insert records where the value of a column is not already present
+      in the destination table
+  """
+
+  append = _messages.MessageField('ActionSimpleLoadMode', 1)
+  maximum = _messages.MessageField('ActionIncrementalLoadMode', 2)
+  replace = _messages.MessageField('ActionSimpleLoadMode', 3)
+  unique = _messages.MessageField('ActionIncrementalLoadMode', 4)
+
+
+class ActionSimpleLoadMode(_messages.Message):
+  r"""Simple load definition"""
+
+
+class ActionSqlDefinition(_messages.Message):
+  r"""Definition of a SQL Data Preparation
+
+  Fields:
+    errorTable: Error table configuration,
+    loadConfig: Load configuration.
+    query: The SQL query representing the data preparation steps. Formatted as
+      a Pipe SQL query statement.
+  """
+
+  errorTable = _messages.MessageField('ActionErrorTable', 1)
+  loadConfig = _messages.MessageField('ActionLoadConfig', 2)
+  query = _messages.StringField(3)
+
+
 class Assertion(_messages.Message):
   r"""Represents an assertion upon a SQL query which is required return zero
   rows.
@@ -416,6 +476,7 @@ class CompilationResultAction(_messages.Message):
     assertion: The assertion executed by this action.
     canonicalTarget: The action's identifier if the project had been compiled
       without any overrides configured. Unique within the compilation result.
+    dataPreparation: The data preparation executed by this action.
     declaration: The declaration declared by this action.
     filePath: The full path including filename in which this action is
       located, relative to the workspace root.
@@ -430,13 +491,14 @@ class CompilationResultAction(_messages.Message):
 
   assertion = _messages.MessageField('Assertion', 1)
   canonicalTarget = _messages.MessageField('Target', 2)
-  declaration = _messages.MessageField('Declaration', 3)
-  filePath = _messages.StringField(4)
-  internalMetadata = _messages.StringField(5)
-  notebook = _messages.MessageField('Notebook', 6)
-  operations = _messages.MessageField('Operations', 7)
-  relation = _messages.MessageField('Relation', 8)
-  target = _messages.MessageField('Target', 9)
+  dataPreparation = _messages.MessageField('DataPreparation', 3)
+  declaration = _messages.MessageField('Declaration', 4)
+  filePath = _messages.StringField(5)
+  internalMetadata = _messages.StringField(6)
+  notebook = _messages.MessageField('Notebook', 7)
+  operations = _messages.MessageField('Operations', 8)
+  relation = _messages.MessageField('Relation', 9)
+  target = _messages.MessageField('Target', 10)
 
 
 class ComputeRepositoryAccessTokenStatusResponse(_messages.Message):
@@ -493,6 +555,46 @@ class DataEncryptionState(_messages.Message):
   kmsKeyVersionName = _messages.StringField(1)
 
 
+class DataPreparation(_messages.Message):
+  r"""Defines a compiled Data Preparation entity
+
+  Fields:
+    contentsSql: SQL definition for a Data Preparation. Contains a SQL query
+      and additional context information.
+    contentsYaml: The data preparation definition, stored as a YAML string.
+    dependencyTargets: A list of actions that this action depends on.
+    disabled: Whether this action is disabled (i.e. should not be run).
+    tags: Arbitrary, user-defined tags on this action.
+  """
+
+  contentsSql = _messages.MessageField('SqlDefinition', 1)
+  contentsYaml = _messages.StringField(2)
+  dependencyTargets = _messages.MessageField('Target', 3, repeated=True)
+  disabled = _messages.BooleanField(4)
+  tags = _messages.StringField(5, repeated=True)
+
+
+class DataPreparationAction(_messages.Message):
+  r"""Represents a workflow action that will run a Data Preparation.
+
+  Fields:
+    contentsSql: SQL definition for a Data Preparation. Contains a SQL query
+      and additional context information.
+    contentsYaml: Output only. YAML representing the contents of the data
+      preparation. Can be used to show the customer what the input was to
+      their workflow.
+    generatedSql: Output only. The generated BigQuery SQL script that will be
+      executed. For reference only.
+    jobId: Output only. The ID of the BigQuery job that executed the SQL in
+      sql_script. Only set once the job has started to run.
+  """
+
+  contentsSql = _messages.MessageField('ActionSqlDefinition', 1)
+  contentsYaml = _messages.StringField(2)
+  generatedSql = _messages.StringField(3)
+  jobId = _messages.StringField(4)
+
+
 class DataformProjectsLocationsGetConfigRequest(_messages.Message):
   r"""A DataformProjectsLocationsGetConfigRequest object.
 
@@ -517,6 +619,8 @@ class DataformProjectsLocationsListRequest(_messages.Message):
   r"""A DataformProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -527,10 +631,11 @@ class DataformProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DataformProjectsLocationsRepositoriesCommitRequest(_messages.Message):
@@ -1548,6 +1653,19 @@ class Empty(_messages.Message):
 
 
 
+class ErrorTable(_messages.Message):
+  r"""Error table information, used to write error data into a BigQuery table.
+
+  Fields:
+    retentionDays: Error table partition expiration in days. Only positive
+      values are allowed.
+    target: Error Table target.
+  """
+
+  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  target = _messages.MessageField('Target', 2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -1711,6 +1829,16 @@ class GitRemoteSettings(_messages.Message):
   sshAuthenticationConfig = _messages.MessageField('SshAuthenticationConfig', 3)
   tokenStatus = _messages.EnumField('TokenStatusValueValuesEnum', 4)
   url = _messages.StringField(5)
+
+
+class IncrementalLoadMode(_messages.Message):
+  r"""Load definition for incremental load modes
+
+  Fields:
+    column: Column name for incremental load modes
+  """
+
+  column = _messages.StringField(1)
 
 
 class IncrementalTableConfig(_messages.Message):
@@ -1896,6 +2024,24 @@ class ListWorkspacesResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   unreachable = _messages.StringField(2, repeated=True)
   workspaces = _messages.MessageField('Workspace', 3, repeated=True)
+
+
+class LoadConfig(_messages.Message):
+  r"""Simplified load configuration for actions
+
+  Fields:
+    append: Append into destination table
+    maximum: Insert records where the value exceeds the previous maximum value
+      for a column in the destination table
+    replace: Replace destination table
+    unique: Insert records where the value of a column is not already present
+      in the destination table
+  """
+
+  append = _messages.MessageField('SimpleLoadMode', 1)
+  maximum = _messages.MessageField('IncrementalLoadMode', 2)
+  replace = _messages.MessageField('SimpleLoadMode', 3)
+  unique = _messages.MessageField('IncrementalLoadMode', 4)
 
 
 class Location(_messages.Message):
@@ -2692,6 +2838,25 @@ class SetIamPolicyRequest(_messages.Message):
   policy = _messages.MessageField('Policy', 1)
 
 
+class SimpleLoadMode(_messages.Message):
+  r"""Simple load definition"""
+
+
+class SqlDefinition(_messages.Message):
+  r"""Definition of a SQL Data Preparation
+
+  Fields:
+    errorTable: Error table configuration,
+    load: Load configuration.
+    query: The SQL query representing the data preparation steps. Formatted as
+      a Pipe SQL query statement.
+  """
+
+  errorTable = _messages.MessageField('ErrorTable', 1)
+  load = _messages.MessageField('LoadConfig', 2)
+  query = _messages.StringField(3)
+
+
 class SshAuthenticationConfig(_messages.Message):
   r"""Configures fields for performing SSH authentication.
 
@@ -3004,6 +3169,8 @@ class WorkflowInvocationAction(_messages.Message):
     canonicalTarget: Output only. The action's identifier if the project had
       been compiled without any overrides configured. Unique within the
       compilation result.
+    dataPreparationAction: Output only. The workflow action's data preparation
+      action details.
     failureReason: Output only. If and only if action's state is FAILED a
       failure reason is set.
     internalMetadata: Output only. All the metadata information that is used
@@ -3044,12 +3211,13 @@ class WorkflowInvocationAction(_messages.Message):
 
   bigqueryAction = _messages.MessageField('BigQueryAction', 1)
   canonicalTarget = _messages.MessageField('Target', 2)
-  failureReason = _messages.StringField(3)
-  internalMetadata = _messages.StringField(4)
-  invocationTiming = _messages.MessageField('Interval', 5)
-  notebookAction = _messages.MessageField('NotebookAction', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  target = _messages.MessageField('Target', 8)
+  dataPreparationAction = _messages.MessageField('DataPreparationAction', 3)
+  failureReason = _messages.StringField(4)
+  internalMetadata = _messages.StringField(5)
+  invocationTiming = _messages.MessageField('Interval', 6)
+  notebookAction = _messages.MessageField('NotebookAction', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  target = _messages.MessageField('Target', 9)
 
 
 class Workspace(_messages.Message):

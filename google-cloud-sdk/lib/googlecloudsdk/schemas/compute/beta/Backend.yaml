@@ -80,7 +80,8 @@ properties:
       overview](https://cloud.google.com/load-balancing/docs/backend-
       service#backends). You must use the *fully-qualified* URL (starting
       with https://www.googleapis.com/) to specify the instance group or
-      NEG. Partial URLs are not supported.
+      NEG. Partial URLs are not supported. If haPolicy is specified,
+      backends must refer to NEG resources of type GCE_VM_IP.
     type: string
   maxConnections:
     description: |-

@@ -363,6 +363,13 @@ reservation:
 
     projects/<project>/reservations/<reservation-name>
 
+provisioning_model:
+  arg_name: provisioning-model
+  required: false
+  help_text: |
+    The provisioning model of the TPU node. One of [standard, spot, reservation-bound]. Setting
+    `--provisioning-model=spot` is functionally equivalent to setting `--spot`.
+
 worker:
   arg_name: worker
   type: "googlecloudsdk.calliope.arg_parsers:ArgList:"

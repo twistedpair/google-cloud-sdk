@@ -354,7 +354,7 @@ def _get_s3_compatible_metadata(args, messages):
 
 def _add_additional_s3_source_options(transfer_spec, args):
   """Adds additional options for S3 source."""
-  if getattr(args, 's3_cloudfront_domain', None):
+  if args.s3_cloudfront_domain:
     transfer_spec.awsS3DataSource.cloudfrontDomain = args.s3_cloudfront_domain
 
 

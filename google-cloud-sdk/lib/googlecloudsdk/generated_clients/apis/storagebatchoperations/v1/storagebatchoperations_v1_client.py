@@ -163,7 +163,7 @@ class StoragebatchoperationsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Jobs in a given project and location.
+      r"""Lists Jobs in a given project.
 
       Args:
         request: (StoragebatchoperationsProjectsLocationsJobsListRequest) input message
@@ -363,7 +363,7 @@ class StoragebatchoperationsV1(base_api.BaseApiClient):
         method_id='storagebatchoperations.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='StoragebatchoperationsProjectsLocationsListRequest',

@@ -280,14 +280,16 @@ class DenyMaintenancePeriod(_messages.Message):
 
 
 class DirectoryServicesConfig(_messages.Message):
-  r"""Directory Services configuration for Kerberos-based authentication.
+  r"""Directory Services configuration.
 
   Fields:
+    ldap: Configuration for LDAP servers.
     managedActiveDirectory: Configuration for Managed Service for Microsoft
       Active Directory.
   """
 
-  managedActiveDirectory = _messages.MessageField('ManagedActiveDirectoryConfig', 1)
+  ldap = _messages.MessageField('LdapConfig', 1)
+  managedActiveDirectory = _messages.MessageField('ManagedActiveDirectoryConfig', 2)
 
 
 class Empty(_messages.Message):
@@ -691,6 +693,8 @@ class FileProjectsLocationsListRequest(_messages.Message):
   r"""A FileProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -703,11 +707,12 @@ class FileProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class FileProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1403,9 +1408,8 @@ class Instance(_messages.Message):
     deletionProtectionReason: Optional. The reason for enabling deletion
       protection.
     description: The description of the instance (2048 characters or less).
-    directoryServices: Optional. Directory Services configuration for
-      Kerberos-based authentication. Should only be set if protocol is
-      "NFS_V4_1".
+    directoryServices: Optional. Directory Services configuration. Should only
+      be set if protocol is "NFS_V4_1".
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -1622,6 +1626,33 @@ class Instance(_messages.Message):
   suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 26, repeated=True)
   tags = _messages.MessageField('TagsValue', 27)
   tier = _messages.EnumField('TierValueValuesEnum', 28)
+
+
+class LdapConfig(_messages.Message):
+  r"""LdapConfig contains all the parameters for connecting to LDAP servers.
+
+  Fields:
+    domain: Required. The LDAP domain name in the format of `my-domain.com`.
+    groupsOu: Optional. The groups Organizational Unit (OU) is optional. This
+      parameter is a hint to allow faster lookup in the LDAP namespace. In
+      case that this parameter is not provided, Filestore instance will query
+      the whole LDAP namespace.
+    servers: Required. The servers names are used for specifying the LDAP
+      servers names. The LDAP servers names can come with two formats: 1. DNS
+      name, for example: `ldap.example1.com`, `ldap.example2.com`. 2. IP
+      address, for example: `10.0.0.1`, `10.0.0.2`, `10.0.0.3`. All servers
+      names must be in the same format: either all DNS names or all IP
+      addresses.
+    usersOu: Optional. The users Organizational Unit (OU) is optional. This
+      parameter is a hint to allow faster lookup in the LDAP namespace. In
+      case that this parameter is not provided, Filestore instance will query
+      the whole LDAP namespace.
+  """
+
+  domain = _messages.StringField(1)
+  groupsOu = _messages.StringField(2)
+  servers = _messages.StringField(3, repeated=True)
+  usersOu = _messages.StringField(4)
 
 
 class ListBackupsResponse(_messages.Message):

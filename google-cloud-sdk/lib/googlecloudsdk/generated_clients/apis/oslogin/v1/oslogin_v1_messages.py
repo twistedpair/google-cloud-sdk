@@ -230,7 +230,8 @@ class SshPublicKey(_messages.Message):
   Fields:
     expirationTimeUsec: An expiration time in microseconds since epoch.
     fingerprint: Output only. The SHA-256 fingerprint of the SSH public key.
-    key: Public key text in SSH format, defined by RFC4253 section 6.6.
+    key: Required. Public key text in SSH format, defined by
+      [RFC4253](https://www.ietf.org/rfc/rfc4253.txt) section 6.6.
     name: Output only. The canonical resource name.
   """
 

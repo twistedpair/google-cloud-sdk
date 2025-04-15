@@ -418,6 +418,8 @@ class AppengineAppsLocationsListRequest(_messages.Message):
   r"""A AppengineAppsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -428,10 +430,11 @@ class AppengineAppsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class AppengineAppsOperationsGetRequest(_messages.Message):
@@ -912,6 +915,22 @@ class AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest(_messa
   name = _messages.StringField(1, required=True)
 
 
+class AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest
+  object.
+
+  Fields:
+    name: Name of the resource to update. Example:
+      apps/myapp/services/default/versions/1.
+    updateMask: Standard field mask for the set of fields to be updated.
+    version: A Version resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  version = _messages.MessageField('Version', 3)
+
+
 class AppengineProjectsLocationsGetRequest(_messages.Message):
   r"""A AppengineProjectsLocationsGetRequest object.
 
@@ -926,6 +945,8 @@ class AppengineProjectsLocationsListRequest(_messages.Message):
   r"""A AppengineProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -936,10 +957,11 @@ class AppengineProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class AppengineProjectsLocationsOperationsGetRequest(_messages.Message):

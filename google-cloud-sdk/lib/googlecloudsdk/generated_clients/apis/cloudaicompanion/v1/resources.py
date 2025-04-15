@@ -64,6 +64,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CODETOOLSSETTINGS = (
+      'projects.locations.codeToolsSettings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'codeToolsSettings/{codeToolsSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CODETOOLSSETTINGS_SETTINGBINDINGS = (
+      'projects.locations.codeToolsSettings.settingBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'codeToolsSettings/{codeToolsSettingsId}/settingBindings/'
+              '{settingBindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATASHARINGWITHGOOGLESETTINGS = (
       'projects.locations.dataSharingWithGoogleSettings',
       '{+name}',

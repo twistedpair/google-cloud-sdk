@@ -61,18 +61,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  ORGANIZATIONS_LOCATIONS_GLOBAL_PARTNERTENANTS_PROXYCONFIGS = (
-      'organizations.locations.global.partnerTenants.proxyConfigs',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/locations/global/'
-              'partnerTenants/{partnerTenantsId}/proxyConfigs/'
-              '{proxyConfigsId}',
-      },
-      ['name'],
-      True
-  )
   ORGANIZATIONS_LOCATIONS_INSIGHTS = (
       'organizations.locations.insights',
       '{+name}',

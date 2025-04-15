@@ -203,8 +203,10 @@ PUBLIC_IMAGE_PROJECTS = BASE_PUBLIC_IMAGE_PROJECTS + [
     'oracle-linux-cloud',
     'rhel-cloud',
     'rhel-sap-cloud',
+    'rocky-linux-accelerator-cloud',
     'suse-cloud',
     'suse-sap-cloud',
+    'ubuntu-os-accelerator-images',
     'ubuntu-os-pro-cloud',
 ] + WINDOWS_IMAGE_PROJECTS
 PREVIEW_IMAGE_PROJECTS = []

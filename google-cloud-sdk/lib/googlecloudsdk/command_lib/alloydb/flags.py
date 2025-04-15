@@ -1947,7 +1947,7 @@ def AddDatabase(parser, required=True):
       '--database',
       required=required,
       type=str,
-      help='Database name from which export has to be done.',
+      help='Database name.',
   )
 
 

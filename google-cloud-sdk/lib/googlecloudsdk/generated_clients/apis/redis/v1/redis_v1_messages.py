@@ -3775,7 +3775,7 @@ class RedisProjectsLocationsBackupCollectionsGetRequest(_messages.Message):
   Fields:
     name: Required. Redis backupCollection resource name using the form: `proj
       ects/{project_id}/locations/{location_id}/backupCollections/{backup_coll
-      ection_id}` where `location_id` refers to a GCP region.
+      ection_id}` where `location_id` refers to a Google Cloud region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3794,7 +3794,7 @@ class RedisProjectsLocationsBackupCollectionsListRequest(_messages.Message):
       [ListBackupCollections] request, if any.
     parent: Required. The resource name of the backupCollection location using
       the form: `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region.
+      `location_id` refers to a Google Cloud region.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3810,7 +3810,7 @@ class RedisProjectsLocationsClustersBackupRequest(_messages.Message):
       request body.
     name: Required. Redis cluster resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-      where `location_id` refers to a GCP region.
+      where `location_id` refers to a Google Cloud region.
   """
 
   backupClusterRequest = _messages.MessageField('BackupClusterRequest', 1)
@@ -3829,7 +3829,7 @@ class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
       unique within the customer project / location
     parent: Required. The resource name of the cluster location using the
       form: `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region.
+      `location_id` refers to a Google Cloud region.
     requestId: Optional. Idempotent request UUID.
   """
 
@@ -3845,7 +3845,7 @@ class RedisProjectsLocationsClustersDeleteRequest(_messages.Message):
   Fields:
     name: Required. Redis cluster resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-      where `location_id` refers to a GCP region.
+      where `location_id` refers to a Google Cloud region.
     requestId: Optional. Idempotent request UUID.
   """
 
@@ -3859,7 +3859,8 @@ class RedisProjectsLocationsClustersGetCertificateAuthorityRequest(_messages.Mes
   Fields:
     name: Required. Redis cluster certificate authority resource name using
       the form: `projects/{project_id}/locations/{location_id}/clusters/{clust
-      er_id}/certificateAuthority` where `location_id` refers to a GCP region.
+      er_id}/certificateAuthority` where `location_id` refers to a Google
+      Cloud region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3871,7 +3872,7 @@ class RedisProjectsLocationsClustersGetRequest(_messages.Message):
   Fields:
     name: Required. Redis cluster resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-      where `location_id` refers to a GCP region.
+      where `location_id` refers to a Google Cloud region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3890,7 +3891,7 @@ class RedisProjectsLocationsClustersListRequest(_messages.Message):
       ListClusters request, if any.
     parent: Required. The resource name of the cluster location using the
       form: `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region.
+      `location_id` refers to a Google Cloud region.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3926,7 +3927,7 @@ class RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest(_message
   Fields:
     name: Required. Redis Cluster instance resource name using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-      where `location_id` refers to a GCP region.
+      where `location_id` refers to a Google Cloud region.
     rescheduleClusterMaintenanceRequest: A RescheduleClusterMaintenanceRequest
       resource to be passed as the request body.
   """
@@ -4125,6 +4126,8 @@ class RedisProjectsLocationsListRequest(_messages.Message):
   r"""A RedisProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -4135,10 +4138,11 @@ class RedisProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class RedisProjectsLocationsOperationsCancelRequest(_messages.Message):

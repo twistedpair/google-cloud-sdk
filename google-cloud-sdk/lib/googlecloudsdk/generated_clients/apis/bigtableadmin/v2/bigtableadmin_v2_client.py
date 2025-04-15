@@ -49,7 +49,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.projects_instances_logicalViews = self.ProjectsInstancesLogicalViewsService(self)
     self.projects_instances_materializedViews = self.ProjectsInstancesMaterializedViewsService(self)
     self.projects_instances_tables_authorizedViews = self.ProjectsInstancesTablesAuthorizedViewsService(self)
-    self.projects_instances_tables_protoBundles = self.ProjectsInstancesTablesProtoBundlesService(self)
+    self.projects_instances_tables_schemaBundles = self.ProjectsInstancesTablesSchemaBundlesService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1424,21 +1424,21 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsInstancesTablesProtoBundlesService(base_api.BaseApiService):
-    """Service class for the projects_instances_tables_protoBundles resource."""
+  class ProjectsInstancesTablesSchemaBundlesService(base_api.BaseApiService):
+    """Service class for the projects_instances_tables_schemaBundles resource."""
 
-    _NAME = 'projects_instances_tables_protoBundles'
+    _NAME = 'projects_instances_tables_schemaBundles'
 
     def __init__(self, client):
-      super(BigtableadminV2.ProjectsInstancesTablesProtoBundlesService, self).__init__(client)
+      super(BigtableadminV2.ProjectsInstancesTablesSchemaBundlesService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new proto bundle in the specified table.
+      r"""Creates a new schema bundle in the specified table.
 
       Args:
-        request: (BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest) input message
+        request: (BigtableadminProjectsInstancesTablesSchemaBundlesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1448,24 +1448,24 @@ class BigtableadminV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/schemaBundles',
         http_method='POST',
-        method_id='bigtableadmin.projects.instances.tables.protoBundles.create',
+        method_id='bigtableadmin.projects.instances.tables.schemaBundles.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['protoBundleId'],
-        relative_path='v2/{+parent}/protoBundles',
-        request_field='protoBundle',
-        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest',
+        query_params=['schemaBundleId'],
+        relative_path='v2/{+parent}/schemaBundles',
+        request_field='schemaBundle',
+        request_type_name='BigtableadminProjectsInstancesTablesSchemaBundlesCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a proto bundle in the specified table.
+      r"""Deletes a schema bundle in the specified table.
 
       Args:
-        request: (BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest) input message
+        request: (BigtableadminProjectsInstancesTablesSchemaBundlesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -1475,78 +1475,78 @@ class BigtableadminV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles/{protoBundlesId}',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/schemaBundles/{schemaBundlesId}',
         http_method='DELETE',
-        method_id='bigtableadmin.projects.instances.tables.protoBundles.delete',
+        method_id='bigtableadmin.projects.instances.tables.schemaBundles.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['etag'],
         relative_path='v2/{+name}',
         request_field='',
-        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesSchemaBundlesDeleteRequest',
         response_type_name='Empty',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets metadata information about the specified proto bundle.
+      r"""Gets metadata information about the specified schema bundle.
 
       Args:
-        request: (BigtableadminProjectsInstancesTablesProtoBundlesGetRequest) input message
+        request: (BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ProtoBundle) The response message.
+        (SchemaBundle) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles/{protoBundlesId}',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/schemaBundles/{schemaBundlesId}',
         http_method='GET',
-        method_id='bigtableadmin.projects.instances.tables.protoBundles.get',
+        method_id='bigtableadmin.projects.instances.tables.schemaBundles.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}',
         request_field='',
-        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesGetRequest',
-        response_type_name='ProtoBundle',
+        request_type_name='BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest',
+        response_type_name='SchemaBundle',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all proto bundles associated with the specified table.
+      r"""Lists all schema bundles associated with the specified table.
 
       Args:
-        request: (BigtableadminProjectsInstancesTablesProtoBundlesListRequest) input message
+        request: (BigtableadminProjectsInstancesTablesSchemaBundlesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListProtoBundlesResponse) The response message.
+        (ListSchemaBundlesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/schemaBundles',
         http_method='GET',
-        method_id='bigtableadmin.projects.instances.tables.protoBundles.list',
+        method_id='bigtableadmin.projects.instances.tables.schemaBundles.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/protoBundles',
+        relative_path='v2/{+parent}/schemaBundles',
         request_field='',
-        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesListRequest',
-        response_type_name='ListProtoBundlesResponse',
+        request_type_name='BigtableadminProjectsInstancesTablesSchemaBundlesListRequest',
+        response_type_name='ListSchemaBundlesResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a proto bundle in the specified table.
+      r"""Updates a schema bundle in the specified table.
 
       Args:
-        request: (BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest) input message
+        request: (BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1556,15 +1556,15 @@ class BigtableadminV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/protoBundles/{protoBundlesId}',
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/schemaBundles/{schemaBundlesId}',
         http_method='PATCH',
-        method_id='bigtableadmin.projects.instances.tables.protoBundles.patch',
+        method_id='bigtableadmin.projects.instances.tables.schemaBundles.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['updateMask'],
         relative_path='v2/{+name}',
-        request_field='protoBundle',
-        request_type_name='BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest',
+        request_field='schemaBundle',
+        request_type_name='BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -2239,7 +2239,7 @@ class BigtableadminV2(base_api.BaseApiClient):
         method_id='bigtableadmin.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+name}/locations',
         request_field='',
         request_type_name='BigtableadminProjectsLocationsListRequest',

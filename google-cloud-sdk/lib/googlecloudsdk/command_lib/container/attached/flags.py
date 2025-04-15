@@ -235,3 +235,24 @@ def AddProxyConfig(parser):
   group = parser.add_group('Proxy config', required=False)
   AddProxySecretName(group, required=True)
   AddProxySecretNamespace(group, required=True)
+
+
+def AddSkipClusterAdminCheck(parser):
+  """Adds --skip-cluster-admin-check flag to parser.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  help_text = """\
+When this hidden flag is set, the cluster admin check will be skipped.
+"""
+  parser.add_argument(
+      '--skip-cluster-admin-check',
+      hidden=True,
+      help=help_text,
+      action='store_true',
+  )
+
+
+def GetSkipClusterAdminCheck(args):
+  return getattr(args, 'skip_cluster_admin_check', None)

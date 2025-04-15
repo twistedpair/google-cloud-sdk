@@ -121,8 +121,8 @@ class FetchPublicValueInfoPermissionDeniedException(Error):
   """Permission denied exception for fetch public value info group members."""
 
 
-class TestEnabledPermissionDeniedException(Error):
-  """Permission denied exception for test enabled."""
+class TestEnabledException(Error):
+  """Exception for test enabled."""
 
 
 class ListDescendantServicesPermissionDeniedException(Error):

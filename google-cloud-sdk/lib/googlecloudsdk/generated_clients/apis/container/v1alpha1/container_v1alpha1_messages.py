@@ -572,7 +572,6 @@ class AutoscaledRolloutPolicy(_messages.Message):
   """
 
 
-
 class AvailableVersion(_messages.Message):
   r"""Deprecated.
 
@@ -1458,15 +1457,18 @@ class ClusterTelemetry(_messages.Message):
 
 
 class ClusterUpdate(_messages.Message):
-  r"""ClusterUpdate describes an update to the cluster. Exactly one update can
-  be applied to a cluster with each request, so at most one field can be
-  provided.
+  r"""ClusterUpdate describes an update to the cluster.
+
+  Exactly one update can be applied to a cluster with each request, so at most
+  one field can be provided.
 
   Enums:
     DesiredDatapathProviderValueValuesEnum: The desired datapath provider for
       the cluster.
     DesiredInTransitEncryptionConfigValueValuesEnum: Specify the details of
       in-transit encryption.
+    DesiredNetworkTierValueValuesEnum: The desired network tier configuration
+      for the cluster.
     DesiredPrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
       connectivity to Google Services.
     DesiredStackTypeValueValuesEnum: The desired stack type of the cluster. If
@@ -1477,8 +1479,6 @@ class ClusterUpdate(_messages.Message):
   Fields:
     additionalPodRangesConfig: The additional pod ranges to be added to the
       cluster. These pod ranges can be used by node pools to allocate pod IPs.
-    anonymousAuthenticationConfig: Configuration for limiting anonymous access
-      to all endpoints except the health checks.
     concurrentNodeCount: Controls how many nodes to upgrade in parallel. A
       maximum of 20 concurrent nodes is allowed. Deprecated. This feature will
       be replaced by an equivalent new feature that gives better control over
@@ -1488,6 +1488,8 @@ class ClusterUpdate(_messages.Message):
       subnetworks attached to the cluster.
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredAnonymousAuthenticationConfig: Configuration for limiting anonymous
+      access to all endpoints except the health checks.
     desiredAuthenticatorGroupsConfig: AuthenticatorGroupsConfig specifies the
       config for the cluster security groups settings.
     desiredAutoGke: AutoGKE is the configuration for AutoGKE settings on the
@@ -1604,6 +1606,8 @@ class ClusterUpdate(_messages.Message):
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     desiredNetworkPerformanceConfig: The desired network performance config.
+    desiredNetworkTier: The desired network tier configuration for the
+      cluster.
     desiredNodeKubeletConfig: The desired node kubelet config for the cluster.
     desiredNodeNetworkPolicy: NodeNetworkPolicy specifies the config for the
       node firewall feature. This feature is only supported with
@@ -1741,6 +1745,21 @@ class ClusterUpdate(_messages.Message):
     IN_TRANSIT_ENCRYPTION_DISABLED = 1
     IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT = 2
 
+  class DesiredNetworkTierValueValuesEnum(_messages.Enum):
+    r"""The desired network tier configuration for the cluster.
+
+    Values:
+      NETWORK_TIER_DEFAULT: By default, use project-level configuration. This
+        field ensures backward compatibility for the network tier of cluster
+        resources, such as node pools and load balancers, for their external
+        IP addresses.
+      NETWORK_TIER_PREMIUM: Premium network tier.
+      NETWORK_TIER_STANDARD: Standard network tier.
+    """
+    NETWORK_TIER_DEFAULT = 0
+    NETWORK_TIER_PREMIUM = 1
+    NETWORK_TIER_STANDARD = 2
+
   class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services.
 
@@ -1773,10 +1792,16 @@ class ClusterUpdate(_messages.Message):
     IPV4_IPV6 = 2
 
   additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 1)
-  anonymousAuthenticationConfig = _messages.MessageField('AnonymousAuthenticationConfig', 2)
-  concurrentNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  desiredAdditionalIpRangesConfig = _messages.MessageField('DesiredAdditionalIPRangesConfig', 4)
-  desiredAddonsConfig = _messages.MessageField('AddonsConfig', 5)
+  concurrentNodeCount = _messages.IntegerField(
+      2, variant=_messages.Variant.INT32
+  )
+  desiredAdditionalIpRangesConfig = _messages.MessageField(
+      'DesiredAdditionalIPRangesConfig', 3
+  )
+  desiredAddonsConfig = _messages.MessageField('AddonsConfig', 4)
+  desiredAnonymousAuthenticationConfig = _messages.MessageField(
+      'AnonymousAuthenticationConfig', 5
+  )
   desiredAuthenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 6)
   desiredAutoGke = _messages.MessageField('AutoGKE', 7)
   desiredAutoIpamConfig = _messages.MessageField('AutoIpamConfig', 8)
@@ -1829,49 +1854,50 @@ class ClusterUpdate(_messages.Message):
   desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 55)
   desiredMonitoringService = _messages.StringField(56)
   desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 57)
-  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 58)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 59)
-  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 60)
-  desiredNodePoolAutoConfigLinuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 61)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 62)
-  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 63)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 64)
-  desiredNodePoolId = _messages.StringField(65)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 66)
-  desiredNodeVersion = _messages.StringField(67)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 68)
-  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 69)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 70)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 71)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 72)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 73)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 74)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 75)
-  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 76)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 77)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 78)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 79)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 80)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 81)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 82)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 83)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 84)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 85)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 86)
-  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 87)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 88)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 89)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 90)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 91)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 92)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 93)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 94)
-  etag = _messages.StringField(95)
-  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 96)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 97)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 98)
-  securityProfile = _messages.MessageField('SecurityProfile', 99)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 100)
+  desiredNetworkTier = _messages.EnumField('DesiredNetworkTierValueValuesEnum', 58)
+  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 59)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 60)
+  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 61)
+  desiredNodePoolAutoConfigLinuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 62)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 63)
+  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 64)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 65)
+  desiredNodePoolId = _messages.StringField(66)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 67)
+  desiredNodeVersion = _messages.StringField(68)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 69)
+  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 70)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 71)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 72)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 73)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 74)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 75)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 76)
+  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 77)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 78)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 79)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 80)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 81)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 82)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 83)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 84)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 85)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 86)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 87)
+  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 88)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 89)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 90)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 91)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 92)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 93)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 94)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 95)
+  etag = _messages.StringField(96)
+  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 97)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 98)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 99)
+  securityProfile = _messages.MessageField('SecurityProfile', 100)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 101)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -1956,7 +1982,6 @@ class CompleteConvertToAutopilotRequest(_messages.Message):
   """
 
 
-
 class CompleteIPRotationRequest(_messages.Message):
   r"""CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
@@ -1987,7 +2012,6 @@ class CompleteNodePoolUpgradeRequest(_messages.Message):
   r"""CompleteNodePoolUpgradeRequest sets the name of target node pool to
   complete upgrade.
   """
-
 
 
 class CompliancePostureConfig(_messages.Message):
@@ -3133,7 +3157,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EnterpriseConfig(_messages.Message):
   r"""EnterpriseConfig is the cluster enterprise configuration.
 
@@ -3227,6 +3250,144 @@ class EphemeralStorageLocalSsdConfig(_messages.Message):
 
   dataCacheCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   localSsdCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class EvictionGracePeriod(_messages.Message):
+  r"""Eviction grace periods are grace periods for each eviction signal.
+
+  Fields:
+    imagefsAvailable: Optional. Grace period for eviction due to imagefs
+      available signal. Sample format: "10s". Must be >= 0. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    imagefsInodesFree: Optional. Grace period for eviction due to imagefs
+      inodes free signal. Sample format: "10s". Must be >= 0. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    memoryAvailable: Optional. Grace period for eviction due to memory
+      available signal. Sample format: "10s". Must be >= 0. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    nodefsAvailable: Optional. Grace period for eviction due to nodefs
+      available signal. Sample format: "10s". Must be >= 0. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    nodefsInodesFree: Optional. Grace period for eviction due to nodefs inodes
+      free signal. Sample format: "10s". Must be >= 0. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    pidAvailable: Optional. Grace period for eviction due to pid available
+      signal. Sample format: "10s". Must be >= 0. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+  """
+
+  imagefsAvailable = _messages.StringField(1)
+  imagefsInodesFree = _messages.StringField(2)
+  memoryAvailable = _messages.StringField(3)
+  nodefsAvailable = _messages.StringField(4)
+  nodefsInodesFree = _messages.StringField(5)
+  pidAvailable = _messages.StringField(6)
+
+
+class EvictionMinimumReclaim(_messages.Message):
+  r"""Eviction minimum reclaims are the resource amounts of minimum reclaims
+  for each eviction signal.
+
+  Fields:
+    imagefsAvailable: Optional. Minimum reclaim for eviction due to imagefs
+      available signal. Only take percentage value for now. Sample format:
+      "10%". Must be <=10%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    imagefsInodesFree: Optional. Minimum reclaim for eviction due to imagefs
+      inodes free signal. Only take percentage value for now. Sample format:
+      "10%". Must be <=10%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    memoryAvailable: Optional. Minimum reclaim for eviction due to memory
+      available signal. Only take percentage value for now. Sample format:
+      "10%". Must be <=10%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    nodefsAvailable: Optional. Minimum reclaim for eviction due to nodefs
+      available signal. Only take percentage value for now. Sample format:
+      "10%". Must be <=10%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    nodefsInodesFree: Optional. Minimum reclaim for eviction due to nodefs
+      inodes free signal. Only take percentage value for now. Sample format:
+      "10%". Must be <=10%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    pidAvailable: Optional. Minimum reclaim for eviction due to pid available
+      signal. Only take percentage value for now. Sample format: "10%". Must
+      be <=10%. See https://kubernetes.io/docs/concepts/scheduling-
+      eviction/node-pressure-eviction/#eviction-signals
+  """
+
+  imagefsAvailable = _messages.StringField(1)
+  imagefsInodesFree = _messages.StringField(2)
+  memoryAvailable = _messages.StringField(3)
+  nodefsAvailable = _messages.StringField(4)
+  nodefsInodesFree = _messages.StringField(5)
+  pidAvailable = _messages.StringField(6)
+
+
+class EvictionSignals(_messages.Message):
+  r"""Eviction signals are the current state of a particular resource at a
+  specific point in time. The kubelet uses eviction signals to make eviction
+  decisions by comparing the signals to eviction thresholds, which are the
+  minimum amount of the resource that should be available on the node.
+
+  Fields:
+    imagefsAvailable: Optional. Amount of storage available on filesystem that
+      container runtime uses for storing images layers. If the container
+      filesystem and image filesystem are not separate, then imagefs can store
+      both image layers and writeable layers. Defines the amount of
+      "imagefs.available" signal in kubelet. Default is unset, if not
+      specified in the kubelet config. Sample format: "30%". Must be >= 15%.
+      See https://kubernetes.io/docs/concepts/scheduling-eviction/node-
+      pressure-eviction/#eviction-signals
+    imagefsInodesFree: Optional. Amount of inodes available on filesystem that
+      container runtime uses for storing images layers. Defines the amount of
+      "imagefs.inodesFree" signal in kubelet. Default is unset, if not
+      specified in the kubelet config. Linux only. Sample format: "30%". Must
+      be >= 5%. See https://kubernetes.io/docs/concepts/scheduling-
+      eviction/node-pressure-eviction/#eviction-signals
+    memoryAvailable: Optional. Memory available (i.e. capacity - workingSet),
+      in bytes. Defines the amount of "memory.available" signal in kubelet.
+      Default is unset, if not specified in the kubelet config. Format:
+      positive number + unit, e.g. 100Ki, 10Mi, 5Gi. Valid units are Ki, Mi,
+      Gi. Must be >= 100Mi and <= 50% of the node's memory. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    nodefsAvailable: Optional. Amount of storage available on filesystem that
+      kubelet uses for volumes, daemon logs, etc. Defines the amount of
+      "nodefs.available" signal in kubelet. Default is unset, if not specified
+      in the kubelet config. Sample format: "30%". Must be >= 10%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    nodefsInodesFree: Optional. Amount of inodes available on filesystem that
+      kubelet uses for volumes, daemon logs, etc. Defines the amount of
+      "nodefs.inodesFree" signal in kubelet. Default is unset, if not
+      specified in the kubelet config. Linux only. It takses percentage value
+      for now. Sample format: "30%". Must be >= 5% and <= 50%. See
+      https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-
+      eviction/#eviction-signals
+    pidAvailable: Optional. Amount of PID available for pod allocation.
+      Defines the amount of "pid.available" signal in kubelet. Default is
+      unset, if not specified in the kubelet config. Sample format: "30%".
+      Must be >= 10%. See https://kubernetes.io/docs/concepts/scheduling-
+      eviction/node-pressure-eviction/#eviction-signals
+  """
+
+  imagefsAvailable = _messages.StringField(1)
+  imagefsInodesFree = _messages.StringField(2)
+  memoryAvailable = _messages.StringField(3)
+  nodefsAvailable = _messages.StringField(4)
+  nodefsInodesFree = _messages.StringField(5)
+  pidAvailable = _messages.StringField(6)
 
 
 class FastSocket(_messages.Message):
@@ -3676,6 +3837,9 @@ class IPAllocationPolicy(_messages.Message):
   Enums:
     Ipv6AccessTypeValueValuesEnum: The ipv6 access type (internal or external)
       when create_subnetwork is true
+    NetworkTierValueValuesEnum: Cluster-level network tier configuration is
+      used to determine the default network tier for external IP addresses on
+      cluster resources, such as node pools and load balancers.
     StackTypeValueValuesEnum: IP stack type
 
   Fields:
@@ -3723,6 +3887,9 @@ class IPAllocationPolicy(_messages.Message):
       of IPs in the secondary range], Usage=numNodes*numZones*podIPsPerNode.
     ipv6AccessType: The ipv6 access type (internal or external) when
       create_subnetwork is true
+    networkTier: Cluster-level network tier configuration is used to determine
+      the default network tier for external IP addresses on cluster resources,
+      such as node pools and load balancers.
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
     nodeIpv4CidrBlock: The IP address range of the instance IPs in this
       cluster. This is applicable only if `create_subnetwork` is true. Set to
@@ -3831,6 +3998,23 @@ class IPAllocationPolicy(_messages.Message):
     INTERNAL = 1
     EXTERNAL = 2
 
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""Cluster-level network tier configuration is used to determine the
+    default network tier for external IP addresses on cluster resources, such
+    as node pools and load balancers.
+
+    Values:
+      NETWORK_TIER_DEFAULT: By default, use project-level configuration. This
+        field ensures backward compatibility for the network tier of cluster
+        resources, such as node pools and load balancers, for their external
+        IP addresses.
+      NETWORK_TIER_PREMIUM: Premium network tier.
+      NETWORK_TIER_STANDARD: Standard network tier.
+    """
+    NETWORK_TIER_DEFAULT = 0
+    NETWORK_TIER_PREMIUM = 1
+    NETWORK_TIER_STANDARD = 2
+
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""IP stack type
 
@@ -3853,23 +4037,24 @@ class IPAllocationPolicy(_messages.Message):
   createSubnetwork = _messages.BooleanField(8)
   defaultPodIpv4RangeUtilization = _messages.FloatField(9)
   ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 10)
-  nodeIpv4Cidr = _messages.StringField(11)
-  nodeIpv4CidrBlock = _messages.StringField(12)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 13)
-  servicesIpv4Cidr = _messages.StringField(14)
-  servicesIpv4CidrBlock = _messages.StringField(15)
-  servicesIpv6CidrBlock = _messages.StringField(16)
-  servicesSecondaryRangeName = _messages.StringField(17)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 18)
-  subnetIpv6CidrBlock = _messages.StringField(19)
-  subnetworkName = _messages.StringField(20)
-  targetNodeIpv4Range = _messages.StringField(21)
-  targetPodIpv4Range = _messages.StringField(22)
-  targetServiceIpv4Range = _messages.StringField(23)
-  tpuIpv4CidrBlock = _messages.StringField(24)
-  tpuUseServiceNetworking = _messages.BooleanField(25)
-  useIpAliases = _messages.BooleanField(26)
-  useRoutes = _messages.BooleanField(27)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 11)
+  nodeIpv4Cidr = _messages.StringField(12)
+  nodeIpv4CidrBlock = _messages.StringField(13)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 14)
+  servicesIpv4Cidr = _messages.StringField(15)
+  servicesIpv4CidrBlock = _messages.StringField(16)
+  servicesIpv6CidrBlock = _messages.StringField(17)
+  servicesSecondaryRangeName = _messages.StringField(18)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 19)
+  subnetIpv6CidrBlock = _messages.StringField(20)
+  subnetworkName = _messages.StringField(21)
+  targetNodeIpv4Range = _messages.StringField(22)
+  targetPodIpv4Range = _messages.StringField(23)
+  targetServiceIpv4Range = _messages.StringField(24)
+  tpuIpv4CidrBlock = _messages.StringField(25)
+  tpuUseServiceNetworking = _messages.BooleanField(26)
+  useIpAliases = _messages.BooleanField(27)
+  useRoutes = _messages.BooleanField(28)
 
 
 class IPEndpointsConfig(_messages.Message):
@@ -5493,6 +5678,24 @@ class NodeKubeletConfig(_messages.Message):
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
+    evictionMaxPodGracePeriodSeconds: Optional.
+      eviction_max_pod_grace_period_seconds is the maximum allowed grace
+      period (in seconds) to use when terminating pods in response to a soft
+      eviction threshold being met. This value effectively caps the Pod's
+      terminationGracePeriodSeconds value during soft evictions. Default: 0.
+      Range: [0, 300].
+    evictionMinimumReclaim: Optional. eviction_minimum_reclaim is a map of
+      signal names to quantities that defines minimum reclaims, which describe
+      the minimum amount of a given resource the kubelet will reclaim when
+      performing a pod eviction while that resource is under pressure.
+    evictionSoft: Optional. eviction_soft is a map of signal names to
+      quantities that defines soft eviction thresholds. Each signal is
+      compared to its corresponding threshold to determine if a pod eviction
+      should occur.
+    evictionSoftGracePeriod: Optional. eviction_soft_grace_period is a map of
+      signal names to quantities that defines grace periods for each soft
+      eviction signal. The grace period is the amount of time that a pod must
+      be under pressure before an eviction occurs.
     imageGcHighThresholdPercent: Optional. Defines the percent of disk usage
       after which image garbage collection is always run. The percent is
       calculated as this field value out of 100. The value must be between 10
@@ -5519,6 +5722,11 @@ class NodeKubeletConfig(_messages.Message):
       to 2 minutes. The default value is "2m0s" if unspecified.
     insecureKubeletReadonlyPortEnabled: Enable or disable Kubelet read only
       port.
+    maxParallelImagePulls: Optional. Defines the maximum number of image pulls
+      in parallel. The range is 2 to 5, inclusive. The default value is 2 or 3
+      depending on the disk type. See
+      https://kubernetes.io/docs/concepts/containers/images/#maximum-parallel-
+      image-pulls for more details.
     memoryManager: Optional. Controls NUMA-aware Memory Manager configuration
       on the node. For more information, see:
       https://kubernetes.io/docs/tasks/administer-cluster/memory-manager/
@@ -5537,14 +5745,19 @@ class NodeKubeletConfig(_messages.Message):
   cpuCfsQuota = _messages.BooleanField(4)
   cpuCfsQuotaPeriod = _messages.StringField(5)
   cpuManagerPolicy = _messages.StringField(6)
-  imageGcHighThresholdPercent = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  imageGcLowThresholdPercent = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  imageMaximumGcAge = _messages.StringField(9)
-  imageMinimumGcAge = _messages.StringField(10)
-  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(11)
-  memoryManager = _messages.MessageField('MemoryManager', 12)
-  podPidsLimit = _messages.IntegerField(13)
-  topologyManager = _messages.MessageField('TopologyManager', 14)
+  evictionMaxPodGracePeriodSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  evictionMinimumReclaim = _messages.MessageField('EvictionMinimumReclaim', 8)
+  evictionSoft = _messages.MessageField('EvictionSignals', 9)
+  evictionSoftGracePeriod = _messages.MessageField('EvictionGracePeriod', 10)
+  imageGcHighThresholdPercent = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  imageGcLowThresholdPercent = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  imageMaximumGcAge = _messages.StringField(13)
+  imageMinimumGcAge = _messages.StringField(14)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(15)
+  maxParallelImagePulls = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  memoryManager = _messages.MessageField('MemoryManager', 17)
+  podPidsLimit = _messages.IntegerField(18)
+  topologyManager = _messages.MessageField('TopologyManager', 19)
 
 
 class NodeLabels(_messages.Message):
@@ -5605,6 +5818,12 @@ class NodeNetworkConfig(_messages.Message):
   r"""Parameters for node pool-level network config. Only applicable if
   `ip_allocation_policy.use_ip_aliases` is true.
 
+  Enums:
+    NetworkTierValueValuesEnum: Output only. The network tier configuration
+      for the node pool inherits from the cluster-level configuration and
+      remains immutable throughout the node pool's lifecycle, including during
+      upgrades.
+
   Fields:
     additionalNodeNetworkConfigs: We specify the additional node networks for
       this node pool using this list. Each node network corresponds to an
@@ -5625,6 +5844,9 @@ class NodeNetworkConfig(_messages.Message):
       enable_private_nodes is not specified, then the value is derived from
       Cluster.NetworkConfig.default_enable_private_nodes
     networkPerformanceConfig: Network bandwidth tier configuration.
+    networkTier: Output only. The network tier configuration for the node pool
+      inherits from the cluster-level configuration and remains immutable
+      throughout the node pool's lifecycle, including during upgrades.
     podCidrOverprovisionConfig: [PRIVATE FIELD] Pod CIDR size overprovisioning
       config for the nodepool. Pod CIDR size per node depends on
       max_pods_per_node. By default, the value of max_pods_per_node is doubled
@@ -5663,18 +5885,36 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `240.0.0.0/8`) to pick a specific range to use.
   """
 
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""Output only. The network tier configuration for the node pool inherits
+    from the cluster-level configuration and remains immutable throughout the
+    node pool's lifecycle, including during upgrades.
+
+    Values:
+      NETWORK_TIER_DEFAULT: By default, use project-level configuration. This
+        field ensures backward compatibility for the network tier of cluster
+        resources, such as node pools and load balancers, for their external
+        IP addresses.
+      NETWORK_TIER_PREMIUM: Premium network tier.
+      NETWORK_TIER_STANDARD: Standard network tier.
+    """
+    NETWORK_TIER_DEFAULT = 0
+    NETWORK_TIER_PREMIUM = 1
+    NETWORK_TIER_STANDARD = 2
+
   additionalNodeNetworkConfigs = _messages.MessageField('AdditionalNodeNetworkConfig', 1, repeated=True)
   additionalPodNetworkConfigs = _messages.MessageField('AdditionalPodNetworkConfig', 2, repeated=True)
   createPodRange = _messages.BooleanField(3)
   enableEndpointsliceProxying = _messages.BooleanField(4)
   enablePrivateNodes = _messages.BooleanField(5)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 6)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
-  podIpv4CidrBlock = _messages.StringField(8)
-  podIpv4RangeUtilization = _messages.FloatField(9)
-  podRange = _messages.StringField(10)
-  subnetwork = _messages.StringField(11)
-  targetPodIpv4Range = _messages.StringField(12)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 7)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 8)
+  podIpv4CidrBlock = _messages.StringField(9)
+  podIpv4RangeUtilization = _messages.FloatField(10)
+  podRange = _messages.StringField(11)
+  subnetwork = _messages.StringField(12)
+  targetPodIpv4Range = _messages.StringField(13)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -7142,7 +7382,6 @@ class SecondaryBootDiskUpdateStrategy(_messages.Message):
   r"""SecondaryBootDiskUpdateStrategy is a placeholder which will be extended
   in the future to define different options for updating secondary boot disks.
   """
-
 
 
 class SecretManagerConfig(_messages.Message):

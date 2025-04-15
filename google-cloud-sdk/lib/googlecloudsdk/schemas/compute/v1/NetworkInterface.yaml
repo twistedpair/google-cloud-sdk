@@ -67,6 +67,7 @@ properties:
     type: string
     enum:
     - EXTERNAL
+    - INTERNAL
     - UNSPECIFIED_IPV6_ACCESS_TYPE
   ipv6Address:
     description: |-

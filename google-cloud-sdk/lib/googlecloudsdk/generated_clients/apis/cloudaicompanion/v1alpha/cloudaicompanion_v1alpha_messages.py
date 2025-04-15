@@ -925,6 +925,7 @@ class JavascriptRequest(_messages.Message):
   r"""Request message for Javascript Task using Gemini.
 
   Fields:
+    copilotEnabled: Optional. If this request is for copilot.
     integrationVersion: Required. The integration version which contains all
       the integration parameters, all triggers and tasks including the
       Javascript task.
@@ -933,9 +934,10 @@ class JavascriptRequest(_messages.Message):
       config (JS code) to generate the Javascript code.
   """
 
-  integrationVersion = _messages.MessageField('IntegrationVersion', 1)
-  taskId = _messages.StringField(2)
-  useCurrentScript = _messages.BooleanField(3)
+  copilotEnabled = _messages.BooleanField(1)
+  integrationVersion = _messages.MessageField('IntegrationVersion', 2)
+  taskId = _messages.StringField(3)
+  useCurrentScript = _messages.BooleanField(4)
 
 
 class JavascriptResponse(_messages.Message):
@@ -1308,6 +1310,7 @@ class ReplaceTaskRequest(_messages.Message):
     TaskTypesValueListEntryValuesEnum:
 
   Fields:
+    copilotEnabled: Optional. If this request is for copilot.
     taskConfig: Required. The current task selected on the UI.
     taskTypes: The list of task types.
   """
@@ -1324,8 +1327,9 @@ class ReplaceTaskRequest(_messages.Message):
     CONNECTOR_TASK = 1
     REST_TASK = 2
 
-  taskConfig = _messages.MessageField('TaskConfig', 1)
-  taskTypes = _messages.EnumField('TaskTypesValueListEntryValuesEnum', 2, repeated=True)
+  copilotEnabled = _messages.BooleanField(1)
+  taskConfig = _messages.MessageField('TaskConfig', 2)
+  taskTypes = _messages.EnumField('TaskTypesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class ReplaceTaskResponse(_messages.Message):

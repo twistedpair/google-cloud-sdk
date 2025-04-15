@@ -23470,7 +23470,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.get',
         ordered_params=['project', 'region', 'serviceAttachment'],
         path_params=['project', 'region', 'serviceAttachment'],
-        query_params=[],
+        query_params=['showNatIps'],
         relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
         request_field='',
         request_type_name='ComputeServiceAttachmentsGetRequest',

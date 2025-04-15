@@ -166,6 +166,7 @@ def create_credential_config(args, config_type):
           cert_path=args.credential_cert_path,
           key_path=args.credential_cert_private_key_path,
           output_file=args.credential_cert_configuration_output_file,
+          trust_chain_path=args.credential_cert_trust_chain_path,
       )
 
   except GeneratorError as cce:
@@ -199,6 +200,7 @@ def get_generator(args, config_type):
         args.credential_cert_path,
         args.credential_cert_private_key_path,
         args.credential_cert_configuration_output_file,
+        args.credential_cert_trust_chain_path,
     )
 
 
@@ -407,13 +409,18 @@ class AzureCredConfigGenerator(CredConfigGenerator):
 class X509CredConfigGenerator(CredConfigGenerator):
   """The generator for X.509-based credential configs."""
 
-  def __init__(self, certificate_path, key_path, cert_config_path):
+  def __init__(self,
+               certificate_path,
+               key_path,
+               cert_config_path,
+               trust_chain_path):
     super(X509CredConfigGenerator,
           self).__init__(ConfigType.WORKLOAD_IDENTITY_POOLS)
 
     self.certificate_path = certificate_path
     self.key_path = key_path
     self.cert_config_path = cert_config_path
+    self.trust_chain_path = trust_chain_path
 
   def get_token_type(self, subject_token_type):
     return 'urn:ietf:params:oauth:token-type:mtls'
@@ -432,6 +439,9 @@ class X509CredConfigGenerator(CredConfigGenerator):
       certificate_config['certificate_config_location'] = self.cert_config_path
     else:
       certificate_config['use_default_certificate_config'] = True
+
+    if self.trust_chain_path is not None:
+      certificate_config['trust_chain_path'] = self.trust_chain_path
 
     return {'certificate': certificate_config}
 

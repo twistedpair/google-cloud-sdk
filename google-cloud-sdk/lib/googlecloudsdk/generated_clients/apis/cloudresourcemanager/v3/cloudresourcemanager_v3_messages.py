@@ -175,6 +175,23 @@ class BooleanValue(_messages.Message):
   value = _messages.BooleanField(1)
 
 
+class Capability(_messages.Message):
+  r"""Representation of a Capability.
+
+  Fields:
+    name: Immutable. Identifier. The resource name of the capability. Must be
+      in the following form: *
+      `folders/{folder_id}/capabilities/{capability_name}` For example,
+      `folders/123/capabilities/app-management` Following are the allowed
+      {capability_name} values: * `app-management`
+    value: Required. The configured value of the capability at the given
+      parent resource.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.BooleanField(2)
+
+
 class ClearSettingRequest(_messages.Message):
   r"""The request for ClearSetting.
 
@@ -204,6 +221,36 @@ class CloudresourcemanagerEffectiveTagsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3)
+
+
+class CloudresourcemanagerFoldersCapabilitiesGetRequest(_messages.Message):
+  r"""A CloudresourcemanagerFoldersCapabilitiesGetRequest object.
+
+  Fields:
+    name: Required. The name of the capability to get. For example,
+      `folders/123/capabilities/app-management`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudresourcemanagerFoldersCapabilitiesPatchRequest(_messages.Message):
+  r"""A CloudresourcemanagerFoldersCapabilitiesPatchRequest object.
+
+  Fields:
+    capability: A Capability resource to be passed as the request body.
+    name: Immutable. Identifier. The resource name of the capability. Must be
+      in the following form: *
+      `folders/{folder_id}/capabilities/{capability_name}` For example,
+      `folders/123/capabilities/app-management` Following are the allowed
+      {capability_name} values: * `app-management`
+    updateMask: Optional. The list of fields to update. Only
+      [Capability.value] can be updated.
+  """
+
+  capability = _messages.MessageField('Capability', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
@@ -1560,8 +1607,6 @@ class EffectiveTagBindingCollection(_messages.Message):
     effectiveTags: Tag keys/values effectively bound to this resource,
       specified in namespaced format. For example: "123/environment":
       "production", "email": "xyz@email.com"
-    etag: Optional. Entity tag which users can pass to prevent race
-      conditions. This field is always set in server responses.
     fullResourceName: The full resource name of the resource the TagBindings
       are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     name: Identifier. The name of the EffectiveTagBindingCollection, following
@@ -1601,9 +1646,8 @@ class EffectiveTagBindingCollection(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   effectiveTags = _messages.MessageField('EffectiveTagsValue', 1)
-  etag = _messages.StringField(2)
-  fullResourceName = _messages.StringField(3)
-  name = _messages.StringField(4)
+  fullResourceName = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -1667,6 +1711,9 @@ class Folder(_messages.Message):
       "marketing" Note: Currently this field is in Preview.
 
   Fields:
+    configuredCapabilities: Output only. Optional capabilities configured for
+      this folder (via UpdateCapability API). Example:
+      `folders/123/capabilities/app-management`.
     createTime: Output only. Timestamp when the folder was created.
     deleteTime: Output only. Timestamp when the folder was requested to be
       deleted.
@@ -1680,6 +1727,9 @@ class Folder(_messages.Message):
     etag: Output only. A checksum computed by the server based on the current
       value of the folder resource. This may be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+    managementProject: Output only. Management Project associated with this
+      folder (if app-management capability is enabled). Example:
+      `projects/google-mp-123` OUTPUT ONLY.
     name: Output only. The resource name of the folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
     parent: Required. The folder's parent's resource name. Updates to the
@@ -1733,15 +1783,17 @@ class Folder(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parent = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  tags = _messages.MessageField('TagsValue', 8)
-  updateTime = _messages.StringField(9)
+  configuredCapabilities = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  managementProject = _messages.StringField(6)
+  name = _messages.StringField(7)
+  parent = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  tags = _messages.MessageField('TagsValue', 10)
+  updateTime = _messages.StringField(11)
 
 
 class FolderOperation(_messages.Message):

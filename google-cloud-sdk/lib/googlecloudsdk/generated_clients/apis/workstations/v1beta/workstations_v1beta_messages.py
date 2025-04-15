@@ -568,9 +568,10 @@ class GcePersistentDisk(_messages.Message):
       read_only is false. Updating source_snapshot will update content in the
       ephemeral directory after the workstation is restarted. Only file
       systems supported by Container-Optimized OS (COS) are explicitly
-      supported. For a list of supported file systems, please refer to the
-      [COS documentation](https://cloud.google.com/container-optimized-
-      os/docs/concepts/supported-filesystems). This field is mutable.
+      supported. For a list of supported file systems, see [the filesystems
+      available in Container-Optimized OS](https://cloud.google.com/container-
+      optimized-os/docs/concepts/supported-filesystems). This field is
+      mutable.
   """
 
   diskType = _messages.StringField(1)
@@ -1969,15 +1970,18 @@ class WorkstationsProjectsLocationsWorkstationClustersListRequest(_messages.Mess
   r"""A WorkstationsProjectsLocationsWorkstationClustersListRequest object.
 
   Fields:
+    filter: Optional. Filter the WorkstationClusters to be listed. Possible
+      filters are described in https://google.aip.dev/160.
     pageSize: Optional. Maximum number of items to return.
     pageToken: Optional. next_page_token value returned from a previous List
       request, if any.
     parent: Required. Parent resource name.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class WorkstationsProjectsLocationsWorkstationClustersPatchRequest(_messages.Message):
@@ -2088,15 +2092,18 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListRequ
   Request object.
 
   Fields:
+    filter: Optional. Filter the WorkstationConfigs to be listed. Possible
+      filters are described in https://google.aip.dev/160.
     pageSize: Optional. Maximum number of items to return.
     pageToken: Optional. next_page_token value returned from a previous List
       request, if any.
     parent: Required. Parent resource name.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListUsableRequest(_messages.Message):
@@ -2266,15 +2273,18 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
   stationsListRequest object.
 
   Fields:
+    filter: Optional. Filter the Workstations to be listed. Possible filters
+      are described in https://google.aip.dev/160.
     pageSize: Optional. Maximum number of items to return.
     pageToken: Optional. next_page_token value returned from a previous List
       request, if any.
     parent: Required. Parent resource name.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsListUsableRequest(_messages.Message):

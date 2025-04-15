@@ -4872,3 +4872,20 @@ def ClearBuildServiceAccountFlag():
       action='store_true',
       help='Clears the Cloud Build service account field.',
   )
+
+
+def ShouldRetryNoZonalRedundancy(args, error_message):
+  if (
+      serverless_exceptions.REDEPLOY_GPU_WITH_FLAG_MESSAGE not in error_message
+      or FlagIsExplicitlySet(args, 'gpu_zonal_redundancy')
+      or FlagIsExplicitlySet(args, 'quiet')
+  ):
+    return False
+  return console_io.PromptContinue(
+      prompt_string=error_message.replace(
+          serverless_exceptions.REDEPLOY_GPU_WITH_FLAG_MESSAGE,
+          'Would you like to deploy with no zonal redundancy instead?',
+      ),
+      default=True,
+      cancel_on_no=True,
+  )

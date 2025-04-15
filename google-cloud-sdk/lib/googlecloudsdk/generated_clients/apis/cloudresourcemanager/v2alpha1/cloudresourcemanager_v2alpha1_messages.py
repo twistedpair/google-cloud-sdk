@@ -501,6 +501,9 @@ class Folder(_messages.Message):
       [UndeleteFolder].
 
   Fields:
+    configuredCapabilities: Output only. Optional capabilities configured for
+      this folder (via UpdateCapability API). Example:
+      `folders/123/capabilities/app-management`.
     createTime: Output only. Timestamp when the Folder was created. Assigned
       by the server.
     displayName: The folder's display name. A folder's display name must be
@@ -513,6 +516,9 @@ class Folder(_messages.Message):
     lifecycleState: The lifecycle state of the folder. Updates to the
       lifecycle_state must be performed via [DeleteFolder] and
       [UndeleteFolder].
+    managementProject: Output only. Management Project associated with this
+      folder (if app-management capability is enabled). Example:
+      `projects/google-mp-123` OUTPUT ONLY.
     name: Output only. The resource name of the Folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
     parent: Output only. The Folder's parent's resource name. Updates to the
@@ -532,11 +538,13 @@ class Folder(_messages.Message):
     ACTIVE = 1
     DELETE_REQUESTED = 2
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  parent = _messages.StringField(5)
+  configuredCapabilities = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
+  managementProject = _messages.StringField(5)
+  name = _messages.StringField(6)
+  parent = _messages.StringField(7)
 
 
 class FolderOperation(_messages.Message):

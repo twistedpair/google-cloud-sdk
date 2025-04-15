@@ -689,6 +689,8 @@ class MessagestreamsProjectsLocationsListRequest(_messages.Message):
   r"""A MessagestreamsProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -701,11 +703,12 @@ class MessagestreamsProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class MessagestreamsProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1198,25 +1201,30 @@ class SaslAuthConfig(_messages.Message):
   r"""SASL/Plain or SASL/SCRAM mechanism configuration.
 
   Enums:
-    MechanismValueValuesEnum:
+    MechanismValueValuesEnum: Required. The authentication method used by the
+      Kafka broker.
 
   Fields:
-    mechanism: A MechanismValueValuesEnum attribute.
-    passwordSecret: Required. The password for the authentication identity may
-      be loaded from Secret Manager. Supported Formats:
+    mechanism: Required. The authentication method used by the Kafka broker.
+    passwordSecret: Required. The password for the authentication identity
+      loaded from Secret Manager. Supported Formats:
       `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
       ect}/locations/{location}/secrets/{secret}/versions/{version}`
     username: Required. The SASL authentication identity (username).
+    usernameSecret: Required. The SASL authentication identity (username)
+      loaded from Secret Manager. Supported Formats:
+      `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
+      ect}/locations/{location}/secrets/{secret}/versions/{version}`
   """
 
   class MechanismValueValuesEnum(_messages.Enum):
-    r"""MechanismValueValuesEnum enum type.
+    r"""Required. The authentication method used by the Kafka broker.
 
     Values:
-      AUTH_MECHANISM_UNSPECIFIED: <no description>
-      PLAIN: <no description>
-      SHA_256: <no description>
-      SHA_512: <no description>
+      AUTH_MECHANISM_UNSPECIFIED: No authentication mechanism was specified.
+      PLAIN: SASL/Plain authentication mechanism.
+      SHA_256: SASL/SCRAM-SHA-256 authentication mechanism.
+      SHA_512: SASL/SCRAM-SHA-512 authentication mechanism.
     """
     AUTH_MECHANISM_UNSPECIFIED = 0
     PLAIN = 1
@@ -1226,13 +1234,14 @@ class SaslAuthConfig(_messages.Message):
   mechanism = _messages.EnumField('MechanismValueValuesEnum', 1)
   passwordSecret = _messages.StringField(2)
   username = _messages.StringField(3)
+  usernameSecret = _messages.StringField(4)
 
 
 class Source(_messages.Message):
   r"""Represents the source where we stream data from.
 
   Fields:
-    kafka: A KafkaSource attribute.
+    kafka: Configurations of the Kafka client streaming from a Kafka cluster.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a source.
     pubsubSubscription: A string attribute.

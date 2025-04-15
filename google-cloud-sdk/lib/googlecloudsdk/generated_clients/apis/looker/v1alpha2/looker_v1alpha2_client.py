@@ -362,6 +362,33 @@ class LookerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ProxySearchDirectGroups(self, request, global_params=None):
+      r"""Proxy Google Groups SearchDirectGroups API.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProxySearchDirectGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ProxySearchDirectGroups')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProxySearchDirectGroups.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:proxySearchDirectGroups',
+        http_method='GET',
+        method_id='looker.projects.locations.instances.proxySearchDirectGroups',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['groupsApiOauthToken', 'searchDirectGroupsRequest_orderBy', 'searchDirectGroupsRequest_pageSize', 'searchDirectGroupsRequest_pageToken', 'searchDirectGroupsRequest_parent', 'searchDirectGroupsRequest_query'],
+        relative_path='v1alpha2/{+name}:proxySearchDirectGroups',
+        request_field='',
+        request_type_name='LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest',
+        response_type_name='ProxySearchDirectGroupsResponse',
+        supports_download=False,
+    )
+
     def Restart(self, request, global_params=None):
       r"""Restart instance.
 
@@ -590,7 +617,7 @@ class LookerV1alpha2(base_api.BaseApiClient):
         method_id='looker.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha2/{+name}/locations',
         request_field='',
         request_type_name='LookerProjectsLocationsListRequest',

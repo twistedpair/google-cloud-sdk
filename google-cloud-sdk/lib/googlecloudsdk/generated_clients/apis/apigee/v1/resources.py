@@ -235,6 +235,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_DNSZONES = (
+      'organizations.dnsZones',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/dnsZones/{dnsZonesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENDPOINTATTACHMENTS = (
       'organizations.endpointAttachments',
       '{+name}',

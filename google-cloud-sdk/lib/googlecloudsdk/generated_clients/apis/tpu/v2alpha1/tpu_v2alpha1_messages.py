@@ -1451,8 +1451,13 @@ class RuntimeVersion(_messages.Message):
 class SchedulingConfig(_messages.Message):
   r"""Sets the scheduling options for this node.
 
+  Enums:
+    ProvisioningModelValueValuesEnum: Optional. Defines the provisioning model
+      for the node.
+
   Fields:
     preemptible: Defines whether the node is preemptible.
+    provisioningModel: Optional. Defines the provisioning model for the node.
     reservationName: Optional. Name of the reservation in which the node
       should be provisioned.
     reserved: Whether the node is created under a reservation.
@@ -1461,11 +1466,27 @@ class SchedulingConfig(_messages.Message):
       terminated.
   """
 
+  class ProvisioningModelValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the provisioning model for the node.
+
+    Values:
+      PROVISIONING_MODEL_UNSPECIFIED: Provisioning model is unknown.
+      STANDARD: Standard provisioning with user controlled runtime.
+      SPOT: Spot provisioning with no guaranteed runtime.
+      RESERVATION_BOUND: Reservation provisioning with runtime bound to the
+        lifetime of the consumed reservation.
+    """
+    PROVISIONING_MODEL_UNSPECIFIED = 0
+    STANDARD = 1
+    SPOT = 2
+    RESERVATION_BOUND = 3
+
   preemptible = _messages.BooleanField(1)
-  reservationName = _messages.StringField(2)
-  reserved = _messages.BooleanField(3)
-  spot = _messages.BooleanField(4)
-  terminationTimestamp = _messages.StringField(5)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 2)
+  reservationName = _messages.StringField(3)
+  reserved = _messages.BooleanField(4)
+  spot = _messages.BooleanField(5)
+  terminationTimestamp = _messages.StringField(6)
 
 
 class ServiceAccount(_messages.Message):
@@ -1838,6 +1859,8 @@ class TpuProjectsLocationsListRequest(_messages.Message):
   r"""A TpuProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1848,10 +1871,11 @@ class TpuProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class TpuProjectsLocationsNodesCreateRequest(_messages.Message):

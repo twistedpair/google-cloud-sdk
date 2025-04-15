@@ -78,6 +78,24 @@ api_scope:
     enum_value: ANY_API
   - arg_value: datastore-mode-api
     enum_value: DATASTORE_MODE_API
+  - arg_value: mongodb-compatible-api
+    enum_value: MONGODB_COMPATIBLE_API
+
+density:
+  api_field: googleFirestoreAdminV1Index.density
+  arg_name: density
+  required: false
+  help_text: Density of the index.
+  default: null
+  choices:
+  - arg_value: density-unspecified
+    enum_value: DENSITY_UNSPECIFIED
+  - arg_value: sparse-any
+    enum_value: SPARSE_ANY
+  - arg_value: sparse-all
+    enum_value: SPARSE_ALL
+  - arg_value: DENSE
+    enum_value: DENSE
 
 field_config:
   api_field: googleFirestoreAdminV1Index.fields
@@ -152,6 +170,20 @@ index:
 disable_indexes:
   arg_name: disable-indexes
   help_text: If provided, the field will no longer be indexed at all.
+  action: store_true
+
+multikey:
+  api_field: googleFirestoreAdminV1Index.multikey
+  arg_name: multikey
+  required: false
+  help_text: |
+    Optional. Whether the index is multikey. By default, the index
+    is not multikey. For non-multikey indexes, none of the paths in the
+    index definition reach or traverse an array, except via an explicit
+    array index. For multikey indexes, at most one of the paths in the index
+    definition reach or traverse an array, except via an explicit array
+    index. Violations will result in errors. Note this field only applies to
+    index with MONGODB_COMPATIBLE_API ApiScope.
   action: store_true
 
 clear_exemption:

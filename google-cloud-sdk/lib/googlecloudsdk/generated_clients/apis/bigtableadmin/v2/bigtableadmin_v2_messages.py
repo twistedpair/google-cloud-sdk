@@ -1514,89 +1514,6 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
-class BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesProtoBundlesCreateRequest object.
-
-  Fields:
-    parent: Required. The parent resource where this proto bundle will be
-      created. Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}`.
-    protoBundle: A ProtoBundle resource to be passed as the request body.
-    protoBundleId: Required. The unique ID to use for the proto bundle, which
-      will become the final component of the proto bundle's resource name.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  protoBundle = _messages.MessageField('ProtoBundle', 2)
-  protoBundleId = _messages.StringField(3)
-
-
-class BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesProtoBundlesDeleteRequest object.
-
-  Fields:
-    etag: Optional. The etag of the proto bundle. If this is provided, it must
-      match the server's etag. The server returns an ABORTED error on a
-      mismatched etag.
-    name: Required. The unique name of the proto bundle to delete. Values are
-      of the form `projects/{project}/instances/{instance}/tables/{table}/prot
-      oBundles/{proto_bundle}`
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class BigtableadminProjectsInstancesTablesProtoBundlesGetRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesProtoBundlesGetRequest object.
-
-  Fields:
-    name: Required. The unique name of the proto bundle to retrieve. Values
-      are of the form `projects/{project}/instances/{instance}/tables/{table}/
-      protoBundles/{proto_bundle}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminProjectsInstancesTablesProtoBundlesListRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesProtoBundlesListRequest object.
-
-  Fields:
-    pageSize: The maximum number of proto bundles to return. If the value is
-      positive, the server may return at most this value. If unspecified, or
-      the value is non-positive, the server will return the maximum allowed
-      page size.
-    pageToken: A page token, received from a previous `ListProtoBundles` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListProtoBundles` must match the call that
-      provided the page token.
-    parent: Required. The parent, which owns this collection of proto bundles.
-      Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesProtoBundlesPatchRequest object.
-
-  Fields:
-    name: Identifier. The unique name identifying this proto bundle. Values
-      are of the form `projects/{project}/instances/{instance}/tables/{table}/
-      protoBundles/{proto_bundle}`
-    protoBundle: A ProtoBundle resource to be passed as the request body.
-    updateMask: Optional. The list of fields to update.
-  """
-
-  name = _messages.StringField(1, required=True)
-  protoBundle = _messages.MessageField('ProtoBundle', 2)
-  updateMask = _messages.StringField(3)
-
-
 class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesRestoreRequest object.
 
@@ -1609,6 +1526,90 @@ class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   restoreTableRequest = _messages.MessageField('RestoreTableRequest', 2)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this schema bundle will be
+      created. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+    schemaBundle: A SchemaBundle resource to be passed as the request body.
+    schemaBundleId: Required. The unique ID to use for the schema bundle,
+      which will become the final component of the schema bundle's resource
+      name.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  schemaBundle = _messages.MessageField('SchemaBundle', 2)
+  schemaBundleId = _messages.StringField(3)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag of the schema bundle. If this is provided, it
+      must match the server's etag. The server returns an ABORTED error on a
+      mismatched etag.
+    name: Required. The unique name of the schema bundle to delete. Values are
+      of the form `projects/{project}/instances/{instance}/tables/{table}/sche
+      maBundles/{schema_bundle}`
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest object.
+
+  Fields:
+    name: Required. The unique name of the schema bundle to retrieve. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      schemaBundles/{schema_bundle}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of schema bundles to return. If the value is
+      positive, the server may return at most this value. If unspecified, or
+      the value is non-positive, the server will return the maximum allowed
+      page size.
+    pageToken: A page token, received from a previous `ListSchemaBundles`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListSchemaBundles` must match the call
+      that provided the page token.
+    parent: Required. The parent, which owns this collection of schema
+      bundles. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest object.
+
+  Fields:
+    name: Identifier. The unique name identifying this schema bundle. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      schemaBundles/{schema_bundle}`
+    schemaBundle: A SchemaBundle resource to be passed as the request body.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  schemaBundle = _messages.MessageField('SchemaBundle', 2)
+  updateMask = _messages.StringField(3)
 
 
 class BigtableadminProjectsInstancesTablesSetIamPolicyRequest(_messages.Message):
@@ -1677,6 +1678,8 @@ class BigtableadminProjectsLocationsListRequest(_messages.Message):
   r"""A BigtableadminProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1687,10 +1690,11 @@ class BigtableadminProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class Binding(_messages.Message):
@@ -2361,15 +2365,15 @@ class CreateMaterializedViewRequest(_messages.Message):
   parent = _messages.StringField(3)
 
 
-class CreateProtoBundleMetadata(_messages.Message):
-  r"""The metadata for the Operation returned by CreateProtoBundle.
+class CreateSchemaBundleMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by CreateSchemaBundle.
 
   Fields:
     endTime: If set, the time at which this operation finished or was
       canceled.
-    name: The unique name identifying this proto bundle. Values are of the
-      form `projects/{project}/instances/{instance}/tables/{table}/protoBundle
-      s/{proto_bundle}`
+    name: The unique name identifying this schema bundle. Values are of the
+      form `projects/{project}/instances/{instance}/tables/{table}/schemaBundl
+      es/{schema_bundle}`
     startTime: The time at which this operation started.
   """
 
@@ -3350,17 +3354,17 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class ListProtoBundlesResponse(_messages.Message):
-  r"""The response for ListProtoBundles.
+class ListSchemaBundlesResponse(_messages.Message):
+  r"""The response for ListSchemaBundles.
 
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    protoBundles: The proto bundles from the specified table.
+    schemaBundles: The schema bundles from the specified table.
   """
 
   nextPageToken = _messages.StringField(1)
-  protoBundles = _messages.MessageField('ProtoBundle', 2, repeated=True)
+  schemaBundles = _messages.MessageField('SchemaBundle', 2, repeated=True)
 
 
 class ListTablesResponse(_messages.Message):
@@ -3877,17 +3881,10 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class ProtoBundle(_messages.Message):
-  r"""A representation of a proto bundle, which includes a unique name and a
-  serialized google.protobuf.FileDescriptorSet.
+class ProtoSchema(_messages.Message):
+  r"""Represents a protobuf schema.
 
   Fields:
-    etag: Optional. The etag for this proto bundle. This may be sent on update
-      and delete requests to ensure the client has an up-to-date value before
-      proceeding. The server returns an ABORTED error on a mismatched etag.
-    name: Identifier. The unique name identifying this proto bundle. Values
-      are of the form `projects/{project}/instances/{instance}/tables/{table}/
-      protoBundles/{proto_bundle}`
     protoDescriptors: Required. Contains a protobuf-serialized [google.protobu
       f.FileDescriptorSet](https://github.com/protocolbuffers/protobuf/blob/ma
       in/src/google/protobuf/descriptor.proto), which could include multiple
@@ -3902,9 +3899,7 @@ class ProtoBundle(_messages.Message):
       buffers/docs/techniques#self-description).
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2)
-  protoDescriptors = _messages.BytesField(3)
+  protoDescriptors = _messages.BytesField(1)
 
 
 class RestoreInfo(_messages.Message):
@@ -3998,6 +3993,25 @@ class RowAffinity(_messages.Message):
   from the cluster group.
   """
 
+
+
+class SchemaBundle(_messages.Message):
+  r"""A named collection of related schemas.
+
+  Fields:
+    etag: Optional. The etag for this schema bundle. This may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding. The server returns an ABORTED error on a mismatched
+      etag.
+    name: Identifier. The unique name identifying this schema bundle. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      schemaBundles/{schema_bundle}`
+    protoSchema: Schema for Protobufs.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  protoSchema = _messages.MessageField('ProtoSchema', 3)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -4648,15 +4662,15 @@ class UpdateLogicalViewRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
-class UpdateProtoBundleMetadata(_messages.Message):
-  r"""The metadata for the Operation returned by UpdateProtoBundle.
+class UpdateSchemaBundleMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by UpdateSchemaBundle.
 
   Fields:
     endTime: If set, the time at which this operation finished or was
       canceled.
-    name: The unique name identifying this proto bundle. Values are of the
-      form `projects/{project}/instances/{instance}/tables/{table}/protoBundle
-      s/{proto_bundle}`
+    name: The unique name identifying this schema bundle. Values are of the
+      form `projects/{project}/instances/{instance}/tables/{table}/schemaBundl
+      es/{schema_bundle}`
     startTime: The time at which this operation started.
   """
 

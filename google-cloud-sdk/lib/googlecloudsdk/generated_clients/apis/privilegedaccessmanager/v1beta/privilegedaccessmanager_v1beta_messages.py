@@ -377,6 +377,9 @@ class Grant(_messages.Message):
       REVOKED: Access was revoked by a user. This is a terminal state.
       ENDED: System took back access as the requested duration was over. This
         is a terminal state.
+      WITHDRAWING: Access is being withdrawn.
+      WITHDRAWN: Grant was withdrawn by the grant owner. This is a terminal
+        state.
     """
     STATE_UNSPECIFIED = 0
     APPROVAL_AWAITED = 1
@@ -389,6 +392,8 @@ class Grant(_messages.Message):
     REVOKING = 8
     REVOKED = 9
     ENDED = 10
+    WITHDRAWING = 11
+    WITHDRAWN = 12
 
   additionalEmailRecipients = _messages.StringField(1, repeated=True)
   auditTrail = _messages.MessageField('AuditTrail', 2)
@@ -1079,6 +1084,8 @@ class PrivilegedaccessmanagerFoldersLocationsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1089,10 +1096,11 @@ class PrivilegedaccessmanagerFoldersLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class PrivilegedaccessmanagerFoldersLocationsOperationsDeleteRequest(_messages.Message):
@@ -1477,6 +1485,8 @@ class PrivilegedaccessmanagerOrganizationsLocationsListRequest(_messages.Message
   r"""A PrivilegedaccessmanagerOrganizationsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1487,10 +1497,11 @@ class PrivilegedaccessmanagerOrganizationsLocationsListRequest(_messages.Message
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class PrivilegedaccessmanagerOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
@@ -1874,6 +1885,8 @@ class PrivilegedaccessmanagerProjectsLocationsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1884,10 +1897,11 @@ class PrivilegedaccessmanagerProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class PrivilegedaccessmanagerProjectsLocationsOperationsDeleteRequest(_messages.Message):

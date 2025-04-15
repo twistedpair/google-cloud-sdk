@@ -197,7 +197,7 @@ class AuthzExtension(_messages.Message):
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
-      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
+      EXT_PROC_GRPC: The extension service uses ext_proc gRPC API over a gRPC
         stream. This is the default value if the wire format is not specified.
         The backend service for the extension must use HTTP2 or H2C as the
         protocol. All `supported_events` for a client request are sent as part
@@ -418,7 +418,7 @@ class CDNPolicy(_messages.Message):
       set to USE_ORIGIN_HEADERS or BYPASS_CACHE, you must omit this field.
     defaultTtl: Optional. Specifies the default TTL for cached content served
       by this origin for responses that do not have an existing valid TTL
-      (max-age or s-max-age). Defaults to `3600s` (1 hour). - The TTL must be
+      (max-age or s-maxage). Defaults to `3600s` (1 hour). - The TTL must be
       >= `0` and <= `31,536,000` seconds (1 year) - Setting a TTL of `0` means
       "always revalidate" (equivalent to must-revalidate) - The value of
       `default_ttl` cannot be set to a value greater than that of max_ttl. -
@@ -1473,13 +1473,16 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is subject to following limitations:
-      * The total size of the metadata must be less than 1KiB. * The total
-      number of keys in the metadata must be less than 20. * The length of
-      each key must be less than 64 characters. * The length of each value
-      must be less than 1024 characters. * All values must be strings. This
-      field is not supported for plugin extensions. Setting it results in a
-      validation error.
+      qualified resource name. This field must not be set for plugin
+      extensions. Setting it results in a validation error. You can set
+      metadata at either the resource level or the extension level. The
+      extension level metadata is recommended because you can pass a different
+      set of metadata through each extension to the backend. This field is
+      subject to following limitations: * The total size of the metadata must
+      be less than 1KiB. * The total number of keys in the metadata must be
+      less than 16. * The length of each key must be less than 64 characters.
+      * The length of each value must be less than 1024 characters. * All
+      values must be strings.
 
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
@@ -1506,13 +1509,16 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is subject to following limitations:
-      * The total size of the metadata must be less than 1KiB. * The total
-      number of keys in the metadata must be less than 20. * The length of
-      each key must be less than 64 characters. * The length of each value
-      must be less than 1024 characters. * All values must be strings. This
-      field is not supported for plugin extensions. Setting it results in a
-      validation error.
+      qualified resource name. This field must not be set for plugin
+      extensions. Setting it results in a validation error. You can set
+      metadata at either the resource level or the extension level. The
+      extension level metadata is recommended because you can pass a different
+      set of metadata through each extension to the backend. This field is
+      subject to following limitations: * The total size of the metadata must
+      be less than 1KiB. * The total number of keys in the metadata must be
+      less than 16. * The length of each key must be less than 64 characters.
+      * The length of each value must be less than 1024 characters. * All
+      values must be strings.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
@@ -1579,12 +1585,15 @@ class ExtensionChainExtension(_messages.Message):
     `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
     following variables are supported in the metadata: `{forwarding_rule_id}`
     - substituted with the forwarding rule's fully qualified resource name.
-    This field is subject to following limitations: * The total size of the
-    metadata must be less than 1KiB. * The total number of keys in the
-    metadata must be less than 20. * The length of each key must be less than
+    This field must not be set for plugin extensions. Setting it results in a
+    validation error. You can set metadata at either the resource level or the
+    extension level. The extension level metadata is recommended because you
+    can pass a different set of metadata through each extension to the
+    backend. This field is subject to following limitations: * The total size
+    of the metadata must be less than 1KiB. * The total number of keys in the
+    metadata must be less than 16. * The length of each key must be less than
     64 characters. * The length of each value must be less than 1024
-    characters. * All values must be strings. This field is not supported for
-    plugin extensions. Setting it results in a validation error.
+    characters. * All values must be strings.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2184,7 +2193,8 @@ class GrpcRouteStatefulSessionAffinityPolicy(_messages.Message):
   Fields:
     cookieTtl: Required. The cookie TTL value for the Set-Cookie header
       generated by the data plane. The lifetime of the cookie may be set to a
-      value from 1 to 86400 seconds (24 hours) inclusive.
+      value from 0 to 86400 seconds (24 hours) inclusive. Set this to 0s to
+      use a session cookie and disable cookie expiration.
   """
 
   cookieTtl = _messages.StringField(1)
@@ -2897,7 +2907,8 @@ class HttpRouteStatefulSessionAffinityPolicy(_messages.Message):
   Fields:
     cookieTtl: Required. The cookie TTL value for the Set-Cookie header
       generated by the data plane. The lifetime of the cookie may be set to a
-      value from 1 to 86400 seconds (24 hours) inclusive.
+      value from 0 to 86400 seconds (24 hours) inclusive. Set this to 0s to
+      use a session cookie and disable cookie expiration.
   """
 
   cookieTtl = _messages.StringField(1)
@@ -2968,11 +2979,16 @@ class LbRouteExtension(_messages.Message):
     MetadataValue: Optional. The metadata provided here is included as part of
       the `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google.lb_route_extension.`. The
-      following variables are supported in the metadata Struct:
+      applies to all extensions in all extensions chains in this resource. The
+      metadata is available under the key `com.google.lb_route_extension.`.
+      The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2985,8 +3001,8 @@ class LbRouteExtension(_messages.Message):
       extension chains per resource.
     forwardingRules: Required. A list of references to the forwarding rules to
       which this service extension is attached. At least one forwarding rule
-      is required. There can be only one `LbRouteExtension` resource per
-      forwarding rule.
+      is required. Only one `LbRouteExtension` resource can be associated with
+      a forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
@@ -2999,11 +3015,16 @@ class LbRouteExtension(_messages.Message):
     metadata: Optional. The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google.lb_route_extension.`. The
-      following variables are supported in the metadata Struct:
+      applies to all extensions in all extensions chains in this resource. The
+      metadata is available under the key `com.google.lb_route_extension.`.
+      The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -3059,12 +3080,16 @@ class LbRouteExtension(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Optional. The metadata provided here is included as part of the
     `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata is
-    available under the namespace `com.google.lb_route_extension.`. The
-    following variables are supported in the metadata Struct:
-    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. This field is not supported for plugin
-    extensions. Setting it results in a validation error.
+    `ProcessingRequest` message sent to the extension server. The metadata
+    applies to all extensions in all extensions chains in this resource. The
+    metadata is available under the key `com.google.lb_route_extension.`. The
+    following variables are supported in the metadata: `{forwarding_rule_id}`
+    - substituted with the forwarding rule's fully qualified resource name.
+    This field must not be set if at least one of the extension chains
+    contains plugin extensions. Setting it results in a validation error. You
+    can set metadata at either the resource level or the extension level. The
+    extension level metadata is recommended because you can pass a different
+    set of metadata through each extension to the backend.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3115,13 +3140,19 @@ class LbTrafficExtension(_messages.Message):
       `LbTrafficExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here is included in the
-      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      applies to all extensions in all extensions chains in this resource. The
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3134,8 +3165,8 @@ class LbTrafficExtension(_messages.Message):
       extension chains per resource.
     forwardingRules: Optional. A list of references to the forwarding rules to
       which this service extension is attached. At least one forwarding rule
-      is required. There can be only one `LBTrafficExtension` resource per
-      forwarding rule.
+      is required. Only one `LbTrafficExtension` resource can be associated
+      with a forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
@@ -3145,13 +3176,19 @@ class LbTrafficExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more
       information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here is included in the
-      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      applies to all extensions in all extensions chains in this resource. The
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3205,13 +3242,19 @@ class LbTrafficExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here is included in the
-    `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata
+    applies to all extensions in all extensions chains in this resource. The
     metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. This field is not supported for plugin
-    extensions. Setting it results in a validation error.
+    qualified resource name. This field must not be set if at least one of the
+    extension chains contains plugin extensions. Setting it results in a
+    validation error. You can set metadata at either the resource level or the
+    extension level. The extension level metadata is recommended because you
+    can pass a different set of metadata through each extension to the
+    backend.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -5912,6 +5955,8 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -5922,10 +5967,11 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class NetworkservicesProjectsLocationsMeshesCreateRequest(_messages.Message):
@@ -8290,7 +8336,8 @@ class ServiceBinding(_messages.Message):
   r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
   used in a BackendService resource. This feature will be deprecated soon. -
   Bind a Private Service Connect producer service to be used in consumer Cloud
-  Service Mesh or Application Load Balancers.
+  Service Mesh or Application Load Balancers. - Bind a Cloud Run service to be
+  used in consumer Cloud Service Mesh or Application Load Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the

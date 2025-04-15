@@ -292,9 +292,11 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
     Values:
       EFFECT_UNSPECIFIED: The effect is unspecified.
       DENY: The policy will deny access if it evaluates to true.
+      ALLOW: The policy will grant access if it evaluates to true.
     """
     EFFECT_UNSPECIFIED = 0
     DENY = 1
+    ALLOW = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ActivationConditionsValue(_messages.Message):
@@ -443,7 +445,7 @@ class GoogleIamV3alphaListPolicyPortersResponse(_messages.Message):
 
 
 class GoogleIamV3alphaListPrincipalAccessBoundaryPoliciesResponse(_messages.Message):
-  r"""A GoogleIamV3alphaListPrincipalAccessBoundaryPoliciesResponse object.
+  r"""Response message for ListPrincipalAccessBoundaryPolicies method.
 
   Fields:
     nextPageToken: Optional. A token, which can be sent as `page_token` to

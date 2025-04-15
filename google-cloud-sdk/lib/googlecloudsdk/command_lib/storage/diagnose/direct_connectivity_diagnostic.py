@@ -52,6 +52,11 @@ def _get_region_string_or_not_found(s):
   return '"{}"'.format(s.lower()) if s else '[Not Found]'
 
 
+def _check_zone_prefix(region, zone):
+  """Returns true if the region is a prefix of the given zone."""
+  return zone.lower().startswith(region.lower())
+
+
 def _exec_and_return_stdout(command):
   """Returns standard output from executing gcloud command."""
   command = execution_utils.ArgsForGcloud() + command
@@ -156,17 +161,6 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
             return _SUCCESS
     return 'Failed. See log at ' + self._logs_path
 
-  def _check_grpc_allowlist(self):
-    """Checks if user on gRPC allowlist."""
-    if self._generic_check_for_string_in_logs(
-        target_string='not allowed to access the GCS gRPC API'
-    ):
-      return (
-          'Not allowlisted. Please contact a support representative'
-          ' for instructions.'
-      )
-    return _SUCCESS
-
   def _check_private_service_connect(self):
     """Checks if connecting to PSC endpoint."""
     if self._generic_check_for_string_in_logs(
@@ -255,27 +249,42 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
       return 'Found conflicting firewalls. See STDERR messages.'
     return _SUCCESS
 
-  def _check_bucket_region_type(self):
-    """Checks if bucket has incompatible region type."""
-    if self._bucket_resource.location_type == 'dual-region':
-      return 'Found bucket {} is in incompatible dual-region.'.format(
-          self._bucket_resource
-      )
-    if self._bucket_resource.location_type == 'multi-region':
-      return (
-          'Found bucket {} is in multi-region. Direct Connectivity support is'
-          ' not yet available for all multi-regions.'.format(
-              self._bucket_resource
-          )
-      )
-    return _SUCCESS
+  def _check_bucket_region(self):
+    """Checks if bucket has problematic region."""
 
-  def _check_bucket_vm_region(self):
-    """Checks if bucket location matches VM zone."""
     bucket_location = self._bucket_resource.location.lower()
-    if self._vm_zone and self._vm_zone.lower().startswith(bucket_location):
+
+    # Dual-region buckets may have replicas in the same region as the VM. For
+    # custom dual-regions, the VM must be in one of the regions covered by the
+    # dual-region. For predefined dual-regions, the customer can check manually.
+    if self._bucket_resource.location_type == 'dual-region':
+      if self._bucket_resource.data_locations:
+        regions = self._bucket_resource.data_locations
+        for region in regions:
+          if _check_zone_prefix(region, self._vm_zone):
+            return _SUCCESS
+        return (
+            f'Bucket "{self._bucket_resource}" locations'
+            f' {_get_region_string_or_not_found(regions[0])} and'
+            f' {_get_region_string_or_not_found(regions[1])} do not include VM'
+            f' "{socket.gethostname()}" zone'
+            f' {_get_region_string_or_not_found(self._vm_zone)}'
+        )
+      return (
+          f'Found bucket "{self._bucket_resource}" is in a dual-region. Ensure '
+          f'VM "{socket.gethostname()}" is in one of the regions covered by '
+          f'the dual-region by looking up the dual-region '
+          f'{_get_region_string_or_not_found(self._bucket_resource.location)} '
+          f'in the following table: '
+          f'https://cloud.google.com/storage/docs/locations#predefined '
+          f'VM zone {_get_region_string_or_not_found(self._vm_zone)} should '
+          f'start with one of the regions covered by the dual-region '
+          f'{_get_region_string_or_not_found(self._bucket_resource.location)}.'
+      )
+    # For other region types, the substring check is sufficient.
+    if self._vm_zone and _check_zone_prefix(bucket_location, self._vm_zone):
       return _SUCCESS
-    return 'Bucket "{}" region {} does not match VM "{}" zone {}'.format(
+    return 'Bucket "{}" location {} does not match VM "{}" zone {}'.format(
         self._bucket_resource,
         _get_region_string_or_not_found(bucket_location),
         socket.gethostname(),
@@ -338,14 +347,6 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
 
     for check, name, description in [
         (
-            self._check_grpc_allowlist,
-            'gRPC Allowlist',
-            (
-                'Checks for string in logs saying bucket or project is'
-                ' allowlisted to use the gRPC API.'
-            ),
-        ),
-        (
             self._check_private_service_connect,
             'Private Service Connect',
             (
@@ -379,16 +380,13 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
             ),
         ),
         (
-            self._check_bucket_region_type,
-            'Bucket Region Type',
-            'Direct Connectivity does not yet support all bucket region types.',
-        ),
-        (
-            self._check_bucket_vm_region,
-            'Bucket Region Matches VM',
+            self._check_bucket_region,
+            'Bucket Region',
             (
-                'Direct Connectivity requires bucket be in the same region as'
-                ' the VM.'
+                'Direct Connectivity supports all bucket region types, but only'
+                ' data with replicas in the same region as the VM will be'
+                ' accessible. Consider co-locating the bucket and VM in the'
+                ' same region.'
             ),
         ),
         (

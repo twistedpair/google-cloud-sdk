@@ -86,7 +86,7 @@ class DeveloperconnectV1(base_api.BaseApiClient):
     )
 
     def DeleteSelf(self, request, global_params=None):
-      r"""Delete the User of the user themselves.
+      r"""Delete the User based on the user credentials.
 
       Args:
         request: (DeveloperconnectProjectsLocationsAccountConnectorsUsersDeleteSelfRequest) input message
@@ -140,7 +140,7 @@ class DeveloperconnectV1(base_api.BaseApiClient):
     )
 
     def FetchSelf(self, request, global_params=None):
-      r"""Fetches the User of the user themselves.
+      r"""Fetch the User based on the user credentials.
 
       Args:
         request: (DeveloperconnectProjectsLocationsAccountConnectorsUsersFetchSelfRequest) input message

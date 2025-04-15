@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
@@ -567,7 +568,15 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
     dummy_request = messages.GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest(
         parent=parent,
     )
-    _ = self._service.QueryVersionConfig(dummy_request)
+    try:
+      _ = self._service.QueryVersionConfig(dummy_request)
+    except (
+        apitools_exceptions.HttpUnauthorizedError,
+        apitools_exceptions.HttpForbiddenError,
+    ):
+      # Ignore unauthorized or forbidden errors. This may happen during the
+      # support case when googler inspect customer's project via Google Admin.
+      pass
 
     # If location is not specified, and container_bare_metal/location is not set
     # list clusters of all locations within a project.

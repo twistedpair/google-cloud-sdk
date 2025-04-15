@@ -146,12 +146,22 @@ def GetAcceleratorFlag(custom_name=None):
 def GetSharedSettingFlag(custom_name=None, support_folder_share_setting=False):
   """Gets the --share-setting flag."""
   help_text = """\
-  Specify if this reservation is shared, and if so, the type of sharing. If you
-  omit this flag, this value is local (not shared) by default.
+  The projects that can use the reservation.
   """
-  choices = ['local', 'projects']
+  choices = {
+      'local': ('Only your project can use the reservation. This is the'
+                ' default value.'),
+      'projects': """\
+          Your project and up to 100 other projects within your
+          project's organization can use the reservation. If you specify
+          this value, then you must also include the --share-with flag in
+          the command.
+        """,
+      }
   if support_folder_share_setting:
-    choices.append('folders')
+    choices.update({'folders': 'Any project on the specified list of folders'
+                               ' can use the reservation.'})
+
   return base.Argument(
       custom_name if custom_name else '--share-setting',
       choices=choices,
@@ -161,15 +171,15 @@ def GetSharedSettingFlag(custom_name=None, support_folder_share_setting=False):
 def GetShareWithFlag(custom_name=None, support_folder_share_setting=False):
   """Gets the --share-with flag."""
   help_text = """\
-    If this reservation is shared (--share-setting is not local), provide a list
-    of all of the specific projects that this reservation is shared with. List
-    must contain project IDs or project numbers.
+    If this reservation is shared (--share-setting=projects), then specify a
+    comma-separated list of projects to share the reservation with. List
+    projects using project IDs or project numbers.
     """
   if support_folder_share_setting:
     help_text = """\
-    If this reservation is shared (--share-setting is not local), provide a list
-    of all of the specific projects or folders that this reservation is shared
-    with. List must contain project IDs or project numbers or folder IDs.
+    If this reservation is shared (--share-setting=projects), then specify a
+    comma-separated list of projects to share the reservation with. List
+    projects using project IDs, project numbers, or folder IDs.
     """
   return base.Argument(
       custom_name if custom_name else '--share-with',
@@ -181,8 +191,9 @@ def GetShareWithFlag(custom_name=None, support_folder_share_setting=False):
 def GetAddShareWithFlag(custom_name=None):
   """Gets the --add-share-with flag."""
   help_text = """\
-  A list of specific projects to add to the list of projects that this
-  reservation is shared with. List must contain project IDs or project numbers.
+  If this reservation is shared (--share-setting is projects), then
+  specify a comma-separated list of projects to share the reservation
+  with. You must list the projects using project IDs or project numbers.
   """
   return base.Argument(
       custom_name if custom_name else '--add-share-with',

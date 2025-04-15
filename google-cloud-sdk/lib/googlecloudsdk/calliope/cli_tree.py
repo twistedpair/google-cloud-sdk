@@ -83,6 +83,7 @@ LOOKUP_IS_MUTEX = 'is_mutex'
 LOOKUP_IS_POSITIONAL = 'is_positional'
 LOOKUP_IS_REQUIRED = 'is_required'
 LOOKUP_NAME = 'name'
+LOOKUP_ALTERNATIVE_NAMES = 'alternative_names'
 LOOKUP_NARGS = 'nargs'
 LOOKUP_PATH = 'path'
 LOOKUP_POSITIONALS = 'positionals'
@@ -209,6 +210,7 @@ class FlagOrPositional(Argument):
     name: str, The normalized name ('_' => '-').
     nargs: {0, 1, '?', '*', '+'}
     value: str, The argument value documentation name.
+    alternative_names: list, The list of alternative names.
   """
 
   def __init__(self, arg, name):
@@ -228,6 +230,7 @@ class FlagOrPositional(Argument):
     self.default = arg.default
     self.description = _NormalizeDescription(_GetDescription(arg))
     self.name = six.text_type(name)
+    self.alternative_names = getattr(arg, LOOKUP_ALTERNATIVE_NAMES, [])
     self.nargs = six.text_type(arg.nargs or 0)
     if arg.metavar:
       self.value = six.text_type(arg.metavar)
@@ -304,7 +307,8 @@ class Flag(FlagOrPositional):
         self.type = 'bool'
       else:
         self.choices = flag.choices
-
+    if getattr(flag, LOOKUP_ALTERNATIVE_NAMES, False):
+      self.alternative_names = flag.alternative_names
     if getattr(flag, LOOKUP_INVERTED_SYNOPSIS, False):
       self.attr[LOOKUP_INVERTED_SYNOPSIS] = True
     prop, kind, value = getattr(flag, 'store_property', (None, None, None))
@@ -360,7 +364,11 @@ class Constraint(Group):
         for name in arg.option_strings:
           if name.startswith('--'):
             name = name.replace('_', '-')
-            order.append((name, Flag(arg, name)))
+            flag = Flag(arg, name)
+            flag.alternative_names = [
+                alt for alt in arg.option_strings if alt != name
+            ]
+            order.append((name, flag))
     order = sorted(order, key=lambda item: item[0])
     super(Constraint, self).__init__(
         group,
@@ -468,6 +476,9 @@ class Command(object):
             continue
           name = name.replace('_', '-')
           flag = Flag(arg, name)
+          flag.alternative_names = [
+              alt for alt in arg.option_strings if alt != name
+          ]
           self.flags[flag.name] = flag
 
     # Collect the ancestor flags.
@@ -632,6 +643,9 @@ def _Serialize(tree):
   def _FlagIndexKey(flag):
     return '::'.join([
         six.text_type(flag.name),
+        '[{}]'.format(
+            ', '.join(six.text_type(n) for n in flag.alternative_names)
+        ),
         six.text_type(flag.attr),
         six.text_type(flag.category),
         '[{}]'.format(', '.join(six.text_type(c) for c in flag.choices)),

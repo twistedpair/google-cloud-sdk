@@ -489,6 +489,9 @@ class Constraints(_messages.Message):
   ensure that `Upgrade` specific requirements are met.
 
   Fields:
+    disallowedIntervals: Output only. Output Only. A list of intervals in
+      which maintenance windows are not allowed. Any time window that overlaps
+      with any of these intervals will be considered invalid.
     minHoursDay: Output only. Minimum number of hours must be allotted for the
       upgrade activities for each selected day. This is a minimum; the upgrade
       schedule can allot more hours for the given day.
@@ -499,9 +502,10 @@ class Constraints(_messages.Message):
       reschedule an upgrade that starts within this range.
   """
 
-  minHoursDay = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minHoursWeek = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  rescheduleDateRange = _messages.MessageField('Interval', 3)
+  disallowedIntervals = _messages.MessageField('WeeklyTimeInterval', 1, repeated=True)
+  minHoursDay = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minHoursWeek = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  rescheduleDateRange = _messages.MessageField('Interval', 4)
 
 
 class Credentials(_messages.Message):
@@ -3832,6 +3836,8 @@ class VmwareengineProjectsLocationsListRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3842,10 +3848,11 @@ class VmwareengineProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class VmwareengineProjectsLocationsNetworkPeeringsCreateRequest(_messages.Message):
@@ -6515,6 +6522,76 @@ class VpcNetwork(_messages.Message):
 
   network = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class WeeklyTimeInterval(_messages.Message):
+  r"""Represents a time interval, spanning across days of the week. Until
+  local timezones are supported, this interval is in UTC.
+
+  Enums:
+    EndDayValueValuesEnum: Output only. The day on which the interval ends.
+      Can be same as start day.
+    StartDayValueValuesEnum: Output only. The day on which the interval
+      starts.
+
+  Fields:
+    endDay: Output only. The day on which the interval ends. Can be same as
+      start day.
+    endTime: Output only. The time on the end day at which the interval ends.
+    startDay: Output only. The day on which the interval starts.
+    startTime: Output only. The time on the start day at which the interval
+      starts.
+  """
+
+  class EndDayValueValuesEnum(_messages.Enum):
+    r"""Output only. The day on which the interval ends. Can be same as start
+    day.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  class StartDayValueValuesEnum(_messages.Enum):
+    r"""Output only. The day on which the interval starts.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  endDay = _messages.EnumField('EndDayValueValuesEnum', 1)
+  endTime = _messages.MessageField('TimeOfDay', 2)
+  startDay = _messages.EnumField('StartDayValueValuesEnum', 3)
+  startTime = _messages.MessageField('TimeOfDay', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

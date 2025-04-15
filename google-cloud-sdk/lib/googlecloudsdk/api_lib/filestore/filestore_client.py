@@ -285,6 +285,7 @@ class FilestoreClient(object):
       nfs_export_options=None,
       kms_key_name=None,
       managed_ad=None,
+      ldap=None,
       source_instance=None,
       deletion_protection_enabled=None,
       deletion_protection_reason=None,
@@ -304,6 +305,7 @@ class FilestoreClient(object):
       nfs_export_options: The nfs export options for the file share.
       kms_key_name: The kms key for instance encryption.
       managed_ad: The Managed Active Directory settings of the instance.
+      ldap: The LDAPS configuration of the instance.
       source_instance: The replication source of the instance.
       deletion_protection_enabled: bool, whether to enable deletion protection.
       deletion_protection_reason: The reason for enabling deletion protection.
@@ -326,6 +328,8 @@ class FilestoreClient(object):
     # Beta API.
     if managed_ad:
       self._adapter.ParseManagedADIntoInstance(instance, managed_ad)
+    if ldap:
+      self._adapter.ParseLdapIntoInstance(instance, ldap)
     if source_instance:
       self._adapter.ParseSourceInstanceIntoInstance(instance, source_instance)
     # 'instance.performance' is a member of 'instance' structure only in
@@ -817,6 +821,36 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     instance.directoryServices = self.messages.DirectoryServicesConfig(
         managedActiveDirectory=self.messages.ManagedActiveDirectoryConfig(
             domain=domain, computer=computer
+        )
+    )
+
+  def ParseLdapIntoInstance(self, instance, ldap):
+    """Parses ldap configs into an instance message.
+
+    Args:
+      instance: The filestore instance struct.
+      ldap: The ldap cli parameters
+
+    Raises:
+      InvalidArgumentError: If ldap argument constraints are violated.
+    """
+    domain = ldap.get('domain')
+    if domain is None:
+      raise InvalidArgumentError('Domain parameter is missing in --ldap.')
+    servers = ldap.get('servers')
+    if servers is None:
+      raise InvalidArgumentError('Servers parameter is missing in --ldap.')
+    servers = servers.split(',')
+    usersou = ldap.get('users_ou')
+    groupsou = ldap.get('groups_ou')
+    # usersou and groupsou are optional
+
+    instance.directoryServices = self.messages.DirectoryServicesConfig(
+        ldap=self.messages.LdapConfig(
+            domain=domain,
+            servers=servers,
+            usersOu=usersou,
+            groupsOu=groupsou,
         )
     )
 

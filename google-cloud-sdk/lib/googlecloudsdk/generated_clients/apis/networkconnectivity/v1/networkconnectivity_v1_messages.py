@@ -1616,7 +1616,7 @@ class LinkedVpcNetwork(_messages.Message):
     producerVpcSpokes: Output only. The list of Producer VPC spokes that this
       VPC spoke is a service consumer VPC spoke for. These producer VPCs are
       connected through VPC peering to this spoke's backing VPC network.
-      Because they are directly connected throuh VPC peering, NCC export
+      Because they are directly connected through VPC peering, NCC export
       filters do not apply between the service consumer VPC spoke and any of
       its producer VPC spokes. This VPC spoke cannot be deleted as long as any
       of these producer VPC spokes are connected to the NCC Hub.
@@ -2798,6 +2798,8 @@ class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2808,10 +2810,11 @@ class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class NetworkconnectivityProjectsLocationsOperationsCancelRequest(_messages.Message):

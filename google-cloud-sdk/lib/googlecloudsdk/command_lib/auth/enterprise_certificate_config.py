@@ -144,8 +144,9 @@ class PKCS11Config(object):
 
 class KeyChainConfig(object):
 
-  def __init__(self, issuer):
+  def __init__(self, issuer, keychain_type):
     self.issuer = issuer
+    self.keychain_type = keychain_type
 
 
 class MyStoreConfig(object):
@@ -218,7 +219,9 @@ def create_macos_config(base_config, **kwargs):
     base_libs_config = {}
 
   ecp_config = KeyChainConfig(
-      kwargs.get('issuer', None) or base_macos_config.get('issuer', None)
+      kwargs.get('issuer', None) or base_macos_config.get('issuer', None),
+      kwargs.get('keychain_type', 'all')
+      or base_macos_config.get('keychain_type', 'all'),
   )
   lib_config = MacOSBinaryPathConfig(
       kwargs.get('ecp', None) or base_libs_config.get('ecp', None),

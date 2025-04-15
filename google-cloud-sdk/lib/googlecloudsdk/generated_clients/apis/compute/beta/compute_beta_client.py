@@ -91,6 +91,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.nodeTypes = self.NodeTypesService(self)
     self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
     self.packetMirrorings = self.PacketMirroringsService(self)
+    self.previewFeatures = self.PreviewFeaturesService(self)
     self.projects = self.ProjectsService(self)
     self.publicAdvertisedPrefixes = self.PublicAdvertisedPrefixesService(self)
     self.publicDelegatedPrefixes = self.PublicDelegatedPrefixesService(self)
@@ -9705,6 +9706,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a machine image. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeMachineImagesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.machineImages.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/machineImages/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeMachineImagesSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 
@@ -12708,6 +12735,94 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputePacketMirroringsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class PreviewFeaturesService(base_api.BaseApiService):
+    """Service class for the previewFeatures resource."""
+
+    _NAME = 'previewFeatures'
+
+    def __init__(self, client):
+      super(ComputeBeta.PreviewFeaturesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of the given PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PreviewFeature) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.previewFeatures.get',
+        ordered_params=['project', 'resourceId'],
+        path_params=['project', 'resourceId'],
+        query_params=[],
+        relative_path='projects/{project}/global/previewFeatures/{resourceId}',
+        request_field='',
+        request_type_name='ComputePreviewFeaturesGetRequest',
+        response_type_name='PreviewFeature',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the details of the given PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PreviewFeatureList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.previewFeatures.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/previewFeatures',
+        request_field='',
+        request_type_name='ComputePreviewFeaturesListRequest',
+        response_type_name='PreviewFeatureList',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.previewFeatures.update',
+        ordered_params=['project', 'resourceId'],
+        path_params=['project', 'resourceId'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/previewFeatures/{resourceId}',
+        request_field='previewFeature',
+        request_type_name='ComputePreviewFeaturesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

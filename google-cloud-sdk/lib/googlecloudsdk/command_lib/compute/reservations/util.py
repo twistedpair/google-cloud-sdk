@@ -139,7 +139,7 @@ def MakeShareSettingsWithArgs(messages,
       return messages.ShareSettings(shareType=messages.ShareSettings
                                     .ShareTypeValueValuesEnum.ORGANIZATION)
     if setting_configs == 'local':
-      if args.IsSpecified(share_with):
+      if args.IsSpecified(share_with) and share_with != 'remove_share_with':
         raise exceptions.InvalidArgumentException(
             '--share_with',
             'The scope this reservation is to be shared with must not be '
@@ -152,11 +152,14 @@ def MakeShareSettingsWithArgs(messages,
             '--share_with',
             'The projects this reservation is to be shared with must be '
             'specified.')
+      project_map = None
+      if share_with != 'remove_share_with':
+        project_map = MakeProjectMapFromProjectList(
+            messages, getattr(args, share_with, None))
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projectMap=MakeProjectMapFromProjectList(
-              messages, getattr(args, share_with, None)))
+          projectMap=project_map)
     if setting_configs == 'folders':
       if not args.IsSpecified(share_with):
         raise exceptions.InvalidArgumentException(

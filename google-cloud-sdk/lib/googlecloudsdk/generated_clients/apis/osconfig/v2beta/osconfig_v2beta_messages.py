@@ -97,6 +97,33 @@ class GoogleCloudOsconfigV1OSPolicyAssignmentOperationMetadata(_messages.Message
   rolloutUpdateTime = _messages.StringField(5)
 
 
+class GoogleCloudOsconfigV2OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class GoogleCloudOsconfigV2betaListPolicyOrchestratorsResponse(_messages.Message):
   r"""Response for the list policy orchestrator resources.
 
@@ -328,13 +355,11 @@ class GoogleCloudOsconfigV2betaPolicyOrchestratorIterationState(_messages.Messag
     failedActions: Output only. Number of orchestration actions which failed
       so far. For more details, query the Cloud Logs.
     finishTime: Output only. Finish time of the wave iteration.
+    iterationId: Output only. Unique identifier of the iteration.
     performedActions: Output only. Overall number of actions done by the
       orchestrator so far.
     progress: Output only. An estimated percentage of the progress. Number
       between 0 and 100.
-    rolloutResource: Output only. Handle to the Progressive Rollouts API
-      rollout resource, which contains detailed information about a particular
-      orchestration iteration.
     startTime: Output only. Start time of the wave iteration.
     state: Output only. State of the iteration.
   """
@@ -360,9 +385,9 @@ class GoogleCloudOsconfigV2betaPolicyOrchestratorIterationState(_messages.Messag
   error = _messages.MessageField('Status', 1)
   failedActions = _messages.IntegerField(2)
   finishTime = _messages.StringField(3)
-  performedActions = _messages.IntegerField(4)
-  progress = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  rolloutResource = _messages.StringField(6)
+  iterationId = _messages.StringField(4)
+  performedActions = _messages.IntegerField(5)
+  progress = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
   startTime = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
 
@@ -1357,7 +1382,21 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.Me
       der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
       cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
       rator_id}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. The list of fields to merge into the existing policy
+      orchestrator. A special ["*"] field mask can be used to simply replace
+      the entire resource. Otherwise, for all paths referenced in the mask,
+      following merge rules are used: * output only fields are ignored, *
+      primitive fields are replaced, * repeated fields are replaced, * map
+      fields are merged key by key, * message fields are cleared if not set in
+      the request, otherwise they are merged recursively (in particular -
+      message fields set to an empty message has no side effects) If field
+      mask is not specified, it is automatically inferred from the request
+      using following rules: * primitive fields are listed, if set to a non-
+      default value (as there is no way to distinguish between default and
+      unset value), * map and repeated fields are listed, *
+      `google.protobuf.Any` fields are listed, * other message fields are
+      traversed recursively. Note: implicit mask does not allow clearing
+      fields.
   """
 
   googleCloudOsconfigV2betaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2betaPolicyOrchestrator', 1)
@@ -1522,7 +1561,21 @@ class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsPatchRequest(_messa
       der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
       cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
       rator_id}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. The list of fields to merge into the existing policy
+      orchestrator. A special ["*"] field mask can be used to simply replace
+      the entire resource. Otherwise, for all paths referenced in the mask,
+      following merge rules are used: * output only fields are ignored, *
+      primitive fields are replaced, * repeated fields are replaced, * map
+      fields are merged key by key, * message fields are cleared if not set in
+      the request, otherwise they are merged recursively (in particular -
+      message fields set to an empty message has no side effects) If field
+      mask is not specified, it is automatically inferred from the request
+      using following rules: * primitive fields are listed, if set to a non-
+      default value (as there is no way to distinguish between default and
+      unset value), * map and repeated fields are listed, *
+      `google.protobuf.Any` fields are listed, * other message fields are
+      traversed recursively. Note: implicit mask does not allow clearing
+      fields.
   """
 
   googleCloudOsconfigV2betaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2betaPolicyOrchestrator', 1)
@@ -1684,7 +1737,21 @@ class OsconfigProjectsLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.M
       der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
       cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
       rator_id}`
-    updateMask: Optional. The list of fields to update.
+    updateMask: Optional. The list of fields to merge into the existing policy
+      orchestrator. A special ["*"] field mask can be used to simply replace
+      the entire resource. Otherwise, for all paths referenced in the mask,
+      following merge rules are used: * output only fields are ignored, *
+      primitive fields are replaced, * repeated fields are replaced, * map
+      fields are merged key by key, * message fields are cleared if not set in
+      the request, otherwise they are merged recursively (in particular -
+      message fields set to an empty message has no side effects) If field
+      mask is not specified, it is automatically inferred from the request
+      using following rules: * primitive fields are listed, if set to a non-
+      default value (as there is no way to distinguish between default and
+      unset value), * map and repeated fields are listed, *
+      `google.protobuf.Any` fields are listed, * other message fields are
+      traversed recursively. Note: implicit mask does not allow clearing
+      fields.
   """
 
   googleCloudOsconfigV2betaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2betaPolicyOrchestrator', 1)

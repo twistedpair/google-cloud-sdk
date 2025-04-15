@@ -2016,6 +2016,10 @@ canonical_surfaces:
   cloudscheduler:
     name: cloudscheduler
     command: scheduler
+  cloudshell:
+    name: cloudshell
+    command: cloud-shell
+    hidden: true
   cloudtasks:
     name: cloudtasks
     command: tasks

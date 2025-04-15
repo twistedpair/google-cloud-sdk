@@ -857,12 +857,14 @@ class BackupPlan(_messages.Message):
       ACTIVE: The resource has been created and is fully usable.
       DELETING: The resource is being deleted.
       INACTIVE: The resource has been created but is not usable.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     INACTIVE = 4
+    UPDATING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2030,6 +2032,8 @@ class BackupdrProjectsLocationsListRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2040,10 +2044,11 @@ class BackupdrProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class BackupdrProjectsLocationsManagementServersCreateRequest(_messages.Message):
@@ -2250,7 +2255,8 @@ class BackupdrProjectsLocationsResourceBackupConfigsListRequest(_messages.Messag
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, server will use 100 as default. Maximum
+      value is 500 and values above 500 will be coerced to 500.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. The project and location for which to retrieve resource

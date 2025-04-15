@@ -77,16 +77,11 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder, with_nat64):
+def CreateNatMessage(args, compute_holder):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
-  if not with_nat64:
-    params['sourceSubnetworkIpRangesToNat'], params['subnetworks'] = (
-        _ParseSubnetFields(args, compute_holder)
-    )
-  else:
-    _AddSubnetOptionsToParams(args, compute_holder, params)
+  _AddSubnetOptionsToParams(args, compute_holder, params)
 
   if args.type is not None:
     params['type'] = (
@@ -168,7 +163,7 @@ def _AddSubnetOptionsToParams(args, compute_holder, params):
     params['nat64Subnetworks'] = ipv6_subnets
 
 
-def UpdateNatMessage(nat, args, compute_holder, with_nat64):
+def UpdateNatMessage(nat, args, compute_holder):
   """Updates a NAT message with the specified arguments."""
   if (
       args.subnet_option
@@ -182,22 +177,21 @@ def UpdateNatMessage(nat, args, compute_holder, with_nat64):
     nat.sourceSubnetworkIpRangesToNat = ranges_to_nat
     nat.subnetworks = subnetworks
 
-  if with_nat64:
-    if (
-        args.subnet_ipv6_option is nat_flags.SubnetIpv6Option.ALL_IPV6_SUBNETS
-        or args.nat64_custom_v6_subnet_ip_ranges
-    ):
-      ranges_to_nat, subnetworks = _ParseIpv6SubnetFields(args, compute_holder)
-      nat.sourceSubnetworkIpRangesToNat64 = ranges_to_nat
-      nat.nat64Subnetworks = subnetworks
+  if (
+      args.subnet_ipv6_option is nat_flags.SubnetIpv6Option.ALL_IPV6_SUBNETS
+      or args.nat64_custom_v6_subnet_ip_ranges
+  ):
+    ranges_to_nat, subnetworks = _ParseIpv6SubnetFields(args, compute_holder)
+    nat.sourceSubnetworkIpRangesToNat64 = ranges_to_nat
+    nat.nat64Subnetworks = subnetworks
 
-    if args.clear_nat_subnet_ip_ranges:
-      nat.sourceSubnetworkIpRangesToNat = None
-      nat.subnetworks = []
+  if args.clear_nat_subnet_ip_ranges:
+    nat.sourceSubnetworkIpRangesToNat = None
+    nat.subnetworks = []
 
-    if args.clear_nat64_subnet_ip_ranges:
-      nat.sourceSubnetworkIpRangesToNat64 = None
-      nat.nat64Subnetworks = []
+  if args.clear_nat64_subnet_ip_ranges:
+    nat.sourceSubnetworkIpRangesToNat64 = None
+    nat.nat64Subnetworks = []
 
   if args.nat_external_drain_ip_pool:
     drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(

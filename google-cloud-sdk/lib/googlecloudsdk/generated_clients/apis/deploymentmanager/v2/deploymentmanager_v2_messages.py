@@ -1364,6 +1364,8 @@ class Operation(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    setAutoscalerLinkOperationMetadata: This field is used internally by the
+      Autoscaler team and should not be promoted to "alpha/beta/v1".
     setCommonInstanceMetadataOperationMetadata: [Output Only] If the operation
       is for projects.setCommonInstanceMetadata, this field will contain
       information on all underlying zonal actions and their state.
@@ -1645,15 +1647,16 @@ class Operation(_messages.Message):
   region = _messages.StringField(16)
   selfLink = _messages.StringField(17)
   selfLinkWithId = _messages.StringField(18)
-  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 19)
-  startTime = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusMessage = _messages.StringField(22)
-  targetId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(24)
-  user = _messages.StringField(25)
-  warnings = _messages.MessageField('WarningsValueListEntry', 26, repeated=True)
-  zone = _messages.StringField(27)
+  setAutoscalerLinkOperationMetadata = _messages.MessageField('SetAutoscalerLinkOperationMetadata', 19)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 20)
+  startTime = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  targetId = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(25)
+  user = _messages.StringField(26)
+  warnings = _messages.MessageField('WarningsValueListEntry', 27, repeated=True)
+  zone = _messages.StringField(28)
 
 
 class OperationsListResponse(_messages.Message):
@@ -2347,6 +2350,16 @@ class ResourcesListResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Resource', 2, repeated=True)
+
+
+class SetAutoscalerLinkOperationMetadata(_messages.Message):
+  r"""A SetAutoscalerLinkOperationMetadata object.
+
+  Fields:
+    zonalIgmIds: List of zonal IGM IDs part of the RMIG.
+  """
+
+  zonalIgmIds = _messages.IntegerField(1, repeated=True)
 
 
 class SetCommonInstanceMetadataOperationMetadata(_messages.Message):

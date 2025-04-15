@@ -33,9 +33,44 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FLAGRELEASES = (
+      'projects.locations.flagReleases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flagReleases/'
+              '{flagReleasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FLAGREVISIONS = (
+      'projects.locations.flagRevisions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flagRevisions/'
+              '{flagRevisionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FLAGS = (
+      'projects.locations.flags',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/flags/{flagsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_RELEASES = (

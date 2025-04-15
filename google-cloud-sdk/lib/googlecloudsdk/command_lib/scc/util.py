@@ -25,6 +25,63 @@ from googlecloudsdk.command_lib.scc import errors
 from googlecloudsdk.core import properties
 
 
+def GetFindingsParentFromPositionalArguments(args):
+  """Converts user input to one of: organization, project, or folder."""
+
+  id_pattern = re.compile("[0-9]+")
+  parent = None
+  if hasattr(args, "parent"):
+    if not args.parent:
+      parent = properties.VALUES.scc.parent.Get()
+    else:
+      parent = args.parent
+
+  if parent is None:
+    # Use organization property as backup for legacy behavior.
+    parent = properties.VALUES.scc.organization.Get()
+
+  organization = (
+      getattr(args, "organization", None)
+      if hasattr(args, "organization")
+      else None
+  )
+  project = getattr(args, "project", None) if hasattr(args, "project") else None
+  folder = getattr(args, "folder", None) if hasattr(args, "folder") else None
+
+  if organization:
+    parent = (
+        f"organizations/{organization}"
+        if id_pattern.match(organization)
+        else organization
+    )
+
+  elif project:
+    parent = f"projects/{project}" if id_pattern.match(project) else project
+
+  elif folder:
+    parent = f"folders/{folder}" if id_pattern.match(folder) else folder
+
+  if parent is None:
+    raise errors.InvalidSCCInputError(
+        "Could not find Parent argument. Please provide the parent argument."
+    )
+
+  if not (
+      parent.startswith("organizations/")
+      or parent.startswith("projects/")
+      or parent.startswith("folders/")
+  ):
+    error_message = (
+        "Parent must match either [0-9]+, organizations/[0-9]+, "
+        "projects/.* "
+        "or folders/.*."
+        ""
+    )
+    raise errors.InvalidSCCInputError(error_message)
+
+  return parent
+
+
 def GetParentFromPositionalArguments(args):
   """Converts user input to one of: organization, project, or folder."""
   id_pattern = re.compile("[0-9]+")

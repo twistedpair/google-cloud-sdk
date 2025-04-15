@@ -24,8 +24,12 @@ from googlecloudsdk.command_lib.functions import call_util
 from googlecloudsdk.core.credentials import store
 
 
-def GenerateIdToken():
+def GenerateIdToken(impersonate_service_account: bool = False):
   """Generate an expiring Google-signed OAuth2 identity token.
+
+  Args:
+    impersonate_service_account: bool, whether to enable a service account
+      impersonationwhen generating the token.
 
   Returns:
     token: str, expiring Google-signed OAuth2 identity token
@@ -45,7 +49,7 @@ def GenerateIdToken():
   # sets token on property of either
   # credentials.token_response['id_token'] or
   # credentials.id_tokenb64
-  store.Refresh(cred)
+  store.Refresh(cred, is_impersonated_credential=impersonate_service_account)
 
   credential = config_helper.Credential(cred)
 
@@ -70,7 +74,7 @@ def Run(args, release_track):
   call_util.UpdateHttpTimeout(args, function, 'v2', release_track)
 
   cloud_run_uri = function.serviceConfig.uri
-  token = GenerateIdToken()
+  token = GenerateIdToken(args.IsSpecified('impersonate_service_account'))
   auth_header = {'Authorization': 'Bearer {}'.format(token)}
 
   return call_util.MakePostRequest(

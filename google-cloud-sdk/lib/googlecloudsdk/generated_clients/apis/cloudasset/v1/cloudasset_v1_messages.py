@@ -2309,9 +2309,13 @@ class FeatureEnablement(_messages.Message):
     Values:
       FEATURE_ID_UNSPECIFIED: Unspecified.
       COLLECT_AWS_OU: Collect AWS ORGANIZATIONS and OUs for Security Posture.
+      COLLECT_AWS_SNS_SUBSCRIPTION_ATTRIBUTES: Collect
+        GetSubcriptionAttributes as supplementary config for
+        AWS::SNS::Subscription.
     """
     FEATURE_ID_UNSPECIFIED = 0
     COLLECT_AWS_OU = 1
+    COLLECT_AWS_SNS_SUBSCRIPTION_ATTRIBUTES = 2
 
   enablement = _messages.EnumField('EnablementValueValuesEnum', 1)
   featureId = _messages.EnumField('FeatureIdValueValuesEnum', 2)

@@ -381,6 +381,33 @@ class OracledatabaseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Switchover(self, request, global_params=None):
+      r"""Initiates a switchover of specified autonomous deatabase to the associated peer database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Switchover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Switchover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:switchover',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.switchover',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:switchover',
+        request_field='switchoverAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsAutonomousDbVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_autonomousDbVersions resource."""
 
@@ -1013,7 +1040,7 @@ class OracledatabaseV1(base_api.BaseApiClient):
         method_id='oracledatabase.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsListRequest',

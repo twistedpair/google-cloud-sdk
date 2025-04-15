@@ -491,6 +491,11 @@ class Templates:
     ).RuntimeEnvironment.IpConfigurationValueValuesEnum
     ip_private = ip_configuration_enum.WORKER_IP_PRIVATE
     ip_configuration = ip_private if template_args.disable_public_ips else None
+    user_labels_value = GetMessagesModule(
+    ).RuntimeEnvironment.AdditionalUserLabelsValue
+    user_labels_list = Templates.__ConvertDictArguments(
+        template_args.additional_user_labels,
+        user_labels_value)
 
     body = Templates.CREATE_REQUEST(
         gcsPath=template_args.gcs_location,
@@ -510,6 +515,9 @@ class Templates:
             workerRegion=template_args.worker_region,
             workerZone=template_args.worker_zone,
             enableStreamingEngine=template_args.enable_streaming_engine,
+            additionalUserLabels=user_labels_value(
+                additionalProperties=user_labels_list)
+            if user_labels_list else None,
             additionalExperiments=(
                 template_args.additional_experiments
                 if template_args.additional_experiments else
@@ -1292,7 +1300,12 @@ class Templates:
                     .additional_experiments else []),
                 additionalUserLabels=Templates.FLEX_TEMPLATE_USER_LABELS_VALUE(
                     additionalProperties=user_labels_list
-                ) if user_labels_list else None),
+                ) if user_labels_list else None,
+                additionalPipelineOptions=(
+                    template_args.additional_pipeline_options
+                    if template_args.additional_pipeline_options
+                    else []
+                )),
             update=streaming_update,
             transformNameMappings=transform_mappings,
             parameters=Templates.FLEX_TEMPLATE_PARAMETERS_VALUE(

@@ -57,3 +57,15 @@ CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG = (
     "Can only specify one of the following flags for get-credentials: "
     "--cross-connect-subnetwork, --internal-ip, --private-endpoint-fqdn."
 )
+
+LOGGING_DISABLED_WARNING = (
+    "Warning: If you disable Logging or apply exclusion filters to "
+    "System logs, GKE customer support is offered on a best-effort "
+    "basis and might require additional effort from your engineering team."
+)
+
+MONITORING_DISABLED_WARNING = (
+    "Warning: If you disable Monitoring, GKE customer support is offered "
+    "on a best-effort basis and might require additional effort "
+    "from your engineering team."
+)

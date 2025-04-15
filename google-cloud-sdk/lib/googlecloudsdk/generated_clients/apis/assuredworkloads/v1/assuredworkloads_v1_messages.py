@@ -108,6 +108,18 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsDeleteRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsEnableComplianceUpdatesRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsEnableComplianceUpdates
+  Request object.
+
+  Fields:
+    name: Required. The `name` field is used to identify the workload. Format:
+      organizations/{org_id}/locations/{location_id}/workloads/{workload_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest(_messages.Message):
   r"""A AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitorin
   gRequest object.
@@ -204,6 +216,40 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesReq
 
   googleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest = _messages.MessageField('GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesApplyRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesApplyRequest
+  object.
+
+  Fields:
+    googleCloudAssuredworkloadsV1ApplyWorkloadUpdateRequest: A
+      GoogleCloudAssuredworkloadsV1ApplyWorkloadUpdateRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the update. Format: organizations/{or
+      g_id}/locations/{location_id}/workloads/{workload_id}/updates/{update_id
+      }
+  """
+
+  googleCloudAssuredworkloadsV1ApplyWorkloadUpdateRequest = _messages.MessageField('GoogleCloudAssuredworkloadsV1ApplyWorkloadUpdateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesListRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesListRequest
+  object.
+
+  Fields:
+    pageSize: Page size. The default value is 20 and the max allowed value is
+      100.
+    pageToken: Page token returned from previous request.
+    parent: Required.
+      organizations/{org_id}/locations/{location_id}/workloads/{workload_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest(_messages.Message):
@@ -314,6 +360,66 @@ class GoogleCloudAssuredworkloadsV1AnalyzeWorkloadMoveResponse(_messages.Message
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAssuredworkloadsV1ApplyWorkloadUpdateOperationMetadata(_messages.Message):
+  r"""Operation metadata to give request details of ApplyWorkloadUpdate.
+
+  Enums:
+    ActionValueValuesEnum: Optional. The time the operation was created.
+
+  Fields:
+    action: Optional. The time the operation was created.
+    createTime: Optional. Output only. The time the operation was created.
+    updateName: Required. The resource name of the update
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Optional. The time the operation was created.
+
+    Values:
+      WORKLOAD_UPDATE_ACTION_UNSPECIFIED: Unspecified value.
+      APPLY: The update is applied.
+    """
+    WORKLOAD_UPDATE_ACTION_UNSPECIFIED = 0
+    APPLY = 1
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  updateName = _messages.StringField(3)
+
+
+class GoogleCloudAssuredworkloadsV1ApplyWorkloadUpdateRequest(_messages.Message):
+  r"""Request to apply update to a workload.
+
+  Enums:
+    ActionValueValuesEnum: The action to be performed on the update.
+
+  Fields:
+    action: The action to be performed on the update.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""The action to be performed on the update.
+
+    Values:
+      WORKLOAD_UPDATE_ACTION_UNSPECIFIED: Unspecified value.
+      APPLY: The update is applied.
+    """
+    WORKLOAD_UPDATE_ACTION_UNSPECIFIED = 0
+    APPLY = 1
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+
+
+class GoogleCloudAssuredworkloadsV1ApplyWorkloadUpdateResponse(_messages.Message):
+  r"""Response for ApplyWorkloadUpdate endpoint.
+
+  Fields:
+    appliedUpdate: The update that was applied.
+  """
+
+  appliedUpdate = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadUpdate', 1)
+
+
 class GoogleCloudAssuredworkloadsV1AssetMoveAnalysis(_messages.Message):
   r"""Represents move analysis results for an asset.
 
@@ -418,6 +524,10 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
   parent = _messages.StringField(4)
 
 
+class GoogleCloudAssuredworkloadsV1EnableComplianceUpdatesResponse(_messages.Message):
+  r"""Response for EnableComplianceUpdates endpoint."""
+
+
 class GoogleCloudAssuredworkloadsV1EnableResourceMonitoringResponse(_messages.Message):
   r"""Response for EnableResourceMonitoring endpoint."""
 
@@ -433,6 +543,18 @@ class GoogleCloudAssuredworkloadsV1ListViolationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   violations = _messages.MessageField('GoogleCloudAssuredworkloadsV1Violation', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1ListWorkloadUpdatesResponse(_messages.Message):
+  r"""Response of listing the compliance updates per workload with pagination.
+
+  Fields:
+    nextPageToken: The next page token. Return empty if reached the last page.
+    workloadUpdates: The list of workload updates for a given workload.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloadUpdates = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadUpdate', 2, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1ListWorkloadsResponse(_messages.Message):
@@ -503,6 +625,77 @@ class GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest(_messages.Mes
   updateMask = _messages.StringField(3)
 
 
+class GoogleCloudAssuredworkloadsV1OrgPolicy(_messages.Message):
+  r"""This assured workload service object is used to represent the org policy
+  attached to a resource. It servces the same purpose as the
+  orgpolicy.v2.Policy object but with functionality that is limited to what is
+  supported by Assured Workloads(e.g. only one rule under one OrgPolicy
+  object, no conditions, etc).
+
+  Fields:
+    constraint: The constraint name of the OrgPolicy. e.g.
+      "constraints/gcp.resourceLocations".
+    inherit: If `inherit` is true, policy rules of the lowest ancestor in the
+      resource hierarchy chain are inherited. If it is false, policy rules are
+      not inherited.
+    reset: Ignores policies set above this resource and restores to the
+      `constraint_default` value. `reset` can only be true when `rules` is
+      empty and `inherit` is false.
+    resource: Resource that the OrgPolicy attaches to. Format: folders/123"
+      projects/123".
+    rule: The rule of the OrgPolicy.
+  """
+
+  constraint = _messages.StringField(1)
+  inherit = _messages.BooleanField(2)
+  reset = _messages.BooleanField(3)
+  resource = _messages.StringField(4)
+  rule = _messages.MessageField('GoogleCloudAssuredworkloadsV1OrgPolicyPolicyRule', 5)
+
+
+class GoogleCloudAssuredworkloadsV1OrgPolicyPolicyRule(_messages.Message):
+  r"""A rule used to express this policy.
+
+  Fields:
+    allowAll: ListPolicy only when all values are allowed.
+    denyAll: ListPolicy only when all values are denied.
+    enforce: BooleanPolicy only.
+    values: ListPolicy only when custom values are specified.
+  """
+
+  allowAll = _messages.BooleanField(1)
+  denyAll = _messages.BooleanField(2)
+  enforce = _messages.BooleanField(3)
+  values = _messages.MessageField('GoogleCloudAssuredworkloadsV1OrgPolicyPolicyRuleStringValues', 4)
+
+
+class GoogleCloudAssuredworkloadsV1OrgPolicyPolicyRuleStringValues(_messages.Message):
+  r"""The values allowed for a ListPolicy.
+
+  Fields:
+    allowedValues: List of values allowed at this resource.
+    deniedValues: List of values denied at this resource.
+  """
+
+  allowedValues = _messages.StringField(1, repeated=True)
+  deniedValues = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1OrgPolicyUpdate(_messages.Message):
+  r"""Represents an update for an org policy control applied on an Assured
+  Workload resource. The inherited org policy is not considered.
+
+  Fields:
+    appliedPolicy: The org policy currently applied on the assured workload
+      resource.
+    suggestedPolicy: The suggested org policy that replaces the applied
+      policy.
+  """
+
+  appliedPolicy = _messages.MessageField('GoogleCloudAssuredworkloadsV1OrgPolicy', 1)
+  suggestedPolicy = _messages.MessageField('GoogleCloudAssuredworkloadsV1OrgPolicy', 2)
+
+
 class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest(_messages.Message):
   r"""Request for restricting list of available resources in Workload
   environment.
@@ -543,6 +736,16 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest(_messages.Mes
 
 class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Message):
   r"""Response for restricting the list of allowed resources."""
+
+
+class GoogleCloudAssuredworkloadsV1UpdateDetails(_messages.Message):
+  r"""The details of the update.
+
+  Fields:
+    orgPolicyUpdate: Update to one org policy, e.g. gcp.resourceLocation.
+  """
+
+  orgPolicyUpdate = _messages.MessageField('GoogleCloudAssuredworkloadsV1OrgPolicyUpdate', 1)
 
 
 class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
@@ -1259,6 +1462,44 @@ class GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse(_messages.Messa
 
   setupErrors = _messages.EnumField('SetupErrorsValueListEntryValuesEnum', 1, repeated=True)
   setupStatus = _messages.EnumField('SetupStatusValueValuesEnum', 2)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadUpdate(_messages.Message):
+  r"""A workload update is a change to the workload's compliance
+  configuration.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the update.
+
+  Fields:
+    createTime: The time the update was created.
+    details: The details of the update.
+    name: Output only. Immutable. Identifier. Resource name of the
+      WorkloadUpdate. Format: organizations/{organization}/locations/{location
+      }/workloads/{workload}/updates/{update}
+    state: Output only. The state of the update.
+    updateTime: The time the update was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the update.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      AVAILABLE: The update is available to be applied.
+      APPLIED: The update has been applied.
+      WITHDRAWN: The update has been withdrawn by the service.
+    """
+    STATE_UNSPECIFIED = 0
+    AVAILABLE = 1
+    APPLIED = 2
+    WITHDRAWN = 3
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('GoogleCloudAssuredworkloadsV1UpdateDetails', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadWorkloadOptions(_messages.Message):

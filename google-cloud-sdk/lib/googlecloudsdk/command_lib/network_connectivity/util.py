@@ -76,7 +76,7 @@ LIST_SPOKES_FORMAT = """
       format(
         "{0}{1}",
         linkedVpcNetwork.yesno(yes="N/A", no=""),
-        firstof(linkedVpnTunnels.siteToSiteDataTransfer, linkedInterconnectAttachments.siteToSiteDataTransfer, linkedRouterApplianceInstances.siteToSiteDataTransfer).yesno(yes="On", no="")
+        firstof(linkedVpnTunnels.siteToSiteDataTransfer, linkedInterconnectAttachments.siteToSiteDataTransfer, linkedRouterApplianceInstances.siteToSiteDataTransfer, gateway).yesno(yes="On", no="")
       ).yesno(no="Off").if(view=detailed):label="DATA TRANSFER",
       description.if(view=detailed)
     )

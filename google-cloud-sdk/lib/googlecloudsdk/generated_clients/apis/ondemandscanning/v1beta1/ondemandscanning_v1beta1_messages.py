@@ -191,7 +191,7 @@ class BinarySourceInfo(_messages.Message):
       different than the binary itself. Historically if they've differed,
       we've stored the name of the source and its version in the
       package/version fields, but we should also store the binary package
-      info, as that's what's actually installed. See b/175908657#comment15.
+      info, as that's what's actually installed.
     sourceVersion: The source package. Similar to the above, this is
       significant when the source is different than the binary itself. Since
       the top-level package/version fields are based on an if/else, we need a
@@ -1356,9 +1356,7 @@ class Layer(_messages.Message):
 
 
 class LayerDetails(_messages.Message):
-  r"""Details about the layer a package was found in. This should be the same
-  as the LayerDetails message in
-  google3/third_party/scalibr/binary/proto/scan_result.proto.
+  r"""Details about the layer a package was found in.
 
   Fields:
     baseImages: The base images the layer is found within.
@@ -1860,8 +1858,7 @@ class PackageData(_messages.Message):
       packages
     package: The package being analysed for vulnerabilities
     packageType: The type of package: os, maven, go, etc.
-    patchedCve: CVEs that this package is no longer vulnerable to go/drydock-
-      dd-custom-binary-scanning
+    patchedCve: CVEs that this package is no longer vulnerable to
     sourceVersion: DEPRECATED
     unused: A string attribute.
     version: The version of the package being analysed

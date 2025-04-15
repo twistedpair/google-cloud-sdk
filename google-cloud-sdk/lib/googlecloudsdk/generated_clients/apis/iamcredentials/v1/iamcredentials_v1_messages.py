@@ -100,6 +100,28 @@ class GenerateIdTokenResponse(_messages.Message):
   token = _messages.StringField(1)
 
 
+class IamcredentialsLocationsWorkforcePoolsGetAllowedLocationsRequest(_messages.Message):
+  r"""A IamcredentialsLocationsWorkforcePoolsGetAllowedLocationsRequest
+  object.
+
+  Fields:
+    name: Required. Resource name of workforce pool.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamcredentialsProjectsLocationsWorkloadIdentityPoolsGetAllowedLocationsRequest(_messages.Message):
+  r"""A IamcredentialsProjectsLocationsWorkloadIdentityPoolsGetAllowedLocation
+  sRequest object.
+
+  Fields:
+    name: Required. Resource name of workload identity pool.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest(_messages.Message):
   r"""A IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest
   object.
@@ -350,6 +372,34 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class WorkforcePoolAllowedLocations(_messages.Message):
+  r"""Represents a list of allowed locations for given workforce pool.
+
+  Fields:
+    encodedLocations: Output only. The hex encoded bitmap of the trust
+      boundary locations
+    locations: Output only. The human readable trust boundary locations. For
+      example, ["us-central1", "europe-west1"]
+  """
+
+  encodedLocations = _messages.StringField(1)
+  locations = _messages.StringField(2, repeated=True)
+
+
+class WorkloadIdentityPoolAllowedLocations(_messages.Message):
+  r"""Represents a list of allowed locations for given workload identity pool.
+
+  Fields:
+    encodedLocations: Output only. The hex encoded bitmap of the trust
+      boundary locations
+    locations: Output only. The human readable trust boundary locations. For
+      example, ["us-central1", "europe-west1"]
+  """
+
+  encodedLocations = _messages.StringField(1)
+  locations = _messages.StringField(2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

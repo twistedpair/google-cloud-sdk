@@ -4376,6 +4376,8 @@ class DialogflowProjectsLocationsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -4386,10 +4388,11 @@ class DialogflowProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DialogflowProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -6804,6 +6807,11 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
       session parameter name - Value: field path in the webhook response
     RequestHeadersValue: The HTTP request headers to send together with
       webhook requests.
+    SecretVersionsForRequestHeadersValue: Optional. The HTTP request headers
+      to send together with webhook requests. Header values are stored in
+      SecretManager secret versions. When the same header name is specified in
+      both `request_headers` and `secret_versions_for_request_headers`, the
+      value in `secret_versions_for_request_headers` will be used.
 
   Fields:
     allowedCaCerts: Optional. Specifies a list of allowed custom CA
@@ -6829,6 +6837,15 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
       send to flexible webhook.
     requestHeaders: The HTTP request headers to send together with webhook
       requests.
+    secretVersionForUsernamePassword: Optional. The SecretManager secret
+      version resource storing the username:password pair for HTTP Basic
+      authentication. Format:
+      `projects/{project}/secrets/{secret}/versions/{version}`
+    secretVersionsForRequestHeaders: Optional. The HTTP request headers to
+      send together with webhook requests. Header values are stored in
+      SecretManager secret versions. When the same header name is specified in
+      both `request_headers` and `secret_versions_for_request_headers`, the
+      value in `secret_versions_for_request_headers` will be used.
     serviceAgentAuth: Optional. Indicate the auth token type generated from
       the [Diglogflow service
       agent](https://cloud.google.com/iam/docs/service-agents#dialogflow-
@@ -6953,6 +6970,38 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecretVersionsForRequestHeadersValue(_messages.Message):
+    r"""Optional. The HTTP request headers to send together with webhook
+    requests. Header values are stored in SecretManager secret versions. When
+    the same header name is specified in both `request_headers` and
+    `secret_versions_for_request_headers`, the value in
+    `secret_versions_for_request_headers` will be used.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        SecretVersionsForRequestHeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SecretVersionsForRequestHeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SecretVersionsForRequestHeadersValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDialogflowCxV3WebhookGenericWebServiceSecretVersio
+          nHeaderValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookGenericWebServiceSecretVersionHeaderValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allowedCaCerts = _messages.BytesField(1, repeated=True)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
   oauthConfig = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig', 3)
@@ -6960,10 +7009,12 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
   password = _messages.StringField(5)
   requestBody = _messages.StringField(6)
   requestHeaders = _messages.MessageField('RequestHeadersValue', 7)
-  serviceAgentAuth = _messages.EnumField('ServiceAgentAuthValueValuesEnum', 8)
-  uri = _messages.StringField(9)
-  username = _messages.StringField(10)
-  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 11)
+  secretVersionForUsernamePassword = _messages.StringField(8)
+  secretVersionsForRequestHeaders = _messages.MessageField('SecretVersionsForRequestHeadersValue', 9)
+  serviceAgentAuth = _messages.EnumField('ServiceAgentAuthValueValuesEnum', 10)
+  uri = _messages.StringField(11)
+  username = _messages.StringField(12)
+  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 13)
 
 
 class GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig(_messages.Message):
@@ -6975,6 +7026,10 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig(_messages.Mes
     clientSecret: Optional. The client secret provided by the 3rd party
       platform.
     scopes: Optional. The OAuth scopes to grant.
+    secretVersionForClientSecret: Optional. The name of the SecretManager
+      secret version resource storing the client secret. If this field is set,
+      the `client_secret` field will be ignored. Format:
+      `projects/{project}/secrets/{secret}/versions/{version}`
     tokenEndpoint: Required. The token endpoint provided by the 3rd party
       platform to exchange an access token.
   """
@@ -6982,7 +7037,21 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig(_messages.Mes
   clientId = _messages.StringField(1)
   clientSecret = _messages.StringField(2)
   scopes = _messages.StringField(3, repeated=True)
-  tokenEndpoint = _messages.StringField(4)
+  secretVersionForClientSecret = _messages.StringField(4)
+  tokenEndpoint = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowCxV3WebhookGenericWebServiceSecretVersionHeaderValue(_messages.Message):
+  r"""Represents the value of an HTTP header stored in a SecretManager secret
+  version.
+
+  Fields:
+    secretVersion: Required. The SecretManager secret version resource storing
+      the header value. Format:
+      `projects/{project}/secrets/{secret}/versions/{version}`
+  """
+
+  secretVersion = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
@@ -9610,6 +9679,11 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
       session parameter name - Value: field path in the webhook response
     RequestHeadersValue: The HTTP request headers to send together with
       webhook requests.
+    SecretVersionsForRequestHeadersValue: Optional. The HTTP request headers
+      to send together with webhook requests. Header values are stored in
+      SecretManager secret versions. When the same header name is specified in
+      both `request_headers` and `secret_versions_for_request_headers`, the
+      value in `secret_versions_for_request_headers` will be used.
 
   Fields:
     allowedCaCerts: Optional. Specifies a list of allowed custom CA
@@ -9635,6 +9709,15 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
       send to flexible webhook.
     requestHeaders: The HTTP request headers to send together with webhook
       requests.
+    secretVersionForUsernamePassword: Optional. The SecretManager secret
+      version resource storing the username:password pair for HTTP Basic
+      authentication. Format:
+      `projects/{project}/secrets/{secret}/versions/{version}`
+    secretVersionsForRequestHeaders: Optional. The HTTP request headers to
+      send together with webhook requests. Header values are stored in
+      SecretManager secret versions. When the same header name is specified in
+      both `request_headers` and `secret_versions_for_request_headers`, the
+      value in `secret_versions_for_request_headers` will be used.
     serviceAgentAuth: Optional. Indicate the auth token type generated from
       the [Diglogflow service
       agent](https://cloud.google.com/iam/docs/service-agents#dialogflow-
@@ -9759,6 +9842,38 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecretVersionsForRequestHeadersValue(_messages.Message):
+    r"""Optional. The HTTP request headers to send together with webhook
+    requests. Header values are stored in SecretManager secret versions. When
+    the same header name is specified in both `request_headers` and
+    `secret_versions_for_request_headers`, the value in
+    `secret_versions_for_request_headers` will be used.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        SecretVersionsForRequestHeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SecretVersionsForRequestHeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SecretVersionsForRequestHeadersValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceSecretV
+          ersionHeaderValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceSecretVersionHeaderValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allowedCaCerts = _messages.BytesField(1, repeated=True)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
   oauthConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig', 3)
@@ -9766,10 +9881,12 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
   password = _messages.StringField(5)
   requestBody = _messages.StringField(6)
   requestHeaders = _messages.MessageField('RequestHeadersValue', 7)
-  serviceAgentAuth = _messages.EnumField('ServiceAgentAuthValueValuesEnum', 8)
-  uri = _messages.StringField(9)
-  username = _messages.StringField(10)
-  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 11)
+  secretVersionForUsernamePassword = _messages.StringField(8)
+  secretVersionsForRequestHeaders = _messages.MessageField('SecretVersionsForRequestHeadersValue', 9)
+  serviceAgentAuth = _messages.EnumField('ServiceAgentAuthValueValuesEnum', 10)
+  uri = _messages.StringField(11)
+  username = _messages.StringField(12)
+  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 13)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig(_messages.Message):
@@ -9781,6 +9898,10 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig(_message
     clientSecret: Optional. The client secret provided by the 3rd party
       platform.
     scopes: Optional. The OAuth scopes to grant.
+    secretVersionForClientSecret: Optional. The name of the SecretManager
+      secret version resource storing the client secret. If this field is set,
+      the `client_secret` field will be ignored. Format:
+      `projects/{project}/secrets/{secret}/versions/{version}`
     tokenEndpoint: Required. The token endpoint provided by the 3rd party
       platform to exchange an access token.
   """
@@ -9788,7 +9909,21 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig(_message
   clientId = _messages.StringField(1)
   clientSecret = _messages.StringField(2)
   scopes = _messages.StringField(3, repeated=True)
-  tokenEndpoint = _messages.StringField(4)
+  secretVersionForClientSecret = _messages.StringField(4)
+  tokenEndpoint = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceSecretVersionHeaderValue(_messages.Message):
+  r"""Represents the value of an HTTP header stored in a SecretManager secret
+  version.
+
+  Fields:
+    secretVersion: Required. The SecretManager secret version resource storing
+      the header value. Format:
+      `projects/{project}/secrets/{secret}/versions/{version}`
+  """
+
+  secretVersion = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
@@ -13034,6 +13169,8 @@ class GoogleCloudDialogflowV2Generator(_messages.Message):
       number. Example: `text-bison` * To use a stable model version, specify
       the version number as well. Example: `text-bison@002`.
     summarizationContext: Input of prebuilt Summarization feature.
+    tools: Optional. Resource names of the tools that the generator can choose
+      from. Format: `projects//locations//tools/`.
     triggerEvent: Optional. The trigger event of the generator. It defines
       when the generator is triggered in a conversation.
     updateTime: Output only. Update time of this generator.
@@ -13066,8 +13203,9 @@ class GoogleCloudDialogflowV2Generator(_messages.Message):
   name = _messages.StringField(5)
   publishedModel = _messages.StringField(6)
   summarizationContext = _messages.MessageField('GoogleCloudDialogflowV2SummarizationContext', 7)
-  triggerEvent = _messages.EnumField('TriggerEventValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  tools = _messages.StringField(8, repeated=True)
+  triggerEvent = _messages.EnumField('TriggerEventValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudDialogflowV2GeneratorSuggestion(_messages.Message):
@@ -13076,10 +13214,25 @@ class GoogleCloudDialogflowV2GeneratorSuggestion(_messages.Message):
   Fields:
     freeFormSuggestion: Optional. Free form suggestion.
     summarySuggestion: Optional. Suggested summary.
+    toolCallInfo: Optional. List of request and response for tool calls
+      executed.
   """
 
   freeFormSuggestion = _messages.MessageField('GoogleCloudDialogflowV2FreeFormSuggestion', 1)
   summarySuggestion = _messages.MessageField('GoogleCloudDialogflowV2SummarySuggestion', 2)
+  toolCallInfo = _messages.MessageField('GoogleCloudDialogflowV2GeneratorSuggestionToolCallInfo', 3, repeated=True)
+
+
+class GoogleCloudDialogflowV2GeneratorSuggestionToolCallInfo(_messages.Message):
+  r"""Request and response for a tool call.
+
+  Fields:
+    toolCall: Required. Request for a tool call.
+    toolCallResult: Required. Response for a tool call.
+  """
+
+  toolCall = _messages.MessageField('GoogleCloudDialogflowV2ToolCall', 1)
+  toolCallResult = _messages.MessageField('GoogleCloudDialogflowV2ToolCallResult', 2)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
@@ -17522,6 +17675,83 @@ class GoogleCloudDialogflowV2TextToSpeechSettings(_messages.Message):
   synthesizeSpeechConfigs = _messages.MessageField('SynthesizeSpeechConfigsValue', 4)
 
 
+class GoogleCloudDialogflowV2ToolCall(_messages.Message):
+  r"""Represents a call of a specific tool's action with the specified inputs.
+
+  Messages:
+    InputParametersValue: Optional. The action's input parameters.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    createTime: Output only. Create time of the tool call.
+    inputParameters: Optional. The action's input parameters.
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//tools/`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputParametersValue(_messages.Message):
+    r"""Optional. The action's input parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  inputParameters = _messages.MessageField('InputParametersValue', 3)
+  tool = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2ToolCallResult(_messages.Message):
+  r"""The result of calling a tool's action.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    content: Only populated if the response content is utf-8 encoded.
+    createTime: Output only. Create time of the tool call result.
+    error: The tool call's error.
+    rawContent: Only populated if the response content is not utf-8 encoded.
+      (by definition byte fields are base64 encoded).
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//tools/`.
+  """
+
+  action = _messages.StringField(1)
+  content = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  error = _messages.MessageField('GoogleCloudDialogflowV2ToolCallResultError', 4)
+  rawContent = _messages.BytesField(5)
+  tool = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowV2ToolCallResultError(_messages.Message):
+  r"""An error produced by the tool call.
+
+  Fields:
+    message: Optional. The error message of the function.
+  """
+
+  message = _messages.StringField(1)
+
+
 class GoogleCloudDialogflowV2TrainAgentRequest(_messages.Message):
   r"""The request message for Agents.TrainAgent."""
 
@@ -18462,10 +18692,25 @@ class GoogleCloudDialogflowV2beta1GeneratorSuggestion(_messages.Message):
   Fields:
     freeFormSuggestion: Optional. Free form suggestion.
     summarySuggestion: Optional. Suggested summary.
+    toolCallInfo: Optional. List of request and response for tool calls
+      executed.
   """
 
   freeFormSuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1FreeFormSuggestion', 1)
   summarySuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1SummarySuggestion', 2)
+  toolCallInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1GeneratorSuggestionToolCallInfo', 3, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1GeneratorSuggestionToolCallInfo(_messages.Message):
+  r"""Request and response for a tool call.
+
+  Fields:
+    toolCall: Required. Request for a tool call.
+    toolCallResult: Required. Response for a tool call.
+  """
+
+  toolCall = _messages.MessageField('GoogleCloudDialogflowV2beta1ToolCall', 1)
+  toolCallResult = _messages.MessageField('GoogleCloudDialogflowV2beta1ToolCallResult', 2)
 
 
 class GoogleCloudDialogflowV2beta1HumanAgentAssistantEvent(_messages.Message):
@@ -20901,6 +21146,83 @@ class GoogleCloudDialogflowV2beta1TelephonyDtmfEvents(_messages.Message):
     DTMF_POUND = 16
 
   dtmfEvents = _messages.EnumField('DtmfEventsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1ToolCall(_messages.Message):
+  r"""Represents a call of a specific tool's action with the specified inputs.
+
+  Messages:
+    InputParametersValue: Optional. The action's input parameters.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    createTime: Output only. Create time of the tool call.
+    inputParameters: Optional. The action's input parameters.
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//tools/`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputParametersValue(_messages.Message):
+    r"""Optional. The action's input parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  inputParameters = _messages.MessageField('InputParametersValue', 3)
+  tool = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1ToolCallResult(_messages.Message):
+  r"""The result of calling a tool's action.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    content: Only populated if the response content is utf-8 encoded.
+    createTime: Output only. Create time of the tool call result.
+    error: The tool call's error.
+    rawContent: Only populated if the response content is not utf-8 encoded.
+      (by definition byte fields are base64 encoded).
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//tools/`.
+  """
+
+  action = _messages.StringField(1)
+  content = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  error = _messages.MessageField('GoogleCloudDialogflowV2beta1ToolCallResultError', 4)
+  rawContent = _messages.BytesField(5)
+  tool = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowV2beta1ToolCallResultError(_messages.Message):
+  r"""An error produced by the tool call.
+
+  Fields:
+    message: Optional. The error message of the function.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):

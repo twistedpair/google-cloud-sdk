@@ -57,14 +57,14 @@ properties:
     - AUTOMATIC
     - DISABLED
   connectionDraining:
-    description: A ConnectionDraining attribute.
+    description: connectionDraining cannot be specified with haPolicy.
     $ref: ConnectionDraining.yaml
   connectionTrackingPolicy:
     description: |-
       Connection Tracking configuration for this BackendService. Connection
       tracking policy settings are only available for external passthrough
       Network Load Balancers and internal passthrough Network Load
-      Balancers.
+      Balancers. connectionTrackingPolicy cannot be specified with haPolicy.
     $ref: BackendServiceConnectionTrackingPolicy.yaml
   consistentHash:
     description: |-
@@ -172,6 +172,7 @@ properties:
       passthrough Network Load
       Balancers](https://cloud.google.com/load-
       balancing/docs/network/networklb-failover-overview).
+      failoverPolicy cannot be specified with haPolicy.
     $ref: BackendServiceFailoverPolicy.yaml
   fingerprint:
     description: |-
@@ -184,6 +185,32 @@ properties:
       the latest fingerprint, make a get() request to retrieve a
       BackendService.
     type: string
+  haPolicy:
+    description: |-
+      Configures self-managed High Availability (HA) for
+      External and Internal Protocol Forwarding. The backends of
+      this regional backend service must only specify zonal
+      network endpoint groups (NEGs) of type GCE_VM_IP. When
+      haPolicy is set for an Internal Passthrough Network Load
+      Balancer, the regional backend service must set the
+      network field. All zonal NEGs must belong to the same
+      network. However, individual NEGs can belong to different
+      subnetworks of that network. When haPolicy is specified,
+      the set of attached network endpoints across all backends
+      comprise an High Availability domain from which one
+      endpoint is selected as the active endpoint (the leader)
+      that receives all traffic. haPolicy can be added only at
+      backend service creation time. Once set up, it cannot be
+      deleted. Note that haPolicy is not for load balancing, and
+      therefore cannot be specified with sessionAffinity,
+      connectionTrackingPolicy, and failoverPolicy. haPolicy
+      requires customers to be responsible for tracking backend
+      endpoint health and electing a leader among the healthy
+      endpoints. Therefore, haPolicy cannot be specified with
+      healthChecks. haPolicy can only be specified for External
+      Passthrough Network Load Balancers and Internal
+      Passthrough Network Load Balancers.
+    $ref: BackendServiceHAPolicy.yaml
   healthChecks:
     description: |-
       The list of URLs to the healthChecks, httpHealthChecks
@@ -193,8 +220,9 @@ properties:
       guide. Currently, at most one health check can be
       specified for each backend service. Backend services with
       instance group or zonal NEG backends must have a health
-      check. Backend services with internet or serverless NEG
-      backends must not have a health check.
+      check unless haPolicy is specified. Backend services with
+      internet or serverless NEG backends must not have a health
+      check. healthChecks[] cannot be specified with haPolicy.
     type: array
     items:
       type: string
@@ -345,13 +373,20 @@ properties:
   network:
     description: |-
       The URL of the network to which this backend
-      service belongs. This field can only be specified
-      when the load balancing scheme is set to INTERNAL.
+      service belongs. This field must be set for
+      Internal Passthrough Network Load Balancers when
+      the haPolicy is enabled, and for External
+      Passthrough Network Load Balancers when the
+      haPolicy fastIpMove is enabled. This field can
+      only be specified when the load balancing scheme
+      is set to INTERNAL.
     type: string
   networkPassThroughLbTrafficPolicy:
     description: |-
       Configures traffic steering properties of internal
       passthrough Network Load Balancers.
+      networkPassThroughLbTrafficPolicy cannot be
+      specified with haPolicy.
     $ref: BackendServiceNetworkPassThroughLbTrafficPolicy.yaml
   outlierDetection:
     description: |-
@@ -490,7 +525,8 @@ properties:
       more details, see: [Session
       Affinity](https://cloud.google.com/load-
       balancing/docs/backend-
-      service#session_affinity).
+      service#session_affinity). sessionAffinity
+      cannot be specified with haPolicy.
     type: string
     enum:
     - CLIENT_IP
@@ -510,7 +546,8 @@ properties:
       STRONG_COOKIE_AFFINITY.
     $ref: BackendServiceHttpCookie.yaml
   subsetting:
-    description: A Subsetting attribute.
+    description: |-
+      subsetting cannot be specified with haPolicy.
     $ref: Subsetting.yaml
   timeoutSec:
     description: |-

@@ -430,7 +430,6 @@ def AddCreateInstanceFlags(parser):
           'Supported values: `SEV`.'
       ),
       type=str,
-      hidden=True,
   )
 
   gpu_group = gce_setup_group.add_group(help='GPU driver configurations.')

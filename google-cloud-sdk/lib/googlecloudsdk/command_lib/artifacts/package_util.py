@@ -44,6 +44,7 @@ def ListPackages(args):
   page_size = args.page_size
   order_by = common_args.ParseSortByArg(args.sort_by)
   _, server_filter = filter_rewriter.Rewriter().Rewrite(args.filter)
+  limit = args.limit
 
   if order_by is not None:
     if "," in order_by:
@@ -59,6 +60,7 @@ def ListPackages(args):
     else:
       # Fall back to client-side paging with client-side filtering.
       page_size = None
+      limit = None
 
   repo_path = resources.Resource.RelativeName(
       resources.REGISTRY.Create(
@@ -73,7 +75,8 @@ def ListPackages(args):
       "repo": repo_path,
       "server_filter": server_filter,
       "page_size": page_size,
-      "order_by": order_by
+      "order_by": order_by,
+      "limit": limit
   }
   server_args_skipped, lpkgs = util.RetryOnInvalidArguments(
       requests.ListPackages,

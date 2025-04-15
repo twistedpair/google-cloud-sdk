@@ -25,9 +25,6 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  connectTimeout:
-    description: The timeout for new network connections to hosts.
-    $ref: Duration.yaml
   maxConnections:
     description: |-
       The maximum number of connections to the backend service. If not

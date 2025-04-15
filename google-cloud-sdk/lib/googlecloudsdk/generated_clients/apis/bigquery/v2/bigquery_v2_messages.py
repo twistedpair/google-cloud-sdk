@@ -576,7 +576,8 @@ class BiEngineStatistics(_messages.Message):
 
 
 class BigLakeConfiguration(_messages.Message):
-  r"""Configuration for BigLake managed tables.
+  r"""Configuration for BigQuery tables for Apache Iceberg (formerly BigLake
+  managed tables.)
 
   Enums:
     FileFormatValueValuesEnum: Optional. The file format the table data is
@@ -4167,6 +4168,11 @@ class JobConfiguration(_messages.Message):
       in the list must have a different key.
     load: [Pick one] Configures a load job.
     query: [Pick one] Configures a query job.
+    reservation: Optional. The reservation that job would use. User can
+      specify a reservation to execute the job. If reservation is not set,
+      reservation is determined based on the rules defined by the reservation
+      assignments. The expected format is
+      `projects/{project}/locations/{location}/reservations/{reservation}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4206,6 +4212,7 @@ class JobConfiguration(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   load = _messages.MessageField('JobConfigurationLoad', 7)
   query = _messages.MessageField('JobConfigurationQuery', 8)
+  reservation = _messages.StringField(9)
 
 
 class JobConfigurationExtract(_messages.Message):
@@ -6669,6 +6676,10 @@ class QueryRequest(_messages.Message):
       lifetime is limited to 15 minutes. In other words, if two requests are
       sent with the same request_id, but more than 15 minutes apart,
       idempotency is not guaranteed.
+    reservation: Optional. The reservation that jobs.query request would use.
+      User can specify a reservation to execute the job.query. The expected
+      format is
+      `projects/{project}/locations/{location}/reservations/{reservation}`.
     timeoutMs: Optional. Optional: Specifies the maximum amount of time, in
       milliseconds, that the client is willing to wait for the query to
       complete. By default, this limit is 10 seconds (10,000 milliseconds). If
@@ -6763,10 +6774,11 @@ class QueryRequest(_messages.Message):
   query = _messages.StringField(17)
   queryParameters = _messages.MessageField('QueryParameter', 18, repeated=True)
   requestId = _messages.StringField(19)
-  timeoutMs = _messages.IntegerField(20, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(21, default=True)
-  useQueryCache = _messages.BooleanField(22, default=True)
-  writeIncrementalResults = _messages.BooleanField(23)
+  reservation = _messages.StringField(20)
+  timeoutMs = _messages.IntegerField(21, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(22, default=True)
+  useQueryCache = _messages.BooleanField(23, default=True)
+  writeIncrementalResults = _messages.BooleanField(24)
 
 
 class QueryResponse(_messages.Message):
@@ -8238,8 +8250,8 @@ class Table(_messages.Message):
       short name of the tag value, e.g. "production".
 
   Fields:
-    biglakeConfiguration: Optional. Specifies the configuration of a BigLake
-      managed table.
+    biglakeConfiguration: Optional. Specifies the configuration of a BigQuery
+      table for Apache Iceberg.
     cloneDefinition: Output only. Contains information about the clone. This
       value is set via the clone operation.
     clustering: Clustering specification for the table. Must be specified with

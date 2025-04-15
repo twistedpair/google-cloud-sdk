@@ -26,9 +26,10 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import exceptions as sdk_core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -36,23 +37,23 @@ from googlecloudsdk.core import resources
 import six
 
 
-class NoFieldsSpecifiedError(exceptions.Error):
+class NoFieldsSpecifiedError(sdk_core_exceptions.Error):
   """Error if no fields are specified for an update request."""
 
 
-class AttachDiskError(exceptions.Error):
+class AttachDiskError(sdk_core_exceptions.Error):
   """Error if the update request is invalid for attaching a disk."""
 
 
-class DetachDiskError(exceptions.Error):
+class DetachDiskError(sdk_core_exceptions.Error):
   """Error if the update request is invalid for detaching a disk."""
 
 
-class BootDiskConfigurationError(exceptions.Error):
+class BootDiskConfigurationError(sdk_core_exceptions.Error):
   """Error if the boot disk configuration is invalid."""
 
 
-class WorkerIdsError(exceptions.Error):
+class WorkerIdsError(sdk_core_exceptions.Error):
   """Error if the boot disk configuration is invalid."""
 
 
@@ -576,6 +577,38 @@ def CreateReservationName(unused_ref, args, request):
   if reservation_name:
     request.node.schedulingConfig.reservationName = reservation_name
   return request
+
+
+def SetProvisioningModel(api_version):
+  """Sets the provisioning model enum value."""
+  def Process(_, args, request):
+    tpu_messages = GetMessagesModule(api_version)
+    if args.spot:
+      request.node.schedulingConfig.provisioningModel = (
+          tpu_messages.SchedulingConfig.ProvisioningModelValueValuesEnum.SPOT
+      )
+      return request
+    if not args.provisioning_model:
+      request.node.schedulingConfig.provisioningModel = (
+          tpu_messages.SchedulingConfig.ProvisioningModelValueValuesEnum.STANDARD
+      )
+      return request
+    try:
+      normalized_candidate = args.provisioning_model.replace('-', '_').upper()
+      candidate_enum = (
+          tpu_messages.SchedulingConfig.ProvisioningModelValueValuesEnum(
+              normalized_candidate
+          )
+      )
+    except TypeError as e:
+      raise exceptions.InvalidArgumentException(
+          '--provisioning-model',
+          f'{args.provisioning_model} is not a valid provisioning model, must'
+          ' be one of [standard, spot, reservation-bound]',
+      ) from e
+    request.node.schedulingConfig.provisioningModel = candidate_enum
+    return request
+  return Process
 
 
 class TPUNode(object):

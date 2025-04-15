@@ -6608,21 +6608,18 @@ class Subject(_messages.Message):
 
   Messages:
     DigestValue: "": "" Algorithms can be e.g. sha256, sha512 See
-      https://github.com/in-
-      toto/attestation/blob/main/spec/field_types.md#DigestSet
+      https://github.com/in-toto/attestation/blob/main/spec/v1/digest_set.md.
 
   Fields:
     digest: "": "" Algorithms can be e.g. sha256, sha512 See
-      https://github.com/in-
-      toto/attestation/blob/main/spec/field_types.md#DigestSet
+      https://github.com/in-toto/attestation/blob/main/spec/v1/digest_set.md.
     name: name is the name of the Subject used here
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DigestValue(_messages.Message):
     r""""": "" Algorithms can be e.g. sha256, sha512 See
-    https://github.com/in-
-    toto/attestation/blob/main/spec/field_types.md#DigestSet
+    https://github.com/in-toto/attestation/blob/main/spec/v1/digest_set.md.
 
     Messages:
       AdditionalProperty: An additional property for a DigestValue object.

@@ -6990,7 +6990,8 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
       the data profile.
     fileClusterSummaries: FileClusterSummary per each cluster.
     fileStoreInfoTypeSummaries: InfoTypes detected in this file store.
-    fileStoreIsEmpty: The file store does not have any files.
+    fileStoreIsEmpty: The file store does not have any files. If the profiling
+      failed, this will be false.
     fileStoreLocation: The location of the file store. * Cloud Storage:
       https://cloud.google.com/storage/docs/locations#available-locations *
       Amazon S3:

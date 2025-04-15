@@ -117,6 +117,12 @@ def GetFullSourceName(args, version):
       return f"{source}/locations/{location}"
     return source
 
+  if hasattr(args, "finding") and id_pattern.match(args.source):
+    source = f"{scc_util.GetFindingsParentFromPositionalArguments(args)}/sources/{args.source}"
+    if version == "v2":
+      return f"{source}/locations/{location}"
+    return source
+
   if id_pattern.match(args.source):
     source = f"{scc_util.GetParentFromPositionalArguments(args)}/sources/{args.source}"
     if version == "v2":
@@ -291,7 +297,10 @@ def ValidateMutexOnSourceAndParent(args):
 def ExtractSecurityMarksFromResponse(response, args):
   """Returns security marks from finding response."""
   del args
-  list_finding_response = list(response)
+  if isinstance(response, list):
+    list_finding_response = response
+  else:
+    list_finding_response = list(response)
   if len(list_finding_response) > 1:
     raise errors.InvalidSCCInputError(
         "ListFindingResponse must only return one finding since it is "

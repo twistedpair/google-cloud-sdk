@@ -205,6 +205,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
@@ -252,6 +253,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
@@ -325,15 +327,15 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
     `run.googleapis.com/encryption-key`: Revision, Execution. *
     `run.googleapis.com/execution-environment`: Revision, Execution. *
-    `run.googleapis.com/gc-traffic-tags`: Service. *
-    `run.googleapis.com/health-check-disabled`: Revision. *
-    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-    stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
-    `run.googleapis.com/network-interfaces`: Revision, Execution. *
-    `run.googleapis.com/post-key-revocation-action-type`: Revision. *
-    `run.googleapis.com/secrets`: Revision, Execution. *
-    `run.googleapis.com/secure-session-agent`: Revision. *
-    `run.googleapis.com/sessionAffinity`: Revision. *
+    `run.googleapis.com/gc-traffic-tags`: Service. * `run.googleapis.com/gpu-
+    zonal-redundancy-disabled`: Revision. * `run.googleapis.com/health-check-
+    disabled`: Revision. * `run.googleapis.com/ingress`: Service. *
+    `run.googleapis.com/launch-stage`: Service, Job. *
+    `run.googleapis.com/minScale`: Service * `run.googleapis.com/network-
+    interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
+    revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
+    Revision, Execution. * `run.googleapis.com/secure-session-agent`:
+    Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
     `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
     `run.googleapis.com/vpc-access-egress`: Revision, Execution.

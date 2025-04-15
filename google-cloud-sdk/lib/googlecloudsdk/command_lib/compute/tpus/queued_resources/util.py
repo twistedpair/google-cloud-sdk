@@ -238,13 +238,16 @@ def SetSpot(api_version):
 
   def Process(ref, args, request):
     del ref  # unused
-    if args.spot:
-      tpu_messages = GetMessagesModule(api_version)
-      if request.queuedResource is None:
-        request.queuedResource = tpu_messages.QueuedResource()
-      if request.queuedResource.spot is None:
+    tpu_messages = GetMessagesModule(api_version)
+    if request.queuedResource is None:
+      request.queuedResource = tpu_messages.QueuedResource()
+    if args.spot and request.queuedResource.spot is None:
+      request.queuedResource.spot = tpu_messages.Spot()
+    if api_version == 'v2alpha1' and args.provisioning_model:
+      provisioning_model = args.provisioning_model.replace('-', '_').upper()
+      spot = tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.SPOT
+      if provisioning_model == spot and request.queuedResource.spot is None:
         request.queuedResource.spot = tpu_messages.Spot()
-
     return request
 
   return Process
@@ -271,38 +274,36 @@ def SetProvisioningModel(api_version):
   """Sets the provisioning model enum value."""
   def Process(ref, args, request):
     del ref  # unused
+    tpu_messages = GetMessagesModule(api_version)
+    if request.queuedResource is None:
+      request.queuedResource = tpu_messages.QueuedResource()
+    if not args.provisioning_model:
+      if args.spot:
+        request.queuedResource.provisioningModel = (
+            tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.SPOT
+        )
+      request.queuedResource.provisioningModel = (
+          tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum.STANDARD
+      )
+      return request
     # create.yaml is in declarative style without direct access to the parser,
     # instead leverage the generated client's enum functionality.
-    if args.provisioning_model:
-      tpu_messages = GetMessagesModule(api_version)
-      if request.queuedResource is None:
-        request.queuedResource = tpu_messages.QueuedResource()
-      try:
-        # Per gcloud style guidance, standard choice flag options are lower
-        # case with dashes but we also support underscores and upper case.
-        normalized_candidate = args.provisioning_model.replace('-', '_').upper()
-        candidate_enum = (
-            tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum(
-                normalized_candidate
-            )
-        )
-      except TypeError as e:
-        raise exceptions.InvalidArgumentException(
-            '--provisioning-model',
-            f'{args.provisioning_model} is not a valid provisioning model, only'
-            ' flex-start and reservation-bound are supported',
-        ) from e
-      model_enums = tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum
-      if (
-          candidate_enum != model_enums.FLEX_START
-          and candidate_enum != model_enums.RESERVATION_BOUND
-      ):
-        raise exceptions.InvalidArgumentException(
-            '--provisioning-model',
-            'Only flex-start and reservation-bound are supported for'
-            ' provisioning model',
-        )
-      request.queuedResource.provisioningModel = candidate_enum
+    try:
+      # Per gcloud style guidance, standard choice flag options are lower
+      # case with dashes but we also support underscores and upper case.
+      normalized_candidate = args.provisioning_model.replace('-', '_').upper()
+      candidate_enum = (
+          tpu_messages.QueuedResource.ProvisioningModelValueValuesEnum(
+              normalized_candidate
+          )
+      )
+    except TypeError as e:
+      raise exceptions.InvalidArgumentException(
+          '--provisioning-model',
+          f'{args.provisioning_model} is not a valid provisioning model, must'
+          ' be one of [standard, spot, reservation-bound, flex-start]',
+      ) from e
+    request.queuedResource.provisioningModel = candidate_enum
     return request
   return Process
 

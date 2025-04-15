@@ -52,7 +52,7 @@ runtime_version:
   arg_name: runtime-version
   required: true
   help_text: |
-    Runtime version for the TPU, such as `2.3`.
+    Runtime version for the TPU, such as `tpu-ubuntu2204-base`.
 
 best_effort:
   arg_name: best-effort
@@ -79,7 +79,6 @@ provisioning_model:
   arg_name: provisioning-model
   help_text: |
     If provided, the resource will be provisioned with the specified provisioning model.
-    Currently only flex-start and reservation-bound are supported.
 
 max_run_duration:
   arg_name: max-run-duration

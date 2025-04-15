@@ -18,7 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+from typing import Union
+
+from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import full_resource_formatter as base
+from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.resources import shim_format_util
 
 _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
@@ -34,7 +41,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
         title='Location constraint', default=shim_format_util.NONE_STRING
     ),
     data_locations=base.FieldDisplayTitleAndDefault(
-        title='Placement Locations', default=None
+        title='Placement locations', default=None
     ),
     versioning_enabled=base.FieldDisplayTitleAndDefault(
         title='Versioning enabled', default=shim_format_util.NONE_STRING
@@ -73,6 +80,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     update_time=base.FieldDisplayTitleAndDefault(
         title='Time updated', default=None
     ),
+    # Soft and hard delete are not supported in gsutil.
     soft_delete_time=None,
     hard_delete_time=None,
     generation=None,
@@ -82,21 +90,19 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     uniform_bucket_level_access=base.FieldDisplayTitleAndDefault(
         title='Bucket Policy Only enabled', default=None
     ),
-    public_access_prevention=base.FieldDisplayTitleAndDefault(
-        title='Public access prevention', default=None
-    ),
-    rpo=base.FieldDisplayTitleAndDefault(title='RPO', default=None),
     autoclass=None,
     autoclass_enabled_time=base.FieldDisplayTitleAndDefault(
         title='Autoclass', default=None
     ),
+    public_access_prevention=base.FieldDisplayTitleAndDefault(
+        title='Public access prevention', default=None
+    ),
+    rpo=base.FieldDisplayTitleAndDefault(title='RPO', default=None),
     satisfies_pzs=base.FieldDisplayTitleAndDefault(
         title='Satisfies PZS', default=None
     ),
-    # Soft and hard delete not supported in shimless gsutil.
-    soft_delete_policy=base.FieldDisplayTitleAndDefault(
-        title='Soft Delete Policy', default=None
-    ),
+    # Soft delete policy is not supported in gsutil.
+    soft_delete_policy=None,
     # IP Filter is not supported in gsutil.
     ip_filter_config=None,
     acl=base.FieldDisplayTitleAndDefault(
@@ -108,95 +114,95 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     name=None,
 )
 
-_OBJECT_DISPLAY_TITLES_AND_DEFAULTS = base.ObjectDisplayTitlesAndDefaults(
-    creation_time=base.FieldDisplayTitleAndDefault(
-        title='Creation time', default=None
-    ),
-    update_time=base.FieldDisplayTitleAndDefault(
-        title='Update time', default=None
-    ),
-    storage_class_update_time=base.FieldDisplayTitleAndDefault(
-        title='Storage class update time', default=None
-    ),
-    # Soft and hard delete not supported in shimless gsutil.
-    soft_delete_time=base.FieldDisplayTitleAndDefault(
-        title='Soft Delete Time', default=None
-    ),
-    hard_delete_time=base.FieldDisplayTitleAndDefault(
-        title='Hard Delete Time', default=None
-    ),
-    storage_class=base.FieldDisplayTitleAndDefault(
-        title='Storage class', default=None
-    ),
-    temporary_hold=base.FieldDisplayTitleAndDefault(
-        title='Temporary Hold', default=None
-    ),
-    event_based_hold=base.FieldDisplayTitleAndDefault(
-        title='Event-Based Hold', default=None
-    ),
-    retention_expiration=base.FieldDisplayTitleAndDefault(
-        title='Retention Expiration', default=None
-    ),
-    # Retention settings not supported in shimless gsutil.
-    retention_settings=base.FieldDisplayTitleAndDefault(
-        title='Retention Settings', default=None
-    ),
-    kms_key=base.FieldDisplayTitleAndDefault(title='KMS key', default=None),
-    cache_control=base.FieldDisplayTitleAndDefault(
-        title='Cache-Control', default=None
-    ),
-    content_disposition=base.FieldDisplayTitleAndDefault(
-        title='Content-Disposition', default=None
-    ),
-    content_encoding=base.FieldDisplayTitleAndDefault(
-        title='Content-Encoding', default=None
-    ),
-    content_language=base.FieldDisplayTitleAndDefault(
-        title='Content-Language', default=None
-    ),
-    size=base.FieldDisplayTitleAndDefault(
-        title='Content-Length', default=shim_format_util.NONE_STRING
-    ),
-    content_type=base.FieldDisplayTitleAndDefault(
-        title='Content-Type', default=shim_format_util.NONE_STRING
-    ),
-    component_count=base.FieldDisplayTitleAndDefault(
-        title='Component-Count', default=None
-    ),
-    custom_time=base.FieldDisplayTitleAndDefault(
-        title='Custom-Time', default=None
-    ),
-    noncurrent_time=base.FieldDisplayTitleAndDefault(
-        title='Noncurrent time', default=None
-    ),
-    custom_fields=base.FieldDisplayTitleAndDefault(
-        title='Metadata', default=None
-    ),
-    crc32c_hash=base.FieldDisplayTitleAndDefault(
-        title='Hash (crc32c)', default=None
-    ),
-    md5_hash=base.FieldDisplayTitleAndDefault(title='Hash (md5)', default=None),
-    encryption_algorithm=base.FieldDisplayTitleAndDefault(
-        title='Encryption algorithm', default=None
-    ),
-    decryption_key_hash_sha256=base.FieldDisplayTitleAndDefault(
-        title='Encryption key SHA256', default=None
-    ),
-    etag=base.FieldDisplayTitleAndDefault(
-        title='ETag', default=shim_format_util.NONE_STRING
-    ),
-    generation=base.FieldDisplayTitleAndDefault(
-        title='Generation', default=None
-    ),
-    metageneration=base.FieldDisplayTitleAndDefault(
-        title='Metageneration', default=None
-    ),
-    acl=base.FieldDisplayTitleAndDefault(
-        title='ACL', default=shim_format_util.EMPTY_LIST_STRING
-    ),
-    name=None,
-    bucket=None,
-)
+
+def _get_gsutil_style_formatted_line(display_name, value, default_value=None):
+  """Returns a gsutil-style formatted line for ls -L output."""
+  if value is not None:
+    if value and (isinstance(value, dict) or isinstance(value, list)):
+      return resource_util.get_metadata_json_section_string(
+          display_name, value,
+      )
+    elif isinstance(value, datetime.datetime):
+      return resource_util.get_padded_metadata_time_line(display_name, value)
+    elif isinstance(value, errors.CloudApiError):
+      return resource_util.get_padded_metadata_key_value_line(
+          display_name, str(value)
+      )
+    return resource_util.get_padded_metadata_key_value_line(
+        display_name, value
+    )
+  elif default_value is not None:
+    return resource_util.get_padded_metadata_key_value_line(
+        display_name, default_value
+    )
+  return None
+
+
+def get_gsutil_style_formatted_string(
+    resource: resource_reference.Resource,
+    display_titles_and_defaults: Union[
+        base.BucketDisplayTitlesAndDefaults, base.ObjectDisplayTitlesAndDefaults
+    ],
+    show_acl: bool = True,
+    show_version_in_url: bool = False,
+) -> str:
+  """Returns the gsutil-style formatted string representing the resource.
+
+  Args:
+    resource: Object holding resource metadata that needs to be displayed.
+    display_titles_and_defaults: Holds the display titles and default values for
+      each field present in the Resource.
+    show_acl: Include ACLs list in resource display.
+    show_version_in_url: Display extended URL with versioning info.
+
+  Returns:
+    A string representing the Resource for ls -L command.
+  """
+  lines = []
+
+  formatted_acl_dict = resource.get_formatted_acl() if show_acl else {}
+
+  # In namedtuple, to prevent conflicts with field names,
+  # the method and attribute names start with an underscore.
+  for key in display_titles_and_defaults._fields:
+    if not show_acl and key == base.ACL_KEY:
+      continue
+    field_display_title_and_default = getattr(display_titles_and_defaults, key)
+    if field_display_title_and_default is None:
+      # Field not supported for this output style.
+      continue
+    # The field_name present in field_display_title_and_default takes
+    # precedence over the key in display_titles_and_defaults.
+    field_name = (
+        field_display_title_and_default.field_name
+        or key
+    )
+
+    value = (
+        formatted_acl_dict.get(field_name)
+        if field_name in formatted_acl_dict
+        else getattr(resource, field_name, None)
+    )
+
+    if value == resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY:
+      continue
+
+    line = _get_gsutil_style_formatted_line(
+        field_display_title_and_default.title,
+        value,
+        field_display_title_and_default.default,
+    )
+    if line is not None:
+      lines.append(line)
+
+  url_string = (
+      resource.storage_url.url_string
+      if show_version_in_url
+      else resource.storage_url.versionless_url_string
+  )
+  fields = '\n'.join(lines)
+  optional_spacing = ' ' if resource.storage_url.is_bucket() else ''
+  return f'{url_string}{optional_spacing}:\n{fields}'
 
 
 class GsutilFullResourceFormatter(base.FullResourceFormatter):
@@ -209,7 +215,7 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
     shim_format_util.replace_time_values_with_gsutil_style_strings(
         bucket_resource)
     shim_format_util.replace_bucket_values_with_present_string(bucket_resource)
-    return base.get_formatted_string(
+    return get_gsutil_style_formatted_string(
         bucket_resource, _BUCKET_DISPLAY_TITLES_AND_DEFAULTS
     )
 
@@ -219,13 +225,111 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
     """See super class."""
     del kwargs  # Unused.
 
+    storage_class_update_time = None
+    if (
+        object_resource.scheme == storage_url.ProviderPrefix.GCS
+        and object_resource.storage_class_update_time
+        and object_resource.storage_class_update_time
+        != object_resource.creation_time
+    ):
+      storage_class_update_time = base.FieldDisplayTitleAndDefault(
+          title='Storage class update time',
+          default=None,
+      )
+
+    object_display_title_and_defaults = base.ObjectDisplayTitlesAndDefaults(
+        creation_time=base.FieldDisplayTitleAndDefault(
+            title='Creation time', default=None
+        ),
+        update_time=base.FieldDisplayTitleAndDefault(
+            title='Update time', default=None
+        ),
+        storage_class_update_time=storage_class_update_time,
+        # Soft and hard delete are not supported in gsutil.
+        soft_delete_time=None,
+        hard_delete_time=None,
+        storage_class=base.FieldDisplayTitleAndDefault(
+            title='Storage class', default=None
+        ),
+        temporary_hold=base.FieldDisplayTitleAndDefault(
+            title='Temporary Hold', default=None
+        ),
+        event_based_hold=base.FieldDisplayTitleAndDefault(
+            title='Event-Based Hold', default=None
+        ),
+        retention_expiration=base.FieldDisplayTitleAndDefault(
+            title='Retention Expiration', default=None
+        ),
+        # Retention settings is not supported in gsutil.
+        retention_settings=None,
+        kms_key=base.FieldDisplayTitleAndDefault(title='KMS key', default=None),
+        cache_control=base.FieldDisplayTitleAndDefault(
+            title='Cache-Control', default=None
+        ),
+        content_disposition=base.FieldDisplayTitleAndDefault(
+            title='Content-Disposition', default=None
+        ),
+        content_encoding=base.FieldDisplayTitleAndDefault(
+            title='Content-Encoding', default=None
+        ),
+        content_language=base.FieldDisplayTitleAndDefault(
+            title='Content-Language', default=None
+        ),
+        size=base.FieldDisplayTitleAndDefault(
+            title='Content-Length', default=shim_format_util.NONE_STRING
+        ),
+        content_type=base.FieldDisplayTitleAndDefault(
+            title='Content-Type', default=shim_format_util.NONE_STRING
+        ),
+        component_count=base.FieldDisplayTitleAndDefault(
+            title='Component-Count', default=None
+        ),
+        custom_time=base.FieldDisplayTitleAndDefault(
+            title='Custom-Time', default=None
+        ),
+        noncurrent_time=base.FieldDisplayTitleAndDefault(
+            title='Noncurrent time', default=None
+        ),
+        custom_fields=base.FieldDisplayTitleAndDefault(
+            title='Metadata', default=None
+        ),
+        crc32c_hash=base.FieldDisplayTitleAndDefault(
+            title='Hash (crc32c)', default=None
+        ),
+        md5_hash=base.FieldDisplayTitleAndDefault(
+            title='Hash (md5)', default=None
+        ),
+        encryption_algorithm=base.FieldDisplayTitleAndDefault(
+            title='Encryption algorithm', default=None
+        ),
+        decryption_key_hash_sha256=base.FieldDisplayTitleAndDefault(
+            title='Encryption key SHA256', default=None
+        ),
+        etag=base.FieldDisplayTitleAndDefault(
+            title='ETag', default=shim_format_util.NONE_STRING
+        ),
+        generation=base.FieldDisplayTitleAndDefault(
+            title='Generation', default=None
+        ),
+        metageneration=base.FieldDisplayTitleAndDefault(
+            title='Metageneration', default=None
+        ),
+        acl=base.FieldDisplayTitleAndDefault(
+            title='ACL', default=shim_format_util.EMPTY_LIST_STRING
+        ),
+        name=None,
+        bucket=None,
+    )
+
     shim_format_util.replace_time_values_with_gsutil_style_strings(
-        object_resource)
+        object_resource
+    )
     shim_format_util.replace_object_values_with_encryption_string(
-        object_resource, 'encrypted')
+        object_resource, 'encrypted'
+    )
     shim_format_util.reformat_custom_fields_for_gsutil(object_resource)
-    return base.get_formatted_string(
+    return get_gsutil_style_formatted_string(
         object_resource,
-        _OBJECT_DISPLAY_TITLES_AND_DEFAULTS,
+        object_display_title_and_defaults,
         show_acl=show_acl,
         show_version_in_url=show_version_in_url)

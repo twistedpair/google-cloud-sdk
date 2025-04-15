@@ -803,10 +803,6 @@ class CreateLinkRequest(_messages.Message):
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   link = _messages.MessageField('Link', 1)
@@ -2897,10 +2893,6 @@ class LoggingBillingAccountsLocationsBucketsLinksCreateRequest(_messages.Message
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   link = _messages.MessageField('Link', 1)
@@ -3189,6 +3181,8 @@ class LoggingBillingAccountsLocationsListRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -3199,10 +3193,11 @@ class LoggingBillingAccountsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LoggingBillingAccountsLocationsOperationsApproveRedactionRequest(_messages.Message):
@@ -3942,10 +3937,6 @@ class LoggingFoldersLocationsBucketsLinksCreateRequest(_messages.Message):
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   link = _messages.MessageField('Link', 1)
@@ -4280,6 +4271,8 @@ class LoggingFoldersLocationsListRequest(_messages.Message):
   r"""A LoggingFoldersLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -4290,10 +4283,11 @@ class LoggingFoldersLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LoggingFoldersLocationsLogScopesCreateRequest(_messages.Message):
@@ -4959,10 +4953,6 @@ class LoggingLocationsBucketsLinksCreateRequest(_messages.Message):
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   link = _messages.MessageField('Link', 1)
@@ -5265,6 +5255,8 @@ class LoggingLocationsListRequest(_messages.Message):
   r"""A LoggingLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -5275,10 +5267,11 @@ class LoggingLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LoggingLocationsOperationsApproveRedactionRequest(_messages.Message):
@@ -5601,10 +5594,6 @@ class LoggingOrganizationsLocationsBucketsLinksCreateRequest(_messages.Message):
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   link = _messages.MessageField('Link', 1)
@@ -5940,6 +5929,8 @@ class LoggingOrganizationsLocationsListRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -5950,10 +5941,11 @@ class LoggingOrganizationsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LoggingOrganizationsLocationsLogScopesCreateRequest(_messages.Message):
@@ -6734,10 +6726,6 @@ class LoggingProjectsLocationsBucketsLinksCreateRequest(_messages.Message):
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
-      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
-      ets/[BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
   """
 
   link = _messages.MessageField('Link', 1)
@@ -7072,6 +7060,8 @@ class LoggingProjectsLocationsListRequest(_messages.Message):
   r"""A LoggingProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -7082,10 +7072,11 @@ class LoggingProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LoggingProjectsLocationsLogScopesCreateRequest(_messages.Message):

@@ -46,7 +46,7 @@ class CancelJobRequest(_messages.Message):
   Fields:
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID in case you need to retry your request. Requests
-      with same `request_id` will ignored for at least 60 minutes since the
+      with same `request_id` will be ignored for at least 60 minutes since the
       first request. The request ID must be a valid UUID with the exception
       that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
@@ -261,10 +261,9 @@ class Job(_messages.Message):
       error log entries.
     loggingConfig: Optional. Logging configuration.
     name: Identifier. The resource name of the Job. job_id is unique within
-      the project and location, that is either set by the customer or defined
-      by the service. Format:
-      projects/{project}/locations/{location}/jobs/{job_id} . For example:
-      "projects/123456/locations/us-central1/jobs/job01".
+      the project, that is either set by the customer or defined by the
+      service. Format: projects/{project}/locations/global/jobs/{job_id} . For
+      example: "projects/123456/locations/global/jobs/job01".
     putMetadata: Updates object metadata. Allows updating fixed-key and custom
       metadata and fixed-key metadata i.e. Cache-Control, Content-Disposition,
       Content-Encoding, Content-Language, Content-Type, Custom-Time.
@@ -478,11 +477,11 @@ class Manifest(_messages.Message):
       Generation may optionally be specified. When it is not specified the
       live object is acted upon. `manifest_location` should either be 1) An
       absolute path to the object in the format of
-      gs://bucket_name/path/file_name.csv. 2) An absolute path with a single
+      `gs://bucket_name/path/file_name.csv`. 2) An absolute path with a single
       wildcard character in the file name, for example
-      gs://bucket_name/path/file_name*.csv. If manifest location is specified
-      with a wildcard, objects in all manifest files matching the pattern will
-      be acted upon.
+      `gs://bucket_name/path/file_name*.csv`. If manifest location is
+      specified with a wildcard, objects in all manifest files matching the
+      pattern will be acted upon.
   """
 
   manifestLocation = _messages.StringField(1)
@@ -605,7 +604,7 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     job: Output only. The Job associated with the operation.
     operation: Output only. The unique operation resource name. Format:
-      projects/{project}/locations/{location}/operations/{operation}.
+      projects/{project}/locations/global/operations/{operation}.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
       cancelled successfully have google.longrunning.Operation.error value
@@ -921,7 +920,7 @@ class StoragebatchoperationsProjectsLocationsJobsCancelRequest(_messages.Message
     cancelJobRequest: A CancelJobRequest resource to be passed as the request
       body.
     name: Required. The `name` of the job to cancel. Format:
-      projects/{project_id}/locations/{location_id}/jobs/{job_id}.
+      projects/{project_id}/locations/global/jobs/{job_id}.
   """
 
   cancelJobRequest = _messages.MessageField('CancelJobRequest', 1)
@@ -939,7 +938,7 @@ class StoragebatchoperationsProjectsLocationsJobsCreateRequest(_messages.Message
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID in case you need to retry your request. Requests
-      with same `request_id` will ignored for at least 60 minutes since the
+      with same `request_id` will be ignored for at least 60 minutes since the
       first request. The request ID must be a valid UUID with the exception
       that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
@@ -955,10 +954,10 @@ class StoragebatchoperationsProjectsLocationsJobsDeleteRequest(_messages.Message
 
   Fields:
     name: Required. The `name` of the job to delete. Format:
-      projects/{project_id}/locations/{location_id}/jobs/{job_id} .
+      projects/{project_id}/locations/global/jobs/{job_id} .
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID in case you need to retry your request. Requests
-      with same `request_id` will ignored for at least 60 minutes since the
+      with same `request_id` will be ignored for at least 60 minutes since the
       first request. The request ID must be a valid UUID with the exception
       that zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
@@ -972,7 +971,7 @@ class StoragebatchoperationsProjectsLocationsJobsGetRequest(_messages.Message):
 
   Fields:
     name: Required. `name` of the job to retrieve. Format:
-      projects/{project_id}/locations/{location_id}/jobs/{job_id} .
+      projects/{project_id}/locations/global/jobs/{job_id} .
   """
 
   name = _messages.StringField(1, required=True)
@@ -988,7 +987,7 @@ class StoragebatchoperationsProjectsLocationsJobsListRequest(_messages.Message):
       create_time.
     pageSize: Optional. The list page size. default page size is 100.
     pageToken: Optional. The list page token.
-    parent: Required. Format: projects/{project_id}/locations/{location_id} .
+    parent: Required. Format: projects/{project_id}/locations/global.
   """
 
   filter = _messages.StringField(1)
@@ -1002,6 +1001,8 @@ class StoragebatchoperationsProjectsLocationsListRequest(_messages.Message):
   r"""A StoragebatchoperationsProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1012,10 +1013,11 @@ class StoragebatchoperationsProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class StoragebatchoperationsProjectsLocationsOperationsCancelRequest(_messages.Message):

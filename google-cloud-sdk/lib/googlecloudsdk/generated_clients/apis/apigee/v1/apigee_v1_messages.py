@@ -1758,6 +1758,64 @@ class ApigeeOrganizationsDevelopersUpdateRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsDnsZonesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDnsZonesCreateRequest object.
+
+  Fields:
+    dnsZoneId: Required. User assigned ID for this resource. Must be unique
+      within the organization. The name must be 1-63 characters long, must
+      begin with a letter, end with a letter or digit, and only contain
+      lowercase letters, digits or dashes.
+    googleCloudApigeeV1DnsZone: A GoogleCloudApigeeV1DnsZone resource to be
+      passed as the request body.
+    parent: Required. Organization where the DNS zone will be created.
+  """
+
+  dnsZoneId = _messages.StringField(1)
+  googleCloudApigeeV1DnsZone = _messages.MessageField('GoogleCloudApigeeV1DnsZone', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsDnsZonesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDnsZonesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the DNS zone to delete. Use the following
+      structure in your request: `organizations/{org}/dnsZones/{dns_zone}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsDnsZonesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDnsZonesGetRequest object.
+
+  Fields:
+    name: Required. Name of the DNS zone to fetch. Use the following structure
+      in your request: `organizations/{org}/dnsZones/{dns_zone}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsDnsZonesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDnsZonesListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of DNS zones to return. If unspecified,
+      at most 25 DNS zones will be returned.
+    pageToken: Optional. Page token, returned from a previous `ListDnsZones`
+      call, that you can use to retrieve the next page.
+    parent: Required. Name of the organization for which to list the DNS
+      zones. Use the following structure in your request:
+      `organizations/{org}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsEndpointAttachmentsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsEndpointAttachmentsCreateRequest object.
 
@@ -8280,6 +8338,72 @@ class GoogleCloudApigeeV1DisableSecurityActionRequest(_messages.Message):
   r"""Message to disable an enabled SecurityAction."""
 
 
+class GoogleCloudApigeeV1DnsZone(_messages.Message):
+  r"""A DNS zone is a resource under an Apigee organization that is used to
+  create a DNS peering with Apigee's network. DNS peering will let Apigee
+  instances resolve the hostnames created in a peered network.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the DNS Peering. Values other
+      than `ACTIVE` mean the resource is not ready to use.
+
+  Fields:
+    createTime: Output only. The time that this resource was created on the
+      server.
+    description: Required. Description of the resource. String of at most 1024
+      characters associated with this resource for the user's convenience.
+    domain: Required. The domain name for hosts in this private zone, for
+      instance "example.com.".
+    name: Identifier. Unique name for the resource. Defined by the server
+      Format: "organizations/{organization}/dnsZones/{dns_zone}".
+    peeringConfig: DNS PEERING zone configuration.
+    state: Output only. State of the DNS Peering. Values other than `ACTIVE`
+      mean the resource is not ready to use.
+    updateTime: Output only. The time that this resource was updated on the
+      server.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the DNS Peering. Values other than `ACTIVE` mean
+    the resource is not ready to use.
+
+    Values:
+      STATE_UNSPECIFIED: Resource is in an unspecified state.
+      CREATING: Resource is being created.
+      ACTIVE: Resource is provisioned and ready to use.
+      DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    UPDATING = 4
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  domain = _messages.StringField(3)
+  name = _messages.StringField(4)
+  peeringConfig = _messages.MessageField('GoogleCloudApigeeV1DnsZonePeeringConfig', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudApigeeV1DnsZonePeeringConfig(_messages.Message):
+  r"""Fields for DNS PEERING zone.
+
+  Fields:
+    targetNetworkId: Required. The VPC network where the records for that
+      private DNS zone's namespace are available. Apigee will be performing
+      DNS peering with this VPC network.
+    targetProjectId: Required. The ID of the project that contains the
+      producer VPC network.
+  """
+
+  targetNetworkId = _messages.StringField(1)
+  targetProjectId = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1DocumentationFile(_messages.Message):
   r"""Documentation file contents for a catalog item.
 
@@ -9169,8 +9293,8 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     createdAt: Output only. Time the instance was created in milliseconds
       since epoch.
     description: Optional. Description of the instance.
-    diskEncryptionKeyName: Customer Managed Encryption Key (CMEK) used for
-      disk and volume encryption. If not specified, a Google-Managed
+    diskEncryptionKeyName: Optional. Customer Managed Encryption Key (CMEK)
+      used for disk and volume encryption. If not specified, a Google-Managed
       encryption key will be used. Use the following format:
       `projects/([^/]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)`
     displayName: Optional. Display name for the instance.
@@ -9708,6 +9832,20 @@ class GoogleCloudApigeeV1ListDeveloperSubscriptionsResponse(_messages.Message):
 
   developerSubscriptions = _messages.MessageField('GoogleCloudApigeeV1DeveloperSubscription', 1, repeated=True)
   nextStartKey = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListDnsZonesResponse(_messages.Message):
+  r"""Response for list DNS zones.
+
+  Fields:
+    dnsZones: DNS zones in a given organization.
+    nextPageToken: Page token that you can include in an `ListDnsZones`
+      request to retrieve the next page. If omitted, no subsequent pages
+      exist.
+  """
+
+  dnsZones = _messages.MessageField('GoogleCloudApigeeV1DnsZone', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1ListEndpointAttachmentsResponse(_messages.Message):
@@ -10565,8 +10703,9 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   r"""A GoogleCloudApigeeV1Organization object.
 
   Enums:
-    BillingTypeValueValuesEnum: Billing type of the Apigee organization. See
-      [Apigee pricing](https://cloud.google.com/apigee/pricing).
+    BillingTypeValueValuesEnum: Optional. Billing type of the Apigee
+      organization. See [Apigee
+      pricing](https://cloud.google.com/apigee/pricing).
     ReleaseChannelValueValuesEnum: Release channel influences the timing and
       frequency of new updates to the Apigee runtimes instances of the
       organization. It can be either STABLE, REGULAR, or RAPID. It can be
@@ -10591,34 +10730,36 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     TypeValueValuesEnum: Not used by Apigee.
 
   Fields:
-    addonsConfig: Addon configurations of the Apigee organization.
+    addonsConfig: Optional. Addon configurations of the Apigee organization.
     analyticsRegion: Required. DEPRECATED: This field will eventually be
       deprecated and replaced with a differently-named field. Primary Google
       Cloud region for analytics data storage. For valid values, see [Create
       an Apigee organization](https://cloud.google.com/apigee/docs/api-
       platform/get-started/create-org).
-    apiConsumerDataEncryptionKeyName: Cloud KMS key name used for encrypting
-      API consumer data. If not specified or [BillingType](#BillingType) is
-      `EVALUATION`, a Google-Managed encryption key will be used. Format:
+    apiConsumerDataEncryptionKeyName: Optional. Cloud KMS key name used for
+      encrypting API consumer data. If not specified or
+      [BillingType](#BillingType) is `EVALUATION`, a Google-Managed encryption
+      key will be used. Format:
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`
-    apiConsumerDataLocation: This field is needed only for customers using
-      non-default data residency regions. Apigee stores some control plane
-      data only in single region. This field determines which single region
-      Apigee should use. For example: "us-west1" when control plane is in US
-      or "europe-west2" when control plane is in EU.
+    apiConsumerDataLocation: Optional. This field is needed only for customers
+      using non-default data residency regions. Apigee stores some control
+      plane data only in single region. This field determines which single
+      region Apigee should use. For example: "us-west1" when control plane is
+      in US or "europe-west2" when control plane is in EU.
     apigeeProjectId: Output only. Apigee Project ID associated with the
       organization. Use this project to allowlist Apigee in the Service
       Attachment when using private service connect with Apigee.
     attributes: Not used by Apigee.
-    authorizedNetwork: Compute Engine network used for Service Networking to
-      be peered with Apigee runtime instances. See [Getting started with the
-      Service Networking API](https://cloud.google.com/service-
-      infrastructure/docs/service-networking/getting-started). Valid only when
-      [RuntimeType](#RuntimeType) is set to `CLOUD`. The value must be set
-      before the creation of a runtime instance and can be updated only when
-      there are no runtime instances. For example: `default`. When changing
-      authorizedNetwork, you must reconfigure VPC peering. After VPC peering
-      with previous network is deleted, [run the following
+    authorizedNetwork: Optional. Compute Engine network used for Service
+      Networking to be peered with Apigee runtime instances. See [Getting
+      started with the Service Networking
+      API](https://cloud.google.com/service-infrastructure/docs/service-
+      networking/getting-started). Valid only when [RuntimeType](#RuntimeType)
+      is set to `CLOUD`. The value must be set before the creation of a
+      runtime instance and can be updated only when there are no runtime
+      instances. For example: `default`. When changing authorizedNetwork, you
+      must reconfigure VPC peering. After VPC peering with previous network is
+      deleted, [run the following
       command](https://cloud.google.com/sdk/gcloud/reference/services/vpc-
       peerings/delete): `gcloud services vpc-peerings delete
       --network=NETWORK`, where `NETWORK` is the name of the previous network.
@@ -10632,21 +10773,21 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       id}/{region}/networks/{network-name}`. For example: `projects/my-
       sharedvpc-host/global/networks/mynetwork` **Note:** Not supported for
       Apigee hybrid.
-    billingType: Billing type of the Apigee organization. See [Apigee
-      pricing](https://cloud.google.com/apigee/pricing).
+    billingType: Optional. Billing type of the Apigee organization. See
+      [Apigee pricing](https://cloud.google.com/apigee/pricing).
     caCertificate: Output only. Base64-encoded public certificate for the root
       CA of the Apigee organization. Valid only when
       [RuntimeType](#RuntimeType) is `CLOUD`.
-    controlPlaneEncryptionKeyName: Cloud KMS key name used for encrypting
-      control plane data that is stored in a multi region. Only used for the
-      data residency region "US" or "EU". If not specified or
+    controlPlaneEncryptionKeyName: Optional. Cloud KMS key name used for
+      encrypting control plane data that is stored in a multi region. Only
+      used for the data residency region "US" or "EU". If not specified or
       [BillingType](#BillingType) is `EVALUATION`, a Google-Managed encryption
       key will be used. Format:
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`
     createdAt: Output only. Time that the Apigee organization was created in
       milliseconds since epoch.
     customerName: Not used by Apigee.
-    description: Description of the Apigee organization.
+    description: Optional. Description of the Apigee organization.
     disableVpcPeering: Optional. Flag that specifies whether the VPC Peering
       through Private Google Access should be disabled between the consumer
       network and Apigee. Valid only when RuntimeType is set to CLOUD.
@@ -10659,8 +10800,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       of provisioning Apigee organization in future. So, this will be a
       temporary flag to enable the transition. Not supported for Apigee
       hybrid.
-    displayName: Display name for the Apigee organization. Unused, but
-      reserved for future use.
+    displayName: Optional. Display name for the Apigee organization. Unused,
+      but reserved for future use.
     environments: Output only. List of environments in the Apigee
       organization.
     expiresAt: Output only. Time that the Apigee organization is scheduled for
@@ -10668,10 +10809,11 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     lastModifiedAt: Output only. Time that the Apigee organization was last
       modified in milliseconds since epoch.
     name: Output only. Name of the Apigee organization.
-    portalDisabled: Configuration for the Portals settings.
+    portalDisabled: Optional. Configuration for the Portals settings.
     projectId: Output only. Project ID associated with the Apigee
       organization.
-    properties: Properties defined in the Apigee organization profile.
+    properties: Optional. Properties defined in the Apigee organization
+      profile.
     releaseChannel: Release channel influences the timing and frequency of new
       updates to the Apigee runtimes instances of the organization. It can be
       either STABLE, REGULAR, or RAPID. It can be selected during creation of
@@ -10681,11 +10823,11 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       will get updates after being validated in the RAPID channel for some
       time. The STABLE channel will get updates after being validated in the
       REGULAR channel for some time.
-    runtimeDatabaseEncryptionKeyName: Cloud KMS key name used for encrypting
-      the data that is stored and replicated across runtime instances. Update
-      is not allowed after the organization is created. If not specified or
-      [RuntimeType](#RuntimeType) is `TRIAL`, a Google-Managed encryption key
-      will be used. For example:
+    runtimeDatabaseEncryptionKeyName: Optional. Cloud KMS key name used for
+      encrypting the data that is stored and replicated across runtime
+      instances. Update is not allowed after the organization is created. If
+      not specified or [RuntimeType](#RuntimeType) is `TRIAL`, a Google-
+      Managed encryption key will be used. For example:
       "projects/foo/locations/us/keyRings/bar/cryptoKeys/baz". **Note:** Not
       supported for Apigee hybrid.
     runtimeType: Required. Runtime type of the Apigee organization based on
@@ -10703,7 +10845,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   """
 
   class BillingTypeValueValuesEnum(_messages.Enum):
-    r"""Billing type of the Apigee organization. See [Apigee
+    r"""Optional. Billing type of the Apigee organization. See [Apigee
     pricing](https://cloud.google.com/apigee/pricing).
 
     Values:

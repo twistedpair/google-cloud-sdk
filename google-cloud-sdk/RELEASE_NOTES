@@ -5,6 +5,221 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 518.0.0 (2025-04-15)
+
+### Google Cloud CLI
+
+* Added warning message to indicate Python 3.8 support will be deprecated on July 15, 2025.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.34 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.34>.
+* Updated Eclipse Jetty web server version to 12.0.19.
+
+### Artifact Registry
+
+* Implemented `gcloud artifacts go auth` for the GOAUTH environment variable
+  introduced in Go 1.24.
+
+### Backup For GKE
+
+* Added the following commands
+  * `gcloud <alpha|beta> container backup-restore backup-channels create`
+  * `gcloud <alpha|beta> container backup-restore backup-channels delete`
+  * `gcloud <alpha|beta> container backup-restore backup-channels describe`
+  * `gcloud <alpha|beta> container backup-restore backup-channels list`
+  * `gcloud <alpha|beta> container backup-restore backup-channels update`
+  to interact with Backup for GKE backup channels.
+* Added the following commands
+  * `gcloud <alpha|beta> container backup-restore backup-plan-bindings describe`
+  * `gcloud <alpha|beta> container backup-restore backup-plan-bindings list`
+  to interact with Backup for GKE backup plan bindings.
+* Added the following commands
+  * `gcloud <alpha|beta> container backup-restore restore-channels create`
+  * `gcloud <alpha|beta> container backup-restore restore-channels delete`
+  * `gcloud <alpha|beta> container backup-restore restore-channels describe`
+  * `gcloud <alpha|beta> container backup-restore restore-channels list`
+  * `gcloud <alpha|beta> container backup-restore restore-channels update`
+  to interact with Backup for GKE restore channels.
+* Added the following commands
+  * `gcloud <alpha|beta> container backup-restore restore-plan-bindings describe`
+  * `gcloud <alpha|beta> container backup-restore restore-plan-bindings list`
+  to interact with Backup for GKE restore plan bindings.
+
+### BigQuery
+
+* Improved authentication performance for service accounts.
+* Added support for `--filter` flag for `bq ls --jobs` which supports filtering by job states using the `states:<comma separated states>` expression.
+* Fixed the failing `bq query` with flags combination `--rpc --reservation=none`.
+
+### Cloud Backup DR
+
+* Add deprecation warning for `network` flag from `gcloud backup-dr management-servers create` command.
+
+### Cloud Bigtable
+
+*    Promoted `gcloud bigtable materialized-views create|describe|list|update|delete` commands to GA.
+
+### Cloud Composer
+
+* Correct URI values returned with `--uri` flag by `gcloud composer environments list` command.
+* Correct URI values returned with `--uri` flag by `gcloud composer operations list` command.
+
+### Cloud Dataflow
+
+* Fixed issue reading gcs files when executing YAML pipelines via `gcloud dataflow yaml run`.
+* Back port `--additional-user-labels` parameter to Dataflow classic template.
+
+### Cloud Filestore
+
+* Added `--ldap` flag to
+  `gcloud beta filestore instances create`.
+
+### Cloud Firestore
+
+* Added a new `MONGODB_COMPATIBLE_API` to `ApiScope` field in Firestore index.
+* Added `--multikey` and `--density` flags to Firestore index create.
+* Promoted `gcloud firestore user-creds` to beta.
+* Added `gcloud beta databases connection-string` which prints the mongo connection string for the given Firestore database.
+* Added `--edition` flag to `gcloud beta databases create` to configure database edition during creation.
+
+### Cloud Functions
+
+* Fixed service account impersonation when calling a 2nd Gen function (
+`functions call` with `--impersonate-service-account` flag).
+
+### Cloud Logging
+
+* Added `--monitored-resource-type` and `--monitored-resource-labels` to `gcloud logging write`.
+
+### Cloud Managed Kafka
+
+* Update subnet help text to reflect one subnet per network.
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager tags bindings list` to change the backend call from ListTagBinding, ListEffectiveTagBinding RPC to GetTagBindingCollection, GetEffectiveTagBindingCollection RPCs for ALPHA release.
+
+### Cloud Run
+
+* Added a prompt to `gcloud run deploy` and `gcloud run services update`
+  commands to retry deploying a GPU service with `--no-gpu-zonal-redundancy`
+  flag. This confirmation prompt only shows up when the original deployment
+  enables GPU but does not specify GPU zonal redundancy, and the project does
+  not have access to GPU with zonal redundancy enabled but has access to GPU
+  with zonal redundancy disabled.
+* Fixed issue where `gcloud run jobs describe` would crash if the job has
+  multiple containers.
+
+### Cloud Spanner
+
+* Promoted `gcloud spanner databases splits` command to GA.
+
+### Compute Engine
+
+* Promoted flags related to the nat64 feature to GA:
+  - `--nat64-all-v6-subnet-ip-ranges` of `gcloud compute routers nats (create|update)`.
+  - `--nat64-custom-v6-subnet-ip-ranges` of `gcloud compute routers nats (create|update)`.
+  - `--clear-nat64-v6-subnet-ip-ranges` of `gcloud compute routers nats update`.
+  - `--clear-nat-subnet-ip-ranges` of `gcloud compute routers nats update`.
+* Updated `gcloud compute images list` to return images from new image projects
+  for Accelerator images: `rocky-linux-accelerator-cloud` and
+  `ubuntu-os-accelerator-images`.
+* Added `--share-setting` flag to `gcloud beta compute reservations update`.
+* Updated import and export schemas for:
+  - `gcloud compute backend-services`.
+* Promoted support for specific instance names (`--instances`) in create resize
+  request to beta.
+
+### Container
+
+* Added interactive warning to `gcloud container clusters create|update`
+  commands when `NONE` is specified as `--logging` or `--monitoring` params.
+
+### Database Migration
+
+* Added `--skip-validation` flag to `gcloud database-migration private-connections create`.
+* Added `--max-concurrent-full-dump-connections`,
+  `--max-concurrent-cdc-connections`, `--skip-full-dump`,
+  `--oracle-cdc-start-position`, `--sqlserver-cdc-start-position`,
+  `--max-concurrent-destination-connections` and `--transaction-timeout` flags
+  to `gcloud database-migration migration-jobs create`.
+
+### Developer Connect
+
+* Add new account-connector OAuth providers.
+
+### Distributed Cloud Edge
+
+* Added `use-google-managed-key` and `control-plane-kms-key` flags to `gcloud
+edge-cloud container clusters update` command to support updating KMS key used
+for control plane disk encryption.
+* Added `use-google-managed-key` and `local-disk-kms-key` flags to `gcloud
+edge-cloud container clusters node-pools update` command to support updating KMS
+key used for worker node disk encryption.
+
+### Gemini
+
+*   Added `gcloud gemini code-tools-settings` API.
+*   Added `gcloud gemini code-tools-settings setting-bindings` API.
+*   Added `gcloud gemini data-sharing-with-google-settings` API.
+*   Added `gcloud gemini data-sharing-with-google-settings setting-bindings` API.
+*   Added `gcloud gemini gemini-gcp-enablement-settings` API.
+*   Added `gcloud gemini gemini-gcp-enablement-settings setting-bindings` API.
+*   Added `gcloud gemini logging-settings` API.
+*   Added `gcloud gemini logging-settings setting-bindings` API.
+*   Added `gcloud gemini release-channel-settings` API.
+*   Added `gcloud gemini release-channel-settings setting-bindings` API.
+
+### Identity and Access Management
+
+* Added a new `--credential-cert-trust-chain-path` flag to
+  `gcloud iam workload pools create-cred-config`. This flag enables using a
+  trust chain file when configuring X.509 certificate-sourced credentials. This
+  is required if there are intermediate certificates between the root
+  certificate and the leaf certificate.
+
+### Kubernetes Engine
+
+* Added a new command `gcloud container clusters get-upgrade-info`
+which returns upgrade information of the given cluster.
+* Added a new command `gcloud container node-pools get-upgrade-info`
+which returns upgrade information of the given node pool.
+* Added `--enable-secret-manager-rotation` and
+`--secret-manager-rotation-interval` flag to enable rotation feature in secret
+manager add on.
+* Added `--data-cache-count` flag to `gcloud container cluster/node-pools
+create` to enable GKE Data Cache.
+* Added `--opportunistic-maintenance` flag to `gcloud
+container node-pools create` for enabling opportunistic maintenance feature.
+
+### Network Connectivity
+
+* Update `gcloud network-connectivity internal-ranges create`, promoted `--exclude-cidr-ranges` flag to GA.
+
+### Network Security
+
+* The `location` flag for the `server-tls-policy list` command is no longer required, having `-` (all locations) as a default value.
+
+### Security Command Center
+
+*   Added `--project`, `--folder` flags to `gcloud scc findings list-marks` command to list marks of findings for project and folder levels.
+*   Added `--project`, `--folder` flags to `gcloud scc findings update` command to update finding for project and folder levels.
+*   Added `--project`, `--folder` flags to `gcloud scc findings update-marks` command to update marks of findings for project and folder levels.
+
+### Transfer
+
+* Add option `s3-cloudfront-domain` to command `gcloud transfer jobs`.
+
+### Workbench
+
+* Added `--confidential-compute-type` flag to `gcloud workbench instances create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 517.0.0 (2025-04-01)
 
 ### AlloyDB
@@ -62,6 +277,8 @@ option assignments.
 * Added `--[no-]iap` flag to beta service command groups to allow enabling and
   disabling IAP.
 * Promoted `--container` flag to GA for `gcloud run jobs` command groups.
+* Promoted `--[no-]gpu-zonal-redundancy` flag to GA for `gcloud run deploy` and
+  and `gcloud run services update` commands.
 * Fixed URLs displayed on `multi-region-services replace` success.
 
 ### Cloud SQL

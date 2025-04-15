@@ -93,6 +93,10 @@ class Cluster(_messages.Message):
       node used if a maximum value is not specified explicitly for a node pool
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
+    enableClusterIsolation: Optional. This denotes if the cluster is required
+      to be isolated. go/cluster-isolation-in-gdcc-cluster
+    enableRemoteBackup: Optional. If true, the remote backup/restore feature
+      will be enabled for this cluster.
     endpoint: Output only. The IP address of the Kubernetes API server.
     externalLoadBalancerAddressPools: Optional. External load balancer pools
       for cluster.
@@ -101,6 +105,8 @@ class Cluster(_messages.Message):
     externalLoadBalancerIpv6AddressPools: Optional. IPv6 address pools for
       cluster data plane external load balancing.
     fleet: Required. Fleet configuration.
+    googleGroupAuthentication: Optional. The Google Group authentication
+      config of the cluster.
     labels: Labels associated with this resource.
     maintenanceEvents: Output only. All the maintenance events scheduled for
       the cluster, including the ones ongoing, planned for the future and done
@@ -205,26 +211,29 @@ class Cluster(_messages.Message):
   controlPlaneVersion = _messages.StringField(8)
   createTime = _messages.StringField(9)
   defaultMaxPodsPerNode = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(11)
-  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 12, repeated=True)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(13, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(14, repeated=True)
-  fleet = _messages.MessageField('Fleet', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 17, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 18)
-  name = _messages.StringField(19)
-  networking = _messages.MessageField('ClusterNetworking', 20)
-  nodeVersion = _messages.StringField(21)
-  port = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 25)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 26)
-  targetVersion = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 29)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 30)
+  enableClusterIsolation = _messages.BooleanField(11)
+  enableRemoteBackup = _messages.BooleanField(12)
+  endpoint = _messages.StringField(13)
+  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 14, repeated=True)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(15, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(16, repeated=True)
+  fleet = _messages.MessageField('Fleet', 17)
+  googleGroupAuthentication = _messages.MessageField('GoogleGroupAuthenticationConfig', 18)
+  labels = _messages.MessageField('LabelsValue', 19)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 20, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 21)
+  name = _messages.StringField(22)
+  networking = _messages.MessageField('ClusterNetworking', 23)
+  nodeVersion = _messages.StringField(24)
+  port = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 26)
+  status = _messages.EnumField('StatusValueValuesEnum', 27)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 28)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 29)
+  targetVersion = _messages.StringField(30)
+  updateTime = _messages.StringField(31)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 32)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 33)
 
 
 class ClusterNetworking(_messages.Message):
@@ -704,6 +713,8 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -716,11 +727,12 @@ class EdgecontainerProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class EdgecontainerProjectsLocationsMachinesGetRequest(_messages.Message):
@@ -942,6 +954,18 @@ class GenerateOfflineCredentialResponse(_messages.Message):
   clientKey = _messages.StringField(2)
   expireTime = _messages.StringField(3)
   userId = _messages.StringField(4)
+
+
+class GoogleGroupAuthenticationConfig(_messages.Message):
+  r"""Google Group authentication config of the cluster. go/gdc-google-group-
+  authentication
+
+  Fields:
+    enable: Optional. If true, the cluster will be configured to use Google
+      Group authentication.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class Ingress(_messages.Message):

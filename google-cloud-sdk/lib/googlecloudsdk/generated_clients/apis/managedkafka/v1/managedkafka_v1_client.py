@@ -575,6 +575,33 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchBrokerDetails(self, request, global_params=None):
+      r"""Returns the properties of brokers in a cluster.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchBrokerDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchBrokerDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchBrokerDetails.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:fetchBrokerDetails',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.clusters.fetchBrokerDetails',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:fetchBrokerDetails',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest',
+        response_type_name='FetchBrokerDetailsResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the properties of a single cluster.
 
@@ -1228,7 +1255,7 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         method_id='managedkafka.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='ManagedkafkaProjectsLocationsListRequest',

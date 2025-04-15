@@ -203,6 +203,7 @@ def PopulateClusterAlphaMessage(req, args):
   resource_args.SetSystemAddonsConfig(args, req)
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
   SetContainerRuntimeConfig(req, args)
+  EnableClusterIsolationConfig(req, args)
 
 
 def IsLCPCluster(args):
@@ -300,4 +301,24 @@ def SetContainerRuntimeConfig(req, args):
       raise ValueError(
           'Unsupported --container_default_runtime_class value: '
           + args.container_default_runtime_class
+      )
+
+
+def EnableClusterIsolationConfig(req, args):
+  """Set secure cluster isolation config in the cluster request message.
+
+  Args:
+   req: Create cluster request message.
+   args: Command line arguments.
+  """
+
+  if flags.FlagIsExplicitlySet(args, 'enable_cluster_isolation'):
+    if args.enable_cluster_isolation.upper() == 'TRUE':
+      req.cluster.enableClusterIsolation = True
+    elif args.enable_cluster_isolation.upper() == 'FALSE':
+      req.cluster.enableClusterIsolation = False
+    else:
+      raise ValueError(
+          'Unsupported --enable_cluster_isolation value: '
+          + args.enable_cluster_isolation
       )

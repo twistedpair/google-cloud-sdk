@@ -3482,6 +3482,8 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3494,11 +3496,12 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  includeUnrevealedLocations = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class GkehubProjectsLocationsMembershipsBindingsCreateRequest(_messages.Message):
@@ -7580,6 +7583,10 @@ class Rollout(_messages.Message):
     managedRolloutConfig: Optional. The configuration used for the Rollout.
     name: Identifier. The full, unique resource name of this Rollout in the
       format of `projects/{project}/locations/global/rollouts/{rollout}`.
+    rolloutSequence: Optional. The full, unique resource name of the rollout
+      sequence that initiatied this Rollout. In the format of `projects/{proje
+      ct}/locations/global/rolloutSequences/{rollout_sequence}`. Empty for
+      user initiated rollouts.
     schedule: Output only. The schedule of the Rollout.
     scheduledStartTime: Optional. The timestamp at which the Rollout is
       scheduled to start. If not specified, the Rollout will start
@@ -7676,13 +7683,14 @@ class Rollout(_messages.Message):
   lastPauseTime = _messages.StringField(11)
   managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 12)
   name = _messages.StringField(13)
-  schedule = _messages.MessageField('Schedule', 14)
-  scheduledStartTime = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateReason = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  versionUpgrade = _messages.MessageField('VersionUpgrade', 20)
+  rolloutSequence = _messages.StringField(14)
+  schedule = _messages.MessageField('Schedule', 15)
+  scheduledStartTime = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateReason = _messages.StringField(18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  versionUpgrade = _messages.MessageField('VersionUpgrade', 21)
 
 
 class Rule(_messages.Message):
@@ -9048,22 +9056,56 @@ class WorkloadIdentityFeatureState(_messages.Message):
   r"""**WorkloadIdentity**: Global feature state.
 
   Messages:
-    NamespaceStatesValue: The state of the IAM namespaces for the fleet.
-    WorkloadIdentityPoolStatesValue: The state of the Workload Identity Pools
-      for the fleet.
+    NamespaceStateDetailsValue: The state of the IAM namespaces for the fleet.
+    NamespaceStatesValue: Deprecated, will erase after code is changed to use
+      the new field.
+    WorkloadIdentityPoolStateDetailsValue: The state of the Workload Identity
+      Pools for the fleet.
+    WorkloadIdentityPoolStatesValue: Deprecated, will erase after code is
+      changed to use the new field.
 
   Fields:
-    namespaceStates: The state of the IAM namespaces for the fleet.
+    namespaceStateDetails: The state of the IAM namespaces for the fleet.
+    namespaceStates: Deprecated, will erase after code is changed to use the
+      new field.
     scopeTenancyWorkloadIdentityPool: The full name of the scope-tenancy pool
       for the fleet.
     workloadIdentityPool: The full name of the svc.id.goog pool for the fleet.
-    workloadIdentityPoolStates: The state of the Workload Identity Pools for
-      the fleet.
+    workloadIdentityPoolStateDetails: The state of the Workload Identity Pools
+      for the fleet.
+    workloadIdentityPoolStates: Deprecated, will erase after code is changed
+      to use the new field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class NamespaceStatesValue(_messages.Message):
+  class NamespaceStateDetailsValue(_messages.Message):
     r"""The state of the IAM namespaces for the fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        NamespaceStateDetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        NamespaceStateDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceStateDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkloadIdentityNamespaceStateDetail attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkloadIdentityNamespaceStateDetail', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceStatesValue(_messages.Message):
+    r"""Deprecated, will erase after code is changed to use the new field.
 
     Messages:
       AdditionalProperty: An additional property for a NamespaceStatesValue
@@ -9103,8 +9145,35 @@ class WorkloadIdentityFeatureState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class WorkloadIdentityPoolStatesValue(_messages.Message):
+  class WorkloadIdentityPoolStateDetailsValue(_messages.Message):
     r"""The state of the Workload Identity Pools for the fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        WorkloadIdentityPoolStateDetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        WorkloadIdentityPoolStateDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WorkloadIdentityPoolStateDetailsValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkloadIdentityWorkloadIdentityPoolStateDetail attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkloadIdentityWorkloadIdentityPoolStateDetail', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WorkloadIdentityPoolStatesValue(_messages.Message):
+    r"""Deprecated, will erase after code is changed to use the new field.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -9146,10 +9215,12 @@ class WorkloadIdentityFeatureState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  namespaceStates = _messages.MessageField('NamespaceStatesValue', 1)
-  scopeTenancyWorkloadIdentityPool = _messages.StringField(2)
-  workloadIdentityPool = _messages.StringField(3)
-  workloadIdentityPoolStates = _messages.MessageField('WorkloadIdentityPoolStatesValue', 4)
+  namespaceStateDetails = _messages.MessageField('NamespaceStateDetailsValue', 1)
+  namespaceStates = _messages.MessageField('NamespaceStatesValue', 2)
+  scopeTenancyWorkloadIdentityPool = _messages.StringField(3)
+  workloadIdentityPool = _messages.StringField(4)
+  workloadIdentityPoolStateDetails = _messages.MessageField('WorkloadIdentityPoolStateDetailsValue', 5)
+  workloadIdentityPoolStates = _messages.MessageField('WorkloadIdentityPoolStatesValue', 6)
 
 
 class WorkloadIdentityMembershipState(_messages.Message):
@@ -9183,6 +9254,67 @@ class WorkloadIdentityMembershipState(_messages.Message):
 
   description = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class WorkloadIdentityNamespaceStateDetail(_messages.Message):
+  r"""NamespaceStateDetail represents the state of a IAM namespace.
+
+  Enums:
+    CodeValueValuesEnum: The state of the IAM namespace.
+
+  Fields:
+    code: The state of the IAM namespace.
+    description: A human-readable description of the current state or returned
+      error.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The state of the IAM namespace.
+
+    Values:
+      NAMESPACE_STATE_UNSPECIFIED: Unknown state.
+      NAMESPACE_STATE_OK: The Namespace was created/updated successfully.
+      NAMESPACE_STATE_ERROR: The Namespace was not created/updated
+        successfully. The error message is in the description field.
+    """
+    NAMESPACE_STATE_UNSPECIFIED = 0
+    NAMESPACE_STATE_OK = 1
+    NAMESPACE_STATE_ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
+
+
+class WorkloadIdentityWorkloadIdentityPoolStateDetail(_messages.Message):
+  r"""WorkloadIdentityPoolStateDetail represents the state of the Workload
+  Identity Pools for the fleet.
+
+  Enums:
+    CodeValueValuesEnum: The state of the Workload Identity Pool.
+
+  Fields:
+    code: The state of the Workload Identity Pool.
+    description: A human-readable description of the current state or returned
+      error.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The state of the Workload Identity Pool.
+
+    Values:
+      WORKLOAD_IDENTITY_POOL_STATE_UNSPECIFIED: Unknown state.
+      WORKLOAD_IDENTITY_POOL_STATE_OK: The Workload Identity Pool was
+        created/updated successfully.
+      WORKLOAD_IDENTITY_POOL_STATE_ERROR: The Workload Identity Pool was not
+        created/updated successfully. The error message is in the description
+        field.
+    """
+    WORKLOAD_IDENTITY_POOL_STATE_UNSPECIFIED = 0
+    WORKLOAD_IDENTITY_POOL_STATE_OK = 1
+    WORKLOAD_IDENTITY_POOL_STATE_ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
 
 
 class WorkloadMigrationFeatureSpec(_messages.Message):

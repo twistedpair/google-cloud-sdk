@@ -458,6 +458,247 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsTest
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class CloudaicompanionProjectsLocationsCodeToolsSettingsCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsCreateRequest
+  object.
+
+  Fields:
+    codeToolsSetting: A CodeToolsSetting resource to be passed as the request
+      body.
+    codeToolsSettingId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and code_tools_setting_id
+      from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  codeToolsSetting = _messages.MessageField('CodeToolsSetting', 1)
+  codeToolsSettingId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsDeleteRequest
+  object.
+
+  Fields:
+    force: Optional. If set to true, any code tools settings from this
+      publisher will also be deleted. (Otherwise, the request will only work
+      if the publisher has no books.)
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsGetRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsListRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListCodeToolsSettingsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsPatchRequest object.
+
+  Fields:
+    codeToolsSetting: A CodeToolsSetting resource to be passed as the request
+      body.
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/codeToolsSettings/{codeToolsSetting}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the CodeToolsSetting resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  codeToolsSetting = _messages.MessageField('CodeToolsSetting', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsCreat
+  eRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    settingBinding: A SettingBinding resource to be passed as the request
+      body.
+    settingBindingId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and setting_id from the
+      method_signature of Create RPC.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  settingBinding = _messages.MessageField('SettingBinding', 3)
+  settingBindingId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsDelet
+  eRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsGetRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsListRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSettingBindingsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsCodeToolsSettingsSettingBindingsPatch
+  Request object.
+
+  Fields:
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/{settingType}/{setting}/settingBindings/{setting_binding}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    settingBinding: A SettingBinding resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the SettingBinding resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  settingBinding = _messages.MessageField('SettingBinding', 3)
+  updateMask = _messages.StringField(4)
+
+
 class CloudaicompanionProjectsLocationsDataSharingWithGoogleSettingsCreateRequest(_messages.Message):
   r"""A
   CloudaicompanionProjectsLocationsDataSharingWithGoogleSettingsCreateRequest
@@ -1548,6 +1789,64 @@ class CodeRepositoryIndex(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class CodeToolsSetting(_messages.Message):
+  r"""Message describing CodeToolsSetting object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp.
+    enabledTool: Required. Represents the full set of enabled tools.
+    labels: Optional. Labels as key value pairs.
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/codeToolsSettings/{codeToolsSetting}
+    updateTime: Output only. [Output only] Update time stamp.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  enabledTool = _messages.MessageField('ToolSetting', 2, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class ConfigItem(_messages.Message):
+  r"""Message for a single configuration item.
+
+  Fields:
+    key: Required. Key of the configuration item.
+    value: Required. Value of the configuration item.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class DataSharingWithGoogleSetting(_messages.Message):
   r"""Message describing DataSharingWithGoogleSetting object
 
@@ -1984,6 +2283,7 @@ class JavascriptRequest(_messages.Message):
   r"""Request message for Javascript Task using Gemini.
 
   Fields:
+    copilotEnabled: Optional. If this request is for copilot.
     integrationVersion: Required. The integration version which contains all
       the integration parameters, all triggers and tasks including the
       Javascript task.
@@ -1992,9 +2292,10 @@ class JavascriptRequest(_messages.Message):
       config (JS code) to generate the Javascript code.
   """
 
-  integrationVersion = _messages.MessageField('IntegrationVersion', 1)
-  taskId = _messages.StringField(2)
-  useCurrentScript = _messages.BooleanField(3)
+  copilotEnabled = _messages.BooleanField(1)
+  integrationVersion = _messages.MessageField('IntegrationVersion', 2)
+  taskId = _messages.StringField(3)
+  useCurrentScript = _messages.BooleanField(4)
 
 
 class JavascriptResponse(_messages.Message):
@@ -2018,6 +2319,21 @@ class ListCodeRepositoryIndexesResponse(_messages.Message):
 
   codeRepositoryIndexes = _messages.MessageField('CodeRepositoryIndex', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListCodeToolsSettingsResponse(_messages.Message):
+  r"""Message for response to listing CodeToolsSettings
+
+  Fields:
+    codeToolsSettings: The list of CodeToolsSetting
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  codeToolsSettings = _messages.MessageField('CodeToolsSetting', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListDataSharingWithGoogleSettingsResponse(_messages.Message):
@@ -2524,6 +2840,7 @@ class ReplaceTaskRequest(_messages.Message):
     TaskTypesValueListEntryValuesEnum:
 
   Fields:
+    copilotEnabled: Optional. If this request is for copilot.
     taskConfig: Required. The current task selected on the UI.
     taskTypes: The list of task types.
   """
@@ -2540,8 +2857,9 @@ class ReplaceTaskRequest(_messages.Message):
     CONNECTOR_TASK = 1
     REST_TASK = 2
 
-  taskConfig = _messages.MessageField('TaskConfig', 1)
-  taskTypes = _messages.EnumField('TaskTypesValueListEntryValuesEnum', 2, repeated=True)
+  copilotEnabled = _messages.BooleanField(1)
+  taskConfig = _messages.MessageField('TaskConfig', 2)
+  taskTypes = _messages.EnumField('TaskTypesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class ReplaceTaskResponse(_messages.Message):
@@ -2638,7 +2956,7 @@ class SettingBinding(_messages.Message):
   r"""Message describing SettingBinding object
 
   Enums:
-    ProductValueValuesEnum: Required. Product type of the setting binding.
+    ProductValueValuesEnum: Optional. Product type of the setting binding.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -2648,13 +2966,13 @@ class SettingBinding(_messages.Message):
     labels: Optional. Labels as key value pairs.
     name: Identifier. Name of the resource. Format:projects/{project}/location
       s/{location}/{settingType}/{setting}/settingBindings/{setting_binding}
-    product: Required. Product type of the setting binding.
+    product: Optional. Product type of the setting binding.
     target: Required. Target of the binding.
     updateTime: Output only. [Output only] Update time stamp.
   """
 
   class ProductValueValuesEnum(_messages.Enum):
-    r"""Required. Product type of the setting binding.
+    r"""Optional. Product type of the setting binding.
 
     Values:
       PRODUCT_UNSPECIFIED: Unspecified product.
@@ -2953,6 +3271,26 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class ToolSetting(_messages.Message):
+  r"""Represents a single enabled tool.
+
+  Fields:
+    accountConnector: Optional. Link to the Dev Connect Account Connector that
+      holds the user credentials. projects/{project}/locations/{location}/acco
+      untConnectors/{account_connector_id}
+    config: Optional. Configuration parameters for the tool.
+    handle: Required. Handle used to invoke the tool.
+    tool: Required. Link to the Tool
+    uriOverride: Optional. Overridden URI, if allowed by Tool.
+  """
+
+  accountConnector = _messages.StringField(1)
+  config = _messages.MessageField('ConfigItem', 2, repeated=True)
+  handle = _messages.StringField(3)
+  tool = _messages.StringField(4)
+  uriOverride = _messages.StringField(5)
 
 
 class TriggerConfig(_messages.Message):

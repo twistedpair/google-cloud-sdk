@@ -72,6 +72,8 @@ class PrivateConnectionsClient:
         privateConnectionId=private_connection.name,
         parent=parent_ref,
         requestId=request_id)
+    if args.IsKnownAndSpecified('skip_validation'):
+      create_req.skipValidation = True
 
     return self._service.Create(create_req)
 

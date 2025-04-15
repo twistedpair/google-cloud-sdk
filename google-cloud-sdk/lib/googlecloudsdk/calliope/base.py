@@ -42,6 +42,8 @@ except AttributeError:
   collections_abc = collections
 
 # Category constants
+BACKUP_CATEGORY = 'Backup'
+RESTORE_CATEGORY = 'Restore'
 AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
 VERTEX_AI_CATEGORY = 'Vertex AI'
 TENSORBOARD_CATEGORY = 'AI Platform Tensorboard'

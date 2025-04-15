@@ -28,18 +28,18 @@ class AccountConnector(_messages.Message):
   Fields:
     annotations: Optional. Allows users to store small amounts of arbitrary
       data.
-    createTime: Output only. The timestamp when the userConnection was
+    createTime: Output only. The timestamp when the accountConnector was
       created.
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     labels: Optional. Labels as key value pairs
-    name: Identifier. The resource name of the userConnection, in the format `
-      projects/{project}/locations/{location}/accountConnectors/{account_conne
-      ctor_id}`.
+    name: Identifier. The resource name of the accountConnector, in the format
+      `projects/{project}/locations/{location}/accountConnectors/{account_conn
+      ector_id}`.
     oauthStartUri: Output only. Start OAuth flow by clicking on this URL.
     providerOauthConfig: Provider OAuth config.
-    updateTime: Output only. The timestamp when the userConnection was
+    updateTime: Output only. The timestamp when the accountConnector was
       updated.
   """
 
@@ -437,13 +437,13 @@ class DeveloperconnectProjectsLocationsAccountConnectorsPatchRequest(_messages.M
   Fields:
     accountConnector: A AccountConnector resource to be passed as the request
       body.
-    allowMissing: Optional. If set to true, and the userConnection is not
-      found a new userConnection will be created. In this situation
+    allowMissing: Optional. If set to true, and the accountConnector is not
+      found a new accountConnector will be created. In this situation
       `update_mask` is ignored. The creation will succeed only if the input
-      userConnection has all the necessary
-    name: Identifier. The resource name of the userConnection, in the format `
-      projects/{project}/locations/{location}/accountConnectors/{account_conne
-      ctor_id}`.
+      accountConnector has all the necessary
+    name: Identifier. The resource name of the accountConnector, in the format
+      `projects/{project}/locations/{location}/accountConnectors/{account_conn
+      ector_id}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2233,6 +2233,8 @@ class ProviderOAuthConfig(_messages.Message):
       SENTRY: Sentry provider. Scopes can be found at
         https://docs.sentry.io/api/permissions/
       ROVO: Rovo provider. Must select the "rovo" scope.
+      NEW_RELIC: New Relic provider. No scopes are allowed.
+      DATASTAX: Datastax provider. No scopes are allowed.
     """
     SYSTEM_PROVIDER_UNSPECIFIED = 0
     GITHUB = 1
@@ -2240,6 +2242,8 @@ class ProviderOAuthConfig(_messages.Message):
     GOOGLE = 3
     SENTRY = 4
     ROVO = 5
+    NEW_RELIC = 6
+    DATASTAX = 7
 
   scopes = _messages.StringField(1, repeated=True)
   systemProviderId = _messages.EnumField('SystemProviderIdValueValuesEnum', 2)

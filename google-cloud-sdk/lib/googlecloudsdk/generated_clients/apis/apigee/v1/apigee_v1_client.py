@@ -69,6 +69,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_developers_balance = self.OrganizationsDevelopersBalanceService(self)
     self.organizations_developers_subscriptions = self.OrganizationsDevelopersSubscriptionsService(self)
     self.organizations_developers = self.OrganizationsDevelopersService(self)
+    self.organizations_dnsZones = self.OrganizationsDnsZonesService(self)
     self.organizations_endpointAttachments = self.OrganizationsEndpointAttachmentsService(self)
     self.organizations_envgroups_attachments = self.OrganizationsEnvgroupsAttachmentsService(self)
     self.organizations_envgroups = self.OrganizationsEnvgroupsService(self)
@@ -3271,6 +3272,124 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsDnsZonesService(base_api.BaseApiService):
+    """Service class for the organizations_dnsZones resource."""
+
+    _NAME = 'organizations_dnsZones'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsDnsZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new DNS zone.
+
+      Args:
+        request: (ApigeeOrganizationsDnsZonesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/dnsZones',
+        http_method='POST',
+        method_id='apigee.organizations.dnsZones.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dnsZoneId'],
+        relative_path='v1/{+parent}/dnsZones',
+        request_field='googleCloudApigeeV1DnsZone',
+        request_type_name='ApigeeOrganizationsDnsZonesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a previously created DNS zone.
+
+      Args:
+        request: (ApigeeOrganizationsDnsZonesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/dnsZones/{dnsZonesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.dnsZones.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDnsZonesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Fetches the representation of an existing DNS zone.
+
+      Args:
+        request: (ApigeeOrganizationsDnsZonesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DnsZone) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/dnsZones/{dnsZonesId}',
+        http_method='GET',
+        method_id='apigee.organizations.dnsZones.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDnsZonesGetRequest',
+        response_type_name='GoogleCloudApigeeV1DnsZone',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Enumerates DNS zones that have been created but not yet deleted.
+
+      Args:
+        request: (ApigeeOrganizationsDnsZonesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListDnsZonesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/dnsZones',
+        http_method='GET',
+        method_id='apigee.organizations.dnsZones.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dnsZones',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDnsZonesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListDnsZonesResponse',
+        supports_download=False,
+    )
+
   class OrganizationsEndpointAttachmentsService(base_api.BaseApiService):
     """Service class for the organizations_endpointAttachments resource."""
 
@@ -4829,7 +4948,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the certificate in an alias.
+      r"""Updates the certificate in an alias. The updated certificate must be in PEM- or DER-encoded X.509 format.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresAliasesUpdateRequest) input message

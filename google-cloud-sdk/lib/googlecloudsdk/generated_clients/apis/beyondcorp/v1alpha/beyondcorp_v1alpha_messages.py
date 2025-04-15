@@ -186,35 +186,6 @@ class ApplicationEndpoint(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCreateRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesCre
-  ateRequest object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule resource to be
-      passed as the request body.
-    parent: Required. The resource name of the BrowserDlpRule parent using the
-      form: `organizations/{organization_id}/locations/global/partnerTenants/{
-      partner_tenant_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDeleteRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDel
   eteRequest object.
@@ -253,50 +224,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequ
   name = _messages.StringField(1, required=True)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesListRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesLis
-  tRequest object.
-
-  Fields:
-    parent: Required. The parent partnerTenant to which the BrowserDlpRules
-      belong. Format: `organizations/{organization_id}/locations/global/partne
-      rTenants/{partner_tenant_id}`
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPatchRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesPat
-  chRequest object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule resource to be
-      passed as the request body.
-    name: Output only. Unique resource name. The name is ignored when creating
-      BrowserDlpRule.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Supported fields include: rule_setting.value.*,
-      group.id/group.email.
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTes
   tIamPermissionsRequest object.
@@ -313,34 +240,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTestIam
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsCreateRequest
-  object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant resource to be
-      passed as the request body.
-    parent: Required. The resource name of the parent organization using the
-      form: `organizations/{organization_id}/locations/global`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest(_messages.Message):
@@ -411,176 +310,6 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest(_messages.
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest
-  object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant resource to be
-      passed as the request body.
-    name: Output only. Unique resource name of the PartnerTenant. The name is
-      ignored when creating PartnerTenant.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the PartnerTenant resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten. Mutable
-      fields: display_name, partner_metadata, group_information.
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreateRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreate
-  Request object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
-      passed as the request body.
-    parent: Required. The resource name of the parent PartnerTenant using the
-      form: `organizations/{organization_id}/locations/global/partnerTenants/{
-      partner_tenant_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDeleteRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsDelete
-  Request object.
-
-  Fields:
-    name: Required. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest(_messages.Message):
-  r"""A
-  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest
-  object.
-
-  Fields:
-    name: Required. The resource name of the ProxyConfig using the form: `orga
-      nizations/{organization_id}/locations/global/partnerTenants/{partner_ten
-      ant_id}/proxyConfigs/{proxy_config_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest(_messages.Message):
-  r"""A
-  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListRequest
-  object.
-
-  Fields:
-    filter: Optional. A filter specifying constraints of a list operation. All
-      fields in the ProxyConfig message are supported. For example, the
-      following query will return the ProxyConfigs with displayName "test-
-      config" organizations/${ORG_ID}/locations/global/partnerTenants/${PARTNE
-      R_TENANT_ID}/proxyConfigs?filter=displayName="test-config" Nested fields
-      are also supported. The follow query will return ProxyConfigs with
-      pacUri "example.com/pac.pac" organizations/${ORG_ID}/locations/global/pa
-      rtnerTenants/${PARTNER_TENANT_ID}/proxyConfigs?filter=routingInfo.pacUri
-      ="example.com/pac.pac" For more information, please refer to
-      https://google.aip.dev/160.
-    orderBy: Optional. Specifies the ordering of results. See [Sorting
-      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
-      r) for more information.
-    pageSize: Optional. The maximum number of items to return. If not
-      specified, a default value of 50 will be used by the service. Regardless
-      of the page_size value, the response may include a partial list and a
-      caller should only rely on response's next_page_token to determine if
-      there are more instances left to be queried.
-    pageToken: Optional. The next_page_token value returned from a previous
-      ListProxyConfigsRequest, if any.
-    parent: Required. The parent organization to which the ProxyConfigs
-      belong. Format: `organizations/{organization_id}/locations/global/partne
-      rTenants/{partner_tenant_id}`
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest(_messages.Message):
-  r"""A
-  BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest
-  object.
-
-  Fields:
-    googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
-      GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
-      passed as the request body.
-    name: Output only. ProxyConfig resource name.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Mutable fields include: display_name, proxy_uri,
-      routing_info, transport_info, encryption_info.
-  """
-
-  googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsTestIamPermissionsRequest(_messages.Message):
@@ -1565,20 +1294,6 @@ class BeyondcorpProjectsLocationsAppGatewaysSetIamPolicyRequest(_messages.Messag
   resource = _messages.StringField(2, required=True)
 
 
-class BeyondcorpProjectsLocationsAppGatewaysShouldThrottleRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsAppGatewaysShouldThrottleRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    port: Optional. The port that is being throttled
-    requestedAmount: Optional. The current throughput through the port (mbps)
-  """
-
-  name = _messages.StringField(1, required=True)
-  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  requestedAmount = _messages.IntegerField(3)
-
-
 class BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest
   object.
@@ -2506,6 +2221,8 @@ class BeyondcorpProjectsLocationsListRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2516,10 +2233,11 @@ class BeyondcorpProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class BeyondcorpProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -4115,18 +3833,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule(_messages.Messag
   ruleSetting = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting', 3)
 
 
-class GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo(_messages.Message):
-  r"""Message contains the JWT encryption information for the proxy server.
-
-  Fields:
-    encryptionSaEmail: Optional. Service Account for encryption key.
-    jwk: Optional. JWK in string.
-  """
-
-  encryptionSaEmail = _messages.StringField(1)
-  jwk = _messages.StringField(2)
-
-
 class GoogleCloudBeyondcorpPartnerservicesV1alphaGroup(_messages.Message):
   r"""Message to capture group information
 
@@ -4137,16 +3843,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaGroup(_messages.Message):
 
   email = _messages.StringField(1)
   id = _messages.StringField(2)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaListBrowserDlpRulesResponse(_messages.Message):
-  r"""Message for response to listing BrowserDlpRules.
-
-  Fields:
-    browserDlpRules: The list of BrowserDlpRule objects.
-  """
-
-  browserDlpRules = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule', 1, repeated=True)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_messages.Message):
@@ -4160,19 +3856,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_mes
 
   nextPageToken = _messages.StringField(1)
   partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 2, repeated=True)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse(_messages.Message):
-  r"""Message for response to listing ProxyConfigs.
-
-  Fields:
-    nextPageToken: A token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    proxyConfigs: The list of ProxyConfig objects.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  proxyConfigs = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 2, repeated=True)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata(_messages.Message):
@@ -4241,86 +3924,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message
   updateTime = _messages.StringField(6)
 
 
-class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
-  r"""Proxy Configuration of a PartnerTenant.
-
-  Fields:
-    createTime: Output only. Timestamp when the resource was created.
-    displayName: Optional. An arbitrary caller-provided name for the
-      ProxyConfig. Cannot exceed 64 characters.
-    encryptionInfo: Optional. Information to encrypt JWT for the proxy server.
-    name: Output only. ProxyConfig resource name.
-    proxyProtocolConfig: Optional. Protocol config data for the Proxy.
-    proxyUri: Required. The URI of the proxy server.
-    routingInfo: Required. Routing info to direct traffic to the proxy server.
-    transportInfo: Optional. Transport layer information to verify for the
-      proxy server.
-    updateTime: Output only. Timestamp when the resource was last modified.
-  """
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  encryptionInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo', 3)
-  name = _messages.StringField(4)
-  proxyProtocolConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig', 5)
-  proxyUri = _messages.StringField(6)
-  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 7)
-  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 8)
-  updateTime = _messages.StringField(9)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig(_messages.Message):
-  r"""The protocol data that specifies how to communicate with Partner's
-  Proxy.
-
-  Messages:
-    MetadataValue: Optional. Untyped property bag to be sent back to the proxy
-      using client specific mechanism.
-
-  Fields:
-    metadata: Optional. Untyped property bag to be sent back to the proxy
-      using client specific mechanism.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Optional. Untyped property bag to be sent back to the proxy using
-    client specific mechanism.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type MetadataValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  metadata = _messages.MessageField('MetadataValue', 1)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo(_messages.Message):
-  r"""Message contains the routing information to direct traffic to the proxy
-  server.
-
-  Fields:
-    pacUri: Required. Proxy Auto-Configuration (PAC) URI.
-  """
-
-  pacUri = _messages.StringField(1)
-
-
 class GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting(_messages.Message):
   r"""Message to capture settings for a BrowserDlpRule
 
@@ -4358,21 +3961,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting(_messages.Message):
 
   type = _messages.StringField(1)
   value = _messages.MessageField('ValueValue', 2)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo(_messages.Message):
-  r"""Message contains the transport layer information to verify the proxy
-  server.
-
-  Fields:
-    serverCaCertPem: Required. PEM encoded CA certificate associated with the
-      proxy server certificate.
-    sslDecryptCaCertPem: Optional. PEM encoded CA certificate associated with
-      the certificate used by proxy server for SSL decryption.
-  """
-
-  serverCaCertPem = _messages.StringField(1)
-  sslDecryptCaCertPem = _messages.StringField(2)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1mainPartnerServiceOperationMetadata(_messages.Message):
@@ -5758,16 +5346,6 @@ class ServiceAccount(_messages.Message):
   """
 
   email = _messages.StringField(1)
-
-
-class ShouldThrottleResponse(_messages.Message):
-  r"""Response message for calling ShouldThrottle
-
-  Fields:
-    shouldThrottle: Whether the port should be throttled
-  """
-
-  shouldThrottle = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

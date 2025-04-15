@@ -51,17 +51,3 @@ properties:
     type: array
     items:
       $ref: ThreatOverride.yaml
-  wildfireInlineMlOverrides:
-    description: |-
-      Configuration for overriding wildfire inline ml actions
-      per protocol.
-    type: array
-    items:
-      $ref: WildfireInlineMlOverride.yaml
-  wildfireOverrides:
-    description: |-
-      Configuration for overriding wildfire actions per
-      protocol.
-    type: array
-    items:
-      $ref: WildfireOverride.yaml

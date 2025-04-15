@@ -354,7 +354,6 @@ def AddUserCredsIdArg(parser):
       'user_creds',
       metavar='USER_CREDS',
       type=str,
-      hidden=True,
       help="""
       The user creds to operate on.
 

@@ -260,8 +260,6 @@ class ConfidentialInstanceConfig(_messages.Message):
   Fields:
     confidentialInstanceType: Optional. Defines the type of technology used by
       the confidential instance.
-    enableConfidentialCompute: Optional. Defines whether the instance should
-      have confidential compute enabled.
   """
 
   class ConfidentialInstanceTypeValueValuesEnum(_messages.Enum):
@@ -272,16 +270,11 @@ class ConfidentialInstanceConfig(_messages.Message):
       CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED: No type specified. Do not use
         this value.
       SEV: AMD Secure Encrypted Virtualization.
-      SEV_SNP: AMD Secure Encrypted Virtualization - Secure Nested Paging.
-      TDX: Intel Trust Domain eXtension.
     """
     CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED = 0
     SEV = 1
-    SEV_SNP = 2
-    TDX = 3
 
   confidentialInstanceType = _messages.EnumField('ConfidentialInstanceTypeValueValuesEnum', 1)
-  enableConfidentialCompute = _messages.BooleanField(2)
 
 
 class Config(_messages.Message):
@@ -1316,6 +1309,8 @@ class NotebooksProjectsLocationsListRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1326,10 +1321,11 @@ class NotebooksProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class NotebooksProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1610,28 +1606,29 @@ class ReservationAffinity(_messages.Message):
   r"""A reservation that an instance can consume from.
 
   Enums:
-    ConsumeReservationTypeValueValuesEnum: Specifies the type of reservation
-      from which this instance can consume resources: RESERVATION_ANY
-      (default), RESERVATION_SPECIFIC, or RESERVATION_NONE. See Consuming
-      reserved instances for examples.
+    ConsumeReservationTypeValueValuesEnum: Required. Specifies the type of
+      reservation from which this instance can consume resources:
+      RESERVATION_ANY (default), RESERVATION_SPECIFIC, or RESERVATION_NONE.
+      See Consuming reserved instances for examples.
 
   Fields:
-    consumeReservationType: Specifies the type of reservation from which this
-      instance can consume resources: RESERVATION_ANY (default),
+    consumeReservationType: Required. Specifies the type of reservation from
+      which this instance can consume resources: RESERVATION_ANY (default),
       RESERVATION_SPECIFIC, or RESERVATION_NONE. See Consuming reserved
       instances for examples.
-    key: Corresponds to the label key of a reservation resource. To target a
-      RESERVATION_SPECIFIC by name, use compute.googleapis.com/reservation-
-      name as the key and specify the name of your reservation as its value.
-    values: Corresponds to the label values of a reservation resource. This
-      can be either a name to a reservation in the same project or
-      "projects/different-project/reservations/some-reservation-name" to
+    key: Optional. Corresponds to the label key of a reservation resource. To
+      target a RESERVATION_SPECIFIC by name, use
+      compute.googleapis.com/reservation-name as the key and specify the name
+      of your reservation as its value.
+    values: Optional. Corresponds to the label values of a reservation
+      resource. This can be either a name to a reservation in the same project
+      or "projects/different-project/reservations/some-reservation-name" to
       target a shared reservation in the same zone but in a different project.
   """
 
   class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
-    r"""Specifies the type of reservation from which this instance can consume
-    resources: RESERVATION_ANY (default), RESERVATION_SPECIFIC, or
+    r"""Required. Specifies the type of reservation from which this instance
+    can consume resources: RESERVATION_ANY (default), RESERVATION_SPECIFIC, or
     RESERVATION_NONE. See Consuming reserved instances for examples.
 
     Values:

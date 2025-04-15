@@ -3966,6 +3966,8 @@ class GkeonpremProjectsLocationsListRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -3976,10 +3978,11 @@ class GkeonpremProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GkeonpremProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -6065,6 +6068,7 @@ class VmwareAdminCluster(_messages.Message):
     createTime: Output only. The time at which VMware admin cluster was
       created.
     description: A human readable description of this VMware admin cluster.
+    enableAdvancedCluster: Enable advanced cluster.
     endpoint: Output only. The DNS name of VMware admin cluster's API server.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
@@ -6169,24 +6173,25 @@ class VmwareAdminCluster(_messages.Message):
   controlPlaneNode = _messages.MessageField('VmwareAdminControlPlaneNodeConfig', 7)
   createTime = _messages.StringField(8)
   description = _messages.StringField(9)
-  endpoint = _messages.StringField(10)
-  etag = _messages.StringField(11)
-  fleet = _messages.MessageField('Fleet', 12)
-  imageType = _messages.StringField(13)
-  loadBalancer = _messages.MessageField('VmwareAdminLoadBalancerConfig', 14)
-  localName = _messages.StringField(15)
-  name = _messages.StringField(16)
-  networkConfig = _messages.MessageField('VmwareAdminNetworkConfig', 17)
-  onPremVersion = _messages.StringField(18)
-  platformConfig = _messages.MessageField('VmwarePlatformConfig', 19)
-  preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 20)
-  reconciling = _messages.BooleanField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  status = _messages.MessageField('ResourceStatus', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
-  validationCheck = _messages.MessageField('ValidationCheck', 26)
-  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 27)
+  enableAdvancedCluster = _messages.BooleanField(10)
+  endpoint = _messages.StringField(11)
+  etag = _messages.StringField(12)
+  fleet = _messages.MessageField('Fleet', 13)
+  imageType = _messages.StringField(14)
+  loadBalancer = _messages.MessageField('VmwareAdminLoadBalancerConfig', 15)
+  localName = _messages.StringField(16)
+  name = _messages.StringField(17)
+  networkConfig = _messages.MessageField('VmwareAdminNetworkConfig', 18)
+  onPremVersion = _messages.StringField(19)
+  platformConfig = _messages.MessageField('VmwarePlatformConfig', 20)
+  preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 21)
+  reconciling = _messages.BooleanField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  status = _messages.MessageField('ResourceStatus', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  validationCheck = _messages.MessageField('ValidationCheck', 27)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 28)
 
 
 class VmwareAdminControlPlaneNodeConfig(_messages.Message):
@@ -6490,6 +6495,7 @@ class VmwareCluster(_messages.Message):
       deleted.
     description: A human readable description of this VMware user cluster.
     disableBundledIngress: Disable bundled ingress.
+    enableAdvancedCluster: Enable advanced cluster.
     enableControlPlaneV2: Enable control plane V2. Default to false.
     endpoint: Output only. The DNS name of VMware user cluster's API server.
     etag: This checksum is computed by the server based on the value of other
@@ -6598,25 +6604,26 @@ class VmwareCluster(_messages.Message):
   deleteTime = _messages.StringField(11)
   description = _messages.StringField(12)
   disableBundledIngress = _messages.BooleanField(13)
-  enableControlPlaneV2 = _messages.BooleanField(14)
-  endpoint = _messages.StringField(15)
-  etag = _messages.StringField(16)
-  fleet = _messages.MessageField('Fleet', 17)
-  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 18)
-  localName = _messages.StringField(19)
-  name = _messages.StringField(20)
-  networkConfig = _messages.MessageField('VmwareNetworkConfig', 21)
-  onPremVersion = _messages.StringField(22)
-  reconciling = _messages.BooleanField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  status = _messages.MessageField('ResourceStatus', 25)
-  storage = _messages.MessageField('VmwareStorageConfig', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
-  upgradePolicy = _messages.MessageField('VmwareClusterUpgradePolicy', 29)
-  validationCheck = _messages.MessageField('ValidationCheck', 30)
-  vcenter = _messages.MessageField('VmwareVCenterConfig', 31)
-  vmTrackingEnabled = _messages.BooleanField(32)
+  enableAdvancedCluster = _messages.BooleanField(14)
+  enableControlPlaneV2 = _messages.BooleanField(15)
+  endpoint = _messages.StringField(16)
+  etag = _messages.StringField(17)
+  fleet = _messages.MessageField('Fleet', 18)
+  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 19)
+  localName = _messages.StringField(20)
+  name = _messages.StringField(21)
+  networkConfig = _messages.MessageField('VmwareNetworkConfig', 22)
+  onPremVersion = _messages.StringField(23)
+  reconciling = _messages.BooleanField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  status = _messages.MessageField('ResourceStatus', 26)
+  storage = _messages.MessageField('VmwareStorageConfig', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  upgradePolicy = _messages.MessageField('VmwareClusterUpgradePolicy', 30)
+  validationCheck = _messages.MessageField('ValidationCheck', 31)
+  vcenter = _messages.MessageField('VmwareVCenterConfig', 32)
+  vmTrackingEnabled = _messages.BooleanField(33)
 
 
 class VmwareClusterUpgradePolicy(_messages.Message):

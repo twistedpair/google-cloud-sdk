@@ -15,7 +15,6 @@
 """Helpers for the container node pool related commands."""
 
 from googlecloudsdk.api_lib.edge_cloud.container import util
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -95,8 +94,6 @@ def GetNodePoolUpdateRequest(args, release_track, existing_node_pool):
   PopulateNodePoolUpdateMessage(
       req, messages, args, update_mask_pieces, existing_node_pool
   )
-  if release_track == base.ReleaseTrack.ALPHA:
-    PopulateNodePoolUpdateAlphaMessage(req, messages, update_mask_pieces, args)
   req.updateMask = ','.join(update_mask_pieces)
   return req
 
@@ -204,3 +201,18 @@ def PopulateNodePoolUpdateMessage(
       v.key = key
       v.value = value
       req.nodePool.nodeConfig.labels.additionalProperties.append(v)
+  if flags.FlagIsExplicitlySet(
+      args, 'use_google_managed_key'
+  ) and flags.FlagIsExplicitlySet(args, 'local_disk_kms_key'):
+    raise exceptions.InvalidArgumentException(
+        '--use-google-managed-key, --local-disk-kms-key',
+        'cannot be specified at the same time',
+    )
+  if flags.FlagIsExplicitlySet(args, 'use_google_managed_key'):
+    update_mask_pieces.append('localDiskEncryption')
+    req.nodePool.localDiskEncryption = messages.LocalDiskEncryption()
+    req.nodePool.localDiskEncryption.kmsKey = ''
+  if flags.FlagIsExplicitlySet(args, 'local_disk_kms_key'):
+    update_mask_pieces.append('localDiskEncryption')
+    req.nodePool.localDiskEncryption = messages.LocalDiskEncryption()
+    req.nodePool.localDiskEncryption.kmsKey = args.local_disk_kms_key

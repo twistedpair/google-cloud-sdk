@@ -113,7 +113,7 @@ class ConfigdeliveryV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Rollouts in a given project, location, and fleet package.
+      r"""Lists Rollouts in a given project, location, and Fleet Package.
 
       Args:
         request: (ConfigdeliveryProjectsLocationsFleetPackagesRolloutsListRequest) input message
@@ -947,7 +947,7 @@ class ConfigdeliveryV1alpha(base_api.BaseApiClient):
         method_id='configdelivery.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+name}/locations',
         request_field='',
         request_type_name='ConfigdeliveryProjectsLocationsListRequest',

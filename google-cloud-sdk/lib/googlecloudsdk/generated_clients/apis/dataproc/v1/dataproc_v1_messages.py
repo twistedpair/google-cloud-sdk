@@ -7022,7 +7022,7 @@ class LifecycleConfig(_messages.Message):
       JSON representation of Timestamp
       (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     autoStopTtl: Optional. The lifetime duration of the cluster. The cluster
-      will be auto-stopped at the end of this period calculated from the time
+      will be auto-stopped at the end of this period, calculated from the time
       of submission of the create or update cluster request. Minimum value is
       10 minutes; maximum value is 14 days (see JSON representation of
       Duration (https://developers.google.com/protocol-

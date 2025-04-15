@@ -59,7 +59,7 @@ class GoogleIamV3betaListPolicyBindingsResponse(_messages.Message):
 
 
 class GoogleIamV3betaListPrincipalAccessBoundaryPoliciesResponse(_messages.Message):
-  r"""A GoogleIamV3betaListPrincipalAccessBoundaryPoliciesResponse object.
+  r"""Response message for ListPrincipalAccessBoundaryPolicies method.
 
   Fields:
     nextPageToken: Optional. A token, which can be sent as `page_token` to

@@ -556,6 +556,44 @@ class Empty(_messages.Message):
 
 
 
+class FetchBrokerDetailsResponse(_messages.Message):
+  r"""Response for FetchBrokerDetails.
+
+  Messages:
+    BrokersPerZoneValue: Output only. The count of brokers in each zone.
+
+  Fields:
+    brokersPerZone: Output only. The count of brokers in each zone.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BrokersPerZoneValue(_messages.Message):
+    r"""Output only. The count of brokers in each zone.
+
+    Messages:
+      AdditionalProperty: An additional property for a BrokersPerZoneValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type BrokersPerZoneValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BrokersPerZoneValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 1)
+
+
 class GcpConfig(_messages.Message):
   r"""Configuration properties for a Kafka cluster deployed to Google Cloud
   Platform.
@@ -1026,6 +1064,18 @@ class ManagedkafkaProjectsLocationsClustersDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest object.
+
+  Fields:
+    name: Required. The name of the cluster whose broker details to return.
+      Structured like:
+      projects/{project}/locations/{location}/clusters/{cluster}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedkafkaProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsClustersGetRequest object.
 
@@ -1467,6 +1517,8 @@ class ManagedkafkaProjectsLocationsListRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1477,10 +1529,11 @@ class ManagedkafkaProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class ManagedkafkaProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1879,7 +1932,9 @@ class TaskRetryPolicy(_messages.Message):
   https://en.wikipedia.org/wiki/Exponential_backoff. Note that the delay
   between consecutive task restarts may not always precisely match the
   configured settings. This can happen when the ConnectCluster is in
-  rebalancing state or if the ConnectCluster is unresponsive etc.
+  rebalancing state or if the ConnectCluster is unresponsive etc. The default
+  values for minimum and maximum backoffs are 60 seconds and 30 minutes
+  respectively.
 
   Fields:
     maximumBackoff: Optional. The maximum amount of time to wait before

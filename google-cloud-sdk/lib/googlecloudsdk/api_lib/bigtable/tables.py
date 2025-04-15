@@ -18,10 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
+import six
 
 
 def ParseSingleRule(rule):
@@ -284,6 +289,8 @@ def RefreshUpdateMask(unused_ref, args, req):
     req = AddFieldToUpdateMask('automatedBackupPolicy', req)
   if args.automated_backup_retention_period:
     req = AddFieldToUpdateMask('automatedBackupPolicy.retentionPeriod', req)
+  if args.row_key_schema_definition_file or args.clear_row_key_schema:
+    req = AddFieldToUpdateMask('rowKeySchema', req)
   return req
 
 
@@ -497,3 +504,92 @@ def CreateDefaultAutomatedBackupPolicy():
     AutomatedBackupPolicy with default policy config.
   """
   return CreateAutomatedBackupPolicy('7d', '1d')
+
+
+def Utf8ToBase64(s):
+  """Encode a utf-8 string as a base64 string."""
+  return six.ensure_text(base64.b64encode(six.ensure_binary(s)))
+
+
+def HandleRowKeySchemaCreateTableArgs(unused_ref, args, req):
+  """Handles row key schema create table args."""
+  if args.row_key_schema_definition_file:
+    req.createTableRequest.table.rowKeySchema = (
+        ParseRowKeySchemaFromDefinitionFile(
+            args.row_key_schema_definition_file,
+            args.row_key_schema_pre_encoded_bytes,
+        )
+    )
+  return req
+
+
+def HandleRowKeySchemaUpdateTableArgs(unused_ref, args, req):
+  """Handles row key schema update table args."""
+  if args.row_key_schema_definition_file:
+    req.table.rowKeySchema = ParseRowKeySchemaFromDefinitionFile(
+        args.row_key_schema_definition_file,
+        args.row_key_schema_pre_encoded_bytes,
+    )
+
+  if args.clear_row_key_schema:
+    req.ignoreWarnings = True
+
+  return req
+
+
+def Base64EncodeBinaryFieldsInRowKeySchema(row_key_schema):
+  """Encodes binary fields in the row key schema in Base64."""
+  # We don't need to check for missing encoding here, as the admin API will
+  # return an error if the encoding is missing.
+  if (
+      not row_key_schema
+      or 'encoding' not in row_key_schema
+      or 'delimitedBytes' not in row_key_schema['encoding']
+      or 'delimiter' not in row_key_schema['encoding']['delimitedBytes']
+      or not row_key_schema['encoding']['delimitedBytes']['delimiter']
+  ):
+    return row_key_schema
+
+  row_key_schema['encoding']['delimitedBytes']['delimiter'] = Utf8ToBase64(
+      row_key_schema['encoding']['delimitedBytes']['delimiter']
+  )
+  return row_key_schema
+
+
+def ParseRowKeySchemaFromDefinitionFile(definition_file, pre_encoded):
+  """Parses row key schema from the definition file.
+
+  Args:
+    definition_file: The path to the definition file. File must be in YAML or
+      JSON format.
+    pre_encoded: Whether all the binary fields in the row key schema (e.g.
+      encoding.delimited_bytes.delimiter) are pre-encoded in Base64.
+
+  Returns:
+    A struct type object representing the row key schema.
+
+  Raises:
+    BadArgumentException if the definition file is not found, can't be
+      read, or is not a valid YAML or JSON file.
+    ValueError if the YAML/JSON object cannot be parsed as a valid row key
+      schema.
+  """
+  row_key_schema_msg_type = (
+      util.GetAdminMessages().GoogleBigtableAdminV2TypeStruct
+  )
+  try:
+    row_key_schema_to_parse = yaml.load_path(definition_file)
+    if not pre_encoded:
+      Base64EncodeBinaryFieldsInRowKeySchema(row_key_schema_to_parse)
+    parsed_row_key_schema = encoding.PyValueToMessage(
+        row_key_schema_msg_type, row_key_schema_to_parse
+    )
+  except (yaml.FileLoadError, yaml.YAMLParseError) as e:
+    raise exceptions.BadArgumentException('--row-key-schema-definition-file', e)
+  except AttributeError as e:
+    raise ValueError(
+        'File [{0}] cannot be parsed as a valid row key schema. [{1}]'.format(
+            definition_file, e
+        )
+    )
+  return parsed_row_key_schema

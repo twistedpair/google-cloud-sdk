@@ -49,33 +49,35 @@ class Execution(k8s_object.KubernetesObject):
     KIND = 'TaskTemplateSpec'
 
     @classmethod
-    def SpecAndAnnotationsOnly(cls, execution):
-      """Special wrapper for spec only that also covers metadata annotations.
+    def SpecAndParitialMetadataOnly(cls, execution):
+      """Special wrapper for spec only that also covers partial metadata.
 
       For a message type without its own metadata, like TaskTemplateSpec,
       metadata fields should either raise AttributeErrors or refer to the
       metadata of a different message depending on use case. This method handles
-      the annotations of metadata by referencing the parent job's annotations.
+      the annotations and labels of metadata by referencing the parent
+      execution's annotations and labels.
       All other metadata fields will fall through to k8s_object which will
       lead to AttributeErrors.
 
       Args:
-        execution: The parent job for this InstanceTemplateSpec
+        execution: The parent execution for this TaskTemplateSpec
 
       Returns:
         A new k8s_object to wrap the TaskTemplateSpec with only the spec
-        fields and the metadata annotations.
+        fields and the metadata annotations and labels.
       """
       spec_wrapper = super(Execution.TaskTemplateSpec,
                            cls).SpecOnly(execution.spec.template.spec,
                                          execution.MessagesModule())
       # pylint: disable=protected-access
       spec_wrapper._annotations = execution.annotations
+      spec_wrapper._labels = execution.labels
       return spec_wrapper
 
     @property
     def annotations(self):
-      """Override to return the parent job's annotations."""
+      """Override to return the parent execution's annotations."""
       try:
         return self._annotations
       except AttributeError:
@@ -83,6 +85,18 @@ class Execution(k8s_object.KubernetesObject):
             'Execution templates do not have their own annotations. Initialize '
             'the wrapper with SpecAndAnnotationsOnly to be able to use '
             'annotations.')
+
+    @property
+    def labels(self):
+      """Override to return the parent execution's labels."""
+      try:
+        return self._labels
+      except AttributeError:
+        raise ValueError(
+            'Execution templates do not have their own labels. Initialize '
+            'the wrapper with SpecAndAnnotationsOnly to be able to use '
+            'labels.'
+        )
 
     @property
     def service_account(self):
@@ -112,7 +126,7 @@ class Execution(k8s_object.KubernetesObject):
 
   @property
   def template(self):
-    return Execution.TaskTemplateSpec.SpecAndAnnotationsOnly(self)
+    return Execution.TaskTemplateSpec.SpecAndParitialMetadataOnly(self)
 
   @property
   def author(self):

@@ -1996,7 +1996,7 @@ class VmmigrationV1alpha1(base_api.BaseApiClient):
         method_id='vmmigration.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+name}/locations',
         request_field='',
         request_type_name='VmmigrationProjectsLocationsListRequest',

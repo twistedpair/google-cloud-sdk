@@ -848,6 +848,8 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -858,10 +860,11 @@ class AlloydbProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class AlloydbProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1054,6 +1057,8 @@ class Backup(_messages.Message):
       (e.g., projects/{project}/locations/{region}/clusters/{cluster_id}).
     clusterUid: Output only. The system-generated UID of the cluster which was
       used to create this resource.
+    createCompletionTime: Output only. Timestamp when the resource finished
+      being created.
     createTime: Output only. Create time stamp
     databaseVersion: Output only. The database engine major version of the
       cluster this backup was created from. Any restored cluster created from
@@ -1096,7 +1101,9 @@ class Backup(_messages.Message):
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
       deleted.
-    updateTime: Output only. Update time stamp
+    updateTime: Output only. Update time stamp Users should not infer any
+      meaning from this field. Its value is generally unrelated to the timing
+      of the backup creation operation.
   """
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
@@ -1229,26 +1236,27 @@ class Backup(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   clusterName = _messages.StringField(2)
   clusterUid = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
-  deleteTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
-  etag = _messages.StringField(11)
-  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 12)
-  expiryTime = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  reconciling = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  sizeBytes = _messages.IntegerField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  tags = _messages.MessageField('TagsValue', 20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
-  uid = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
+  createCompletionTime = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
+  deleteTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 11)
+  etag = _messages.StringField(12)
+  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 13)
+  expiryTime = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  reconciling = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  sizeBytes = _messages.IntegerField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  tags = _messages.MessageField('TagsValue', 21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
 
 
 class BackupSource(_messages.Message):
@@ -3091,12 +3099,29 @@ class PscAutoConnectionConfig(_messages.Message):
       consumer network might be hosted a different project than the consumer
       project.
     consumerNetworkStatus: Output only. The status of the service connection
-      policy.
+      policy. Possible values: "STATE_UNSPECIFIED" - Default state, when
+      Connection Map is created initially. "VALID" - Set when policy and map
+      configuration is valid, and their matching can lead to allowing creation
+      of PSC Connections subject to other constraints like connections limit.
+      "CONNECTION_POLICY_MISSING" - No Service Connection Policy found for
+      this network and Service Class "POLICY_LIMIT_REACHED" - Service
+      Connection Policy limit reached for this network and Service Class
+      "CONSUMER_INSTANCE_PROJECT_NOT_ALLOWLISTED" - The consumer instance
+      project is not in AllowedGoogleProducersResourceHierarchyLevels of the
+      matching ServiceConnectionPolicy.
     consumerProject: The consumer project to which the PSC service automation
       endpoint will be created.
     ipAddress: Output only. The IP address of the PSC service automation
       endpoint.
     status: Output only. The status of the PSC service automation connection.
+      Possible values: "STATE_UNSPECIFIED" - An invalid state as the default
+      case. "ACTIVE" - The connection has been created successfully. "FAILED"
+      - The connection is not functional since some resources on the
+      connection fail to be created. "CREATING" - The connection is being
+      created. "DELETING" - The connection is being deleted.
+      "CREATE_REPAIRING" - The connection is being repaired to complete
+      creation. "DELETE_REPAIRING" - The connection is being repaired to
+      complete deletion.
   """
 
   consumerNetwork = _messages.StringField(1)

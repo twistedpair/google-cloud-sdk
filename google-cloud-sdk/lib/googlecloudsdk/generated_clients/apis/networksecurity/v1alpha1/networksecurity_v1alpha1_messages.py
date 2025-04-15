@@ -181,7 +181,7 @@ class AntivirusOverride(_messages.Message):
 
     Values:
       PROTOCOL_UNSPECIFIED: Protocol not specified.
-      SMTP: SMTP prtocol
+      SMTP: SMTP protocol
       SMB: SMB protocol
       POP3: POP3 protocol
       IMAP: IMAP protocol
@@ -241,7 +241,7 @@ class AntivirusThreatOverride(_messages.Message):
 
     Values:
       PROTOCOL_UNSPECIFIED: Protocol not specified.
-      SMTP: SMTP prtocol
+      SMTP: SMTP protocol
       SMB: SMB protocol
       POP3: POP3 protocol
       IMAP: IMAP protocol
@@ -963,6 +963,10 @@ class CustomMirroringProfile(_messages.Message):
   r"""CustomMirroringProfile defines out-of-band integration behavior
   (mirroring). It is used by mirroring rules with a MIRROR action.
 
+  Enums:
+    MirroringEndpointGroupTypeValueValuesEnum: Output only. The type of the
+      mirroring endpoint group this Profile is attached to.
+
   Fields:
     mirroringDeploymentGroups: Optional. The target downstream
       MirroringDeploymentGroups. This field is used for Packet Broker
@@ -971,10 +975,27 @@ class CustomMirroringProfile(_messages.Message):
     mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
       a mirroring rule with this security profile attached matches a packet, a
       replica will be mirrored to the location-local target in this group.
+    mirroringEndpointGroupType: Output only. The type of the mirroring
+      endpoint group this Profile is attached to.
   """
+
+  class MirroringEndpointGroupTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the mirroring endpoint group this Profile is
+    attached to.
+
+    Values:
+      MIRRORING_ENDPOINT_GROUP_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      DIRECT: The endpoint group is a direct endpoint group.
+      BROKER: The endpoint group is a broker endpoint group.
+    """
+    MIRRORING_ENDPOINT_GROUP_TYPE_UNSPECIFIED = 0
+    DIRECT = 1
+    BROKER = 2
 
   mirroringDeploymentGroups = _messages.StringField(1, repeated=True)
   mirroringEndpointGroup = _messages.StringField(2)
+  mirroringEndpointGroupType = _messages.EnumField('MirroringEndpointGroupTypeValueValuesEnum', 3)
 
 
 class Destination(_messages.Message):
@@ -1393,21 +1414,68 @@ class FirstPartyEndpointSettings(_messages.Message):
   r"""A FirstPartyEndpointSettings object."""
 
 
+class ForwardingRule(_messages.Message):
+  r"""ForwardingRule contains the forwarding rule related parameters used to
+  create or update a PSC attachment via G2CCyrus.
+
+  Fields:
+    incarnationId: Required. The Arcus incarnation ID.
+    ipAddress: Required. The IP address of the forwarding rule.
+    name: Required. The canonical forwarding rule name:
+      projects/{project_number}/regions/{region}/forwardingRules/{id}
+  """
+
+  incarnationId = _messages.IntegerField(1)
+  ipAddress = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class GatewayAttachment(_messages.Message):
   r"""GatewayAttachment is a resource that represents the Gateway attachment
   in a given location.
+
+  Enums:
+    OriginValueValuesEnum: Required. The origin of the attachment.
+    StateValueValuesEnum: Output only. Current state of the GatewayAttachment.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    forwardingRule: Required. Immutable. The forwarding rule of the
+      attachment.
     labels: Optional. Labels as key value pairs
     name: Identifier. The name of the resource.
+    origin: Required. The origin of the attachment.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
+    state: Output only. Current state of the GatewayAttachment.
     updateTime: Output only. [Output only] Update time stamp
+    userspaceTunneling: Immutable. Userspace tunneling attachment.
   """
+
+  class OriginValueValuesEnum(_messages.Enum):
+    r"""Required. The origin of the attachment.
+
+    Values:
+      ORIGIN_UNSPECIFIED: Not set.
+      ORIGIN_PACKET_BROKER: Packet broker.
+      ORIGIN_BUTTER_PACKET_CAPTURE: Butter packet capture.
+    """
+    ORIGIN_UNSPECIFIED = 0
+    ORIGIN_PACKET_BROKER = 1
+    ORIGIN_BUTTER_PACKET_CAPTURE = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the GatewayAttachment.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1434,16 +1502,27 @@ class GatewayAttachment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  reconciling = _messages.BooleanField(4)
-  updateTime = _messages.StringField(5)
+  forwardingRule = _messages.MessageField('ForwardingRule', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  origin = _messages.EnumField('OriginValueValuesEnum', 5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  userspaceTunneling = _messages.MessageField('GatewayAttachmentUserspaceTunneling', 9)
+
+
+class GatewayAttachmentUserspaceTunneling(_messages.Message):
+  r"""Userspace tunneling configuration."""
 
 
 class GatewayEndpoint(_messages.Message):
   r"""GatewayEndpoint is a resource that represents the Gateway endpoint in a
   given location.
 
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the GatewayEndpoint.
+
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
@@ -1451,10 +1530,24 @@ class GatewayEndpoint(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Identifier. The name of the resource.
+    network: Required. The name of the VPC network of the endpoint. It
+      dictates the project used for the Andromeda EP.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
+    state: Output only. Current state of the GatewayEndpoint.
     updateTime: Output only. [Output only] Update time stamp
+    userspaceTunneling: Immutable. Userspace tunneling configuration.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the GatewayEndpoint.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1483,8 +1576,23 @@ class GatewayEndpoint(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  reconciling = _messages.BooleanField(4)
-  updateTime = _messages.StringField(5)
+  network = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+  userspaceTunneling = _messages.MessageField('GatewayEndpointUserspaceTunneling', 8)
+
+
+class GatewayEndpointUserspaceTunneling(_messages.Message):
+  r"""Userspace tunneling configuration.
+
+  Fields:
+    ipAddress: Required. The IP address associated with the EP. The caller
+      must statically allocate it in a network subnet that's in the same
+      region as this EP.
+  """
+
+  ipAddress = _messages.StringField(1)
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -9690,18 +9798,12 @@ class ThreatPreventionProfile(_messages.Message):
       threat_id match. If a threat is matched both by configuration provided
       in severity_overrides and threat_overrides, the threat_overrides action
       is applied.
-    wildfireInlineMlOverrides: Optional. Configuration for overriding wildfire
-      inline ml actions per protocol.
-    wildfireOverrides: Optional. Configuration for overriding wildfire actions
-      per protocol.
   """
 
   antivirusOverrides = _messages.MessageField('AntivirusOverride', 1, repeated=True)
   antivirusThreatOverrides = _messages.MessageField('AntivirusThreatOverride', 2, repeated=True)
   severityOverrides = _messages.MessageField('SeverityOverride', 3, repeated=True)
   threatOverrides = _messages.MessageField('ThreatOverride', 4, repeated=True)
-  wildfireInlineMlOverrides = _messages.MessageField('WildfireInlineMlOverride', 5, repeated=True)
-  wildfireOverrides = _messages.MessageField('WildfireOverride', 6, repeated=True)
 
 
 class TlsCertificateFiles(_messages.Message):
@@ -10116,126 +10218,6 @@ class ValidationCA(_messages.Message):
   caCertPath = _messages.StringField(1)
   certificateProviderInstance = _messages.MessageField('CertificateProviderInstance', 2)
   grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 3)
-
-
-class WildfireInlineMlOverride(_messages.Message):
-  r"""Defines what action to take for wildfire inline ml threats per protocol.
-
-  Enums:
-    ActionValueValuesEnum: Required. Threat action override. For some threat
-      types, only a subset of actions applies.
-    ProtocolValueValuesEnum: Required. Protocol to match.
-
-  Fields:
-    action: Required. Threat action override. For some threat types, only a
-      subset of actions applies.
-    protocol: Required. Protocol to match.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""Required. Threat action override. For some threat types, only a subset
-    of actions applies.
-
-    Values:
-      THREAT_ACTION_UNSPECIFIED: Threat action not specified.
-      DEFAULT_ACTION: The default action (as specified by the vendor) is
-        taken.
-      ALLOW: The packet matching this rule will be allowed to transmit.
-      ALERT: The packet matching this rule will be allowed to transmit, but a
-        threat_log entry will be sent to the consumer project.
-      DENY: The packet matching this rule will be dropped, and a threat_log
-        entry will be sent to the consumer project.
-    """
-    THREAT_ACTION_UNSPECIFIED = 0
-    DEFAULT_ACTION = 1
-    ALLOW = 2
-    ALERT = 3
-    DENY = 4
-
-  class ProtocolValueValuesEnum(_messages.Enum):
-    r"""Required. Protocol to match.
-
-    Values:
-      PROTOCOL_UNSPECIFIED: Protocol not specified.
-      SMTP: SMTP prtocol
-      SMB: SMB protocol
-      POP3: POP3 protocol
-      IMAP: IMAP protocol
-      HTTP2: HTTP2 protocol
-      HTTP: HTTP protocol
-      FTP: FTP protocol
-    """
-    PROTOCOL_UNSPECIFIED = 0
-    SMTP = 1
-    SMB = 2
-    POP3 = 3
-    IMAP = 4
-    HTTP2 = 5
-    HTTP = 6
-    FTP = 7
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 2)
-
-
-class WildfireOverride(_messages.Message):
-  r"""Defines what action to take for wildfire threats per protocol.
-
-  Enums:
-    ActionValueValuesEnum: Required. Threat action override. For some threat
-      types, only a subset of actions applies.
-    ProtocolValueValuesEnum: Required. Protocol to match.
-
-  Fields:
-    action: Required. Threat action override. For some threat types, only a
-      subset of actions applies.
-    protocol: Required. Protocol to match.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""Required. Threat action override. For some threat types, only a subset
-    of actions applies.
-
-    Values:
-      THREAT_ACTION_UNSPECIFIED: Threat action not specified.
-      DEFAULT_ACTION: The default action (as specified by the vendor) is
-        taken.
-      ALLOW: The packet matching this rule will be allowed to transmit.
-      ALERT: The packet matching this rule will be allowed to transmit, but a
-        threat_log entry will be sent to the consumer project.
-      DENY: The packet matching this rule will be dropped, and a threat_log
-        entry will be sent to the consumer project.
-    """
-    THREAT_ACTION_UNSPECIFIED = 0
-    DEFAULT_ACTION = 1
-    ALLOW = 2
-    ALERT = 3
-    DENY = 4
-
-  class ProtocolValueValuesEnum(_messages.Enum):
-    r"""Required. Protocol to match.
-
-    Values:
-      PROTOCOL_UNSPECIFIED: Protocol not specified.
-      SMTP: SMTP prtocol
-      SMB: SMB protocol
-      POP3: POP3 protocol
-      IMAP: IMAP protocol
-      HTTP2: HTTP2 protocol
-      HTTP: HTTP protocol
-      FTP: FTP protocol
-    """
-    PROTOCOL_UNSPECIFIED = 0
-    SMTP = 1
-    SMB = 2
-    POP3 = 3
-    IMAP = 4
-    HTTP2 = 5
-    HTTP = 6
-    FTP = 7
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

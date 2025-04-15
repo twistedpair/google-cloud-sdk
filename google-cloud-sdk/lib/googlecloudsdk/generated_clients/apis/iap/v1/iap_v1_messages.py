@@ -1002,7 +1002,7 @@ class Resource(_messages.Message):
       to enforce custom org policies. For create operations, GCP service is
       expected to pass resource from customer request as is. For update/patch
       operations, GCP service is expected to compute the next state with the
-      patch provided by the user. See go/custom-constraints-org-policy-
+      patch provided by the user. See go/federated-custom-org-policy-
       integration-guide for additional details.
     LabelsValue: The service defined labels of the resource on which the
       conditions will be evaluated. The semantics - including the key names -
@@ -1027,7 +1027,7 @@ class Resource(_messages.Message):
       to enforce custom org policies. For create operations, GCP service is
       expected to pass resource from customer request as is. For update/patch
       operations, GCP service is expected to compute the next state with the
-      patch provided by the user. See go/custom-constraints-org-policy-
+      patch provided by the user. See go/federated-custom-org-policy-
       integration-guide for additional details.
     labels: The service defined labels of the resource on which the conditions
       will be evaluated. The semantics - including the key names - are vague
@@ -1096,7 +1096,7 @@ class Resource(_messages.Message):
     policies. For create operations, GCP service is expected to pass resource
     from customer request as is. For update/patch operations, GCP service is
     expected to compute the next state with the patch provided by the user.
-    See go/custom-constraints-org-policy-integration-guide for additional
+    See go/federated-custom-org-policy-integration-guide for additional
     details.
 
     Messages:

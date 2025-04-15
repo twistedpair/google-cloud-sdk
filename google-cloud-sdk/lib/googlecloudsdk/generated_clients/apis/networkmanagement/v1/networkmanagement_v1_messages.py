@@ -426,22 +426,17 @@ class ConnectivityTest(_messages.Message):
     LabelsValue: Resource labels to represent user-provided metadata.
 
   Fields:
-    bypassFirewallChecks: Whether the test should skip firewall checking. If
-      not provided, we assume false.
+    bypassFirewallChecks: Whether the analysis should skip firewall checking.
+      Default value is false.
     createTime: Output only. The time the test was created.
     description: The user-supplied description of the Connectivity Test.
       Maximum of 512 characters.
     destination: Required. Destination specification of the Connectivity Test.
-      You can use a combination of destination IP address, Compute Engine VM
-      instance, or VPC network to uniquely identify the destination location.
-      Even if the destination IP address is not unique, the source IP location
-      is unique. Usually, the analysis can infer the destination endpoint from
-      route information. If the destination you specify is a VM instance and
-      the instance has multiple network interfaces, then you must also specify
-      either a destination IP address or VPC network to identify the
-      destination interface. A reachability analysis proceeds even if the
-      destination location is ambiguous. However, the result can include
-      endpoints that you don't intend to test.
+      You can use a combination of destination IP address, URI of a supported
+      endpoint, project ID, or VPC network to identify the destination
+      location. Reachability analysis proceeds even if the destination
+      location is ambiguous. However, the test result might include endpoints
+      or use a destination that you don't intend to test.
     displayName: Output only. The display name of a Connectivity Test.
     labels: Resource labels to represent user-provided metadata.
     name: Identifier. Unique name of the resource using the form:
@@ -465,19 +460,11 @@ class ConnectivityTest(_messages.Message):
     roundTrip: Whether run analysis for the return path from destination to
       source. Default value is false.
     source: Required. Source specification of the Connectivity Test. You can
-      use a combination of source IP address, virtual machine (VM) instance,
-      or Compute Engine network to uniquely identify the source location.
-      Examples: If the source IP address is an internal IP address within a
-      Google Cloud Virtual Private Cloud (VPC) network, then you must also
-      specify the VPC network. Otherwise, specify the VM instance, which
-      already contains its internal IP address and VPC network information. If
-      the source of the test is within an on-premises network, then you must
-      provide the destination VPC network. If the source endpoint is a Compute
-      Engine VM instance with multiple network interfaces, the instance itself
-      is not sufficient to identify the endpoint. So, you must also specify
-      the source IP address or VPC network. A reachability analysis proceeds
-      even if the source location is ambiguous. However, the test result may
-      include endpoints that you don't intend to test.
+      use a combination of source IP address, URI of a supported endpoint,
+      project ID, or VPC network to identify the source location. Reachability
+      analysis might proceed even if the source location is ambiguous.
+      However, the test result might include endpoints or use a source that
+      you don't intend to test.
     updateTime: Output only. The time the test's configuration was updated.
   """
 
@@ -855,6 +842,18 @@ class DropInfo(_messages.Message):
       PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED: Sending packets processed by
         the Private NAT Gateways to the Private Service Connect endpoints is
         not supported.
+      PSC_PORT_MAPPING_PORT_MISMATCH: Packet is sent to the PSC port mapping
+        service, but its destination port does not match any port mapping
+        rules.
+      PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED: Sending packets
+        directly to the PSC port mapping service without going through the PSC
+        connection is not supported.
+      UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION: Packet with destination
+        IP address within the reserved NAT64 range is dropped due to matching
+        a route of an unsupported type.
+      TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED: Packet could be
+        dropped because hybrid endpoint like a VPN gateway or Interconnect is
+        not allowed to send traffic to the Internet.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -941,6 +940,10 @@ class DropInfo(_messages.Message):
     NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 82
     NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 83
     PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 84
+    PSC_PORT_MAPPING_PORT_MISMATCH = 85
+    PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 86
+    UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 87
+    TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 88
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -984,18 +987,20 @@ class Endpoint(_messages.Message):
   Fields:
     appEngineVersion: An [App Engine](https://cloud.google.com/appengine)
       [service version](https://cloud.google.com/appengine/docs/admin-
-      api/reference/rest/v1/apps.services.versions).
+      api/reference/rest/v1/apps.services.versions). Applicable only to source
+      endpoint.
     cloudFunction: A [Cloud Function](https://cloud.google.com/functions).
+      Applicable only to source endpoint.
     cloudRunRevision: A [Cloud Run](https://cloud.google.com/run) [revision](h
       ttps://cloud.google.com/run/docs/reference/rest/v1/namespaces.revisions/
-      get)
+      get) Applicable only to source endpoint.
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
     forwardingRule: A forwarding rule and its corresponding IP address
       represent the frontend configuration of a Google Cloud load balancer.
       Forwarding rules are also used for protocol forwarding, Private Service
       Connect and other network services to provide forwarding information in
-      the control plane. Format:
+      the control plane. Applicable only to destination endpoint. Format:
       projects/{project}/global/forwardingRules/{id} or
       projects/{project}/regions/{region}/forwardingRules/{id}
     forwardingRuleTarget: Output only. Specifies the type of the target of the
@@ -1015,23 +1020,25 @@ class Endpoint(_messages.Message):
       points to. Empty for forwarding rules not related to load balancers.
     loadBalancerType: Output only. Type of the load balancer the forwarding
       rule points to.
-    network: A Compute Engine network URI.
+    network: A VPC network URI.
     networkType: Type of the network where the endpoint is located. Applicable
       only to source endpoint, as destination network type can be inferred
       from the source.
     port: The IP protocol port of the endpoint. Only applicable when protocol
       is TCP or UDP.
-    projectId: Project ID where the endpoint is located. The Project ID can be
-      derived from the URI if you provide a VM instance or network URI. The
-      following are two cases where you must provide the project ID: 1. Only
-      the IP address is specified, and the IP address is within a Google Cloud
-      project. 2. When you are using Shared VPC and the IP address that you
-      provide is from the service project. In this case, the network that the
-      IP address resides in is defined in the host project.
+    projectId: Project ID where the endpoint is located. The project ID can be
+      derived from the URI if you provide a endpoint or network URI. The
+      following are two cases where you may need to provide the project ID: 1.
+      Only the IP address is specified, and the IP address is within a Google
+      Cloud project. 2. When you are using Shared VPC and the IP address that
+      you provide is from the service project. In this case, the network that
+      the IP address resides in is defined in the host project.
     redisCluster: A [Redis
       Cluster](https://cloud.google.com/memorystore/docs/cluster) URI.
+      Applicable only to destination endpoint.
     redisInstance: A [Redis
       Instance](https://cloud.google.com/memorystore/docs/redis) URI.
+      Applicable only to destination endpoint.
   """
 
   class ForwardingRuleTargetValueValuesEnum(_messages.Enum):
@@ -1093,7 +1100,8 @@ class Endpoint(_messages.Message):
         detailed output, specify the URI for the source or destination
         network.
       NON_GCP_NETWORK: A network hosted outside of Google Cloud. This can be
-        an on-premises network, or a network hosted by another cloud provider.
+        an on-premises network, an internet resource or a network hosted by
+        another cloud provider.
     """
     NETWORK_TYPE_UNSPECIFIED = 0
     GCP_NETWORK = 1
@@ -1415,6 +1423,8 @@ class GoogleServiceInfo(_messages.Message):
       GOOGLE_API_VPC_SC: Google API via VPC Service Controls.
         https://cloud.google.com/vpc/docs/configure-private-service-connect-
         apis
+      SERVERLESS_VPC_ACCESS: Google API via Serverless VPC Access.
+        https://cloud.google.com/vpc/docs/serverless-vpc-access
     """
     GOOGLE_SERVICE_TYPE_UNSPECIFIED = 0
     IAP = 1
@@ -1423,6 +1433,7 @@ class GoogleServiceInfo(_messages.Message):
     GOOGLE_API = 4
     GOOGLE_API_PSC = 5
     GOOGLE_API_VPC_SC = 6
+    SERVERLESS_VPC_ACCESS = 7
 
   googleServiceType = _messages.EnumField('GoogleServiceTypeValueValuesEnum', 1)
   sourceIp = _messages.StringField(2)
@@ -2119,6 +2130,8 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2129,10 +2142,11 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest(_messages.Message):
@@ -2439,16 +2453,17 @@ class ProbingDetails(_messages.Message):
 
   Fields:
     abortCause: The reason probing was aborted.
-    destinationEgressLocation: The EdgeLocation from which a packet destined
-      for/originating from the internet will egress/ingress the Google
-      network. This will only be populated for a connectivity test which has
-      an internet destination/source address. The absence of this field *must
-      not* be used as an indication that the destination/source is part of the
-      Google network.
+    destinationEgressLocation: The EdgeLocation from which a packet, destined
+      to the internet, will egress the Google network. This will only be
+      populated for a connectivity test which has an internet destination
+      address. The absence of this field *must not* be used as an indication
+      that the destination is part of the Google network.
+    edgeResponses: Probing results for all edge devices.
     endpointInfo: The source and destination endpoints derived from the test
       input and used for active probing.
     error: Details about an internal failure or the cancellation of active
       probing.
+    probedAllDevices: Whether all relevant edge devices were probed.
     probingLatency: Latency as measured by active probing in one direction:
       from the source to the destination endpoint.
     result: The overall result of active probing.
@@ -2494,13 +2509,15 @@ class ProbingDetails(_messages.Message):
 
   abortCause = _messages.EnumField('AbortCauseValueValuesEnum', 1)
   destinationEgressLocation = _messages.MessageField('EdgeLocation', 2)
-  endpointInfo = _messages.MessageField('EndpointInfo', 3)
-  error = _messages.MessageField('Status', 4)
-  probingLatency = _messages.MessageField('LatencyDistribution', 5)
-  result = _messages.EnumField('ResultValueValuesEnum', 6)
-  sentProbeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  successfulProbeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  verifyTime = _messages.StringField(9)
+  edgeResponses = _messages.MessageField('SingleEdgeResponse', 3, repeated=True)
+  endpointInfo = _messages.MessageField('EndpointInfo', 4)
+  error = _messages.MessageField('Status', 5)
+  probedAllDevices = _messages.BooleanField(6)
+  probingLatency = _messages.MessageField('LatencyDistribution', 7)
+  result = _messages.EnumField('ResultValueValuesEnum', 8)
+  sentProbeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  successfulProbeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  verifyTime = _messages.StringField(11)
 
 
 class ProxyConnectionInfo(_messages.Message):
@@ -2848,6 +2865,56 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SingleEdgeResponse(_messages.Message):
+  r"""Probing results for a single edge device.
+
+  Enums:
+    ResultValueValuesEnum: The overall result of active probing for this
+      egress device.
+
+  Fields:
+    destinationEgressLocation: The EdgeLocation from which a packet, destined
+      to the internet, will egress the Google network. This will only be
+      populated for a connectivity test which has an internet destination
+      address. The absence of this field *must not* be used as an indication
+      that the destination is part of the Google network.
+    destinationRouter: Router name in the format '{router}.{metroshard}'. For
+      example: pf01.aaa01, pr02.aaa01.
+    probingLatency: Latency as measured by active probing in one direction:
+      from the source to the destination endpoint.
+    result: The overall result of active probing for this egress device.
+    sentProbeCount: Number of probes sent.
+    successfulProbeCount: Number of probes that reached the destination.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The overall result of active probing for this egress device.
+
+    Values:
+      PROBING_RESULT_UNSPECIFIED: No result was specified.
+      REACHABLE: At least 95% of packets reached the destination.
+      UNREACHABLE: No packets reached the destination.
+      REACHABILITY_INCONSISTENT: Less than 95% of packets reached the
+        destination.
+      UNDETERMINED: Reachability could not be determined. Possible reasons
+        are: * The user lacks permission to access some of the network
+        resources required to run the test. * No valid source endpoint could
+        be derived from the request. * An internal error occurred.
+    """
+    PROBING_RESULT_UNSPECIFIED = 0
+    REACHABLE = 1
+    UNREACHABLE = 2
+    REACHABILITY_INCONSISTENT = 3
+    UNDETERMINED = 4
+
+  destinationEgressLocation = _messages.MessageField('EdgeLocation', 1)
+  destinationRouter = _messages.StringField(2)
+  probingLatency = _messages.MessageField('LatencyDistribution', 3)
+  result = _messages.EnumField('ResultValueValuesEnum', 4)
+  sentProbeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  successfulProbeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3262,7 +3329,8 @@ class VpcFlowLogsConfig(_messages.Message):
       Default value is INCLUDE_ALL_METADATA.
     StateValueValuesEnum: Optional. The state of the VPC Flow Log
       configuration. Default value is ENABLED. When creating a new
-      configuration, it must be enabled.
+      configuration, it must be enabled. Setting state=DISABLED will pause the
+      log generation for this config.
     TargetResourceStateValueValuesEnum: Output only. A diagnostic bit -
       describes the state of the configured target resource for diagnostic
       purposes.
@@ -3299,6 +3367,7 @@ class VpcFlowLogsConfig(_messages.Message):
       g_id}`
     state: Optional. The state of the VPC Flow Log configuration. Default
       value is ENABLED. When creating a new configuration, it must be enabled.
+      Setting state=DISABLED will pause the log generation for this config.
     targetResourceState: Output only. A diagnostic bit - describes the state
       of the configured target resource for diagnostic purposes.
     updateTime: Output only. The time the config was updated.
@@ -3348,7 +3417,8 @@ class VpcFlowLogsConfig(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Optional. The state of the VPC Flow Log configuration. Default value
-    is ENABLED. When creating a new configuration, it must be enabled.
+    is ENABLED. When creating a new configuration, it must be enabled. Setting
+    state=DISABLED will pause the log generation for this config.
 
     Values:
       STATE_UNSPECIFIED: If not specified, will default to ENABLED.

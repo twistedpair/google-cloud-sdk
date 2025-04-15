@@ -174,11 +174,14 @@ class AndroidModel(_messages.Message):
   r"""A description of an Android device tests may be run on.
 
   Enums:
+    AccessDeniedReasonsValueListEntryValuesEnum:
     FormValueValuesEnum: Whether this device is virtual or physical.
     FormFactorValueValuesEnum: Whether this device is a phone, tablet,
       wearable, etc.
 
   Fields:
+    accessDeniedReasons: Reasons for access denial. This model is accessible
+      if this list is empty, otherwise the model is viewable only.
     brand: The company that this device is branded with. Example: "Google",
       "Samsung".
     codename: The name of the industrial design. This corresponds to
@@ -211,6 +214,18 @@ class AndroidModel(_messages.Message):
     thumbnailUrl: URL of a thumbnail image (photo) of the device.
   """
 
+  class AccessDeniedReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""AccessDeniedReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      ACCESS_DENIED_REASON_UNSPECIFIED: Do not use. For proto versioning only.
+      EULA_NOT_ACCEPTED: The model is for viewing purposes only. Access and
+        utilization require acceptance of an End User License Agreement
+        (EULA).
+    """
+    ACCESS_DENIED_REASON_UNSPECIFIED = 0
+    EULA_NOT_ACCEPTED = 1
+
   class FormFactorValueValuesEnum(_messages.Enum):
     r"""Whether this device is a phone, tablet, wearable, etc.
 
@@ -241,23 +256,24 @@ class AndroidModel(_messages.Message):
     PHYSICAL = 2
     EMULATOR = 3
 
-  brand = _messages.StringField(1)
-  codename = _messages.StringField(2)
-  form = _messages.EnumField('FormValueValuesEnum', 3)
-  formFactor = _messages.EnumField('FormFactorValueValuesEnum', 4)
-  id = _messages.StringField(5)
-  labInfo = _messages.MessageField('LabInfo', 6)
-  lowFpsVideoRecording = _messages.BooleanField(7)
-  manufacturer = _messages.StringField(8)
-  name = _messages.StringField(9)
-  perVersionInfo = _messages.MessageField('PerAndroidVersionInfo', 10, repeated=True)
-  screenDensity = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(14, repeated=True)
-  supportedVersionIds = _messages.StringField(15, repeated=True)
-  tags = _messages.StringField(16, repeated=True)
-  thumbnailUrl = _messages.StringField(17)
+  accessDeniedReasons = _messages.EnumField('AccessDeniedReasonsValueListEntryValuesEnum', 1, repeated=True)
+  brand = _messages.StringField(2)
+  codename = _messages.StringField(3)
+  form = _messages.EnumField('FormValueValuesEnum', 4)
+  formFactor = _messages.EnumField('FormFactorValueValuesEnum', 5)
+  id = _messages.StringField(6)
+  labInfo = _messages.MessageField('LabInfo', 7)
+  lowFpsVideoRecording = _messages.BooleanField(8)
+  manufacturer = _messages.StringField(9)
+  name = _messages.StringField(10)
+  perVersionInfo = _messages.MessageField('PerAndroidVersionInfo', 11, repeated=True)
+  screenDensity = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(15, repeated=True)
+  supportedVersionIds = _messages.StringField(16, repeated=True)
+  tags = _messages.StringField(17, repeated=True)
+  thumbnailUrl = _messages.StringField(18)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -2291,6 +2307,8 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
 
   Fields:
     environmentType: Required. The type of environment that should be listed.
+    includeViewableModels: Optional. Whether to include viewable only models
+      in the response. This is only applicable for Android models.
     projectId: For authorization, the cloud project requesting the
       TestEnvironmentCatalog.
   """
@@ -2316,7 +2334,8 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
     DEVICE_IP_BLOCKS = 5
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
-  projectId = _messages.StringField(2)
+  includeViewableModels = _messages.BooleanField(2)
+  projectId = _messages.StringField(3)
 
 
 class ToolResultsExecution(_messages.Message):

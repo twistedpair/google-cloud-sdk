@@ -105,6 +105,8 @@ class Cluster(_messages.Message):
     externalLoadBalancerIpv6AddressPools: Optional. IPv6 address pools for
       cluster data plane external load balancing.
     fleet: Required. Fleet configuration.
+    googleGroupAuthentication: Optional. The Google Group authentication
+      config of the cluster.
     labels: Labels associated with this resource.
     maintenanceEvents: Output only. All the maintenance events scheduled for
       the cluster, including the ones ongoing, planned for the future and done
@@ -216,21 +218,22 @@ class Cluster(_messages.Message):
   externalLoadBalancerIpv4AddressPools = _messages.StringField(15, repeated=True)
   externalLoadBalancerIpv6AddressPools = _messages.StringField(16, repeated=True)
   fleet = _messages.MessageField('Fleet', 17)
-  labels = _messages.MessageField('LabelsValue', 18)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 19, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 20)
-  name = _messages.StringField(21)
-  networking = _messages.MessageField('ClusterNetworking', 22)
-  nodeVersion = _messages.StringField(23)
-  port = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 25)
-  status = _messages.EnumField('StatusValueValuesEnum', 26)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 27)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 28)
-  targetVersion = _messages.StringField(29)
-  updateTime = _messages.StringField(30)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 31)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 32)
+  googleGroupAuthentication = _messages.MessageField('GoogleGroupAuthenticationConfig', 18)
+  labels = _messages.MessageField('LabelsValue', 19)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 20, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 21)
+  name = _messages.StringField(22)
+  networking = _messages.MessageField('ClusterNetworking', 23)
+  nodeVersion = _messages.StringField(24)
+  port = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 26)
+  status = _messages.EnumField('StatusValueValuesEnum', 27)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 28)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 29)
+  targetVersion = _messages.StringField(30)
+  updateTime = _messages.StringField(31)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 32)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 33)
 
 
 class ClusterNetworking(_messages.Message):
@@ -1201,6 +1204,18 @@ class GenerateOfflineCredentialResponse(_messages.Message):
   clientKey = _messages.StringField(2)
   expireTime = _messages.StringField(3)
   userId = _messages.StringField(4)
+
+
+class GoogleGroupAuthenticationConfig(_messages.Message):
+  r"""Google Group authentication config of the cluster. go/gdc-google-group-
+  authentication
+
+  Fields:
+    enable: Optional. If true, the cluster will be configured to use Google
+      Group authentication.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class Ingress(_messages.Message):

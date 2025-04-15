@@ -1462,6 +1462,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateAndroidCIInstanceReque
       must: be 6-50 characters long, contain only lowercase letters, digits,
       hyphens and underscores, start with a lowercase letter, and end with a
       lowercase letter or a digit.
+    macServiceAccount: Optional. Mac Service Account is the service account
+      that will be used to run Mac VMs.
     parent: Required. Resource name of the project containing the instance.
       Format: `projects/[PROJECT_ID]`.
     vmServiceAccount: Optional. Service Account is the service account that
@@ -1471,8 +1473,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateAndroidCIInstanceReque
   billingProjectManagerGroup = _messages.StringField(1)
   instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 2)
   instanceId = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  vmServiceAccount = _messages.StringField(5)
+  macServiceAccount = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  vmServiceAccount = _messages.StringField(6)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest(_messages.Message):

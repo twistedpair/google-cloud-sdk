@@ -418,7 +418,7 @@ class CDNPolicy(_messages.Message):
       set to USE_ORIGIN_HEADERS or BYPASS_CACHE, you must omit this field.
     defaultTtl: Optional. Specifies the default TTL for cached content served
       by this origin for responses that do not have an existing valid TTL
-      (max-age or s-max-age). Defaults to `3600s` (1 hour). - The TTL must be
+      (max-age or s-maxage). Defaults to `3600s` (1 hour). - The TTL must be
       >= `0` and <= `31,536,000` seconds (1 year) - Setting a TTL of `0` means
       "always revalidate" (equivalent to must-revalidate) - The value of
       `default_ttl` cannot be set to a value greater than that of max_ttl. -
@@ -1428,7 +1428,7 @@ class ExtensionChainExtension(_messages.Message):
       set of metadata through each extension to the backend. This field is
       subject to following limitations: * The total size of the metadata must
       be less than 1KiB. * The total number of keys in the metadata must be
-      less than 20. * The length of each key must be less than 64 characters.
+      less than 16. * The length of each key must be less than 64 characters.
       * The length of each value must be less than 1024 characters. * All
       values must be strings.
 
@@ -1469,7 +1469,7 @@ class ExtensionChainExtension(_messages.Message):
       set of metadata through each extension to the backend. This field is
       subject to following limitations: * The total size of the metadata must
       be less than 1KiB. * The total number of keys in the metadata must be
-      less than 20. * The length of each key must be less than 64 characters.
+      less than 16. * The length of each key must be less than 64 characters.
       * The length of each value must be less than 1024 characters. * All
       values must be strings.
     name: Required. The name for this extension. The name is logged as part of
@@ -1617,7 +1617,7 @@ class ExtensionChainExtension(_messages.Message):
     can pass a different set of metadata through each extension to the
     backend. This field is subject to following limitations: * The total size
     of the metadata must be less than 1KiB. * The total number of keys in the
-    metadata must be less than 20. * The length of each key must be less than
+    metadata must be less than 16. * The length of each key must be less than
     64 characters. * The length of each value must be less than 1024
     characters. * All values must be strings.
 
@@ -9928,7 +9928,8 @@ class ServiceBinding(_messages.Message):
   r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
   used in a BackendService resource. This feature will be deprecated soon. -
   Bind a Private Service Connect producer service to be used in consumer Cloud
-  Service Mesh or Application Load Balancers.
+  Service Mesh or Application Load Balancers. - Bind a Cloud Run service to be
+  used in consumer Cloud Service Mesh or Application Load Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the

@@ -173,7 +173,7 @@ def ListVersionTags(client, messages, package, version, page_size=None):
 
 
 def ListPackages(client, messages, repo, page_size=None,
-                 order_by=None, server_filter=None):
+                 order_by=None, limit=None, server_filter=None):
   """Lists all packages under a repository."""
   list_pkgs_req = (
       messages.ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(
@@ -182,6 +182,7 @@ def ListPackages(client, messages, repo, page_size=None,
       list_pager.YieldFromList(
           client.projects_locations_repositories_packages,
           list_pkgs_req,
+          limit=limit,
           batch_size=page_size,
           batch_size_attribute="pageSize",
           field="packages"))

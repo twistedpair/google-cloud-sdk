@@ -1022,6 +1022,8 @@ class EventAnnotation(_messages.Message):
       CLOUD_ALERTING_ALERT: Alerts from Cloud Alerting
       SERVICE_HEALTH_INCIDENT: Incidents from Service Health
       SAP_BACKINT: Agent for SAP Backint related events.
+      SAP_AVAILABILITY: Agent for SAP availability related events.
+      SAP_OPERATIONS: Agent for SAP operations related events.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     GKE_WORKLOAD_DEPLOYMENT = 1
@@ -1046,6 +1048,8 @@ class EventAnnotation(_messages.Message):
     CLOUD_ALERTING_ALERT = 20
     SERVICE_HEALTH_INCIDENT = 21
     SAP_BACKINT = 22
+    SAP_AVAILABILITY = 23
+    SAP_OPERATIONS = 24
 
   displayName = _messages.StringField(1)
   enabled = _messages.BooleanField(2)

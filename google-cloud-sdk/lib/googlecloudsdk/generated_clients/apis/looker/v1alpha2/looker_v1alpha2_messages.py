@@ -144,6 +144,41 @@ class EncryptionConfig(_messages.Message):
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
 
 
+class EntityKey(_messages.Message):
+  r"""A unique identifier for an entity in the Cloud Identity Groups API. An
+  entity can represent either a group with an optional `namespace` or a user
+  without a `namespace`. The combination of `id` and `namespace` must be
+  unique; however, the same `id` can be used with different `namespace`s.
+
+  Fields:
+    id: The ID of the entity. For Google-managed entities, the `id` should be
+      the email address of an existing group or user. Email addresses need to
+      adhere to [name guidelines for users and
+      groups](https://support.google.com/a/answer/9193374). For external-
+      identity-mapped entities, the `id` must be a string conforming to the
+      Identity Source's requirements. Must be unique within a `namespace`.
+    namespace: The namespace in which the entity exists. If not specified, the
+      `EntityKey` represents a Google-managed entity such as a Google user or
+      a Google Group. If specified, the `EntityKey` represents an external-
+      identity-mapped group. The namespace must correspond to an identity
+      source created in Admin Console and must be in the form of
+      `identitysources/{identity_source}`.
+  """
+
+  id = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+
+
+class ExpiryDetail(_messages.Message):
+  r"""The `MembershipRole` expiry details.
+
+  Fields:
+    expireTime: The time at which the `MembershipRole` will expire.
+  """
+
+  expireTime = _messages.StringField(1)
+
+
 class ExportEncryptionConfig(_messages.Message):
   r"""Configuration for Encryption - e.g. CMEK.
 
@@ -749,6 +784,49 @@ class LookerProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest(_messages.Message):
+  r"""A LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest object.
+
+  Fields:
+    groupsApiOauthToken: Required. OAuth token to use with the Groups API
+    name: Required. Format:
+      `projects/{project}/locations/{location}/instances/{instance}`.
+    searchDirectGroupsRequest_orderBy: The ordering of membership relation for
+      the display name or email in the response. The syntax for this field can
+      be found at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+      Example: Sort by the ascending display name: order_by="group_name" or
+      order_by="group_name asc". Sort by the descending display name:
+      order_by="group_name desc". Sort by the ascending group key:
+      order_by="group_key" or order_by="group_key asc". Sort by the descending
+      group key: order_by="group_key desc".
+    searchDirectGroupsRequest_pageSize: The default page size is 200 (max
+      1000).
+    searchDirectGroupsRequest_pageToken: The `next_page_token` value returned
+      from a previous list request, if any
+    searchDirectGroupsRequest_parent: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to search transitive memberships in. Format: groups/{group_id}, where
+      group_id is always '-' as this API will search across all groups for a
+      given member.
+    searchDirectGroupsRequest_query: Required. A CEL expression that MUST
+      include member specification AND label(s). Users can search on label
+      attributes of groups. CONTAINS match ('in') is supported on labels.
+      Identity-mapped groups are uniquely identified by both a `member_key_id`
+      and a `member_key_namespace`, which requires an additional query input:
+      `member_key_namespace`. Example query: `member_key_id ==
+      'member_key_id_value' && 'label_value' in labels`
+  """
+
+  groupsApiOauthToken = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  searchDirectGroupsRequest_orderBy = _messages.StringField(3)
+  searchDirectGroupsRequest_pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  searchDirectGroupsRequest_pageToken = _messages.StringField(5)
+  searchDirectGroupsRequest_parent = _messages.StringField(6)
+  searchDirectGroupsRequest_query = _messages.StringField(7)
+
+
 class LookerProjectsLocationsInstancesRestartRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesRestartRequest object.
 
@@ -781,6 +859,8 @@ class LookerProjectsLocationsListRequest(_messages.Message):
   r"""A LookerProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -791,10 +871,11 @@ class LookerProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class LookerProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -895,6 +976,83 @@ class MaintenanceWindow(_messages.Message):
 
   dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
   startTime = _messages.MessageField('TimeOfDay', 2)
+
+
+class MembershipRelation(_messages.Message):
+  r"""Message containing membership relation.
+
+  Messages:
+    LabelsValue: One or more label entries that apply to the Group. Currently
+      supported labels contain a key with an empty value.
+
+  Fields:
+    description: An extended description to help users determine the purpose
+      of a `Group`.
+    displayName: The display name of the `Group`.
+    group: The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      `Group`. Shall be of the form `groups/{group_id}`.
+    groupKey: The `EntityKey` of the `Group`.
+    labels: One or more label entries that apply to the Group. Currently
+      supported labels contain a key with an empty value.
+    membership: The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      `Membership`. Shall be of the form
+      `groups/{group_id}/memberships/{membership_id}`.
+    roles: The `MembershipRole`s that apply to the `Membership`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""One or more label entries that apply to the Group. Currently supported
+    labels contain a key with an empty value.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  group = _messages.StringField(3)
+  groupKey = _messages.MessageField('EntityKey', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  membership = _messages.StringField(6)
+  roles = _messages.MessageField('MembershipRole', 7, repeated=True)
+
+
+class MembershipRole(_messages.Message):
+  r"""A membership role within the Cloud Identity Groups API. A
+  `MembershipRole` defines the privileges granted to a `Membership`.
+
+  Fields:
+    expiryDetail: The expiry details of the `MembershipRole`. Expiry details
+      are only supported for `MEMBER` `MembershipRoles`. May be set if `name`
+      is `MEMBER`. Must not be set if `name` is any other value.
+    name: The name of the `MembershipRole`. Must be one of `OWNER`, `MANAGER`,
+      `MEMBER`.
+    restrictionEvaluations: Evaluations of restrictions applied to parent
+      group on this membership.
+  """
+
+  expiryDetail = _messages.MessageField('ExpiryDetail', 1)
+  name = _messages.StringField(2)
+  restrictionEvaluations = _messages.MessageField('RestrictionEvaluations', 3)
 
 
 class OAuthConfig(_messages.Message):
@@ -1045,6 +1203,16 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class ProxySearchDirectGroupsResponse(_messages.Message):
+  r"""Response wrapper for proxy to Groups API SearchDirectGroups
+
+  Fields:
+    searchDirectGroupsResponse: response from Groups API
+  """
+
+  searchDirectGroupsResponse = _messages.MessageField('SearchDirectGroupsResponse', 1)
+
+
 class PscConfig(_messages.Message):
   r"""Information for Private Service Connect (PSC) setup for a Looker
   instance.
@@ -1076,6 +1244,63 @@ class RestoreInstanceRequest(_messages.Message):
   """
 
   backup = _messages.StringField(1)
+
+
+class RestrictionEvaluation(_messages.Message):
+  r"""The evaluated state of this restriction.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the restriction
+
+  Fields:
+    state: Output only. The current state of the restriction
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the restriction
+
+    Values:
+      STATE_UNSPECIFIED: Default. Should not be used.
+      COMPLIANT: The member adheres to the parent group's restriction.
+      FORWARD_COMPLIANT: The group-group membership might be currently
+        violating some parent group's restriction but in future, it will never
+        allow any new member in the child group which can violate parent
+        group's restriction.
+      NON_COMPLIANT: The member violates the parent group's restriction.
+      EVALUATING: The state of the membership is under evaluation.
+    """
+    STATE_UNSPECIFIED = 0
+    COMPLIANT = 1
+    FORWARD_COMPLIANT = 2
+    NON_COMPLIANT = 3
+    EVALUATING = 4
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class RestrictionEvaluations(_messages.Message):
+  r"""Evaluations of restrictions applied to parent group on this membership.
+
+  Fields:
+    memberRestrictionEvaluation: Evaluation of the member restriction applied
+      to this membership. Empty if the user lacks permission to view the
+      restriction evaluation.
+  """
+
+  memberRestrictionEvaluation = _messages.MessageField('RestrictionEvaluation', 1)
+
+
+class SearchDirectGroupsResponse(_messages.Message):
+  r"""The response message for MembershipsService.SearchDirectGroups.
+
+  Fields:
+    memberships: List of direct groups satisfying the query.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results available for listing.
+  """
+
+  memberships = _messages.MessageField('MembershipRelation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ServiceAttachment(_messages.Message):
@@ -1281,3 +1506,13 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_orderBy', 'searchDirectGroupsRequest.orderBy')
+encoding.AddCustomJsonFieldMapping(
+    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_pageSize', 'searchDirectGroupsRequest.pageSize')
+encoding.AddCustomJsonFieldMapping(
+    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_pageToken', 'searchDirectGroupsRequest.pageToken')
+encoding.AddCustomJsonFieldMapping(
+    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_parent', 'searchDirectGroupsRequest.parent')
+encoding.AddCustomJsonFieldMapping(
+    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_query', 'searchDirectGroupsRequest.query')

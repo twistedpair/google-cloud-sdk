@@ -441,6 +441,22 @@ class _BaseInstances(object):
         settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
       settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
 
+    if args.IsKnownAndSpecified('psc_network_attachment_uri'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.networkAttachmentUri = (
+          args.psc_network_attachment_uri
+      )
+
+    if args.IsKnownAndSpecified('clear_psc_network_attachment_uri'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.networkAttachmentUri = ''
+
     if args.deletion_protection is not None:
       settings.deletionProtectionEnabled = args.deletion_protection
 
@@ -582,9 +598,10 @@ class _BaseInstances(object):
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
-    settings.databaseFlags = reducers.DatabaseFlags(
-        sql_messages, original_settings, database_flags=args.database_flags
-    )
+    if args and args.IsKnownAndSpecified('database_flags'):
+      settings.databaseFlags = reducers.DatabaseFlags(
+          sql_messages, original_settings, database_flags=args.database_flags
+      )
 
     settings.maintenanceWindow = reducers.MaintenanceWindow(
         sql_messages,
@@ -738,12 +755,13 @@ class _BaseInstances(object):
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
-    settings.databaseFlags = reducers.DatabaseFlags(
-        sql_messages,
-        original_settings,
-        database_flags=args.database_flags,
-        clear_database_flags=args.clear_database_flags,
-    )
+    if args and args.IsKnownAndSpecified('database_flags'):
+      settings.databaseFlags = reducers.DatabaseFlags(
+          sql_messages,
+          original_settings,
+          database_flags=args.database_flags,
+          clear_database_flags=args.clear_database_flags,
+      )
 
     settings.maintenanceWindow = reducers.MaintenanceWindow(
         sql_messages,

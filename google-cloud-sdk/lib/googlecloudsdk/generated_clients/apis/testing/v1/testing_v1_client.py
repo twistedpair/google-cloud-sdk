@@ -352,7 +352,7 @@ class TestingV1(base_api.BaseApiClient):
         method_id='testing.testEnvironmentCatalog.get',
         ordered_params=['environmentType'],
         path_params=['environmentType'],
-        query_params=['projectId'],
+        query_params=['includeViewableModels', 'projectId'],
         relative_path='v1/testEnvironmentCatalog/{environmentType}',
         request_field='',
         request_type_name='TestingTestEnvironmentCatalogGetRequest',

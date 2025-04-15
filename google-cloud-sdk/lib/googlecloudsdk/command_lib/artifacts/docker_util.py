@@ -121,9 +121,7 @@ _VERSION_COLLECTION_NAME = (
     "artifactregistry.projects.locations.repositories.packages.versions"
 )
 
-DOCKER_URI_REGEX = (
-    r"https://((us\.|eu\.|asia\.)?gcr.io)?(?P<docker_string>.*docker\.pkg\.dev.*)"
-)
+DOCKER_URI_REGEX = r"https://(?P<docker_string>.*(docker\.pkg\.dev|gcr\.io).*)"
 
 
 def _GetDefaultResources():

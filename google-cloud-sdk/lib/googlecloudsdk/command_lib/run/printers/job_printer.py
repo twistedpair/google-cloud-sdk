@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 import datetime
 
-from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.command_lib.run.printers import container_and_volume_printer_util as container_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.util import time_util
@@ -81,69 +80,7 @@ class JobPrinter(cp.CustomPrinterBase):
 
   @staticmethod
   def TransformSpec(record):
-    limits = container_util.GetLimits(record.template)
-    breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
-    job_spec_annotations = {
-        field.key: field.value
-        for field in record.spec.template.metadata.annotations.additionalProperties
-    }
-    gpu_type = None
-    node_selector = record.template.node_selector
-    if k8s_object.GPU_TYPE_NODE_SELECTOR in node_selector:
-      gpu_type = node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
-    return cp.Labeled([
-        ('Image', record.template.image),
-        ('Tasks', record.task_count),
-        ('Command', ' '.join(record.template.container.command)),
-        ('Args', ' '.join(record.template.container.args)),
-        ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
-        # pylint: disable=g-explicit-bool-comparison
-        # Empty breakglass string is valid, space is used to force it showing
-        (
-            'Breakglass Justification',
-            ' ' if breakglass_value == '' else breakglass_value,
-        ),
-        ('Memory', limits['memory']),
-        ('CPU', limits['cpu']),
-        ('GPU', limits['nvidia.com/gpu']),
-        ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
-        (
-            'Task Timeout',
-            FormatDurationShort(record.template.spec.timeoutSeconds)
-            if record.template.spec.timeoutSeconds
-            else None,
-        ),
-        (
-            'Max Retries',
-            '{}'.format(record.max_retries)
-            if record.max_retries is not None
-            else None,
-        ),
-        (
-            'Parallelism',
-            record.parallelism if record.parallelism else 'No limit',
-        ),
-        ('Service account', record.template.service_account),
-        (
-            'Env vars',
-            container_util.GetUserEnvironmentVariables(record.template),
-        ),
-        ('Secrets', container_util.GetSecrets(record.template.container)),
-        ('VPC access', k8s_util.GetVpcNetwork(job_spec_annotations)),
-        (
-            'SQL connections',
-            k8s_util.GetCloudSqlInstances(job_spec_annotations),
-        ),
-        (
-            'Volume Mounts',
-            container_util.GetVolumeMounts(record.template.container),
-        ),
-        (
-            'Volumes',
-            container_util.GetVolumes(record.template),
-        ),
-        ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record)),
-    ])
+    return ExecutionPrinter.TransformSpec(record.execution_template, record)
 
   @staticmethod
   def TransformStatus(record):
@@ -202,21 +139,9 @@ class TaskPrinter(cp.CustomPrinterBase):
 
   @staticmethod
   def TransformSpec(record):
-    limits = container_util.GetLimits(record)
-    gpu_type = None
-    node_selector = record.node_selector
-    if k8s_object.GPU_TYPE_NODE_SELECTOR in node_selector:
-      gpu_type = node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
-    return cp.Labeled([
-        ('Image', record.image),
-        ('Command', ' '.join(record.container.command)),
-        ('Args', ' '.join(record.container.args)),
-        ('Memory', limits['memory']),
-        ('CPU', limits['cpu']),
-        ('GPU', limits['nvidia.com/gpu']),
-        ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
+    labels = [
         (
-            'Timeout',
+            'Task Timeout',
             FormatDurationShort(record.spec.timeoutSeconds)
             if record.spec.timeoutSeconds
             else None,
@@ -228,19 +153,14 @@ class TaskPrinter(cp.CustomPrinterBase):
             else None,
         ),
         ('Service account', record.service_account),
-        ('Env vars', container_util.GetUserEnvironmentVariables(record)),
-        ('Secrets', container_util.GetSecrets(record.container)),
         ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
-        (
-            'Volume Mounts',
-            container_util.GetVolumeMounts(record.container),
-        ),
         (
             'Volumes',
             container_util.GetVolumes(record),
         ),
-    ])
+    ]
+    return cp.Lines([container_util.GetContainers(record), cp.Labeled(labels)])
 
   @staticmethod
   def TransformStatus(record):
@@ -278,59 +198,44 @@ class ExecutionPrinter(cp.CustomPrinterBase):
   """
 
   @staticmethod
-  def TransformSpec(record):
-    limits = container_util.GetLimits(record.template)
-    breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
-    gpu_type = None
-    node_selector = record.template.node_selector
-    if k8s_object.GPU_TYPE_NODE_SELECTOR in node_selector:
-      gpu_type = node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
-    return cp.Labeled([
-        ('Image', record.template.image),
-        ('Tasks', record.spec.taskCount),
-        ('Command', ' '.join(record.template.container.command)),
-        ('Args', ' '.join(record.template.container.args)),
-        ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
-        # pylint: disable=g-explicit-bool-comparison
-        # Empty breakglass string is valid, space is used to force it showing
-        (
-            'Breakglass Justification',
-            ' ' if breakglass_value == '' else breakglass_value,
-        ),
-        ('Memory', limits['memory']),
-        ('CPU', limits['cpu']),
-        ('GPU', limits['nvidia.com/gpu']),
-        ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
-        (
-            'Task Timeout',
-            FormatDurationShort(record.template.spec.timeoutSeconds)
-            if record.template.spec.timeoutSeconds
-            else None,
-        ),
-        (
-            'Max Retries',
-            '{}'.format(record.template.spec.maxRetries)
-            if record.template.spec.maxRetries is not None
-            else None,
-        ),
-        ('Parallelism', record.parallelism),
-        ('Service account', record.template.service_account),
-        (
-            'Env vars',
-            container_util.GetUserEnvironmentVariables(record.template),
-        ),
-        ('Secrets', container_util.GetSecrets(record.template.container)),
-        ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
-        ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
-        (
-            'Volume Mounts',
-            container_util.GetVolumeMounts(record.template.container),
-        ),
-        (
-            'Volumes',
-            container_util.GetVolumes(record.template),
-        ),
-        ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record))
+  def TransformSpec(record, record_for_annotations):
+    """Transforms the execution spec into a custom human-readable format.
+
+    Args:
+      record: The execution or execution template to transform.
+      record_for_annotations: The resource whose annotations should be used to
+        extract Cloud Run feature settings. It should be an execution or a job.
+
+    Returns:
+      A custom printer Marker class for a list of lines.
+    """
+    breakglass_value = k8s_util.GetBinAuthzBreakglass(record_for_annotations)
+    return cp.Lines([
+        cp.Labeled([
+            ('Tasks', record.spec.taskCount),
+            (
+                'Parallelism',
+                record.parallelism if record.parallelism else 'No limit',
+            ),
+        ]),
+        TaskPrinter.TransformSpec(record.template),
+        cp.Labeled([
+            (
+                'Binary Authorization',
+                k8s_util.GetBinAuthzPolicy(record_for_annotations),
+            ),
+            # pylint: disable=g-explicit-bool-comparison
+            # Empty breakglass string is valid, space is used to force it
+            # showing
+            (
+                'Breakglass Justification',
+                ' ' if breakglass_value == '' else breakglass_value,
+            ),
+            (
+                'Threat Detection',
+                k8s_util.GetThreatDetectionEnabled(record_for_annotations),
+            ),
+        ]),
     ])
 
   @staticmethod
@@ -406,7 +311,7 @@ class ExecutionPrinter(cp.CustomPrinterBase):
     header = k8s_util.BuildHeader(record)
     status = ExecutionPrinter.TransformStatus(record)
     labels = k8s_util.GetLabels(record.labels)
-    spec = ExecutionPrinter.TransformSpec(record)
+    spec = ExecutionPrinter.TransformSpec(record, record)
     ready_message = k8s_util.FormatReadyMessage(record)
     if header:
       output.append(header)

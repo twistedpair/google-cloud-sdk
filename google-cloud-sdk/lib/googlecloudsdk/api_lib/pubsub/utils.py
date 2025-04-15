@@ -29,6 +29,7 @@ class ErrorCause(enum.Enum):
   LIST = 'list'
   YAML_OR_JSON = 'yaml_or_json'
   UNRECOGNIZED_FIELDS = 'unrecognized_fields'
+  MULTIPLE_SMTS_VALIDATE = 'multiple_smts_validate'
 
 
 class MessageTransformsMissingFileError(exceptions.Error):
@@ -82,6 +83,14 @@ def GetErrorMessage(err: Exception) -> str:
       return (
           'Message transforms file [{0}] is not properly formatted in YAML'
           ' or JSON due to [{1}]'.format(err.path, six.text_type(err))
+      )
+    elif err.error_cause == ErrorCause.MULTIPLE_SMTS_VALIDATE:
+      return (
+          'Message transform file [{0}] contains a list of message transforms'
+          ' instead of a single (1) message transform. Please edit your'
+          ' message-transform-file to contain a single element.'.format(
+              err.path
+          )
       )
     else:
       return (
@@ -181,6 +190,13 @@ def GetMessageTransformFromFile(message, path) -> Any:
   try:
     # yaml.load() is able to parse YAML and JSON files
     message_transform = yaml.load(in_text)
+    if isinstance(message_transform, list):
+      if len(message_transform) == 1:
+        message_transform = message_transform[0]
+      else:
+        raise MessageTransformsInvalidFormatError(
+            path, ErrorCause.MULTIPLE_SMTS_VALIDATE
+        )
     result = encoding.PyValueToMessage(message, message_transform)
     ValidateMessageTransformMessage(result, path)
   except (

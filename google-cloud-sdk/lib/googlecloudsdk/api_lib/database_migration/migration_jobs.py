@@ -168,8 +168,36 @@ class MigrationJobsClient(object):
       migration_job.labels = update_result.labels
       update_fields.append('labels')
 
-  def _GetConversionWorkspaceInfo(self, conversion_workspace_ref, args):
-    """Returns the conversion worksapce info.
+  def _GetConversionWorkspace(self, conversion_workspace_ref):
+    """Returns the conversion workspace.
+
+    Args:
+      conversion_workspace_ref: str, the reference of the conversion workspace.
+
+    Raises:
+      BadArgumentException: Unable to fetch latest commit for the specified
+      conversion workspace.
+    """
+    cw_client = conversion_workspaces.ConversionWorkspacesClient(
+        release_track=self.release_track,
+    )
+    conversion_workspace = cw_client.crud.Read(
+        name=conversion_workspace_ref.RelativeName(),
+    )
+    if conversion_workspace.latestCommitId is None:
+      raise exceptions.BadArgumentException(
+          'conversion-workspace',
+          (
+              'Unable to fetch latest commit for the specified conversion'
+              ' workspace. Conversion Workspace might not be committed.'
+          ),
+      )
+    return conversion_workspace
+
+  def _GetConversionWorkspaceInfo(
+      self, conversion_workspace_ref, args
+  ):
+    """Returns the conversion workspace info.
 
     Args:
       conversion_workspace_ref: str, the reference of the conversion workspace.
@@ -180,30 +208,17 @@ class MigrationJobsClient(object):
       BadArgumentException: Unable to fetch latest commit for the specified
       conversion workspace.
     """
-    if conversion_workspace_ref is not None:
-      conversion_workspace_obj = self.messages.ConversionWorkspaceInfo(
-          name=conversion_workspace_ref.RelativeName()
+    conversion_workspace_obj = self.messages.ConversionWorkspaceInfo(
+        name=conversion_workspace_ref.RelativeName()
+    )
+    if args.commit_id is not None:
+      conversion_workspace_obj.commitId = args.commit_id
+    else:
+      conversion_workspace = self._GetConversionWorkspace(
+          conversion_workspace_ref
       )
-      if args.commit_id is not None:
-        conversion_workspace_obj.commitId = args.commit_id
-      else:
-        # Get conversion workspace's latest commit id.
-        cw_client = conversion_workspaces.ConversionWorkspacesClient(
-            release_track=self.release_track,
-        )
-        conversion_workspace = cw_client.crud.Read(
-            name=conversion_workspace_ref.RelativeName(),
-        )
-        if conversion_workspace.latestCommitId is None:
-          raise exceptions.BadArgumentException(
-              'conversion-workspace',
-              (
-                  'Unable to fetch latest commit for the specified conversion'
-                  ' workspace. Conversion Workspace might not be committed.'
-              ),
-          )
-        conversion_workspace_obj.commitId = conversion_workspace.latestCommitId
-      return conversion_workspace_obj
+      conversion_workspace_obj.commitId = conversion_workspace.latestCommitId
+    return conversion_workspace_obj
 
   def _ComplementConversionWorkspaceInfo(self, conversion_workspace, args):
     """Returns the conversion workspace info with the supplied or the latest commit id.
@@ -383,6 +398,186 @@ class MigrationJobsClient(object):
         sourceObjectsConfig=source_objects_conifg
     )
 
+  def _IsHeterogeneousConfigKnownAndSpecified(self, args):
+    """Checks if at least one heterogeneous config flag is specified.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      True if at least one of the heterogeneous config's flags is known and
+      specified.
+    """
+    return (
+        args.IsKnownAndSpecified('max_concurrent_full_dump_connections')
+        or args.IsKnownAndSpecified('max_concurrent_cdc_connections')
+        or args.IsKnownAndSpecified('skip_full_dump')
+        or args.IsKnownAndSpecified('oracle_cdc_start_position')
+        or args.IsKnownAndSpecified('sqlserver_cdc_start_position')
+        or args.IsKnownAndSpecified('max_concurrent_destination_connections')
+        or args.IsKnownAndSpecified('transaction_timeout')
+    )
+
+  def _GetPostgresDestinationConfig(self, args):
+    """Returns the postgres destination config.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+
+    Returns:
+      PostgresDestinationConfig: The postgres destination config.
+    """
+    postgres_destination_config = self.messages.PostgresDestinationConfig()
+    if args.IsKnownAndSpecified('max_concurrent_destination_connections'):
+      postgres_destination_config.maxConcurrentConnections = (
+          args.max_concurrent_destination_connections
+      )
+    if args.IsKnownAndSpecified('transaction_timeout'):
+      postgres_destination_config.transactionTimeout = (
+          str(args.transaction_timeout) + 's'
+      )
+    return postgres_destination_config
+
+  def _GetOracleSourceConfig(self, args):
+    """Returns the oracle source config.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+
+    Returns:
+      The oracle source config.
+
+    Raises:
+      RequiredArgumentException: The Oracle CDC start position should be
+      specified when skipping full dump.
+    """
+    oracle_source_config = self.messages.OracleSourceConfig()
+    if args.IsKnownAndSpecified('max_concurrent_full_dump_connections'):
+      oracle_source_config.maxConcurrentFullDumpConnections = (
+          args.max_concurrent_full_dump_connections
+      )
+    if args.IsKnownAndSpecified('max_concurrent_cdc_connections'):
+      oracle_source_config.maxConcurrentCdcConnections = (
+          args.max_concurrent_cdc_connections
+      )
+    if args.IsKnownAndSpecified('skip_full_dump'):
+      oracle_source_config.skipFullDump = args.skip_full_dump
+      if args.IsKnownAndSpecified('oracle_cdc_start_position'):
+        temp = int(args.oracle_cdc_start_position)
+        oracle_source_config.cdcStartPosition = temp
+      else:
+        raise exceptions.RequiredArgumentException(
+            'oracle-cdc-start-position',
+            (
+                'The Oracle CDC start position should be specified when'
+                ' skipping full dump.'
+            ),
+        )
+    return oracle_source_config
+
+  def _GetSqlServerSourceConfig(self, args):
+    """Returns the sqlserver source config.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+
+    Returns:
+      The sqlserver source config.
+
+    Raises:
+      RequiredArgumentException: The SQL Server CDC start position should be
+      specified when skipping full dump.
+    """
+    sqlserver_source_config = self.messages.SqlServerSourceConfig()
+    if args.IsKnownAndSpecified('max_concurrent_full_dump_connections'):
+      sqlserver_source_config.maxConcurrentFullDumpConnections = (
+          args.max_concurrent_full_dump_connections
+      )
+    if args.IsKnownAndSpecified('max_concurrent_cdc_connections'):
+      sqlserver_source_config.maxConcurrentCdcConnections = (
+          args.max_concurrent_cdc_connections
+      )
+    if args.IsKnownAndSpecified('skip_full_dump'):
+      sqlserver_source_config.skipFullDump = args.skip_full_dump
+      if args.IsKnownAndSpecified('sqlserver_cdc_start_position'):
+        sqlserver_source_config.sqlserverCdcStartPosition = (
+            args.sqlserver_cdc_start_position
+        )
+      else:
+        raise exceptions.RequiredArgumentException(
+            'sqlserver-cdc-start-position',
+            (
+                'The SQL Server CDC start position should be specified when'
+                ' skipping full dump.'
+            ),
+        )
+    return sqlserver_source_config
+
+  def _GetHeterogeneousMigrationJobConfig(
+      self, conversion_workspace_ref, args
+  ):
+    """Returns the heterogeneous migration job config.
+
+    Args:
+      conversion_workspace_ref: str, the reference of the conversion workspace.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      A tuple containing the heterogeneous config key and the config object.
+
+    Raises:
+      Error: Invalid source or destination engine.
+    """
+    if self._IsHeterogeneousConfigKnownAndSpecified(args):
+      conversion_workspace = self._GetConversionWorkspace(
+          conversion_workspace_ref
+      )
+      if (
+          conversion_workspace.destination.engine
+          == self.messages.DatabaseEngineInfo.EngineValueValuesEnum.POSTGRESQL
+      ):
+        postgres_destination_config = self._GetPostgresDestinationConfig(
+            args
+        )
+      else:
+        raise Error(
+            'Cannot create heterogeneous migration job configuration for '
+            'destination engine: {engine}'.format(
+                engine=conversion_workspace.destination.engine
+            )
+        )
+      if (
+          conversion_workspace.source.engine
+          == self.messages.DatabaseEngineInfo.EngineValueValuesEnum.ORACLE
+      ):
+        oracle_to_postgres_config = self.messages.OracleToPostgresConfig(
+            oracleSourceConfig=self._GetOracleSourceConfig(args),
+            postgresDestinationConfig=postgres_destination_config
+            )
+        return 'oracleToPostgresConfig', oracle_to_postgres_config
+      elif (
+          conversion_workspace.source.engine
+          == self.messages.DatabaseEngineInfo.EngineValueValuesEnum.SQLSERVER
+      ):
+        sqlserver_to_postgres_config = self.messages.SqlServerToPostgresConfig(
+            sqlserverSourceConfig=self._GetSqlServerSourceConfig(args),
+            postgresDestinationConfig=postgres_destination_config
+            )
+        return 'sqlserverToPostgresConfig', sqlserver_to_postgres_config
+      else:
+        raise Error(
+            'Cannot create heterogeneous migration job configuration for '
+            ' source engine: {engine}'.format(
+                engine=conversion_workspace.source.engine
+            ),
+        )
+    return None, None
+
   def _GetMigrationJob(
       self,
       source_ref,
@@ -391,7 +586,27 @@ class MigrationJobsClient(object):
       cmek_key_ref,
       args,
   ):
-    """Returns a migration job."""
+    """Returns a migration job.
+
+    Args:
+      source_ref: a Resource reference to a
+        datamigration.projects.locations.connectionProfiles resource.
+      destination_ref: a Resource reference to a
+        datamigration.projects.locations.connectionProfiles resource.
+      conversion_workspace_ref: a Resource reference to a
+        datamigration.projects.locations.conversionWorkspaces resource.
+      cmek_key_ref: a Resource reference to a
+        cloudkms.projects.locations.keyRings.cryptoKeys resource.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      MigrationJob: the migration job.
+
+    Raises:
+      RequiredArgumentException: If conversion workspace is not specified for
+      heterogeneous migration job.
+    """
     migration_job_type = self.messages.MigrationJob
     labels = labels_util.ParseCreateArgs(
         args, self.messages.MigrationJob.LabelsValue
@@ -410,6 +625,27 @@ class MigrationJobsClient(object):
     if args.IsSpecified('dump_flags'):
       params['dumpFlags'] = self._GetDumpFlags(args.dump_flags)
 
+    if conversion_workspace_ref is not None:
+      params['conversionWorkspace'] = self._GetConversionWorkspaceInfo(
+          conversion_workspace_ref, args
+      )
+      heterogeneous_config_key, heterogeneous_config_obj = (
+          self._GetHeterogeneousMigrationJobConfig(
+              conversion_workspace_ref, args
+          )
+      )
+      if heterogeneous_config_key is not None:
+        params[heterogeneous_config_key] = heterogeneous_config_obj
+    else:
+      if self._IsHeterogeneousConfigKnownAndSpecified(args):
+        raise exceptions.RequiredArgumentException(
+            'conversion-workspace',
+            (
+                'Conversion workspace is required for heterogeneous migration'
+                ' job.'
+            ),
+        )
+
     migration_job_obj = migration_job_type(
         labels=labels,
         displayName=args.display_name,
@@ -420,10 +656,6 @@ class MigrationJobsClient(object):
         destination=destination,
         **params
     )
-    if conversion_workspace_ref is not None:
-      migration_job_obj.conversionWorkspace = self._GetConversionWorkspaceInfo(
-          conversion_workspace_ref, args
-      )
     if cmek_key_ref is not None:
       migration_job_obj.cmekKeyName = cmek_key_ref.RelativeName()
 

@@ -39,8 +39,106 @@ class IamcredentialsV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.locations_workforcePools = self.LocationsWorkforcePoolsService(self)
+    self.locations = self.LocationsService(self)
+    self.projects_locations_workloadIdentityPools = self.ProjectsLocationsWorkloadIdentityPoolsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
+
+  class LocationsWorkforcePoolsService(base_api.BaseApiService):
+    """Service class for the locations_workforcePools resource."""
+
+    _NAME = 'locations_workforcePools'
+
+    def __init__(self, client):
+      super(IamcredentialsV1.LocationsWorkforcePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetAllowedLocations(self, request, global_params=None):
+      r"""Returns the trust boundary info for a given workforce pool.
+
+      Args:
+        request: (IamcredentialsLocationsWorkforcePoolsGetAllowedLocationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolAllowedLocations) The response message.
+      """
+      config = self.GetMethodConfig('GetAllowedLocations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAllowedLocations.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/allowedLocations',
+        http_method='GET',
+        method_id='iamcredentials.locations.workforcePools.getAllowedLocations',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/allowedLocations',
+        request_field='',
+        request_type_name='IamcredentialsLocationsWorkforcePoolsGetAllowedLocationsRequest',
+        response_type_name='WorkforcePoolAllowedLocations',
+        supports_download=False,
+    )
+
+  class LocationsService(base_api.BaseApiService):
+    """Service class for the locations resource."""
+
+    _NAME = 'locations'
+
+    def __init__(self, client):
+      super(IamcredentialsV1.LocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsWorkloadIdentityPoolsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools'
+
+    def __init__(self, client):
+      super(IamcredentialsV1.ProjectsLocationsWorkloadIdentityPoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetAllowedLocations(self, request, global_params=None):
+      r"""Returns the trust boundary info for a given workload identity pool.
+
+      Args:
+        request: (IamcredentialsProjectsLocationsWorkloadIdentityPoolsGetAllowedLocationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkloadIdentityPoolAllowedLocations) The response message.
+      """
+      config = self.GetMethodConfig('GetAllowedLocations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAllowedLocations.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/allowedLocations',
+        http_method='GET',
+        method_id='iamcredentials.projects.locations.workloadIdentityPools.getAllowedLocations',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/allowedLocations',
+        request_field='',
+        request_type_name='IamcredentialsProjectsLocationsWorkloadIdentityPoolsGetAllowedLocationsRequest',
+        response_type_name='WorkloadIdentityPoolAllowedLocations',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(IamcredentialsV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsServiceAccountsService(base_api.BaseApiService):
     """Service class for the projects_serviceAccounts resource."""
