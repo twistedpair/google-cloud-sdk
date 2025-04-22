@@ -649,6 +649,15 @@ class VolumesAdapter(object):
             )
         ]
     )
+    hybrid_replication_parameters_message.replicationSchedule = (
+        hybrid_replication_parameters.get('replication-schedule')
+    )
+    hybrid_replication_parameters_message.hybridReplicationType = (
+        hybrid_replication_parameters.get('hybrid-replication-type')
+    )
+    hybrid_replication_parameters_message.largeVolumeConstituentCount = (
+        hybrid_replication_parameters.get('large-volume-constituent-count')
+    )
     volume.hybridReplicationParameters = hybrid_replication_parameters_message
 
 

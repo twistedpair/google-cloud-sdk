@@ -246,27 +246,39 @@ def GetDnsPeeringArgs():
   return peering_group
 
 
-def GetForwardingTargetsArg():
+def _GetForwardingTargetsHelpText(release_track):
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    return 'IPv4/IPv6 addresses or one domain name of the target name server'
+  else:
+    return 'IPv4 addresses'
+
+
+def GetForwardingTargetsArg(release_track):
   return base.Argument(
       '--forwarding-targets',
       type=arg_parsers.ArgList(),
       metavar='IP_ADDRESSES',
-      help=('List of IPv4 addresses of target name servers that the zone '
-            'will forward queries to. Ignored for `public` visibility. '
-            'Non-RFC1918 addresses will forward to the target through the '
-            'Internet. RFC1918 addresses will forward through the VPC.'))
+      help=(
+          f'List of {_GetForwardingTargetsHelpText(release_track)} that'
+          ' the zone will forward queries to. Ignored for `public` visibility.'
+          ' Non-RFC1918 addresses will forward to the target through the'
+          ' Internet. RFC1918 addresses will forward through the VPC.'
+      ),
+  )
 
 
-def GetPrivateForwardingTargetsArg():
+def GetPrivateForwardingTargetsArg(release_track):
   return base.Argument(
       '--private-forwarding-targets',
       type=arg_parsers.ArgList(),
       metavar='IP_ADDRESSES',
       help=(
-          'List of IPv4 addresses of target name servers that the zone '
-          'will forward queries to. Ignored for `public` visibility. '
-          'All addresses specified for this parameter will be reached through the VPC.'
-      ))
+          f'List of {_GetForwardingTargetsHelpText(release_track)} that'
+          ' the zone will forward queries to. Ignored for `public`'
+          ' visibility. All addresses specified for this parameter will be'
+          ' reached through the VPC.'
+      ),
+  )
 
 
 def GetReverseLookupArg():

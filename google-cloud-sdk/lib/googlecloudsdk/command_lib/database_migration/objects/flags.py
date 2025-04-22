@@ -21,13 +21,39 @@ from __future__ import unicode_literals
 
 def AddSourceObjectIdentifierFlag(parser):
   """Adds source object identifier flags to the given parser."""
+  AddTypeFlag(parser)
+
   source_object_identifier_group = parser.add_group(
       'The source object identifier.', required=True
   )
   AddDatabaseFlag(source_object_identifier_group)
+  AddSchemaFlag(source_object_identifier_group)
+  AddTableFlag(source_object_identifier_group)
 
 
 def AddDatabaseFlag(parser):
   """Adds a --database flag to the given parser."""
   help_text = 'The name of the database to lookup.'
   parser.add_argument('--database', help=help_text)
+
+
+def AddSchemaFlag(parser):
+  """Adds a --schema flag to the given parser."""
+  help_text = 'The name of the schema to lookup.'
+  parser.add_argument('--schema', help=help_text, hidden=True)
+
+
+def AddTableFlag(parser):
+  """Adds a --table flag to the given parser."""
+  help_text = 'The name of the table to lookup.'
+  parser.add_argument('--table', help=help_text, hidden=True)
+
+
+def AddTypeFlag(parser):
+  """Adds a --type flag to the given parser."""
+  help_text = (
+      'The type of the object to lookup. If not provided, the default is'
+      ' DATABASE.'
+  )
+  choices = ['DATABASE', 'SCHEMA', 'TABLE']
+  parser.add_argument('--type', help=help_text, choices=choices, hidden=True)

@@ -1280,6 +1280,20 @@ class BackupDrBackupSource(_messages.Message):
   backup = _messages.StringField(1)
 
 
+class BackupDrPitrSource(_messages.Message):
+  r"""Message describing a BackupDrPitrSource.
+
+  Fields:
+    dataSource: Required. The name of the backup resource with the format: * p
+      rojects/{project}/locations/{location}/backupVaults/{backupvault_id}/dat
+      aSources/{datasource_id}
+    pointInTime: Required. The point in time to restore to.
+  """
+
+  dataSource = _messages.StringField(1)
+  pointInTime = _messages.StringField(2)
+
+
 class BackupSource(_messages.Message):
   r"""Message describing a BackupSource.
 
@@ -1801,8 +1815,7 @@ class ConnectionPoolConfig(_messages.Message):
     defaultPoolSize: Optional. Deprecated. Use 'flags' instead. The default
       pool size. Defaults to 20.
     enable: Optional. Deprecated; Prefer 'enabled' as this will be removed
-      soon. TODO(b/394996708) move to reserved once the field is removed from
-      the gcloud client.
+      soon.
     enabled: Optional. Whether to enable Managed Connection Pool (MCP).
     flags: Optional. Connection Pool flags, as a list of "key": "value" pairs.
     ignoreStartupParameters: Optional. Deprecated. Use 'flags' instead. The
@@ -2422,6 +2435,13 @@ class Instance(_messages.Message):
   It's the main unit of computing resources in AlloyDB.
 
   Enums:
+    ActivationPolicyValueValuesEnum: Optional. Specifies whether an instance
+      needs to spin up. Once the instance is active, the activation policy can
+      be updated to the `NEVER` to stop the instance. Likewise, the activation
+      policy can be updated to `ALWAYS` to start the instance. There are
+      restrictions around when an instance can/cannot be activated (for
+      example, a read pool instance should be stopped before stopping primary
+      etc.). Please refer to the API documentation for more details.
     AvailabilityTypeValueValuesEnum: Availability type of an Instance. If
       empty, defaults to REGIONAL for primary instances. For read pools,
       availability_type is always UNSPECIFIED. Instances in the read pools are
@@ -2452,6 +2472,13 @@ class Instance(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    activationPolicy: Optional. Specifies whether an instance needs to spin
+      up. Once the instance is active, the activation policy can be updated to
+      the `NEVER` to stop the instance. Likewise, the activation policy can be
+      updated to `ALWAYS` to start the instance. There are restrictions around
+      when an instance can/cannot be activated (for example, a read pool
+      instance should be stopped before stopping primary etc.). Please refer
+      to the API documentation for more details.
     annotations: Annotations to allow client tools to store small amount of
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
     availabilityType: Availability type of an Instance. If empty, defaults to
@@ -2542,6 +2569,24 @@ class Instance(_messages.Message):
     writableNode: Output only. This is set for the read-write VM of the
       PRIMARY instance only.
   """
+
+  class ActivationPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies whether an instance needs to spin up. Once the
+    instance is active, the activation policy can be updated to the `NEVER` to
+    stop the instance. Likewise, the activation policy can be updated to
+    `ALWAYS` to start the instance. There are restrictions around when an
+    instance can/cannot be activated (for example, a read pool instance should
+    be stopped before stopping primary etc.). Please refer to the API
+    documentation for more details.
+
+    Values:
+      ACTIVATION_POLICY_UNSPECIFIED: The policy is not specified.
+      ALWAYS: The instance is running.
+      NEVER: The instance is not running.
+    """
+    ACTIVATION_POLICY_UNSPECIFIED = 0
+    ALWAYS = 1
+    NEVER = 2
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
     r"""Availability type of an Instance. If empty, defaults to REGIONAL for
@@ -2695,40 +2740,41 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
-  clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 3)
-  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 4)
-  createTime = _messages.StringField(5)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 6)
-  deleteTime = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  enablePublicIp = _messages.BooleanField(9)
-  etag = _messages.StringField(10)
-  gcaConfig = _messages.MessageField('GCAInstanceConfig', 11)
-  gceZone = _messages.StringField(12)
-  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 13)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 14)
-  ipAddress = _messages.StringField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  machineConfig = _messages.MessageField('MachineConfig', 17)
-  name = _messages.StringField(18)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 19)
-  nodes = _messages.MessageField('Node', 20, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 21)
-  outboundPublicIpAddresses = _messages.StringField(22, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 23)
-  publicIpAddress = _messages.StringField(24)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 25)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 26)
-  reconciling = _messages.BooleanField(27)
-  satisfiesPzi = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  uid = _messages.StringField(31)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 32)
-  updateTime = _messages.StringField(33)
-  writableNode = _messages.MessageField('Node', 34)
+  activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 3)
+  clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 4)
+  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 5)
+  createTime = _messages.StringField(6)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 7)
+  deleteTime = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  enablePublicIp = _messages.BooleanField(10)
+  etag = _messages.StringField(11)
+  gcaConfig = _messages.MessageField('GCAInstanceConfig', 12)
+  gceZone = _messages.StringField(13)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 14)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 15)
+  ipAddress = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  machineConfig = _messages.MessageField('MachineConfig', 18)
+  name = _messages.StringField(19)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 20)
+  nodes = _messages.MessageField('Node', 21, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 22)
+  outboundPublicIpAddresses = _messages.StringField(23, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 24)
+  publicIpAddress = _messages.StringField(25)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 26)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 27)
+  reconciling = _messages.BooleanField(28)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  uid = _messages.StringField(32)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 33)
+  updateTime = _messages.StringField(34)
+  writableNode = _messages.MessageField('Node', 35)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -3487,11 +3533,12 @@ class RestartInstanceRequest(_messages.Message):
 
 class RestoreClusterRequest(_messages.Message):
   r"""Message for restoring a Cluster from a backup or another cluster at a
-  given point in time.
+  given point in time. NEXT_ID: 11
 
   Fields:
     backupSource: Backup source.
     backupdrBackupSource: BackupDR backup source.
+    backupdrPitrSource: BackupDR source used for point in time recovery.
     cluster: Required. The resource being created
     clusterId: Required. ID of the requesting object.
     continuousBackupSource: ContinuousBackup source. Continuous backup needs
@@ -3514,11 +3561,12 @@ class RestoreClusterRequest(_messages.Message):
 
   backupSource = _messages.MessageField('BackupSource', 1)
   backupdrBackupSource = _messages.MessageField('BackupDrBackupSource', 2)
-  cluster = _messages.MessageField('Cluster', 3)
-  clusterId = _messages.StringField(4)
-  continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 5)
-  requestId = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  backupdrPitrSource = _messages.MessageField('BackupDrPitrSource', 3)
+  cluster = _messages.MessageField('Cluster', 4)
+  clusterId = _messages.StringField(5)
+  continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 6)
+  requestId = _messages.StringField(7)
+  validateOnly = _messages.BooleanField(8)
 
 
 class RestoreFromCloudSQLRequest(_messages.Message):

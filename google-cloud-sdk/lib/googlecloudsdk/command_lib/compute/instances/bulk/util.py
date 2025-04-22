@@ -57,6 +57,7 @@ class SupportedFeatures:
       support_enable_target_shape,
       support_confidential_compute_type,
       support_confidential_compute_type_tdx,
+      support_snp_svsm,
       support_max_count_per_zone,
       support_performance_monitoring_unit,
       support_custom_hostnames,
@@ -90,6 +91,7 @@ class SupportedFeatures:
     self.support_confidential_compute_type_tdx = (
         support_confidential_compute_type_tdx
     )
+    self.support_snp_svsm = support_snp_svsm
     self.support_max_count_per_zone = support_max_count_per_zone
     self.support_local_ssd_recovery_timeout = support_local_ssd_recovery_timeout
     self.support_performance_monitoring_unit = (
@@ -318,20 +320,21 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
 
   confidential_vm_type = None
   if supported_features.support_confidential_compute:
-    confidential_instance_config = (
-        create_utils.BuildConfidentialInstanceConfigMessage(
-            messages=compute_client.messages,
-            args=args,
-            support_confidential_compute_type=supported_features
-            .support_confidential_compute_type,
-            support_confidential_compute_type_tdx=supported_features
-            .support_confidential_compute_type_tdx))
+    confidential_instance_config = create_utils.BuildConfidentialInstanceConfigMessage(
+        messages=compute_client.messages,
+        args=args,
+        support_confidential_compute_type=supported_features.support_confidential_compute_type,
+        support_confidential_compute_type_tdx=supported_features.support_confidential_compute_type_tdx,
+        support_snp_svsm=supported_features.support_snp_svsm,
+    )
 
     confidential_vm_type = instance_utils.GetConfidentialVmType(
-        args, supported_features.support_confidential_compute_type)
+        args, supported_features.support_confidential_compute_type
+    )
 
   service_accounts = create_utils.GetProjectServiceAccount(
-      args, project, compute_client, skip_defaults)
+      args, project, compute_client, skip_defaults
+  )
 
   boot_disk_size_gb = instance_utils.GetBootDiskSizeGb(args)
 

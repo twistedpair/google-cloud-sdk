@@ -841,8 +841,8 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     if servers is None:
       raise InvalidArgumentError('Servers parameter is missing in --ldap.')
     servers = servers.split(',')
-    usersou = ldap.get('users_ou')
-    groupsou = ldap.get('groups_ou')
+    usersou = ldap.get('users-ou')
+    groupsou = ldap.get('groups-ou')
     # usersou and groupsou are optional
 
     instance.directoryServices = self.messages.DirectoryServicesConfig(

@@ -43,6 +43,11 @@ properties:
       project/locations/global/edgeCacheOrigins/my-origin` * `my-origin` The
       value of max_attempts_timeout dictates the timeout across all origins.
     type: string
+  flexShielding:
+    description: |-
+      The FlexShieldingOptions to be used for all routes to this origin. If not
+      set, defaults to a global caching layer in front of the origin.
+    $ref: FlexShieldingOptions.yaml
   labels:
     description: |-
       A set of label tags associated with the EdgeCacheOrigin resource.

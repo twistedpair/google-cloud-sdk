@@ -289,11 +289,9 @@ class Flag(FlagOrPositional):
       self.type = 'bool'
       self.default = bool(flag.default)
     else:
-      if isinstance(flag.type, six.integer_types) or isinstance(
-          flag.default, six.integer_types
-      ):
+      if flag.type is int or isinstance(flag.default, int):
         self.type = 'int'
-      elif isinstance(flag.type, float) or isinstance(flag.default, float):
+      elif flag.type is float or isinstance(flag.default, float):
         self.type = 'float'
       elif isinstance(flag.type, arg_parsers.ArgDict):
         self.type = 'dict'

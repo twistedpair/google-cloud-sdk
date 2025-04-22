@@ -34,12 +34,16 @@ class AcceleratorConfig(_messages.Message):
       V3: TPU v3.
       V4: TPU v4.
       V5LITE_POD: TPU v5lite pod.
+      V5P: TPU v5p.
+      V6E: TPU v6e.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
     V3 = 2
     V4 = 3
     V5LITE_POD = 4
+    V5P = 5
+    V6E = 6
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -412,7 +416,7 @@ class MultisliceParams(_messages.Message):
 
   Fields:
     nodeCount: Required. Number of nodes with this spec. The system will
-      attempt to provison "node_count" nodes as part of the request. This
+      attempt to provision "node_count" nodes as part of the request. This
       needs to be > 1.
     nodeIdPrefix: Optional. Prefix of node_ids in case of multislice request.
       Should follow the `^[A-Za-z0-9_.~+%-]+$` regex format. If node_count = 3
@@ -507,7 +511,14 @@ class Node(_messages.Message):
     multisliceNode: Output only. Whether the Node belongs to a Multislice
       group.
     name: Output only. Immutable. The name of the TPU.
-    networkConfig: Network configurations for the TPU node.
+    networkConfig: Network configurations for the TPU node. network_config and
+      network_configs are mutually exclusive, you can only specify one of
+      them. If both are specified, an error will be returned.
+    networkConfigs: Optional. Repeated network configurations for the TPU
+      node. This field is used to specify multiple networks configs for the
+      TPU node. network_config and network_configs are mutually exclusive, you
+      can only specify one of them. If both are specified, an error will be
+      returned.
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that runtime clients of the
       node reach out to the 0th entry in this map first.
@@ -523,6 +534,7 @@ class Node(_messages.Message):
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tags: Tags to apply to the TPU Node. Tags are used to identify valid
       sources or targets for network firewalls.
+    upcomingMaintenance: Output only. Upcoming maintenance on this TPU node.
   """
 
   class ApiVersionValueValuesEnum(_messages.Enum):
@@ -581,6 +593,7 @@ class Node(_messages.Message):
       HIDING: TPU node is currently hiding.
       HIDDEN: TPU node has been hidden.
       UNHIDING: TPU node is currently unhiding.
+      UNKNOWN: TPU node has unknown state after a failed repair.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -597,6 +610,7 @@ class Node(_messages.Message):
     HIDING = 12
     HIDDEN = 13
     UNHIDING = 14
+    UNKNOWN = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -662,15 +676,17 @@ class Node(_messages.Message):
   multisliceNode = _messages.BooleanField(13)
   name = _messages.StringField(14)
   networkConfig = _messages.MessageField('NetworkConfig', 15)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 16, repeated=True)
-  queuedResource = _messages.StringField(17)
-  runtimeVersion = _messages.StringField(18)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 19)
-  serviceAccount = _messages.MessageField('ServiceAccount', 20)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  symptoms = _messages.MessageField('Symptom', 23, repeated=True)
-  tags = _messages.StringField(24, repeated=True)
+  networkConfigs = _messages.MessageField('NetworkConfig', 16, repeated=True)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 17, repeated=True)
+  queuedResource = _messages.StringField(18)
+  runtimeVersion = _messages.StringField(19)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 20)
+  serviceAccount = _messages.MessageField('ServiceAccount', 21)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  symptoms = _messages.MessageField('Symptom', 24, repeated=True)
+  tags = _messages.StringField(25, repeated=True)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 26)
 
 
 class NodeSpec(_messages.Message):
@@ -1285,6 +1301,8 @@ class TpuProjectsLocationsListRequest(_messages.Message):
   r"""A TpuProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1295,10 +1313,11 @@ class TpuProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
@@ -1552,6 +1571,59 @@ class TpuProjectsLocationsRuntimeVersionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class UpcomingMaintenance(_messages.Message):
+  r"""Upcoming Maintenance notification information.
+
+  Enums:
+    MaintenanceStatusValueValuesEnum: The status of the maintenance.
+    TypeValueValuesEnum: Defines the type of maintenance.
+
+  Fields:
+    canReschedule: Indicates if the maintenance can be customer triggered.
+    latestWindowStartTime: The latest time for the planned maintenance window
+      to start. This timestamp value is in RFC3339 text format.
+    maintenanceStatus: The status of the maintenance.
+    type: Defines the type of maintenance.
+    windowEndTime: The time by which the maintenance disruption will be
+      completed. This timestamp value is in RFC3339 text format.
+    windowStartTime: The current start time of the maintenance window. This
+      timestamp value is in RFC3339 text format.
+  """
+
+  class MaintenanceStatusValueValuesEnum(_messages.Enum):
+    r"""The status of the maintenance.
+
+    Values:
+      UNKNOWN: Unknown maintenance status. Do not use this value.
+      PENDING: There is pending maintenance.
+      ONGOING: There is ongoing maintenance on this VM.
+    """
+    UNKNOWN = 0
+    PENDING = 1
+    ONGOING = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of maintenance.
+
+    Values:
+      UNKNOWN_TYPE: No type specified. Do not use this value.
+      SCHEDULED: Scheduled maintenance (e.g. maintenance after uptime
+        guarantee is complete).
+      UNSCHEDULED: Unscheduled maintenance (e.g. emergency maintenance during
+        uptime guarantee).
+    """
+    UNKNOWN_TYPE = 0
+    SCHEDULED = 1
+    UNSCHEDULED = 2
+
+  canReschedule = _messages.BooleanField(1)
+  latestWindowStartTime = _messages.StringField(2)
+  maintenanceStatus = _messages.EnumField('MaintenanceStatusValueValuesEnum', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  windowEndTime = _messages.StringField(5)
+  windowStartTime = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

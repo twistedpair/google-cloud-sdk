@@ -111,6 +111,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  NAMESPACES_WORKERPOOLS = (
+      'namespaces.workerpools',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/workerpools/{workerpoolsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

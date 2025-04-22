@@ -436,9 +436,8 @@ class CDNPolicy(_messages.Message):
       directive. - The TTL must be >= `0` and <= `31,536,000` seconds (1 year)
       - Setting a TTL of `0` means "always revalidate" - The value of
       `max_ttl` must be equal to or greater than default_ttl. - Fractions of a
-      second are not allowed. When CacheMode is set to
-      [USE_ORIGIN_HEADERS].[CacheMode.USE_ORIGIN_HEADERS], FORCE_CACHE_ALL, or
-      BYPASS_CACHE, you must omit this field.
+      second are not allowed. When CacheMode is set to USE_ORIGIN_HEADERS,
+      FORCE_CACHE_ALL, or BYPASS_CACHE, you must omit this field.
     negativeCaching: Optional. Negative caching allows setting per-status code
       TTLs, in order to apply fine-grained caching for common errors or
       redirects. This can reduce the load on your origin and improve end-user
@@ -954,6 +953,9 @@ class EdgeCacheOrigin(_messages.Message):
       are both valid paths to an `EdgeCacheOrigin` resource: * `projects/my-
       project/locations/global/edgeCacheOrigins/my-origin` * `my-origin` The
       value of max_attempts_timeout dictates the timeout across all origins.
+    flexShielding: Optional. The FlexShieldingOptions to be used for all
+      routes to this origin. If not set, defaults to a global caching layer in
+      front of the origin.
     labels: Optional. A set of label tags associated with the EdgeCacheOrigin
       resource.
     maxAttempts: Optional. The maximum number of attempts to cache fill from
@@ -1091,17 +1093,18 @@ class EdgeCacheOrigin(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   failoverOrigin = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  maxAttempts = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  name = _messages.StringField(7)
-  originAddress = _messages.StringField(8)
-  originOverrideAction = _messages.MessageField('OriginOverrideAction', 9)
-  originRedirect = _messages.MessageField('OriginRedirect', 10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
-  retryConditions = _messages.EnumField('RetryConditionsValueListEntryValuesEnum', 13, repeated=True)
-  timeout = _messages.MessageField('Timeout', 14)
-  updateTime = _messages.StringField(15)
+  flexShielding = _messages.MessageField('FlexShieldingOptions', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  maxAttempts = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  originAddress = _messages.StringField(9)
+  originOverrideAction = _messages.MessageField('OriginOverrideAction', 10)
+  originRedirect = _messages.MessageField('OriginRedirect', 11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
+  retryConditions = _messages.EnumField('RetryConditionsValueListEntryValuesEnum', 14, repeated=True)
+  timeout = _messages.MessageField('Timeout', 15)
+  updateTime = _messages.StringField(16)
 
 
 class EdgeCacheService(_messages.Message):
@@ -1666,6 +1669,34 @@ class ExtensionChainMatchCondition(_messages.Message):
   """
 
   celExpression = _messages.StringField(1)
+
+
+class FlexShieldingOptions(_messages.Message):
+  r"""Defines the caching layer to use in front of the origin.
+
+  Enums:
+    FlexShieldingRegionsValueListEntryValuesEnum:
+
+  Fields:
+    flexShieldingRegions: Optional. Whenever possible, content will be fetched
+      from origin and cached in or near the specified region. Best effort. You
+      must specify exactly one FlexShieldingRegion.
+  """
+
+  class FlexShieldingRegionsValueListEntryValuesEnum(_messages.Enum):
+    r"""FlexShieldingRegionsValueListEntryValuesEnum enum type.
+
+    Values:
+      FLEX_SHIELDING_REGION_UNSPECIFIED: It is an error to specify
+        FLEX_SHIELDING_REGION_UNSPECIFIED.
+      AFRICA_SOUTH1: Origin fetch from near africa-south1.
+      ME_CENTRAL1: Origin fetch from near me-central1.
+    """
+    FLEX_SHIELDING_REGION_UNSPECIFIED = 0
+    AFRICA_SOUTH1 = 1
+    ME_CENTRAL1 = 2
+
+  flexShieldingRegions = _messages.EnumField('FlexShieldingRegionsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class Gateway(_messages.Message):

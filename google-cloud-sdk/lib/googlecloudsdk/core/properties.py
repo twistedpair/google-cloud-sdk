@@ -1237,6 +1237,8 @@ class _SectionApiEndpointOverrides(_Section):
         'cloudfunctions', command='gcloud functions')
     self.cloudidentity = self._Add('cloudidentity', command='gcloud identity')
     self.cloudkms = self._Add('cloudkms', command='gcloud kms')
+    self.cloudlocationfinder = self._Add(
+        'cloudlocationfinder', command='gcloud cloudlocationfinder')
     self.cloudnumberregistry = self._Add(
         'cloudnumberregistry',
         command='gcloud cloudnumberregistry', hidden=True)

@@ -569,6 +569,7 @@ class AutoscaledRolloutPolicy(_messages.Message):
   """
 
 
+
 class AvailableVersion(_messages.Message):
   r"""Deprecated.
 
@@ -1321,6 +1322,8 @@ class ClusterAutoscaling(_messages.Message):
     autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
       contains defaults for a node pool created by NAP.
     autoscalingProfile: Defines autoscaling behaviour.
+    defaultComputeClassConfig: Default compute class is a configuration for
+      default compute class.
     enableNodeAutoprovisioning: Enables automatic node pool creation and
       deletion.
     resourceLimits: Contains global constraints regarding minimum and maximum
@@ -1342,8 +1345,9 @@ class ClusterAutoscaling(_messages.Message):
   autoprovisioningLocations = _messages.StringField(1, repeated=True)
   autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
   autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 3)
-  enableNodeAutoprovisioning = _messages.BooleanField(4)
-  resourceLimits = _messages.MessageField('ResourceLimit', 5, repeated=True)
+  defaultComputeClassConfig = _messages.MessageField('DefaultComputeClassConfig', 4)
+  enableNodeAutoprovisioning = _messages.BooleanField(5)
+  resourceLimits = _messages.MessageField('ResourceLimit', 6, repeated=True)
 
 
 class ClusterNetworkPerformanceConfig(_messages.Message):
@@ -1399,10 +1403,9 @@ class ClusterTelemetry(_messages.Message):
 
 
 class ClusterUpdate(_messages.Message):
-  r"""ClusterUpdate describes an update to the cluster.
-
-  Exactly one update can be applied to a cluster with each request, so at most
-  one field can be provided.
+  r"""ClusterUpdate describes an update to the cluster. Exactly one update can
+  be applied to a cluster with each request, so at most one field can be
+  provided.
 
   Enums:
     DesiredDatapathProviderValueValuesEnum: The desired datapath provider for
@@ -1726,13 +1729,9 @@ class ClusterUpdate(_messages.Message):
     IPV4_IPV6 = 2
 
   additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 1)
-  desiredAdditionalIpRangesConfig = _messages.MessageField(
-      'DesiredAdditionalIPRangesConfig', 2
-  )
+  desiredAdditionalIpRangesConfig = _messages.MessageField('DesiredAdditionalIPRangesConfig', 2)
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 3)
-  desiredAnonymousAuthenticationConfig = _messages.MessageField(
-      'AnonymousAuthenticationConfig', 4
-  )
+  desiredAnonymousAuthenticationConfig = _messages.MessageField('AnonymousAuthenticationConfig', 4)
   desiredAuthenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 5)
   desiredAutoGke = _messages.MessageField('AutoGKE', 6)
   desiredAutoIpamConfig = _messages.MessageField('AutoIpamConfig', 7)
@@ -1910,6 +1909,7 @@ class CompleteConvertToAutopilotRequest(_messages.Message):
   """
 
 
+
 class CompleteIPRotationRequest(_messages.Message):
   r"""CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
@@ -1940,6 +1940,7 @@ class CompleteNodePoolUpgradeRequest(_messages.Message):
   r"""CompleteNodePoolUpgradeRequest sets the name of target node pool to
   complete upgrade.
   """
+
 
 
 class CompliancePostureConfig(_messages.Message):
@@ -2900,6 +2901,8 @@ class DNSEndpointConfig(_messages.Message):
       if this is false.
     dnsAliases: Alternate hostnames for the cluster. The default hostname is
       not included in this list.
+    enableK8sTokensViaDns: Controls whether the k8s token auth is allowed via
+      DNS.
     endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
       format address. This is accessible from the public internet. Ex: uid.us-
       central1.gke.goog. Always present, but the behavior may change according
@@ -2908,7 +2911,8 @@ class DNSEndpointConfig(_messages.Message):
 
   allowExternalTraffic = _messages.BooleanField(1)
   dnsAliases = _messages.MessageField('DNSAlias', 2, repeated=True)
-  endpoint = _messages.StringField(3)
+  enableK8sTokensViaDns = _messages.BooleanField(3)
+  endpoint = _messages.StringField(4)
 
 
 class DailyMaintenanceWindow(_messages.Message):
@@ -3019,6 +3023,16 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class DefaultComputeClassConfig(_messages.Message):
+  r"""DefaultComputeClassConfig defines default compute class configuration.
+
+  Fields:
+    enabled: Enables default compute class.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class DefaultSnatStatus(_messages.Message):
   r"""DefaultSnatStatus contains the desired state of whether default sNAT
   should be disabled on the cluster.
@@ -3086,6 +3100,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EnterpriseConfig(_messages.Message):
@@ -4153,6 +4168,17 @@ class LinuxNodeConfig(_messages.Message):
   Enums:
     CgroupModeValueValuesEnum: cgroup_mode specifies the cgroup mode to be
       used on the node.
+    TransparentHugepageDefragValueValuesEnum: Optional. Defines the
+      transparent hugepage defrag configuration on the node. VM hugepage
+      allocation can be managed by either limiting defragmentation for delayed
+      allocation or skipping it entirely for immediate allocation only. See
+      https://docs.kernel.org/admin-guide/mm/transhuge.html for more details.
+    TransparentHugepageEnabledValueValuesEnum: Optional. Transparent Hugepage
+      Support for anonymous memory can be entirely disabled (mostly for
+      debugging purposes) or only enabled inside MADV_HUGEPAGE regions (to
+      avoid the risk of consuming more memory resources) or enabled system
+      wide. See https://docs.kernel.org/admin-guide/mm/transhuge.html for more
+      details.
 
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
@@ -4183,6 +4209,16 @@ class LinuxNodeConfig(_messages.Message):
       net.netfilter.nf_conntrack_tcp_timeout_established
       net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax
       kernel.shmall vm.max_map_count
+    transparentHugepageDefrag: Optional. Defines the transparent hugepage
+      defrag configuration on the node. VM hugepage allocation can be managed
+      by either limiting defragmentation for delayed allocation or skipping it
+      entirely for immediate allocation only. See
+      https://docs.kernel.org/admin-guide/mm/transhuge.html for more details.
+    transparentHugepageEnabled: Optional. Transparent Hugepage Support for
+      anonymous memory can be entirely disabled (mostly for debugging
+      purposes) or only enabled inside MADV_HUGEPAGE regions (to avoid the
+      risk of consuming more memory resources) or enabled system wide. See
+      https://docs.kernel.org/admin-guide/mm/transhuge.html for more details.
   """
 
   class CgroupModeValueValuesEnum(_messages.Enum):
@@ -4200,6 +4236,64 @@ class LinuxNodeConfig(_messages.Message):
     CGROUP_MODE_UNSPECIFIED = 0
     CGROUP_MODE_V1 = 1
     CGROUP_MODE_V2 = 2
+
+  class TransparentHugepageDefragValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the transparent hugepage defrag configuration on the
+    node. VM hugepage allocation can be managed by either limiting
+    defragmentation for delayed allocation or skipping it entirely for
+    immediate allocation only. See https://docs.kernel.org/admin-
+    guide/mm/transhuge.html for more details.
+
+    Values:
+      TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. This should not
+        be used.
+      TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS: It means that an application
+        requesting THP will stall on allocation failure and directly reclaim
+        pages and compact memory in an effort to allocate a THP immediately.
+      TRANSPARENT_HUGEPAGE_DEFRAG_DEFER: It means that an application will
+        wake kswapd in the background to reclaim pages and wake kcompactd to
+        compact memory so that THP is available in the near future. It's the
+        responsibility of khugepaged to then install the THP pages later.
+      TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE: It means that an
+        application will enter direct reclaim and compaction like always, but
+        only for regions that have used madvise(MADV_HUGEPAGE); all other
+        regions will wake kswapd in the background to reclaim pages and wake
+        kcompactd to compact memory so that THP is available in the near
+        future.
+      TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE: It means that an application will
+        enter direct reclaim like always but only for regions that are have
+        used madvise(MADV_HUGEPAGE). This is the default behaviour for both.
+      TRANSPARENT_HUGEPAGE_DEFRAG_NEVER: It means that an application will
+        never enter direct reclaim or compaction.
+    """
+    TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED = 0
+    TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS = 1
+    TRANSPARENT_HUGEPAGE_DEFRAG_DEFER = 2
+    TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE = 3
+    TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE = 4
+    TRANSPARENT_HUGEPAGE_DEFRAG_NEVER = 5
+
+  class TransparentHugepageEnabledValueValuesEnum(_messages.Enum):
+    r"""Optional. Transparent Hugepage Support for anonymous memory can be
+    entirely disabled (mostly for debugging purposes) or only enabled inside
+    MADV_HUGEPAGE regions (to avoid the risk of consuming more memory
+    resources) or enabled system wide. See https://docs.kernel.org/admin-
+    guide/mm/transhuge.html for more details.
+
+    Values:
+      TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. This should not
+        be used.
+      TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent Hugepage support for
+        anonymous memory is enabled system wide.
+      TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent Hugepage support for
+        anonymous memory is enabled inside MADV_HUGEPAGE regions.
+      TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent Hugepage support for
+        anonymous memory is disabled.
+    """
+    TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED = 0
+    TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS = 1
+    TRANSPARENT_HUGEPAGE_ENABLED_MADVISE = 2
+    TRANSPARENT_HUGEPAGE_ENABLED_NEVER = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
@@ -4239,6 +4333,8 @@ class LinuxNodeConfig(_messages.Message):
   cgroupMode = _messages.EnumField('CgroupModeValueValuesEnum', 1)
   hugepages = _messages.MessageField('HugepagesConfig', 2)
   sysctls = _messages.MessageField('SysctlsValue', 3)
+  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 4)
+  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 5)
 
 
 class ListClustersResponse(_messages.Message):
@@ -7228,6 +7324,7 @@ class SecondaryBootDiskUpdateStrategy(_messages.Message):
   r"""SecondaryBootDiskUpdateStrategy is a placeholder which will be extended
   in the future to define different options for updating secondary boot disks.
   """
+
 
 
 class SecretManagerConfig(_messages.Message):

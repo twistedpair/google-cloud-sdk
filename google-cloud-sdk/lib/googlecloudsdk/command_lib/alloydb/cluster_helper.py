@@ -266,10 +266,12 @@ def ConstructCreateRequestFromArgsAlpha(alloydb_messages, location_ref, args):
 
 
 def _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-    alloydb_messages, resource_parser, args
+    alloydb_messages,
+    resource_parser,
+    args,
 ):
   """Returns the backup and continuous backup source for restore request."""
-  backup_source, continuous_backup_source = None, None
+  # AlloyDB backup.
   if args.backup:
     backup_ref = resource_parser.Parse(
         collection='alloydb.projects.locations.backups',
@@ -282,20 +284,31 @@ def _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
     backup_source = alloydb_messages.BackupSource(
         backupName=backup_ref.RelativeName()
     )
-  else:
-    cluster_ref = resource_parser.Parse(
-        collection='alloydb.projects.locations.clusters',
-        line=args.source_cluster,
-        params={
-            'projectsId': properties.VALUES.core.project.GetOrFail,
-            'locationsId': args.region,
-        },
+    return backup_source, None, None
+
+  # BackupDR backup.
+  if hasattr(args, 'backupdr_backup') and args.backupdr_backup:
+    backup_dr_backup_source = alloydb_messages.BackupDrBackupSource(
+        backup=args.backupdr_backup,
     )
-    continuous_backup_source = alloydb_messages.ContinuousBackupSource(
-        cluster=cluster_ref.RelativeName(),
-        pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-    )
-  return backup_source, continuous_backup_source
+    return None, backup_dr_backup_source, None
+
+  # AlloyDB source cluster is the remaining case.
+  # Note the gcloud flags library guarantees that args.source_cluster is
+  # specified.
+  cluster_ref = resource_parser.Parse(
+      collection='alloydb.projects.locations.clusters',
+      line=args.source_cluster,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'locationsId': args.region,
+      },
+  )
+  continuous_backup_source = alloydb_messages.ContinuousBackupSource(
+      cluster=cluster_ref.RelativeName(),
+      pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+  )
+  return None, None, continuous_backup_source
 
 
 def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
@@ -332,9 +345,11 @@ def ConstructRestoreRequestFromArgsGA(
       alloydb_messages, args
   )
 
-  backup_source, continuous_backup_source = (
+  backup_source, _, continuous_backup_source = (
       _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-          alloydb_messages, resource_parser, args
+          alloydb_messages,
+          resource_parser,
+          args,
       )
   )
 
@@ -343,6 +358,7 @@ def ConstructRestoreRequestFromArgsGA(
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
           backupSource=backup_source,
           continuousBackupSource=continuous_backup_source,
+          # TODO(b/400420101): support backup_dr_backup_source
           clusterId=args.cluster,
           cluster=cluster_resource,
       ),
@@ -366,9 +382,11 @@ def ConstructRestoreRequestFromArgsAlpha(
       alloydb_messages, args
   )
 
-  backup_source, continuous_backup_source = (
+  backup_source, backup_dr_backup_source, continuous_backup_source = (
       _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-          alloydb_messages, resource_parser, args
+          alloydb_messages,
+          resource_parser,
+          args,
       )
   )
   cluster_resource.tags = flags.GetTagsFromArgs(
@@ -379,6 +397,7 @@ def ConstructRestoreRequestFromArgsAlpha(
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
           backupSource=backup_source,
           continuousBackupSource=continuous_backup_source,
+          backupdrBackupSource=backup_dr_backup_source,
           clusterId=args.cluster,
           cluster=cluster_resource,
       ),
@@ -402,9 +421,11 @@ def ConstructRestoreRequestFromArgsBeta(
       alloydb_messages, args
   )
 
-  backup_source, continuous_backup_source = (
+  backup_source, backup_dr_backup_source, continuous_backup_source = (
       _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-          alloydb_messages, resource_parser, args
+          alloydb_messages,
+          resource_parser,
+          args,
       )
   )
 
@@ -413,6 +434,7 @@ def ConstructRestoreRequestFromArgsBeta(
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
           backupSource=backup_source,
           continuousBackupSource=continuous_backup_source,
+          backupdrBackupSource=backup_dr_backup_source,
           clusterId=args.cluster,
           cluster=cluster_resource,
       ),

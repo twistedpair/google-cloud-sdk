@@ -1042,6 +1042,20 @@ class GoogleIamV3alphaPrincipalAccessBoundaryPolicyRule(_messages.Message):
   resources = _messages.StringField(3, repeated=True)
 
 
+class GoogleIamV3alphaSearchAccessPolicyBindingsResponse(_messages.Message):
+  r"""Response message for SearchAccessPolicyBindings rpc.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    policyBindings: The policy bindings that reference the specified policy.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policyBindings = _messages.MessageField('GoogleIamV3alphaPolicyBinding', 2, repeated=True)
+
+
 class GoogleIamV3alphaSearchApplicablePoliciesResponse(_messages.Message):
   r"""Response message for SearchApplicablePolicies
 
@@ -1694,6 +1708,32 @@ class IamFoldersLocationsAccessPoliciesPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class IamFoldersLocationsAccessPoliciesSearchPolicyBindingsRequest(_messages.Message):
+  r"""A IamFoldersLocationsAccessPoliciesSearchPolicyBindingsRequest object.
+
+  Fields:
+    name: Required. The name of the access policy. Format: `organizations/{org
+      anization_id}/locations/{location}/accessPolicies/{access_policy_id}` `f
+      olders/{folder_id}/locations/{location}/accessPolicies/{access_policy_id
+      }` `projects/{project_id}/locations/{location}/accessPolicies/{access_po
+      licy_id}` `projects/{project_number}/locations/{location}/accessPolicies
+      /{access_policy_id}`
+    pageSize: Optional. The maximum number of policy bindings to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      policy bindings will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `SearchAccessPolicyBindingsRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SearchAccessPolicyBindingsRequest` must match the call that provided
+      the page token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class IamFoldersLocationsOperationsGetRequest(_messages.Message):
   r"""A IamFoldersLocationsOperationsGetRequest object.
 
@@ -1773,11 +1813,10 @@ class IamFoldersLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | `target:ex*` | The binding target's name starts with
-      "ex". | | `target:example` | The binding target's name is `example`. | |
-      `policy:example` | The binding policy's name is `example`. |
+      are: + `target` + `policy` Some examples of filter queries: *
+      `target:ex*`: The binding target's name starts with "ex". *
+      `target:example`: The binding target's name is `example`. *
+      `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -1975,6 +2014,33 @@ class IamOrganizationsLocationsAccessPoliciesPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class IamOrganizationsLocationsAccessPoliciesSearchPolicyBindingsRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsAccessPoliciesSearchPolicyBindingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the access policy. Format: `organizations/{org
+      anization_id}/locations/{location}/accessPolicies/{access_policy_id}` `f
+      olders/{folder_id}/locations/{location}/accessPolicies/{access_policy_id
+      }` `projects/{project_id}/locations/{location}/accessPolicies/{access_po
+      licy_id}` `projects/{project_number}/locations/{location}/accessPolicies
+      /{access_policy_id}`
+    pageSize: Optional. The maximum number of policy bindings to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      policy bindings will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `SearchAccessPolicyBindingsRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SearchAccessPolicyBindingsRequest` must match the call that provided
+      the page token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class IamOrganizationsLocationsOperationsGetRequest(_messages.Message):
   r"""A IamOrganizationsLocationsOperationsGetRequest object.
 
@@ -2054,11 +2120,10 @@ class IamOrganizationsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | `target:ex*` | The binding target's name starts with
-      "ex". | | `target:example` | The binding target's name is `example`. | |
-      `policy:example` | The binding policy's name is `example`. |
+      are: + `target` + `policy` Some examples of filter queries: *
+      `target:ex*`: The binding target's name starts with "ex". *
+      `target:example`: The binding target's name is `example`. *
+      `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -2389,6 +2454,32 @@ class IamProjectsLocationsAccessPoliciesPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class IamProjectsLocationsAccessPoliciesSearchPolicyBindingsRequest(_messages.Message):
+  r"""A IamProjectsLocationsAccessPoliciesSearchPolicyBindingsRequest object.
+
+  Fields:
+    name: Required. The name of the access policy. Format: `organizations/{org
+      anization_id}/locations/{location}/accessPolicies/{access_policy_id}` `f
+      olders/{folder_id}/locations/{location}/accessPolicies/{access_policy_id
+      }` `projects/{project_id}/locations/{location}/accessPolicies/{access_po
+      licy_id}` `projects/{project_number}/locations/{location}/accessPolicies
+      /{access_policy_id}`
+    pageSize: Optional. The maximum number of policy bindings to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      policy bindings will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `SearchAccessPolicyBindingsRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SearchAccessPolicyBindingsRequest` must match the call that provided
+      the page token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class IamProjectsLocationsOperationsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsOperationsGetRequest object.
 
@@ -2468,11 +2559,10 @@ class IamProjectsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | `target:ex*` | The binding target's name starts with
-      "ex". | | `target:example` | The binding target's name is `example`. | |
-      `policy:example` | The binding policy's name is `example`. |
+      are: + `target` + `policy` Some examples of filter queries: *
+      `target:ex*`: The binding target's name starts with "ex". *
+      `target:example`: The binding target's name is `example`. *
+      `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values

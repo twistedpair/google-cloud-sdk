@@ -531,9 +531,10 @@ def AddEnableCdn(parser):
       help="""\
       Enable or disable Cloud CDN for the backend service. Only available for
       backend services with --load-balancing-scheme=EXTERNAL that use a
-      --protocol of HTTP, HTTPS, or HTTP2. Cloud CDN caches HTTP responses at
-      the edge of Google's network. Cloud CDN is disabled by default.
-      """)
+      --protocol of HTTP, HTTPS, HTTP2 or H2C. Cloud CDN caches HTTP responses
+      at the edge of Google's network. Cloud CDN is disabled by default.
+      """,
+  )
 
 
 def AddCacheKeyIncludeProtocol(parser, default):
@@ -859,24 +860,22 @@ def AddSessionAffinity(
   if not target_pools:
     choices.update({
         'GENERATED_COOKIE': (
-            '(Applicable if `--load-balancing-scheme` is '
-            '`INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, `EXTERNAL_MANAGED`, '
-            'or `EXTERNAL`) '
-            'If the `--load-balancing-scheme` is `EXTERNAL` or '
-            '`EXTERNAL_MANAGED`, routes requests to backend VMs or endpoints '
-            'in a NEG, based on the contents of the `GCLB` cookie set by the '
-            'load balancer. Only applicable when `--protocol` is HTTP, HTTPS, '
-            'or HTTP2. If the `--load-balancing-scheme` is `INTERNAL_MANAGED` '
-            'or `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
-            'endpoints in a NEG, based on the contents of the `GCILB` cookie '
-            'set by the proxy. (If no cookie is present, the proxy '
-            'chooses a backend VM or endpoint and sends a `Set-Cookie` '
-            'response for future requests.) If the `--load-balancing-scheme` '
-            'is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
-            'endpoints in a NEG, based on the contents of a cookie set by '
-            'Traffic Director. This session affinity is only valid if the '
-            'load balancing locality policy is either `RING_HASH` or '
-            '`MAGLEV`.'
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`,'
+            ' `INTERNAL_SELF_MANAGED`, `EXTERNAL_MANAGED`, or `EXTERNAL`) If'
+            ' the `--load-balancing-scheme` is `EXTERNAL` or'
+            ' `EXTERNAL_MANAGED`, routes requests to backend VMs or endpoints'
+            ' in a NEG, based on the contents of the `GCLB` cookie set by the'
+            ' load balancer. Only applicable when `--protocol` is HTTP,'
+            ' HTTPS,HTTP2 or H2C. If the `--load-balancing-scheme` is'
+            ' `INTERNAL_MANAGED` or `INTERNAL_SELF_MANAGED`, routes requests to'
+            ' backend VMs or endpoints in a NEG, based on the contents of the'
+            ' `GCILB` cookie set by the proxy. (If no cookie is present, the'
+            ' proxy chooses a backend VM or endpoint and sends a `Set-Cookie`'
+            ' response for future requests.) If the `--load-balancing-scheme`'
+            ' is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or'
+            ' endpoints in a NEG, based on the contents of a cookie set by'
+            ' Traffic Director. This session affinity is only valid if the load'
+            ' balancing locality policy is either `RING_HASH` or `MAGLEV`.'
         ),
         'CLIENT_IP_PROTO': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
@@ -1017,14 +1016,14 @@ def AddTimeout(parser, default='30s'):
       external passthrough Network Load Balancers (``global'' not set and
       ``load-balancing-scheme'' set to EXTERNAL), ``timeout'' is ignored.
 
-      If the ``protocol'' is HTTP, HTTPS, or HTTP2, ``timeout'' is a
+      If the ``protocol'' is HTTP, HTTPS, HTTP2 or H2C, ``timeout'' is a
       request/response timeout for HTTP(S) traffic, meaning the amount
       of time that the load balancer waits for a backend to return a
       full response to a request. If WebSockets traffic is supported, the
       ``timeout'' parameter sets the maximum amount of time that a
       WebSocket can be open (idle or not).
 
-      For example, for HTTP, HTTPS, or HTTP2 traffic, specifying a ``timeout''
+      For example, for HTTP, HTTPS, HTTP2 or H2C traffic, specifying a ``timeout''
       of 10s means that backends have 10 seconds to respond to the load
       balancer's requests. The load balancer retries the HTTP GET request one
       time if the backend closes the connection or times out before sending
@@ -1036,7 +1035,8 @@ def AddTimeout(parser, default='30s'):
       If the ``protocol'' is SSL or TCP, ``timeout'' is an idle timeout.
 
       The full range of timeout values allowed is 1 - 2,147,483,647 seconds.
-      """)
+      """,
+  )
 
 
 def AddPortName(parser):
@@ -1077,7 +1077,7 @@ def AddProtocol(parser, default='HTTP'):
     default: The default protocol if this flag is unspecified.
   """
   ilb_protocols = 'TCP, UDP, UNSPECIFIED'
-  td_protocols = ('HTTP, HTTPS, HTTP2, GRPC')
+  td_protocols = 'HTTP, HTTPS, HTTP2, GRPC, H2C (beta only)'
   netlb_protocols = 'TCP, UDP, UNSPECIFIED'
   parser.add_argument(
       '--protocol',
@@ -1093,7 +1093,8 @@ def AddProtocol(parser, default='HTTP'):
       Director), the protocol must be one of: {1}.
 
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal Application
-      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2.
+      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, H2C
+      (beta only).
 
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal proxy
       Network Load Balancer), the protocol must be only TCP.
@@ -1109,7 +1110,7 @@ def AddProtocol(parser, default='HTTP'):
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Global external Application Load Balancer and regional external
       Application Load Balancer), the protocol must be
-      one of: HTTP, HTTPS, HTTP2.
+      one of: HTTP, HTTPS, HTTP2, H2C (beta only).
 
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Global external proxy Network Load Balancer), the protocol
@@ -1118,7 +1119,8 @@ def AddProtocol(parser, default='HTTP'):
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Regional external proxy Network Load Balancer), the protocol
       must be only TCP.
-      """.format(ilb_protocols, td_protocols, netlb_protocols))
+      """.format(ilb_protocols, td_protocols, netlb_protocols),
+  )
 
 
 def AddConnectionDrainOnFailover(parser, default):

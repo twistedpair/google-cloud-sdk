@@ -81,6 +81,7 @@ def GetFullFindingName(args, version):
 
 
 def GetFullSourceName(args, version):
+
   """Returns relative resource name for a source from --source argument.
 
   Args:
@@ -93,6 +94,7 @@ def GetFullSourceName(args, version):
     if no location is specified in argument: sources/{source_id}
     if a location is specified: sources/{source_id}/locations/{location_id}
   """
+
   resource_pattern = re.compile(
       "(organizations|projects|folders)/.*/sources/[0-9-]+"
   )
@@ -117,7 +119,8 @@ def GetFullSourceName(args, version):
       return f"{source}/locations/{location}"
     return source
 
-  if hasattr(args, "finding") and id_pattern.match(args.source):
+  if (id_pattern.match(args.source) and
+      (hasattr(args, "finding") or hasattr(args, "parent"))):
     source = f"{scc_util.GetFindingsParentFromPositionalArguments(args)}/sources/{args.source}"
     if version == "v2":
       return f"{source}/locations/{location}"

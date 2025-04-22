@@ -70,9 +70,9 @@ class ObjectsClient(object):
     """
     source_object_identifier = self.messages.SourceObjectIdentifier(
         database=args.database,
-        type=self.messages.SourceObjectIdentifier.TypeValueValuesEnum.lookup_by_name(
-            'DATABASE'
-        ),
+        schema=args.schema,
+        table=args.table,
+        type=self.GetType(args)
     )
 
     lookup_req_type = (
@@ -85,3 +85,13 @@ class ObjectsClient(object):
         parent=migration_job_ref.RelativeName(),
     )
     return self._service.Lookup(lookup_req)
+
+  def GetType(self, args):
+    if  args.IsKnownAndSpecified('type'):
+      return self.messages.SourceObjectIdentifier.TypeValueValuesEnum.lookup_by_name(
+          args.type
+          )
+    return (self.messages.SourceObjectIdentifier.TypeValueValuesEnum
+            .lookup_by_name('DATABASE'))
+
+

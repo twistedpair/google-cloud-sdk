@@ -33,6 +33,16 @@ class InvalidParentError(Error):
     )
 
 
+class InvalidParentFlagError(Error):
+  """An error representing an invalid CRM parent."""
+
+  def __init__(self, bad_parent_arg: str):
+    super().__init__(
+        f'"{bad_parent_arg}" is not a valid parent. The parent name should'
+        ' begin with "organizations/"or "projects/".'
+    )
+
+
 class InvalidServiceNameError(Error):
   """An error representing an invalid service name."""
 

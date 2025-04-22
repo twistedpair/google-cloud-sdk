@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.api_lib.backupdr.restore_util import ComputeUtil
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.backupdr import util as command_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.backupdr.v1 import backupdr_v1_messages
@@ -71,6 +72,19 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "InstanceKmsKey",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
+
+
+class DiskRestoreConfig(util.RestrictedDict):
+  """Restore configuration."""
+
+  def __init__(self, *args, **kwargs):
+    supported_flags = [
+        "Name",
+        "TargetZone",
+        "TargetRegion",
+        "TargetProject",
+    ]
+    super(DiskRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
 
 class BackupsClient(util.BackupDrClientBase):
@@ -394,10 +408,55 @@ class BackupsClient(util.BackupDrClientBase):
     )
     return self.service.Restore(request)
 
-  def ParseUpdate(self, enforced_retention):
+  def RestoreDisk(self, resource, restore_config: DiskRestoreConfig):
+    """Restores the given backup.
+
+    Args:
+      resource: The backup to be restored.
+      restore_config: Restore configuration.
+
+    Returns:
+      A long running operation
+    """
+    restore_request = self.messages.RestoreBackupRequest()
+    restore_request.diskRestoreProperties = self.messages.DiskRestoreProperties(
+        name=restore_config["Name"],
+    )
+
+    target_zone = restore_config.get("TargetZone", None)
+    target_region = restore_config.get("TargetRegion", None)
+
+    if target_zone is None and target_region is None:
+      raise exceptions.InvalidArgumentException(
+          "target_zone",
+          "Target zone or target region is required for disk restore",
+      )
+
+    if target_zone is not None and target_region is not None:
+      raise exceptions.InvalidArgumentException(
+          "target_zone",
+          "Both Target zone and target region cannot be specified for disk"
+          " restore",
+      )
+    if target_zone is not None:
+      restore_request.diskTargetEnvironment = (
+          self.messages.DiskTargetEnvironment(
+              zone=restore_config["TargetZone"],
+              project=restore_config["TargetProject"],
+          )
+      )
+
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(
+        name=resource.RelativeName(), restoreBackupRequest=restore_request
+    )
+    return self.service.Restore(request)
+
+  def ParseUpdate(self, enforced_retention, expire_time):
     updated_backup = self.messages.Backup()
-    if enforced_retention != "Nones":
+    if enforced_retention is not None:
       updated_backup.enforcedRetentionEndTime = enforced_retention
+    if expire_time is not None:
+      updated_backup.expireTime = expire_time
     return updated_backup
 
   def Update(self, resource, backup, update_mask):

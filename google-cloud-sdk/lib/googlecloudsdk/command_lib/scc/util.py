@@ -27,7 +27,6 @@ from googlecloudsdk.core import properties
 
 def GetFindingsParentFromPositionalArguments(args):
   """Converts user input to one of: organization, project, or folder."""
-
   id_pattern = re.compile("[0-9]+")
   parent = None
   if hasattr(args, "parent"):
@@ -66,6 +65,10 @@ def GetFindingsParentFromPositionalArguments(args):
         "Could not find Parent argument. Please provide the parent argument."
     )
 
+  if id_pattern.match(parent):
+    # Prepend organizations/ if only number value is provided.
+    parent = "organizations/" + parent
+
   if not (
       parent.startswith("organizations/")
       or parent.startswith("projects/")
@@ -98,6 +101,12 @@ def GetParentFromPositionalArguments(args):
 
   if parent is None and hasattr(args, "organization"):
     parent = args.organization
+
+  if parent is None and hasattr(args, "project"):
+    parent = args.project
+
+  if parent is None and hasattr(args, "folder"):
+    parent = args.folder
 
   if parent is None:
     raise errors.InvalidSCCInputError(

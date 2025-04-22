@@ -267,3 +267,61 @@ def CreateModuleList() -> base.Argument:
       SCREAMING_SNAKE_CASE format (e.g. WEB_UI_ENABLED, API_KEY_NOT_ROTATED).
       A single module name is also valid.""",
   )
+
+
+def CreateFlagForParent(
+    resource_name: str = 'billing metadata', required=False
+) -> base.Argument:
+  """Returns a flag for capturing an org, project name.
+
+  The flag can be provided in one of 2 forms:
+    1. --parent=organizations/<id>, --parent=projects/<id or name>
+    2. One of:
+      * --organizations=<id> or organizations/<id>
+      * --projects=<id or name> or projects/<id or name>
+
+  Args:
+    resource_name: The name of the resource for which the flag is created. The
+      default value is set to 'billing metadata'.
+    required: whether or not this flag is required
+
+  Returns:
+    A base.Argument object.
+  """
+
+  root = base.ArgumentGroup(mutex=True, required=required)
+
+  root.AddArgument(
+      base.Argument(
+          '--parent',
+          required=False,
+          help=textwrap.dedent(
+              """Parent associated with the {}. Can be one of
+                organizations/<id>, projects/<id or name>""".format(
+                  resource_name
+              )
+          ),
+      )
+  )
+
+  root.AddArgument(
+      base.Argument(
+          '--organization',
+          required=False,
+          metavar='ORGANIZATION_ID',
+          completer=completers.OrganizationCompleter,
+          help='Organization associated with the {}.'.format(resource_name),
+      )
+  )
+
+  root.AddArgument(
+      base.Argument(
+          '--project',
+          required=False,
+          metavar='PROJECT_ID_OR_NUMBER',
+          completer=completers.ProjectCompleter,
+          help='Project associated with the {}.'.format(resource_name),
+      )
+  )
+
+  return root

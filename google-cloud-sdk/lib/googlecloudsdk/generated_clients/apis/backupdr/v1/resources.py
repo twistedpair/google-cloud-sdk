@@ -63,6 +63,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKUPPLANS_REVISIONS = (
+      'projects.locations.backupPlans.revisions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupPlans/'
+              '{backupPlansId}/revisions/{revisionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_BACKUPVAULTS = (
       'projects.locations.backupVaults',
       '{+name}',

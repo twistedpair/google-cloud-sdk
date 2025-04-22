@@ -40,6 +40,7 @@ class BackupdrV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_backupPlanAssociations = self.ProjectsLocationsBackupPlanAssociationsService(self)
+    self.projects_locations_backupPlans_revisions = self.ProjectsLocationsBackupPlansRevisionsService(self)
     self.projects_locations_backupPlans = self.ProjectsLocationsBackupPlansService(self)
     self.projects_locations_backupVaults_dataSources_backups = self.ProjectsLocationsBackupVaultsDataSourcesBackupsService(self)
     self.projects_locations_backupVaults_dataSources = self.ProjectsLocationsBackupVaultsDataSourcesService(self)
@@ -113,6 +114,33 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchForResourceTypeOld(self, request, global_params=None):
+      r"""List BackupPlanAssociations for a given resource type. DEPRECATED.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOldRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchBackupPlanAssociationsForResourceTypeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchForResourceTypeOld')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchForResourceTypeOld.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations:fetchForResourceTypeOld',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlanAssociations.fetchForResourceTypeOld',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'resourceType'],
+        relative_path='v1/{+parent}/backupPlanAssociations:fetchForResourceTypeOld',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOldRequest',
+        response_type_name='FetchBackupPlanAssociationsForResourceTypeResponse',
         supports_download=False,
     )
 
@@ -221,6 +249,70 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='triggerBackupRequest',
         request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupPlansRevisionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupPlans_revisions resource."""
+
+    _NAME = 'projects_locations_backupPlans_revisions'
+
+    def __init__(self, client):
+      super(BackupdrV1.ProjectsLocationsBackupPlansRevisionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single BackupPlanRevision.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansRevisionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupPlanRevision) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/revisions/{revisionsId}',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlans.revisions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlansRevisionsGetRequest',
+        response_type_name='BackupPlanRevision',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BackupPlanRevisions in a given project and location.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansRevisionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupPlanRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/revisions',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlans.revisions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/revisions',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlansRevisionsListRequest',
+        response_type_name='ListBackupPlanRevisionsResponse',
         supports_download=False,
     )
 
@@ -339,6 +431,33 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupPlansListRequest',
         response_type_name='ListBackupPlansResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a BackupPlan.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}',
+        http_method='PATCH',
+        method_id='backupdr.projects.locations.backupPlans.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='backupPlan',
+        request_type_name='BackupdrProjectsLocationsBackupPlansPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

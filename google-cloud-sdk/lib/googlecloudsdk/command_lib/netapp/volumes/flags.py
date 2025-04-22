@@ -49,7 +49,8 @@ def AddVolumeAssociatedStoragePoolArg(parser, required=True):
       flags.GetStoragePoolResourceSpec(),
       'The Storage Pool to associate with Volume.',
       required=required,
-      flag_name_overrides={'location': ''}).AddToParser(parser)
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)
 
 
 def AddVolumeNetworkArg(parser, required=True):
@@ -79,7 +80,8 @@ def AddVolumeNetworkArg(parser, required=True):
       '--network',
       type=arg_parsers.ArgDict(spec=network_arg_spec, required_keys=['name']),
       required=required,
-      help=network_help)
+      help=network_help,
+  )
 
 
 def GetVolumeProtocolEnumFromArg(choice, messages):
@@ -93,8 +95,8 @@ def GetVolumeProtocolEnumFromArg(choice, messages):
     the protocol enum
   """
   return arg_utils.ChoiceToEnum(
-      choice=choice,
-      enum_type=messages.Volume.ProtocolsValueListEntryValuesEnum)
+      choice=choice, enum_type=messages.Volume.ProtocolsValueListEntryValuesEnum
+  )
 
 
 def AddVolumeProtocolsArg(parser, required=True):
@@ -106,7 +108,8 @@ def AddVolumeProtocolsArg(parser, required=True):
       metavar='PROTOCOL',
       help="""Type of File System protocols for the Cloud NetApp Files Volume. \
 Valid component values are:
-            `NFSV3`, `NFSV4`, `SMB`.""")
+            `NFSV3`, `NFSV4`, `SMB`.""",
+  )
 
 
 def AddVolumeShareNameArg(parser, required=True):
@@ -115,7 +118,8 @@ def AddVolumeShareNameArg(parser, required=True):
       '--share-name',
       type=str,
       required=required,
-      help="""Share name of the Mount path clients will use.""")
+      help="""Share name of the Mount path clients will use.""",
+  )
 
 
 def AddVolumeExportPolicyArg(parser):
@@ -125,50 +129,33 @@ def AddVolumeExportPolicyArg(parser):
     parser: argparse parser.
   """
   export_policy_arg_spec = {
-      'allowed-clients':
-          str,
-      'has-root-access':
-          str,
-      'access-type':
-          str,
-      'kerberos-5-read-only':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
-      'kerberos-5-read-write':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
-      'kerberos-5i-read-only':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
-      'kerberos-5i-read-write':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
-      'kerberos-5p-read-write':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
-      'kerberos-5p-read-only':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
-      'nfsv3':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey),
-      'nfsv4':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey),
+      'allowed-clients': str,
+      'has-root-access': str,
+      'access-type': str,
+      'kerberos-5-read-only': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'kerberos-5-read-write': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'kerberos-5i-read-only': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'kerberos-5i-read-write': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'kerberos-5p-read-write': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'kerberos-5p-read-only': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'nfsv3': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'nfsv4': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
   }
   export_policy_help = """\
         Export Policy of a Cloud NetApp Files Volume.
@@ -187,7 +174,8 @@ def AddVolumeExportPolicyArg(parser):
       '--export-policy',
       type=arg_parsers.ArgDict(spec=export_policy_arg_spec),
       action='append',
-      help=export_policy_help)
+      help=export_policy_help,
+  )
 
 
 def AddVolumeUnixPermissionsArg(parser):
@@ -196,7 +184,8 @@ def AddVolumeUnixPermissionsArg(parser):
       '--unix-permissions',
       type=str,
       help="""Unix permissions the mount point will be created with. \
-Unix permissions are only applicable with NFS protocol only""")
+Unix permissions are only applicable with NFS protocol only""",
+  )
 
 
 def GetVolumeSmbSettingsEnumFromArg(choice, messages):
@@ -211,7 +200,8 @@ def GetVolumeSmbSettingsEnumFromArg(choice, messages):
   """
   return arg_utils.ChoiceToEnum(
       choice=choice,
-      enum_type=messages.Volume.SmbSettingsValueListEntryValuesEnum)
+      enum_type=messages.Volume.SmbSettingsValueListEntryValuesEnum,
+  )
 
 
 def AddVolumeSmbSettingsArg(parser):
@@ -225,7 +215,8 @@ for a Cloud NetApp Files Volume. \
 Valid component values are:
   `ENCRYPT_DATA`, `BROWSABLE`, `CHANGE_NOTIFY`, `NON_BROWSABLE`,
   `OPLOCKS`, `SHOW_SNAPSHOT`, `SHOW_PREVIOUS_VERSIONS`,
-  `ACCESS_BASED_ENUMERATION`, `CONTINUOUSLY_AVAILABLE`.""")
+  `ACCESS_BASED_ENUMERATION`, `CONTINUOUSLY_AVAILABLE`.""",
+  )
 
 
 def AddVolumeHourlySnapshotArg(parser):
@@ -240,7 +231,8 @@ def AddVolumeHourlySnapshotArg(parser):
   parser.add_argument(
       '--snapshot-hourly',
       type=arg_parsers.ArgDict(spec=hourly_snapshot_arg_spec),
-      help=hourly_snapshot_help)
+      help=hourly_snapshot_help,
+  )
 
 
 def AddVolumeDailySnapshotArg(parser):
@@ -256,7 +248,8 @@ def AddVolumeDailySnapshotArg(parser):
   parser.add_argument(
       '--snapshot-daily',
       type=arg_parsers.ArgDict(spec=daily_snapshot_arg_spec),
-      help=daily_snapshot_help)
+      help=daily_snapshot_help,
+  )
 
 
 def AddVolumeWeeklySnapshotArg(parser):
@@ -265,7 +258,7 @@ def AddVolumeWeeklySnapshotArg(parser):
       'snapshots-to-keep': float,
       'minute': float,
       'hour': float,
-      'day': str
+      'day': str,
   }
   weekly_snapshot_help = """
   Make a snapshot every week e.g. at Monday 04:00, Wednesday 05:20,
@@ -274,7 +267,8 @@ def AddVolumeWeeklySnapshotArg(parser):
   parser.add_argument(
       '--snapshot-weekly',
       type=arg_parsers.ArgDict(spec=weekly_snapshot_arg_spec),
-      help=weekly_snapshot_help)
+      help=weekly_snapshot_help,
+  )
 
 
 def AddVolumeMonthlySnapshotArg(parser):
@@ -283,7 +277,7 @@ def AddVolumeMonthlySnapshotArg(parser):
       'snapshots-to-keep': float,
       'minute': float,
       'hour': float,
-      'day': str
+      'day': str,
   }
   monthly_snapshot_help = """
   Make a snapshot once a month e.g. at 2nd 04:00, 7th 05:20, 24th 23:50
@@ -314,12 +308,14 @@ def AddVolumeSnapshotDirectoryArg(parser):
   parser.add_argument(
       '--snapshot-directory',
       type=arg_parsers.ArgBoolean(
-          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
       default='true',
       help="""Snapshot Directory if enabled (true) makes the Volume
             contain a read-only .snapshot directory which provides access
             to each of the volume's snapshots
-          """)
+          """,
+  )
 
 
 def GetVolumeSecurityStyleEnumFromArg(choice, messages):
@@ -333,24 +329,24 @@ def GetVolumeSecurityStyleEnumFromArg(choice, messages):
     The choice arg.
   """
   return arg_utils.ChoiceToEnum(
-      choice=choice,
-      enum_type=messages.Volume.SecurityStyleValueValuesEnum)
+      choice=choice, enum_type=messages.Volume.SecurityStyleValueValuesEnum
+  )
 
 
 def AddVolumeSecurityStyleArg(parser, messages):
   """Adds the --security-style arg to the arg parser."""
-  security_style_arg = (
-      arg_utils.ChoiceEnumMapper(
-          '--security-style',
-          messages.Volume.SecurityStyleValueValuesEnum,
-          help_str="""The security style of the Volume. This can either be
+  security_style_arg = arg_utils.ChoiceEnumMapper(
+      '--security-style',
+      messages.Volume.SecurityStyleValueValuesEnum,
+      help_str="""The security style of the Volume. This can either be
           UNIX or NTFS.
         """,
-          custom_mappings={
-              'UNIX': ('unix', """UNIX security style for Volume"""),
-              'NTFS': ('ntfs', """NTFS security style for Volume."""),
-          },
-          default='SECURITY_STYLE_UNSPECIFIED'))
+      custom_mappings={
+          'UNIX': ('unix', """UNIX security style for Volume"""),
+          'NTFS': ('ntfs', """NTFS security style for Volume."""),
+      },
+      default='SECURITY_STYLE_UNSPECIFIED',
+  )
   security_style_arg.choice_arg.AddToParser(parser)
 
 
@@ -359,8 +355,9 @@ def AddVolumeEnableKerberosArg(parser):
   parser.add_argument(
       '--enable-kerberos',
       type=arg_parsers.ArgBoolean(
-          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
-      help="""Boolean flag indicating whether Volume is a kerberos Volume or not"""
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Volume is a kerberos Volume or not""",
   )
 
 
@@ -369,8 +366,9 @@ def AddVolumeEnableLdapArg(parser):
   parser.add_argument(
       '--enable-ldap',
       type=arg_parsers.ArgBoolean(
-          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
-      help="""Boolean flag indicating whether Volume is a NFS LDAP Volume or not"""
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Volume is a NFS LDAP Volume or not""",
   )
 
 
@@ -379,7 +377,7 @@ def AddVolumeForceArg(parser):
   parser.add_argument(
       '--force',
       action='store_true',
-      help="""Forces the deletion of a volume and its child resources, such as snapshots."""
+      help="""Forces the deletion of a volume and its child resources, such as snapshots.""",
   )
 
 
@@ -389,10 +387,9 @@ def AddVolumeRevertSnapshotArg(parser, required=True):
       '--snapshot',
       flags.GetSnapshotResourceSpec(source_snapshot_op=True, positional=False),
       required=required,
-      flag_name_overrides={'location': '',
-                           'volume': ''},
-      group_help='The Snapshot to revert the Volume back to.').AddToParser(
-          parser)
+      flag_name_overrides={'location': '', 'volume': ''},
+      group_help='The Snapshot to revert the Volume back to.',
+  ).AddToParser(parser)
 
 
 def AddVolumeSourceSnapshotArg(parser):
@@ -400,10 +397,9 @@ def AddVolumeSourceSnapshotArg(parser):
   concept_parsers.ConceptParser.ForResource(
       '--source-snapshot',
       flags.GetSnapshotResourceSpec(source_snapshot_op=True, positional=False),
-      flag_name_overrides={'location': '',
-                           'volume': ''},
-      group_help='The source Snapshot to create the Volume from.').AddToParser(
-          parser)
+      flag_name_overrides={'location': '', 'volume': ''},
+      group_help='The source Snapshot to create the Volume from.',
+  ).AddToParser(parser)
 
 
 def AddVolumeSourceBackupArg(parser):
@@ -428,7 +424,8 @@ def GetVolumeRestrictedActionsEnumFromArg(choice, messages):
   """
   return arg_utils.ChoiceToEnum(
       choice=choice,
-      enum_type=messages.Volume.RestrictedActionsValueListEntryValuesEnum)
+      enum_type=messages.Volume.RestrictedActionsValueListEntryValuesEnum,
+  )
 
 
 def AddVolumeRestrictedActionsArg(parser):
@@ -439,24 +436,20 @@ def AddVolumeRestrictedActionsArg(parser):
       metavar='RESTRICTED_ACTION',
       help="""Actions to be restricted for a volume. \
 Valid restricted action options are:
-          'DELETE'."""
+          'DELETE'.""",
   )
 
 
 def AddVolumeBackupConfigArg(parser):
   """Adds the --backup-config arg to the arg parser."""
   backup_config_arg_spec = {
-      'backup-policies':
-          arg_parsers.ArgList(min_length=1,
-                              element_type=str,
-                              custom_delim_char='#'),
-      'backup-vault':
-          str,
-      'enable-scheduled-backups':
-          arg_parsers.ArgBoolean(
-              truthy_strings=netapp_util.truthy,
-              falsey_strings=netapp_util.falsey
-          ),
+      'backup-policies': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'
+      ),
+      'backup-vault': str,
+      'enable-scheduled-backups': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
   }
   backup_config_help = """\
 Backup Config contains backup related config on a volume.
@@ -473,7 +466,8 @@ whether or not scheduled backups are enabled on the volume.
   parser.add_argument(
       '--backup-config',
       type=arg_parsers.ArgDict(spec=backup_config_arg_spec),
-      help=backup_config_help)
+      help=backup_config_help,
+  )
 
 
 def AddVolumeLargeCapacityArg(parser):
@@ -481,8 +475,9 @@ def AddVolumeLargeCapacityArg(parser):
   parser.add_argument(
       '--large-capacity',
       type=arg_parsers.ArgBoolean(
-          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
-      help="""Boolean flag indicating whether Volume is a large capacity Volume or not"""
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Volume is a large capacity Volume or not""",
   )
 
 
@@ -491,8 +486,9 @@ def AddVolumeMultipleEndpointsArg(parser):
   parser.add_argument(
       '--multiple-endpoints',
       type=arg_parsers.ArgBoolean(
-          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
-      help="""Boolean flag indicating whether Volume is a multiple endpoints Volume or not"""
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Volume is a multiple endpoints Volume or not""",
   )
 
 
@@ -518,11 +514,11 @@ can be range from 7-183. Default is 31.
       '--tiering-policy',
       type=arg_parsers.ArgDict(spec=tiering_policy_arg_spec),
       metavar='tier-action=ENABLED|PAUSED',
-      help=tiering_policy_help
+      help=tiering_policy_help,
   )
 
 
-def AddVolumeHybridReplicationParametersArg(parser, hidden=False):
+def AddVolumeHybridReplicationParametersArg(parser, messages, hidden=False):
   """Adds the --hybrid-replication-parameters arg to the arg parser."""
   hybrid_replication_parameters_arg_spec = {
       'replication': str,
@@ -534,6 +530,13 @@ def AddVolumeHybridReplicationParametersArg(parser, hidden=False):
       ),
       'cluster-location': str,
       'description': str,
+      'replication-schedule': (
+          messages.HybridReplicationParameters.ReplicationScheduleValueValuesEnum
+      ),
+      'hybrid-replication-type': (
+          messages.HybridReplicationParameters.HybridReplicationTypeValueValuesEnum
+      ),
+      'large-volume-constituent-count': int,
       'labels': arg_parsers.ArgList(
           min_length=1, element_type=str, custom_delim_char='#'
       ),
@@ -549,12 +552,17 @@ def AddVolumeHybridReplicationParametersArg(parser, hidden=False):
       peer-ip-addresses=[PEER-IP-ADDRESS1#PEER-IP-ADDRESS2#...],
       cluster-location=CLUSTER_LOCATION,
       description=DESCRIPTION,
-      labels=[KEY1:VALUE1#KEY2:VALUE2#...]
+      replication-schedule=REPLICATION_SCHEDULE,
+      hybrid-replication-type=HYBRID_REPLICATION_TYPE,
+      large-volume-constituent-count=LARGE_VOLUME_CONSTITUENT_COUNT,
+      labels=[KEY1:VALUE1#KEY2:VALUE2#...],
 
   replication is the desired name for the replication of the volume,
   peer-volume-name is the name of the user's local source volume, peer-cluster-name is the name of the user's local source cluster,
   peer-svm-name is the name of the user's local source vserver svm, peer-ip-addresses is a ampersand-separated(#) list of ip addresses,
-  cluster-location is the name of the source cluster location, description is the description of the replication and
+  cluster-location is the name of the source cluster location, description is the description of the replication,
+  replication-schedule is the schedule of corresponding hybrid replication created, hybrid-replication-type is the hybrid replication type
+  of the corresponding hybrid replication created, large-volume-constituent-count is the number of constituent volumes in the large volume, and
   labels is an hashtag-separated(#) key value pair of labels with key and value separated by colon(:) for the replication.
       """
   parser.add_argument(
@@ -570,9 +578,9 @@ def AddVolumeHybridReplicationParametersArg(parser, hidden=False):
 
 def AddVolumeCreateArgs(parser, release_track):
   """Add args for creating a Volume."""
-  concept_parsers.ConceptParser([
-      flags.GetVolumePresentationSpec('The Volume to create.')
-  ]).AddToParser(parser)
+  concept_parsers.ConceptParser(
+      [flags.GetVolumePresentationSpec('The Volume to create.')]
+  ).AddToParser(parser)
   messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   flags.AddResourceDescriptionArg(parser, 'Volume')
   flags.AddResourceCapacityArg(parser, 'Volume')
@@ -595,29 +603,31 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeRestrictedActionsArg(parser)
   AddVolumeLargeCapacityArg(parser)
   AddVolumeMultipleEndpointsArg(parser)
-  if (release_track == calliope_base.ReleaseTrack.BETA or
-      release_track == calliope_base.ReleaseTrack.GA):
+  if (
+      release_track == calliope_base.ReleaseTrack.BETA
+      or release_track == calliope_base.ReleaseTrack.GA
+  ):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages)
-  AddVolumeHybridReplicationParametersArg(parser)
+  AddVolumeHybridReplicationParametersArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
 
 
 def AddVolumeDeleteArgs(parser):
   """Add args for deleting a Volume."""
-  concept_parsers.ConceptParser([
-      flags.GetVolumePresentationSpec('The Volume to delete.')
-  ]).AddToParser(parser)
+  concept_parsers.ConceptParser(
+      [flags.GetVolumePresentationSpec('The Volume to delete.')]
+  ).AddToParser(parser)
   flags.AddResourceAsyncFlag(parser)
   AddVolumeForceArg(parser)
 
 
 def AddVolumeUpdateArgs(parser, release_track):
   """Add args for updating a Volume."""
-  concept_parsers.ConceptParser([
-      flags.GetVolumePresentationSpec('The Volume to update.')
-  ]).AddToParser(parser)
+  concept_parsers.ConceptParser(
+      [flags.GetVolumePresentationSpec('The Volume to update.')]
+  ).AddToParser(parser)
   messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   flags.AddResourceDescriptionArg(parser, 'Volume')
   flags.AddResourceCapacityArg(parser, 'Volume', required=False)
@@ -638,8 +648,10 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
-  if (release_track == calliope_base.ReleaseTrack.BETA or
-      release_track == calliope_base.ReleaseTrack.GA):
+  if (
+      release_track == calliope_base.ReleaseTrack.BETA
+      or release_track == calliope_base.ReleaseTrack.GA
+  ):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages)

@@ -42,6 +42,7 @@ class CustomModuleType(StrEnum):
   ETD = 'eventThreatDetectionCustomModules'
   EFFECTIVE_ETD = 'effectiveEventThreatDetectionCustomModules'
   EFFECTIVE_SHA = 'effectiveSecurityHealthAnalyticsCustomModules'
+  BILLING_METADATA = 'billingMetadata'
 
 
 SERVICE_RESOURCE_PLURAL_NAME = 'securityCenterServices'

@@ -183,6 +183,30 @@ origin:
 
       Defaults to 5 seconds. The timeout must be a value between 1s and 30s.
 
+  flex_shielding:
+    arg_name: flex-shielding
+    api_field: edgeCacheOrigin.flexShielding
+    choices:
+    - arg_value: "ME_CENTRAL1"
+      enum_value: ME_CENTRAL1
+      help_text: |
+        Origin fetch from near me-central1.
+    - arg_value: "AFRICA_SOUTH1"
+      enum_value: AFRICA_SOUTH1
+      help_text: |
+        Origin fetch from near africa-south1.
+    - arg_value: ""
+      help_text: |
+        Turn off flexible shielding and use the default global origin shielding.
+    ALPHA:
+      processor: googlecloudsdk.command_lib.edge_cache.util:GetFlexShieldingAlpha
+    GA:
+      processor: googlecloudsdk.command_lib.edge_cache.util:GetFlexShieldingGA
+    help_text: |
+      Whenever possible, content will be fetched from origin and cached in or near the specified region. Best effort.
+
+      Defaults to default global origin shielding. You may specify at most one region. An empty flag turns off flex shielding.
+
 keyset:
   description:
     arg_name: description

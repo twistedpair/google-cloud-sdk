@@ -1,0 +1,39 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1 FlexShieldingOptions export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  flexShieldingRegions:
+    description: |-
+      Whenever possible, content will be fetched from origin and cached in or
+      near the specified region. Best effort. You must specify exactly one
+      FlexShieldingRegion.
+    type: array
+    items:
+      type: string
+      enum:
+      - AFRICA_SOUTH1
+      - FLEX_SHIELDING_REGION_UNSPECIFIED
+      - ME_CENTRAL1

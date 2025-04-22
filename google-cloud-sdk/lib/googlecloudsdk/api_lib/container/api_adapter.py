@@ -324,6 +324,10 @@ CONFIDENTIAL_NODE_TYPE_NOT_SUPPORTED = """\
 Invalid type '{type}' for '--confidential-node-type' (must be one of {choices}).
 """
 
+ANONYMOUS_AUTHENTICATION_MODE_NOT_SUPPORTED = """\
+Anonymous authentication mode '{mode}' is not supported.
+"""
+
 DEFAULT_MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -771,7 +775,6 @@ class CreateClusterOptions(object):
       stack_type=None,
       ipv6_access_type=None,
       enable_workload_config_audit=None,
-      pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
       enable_autoprovisioning_surge_upgrade=None,
       enable_autoprovisioning_blue_green_upgrade=None,
@@ -827,6 +830,7 @@ class CreateClusterOptions(object):
       enable_ip_access=None,
       enable_authorized_networks_on_private_endpoint=None,
       patch_update=None,
+      anonymous_authentication_config=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1029,9 +1033,6 @@ class CreateClusterOptions(object):
     self.stack_type = stack_type
     self.ipv6_access_type = ipv6_access_type
     self.enable_workload_config_audit = enable_workload_config_audit
-    self.pod_autoscaling_direct_metrics_opt_in = (
-        pod_autoscaling_direct_metrics_opt_in
-    )
     self.enable_workload_vulnerability_scanning = (
         enable_workload_vulnerability_scanning
     )
@@ -1111,6 +1112,7 @@ class CreateClusterOptions(object):
     self.enable_authorized_networks_on_private_endpoint = (
         enable_authorized_networks_on_private_endpoint
     )
+    self.anonymous_authentication_config = anonymous_authentication_config
     self.patch_update = patch_update
 
 
@@ -1225,7 +1227,6 @@ class UpdateClusterOptions(object):
       disable_dataplane_v2_flow_observability=None,
       dataplane_v2_observability_mode=None,
       enable_workload_config_audit=None,
-      pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
       enable_autoprovisioning_surge_upgrade=None,
       enable_autoprovisioning_blue_green_upgrade=None,
@@ -1282,6 +1283,7 @@ class UpdateClusterOptions(object):
       enable_autopilot_compatibility_auditing=None,
       service_account_signing_keys=None,
       service_account_verification_keys=None,
+      anonymous_authentication_config=None,
       patch_update=None,
   ):
     self.version = version
@@ -1406,9 +1408,6 @@ class UpdateClusterOptions(object):
     )
     self.dataplane_v2_observability_mode = dataplane_v2_observability_mode
     self.enable_workload_config_audit = enable_workload_config_audit
-    self.pod_autoscaling_direct_metrics_opt_in = (
-        pod_autoscaling_direct_metrics_opt_in
-    )
     self.enable_workload_vulnerability_scanning = (
         enable_workload_vulnerability_scanning
     )
@@ -1497,6 +1496,7 @@ class UpdateClusterOptions(object):
     )
     self.service_account_verification_keys = service_account_verification_keys
     self.service_account_signing_keys = service_account_signing_keys
+    self.anonymous_authentication_config = anonymous_authentication_config
     self.patch_update = patch_update
 
 
@@ -2221,29 +2221,32 @@ class APIAdapter(object):
       cluster.subnetwork = options.subnetwork
     if options.addons:
       addons = self._AddonsConfig(
-          disable_ingress=INGRESS not in options.addons
+          disable_ingress=not options.addons.get(INGRESS, False)
           and not options.autopilot,
-          disable_hpa=HPA not in options.addons and not options.autopilot,
-          disable_dashboard=DASHBOARD not in options.addons,
-          disable_network_policy=(NETWORK_POLICY not in options.addons),
-          enable_node_local_dns=(NODELOCALDNS in options.addons or None),
-          enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
-          enable_filestore_csi_driver=(GCPFILESTORECSIDRIVER in options.addons),
-          enable_application_manager=(APPLICATIONMANAGER in options.addons),
-          enable_cloud_build=(CLOUDBUILD in options.addons),
-          enable_backup_restore=(BACKUPRESTORE in options.addons),
-          enable_gcsfuse_csi_driver=(GCSFUSECSIDRIVER in options.addons),
-          enable_stateful_ha=(STATEFULHA in options.addons),
-          enable_parallelstore_csi_driver=(
-              PARALLELSTORECSIDRIVER in options.addons
+          disable_hpa=not options.addons.get(HPA, False)
+          and not options.autopilot,
+          disable_dashboard=not options.addons.get(DASHBOARD, False),
+          disable_network_policy=not options.addons.get(NETWORK_POLICY, False),
+          enable_node_local_dns=options.addons.get(NODELOCALDNS),
+          enable_gcepd_csi_driver=options.addons.get(GCEPDCSIDRIVER, False),
+          enable_filestore_csi_driver=options.addons.get(
+              GCPFILESTORECSIDRIVER, False
           ),
-          enable_high_scale_checkpointing=(
-              HIGHSCALECHECKPOINTING in options.addons
+          enable_application_manager=options.addons.get(
+              APPLICATIONMANAGER, False
           ),
-          enable_lustre_csi_driver=(
-              LUSTRECSIDRIVER in options.addons
+          enable_cloud_build=options.addons.get(CLOUDBUILD, False),
+          enable_backup_restore=options.addons.get(BACKUPRESTORE, False),
+          enable_gcsfuse_csi_driver=options.addons.get(GCSFUSECSIDRIVER, False),
+          enable_stateful_ha=options.addons.get(STATEFULHA, False),
+          enable_parallelstore_csi_driver=options.addons.get(
+              PARALLELSTORECSIDRIVER, False
           ),
-          enable_ray_operator=(RAYOPERATOR in options.addons),
+          enable_high_scale_checkpointing=options.addons.get(
+              HIGHSCALECHECKPOINTING, False
+          ),
+          enable_lustre_csi_driver=options.addons.get(LUSTRECSIDRIVER, False),
+          enable_ray_operator=options.addons.get(RAYOPERATOR, False),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -2737,12 +2740,6 @@ class APIAdapter(object):
             self.messages.ProtectConfig.WorkloadVulnerabilityModeValueValuesEnum.DISABLED
         )
 
-    if options.pod_autoscaling_direct_metrics_opt_in is not None:
-      pod_autoscaling_config = self.messages.PodAutoscaling(
-          directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in
-      )
-      cluster.podAutoscaling = pod_autoscaling_config
-
     if options.hpa_profile is not None:
       if cluster.podAutoscaling is None:
         cluster.podAutoscaling = self.messages.PodAutoscaling()
@@ -3063,6 +3060,11 @@ class APIAdapter(object):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.defaultEnablePrivateNodes = (
           options.enable_private_nodes
+      )
+
+    if options.anonymous_authentication_config is not None:
+      cluster.anonymousAuthenticationConfig = _GetAnonymousAuthenticationConfig(
+          options, self.messages
       )
 
     return cluster
@@ -4602,14 +4604,6 @@ class APIAdapter(object):
           )
       update = self.messages.ClusterUpdate(desiredProtectConfig=protect_config)
 
-    if options.pod_autoscaling_direct_metrics_opt_in is not None:
-      pod_autoscaling_config = self.messages.PodAutoscaling(
-          directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in
-      )
-      update = self.messages.ClusterUpdate(
-          desiredPodAutoscaling=pod_autoscaling_config
-      )
-
     if options.hpa_profile is not None:
       if options.hpa_profile == 'performance':
         pod_autoscaling_config = self.messages.PodAutoscaling(
@@ -5066,6 +5060,21 @@ class APIAdapter(object):
       )
       update = self.messages.ClusterUpdate(
           userManagedKeysConfig=updated_user_managed_keys_config
+      )
+
+    if options.anonymous_authentication_config is not None:
+      modes = {
+          'LIMITED': (
+              self.messages.DesiredAnonymousAuthenticationConfig.ModeValueValuesEnum.LIMITED
+          ),
+          'ENABLED': (
+              self.messages.DesiredAnonymousAuthenticationConfig.ModeValueValuesEnum.ENABLED
+          ),
+      }
+      config = self.messages.DesiredAnonymousAuthenticationConfig()
+      config.mode = modes[options.anonymous_authentication_config]
+      update = self.messages.ClusterUpdate(
+          desiredAnonymousAuthenticationConfig=config
       )
 
     return update
@@ -7132,6 +7141,35 @@ class APIAdapter(object):
     )
     return self.ParseOperation(op.name, cluster_ref.zone)
 
+  def ModifyAnonymousAuthenticationConfig(
+      self, cluster_ref, anonymous_authentication_config
+  ):
+    """Updates the anonymous authentication config on the cluster."""
+    update = self.messages.ClusterUpdate()
+    available_modes = {
+        'LIMITED': (
+            self.messages.AnonymousAuthenticationConfig.ModeValueValuesEnum.LIMITED
+        ),
+        'ENABLED': (
+            self.messages.AnonymousAuthenticationConfig.ModeValueValuesEnum.ENABLED
+        ),
+    }
+    if anonymous_authentication_config is not None:
+      update.desiredAnonymousAuthenticationConfig = (
+          self.messages.AnonymousAuthenticationConfig(
+              mode=available_modes[anonymous_authentication_config]
+          )
+      )
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
   def _GetDesiredControlPlaneEndpointsConfig(self, cluster_ref, options):
     """Gets the DesiredControlPlaneEndpointsConfig from options."""
     cp_endpoints_config = self.messages.ControlPlaneEndpointsConfig()
@@ -8149,6 +8187,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.tier is not None:
       cluster.enterpriseConfig = _GetEnterpriseConfig(options, self.messages)
 
+    if options.anonymous_authentication_config is not None:
+      cluster.anonymousAuthenticationConfig = _GetAnonymousAuthenticationConfig(
+          options, self.messages
+      )
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster,
@@ -8303,6 +8346,27 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredEnterpriseConfig=_GetDesiredEnterpriseConfig(
               options, self.messages
           )
+      )
+
+    if options.anonymous_authentication_config is not None:
+      modes = {
+          'LIMITED': (
+              self.messages.AnonymousAuthenticationConfig.ModeValueValuesEnum.LIMITED
+          ),
+          'ENABLED': (
+              self.messages.AnonymousAuthenticationConfig.ModeValueValuesEnum.ENABLED
+          ),
+      }
+      if options.anonymous_authentication_config not in modes:
+        raise util.Error(
+            ANONYMOUS_AUTHENTICATION_MODE_NOT_SUPPORTED.format(
+                mode=options.anonymous_authentication_config
+            )
+        )
+      anon_auth_config = self.messages.AnonymousAuthenticationConfig()
+      anon_auth_config.mode = modes[options.anonymous_authentication_config]
+      update = self.messages.ClusterUpdate(
+          desiredAnonymousAuthenticationConfig=anon_auth_config
       )
 
     if not update:
@@ -9522,6 +9586,28 @@ def VariantConfigEnumFromString(messages, variant):
         messages.LoggingVariantConfig.VariantValueValuesEnum.MAX_THROUGHPUT
     )
   return variant_config_enum
+
+
+def _GetAnonymousAuthenticationConfig(options, messages):
+  """Configures the AnonymousAuthenticationConfig from options."""
+  config = messages.AnonymousAuthenticationConfig()
+  if options.anonymous_authentication_config is not None:
+    modes = {
+        'LIMITED': (
+            messages.AnonymousAuthenticationConfig.ModeValueValuesEnum.LIMITED
+        ),
+        'ENABLED': (
+            messages.AnonymousAuthenticationConfig.ModeValueValuesEnum.ENABLED
+        ),
+    }
+    if options.anonymous_authentication_config not in modes:
+      raise util.Error(
+          ANONYMOUS_AUTHENTICATION_MODE_NOT_SUPPORTED.format(
+              mode=options.anonymous_authentication_config
+          )
+      )
+    config.mode = modes[options.anonymous_authentication_config]
+  return config
 
 
 def _GetEnterpriseConfig(options, messages):

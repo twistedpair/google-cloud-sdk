@@ -397,6 +397,10 @@ apis:
     v1:
       discovery_doc: cloudkms_v1.json
       default: true
+  cloudlocationfinder:
+    v1alpha:
+      discovery_doc: cloudlocationfinder_v1alpha.json
+      default: true
   cloudnumberregistry:
     v1alpha:
       discovery_doc: cloudnumberregistry_v1alpha.json
@@ -2004,6 +2008,9 @@ canonical_surfaces:
   cloudkms:
     name: cloudkms
     command: kms
+  cloudlocationfinder:
+    name: cloudlocationfinder
+    command: cloudlocationfinder
   cloudnumberregistry:
     name: cloudnumberregistry
     hidden: true

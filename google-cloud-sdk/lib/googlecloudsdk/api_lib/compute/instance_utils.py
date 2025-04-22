@@ -368,9 +368,82 @@ def CreateShieldedInstanceIntegrityPolicyMessage(messages,
   return shielded_instance_integrity_policy
 
 
+def ValidateSvsmConfig(svsm_args, support_snp_svsm):
+  """Validates flags specifying SVSM config.
+
+  Args:
+    svsm_args: The flags specifying SVSM config.
+    support_snp_svsm: Whether SVSM is supported.
+
+  Returns:
+    Nothing. Function acts as a validator, and will raise an exception from
+      within the function if needed.
+
+  Raises:
+    calliope_exceptions.RequiredArgumentException when the flags are not
+      specified or are not valid.
+  """
+
+  if not svsm_args or not support_snp_svsm:
+    return
+
+  tpm_choices = ['EPHEMERAL', 'NO_CC_TPM']
+  snp_irq_choices = ['RESTRICTED', 'UNRESTRICTED']
+
+  tpm = svsm_args.get('tpm', None)
+  snp_irq = svsm_args.get('snp-irq', None)
+  if tpm and tpm not in tpm_choices:
+    raise calliope_exceptions.InvalidArgumentException(
+        '--svsm-config',
+        f'Unexpected confidential TPM type: [{tpm}]. Legal values are '
+        f'[{", ".join(tpm_choices)}].',
+    )
+  if snp_irq and snp_irq not in snp_irq_choices:
+    raise calliope_exceptions.InvalidArgumentException(
+        '--svsm-config',
+        f'Unexpected SEV SNP IRQ mode: [{snp_irq}]. Legal values are '
+        f'[{", ".join(snp_irq_choices)}].',
+    )
+
+
+def CreateConfidentialParavisorConfigMessage(args, messages, support_snp_svsm):
+  """Create confidentialParavisorConfig message for VM."""
+  if (
+      not hasattr(args, 'svsm_config') or not args.IsSpecified('svsm_config')
+      or not support_snp_svsm
+  ):
+    return None
+  ValidateSvsmConfig(args.svsm_config, support_snp_svsm)
+  tpm = (
+      args.svsm_config.get('tpm', 'CONFIDENTIAL_TPM_TYPE_UNSPECIFIED')
+      if args.svsm_config
+      else 'CONFIDENTIAL_TPM_TYPE_UNSPECIFIED'
+  )
+  snp_irq = (
+      args.svsm_config.get('snp-irq', 'SEV_SNP_IRQ_MODE_UNSPECIFIED')
+      if args.svsm_config
+      else 'SEV_SNP_IRQ_MODE_UNSPECIFIED'
+  )
+  confidential_tpm_type = (
+      messages.ConfidentialParavisorConfig.ConfidentialTpmTypeValueValuesEnum(
+          tpm
+      )
+  )
+  sev_snp_irq_mode = (
+      messages.ConfidentialParavisorConfig.SevSnpIrqModeValueValuesEnum(
+          snp_irq
+      )
+  )
+  return messages.ConfidentialParavisorConfig(
+      confidentialTpmType=confidential_tpm_type,
+      sevSnpIrqMode=sev_snp_irq_mode,
+  )
+
+
 def CreateConfidentialInstanceMessage(messages, args,
                                       support_confidential_compute_type,
-                                      support_confidential_compute_type_tdx):
+                                      support_confidential_compute_type_tdx,
+                                      support_snp_svsm):
   """Create confidentialInstanceConfig message for VM."""
   confidential_instance_config_msg = None
   enable_confidential_compute = None
@@ -397,9 +470,27 @@ def CreateConfidentialInstanceMessage(messages, args,
       enable_confidential_compute = None
       confidential_instance_type = None
 
-  if confidential_instance_type is not None:
+  confidential_paravisor_config_msg = CreateConfidentialParavisorConfigMessage(
+      args, messages, support_snp_svsm
+  )
+  if (
+      confidential_instance_type is not None
+      and confidential_paravisor_config_msg is not None
+  ):
     confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
-        confidentialInstanceType=confidential_instance_type)
+        confidentialInstanceType=confidential_instance_type,
+        confidentialParavisorConfig=confidential_paravisor_config_msg,
+    )
+  elif confidential_instance_type is not None:
+    confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
+        confidentialInstanceType=confidential_instance_type
+    )
+  elif confidential_paravisor_config_msg is not None:
+    raise calliope_exceptions.InvalidArgumentException(
+        '--confidential-compute-type',
+        'Confidential compute type must be specified when using '
+        '--svsm-config.',
+    )
   elif enable_confidential_compute is not None:
     confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
         enableConfidentialCompute=enable_confidential_compute

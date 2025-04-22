@@ -351,3 +351,75 @@ def GetModuleListFromArgs(args) -> {str}:
   modules_set = {module.strip() for module in modules_list}
 
   return modules_set
+
+
+def GetModuleNamePathFromArgs(
+    args, module_type: constants.CustomModuleType
+) -> str:
+  """Returns the specified module name path from args if it exists.
+
+  Args:
+    args: command line args.
+    module_type: the module type (see
+      googlecloudsdk.command_lib.scc.manage.constants)
+
+  Returns:
+    The relative path. e.g.
+    'organizations/1234/locations/global/{module_type}',
+    'projects/foo/locations/global/{module_type}'.
+  """
+  if args.parent:
+    return (
+        f'{_ParseParentFlag(args.parent).RelativeName()}/locations/global/'
+        f'{module_type}'
+    )
+
+  return (
+      f'{_GetParentResourceFromArg(args).RelativeName()}/locations/global/'
+      f'{module_type}'
+  )
+
+
+def _ParseParentFlag(parent: str) -> str:
+  """Extracts parent name from {organizations|projects}/<id>.
+
+  Args:
+    parent: The parent string to parse.
+
+  Returns:
+    The relative path of the parent.
+
+  Raises:
+    InvalidParentFlagError: The provided parent string is invalid.
+  """
+
+  if parent.startswith('organizations/'):
+    return resources.REGISTRY.Parse(
+        parent, collection='cloudresourcemanager.organizations'
+    )
+  if parent.startswith('projects/'):
+    return resources.REGISTRY.Parse(
+        parent,
+        collection='cloudresourcemanager.projects',
+    )
+
+  raise errors.InvalidParentFlagError(parent)
+
+
+def _GetParentResourceFromArg(args):
+  """Returns the parent resource from the given args.
+
+  Args:
+    args: command line args.
+
+  Returns:
+    The parent resource.
+  """
+  if args.organization:
+    return resources.REGISTRY.Parse(
+        args.organization, collection='cloudresourcemanager.organizations'
+    )
+  return resources.REGISTRY.Parse(
+      args.project or properties.VALUES.core.project.Get(required=True),
+      collection='cloudresourcemanager.projects',
+    )

@@ -115,7 +115,7 @@ class AuthzExtension(_messages.Message):
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
-      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
+      EXT_PROC_GRPC: The extension service uses ext_proc gRPC API over a gRPC
         stream. This is the default value if the wire format is not specified.
         The backend service for the extension must use HTTP2 or H2C as the
         protocol. All `supported_events` for a client request are sent as part
@@ -382,6 +382,23 @@ class ExtensionChainExtension(_messages.Message):
   r"""A single extension in the chain to execute for the matching request.
 
   Enums:
+    RequestBodySendModeValueValuesEnum: Optional. Configures the send mode for
+      request body processing. The field can only be set if `supported_events`
+      includes `REQUEST_BODY`. If `supported_events` includes `REQUEST_BODY`,
+      but `request_body_send_mode` is unset, the default value `STREAMED` is
+      used. When this field is set to `FULL_DUPLEX_STREAMED`,
+      `supported_events` must include both `REQUEST_BODY` and
+      `REQUEST_TRAILERS`. This field can be set only for `LbTrafficExtension`
+      and `LbRouteExtension` resources, and only when the `service` field of
+      the extension points to a `BackendService`. Only `FULL_DUPLEX_STREAMED`
+      mode is supported for `LbRouteExtension` resources.
+    ResponseBodySendModeValueValuesEnum: Optional. Configures the send mode
+      for response processing. If unspecified, the default value `STREAMED` is
+      used. When this field is set to `FULL_DUPLEX_STREAMED`,
+      `supported_events` must include both `RESPONSE_BODY` and
+      `RESPONSE_TRAILERS`. This field can be set only for `LbTrafficExtension`
+      resources, and only when the `service` field of the extension points to
+      a `BackendService`.
     SupportedEventsValueListEntryValuesEnum:
 
   Messages:
@@ -392,13 +409,16 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is subject to following limitations:
-      * The total size of the metadata must be less than 1KiB. * The total
-      number of keys in the metadata must be less than 20. * The length of
-      each key must be less than 64 characters. * The length of each value
-      must be less than 1024 characters. * All values must be strings. This
-      field is not supported for plugin extensions. Setting it results in a
-      validation error.
+      qualified resource name. This field must not be set for plugin
+      extensions. Setting it results in a validation error. You can set
+      metadata at either the resource level or the extension level. The
+      extension level metadata is recommended because you can pass a different
+      set of metadata through each extension to the backend. This field is
+      subject to following limitations: * The total size of the metadata must
+      be less than 1KiB. * The total number of keys in the metadata must be
+      less than 16. * The length of each key must be less than 64 characters.
+      * The length of each value must be less than 1024 characters. * All
+      values must be strings.
 
   Fields:
     allowDynamicForwarding: Optional. When set to `TRUE`, the response from an
@@ -430,18 +450,37 @@ class ExtensionChainExtension(_messages.Message):
       `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is subject to following limitations:
-      * The total size of the metadata must be less than 1KiB. * The total
-      number of keys in the metadata must be less than 20. * The length of
-      each key must be less than 64 characters. * The length of each value
-      must be less than 1024 characters. * All values must be strings. This
-      field is not supported for plugin extensions. Setting it results in a
-      validation error.
+      qualified resource name. This field must not be set for plugin
+      extensions. Setting it results in a validation error. You can set
+      metadata at either the resource level or the extension level. The
+      extension level metadata is recommended because you can pass a different
+      set of metadata through each extension to the backend. This field is
+      subject to following limitations: * The total size of the metadata must
+      be less than 1KiB. * The total number of keys in the metadata must be
+      less than 16. * The length of each key must be less than 64 characters.
+      * The length of each value must be less than 1024 characters. * All
+      values must be strings.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number.
+    requestBodySendMode: Optional. Configures the send mode for request body
+      processing. The field can only be set if `supported_events` includes
+      `REQUEST_BODY`. If `supported_events` includes `REQUEST_BODY`, but
+      `request_body_send_mode` is unset, the default value `STREAMED` is used.
+      When this field is set to `FULL_DUPLEX_STREAMED`, `supported_events`
+      must include both `REQUEST_BODY` and `REQUEST_TRAILERS`. This field can
+      be set only for `LbTrafficExtension` and `LbRouteExtension` resources,
+      and only when the `service` field of the extension points to a
+      `BackendService`. Only `FULL_DUPLEX_STREAMED` mode is supported for
+      `LbRouteExtension` resources.
+    responseBodySendMode: Optional. Configures the send mode for response
+      processing. If unspecified, the default value `STREAMED` is used. When
+      this field is set to `FULL_DUPLEX_STREAMED`, `supported_events` must
+      include both `RESPONSE_BODY` and `RESPONSE_TRAILERS`. This field can be
+      set only for `LbTrafficExtension` resources, and only when the `service`
+      field of the extension points to a `BackendService`.
     service: Required. The reference to the service that runs the extension.
       To configure a callout extension, `service` must be a fully-qualified
       reference to a [backend service](https://cloud.google.com/compute/docs/r
@@ -467,6 +506,63 @@ class ExtensionChainExtension(_messages.Message):
       Required for callout extensions. This field is not supported for plugin
       extensions. Setting it results in a validation error.
   """
+
+  class RequestBodySendModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures the send mode for request body processing. The
+    field can only be set if `supported_events` includes `REQUEST_BODY`. If
+    `supported_events` includes `REQUEST_BODY`, but `request_body_send_mode`
+    is unset, the default value `STREAMED` is used. When this field is set to
+    `FULL_DUPLEX_STREAMED`, `supported_events` must include both
+    `REQUEST_BODY` and `REQUEST_TRAILERS`. This field can be set only for
+    `LbTrafficExtension` and `LbRouteExtension` resources, and only when the
+    `service` field of the extension points to a `BackendService`. Only
+    `FULL_DUPLEX_STREAMED` mode is supported for `LbRouteExtension` resources.
+
+    Values:
+      BODY_SEND_MODE_UNSPECIFIED: Default value. Do not use.
+      BODY_SEND_MODE_STREAMED: Calls to the extension are executed in the
+        streamed mode. Subsequent chunks will be sent only after the previous
+        chunks have been processed. The content of the body chunks is sent one
+        way to the extension. Extension may send modified chunks back. This is
+        the default value if the processing mode is not specified.
+      BODY_SEND_MODE_FULL_DUPLEX_STREAMED: Calls are executed in the full
+        duplex mode. Subsequent chunks will be sent for processing without
+        waiting for the response for the previous chunk or for the response
+        for `REQUEST_HEADERS` event. Extension can freely modify or chunk the
+        body contents. If the extension doesn't send the body contents back,
+        the next extension in the chain or the upstream will receive an empty
+        body.
+    """
+    BODY_SEND_MODE_UNSPECIFIED = 0
+    BODY_SEND_MODE_STREAMED = 1
+    BODY_SEND_MODE_FULL_DUPLEX_STREAMED = 2
+
+  class ResponseBodySendModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures the send mode for response processing. If
+    unspecified, the default value `STREAMED` is used. When this field is set
+    to `FULL_DUPLEX_STREAMED`, `supported_events` must include both
+    `RESPONSE_BODY` and `RESPONSE_TRAILERS`. This field can be set only for
+    `LbTrafficExtension` resources, and only when the `service` field of the
+    extension points to a `BackendService`.
+
+    Values:
+      BODY_SEND_MODE_UNSPECIFIED: Default value. Do not use.
+      BODY_SEND_MODE_STREAMED: Calls to the extension are executed in the
+        streamed mode. Subsequent chunks will be sent only after the previous
+        chunks have been processed. The content of the body chunks is sent one
+        way to the extension. Extension may send modified chunks back. This is
+        the default value if the processing mode is not specified.
+      BODY_SEND_MODE_FULL_DUPLEX_STREAMED: Calls are executed in the full
+        duplex mode. Subsequent chunks will be sent for processing without
+        waiting for the response for the previous chunk or for the response
+        for `REQUEST_HEADERS` event. Extension can freely modify or chunk the
+        body contents. If the extension doesn't send the body contents back,
+        the next extension in the chain or the upstream will receive an empty
+        body.
+    """
+    BODY_SEND_MODE_UNSPECIFIED = 0
+    BODY_SEND_MODE_STREAMED = 1
+    BODY_SEND_MODE_FULL_DUPLEX_STREAMED = 2
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedEventsValueListEntryValuesEnum enum type.
@@ -503,12 +599,15 @@ class ExtensionChainExtension(_messages.Message):
     `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
     following variables are supported in the metadata: `{forwarding_rule_id}`
     - substituted with the forwarding rule's fully qualified resource name.
-    This field is subject to following limitations: * The total size of the
-    metadata must be less than 1KiB. * The total number of keys in the
-    metadata must be less than 20. * The length of each key must be less than
+    This field must not be set for plugin extensions. Setting it results in a
+    validation error. You can set metadata at either the resource level or the
+    extension level. The extension level metadata is recommended because you
+    can pass a different set of metadata through each extension to the
+    backend. This field is subject to following limitations: * The total size
+    of the metadata must be less than 1KiB. * The total number of keys in the
+    metadata must be less than 16. * The length of each key must be less than
     64 characters. * The length of each value must be less than 1024
-    characters. * All values must be strings. This field is not supported for
-    plugin extensions. Setting it results in a validation error.
+    characters. * All values must be strings.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -536,9 +635,11 @@ class ExtensionChainExtension(_messages.Message):
   forwardHeaders = _messages.StringField(4, repeated=True)
   metadata = _messages.MessageField('MetadataValue', 5)
   name = _messages.StringField(6)
-  service = _messages.StringField(7)
-  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 8, repeated=True)
-  timeout = _messages.StringField(9)
+  requestBodySendMode = _messages.EnumField('RequestBodySendModeValueValuesEnum', 7)
+  responseBodySendMode = _messages.EnumField('ResponseBodySendModeValueValuesEnum', 8)
+  service = _messages.StringField(9)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 10, repeated=True)
+  timeout = _messages.StringField(11)
 
 
 class ExtensionChainMatchCondition(_messages.Message):
@@ -1099,7 +1200,8 @@ class GrpcRouteStatefulSessionAffinityPolicy(_messages.Message):
   Fields:
     cookieTtl: Required. The cookie TTL value for the Set-Cookie header
       generated by the data plane. The lifetime of the cookie may be set to a
-      value from 1 to 86400 seconds (24 hours) inclusive.
+      value from 0 to 86400 seconds (24 hours) inclusive. Set this to 0s to
+      use a session cookie and disable cookie expiration.
   """
 
   cookieTtl = _messages.StringField(1)
@@ -1696,7 +1798,8 @@ class HttpRouteStatefulSessionAffinityPolicy(_messages.Message):
   Fields:
     cookieTtl: Required. The cookie TTL value for the Set-Cookie header
       generated by the data plane. The lifetime of the cookie may be set to a
-      value from 1 to 86400 seconds (24 hours) inclusive.
+      value from 0 to 86400 seconds (24 hours) inclusive. Set this to 0s to
+      use a session cookie and disable cookie expiration.
   """
 
   cookieTtl = _messages.StringField(1)
@@ -1718,6 +1821,106 @@ class HttpRouteURLRewrite(_messages.Message):
   pathPrefixRewrite = _messages.StringField(2)
 
 
+class LbEdgeExtension(_messages.Message):
+  r"""`LbEdgeExtension` is a resource that lets the extension service
+  influence the Backend Service selection or Cloud CDN cache keys by modifying
+  the request headers.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: `EXTERNAL_MANAGED`. For more
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the `LbEdgeExtension`
+      resource. The format must comply with [the requirements for
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    extensionChains: Required. A set of ordered extension chains that contain
+      the match conditions and extensions to execute. Match conditions for
+      each extension chain are evaluated in sequence for a given request. The
+      first extension chain that has a condition that matches the request is
+      executed. Any subsequent extension chains do not execute. Limited to 5
+      extension chains per resource.
+    forwardingRules: Required. A list of references to the forwarding rules to
+      which this service extension is attached. At least one forwarding rule
+      is required. Only one `LbEdgeExtension` resource can be associated with
+      a forwarding rule.
+    labels: Optional. Set of labels associated with the `LbEdgeExtension`
+      resource. The format must comply with [the requirements for
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `EXTERNAL_MANAGED`. For more information, refer to
+      [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
+    name: Required. Identifier. Name of the `LbEdgeExtension` resource in the
+      following format: `projects/{project}/locations/{location}/lbEdgeExtensi
+      ons/{lb_edge_extension}`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+    overview](https://cloud.google.com/load-balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `LbEdgeExtension`
+    resource. The format must comply with [the requirements for
+    labels](https://cloud.google.com/compute/docs/labeling-
+    resources#requirements) for Google Cloud resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
+  forwardingRules = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class LbRouteExtension(_messages.Message):
   r"""`LbRouteExtension` is a resource that lets you control where traffic is
   routed to for a given request.
@@ -1737,11 +1940,16 @@ class LbRouteExtension(_messages.Message):
     MetadataValue: Optional. The metadata provided here is included as part of
       the `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google.lb_route_extension.`. The
-      following variables are supported in the metadata Struct:
+      applies to all extensions in all extensions chains in this resource. The
+      metadata is available under the key `com.google.lb_route_extension.`.
+      The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -1754,8 +1962,8 @@ class LbRouteExtension(_messages.Message):
       extension chains per resource.
     forwardingRules: Required. A list of references to the forwarding rules to
       which this service extension is attached. At least one forwarding rule
-      is required. There can be only one `LbRouteExtension` resource per
-      forwarding rule.
+      is required. Only one `LbRouteExtension` resource can be associated with
+      a forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
@@ -1768,11 +1976,16 @@ class LbRouteExtension(_messages.Message):
     metadata: Optional. The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      is available under the namespace `com.google.lb_route_extension.`. The
-      following variables are supported in the metadata Struct:
+      applies to all extensions in all extensions chains in this resource. The
+      metadata is available under the key `com.google.lb_route_extension.`.
+      The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -1828,12 +2041,16 @@ class LbRouteExtension(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Optional. The metadata provided here is included as part of the
     `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata is
-    available under the namespace `com.google.lb_route_extension.`. The
-    following variables are supported in the metadata Struct:
-    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. This field is not supported for plugin
-    extensions. Setting it results in a validation error.
+    `ProcessingRequest` message sent to the extension server. The metadata
+    applies to all extensions in all extensions chains in this resource. The
+    metadata is available under the key `com.google.lb_route_extension.`. The
+    following variables are supported in the metadata: `{forwarding_rule_id}`
+    - substituted with the forwarding rule's fully qualified resource name.
+    This field must not be set if at least one of the extension chains
+    contains plugin extensions. Setting it results in a validation error. You
+    can set metadata at either the resource level or the extension level. The
+    extension level metadata is recommended because you can pass a different
+    set of metadata through each extension to the backend.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1884,13 +2101,19 @@ class LbTrafficExtension(_messages.Message):
       `LbTrafficExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here is included in the
-      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      applies to all extensions in all extensions chains in this resource. The
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -1903,8 +2126,8 @@ class LbTrafficExtension(_messages.Message):
       extension chains per resource.
     forwardingRules: Optional. A list of references to the forwarding rules to
       which this service extension is attached. At least one forwarding rule
-      is required. There can be only one `LBTrafficExtension` resource per
-      forwarding rule.
+      is required. Only one `LbTrafficExtension` resource can be associated
+      with a forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
@@ -1914,13 +2137,19 @@ class LbTrafficExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more
       information, refer to [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here is included in the
-      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      applies to all extensions in all extensions chains in this resource. The
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. This field is not supported for plugin
-      extensions. Setting it results in a validation error.
+      qualified resource name. This field must not be set if at least one of
+      the extension chains contains plugin extensions. Setting it results in a
+      validation error. You can set metadata at either the resource level or
+      the extension level. The extension level metadata is recommended because
+      you can pass a different set of metadata through each extension to the
+      backend.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -1974,13 +2203,19 @@ class LbTrafficExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here is included in the
-    `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata
+    applies to all extensions in all extensions chains in this resource. The
     metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. This field is not supported for plugin
-    extensions. Setting it results in a validation error.
+    qualified resource name. This field must not be set if at least one of the
+    extension chains contains plugin extensions. Setting it results in a
+    validation error. You can set metadata at either the resource level or the
+    extension level. The extension level metadata is recommended because you
+    can pass a different set of metadata through each extension to the
+    backend.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2115,6 +2350,21 @@ class ListHttpRoutesResponse(_messages.Message):
   """
 
   httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListLbEdgeExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `LbEdgeExtension` resources.
+
+  Fields:
+    lbEdgeExtensions: The list of `LbEdgeExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  lbEdgeExtensions = _messages.MessageField('LbEdgeExtension', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -2435,11 +2685,15 @@ class ListWasmPluginVersionsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
     wasmPluginVersions: List of `WasmPluginVersion` resources.
   """
 
   nextPageToken = _messages.StringField(1)
-  wasmPluginVersions = _messages.MessageField('WasmPluginVersion', 2, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
+  wasmPluginVersions = _messages.MessageField('WasmPluginVersion', 3, repeated=True)
 
 
 class ListWasmPluginsResponse(_messages.Message):
@@ -2450,11 +2704,15 @@ class ListWasmPluginsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Unreachable resources. Populated when the request attempts to
+      list all resources across all supported locations, while some locations
+      are temporarily unavailable.
     wasmPlugins: List of `WasmPlugin` resources.
   """
 
   nextPageToken = _messages.StringField(1)
-  wasmPlugins = _messages.MessageField('WasmPlugin', 2, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
+  wasmPlugins = _messages.MessageField('WasmPlugin', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -3949,6 +4207,124 @@ class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class NetworkservicesProjectsLocationsLbEdgeExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbEdgeExtensionsCreateRequest object.
+
+  Fields:
+    lbEdgeExtension: A LbEdgeExtension resource to be passed as the request
+      body.
+    lbEdgeExtensionId: Required. User-provided ID of the `LbEdgeExtension`
+      resource to be created.
+    parent: Required. The parent resource of the `LbEdgeExtension` resource.
+      Must be in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  lbEdgeExtension = _messages.MessageField('LbEdgeExtension', 1)
+  lbEdgeExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbEdgeExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbEdgeExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the `LbEdgeExtension` resource to delete. Must
+      be in the format `projects/{project}/locations/{location}/lbEdgeExtensio
+      ns/{lb_edge_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsLbEdgeExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbEdgeExtensionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the `LbEdgeExtension` resource to get. Must be
+      in the format `projects/{project}/locations/{location}/lbEdgeExtensions/
+      {lb_edge_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsLbEdgeExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbEdgeExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint about how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the
+      `LbEdgeExtension` resources are listed. These values are specified in
+      the following format: `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsLbEdgeExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbEdgeExtensionsPatchRequest object.
+
+  Fields:
+    lbEdgeExtension: A LbEdgeExtension resource to be passed as the request
+      body.
+    name: Required. Identifier. Name of the `LbEdgeExtension` resource in the
+      following format: `projects/{project}/locations/{location}/lbEdgeExtensi
+      ons/{lb_edge_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for 60 minutes since the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server ignores the second request This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Used to specify the fields to be overwritten in the
+      `LbEdgeExtension` resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
+  """
+
+  lbEdgeExtension = _messages.MessageField('LbEdgeExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest object.
 
@@ -4193,6 +4569,8 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -4203,10 +4581,11 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class NetworkservicesProjectsLocationsMeshesCreateRequest(_messages.Message):
@@ -6192,7 +6571,8 @@ class ServiceBinding(_messages.Message):
   r"""ServiceBinding can be used to: - Bind a Service Directory Service to be
   used in a BackendService resource. This feature will be deprecated soon. -
   Bind a Private Service Connect producer service to be used in consumer Cloud
-  Service Mesh or Application Load Balancers.
+  Service Mesh or Application Load Balancers. - Bind a Cloud Run service to be
+  used in consumer Cloud Service Mesh or Application Load Balancers.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the
@@ -6722,7 +7102,7 @@ class TlsRouteRouteDestination(_messages.Message):
 
   Fields:
     serviceName: Required. The URL of a BackendService to route traffic to.
-    weight: Optional. Specifies the proportion of requests forwareded to the
+    weight: Optional. Specifies the proportion of requests forwarded to the
       backend referenced by the service_name field. This is computed as: -
       weight/Sum(weights in destinations) Weights in all destinations does not
       need to sum up to 100.

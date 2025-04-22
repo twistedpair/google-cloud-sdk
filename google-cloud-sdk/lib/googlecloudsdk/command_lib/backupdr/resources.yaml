@@ -162,3 +162,33 @@ backup:
     attribute_name: backup
     help: The ID of the Backup.
   disable_auto_completers: false
+
+dataSourceReference:
+  name: data_source_reference
+  collection: backupdr.projects.locations.dataSourceReferences
+  request_id_field: dataSourceReferenceId
+  attributes:
+  - *project
+  - *location
+  - &dataSourceReferenceId
+    parameter_name: dataSourceReferencesId
+    attribute_name: data_source_reference
+    help: The ID of the Data Source Reference.
+  disable_auto_completers: false
+
+dataSourceReferenceDefault:
+  name: dataSourceReference
+  collection: backupdr.projects.locations.dataSourceReferences
+  request_id_field: dataSourceReferenceId
+  attributes:
+  - *project
+  - *locationDefaultGlobal
+  - *backupVaultDefault
+  - &dataSourceReferenceDefault
+    parameter_name: dataSourceReferencesId
+    attribute_name: data_source_reference
+    help: The ID of the Data Source Reference.
+    fallthroughs:
+    - value: "-"
+      hint: |
+        default is all data source references

@@ -555,6 +555,30 @@ def AddCPUCount(parser, required=True):
   )
 
 
+def AddActivationPolicy(parser, alloydb_messages, required=False):
+  """Adds a --activation-policy flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --activation-policy is required.
+  """
+  parser.add_argument(
+      '--activation-policy',
+      required=required,
+      choices=[
+          alloydb_messages.Instance.ActivationPolicyValueValuesEnum.ALWAYS,
+          alloydb_messages.Instance.ActivationPolicyValueValuesEnum.NEVER
+      ],
+      type=alloydb_messages.Instance.ActivationPolicyValueValuesEnum,
+      help=(
+          'Activation Policy for the instance.'
+          'Required to START or STOP an instance.'
+          'ALWAYS - The instance is up and running.'
+          'NEVER - The instance is stopped.'
+      ),
+  )
+
+
 def AddMachineType(parser, required=False):
   """Adds a --machine-type flag to parser.
 
@@ -995,11 +1019,12 @@ def AddEncryptionConfigFlags(parser, verb):
   ).AddToParser(parser)
 
 
-def AddRestoreClusterSourceFlags(parser):
+def AddRestoreClusterSourceFlags(parser, release_track):
   """Adds RestoreCluster flags.
 
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
+    release_track: The command version being used - GA/BETA/ALPHA.
   """
   group = parser.add_group(
       mutex=True, required=True, help='RestoreCluster source types.'
@@ -1016,6 +1041,21 @@ def AddRestoreClusterSourceFlags(parser):
           ' created.'
       ),
   )
+  if (
+      release_track == base.ReleaseTrack.ALPHA
+      or release_track == base.ReleaseTrack.BETA
+  ):
+    group.add_argument(
+        '--backupdr-backup',
+        type=str,
+        help=(
+            'Backup DR backup to restore from. This is a resource path of the'
+            ' form'
+            ' projects/myProject/locations/us-central1/backupVaults/myBackupVault/dataSources/myDataSource/backups/myBackup.'
+        ),
+        # TODO(b/400420101): Remove hidden flag once the feature is ready.
+        hidden=True,
+    )
 
   continuous_backup_source_group = group.add_group(
       help='Restore a cluster from a source cluster at a given point in time.'
@@ -1193,7 +1233,7 @@ def AddInsightsConfigRecordApplicationTags(parser, show_negated_in_help):
       required=False,
       help="""Allow application tags to be recorded by the query insights
         feature.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1203,7 +1243,7 @@ def AddOutboundPublicIp(parser, show_negated_in_help):
       '--outbound-public-ip',
       required=False,
       help="""Add outbound Public IP connectivity to an AlloyDB instance.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1214,7 +1254,7 @@ def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help):
       required=False,
       help="""Allow the client address to be recorded by the query insights
         feature.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1224,7 +1264,7 @@ def AddObservabilityConfigEnabled(parser, show_negated_in_help):
       '--observability-config-enabled',
       required=False,
       help="""Enable enhanced query insights feature.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1235,7 +1275,7 @@ def AddObservabilityConfigPreserveComments(parser, show_negated_in_help):
       required=False,
       help="""Allow preservation of comments in query string recorded by the
         enhanced query insights feature.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1245,7 +1285,7 @@ def AddObservabilityConfigTrackWaitEvents(parser, show_negated_in_help):
       '--observability-config-track-wait-events',
       required=False,
       help="""Track wait events during query execution.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1266,7 +1306,7 @@ def AddObservabilityConfigRecordApplicationTags(parser, show_negated_in_help):
       required=False,
       help="""Allow application tags to be recorded by the enhanced query
         insights feature.""",
-      **kwargs
+      **kwargs,
   )
 
 
@@ -1286,7 +1326,7 @@ def AddObservabilityConfigTrackActiveQueries(parser, show_negated_in_help):
       '--observability-config-track-active-queries',
       required=False,
       help="""Track actively running queries.""",
-      **kwargs
+      **kwargs,
   )
 
 

@@ -447,6 +447,19 @@ def AddBackupEnforcedRetentionEndTime(parser):
   )
 
 
+def AddBackupExpireTime(parser):
+  """Adds the --expire-time flag to the given parser."""
+  help_text = """
+   The date when this backup is automatically expired. This date can be extended, but not shortened. It should be specified in the format of "YYYY-MM-DD"."""
+  parser.add_argument(
+      '--expire-time',
+      required=True,
+      type=arg_parsers.Datetime.Parse,
+      help=help_text,
+      hidden=True,
+  )
+
+
 def AddOutputFormat(parser, output_format):
   parser.display_info.AddFormat(output_format)
   parser.display_info.AddTransforms({

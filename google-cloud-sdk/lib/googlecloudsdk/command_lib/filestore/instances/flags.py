@@ -79,25 +79,25 @@ FILE_TIER_TO_TYPE = {
 
 _LDAP_HELP_TEXT = """\
         LDAP configuration for an instance. Specifies the domain name, servers,
-        users_ou, and groups_ou to be created by the filestore instance. users_ou
-        and groups_ou are optional.
+        users-ou, and groups-ou to be created by the filestore instance. users-ou
+        and groups-ou are optional.
 
          domain
             The desired domain name. i.e.:
             'my-domain.com'
 
-          Servers
+          servers
             The desired LDAP servers. i.e.:
             'ldap.example.com', 'ldap2.example.com'
 
-          Usersou
-            The desired usersou.
+          users-ou
+            The desired users Organizational Unit (OU).
 
-          Groups_ou
-            The desired groups_ou.
+          groups-ou
+            The desired groups Organizational Unit (OU).
 
           Use the following format to specify the LDAP configuration:
-            --ldap=^:^domain=my-domain.com:servers=ldap.example.com,ldap2.example.com:users_ou=users:groups_ou=groups
+            --ldap=^:^domain=my-domain.com:servers=ldap.example.com,ldap2.example.com:users-ou=users:groups-ou=groups
   """
 
 _MANAGED_AD_HELP_TEXT = """\
@@ -356,19 +356,20 @@ def AddDirectoryServicesArg(parser):
   ldap_arg_spec = {
       'domain': str,
       'servers': str,
-      'users_ou': str,
-      'groups_ou': str,
+      'users-ou': str,
+      'groups-ou': str,
   }
 
   group.add_argument(
       '--ldap',
-      metavar='^:^domain=DOMAIN:servers=SERVER1,SERVER2:users_ou=USERSOU:groups_ou=GROUPSOU',
+      metavar='^:^domain=DOMAIN:servers=SERVER1,SERVER2:users-ou=USERSOU:groups-ou=GROUPSOU',
       type=arg_parsers.ArgDict(
           spec=ldap_arg_spec,
           required_keys=['domain', 'servers'],
       ),
       required=False,
       help=_LDAP_HELP_TEXT,
+      hidden=True,
   )
 
 

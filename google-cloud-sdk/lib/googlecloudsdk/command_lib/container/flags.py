@@ -74,6 +74,36 @@ _PMU_LEVEL = {
 }
 
 
+class InvalidAddonValueError(util.Error):
+  """A class for invalid --addons input."""
+
+  def __init__(self, value):
+    message = (
+        f'invalid --addons value {value}; must be ENABLED, DISABLED or empty.'
+    )
+    super().__init__(message)
+
+
+def _ParseAddonEnabled(val: str) -> bool:
+  """Parses expected status for addons from --addons flag.
+
+  Args:
+    val: 'ENABLED', 'DISABLED' or empty string (same as 'ENABLED' for backwards
+      compatibility).
+
+  Returns:
+    True if the addon is expected to be enabled, False otherwise.
+
+  Raises:
+    InvalidAddonValueError: if the value is not 'ENABLED', 'DISABLED' or empty.
+  """
+  if val in ('', 'ENABLED'):
+    return True
+  if val == 'DISABLED':
+    return False
+  raise InvalidAddonValueError(val)
+
+
 def AddBasicAuthFlags(parser):
   """Adds basic auth flags to the given parser.
 
@@ -3648,11 +3678,14 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
   parser.add_argument(
       '--addons',
-      type=arg_parsers.ArgList(
-          choices=(addon_options + api_adapter.CLOUDRUN_ADDONS),
-          visible_choices=visible_addon_options,
+      type=arg_parsers.ArgDict(
+          spec={
+              choice: _ParseAddonEnabled
+              for choice in (addon_options + api_adapter.CLOUDRUN_ADDONS)
+          },
+          allow_key_only=True,
       ),
-      metavar='ADDON',
+      metavar='ADDON[=ENABLED|DISABLED]',
       help="""\
 Addons
 (https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster.AddonsConfig)
@@ -3660,7 +3693,11 @@ are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled. Default addons: {0}.
 The Istio addon is deprecated and removed.
 For more information and migration, see https://cloud.google.com/istio/docs/istio-on-gke/migrate-to-anthos-service-mesh.
-""".format(', '.join(api_adapter.DEFAULT_ADDONS)),
+ADDON must be one of: {1}.
+""".format(
+          ', '.join(api_adapter.DEFAULT_ADDONS),
+          ', '.join(visible_addon_options),
+      ),
   )
 
 
@@ -3714,7 +3751,7 @@ Must be used in conjunction with '--enable-ip-alias' or '--no-enable-ip-alias'.
   )
 
 
-def AddTpuFlags(parser, hidden=False, enable_tpu_service_networking=False):
+def AddTpuFlags(parser, hidden=True, enable_tpu_service_networking=False):
   """Adds flags related to TPUs to the parser.
 
   Args:
@@ -3724,7 +3761,9 @@ def AddTpuFlags(parser, hidden=False, enable_tpu_service_networking=False):
       enable_tpu_service_networking flag.
   """
 
-  tpu_group = parser.add_group(help='Flags relating to Cloud TPUs:')
+  tpu_group = parser.add_group(
+      help='Flags relating to Cloud TPUs:', hidden=hidden
+  )
 
   tpu_group.add_argument(
       '--enable-tpu',
@@ -6091,21 +6130,6 @@ def AddPrivateEndpointFQDNFlag(parser, hidden=True):
   )
 
 
-def AddPodAutoscalingDirectMetricsOptInFlag(parser):
-  """Adds a --pod-autoscaling-direct-metrics-opt-in flag to the given parser."""
-  parser.add_argument(
-      '--pod-autoscaling-direct-metrics-opt-in',
-      default=None,
-      action='store_true',
-      hidden=True,
-      help=(
-          'When specified, the cluster will use the pod autoscaling direct '
-          'metrics collection feature. Otherwise the cluster will use '
-          'the feature or will not, depending on the cluster version.'
-      ),
-  )
-
-
 def VerifyGetCredentialsFlags(args):
   """Verifies that the passed flags are valid for get-credentials.
 
@@ -7057,6 +7081,29 @@ def AddInsecureRBACBindingFlags(parser, hidden=False):
   )
 
 
+def AddAnonymousAuthenticationConfigFlag(parser):
+  """Adds --anonymous-authentication-config flag group to the group.
+
+  Args:
+    parser: A given parser.
+  """
+  parser.add_argument(
+      '--anonymous-authentication-config',
+      help="""Enable or restrict anonymous access to the cluster.""",
+      choices={
+          'LIMITED': """\
+                'LIMITED' restricts anonymous access to the cluster.
+                Only calls to the health check endpoints are allowed
+                anonymously, all other calls will be rejected.""",
+          'ENABLED': """\
+                'ENABLED' enables anonymous calls.""",
+      },
+      # TODO(b/373886051): Unhide this flag once the feature has been announced.
+      hidden=True,
+      default=None,
+  )
+
+
 def AddAdditionalIpRangesFlag(parser):
   """Adds additional IP ranges flag to parser."""
 
@@ -7288,4 +7335,3 @@ def AddPatchUpdateFlag(parser):
       ),
       metavar='PATCH_UPDATE',
   )
-

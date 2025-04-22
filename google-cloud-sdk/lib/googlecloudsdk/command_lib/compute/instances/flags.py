@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import copy
 import functools
 import ipaddress
+import textwrap
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
@@ -3191,7 +3192,8 @@ def AddShieldedInstanceIntegrityPolicyArgs(parser):
 def AddConfidentialComputeArgs(
     parser,
     support_confidential_compute_type=False,
-    support_confidential_compute_type_tdx=False) -> None:
+    support_confidential_compute_type_tdx=False,
+    support_snp_svsm=False) -> None:
   """Adds flags for confidential compute for instance."""
   if support_confidential_compute_type:
     choices = {
@@ -3216,6 +3218,29 @@ def AddConfidentialComputeArgs(
         Trust Domain eXtension based on Intel virtualization features for
         running confidential instances is also supported.
         """)))
+    if support_snp_svsm:
+      svsm_help_text = textwrap.dedent("""\
+        Secure VM Service Module (SVSM) is supported on AMD Secure Nested Paging
+        (SEV-SNP) VMs for additional security. To specify the svsm-config also
+        provide the argument `confidential-compute-type=SEV_SNP` on the command
+        line.
+
+        *tpm*::: The virtual Trusted Platform Module (TPM) used by SVSM.
+        Currently the only vTPM supported is: EPHEMERAL.
+        *snp-irq*::: The interrupt request mode to use for the AMD SEV-SNP VM.
+        Currently the only IRQ mode supported is: UNRESTRICTED.
+        """)
+      svsm_congfig_spec = {
+          'tpm': str,
+          'snp-irq': str,
+      }
+      parser.add_argument(
+          '--svsm-config',
+          hidden=True,
+          type=arg_parsers.ArgDict(spec=svsm_congfig_spec),
+          metavar='PROPERTY=VALUE',
+          help=svsm_help_text,
+      )
 
     parser = parser.add_mutually_exclusive_group()
     parser.add_argument(

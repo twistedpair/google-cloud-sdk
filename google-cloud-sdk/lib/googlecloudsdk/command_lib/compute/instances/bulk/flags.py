@@ -397,6 +397,7 @@ def AddCommonBulkInsertArgs(
     add_zone_region_flags=True,
     support_confidential_compute_type=False,
     support_confidential_compute_type_tdx=False,
+    support_snp_svsm=False,
     support_no_address_in_networking=False,
     support_max_count_per_zone=False,
     support_network_queue_count=False,
@@ -530,6 +531,7 @@ def AddCommonBulkInsertArgs(
       parser,
       support_confidential_compute_type,
       support_confidential_compute_type_tdx,
+      support_snp_svsm,
   )
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
   AddBulkCreateArgs(

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import datetime
 from typing import Union
 
 from googlecloudsdk.api_lib.storage import errors
@@ -115,25 +114,48 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
 )
 
 
-def _get_gsutil_style_formatted_line(display_name, value, default_value=None):
-  """Returns a gsutil-style formatted line for ls -L output."""
+def _get_gsutil_style_formatted_line_for_object_resource(
+    display_name, value, default_value=None
+):
+  """Returns a gsutil-style formatted line for ls -L output for object."""
   if value is not None:
     if value and (isinstance(value, dict) or isinstance(value, list)):
-      return resource_util.get_metadata_json_section_string(
-          display_name, value,
+      return resource_util.get_gsutil_object_metadata_json_section_string(
+          display_name, value
       )
-    elif isinstance(value, datetime.datetime):
-      return resource_util.get_padded_metadata_time_line(display_name, value)
     elif isinstance(value, errors.CloudApiError):
-      return resource_util.get_padded_metadata_key_value_line(
-          display_name, str(value)
+      return resource_util.get_gsutil_padded_object_metadata_key_value_line(
+          display_name, str(value),
       )
-    return resource_util.get_padded_metadata_key_value_line(
-        display_name, value
+    return resource_util.get_gsutil_padded_object_metadata_key_value_line(
+        display_name, value,
     )
   elif default_value is not None:
-    return resource_util.get_padded_metadata_key_value_line(
-        display_name, default_value
+    return resource_util.get_gsutil_padded_object_metadata_key_value_line(
+        display_name, default_value,
+    )
+  return None
+
+
+def _get_gsutil_style_formatted_line_for_bucket_resource(
+    display_name, value, default_value=None
+):
+  """Returns a gsutil-style formatted line for ls -L output for bucket resource."""
+  if value is not None:
+    if value and (isinstance(value, dict) or isinstance(value, list)):
+      return resource_util.get_gsutil_bucket_metadata_json_section_string(
+          display_name, value
+      )
+    elif isinstance(value, errors.CloudApiError):
+      return resource_util.get_gsutil_padded_bucket_metadata_key_value_line(
+          display_name, str(value),
+      )
+    return resource_util.get_gsutil_padded_bucket_metadata_key_value_line(
+        display_name, value,
+    )
+  elif default_value is not None:
+    return resource_util.get_gsutil_padded_bucket_metadata_key_value_line(
+        display_name, default_value,
     )
   return None
 
@@ -187,11 +209,18 @@ def get_gsutil_style_formatted_string(
     if value == resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY:
       continue
 
-    line = _get_gsutil_style_formatted_line(
-        field_display_title_and_default.title,
-        value,
-        field_display_title_and_default.default,
-    )
+    if resource.storage_url.is_bucket():
+      line = _get_gsutil_style_formatted_line_for_bucket_resource(
+          field_display_title_and_default.title,
+          value,
+          field_display_title_and_default.default,
+      )
+    else:
+      line = _get_gsutil_style_formatted_line_for_object_resource(
+          field_display_title_and_default.title,
+          value,
+          field_display_title_and_default.default,
+      )
     if line is not None:
       lines.append(line)
 

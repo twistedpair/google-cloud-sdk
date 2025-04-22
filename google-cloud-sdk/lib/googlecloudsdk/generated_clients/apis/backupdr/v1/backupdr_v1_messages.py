@@ -844,6 +844,11 @@ class BackupPlan(_messages.Message):
       Format:
       `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
     resourceType: Required.
+    revisionId: Output only. The user friendly revision ID of the
+      `BackupPlanRevision`. Example: v0, v1, v2, etc.
+    revisionName: Output only. The resource id of the `BackupPlanRevision`.
+      Format: `projects/{project}/locations/{location}/backupPlans/{backup_pla
+      n}/revisions/{revision_id}`
     state: Output only. The `State` for the `BackupPlan`.
     updateTime: Output only. When the `BackupPlan` was last updated.
   """
@@ -901,8 +906,10 @@ class BackupPlan(_messages.Message):
   logRetentionDays = _messages.IntegerField(8)
   name = _messages.StringField(9)
   resourceType = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  revisionId = _messages.StringField(11)
+  revisionName = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -962,6 +969,47 @@ class BackupPlanAssociation(_messages.Message):
   rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 8, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 9)
   updateTime = _messages.StringField(10)
+
+
+class BackupPlanRevision(_messages.Message):
+  r"""`BackupPlanRevision` represents a snapshot of a `BackupPlan` at a point
+  in time.
+
+  Enums:
+    StateValueValuesEnum: Output only. Resource State
+
+  Fields:
+    backupPlanSnapshot: The Backup Plan being encompassed by this revision.
+    createTime: Output only. The timestamp that the revision was created.
+    name: Output only. Identifier. The resource name of the
+      `BackupPlanRevision`. Format: `projects/{project}/locations/{location}/b
+      ackupPlans/{backup_plan}/revisions/{revision}`
+    revisionId: Output only. The user friendly revision ID of the
+      `BackupPlanRevision`. Example: v0, v1, v2, etc.
+    state: Output only. Resource State
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Resource State
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: The resource is being created.
+      ACTIVE: The resource has been created and is fully usable.
+      DELETING: The resource is being deleted.
+      INACTIVE: The resource has been created but is not usable.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    INACTIVE = 4
+
+  backupPlanSnapshot = _messages.MessageField('BackupPlan', 1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  revisionId = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class BackupRule(_messages.Message):
@@ -1235,6 +1283,40 @@ class BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest(_messages.Mes
   requestId = _messages.StringField(2)
 
 
+class BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOldRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOld
+  Request object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the results fetched in
+      the response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering.
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields:
+    pageSize: Optional. The maximum number of BackupPlanAssociations to
+      return. The service may return fewer than this value. If unspecified, at
+      most 50 BackupPlanAssociations will be returned. The maximum value is
+      100; values above 100 will be coerced to 100.
+    pageToken: Optional. A page token, received from a previous call of
+      `FetchBackupPlanAssociationsForResourceType`. Provide this to retrieve
+      the subsequent page. When paginating, all other parameters provided to
+      `FetchBackupPlanAssociationsForResourceType` must match the call that
+      provided the page token.
+    parent: Required. The parent resource name. Format:
+      projects/{project}/locations/{location}
+    resourceType: Required. The type of the GCP resource. Ex:
+      sql.googleapis.com/Instance
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  resourceType = _messages.StringField(6)
+
+
 class BackupdrProjectsLocationsBackupPlanAssociationsGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupPlanAssociationsGetRequest object.
 
@@ -1414,6 +1496,77 @@ class BackupdrProjectsLocationsBackupPlansListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class BackupdrProjectsLocationsBackupPlansPatchRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansPatchRequest object.
+
+  Fields:
+    backupPlan: A BackupPlan resource to be passed as the request body.
+    name: Output only. Identifier. The resource name of the `BackupPlan`.
+      Format:
+      `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. The list of fields to update. Field mask is used to
+      specify the fields to be overwritten in the BackupPlan resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then the request will
+      fail. Currently, these fields are supported in update: description,
+      schedules, retention period, adding and removing Backup Rules.
+  """
+
+  backupPlan = _messages.MessageField('BackupPlan', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class BackupdrProjectsLocationsBackupPlansRevisionsGetRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansRevisionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the `BackupPlanRevision` to retrieve.
+      Format: `projects/{project}/locations/{location}/backupPlans/{backup_pla
+      n}/revisions/{revision}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BackupdrProjectsLocationsBackupPlansRevisionsListRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansRevisionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of `BackupPlans` to return in a
+      single response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListBackupPlans` call. Provide this to retrieve the subsequent page in
+      a multi-page list of results. When paginating, all other parameters
+      provided to `ListBackupPlans` must match the call that provided the page
+      token.
+    parent: Required. The project and location for which to retrieve
+      `BackupPlanRevisions` information. Format:
+      `projects/{project}/locations/{location}/backupPlans/{backup_plan}`. In
+      Cloud BackupDR, locations map to GCP regions, for e.g. **us-central1**.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class BackupdrProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
@@ -3043,6 +3196,168 @@ class DataSourceReference(_messages.Message):
   name = _messages.StringField(7)
 
 
+class DiskRestoreProperties(_messages.Message):
+  r"""DiskRestoreProperties represents the properties of a Disk restore.
+
+  Enums:
+    AccessModeValueValuesEnum: Optional. The access mode of the disk.
+    ArchitectureValueValuesEnum: Optional. The architecture of the source
+      disk. Valid values are ARM64 or X86_64.
+
+  Messages:
+    LabelsValue: Optional. Labels to apply to this disk. These can be modified
+      later using setLabels method. Label values can be empty.
+    ResourceManagerTagsValue: Optional. Resource manager tags to be bound to
+      the disk.
+
+  Fields:
+    accessMode: Optional. The access mode of the disk.
+    architecture: Optional. The architecture of the source disk. Valid values
+      are ARM64 or X86_64.
+    description: Optional. An optional description of this resource. Provide
+      this property when you create the resource.
+    diskEncryptionKey: Optional. Encrypts the disk using a customer-supplied
+      encryption key or a customer-managed encryption key.
+    enableConfidentialCompute: Optional. Indicates whether this disk is using
+      confidential compute mode. Encryption with a Cloud KMS key is required
+      to enable this option.
+    guestOsFeature: Optional. A list of features to enable in the guest
+      operating system. This is applicable only for bootable images.
+    labels: Optional. Labels to apply to this disk. These can be modified
+      later using setLabels method. Label values can be empty.
+    licenses: Optional. A list of publicly available licenses that are
+      applicable to this backup. This is applicable if the original image had
+      licenses attached, e.g. Windows image
+    name: Required. Name of the disk..
+    physicalBlockSizeBytes: Optional. Physical block size of the persistent
+      disk, in bytes. If not present in a request, a default value is used.
+      Currently, the supported size is 4096.
+    provisionedIops: Optional. Indicates how many IOPS to provision for the
+      disk. This sets the number of I/O operations per second that the disk
+      can handle.
+    provisionedThroughput: Optional. Indicates how much throughput to
+      provision for the disk. This sets the number of throughput MB per second
+      that the disk can handle.
+    resourceManagerTags: Optional. Resource manager tags to be bound to the
+      disk.
+    resourcePolicy: Optional. Resource policies applied to this disk.
+    sizeGb: Required. The size of the disk in GB.
+    storagePool: Optional. The storage pool in which the new disk is created.
+      You can provide this as a partial or full URL to the resource.
+    type: Required. URL of the disk type resource describing which disk type
+      to use to create the disk.
+  """
+
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The access mode of the disk.
+
+    Values:
+      READ_WRITE_SINGLE: The default AccessMode, means the disk can be
+        attached to single instance in RW mode.
+      READ_WRITE_MANY: The AccessMode means the disk can be attached to
+        multiple instances in RW mode.
+      READ_ONLY_MANY: The AccessMode means the disk can be attached to
+        multiple instances in RO mode.
+    """
+    READ_WRITE_SINGLE = 0
+    READ_WRITE_MANY = 1
+    READ_ONLY_MANY = 2
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Optional. The architecture of the source disk. Valid values are ARM64
+    or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value. This value is unused.
+      X86_64: Disks with architecture X86_64
+      ARM64: Disks with architecture ARM64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86_64 = 1
+    ARM64 = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to apply to this disk. These can be modified later
+    using setLabels method. Label values can be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Optional. Resource manager tags to be bound to the disk.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 2)
+  description = _messages.StringField(3)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
+  enableConfidentialCompute = _messages.BooleanField(5)
+  guestOsFeature = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  licenses = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  physicalBlockSizeBytes = _messages.IntegerField(10)
+  provisionedIops = _messages.IntegerField(11)
+  provisionedThroughput = _messages.IntegerField(12)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 13)
+  resourcePolicy = _messages.StringField(14, repeated=True)
+  sizeGb = _messages.IntegerField(15)
+  storagePool = _messages.StringField(16)
+  type = _messages.StringField(17)
+
+
+class DiskTargetEnvironment(_messages.Message):
+  r"""DiskTargetEnvironment represents the target environment for the disk.
+
+  Fields:
+    project: Required. Target project for the disk.
+    zone: Required. Target zone for the disk.
+  """
+
+  project = _messages.StringField(1)
+  zone = _messages.StringField(2)
+
+
 class DisplayDevice(_messages.Message):
   r"""A set of Display Device options
 
@@ -3137,6 +3452,21 @@ class FetchAccessTokenResponse(_messages.Message):
   readLocation = _messages.StringField(2)
   token = _messages.StringField(3)
   writeLocation = _messages.StringField(4)
+
+
+class FetchBackupPlanAssociationsForResourceTypeResponse(_messages.Message):
+  r"""Response for the FetchBackupPlanAssociationsForResourceType method.
+
+  Fields:
+    backupPlanAssociations: Output only. The BackupPlanAssociations from the
+      specified parent.
+    nextPageToken: Output only. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+  """
+
+  backupPlanAssociations = _messages.MessageField('BackupPlanAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class FetchDataSourceReferencesForResourceTypeResponse(_messages.Message):
@@ -3448,6 +3778,28 @@ class ListBackupPlanAssociationsResponse(_messages.Message):
   """
 
   backupPlanAssociations = _messages.MessageField('BackupPlanAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupPlanRevisionsResponse(_messages.Message):
+  r"""The response message for getting a list of `BackupPlanRevision`.
+
+  Fields:
+    backupPlanRevisions: The list of `BackupPlanRevisions` in the project for
+      the specified location. If the `{location}` value in the request is "-",
+      the response contains a list of resources from all locations. In case
+      any location is unreachable, the response will only return backup plans
+      in reachable locations and the 'unreachable' field will be populated
+      with a list of unreachable locations.
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListBackupPlanRevisions` call to retrieve the next page of results. If
+      this field is omitted or empty, then there are no more results to
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupPlanRevisions = _messages.MessageField('BackupPlanRevision', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -4293,6 +4645,21 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RegionDiskTargetEnvironment(_messages.Message):
+  r"""RegionDiskTargetEnvironment represents the target environment for the
+  disk.
+
+  Fields:
+    project: Required. Target project for the disk.
+    region: Required. Target region for the disk.
+    replicaZones: Required. Target URLs of the replica zones for the disk.
+  """
+
+  project = _messages.StringField(1)
+  region = _messages.StringField(2)
+  replicaZones = _messages.StringField(3, repeated=True)
+
+
 class RemoveDataSourceRequest(_messages.Message):
   r"""Message for deleting a DataSource.
 
@@ -4406,6 +4773,10 @@ class RestoreBackupRequest(_messages.Message):
       overridden during restore.
     computeInstanceTargetEnvironment: Compute Engine target environment to be
       used during restore.
+    diskRestoreProperties: Disk properties to be overridden during restore.
+    diskTargetEnvironment: Disk target environment to be used during restore.
+    regionDiskTargetEnvironment: Region disk target environment to be used
+      during restore.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4421,7 +4792,10 @@ class RestoreBackupRequest(_messages.Message):
 
   computeInstanceRestoreProperties = _messages.MessageField('ComputeInstanceRestoreProperties', 1)
   computeInstanceTargetEnvironment = _messages.MessageField('ComputeInstanceTargetEnvironment', 2)
-  requestId = _messages.StringField(3)
+  diskRestoreProperties = _messages.MessageField('DiskRestoreProperties', 3)
+  diskTargetEnvironment = _messages.MessageField('DiskTargetEnvironment', 4)
+  regionDiskTargetEnvironment = _messages.MessageField('RegionDiskTargetEnvironment', 5)
+  requestId = _messages.StringField(6)
 
 
 class RestoreBackupResponse(_messages.Message):

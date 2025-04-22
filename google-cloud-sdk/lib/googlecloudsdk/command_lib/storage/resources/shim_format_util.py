@@ -139,5 +139,8 @@ def reformat_custom_fields_for_gsutil(object_resource):
   metadata_lines = []
   for k, v in iterable_metadata:
     metadata_lines.append(
-        resource_util.get_padded_metadata_key_value_line(k, v, extra_indent=2))
+        resource_util.get_gsutil_padded_object_metadata_key_value_line(
+            k, v, indent=2
+        )
+    )
   object_resource.custom_fields = '\n' + '\n'.join(metadata_lines)

@@ -235,7 +235,6 @@ def CreateMembership(project,
       parent=parent_ref,
       membershipId=membership_id,
   )
-  # TODO(b/216318697): Use k8s_version for both GKE/Non-GKE
   if gke_cluster_self_link:
     endpoint = messages.MembershipEndpoint(
         gkeCluster=messages.GkeCluster(resourceLink=gke_cluster_self_link))

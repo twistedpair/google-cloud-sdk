@@ -44,14 +44,22 @@ class PrivateConnectionsClient:
     private_connection_obj = self._messages.PrivateConnection(
         name=private_connection_id, labels={}, displayName=args.display_name)
 
-    # TODO(b/207467120): use only vpc flag.
-    if release_track == base.ReleaseTrack.BETA:
-      vpc_peering_ref = args.CONCEPTS.vpc_name.Parse()
+    if hasattr(args, 'network_attachment') and args.network_attachment:
+      private_connection_obj.pscInterfaceConfig = (
+          self._messages.PscInterfaceConfig(
+              networkAttachment=args.network_attachment
+          )
+      )
     else:
-      vpc_peering_ref = args.CONCEPTS.vpc.Parse()
+      # TODO(b/207467120): use only vpc flag.
+      if release_track == base.ReleaseTrack.BETA:
+        vpc_peering_ref = args.CONCEPTS.vpc_name.Parse()
+      else:
+        vpc_peering_ref = args.CONCEPTS.vpc.Parse()
 
-    private_connection_obj.vpcPeeringConfig = self._messages.VpcPeeringConfig(
-        vpc=vpc_peering_ref.RelativeName(), subnet=args.subnet)
+      private_connection_obj.vpcPeeringConfig = self._messages.VpcPeeringConfig(
+          vpc=vpc_peering_ref.RelativeName(), subnet=args.subnet
+      )
 
     return private_connection_obj
 
@@ -75,11 +83,15 @@ class PrivateConnectionsClient:
                                                     release_track, args)
 
     request_id = util.GenerateRequestId()
-    create_req_type = self._messages.DatastreamProjectsLocationsPrivateConnectionsCreateRequest
+    create_req_type = (
+        self._messages.DatastreamProjectsLocationsPrivateConnectionsCreateRequest
+    )
     create_req = create_req_type(
         privateConnection=private_connection,
         privateConnectionId=private_connection.name,
         parent=parent_ref,
-        requestId=request_id)
+        requestId=request_id,
+        validateOnly=args.validate_only,
+    )
 
     return self._service.Create(create_req)

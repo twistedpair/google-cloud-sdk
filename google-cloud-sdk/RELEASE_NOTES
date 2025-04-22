@@ -5,6 +5,70 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 519.0.0 (2025-04-22)
+
+### Breaking Changes
+
+*   **(Container)** Remove `--enable-tpu` `--enable-tpu-service-networking` `--tpu-ipv4-cidr` from `gcloud container clusters create` and `gcloud container clusters update`.
+
+
+### Cloud Backup DR
+
+*   Added `gcloud backup-dr backups update` to allow updating the enforced retention time for Backup and DR backups.
+
+### Cloud DNS
+
+* Added alpha and beta support for creating forwarding zones with IPv6 and FQDN forwarding targets.
+
+### Cloud Datastream
+
+* Add `gcloud` CLI support for PSC Interface Private Connection.
+
+### Cloud Filestore
+
+* Fix LDAP parameters in `gcloud beta filestore instances create`.
+
+### Cloud NetApp
+
+* Updated `gcloud netapp backup-vaults create`.
+* Added new options 'replication-schedule', 'hybrid-replication-type' and
+'large-volume-constituent-count' to hybrid-replication-parameters in the create
+volume flow.
+
+### Cloud Services
+
+*  Added `--service-account` flag to `gcloud services api-keys create`.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.34.
+
+### Compute Engine
+
+* Added `gcloud compute reservations blocks list` command in v1.
+* Added `gcloud compute reservations blocks describe` command in v1.
+* Added `gcloud compute reservations blocks perform-maintenance` command in v1.
+* Added `gcloud compute reservations perform-maintenance` command in v1.
+* Added `--tags` flag to the following command:
+  - `gcloud compute url-maps invalidate-cdn-cache`.
+
+### Kubernetes Engine
+
+* Added ability to explicitly disable addons on cluster creation using
+`--addons AddonName=DISABLED` or enable using `--addons AddonName=ENABLED`.
+
+### Network Connectivity
+
+* Update `gcloud network-connectivity service-connection-policies update`, made `--subnets` and PSC config subgroup flags optional.
+
+### Security Command Center
+
+*   Added `--organization`, `--project`, `--folder` flags to `gcloud scc findings list` command to list source's findings for organization, project and folder levels.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 518.0.0 (2025-04-15)
 
 ### Google Cloud CLI

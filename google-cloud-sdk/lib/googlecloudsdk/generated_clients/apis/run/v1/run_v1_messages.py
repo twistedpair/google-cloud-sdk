@@ -2696,6 +2696,24 @@ class HTTPHeader(_messages.Message):
   value = _messages.StringField(2)
 
 
+class InstanceSplit(_messages.Message):
+  r"""Holds a single instance split entry for the Worker. Allocations can be
+  done to a specific Revision name, or pointing to the latest Ready Revision.
+
+  Fields:
+    latestRevision: Uses the "status.latestReadyRevisionName" to determine the
+      traffic target. When it changes, traffic will automatically migrate from
+      the prior "latest ready" revision to the new one.
+    percent: Specifies percent of the instance split to this Revision. This
+      defaults to zero if unspecified.
+    revisionName: Revision to which to assign this portion of instances.
+  """
+
+  latestRevision = _messages.BooleanField(1)
+  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  revisionName = _messages.StringField(3)
+
+
 class Job(_messages.Message):
   r"""Job represents the configuration of a single job, which references a
   container image which is run to completion.
@@ -2981,6 +2999,27 @@ class ListTasksResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Task', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListWorkerPoolsResponse(_messages.Message):
+  r"""A list of WorkerPool resources.
+
+  Fields:
+    apiVersion: The API version for this call; returns
+      "run.googleapis.com/v1".
+    items: List of WorkerPools.
+    kind: The kind of this resource; returns "WorkerPoolList".
+    metadata: Metadata associated with this WorkerPool list.
+    unreachable: For calls against the global endpoint, returns the list of
+      Cloud locations that could not be reached. For regional calls, this
+      field is not used.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('WorkerPool', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -4446,6 +4485,100 @@ class RunNamespacesTasksListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
+class RunNamespacesWorkerpoolsCreateRequest(_messages.Message):
+  r"""A RunNamespacesWorkerpoolsCreateRequest object.
+
+  Fields:
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
+    parent: Required. The resource's parent. In Cloud Run, it may be one of
+      the following: * `{project_id_or_number}` *
+      `namespaces/{project_id_or_number}` *
+      `namespaces/{project_id_or_number}/workerpools` *
+      `projects/{project_id_or_number}/locations/{region}` *
+      `projects/{project_id_or_number}/regions/{region}`
+    workerPool: A WorkerPool resource to be passed as the request body.
+  """
+
+  dryRun = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  workerPool = _messages.MessageField('WorkerPool', 3)
+
+
+class RunNamespacesWorkerpoolsDeleteRequest(_messages.Message):
+  r"""A RunNamespacesWorkerpoolsDeleteRequest object.
+
+  Fields:
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
+    name: Required. The fully qualified name of the worker pool to delete. It
+      can be any of the following forms: *
+      `namespaces/{project_id_or_number}/workerpools/{worker_pool_name}` (only
+      when the `endpoint` is regional) * `projects/{project_id_or_number}/loca
+      tions/{region}/workerpools/{worker_pool_name}` * `projects/{project_id_o
+      r_number}/regions/{region}/workerpools/{worker_pool_name}`
+  """
+
+  dryRun = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class RunNamespacesWorkerpoolsGetRequest(_messages.Message):
+  r"""A RunNamespacesWorkerpoolsGetRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the worker pool to retrieve.
+      It can be any of the following forms: *
+      `namespaces/{project_id_or_number}/workerpools/{worker_pool_name}` (only
+      when the `endpoint` is regional) * `projects/{project_id_or_number}/loca
+      tions/{region}/workerpools/{worker_pool_name}` * `projects/{project_id_o
+      r_number}/regions/{region}/workerpools/{worker_pool_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesWorkerpoolsListRequest(_messages.Message):
+  r"""A RunNamespacesWorkerpoolsListRequest object.
+
+  Fields:
+    continue_: Encoded string to continue paging.
+    labelSelector: =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: Required. The parent from where the resources should be listed. In
+      Cloud Run, it may be one of the following: * `{project_id_or_number}` *
+      `namespaces/{project_id_or_number}` *
+      `namespaces/{project_id_or_number}/workerpools` *
+      `projects/{project_id_or_number}/locations/{region}` *
+      `projects/{project_id_or_number}/regions/{region}`
+  """
+
+  continue_ = _messages.StringField(1)
+  labelSelector = _messages.StringField(2)
+  limit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(4, required=True)
+
+
+class RunNamespacesWorkerpoolsReplaceWorkerPoolRequest(_messages.Message):
+  r"""A RunNamespacesWorkerpoolsReplaceWorkerPoolRequest object.
+
+  Fields:
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
+    name: Required. The fully qualified name of the worker pool to replace. It
+      can be any of the following forms: *
+      `namespaces/{project_id_or_number}/workerpools/{worker_pool_name}` (only
+      when the `endpoint` is regional) * `projects/{project_id_or_number}/loca
+      tions/{region}/workerpools/{worker_pool_name}` * `projects/{project_id_o
+      r_number}/regions/{region}/workerpools/{worker_pool_name}`
+    workerPool: A WorkerPool resource to be passed as the request body.
+  """
+
+  dryRun = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  workerPool = _messages.MessageField('WorkerPool', 3)
+
+
 class RunProjectsAuthorizeddomainsListRequest(_messages.Message):
   r"""A RunProjectsAuthorizeddomainsListRequest object.
 
@@ -5642,6 +5775,78 @@ class VolumeMount(_messages.Message):
   subPath = _messages.StringField(4)
 
 
+class WorkerPool(_messages.Message):
+  r"""WorkerPool acts as a top-level container that manages a set instance
+  splits among a set of Revisions and a template for creating new Revisions.
+
+  Fields:
+    apiVersion: The API version for this call. It must be
+      "run.googleapis.com/v1".
+    kind: The kind of resource. It must be "WorkerPool".
+    metadata: Metadata associated with this WorkerPool, including name,
+      namespace, labels, and annotations. In Cloud Run, annotations with
+      'run.googleapis.com/' and 'autoscaling.knative.dev' are restricted, and
+      the accepted annotations will be different depending on the resource
+      type. The following Cloud Run-specific annotations are accepted in
+      WorkerPool.metadata.annotations. * `run.googleapis.com/binary-
+      authorization-breakglass` * `run.googleapis.com/binary-authorization` *
+      `run.googleapis.com/client-name` * `run.googleapis.com/description`
+    spec: Holds the desired state of the WorkerPool (from the client).
+    status: Communicates the system-controlled state of the WorkerPool.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('WorkerPoolSpec', 4)
+  status = _messages.MessageField('WorkerPoolStatus', 5)
+
+
+class WorkerPoolSpec(_messages.Message):
+  r"""WorkerPoolSpec holds the desired state of the WorkerPool's template and
+  instance splits.
+
+  Fields:
+    instanceSplits: Specifies how to distribute instances over a collection of
+      Revisions.
+    template: Holds the latest specification for the Revision to be stamped
+      out.
+  """
+
+  instanceSplits = _messages.MessageField('InstanceSplit', 1, repeated=True)
+  template = _messages.MessageField('RevisionTemplate', 2)
+
+
+class WorkerPoolStatus(_messages.Message):
+  r"""The current state of the WorkerPool. Output only.
+
+  Fields:
+    conditions: Conditions communicate information about ongoing/complete
+      reconciliation processes that bring the `spec` inline with the observed
+      state of the world. * `Ready`: `True` when all underlying resources are
+      ready.
+    instanceSplits: Holds the configured traffic distribution. These entries
+      will always contain RevisionName references. When ConfigurationName
+      appears in the spec, this will hold the LatestReadyRevisionName that we
+      last observed.
+    latestCreatedRevisionName: Name of the last revision that was created from
+      this WorkerPool's template. It might not be ready yet, for that use
+      LatestReadyRevisionName.
+    latestReadyRevisionName: Name of the latest Revision from this
+      WorkerPool's template that has had its `Ready` condition become `True`.
+    observedGeneration: Returns the generation last seen by the system.
+      Clients polling for completed reconciliation should poll until
+      observedGeneration = metadata.generation and the Ready condition's
+      status is True or False.
+  """
+
+  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
+  instanceSplits = _messages.MessageField('InstanceSplit', 2, repeated=True)
+  latestCreatedRevisionName = _messages.StringField(3)
+  latestReadyRevisionName = _messages.StringField(4)
+  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 encoding.AddCustomJsonFieldMapping(
     ListMeta, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(
@@ -5668,6 +5873,8 @@ encoding.AddCustomJsonFieldMapping(
     RunNamespacesServicesListRequest, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(
     RunNamespacesTasksListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesWorkerpoolsListRequest, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(
     RunProjectsLocationsConfigurationsListRequest, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(

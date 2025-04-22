@@ -978,6 +978,12 @@ def ConstructPatchRequestFromArgsAlpha(alloydb_messages, instance_ref, args):
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsAlpha(
       alloydb_messages, instance_ref, args
   )
+
+  activation_policy_path = 'activationPolicy'
+  if args.activation_policy:
+    instance_resource.activationPolicy = args.activation_policy
+    paths.append(activation_policy_path)
+
   mask = ','.join(paths) if paths else None
 
   return alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(

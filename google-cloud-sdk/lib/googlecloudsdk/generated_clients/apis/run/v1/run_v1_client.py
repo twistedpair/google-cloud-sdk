@@ -48,6 +48,7 @@ class RunV1(base_api.BaseApiClient):
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
     self.namespaces_tasks = self.NamespacesTasksService(self)
+    self.namespaces_workerpools = self.NamespacesWorkerpoolsService(self)
     self.namespaces = self.NamespacesService(self)
     self.projects_authorizeddomains = self.ProjectsAuthorizeddomainsService(self)
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
@@ -931,6 +932,151 @@ class RunV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='RunNamespacesTasksListRequest',
         response_type_name='ListTasksResponse',
+        supports_download=False,
+    )
+
+  class NamespacesWorkerpoolsService(base_api.BaseApiService):
+    """Service class for the namespaces_workerpools resource."""
+
+    _NAME = 'namespaces_workerpools'
+
+    def __init__(self, client):
+      super(RunV1.NamespacesWorkerpoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkerPool. WorkerPool creation will trigger a new deployment. Use GetWorkerPool, and check worker_pool.status to determine if the WorkerPool is ready.
+
+      Args:
+        request: (RunNamespacesWorkerpoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkerPool) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/workerpools',
+        http_method='POST',
+        method_id='run.namespaces.workerpools.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dryRun'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/workerpools',
+        request_field='workerPool',
+        request_type_name='RunNamespacesWorkerpoolsCreateRequest',
+        response_type_name='WorkerPool',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the provided worker pool. This will cause the WorkerPool to stop all instances and will delete all associated WorkerPoolRevisions.
+
+      Args:
+        request: (RunNamespacesWorkerpoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Status) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/workerpools/{workerpoolsId}',
+        http_method='DELETE',
+        method_id='run.namespaces.workerpools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['dryRun'],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesWorkerpoolsDeleteRequest',
+        response_type_name='Status',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a worker pool.
+
+      Args:
+        request: (RunNamespacesWorkerpoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkerPool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/workerpools/{workerpoolsId}',
+        http_method='GET',
+        method_id='run.namespaces.workerpools.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesWorkerpoolsGetRequest',
+        response_type_name='WorkerPool',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists worker pools for the given project and region. Results are sorted by creation time, descending.
+
+      Args:
+        request: (RunNamespacesWorkerpoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkerPoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/workerpools',
+        http_method='GET',
+        method_id='run.namespaces.workerpools.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'labelSelector', 'limit'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/workerpools',
+        request_field='',
+        request_type_name='RunNamespacesWorkerpoolsListRequest',
+        response_type_name='ListWorkerPoolsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceWorkerPool(self, request, global_params=None):
+      r"""Replaces a worker pool. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesWorkerpoolsReplaceWorkerPoolRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkerPool) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceWorkerPool')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceWorkerPool.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/workerpools/{workerpoolsId}',
+        http_method='PUT',
+        method_id='run.namespaces.workerpools.replaceWorkerPool',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['dryRun'],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='workerPool',
+        request_type_name='RunNamespacesWorkerpoolsReplaceWorkerPoolRequest',
+        response_type_name='WorkerPool',
         supports_download=False,
     )
 

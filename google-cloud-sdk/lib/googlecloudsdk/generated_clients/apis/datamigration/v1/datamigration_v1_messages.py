@@ -5705,6 +5705,10 @@ class SourceObjectIdentifier(_messages.Message):
   Fields:
     database: Optional. The database name. This will be required only if the
       object uses a database name as part of its unique identifier.
+    schema: Optional. The schema name. This will be required only if the
+      object uses a schema name as part of its unique identifier.
+    table: Optional. The table name. This will be required only if the object
+      is a level below database or schema.
     type: Required. The type of the migration job object.
   """
 
@@ -5715,12 +5719,18 @@ class SourceObjectIdentifier(_messages.Message):
       MIGRATION_JOB_OBJECT_TYPE_UNSPECIFIED: The type of the migration job
         object is unknown.
       DATABASE: The migration job object is a database.
+      SCHEMA: The migration job object is a schema.
+      TABLE: The migration job object is a table.
     """
     MIGRATION_JOB_OBJECT_TYPE_UNSPECIFIED = 0
     DATABASE = 1
+    SCHEMA = 2
+    TABLE = 3
 
   database = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  schema = _messages.StringField(2)
+  table = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class SourceObjectsConfig(_messages.Message):

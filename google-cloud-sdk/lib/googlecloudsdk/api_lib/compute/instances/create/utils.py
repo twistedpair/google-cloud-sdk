@@ -1195,12 +1195,14 @@ def BuildShieldedInstanceConfigMessage(messages, args):
 def BuildConfidentialInstanceConfigMessage(
     messages, args,
     support_confidential_compute_type=False,
-    support_confidential_compute_type_tdx=False):
+    support_confidential_compute_type_tdx=False,
+    support_snp_svsm=False):
   """Builds a confidential instance configuration message."""
   return instance_utils.CreateConfidentialInstanceMessage(
       messages, args,
       support_confidential_compute_type,
-      support_confidential_compute_type_tdx)
+      support_confidential_compute_type_tdx,
+      support_snp_svsm)
 
 
 def GetImageUri(args,
