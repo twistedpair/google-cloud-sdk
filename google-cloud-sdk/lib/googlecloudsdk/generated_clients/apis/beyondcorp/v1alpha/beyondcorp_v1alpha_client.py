@@ -77,60 +77,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Delete(self, request, global_params=None):
-      r"""Deletes an existing BrowserDlpRule.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/browserDlpRules/{browserDlpRulesId}',
-        http_method='DELETE',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.browserDlpRules.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single BrowserDlpRule.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}/browserDlpRules/{browserDlpRulesId}',
-        http_method='GET',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.browserDlpRules.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequest',
-        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule',
-        supports_download=False,
-    )
-
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 

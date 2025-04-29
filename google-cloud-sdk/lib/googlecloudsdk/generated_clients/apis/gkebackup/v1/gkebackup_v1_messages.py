@@ -3080,7 +3080,7 @@ class Restore(_messages.Message):
       completed.
     createTime: Output only. The timestamp when this Restore resource was
       created.
-    description: User specified descriptive string for this Restore.
+    description: Optional. User specified descriptive string for this Restore.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a restore from overwriting
       each other. It is strongly suggested that systems make use of the `etag`

@@ -49,18 +49,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  ORGANIZATIONS_LOCATIONS_GLOBAL_PARTNERTENANTS_BROWSERDLPRULES = (
-      'organizations.locations.global.partnerTenants.browserDlpRules',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/locations/global/'
-              'partnerTenants/{partnerTenantsId}/browserDlpRules/'
-              '{browserDlpRulesId}',
-      },
-      ['name'],
-      True
-  )
   ORGANIZATIONS_LOCATIONS_INSIGHTS = (
       'organizations.locations.insights',
       '{+name}',

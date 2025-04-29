@@ -97,9 +97,12 @@ class AbortInfo(_messages.Message):
         configuration was missing.
       ROUTE_CONFIG_NOT_FOUND: Aborted because expected route configuration was
         missing.
-      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT: Aborted because a PSC
+      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT: Aborted because PSC
         endpoint selection for the Google-managed service is ambiguous
         (several PSC endpoints satisfy test input).
+      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT: Aborted because endpoint
+        selection for the Google-managed service is ambiguous (several
+        endpoints satisfy test input).
       SOURCE_PSC_CLOUD_SQL_UNSUPPORTED: Aborted because tests with a PSC-based
         Cloud SQL instance as a source are not supported.
       SOURCE_REDIS_CLUSTER_UNSUPPORTED: Aborted because tests with a Redis
@@ -147,14 +150,15 @@ class AbortInfo(_messages.Message):
     FIREWALL_CONFIG_NOT_FOUND = 26
     ROUTE_CONFIG_NOT_FOUND = 27
     GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 28
-    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 29
-    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 30
-    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 31
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 32
-    NON_ROUTABLE_IP_ADDRESS = 33
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 34
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 35
-    NO_SERVERLESS_IP_RANGES = 36
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT = 29
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 30
+    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 31
+    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 32
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 33
+    NON_ROUTABLE_IP_ADDRESS = 34
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 35
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 36
+    NO_SERVERLESS_IP_RANGES = 37
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -660,16 +664,16 @@ class DropInfo(_messages.Message):
         based VPN tunnel remote selector.
       PRIVATE_TRAFFIC_TO_INTERNET: Packet with internal destination address
         sent to the internet gateway.
-      PRIVATE_GOOGLE_ACCESS_DISALLOWED: Instance with only an internal IP
-        address tries to access Google API and services, but private Google
-        access is not enabled in the subnet.
+      PRIVATE_GOOGLE_ACCESS_DISALLOWED: Endpoint with only an internal IP
+        address tries to access Google API and services, but Private Google
+        Access is not enabled in the subnet or is not applicable.
       PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED: Source endpoint tries
         to access Google API and services through the VPN tunnel to another
         network, but Private Google Access needs to be enabled in the source
         endpoint network.
-      NO_EXTERNAL_ADDRESS: Instance with only an internal IP address tries to
-        access external hosts, but Cloud NAT is not enabled in the subnet,
-        unless special configurations on a VM allow this connection.
+      NO_EXTERNAL_ADDRESS: Endpoint with only an internal IP address tries to
+        access external hosts, but there is no matching Cloud NAT gateway in
+        the subnet.
       UNKNOWN_INTERNAL_ADDRESS: Destination internal address cannot be
         resolved to a known target. If this is a shared VPC scenario, verify
         if the service project ID is provided as test input. Otherwise, verify
@@ -854,6 +858,12 @@ class DropInfo(_messages.Message):
       TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED: Packet could be
         dropped because hybrid endpoint like a VPN gateway or Interconnect is
         not allowed to send traffic to the Internet.
+      NO_MATCHING_NAT64_GATEWAY: Packet with destination IP address within the
+        reserved NAT64 range is dropped due to no matching NAT gateway in the
+        subnet.
+      LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH: Packet is dropped due to
+        being sent to a backend of a passthrough load balancer that doesn't
+        use the same IP version as the frontend.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -944,6 +954,8 @@ class DropInfo(_messages.Message):
     PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 86
     UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 87
     TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 88
+    NO_MATCHING_NAT64_GATEWAY = 89
+    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 90
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -1451,6 +1463,7 @@ class InstanceInfo(_messages.Message):
     networkUri: URI of a Compute Engine network.
     pscNetworkAttachmentUri: URI of the PSC network attachment the NIC is
       attached to (if relevant).
+    running: Indicates whether the Compute Engine instance is running.
     serviceAccount: Service account authorized for the instance.
     uri: URI of a Compute Engine instance.
   """
@@ -1462,8 +1475,9 @@ class InstanceInfo(_messages.Message):
   networkTags = _messages.StringField(5, repeated=True)
   networkUri = _messages.StringField(6)
   pscNetworkAttachmentUri = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  uri = _messages.StringField(9)
+  running = _messages.BooleanField(8)
+  serviceAccount = _messages.StringField(9)
+  uri = _messages.StringField(10)
 
 
 class LatencyDistribution(_messages.Message):

@@ -666,6 +666,7 @@ class CommonFeatureSpec(_messages.Message):
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
+    rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
     workloadmigration: The specification for WorkloadMigration feature.
   """
 
@@ -675,7 +676,8 @@ class CommonFeatureSpec(_messages.Message):
   fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
   helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 7)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 7)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 8)
 
 
 class CommonFeatureState(_messages.Message):
@@ -686,6 +688,7 @@ class CommonFeatureState(_messages.Message):
     clusterupgrade: ClusterUpgrade fleet-level state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
+    rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     state: Output only. The "running state" of the Feature in this Fleet.
   """
 
@@ -693,7 +696,8 @@ class CommonFeatureState(_messages.Message):
   clusterupgrade = _messages.MessageField('ClusterUpgradeFleetState', 2)
   fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
   helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
-  state = _messages.MessageField('FeatureState', 5)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 5)
+  state = _messages.MessageField('FeatureState', 6)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -5038,9 +5042,16 @@ class Membership(_messages.Message):
     ClusterTierValueValuesEnum: Output only. The tier of the cluster.
     InfrastructureTypeValueValuesEnum: Optional. The infrastructure type this
       Membership is running on.
+    MembershipTypeValueValuesEnum: Output only. The type of the membership.
 
   Messages:
-    LabelsValue: Optional. Labels for this membership.
+    LabelsValue: Optional. Labels for this membership. These labels are not
+      leveraged by multi-cluster features, instead, we prefer cluster labels,
+      which can be set on GKE cluster or other cluster types.
+    PlatformLabelsValue: Output only. The labels of the cluster, coming from
+      the platform api For example, a GKE cluster object labels are replicated
+      here. This field is used by multi-cluster features as the source of
+      labels and they ignore the membership labels (the `labels` field)
 
   Fields:
     authority: Optional. How to identify workloads from this Membership. See
@@ -5060,12 +5071,15 @@ class Membership(_messages.Message):
       the UID of the `kube-system` namespace object.
     infrastructureType: Optional. The infrastructure type this Membership is
       running on.
-    labels: Optional. Labels for this membership.
+    labels: Optional. Labels for this membership. These labels are not
+      leveraged by multi-cluster features, instead, we prefer cluster labels,
+      which can be set on GKE cluster or other cluster types.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
       is updated every several minutes, not continuously. For clusters that do
       not use GKE Connect, or that have never connected successfully, this
       field will be unset.
+    membershipType: Output only. The type of the membership.
     monitoringConfig: Optional. The monitoring config information for this
       membership.
     name: Output only. The full, unique name of this Membership resource in
@@ -5075,6 +5089,10 @@ class Membership(_messages.Message):
       case alphanumeric characters or `-` 3. It must start and end with an
       alphanumeric character Which can be expressed as the regex:
       `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+    platformLabels: Output only. The labels of the cluster, coming from the
+      platform api For example, a GKE cluster object labels are replicated
+      here. This field is used by multi-cluster features as the source of
+      labels and they ignore the membership labels (the `labels` field)
     state: Output only. State of the Membership resource.
     uniqueId: Output only. Google-generated UUID for this resource. This is
       unique across all Membership resources. If a Membership resource is
@@ -5111,9 +5129,22 @@ class Membership(_messages.Message):
     ON_PREM = 1
     MULTI_CLOUD = 2
 
+  class MembershipTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the membership.
+
+    Values:
+      MEMBERSHIP_TYPE_UNSPECIFIED: The MembershipType is not set.
+      LIGHTWEIGHT: The membership supports only lightweight compatible
+        features.
+    """
+    MEMBERSHIP_TYPE_UNSPECIFIED = 0
+    LIGHTWEIGHT = 1
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels for this membership.
+    r"""Optional. Labels for this membership. These labels are not leveraged
+    by multi-cluster features, instead, we prefer cluster labels, which can be
+    set on GKE cluster or other cluster types.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -5135,6 +5166,34 @@ class Membership(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PlatformLabelsValue(_messages.Message):
+    r"""Output only. The labels of the cluster, coming from the platform api
+    For example, a GKE cluster object labels are replicated here. This field
+    is used by multi-cluster features as the source of labels and they ignore
+    the membership labels (the `labels` field)
+
+    Messages:
+      AdditionalProperty: An additional property for a PlatformLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PlatformLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PlatformLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authority = _messages.MessageField('Authority', 1)
   clusterTier = _messages.EnumField('ClusterTierValueValuesEnum', 2)
   createTime = _messages.StringField(3)
@@ -5145,11 +5204,13 @@ class Membership(_messages.Message):
   infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 8)
   labels = _messages.MessageField('LabelsValue', 9)
   lastConnectionTime = _messages.StringField(10)
-  monitoringConfig = _messages.MessageField('MonitoringConfig', 11)
-  name = _messages.StringField(12)
-  state = _messages.MessageField('MembershipState', 13)
-  uniqueId = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  membershipType = _messages.EnumField('MembershipTypeValueValuesEnum', 11)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 12)
+  name = _messages.StringField(13)
+  platformLabels = _messages.MessageField('PlatformLabelsValue', 14)
+  state = _messages.MessageField('MembershipState', 15)
+  uniqueId = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class MembershipBinding(_messages.Message):
@@ -6514,6 +6575,27 @@ class RBACRoleBinding(_messages.Message):
   user = _messages.StringField(10)
 
 
+class RBACRoleBindingActuationFeatureSpec(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: The Hub-wide input for the
+  RBACRoleBindingActuation feature.
+
+  Fields:
+    allowedCustomRoles: The list of allowed custom roles (ClusterRoles). If a
+      ClusterRole is not part of this list, it cannot be used in a Scope
+      RBACRoleBinding. If a ClusterRole in this list is in use, it cannot be
+      removed from the list.
+  """
+
+  allowedCustomRoles = _messages.StringField(1, repeated=True)
+
+
+class RBACRoleBindingActuationFeatureState(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: An empty state left as an example Hub-
+  wide Feature state.
+  """
+
+
+
 class RBACRoleBindingLifecycleState(_messages.Message):
   r"""RBACRoleBindingLifecycleState describes the state of a RbacRoleBinding
   resource.
@@ -6652,6 +6734,8 @@ class Role(_messages.Message):
       role to use
 
   Fields:
+    customRole: Optional. custom_role is the name of a custom
+      KubernetesClusterRole to use.
     predefinedRole: predefined_role is the Kubernetes default role to use
   """
 
@@ -6672,7 +6756,8 @@ class Role(_messages.Message):
     VIEW = 3
     ANTHOS_SUPPORT = 4
 
-  predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
+  customRole = _messages.StringField(1)
+  predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 2)
 
 
 class Rule(_messages.Message):
@@ -6694,7 +6779,7 @@ class Rule(_messages.Message):
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
       (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
+    permissions: A permission is a string of form `..` (e.g.,
       'storage.buckets.list'). A value of '*' matches all permissions, and a
       verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
   """
@@ -6923,8 +7008,7 @@ class SecurityPostureConfig(_messages.Message):
 
 
 class ServiceMeshCondition(_messages.Message):
-  r"""Condition being reported. TODO b/395151419: Remove this message once the
-  membership-level conditions field uses the common Condition message.
+  r"""Condition being reported.
 
   Enums:
     CodeValueValuesEnum: Unique identifier of the condition which describes
@@ -7246,7 +7330,6 @@ class ServiceMeshMembershipState(_messages.Message):
 
   Fields:
     conditions: Output only. List of conditions reported for this membership.
-      TODO b/395151419: Use the common Condition message.
     controlPlaneManagement: Output only. Status of control plane management
     dataPlaneManagement: Output only. Status of data plane management.
   """

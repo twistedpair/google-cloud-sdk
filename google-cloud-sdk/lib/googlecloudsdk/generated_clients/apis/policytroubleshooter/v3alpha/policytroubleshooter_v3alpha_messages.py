@@ -3532,7 +3532,7 @@ class GoogleIamV1Rule(_messages.Message):
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
       (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
+    permissions: A permission is a string of form `..` (e.g.,
       'storage.buckets.list'). A value of '*' matches all permissions, and a
       verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
   """
@@ -5033,7 +5033,9 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
       NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
         permission to auth session info
       NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
-        TODO(b/382592764) Add support for NODE_ERROR_UNKNOWN_REGION
+      NODE_ERROR_INVALID_NETWORK: The network project in the list for
+        `in_vpc_network` is not valid. TODO(b/382592764) Add support for
+        NODE_ERROR_UNKNOWN_REGION
     """
     NODE_ERROR_UNSPECIFIED = 0
     NODE_ERROR_INTERNAL_ERROR = 1
@@ -5047,6 +5049,7 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
     NODE_ERROR_NO_MATCHING_OVERLOADED_FUNC = 9
     NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED = 10
     NODE_ERROR_NO_BCE_LICENSE = 11
+    NODE_ERROR_INVALID_NETWORK = 12
 
   class NodeStateValueValuesEnum(_messages.Enum):
     r"""Evaluation state of this node
@@ -5088,7 +5091,9 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
       NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
         permission to auth session info
       NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
-        TODO(b/382592764) Add support for NODE_ERROR_UNKNOWN_REGION
+      NODE_ERROR_INVALID_NETWORK: The network project in the list for
+        `in_vpc_network` is not valid. TODO(b/382592764) Add support for
+        NODE_ERROR_UNKNOWN_REGION
     """
     NODE_ERROR_UNSPECIFIED = 0
     NODE_ERROR_INTERNAL_ERROR = 1
@@ -5102,6 +5107,7 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
     NODE_ERROR_NO_MATCHING_OVERLOADED_FUNC = 9
     NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED = 10
     NODE_ERROR_NO_BCE_LICENSE = 11
+    NODE_ERROR_INVALID_NETWORK = 12
 
   criticalNodeErrors = _messages.EnumField('CriticalNodeErrorsValueListEntryValuesEnum', 1, repeated=True)
   nodeState = _messages.EnumField('NodeStateValueValuesEnum', 2)

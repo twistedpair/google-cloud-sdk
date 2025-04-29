@@ -6086,6 +6086,7 @@ class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
       in the same session do not necessarily need to specify the same
       language.
     text: The natural language text to be processed.
+    toolCallResult: The results of a tool executed by the client.
   """
 
   audio = _messages.MessageField('GoogleCloudDialogflowCxV3AudioInput', 1)
@@ -6094,6 +6095,7 @@ class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
   intent = _messages.MessageField('GoogleCloudDialogflowCxV3IntentInput', 4)
   languageCode = _messages.StringField(5)
   text = _messages.MessageField('GoogleCloudDialogflowCxV3TextInput', 6)
+  toolCallResult = _messages.MessageField('GoogleCloudDialogflowCxV3ToolCallResult', 7)
 
 
 class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
@@ -6147,6 +6149,8 @@ class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
     telephonyTransferCall: A signal that the client should transfer the phone
       call connected to this agent to a third-party endpoint.
     text: Returns a text response.
+    toolCall: Returns the definition of a tool call that should be executed by
+      the client.
   """
 
   class ResponseTypeValueValuesEnum(_messages.Enum):
@@ -6200,6 +6204,7 @@ class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
   responseType = _messages.EnumField('ResponseTypeValueValuesEnum', 10)
   telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall', 11)
   text = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageText', 12)
+  toolCall = _messages.MessageField('GoogleCloudDialogflowCxV3ToolCall', 13)
 
 
 class GoogleCloudDialogflowCxV3ResponseMessageConversationSuccess(_messages.Message):
@@ -6664,6 +6669,105 @@ class GoogleCloudDialogflowCxV3TextInput(_messages.Message):
   """
 
   text = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3ToolCall(_messages.Message):
+  r"""Represents a call of a specific tool's action with the specified inputs.
+
+  Messages:
+    InputParametersValue: Optional. The action's input parameters.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    inputParameters: Optional. The action's input parameters.
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//agents//tools/`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputParametersValue(_messages.Message):
+    r"""Optional. The action's input parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  inputParameters = _messages.MessageField('InputParametersValue', 2)
+  tool = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowCxV3ToolCallResult(_messages.Message):
+  r"""The result of calling a tool's action that has been executed by the
+  client.
+
+  Messages:
+    OutputParametersValue: The tool call's output parameters.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    error: The tool call's error.
+    outputParameters: The tool call's output parameters.
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//agents//tools/`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputParametersValue(_messages.Message):
+    r"""The tool call's output parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  error = _messages.MessageField('GoogleCloudDialogflowCxV3ToolCallResultError', 2)
+  outputParameters = _messages.MessageField('OutputParametersValue', 3)
+  tool = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowCxV3ToolCallResultError(_messages.Message):
+  r"""An error produced by the tool call.
+
+  Fields:
+    message: Optional. The error message of the function.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3TransitionRoute(_messages.Message):
@@ -11955,6 +12059,40 @@ class GoogleCloudDialogflowV2CreateConversationModelOperationMetadata(_messages.
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
+class GoogleCloudDialogflowV2CustomPronunciationParams(_messages.Message):
+  r"""Pronunciation customization for a phrase.
+
+  Enums:
+    PhoneticEncodingValueValuesEnum: The phonetic encoding of the phrase.
+
+  Fields:
+    phoneticEncoding: The phonetic encoding of the phrase.
+    phrase: The phrase to which the customization is applied. The phrase can
+      be multiple words, such as proper nouns, but shouldn't span the length
+      of the sentence.
+    pronunciation: The pronunciation of the phrase. This must be in the
+      phonetic encoding specified above.
+  """
+
+  class PhoneticEncodingValueValuesEnum(_messages.Enum):
+    r"""The phonetic encoding of the phrase.
+
+    Values:
+      PHONETIC_ENCODING_UNSPECIFIED: Not specified.
+      PHONETIC_ENCODING_IPA: IPA, such as apple -> \u02c8\xe6p\u0259l.
+        https://en.wikipedia.org/wiki/International_Phonetic_Alphabet
+      PHONETIC_ENCODING_X_SAMPA: X-SAMPA, such as apple -> "{p@l".
+        https://en.wikipedia.org/wiki/X-SAMPA
+    """
+    PHONETIC_ENCODING_UNSPECIFIED = 0
+    PHONETIC_ENCODING_IPA = 1
+    PHONETIC_ENCODING_X_SAMPA = 2
+
+  phoneticEncoding = _messages.EnumField('PhoneticEncodingValueValuesEnum', 1)
+  phrase = _messages.StringField(2)
+  pronunciation = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2DeleteConversationDatasetOperationMetadata(_messages.Message):
   r"""Metadata for DeleteConversationDataset."""
 
@@ -13965,7 +14103,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       Support](https://cloud.google.com/dialogflow/docs/reference/language)
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
-      language.
+      language. If not set, the language is inferred from the
+      ConversationProfile.stt_config.
     model: Optional. Which Speech model to select for the given request. For
       more information, see [Speech
       models](https://cloud.google.com/dialogflow/es/docs/speech-models).
@@ -16870,7 +17009,8 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       Support](https://cloud.google.com/dialogflow/docs/reference/language)
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
-      language.
+      language. If not specified, the default language configured at
+      ConversationProfile is used.
     model: Which Speech model to select. Select the model best suited to your
       domain to get best results. If a model is not explicitly specified, then
       Dialogflow auto-selects a model based on other parameters in the
@@ -17537,6 +17677,8 @@ class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):
     pitch: Optional. Speaking pitch, in the range [-20.0, 20.0]. 20 means
       increase 20 semitones from the original pitch. -20 means decrease 20
       semitones from the original pitch.
+    pronunciations: Optional. The custom pronunciations for the synthesized
+      audio.
     speakingRate: Optional. Speaking rate/speed, in the range [0.25, 4.0]. 1.0
       is the normal native speed supported by the specific voice. 2.0 is twice
       as fast, and 0.5 is half as fast. If unset(0.0), defaults to the native
@@ -17555,9 +17697,10 @@ class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):
 
   effectsProfileId = _messages.StringField(1, repeated=True)
   pitch = _messages.FloatField(2)
-  speakingRate = _messages.FloatField(3)
-  voice = _messages.MessageField('GoogleCloudDialogflowV2VoiceSelectionParams', 4)
-  volumeGainDb = _messages.FloatField(5)
+  pronunciations = _messages.MessageField('GoogleCloudDialogflowV2CustomPronunciationParams', 3, repeated=True)
+  speakingRate = _messages.FloatField(4)
+  voice = _messages.MessageField('GoogleCloudDialogflowV2VoiceSelectionParams', 5)
+  volumeGainDb = _messages.FloatField(6)
 
 
 class GoogleCloudDialogflowV2TextInput(_messages.Message):
@@ -20913,7 +21056,6 @@ class GoogleCloudDialogflowV2beta1StreamingRecognitionResult(_messages.Message):
     Values:
       MESSAGE_TYPE_UNSPECIFIED: Not specified. Should never be used.
       TRANSCRIPT: Message contains a (possibly partial) transcript.
-      DTMF_DIGITS: Message contains DTMF digits.
       END_OF_SINGLE_UTTERANCE: This event indicates that the server has
         detected the end of the user's speech utterance and expects no
         additional speech. Therefore, the server will not process additional
@@ -20922,6 +21064,7 @@ class GoogleCloudDialogflowV2beta1StreamingRecognitionResult(_messages.Message):
         connection, and wait for any additional results until the server
         closes the gRPC connection. This message is only sent if
         `single_utterance` was set to `true`, and is not used otherwise.
+      DTMF_DIGITS: Message contains DTMF digits.
       PARTIAL_DTMF_DIGITS: Message contains DTMF digits. Before a message with
         DTMF_DIGITS is sent, a message with PARTIAL_DTMF_DIGITS may be sent
         with DTMF digits collected up to the time of sending, which represents
@@ -20929,8 +21072,8 @@ class GoogleCloudDialogflowV2beta1StreamingRecognitionResult(_messages.Message):
     """
     MESSAGE_TYPE_UNSPECIFIED = 0
     TRANSCRIPT = 1
-    DTMF_DIGITS = 2
-    END_OF_SINGLE_UTTERANCE = 3
+    END_OF_SINGLE_UTTERANCE = 2
+    DTMF_DIGITS = 3
     PARTIAL_DTMF_DIGITS = 4
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

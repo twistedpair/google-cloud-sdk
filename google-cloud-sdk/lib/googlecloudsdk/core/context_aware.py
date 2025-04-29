@@ -46,20 +46,27 @@ CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION = 'Account restricted'
 # )
 
 CONTEXT_AWARE_ACCESS_HELP_MSG = (
-    'Access was blocked by Context Aware Access. If you are using gcloud'
-    ' in an SSH session and your organization requires gcloud from a company'
-    ' registered device, please first RDP into your remote machine and log into'
-    ' Chrome.'
+    'Access was blocked by Context Aware Access. If you are using gcloud on a'
+    ' remote machine via SSH and your organization requires gcloud from a'
+    ' company managed device, please first CRD (Chrome Remote Desktop) or RDP'
+    ' (Remote Desktop Protocol) into your remote machine and log into Chrome.'
+    ' This would get your remote machine registered. After that, you should be'
+    ' able to run gcloud on that machine via SSH.'
 )
 CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
     'Access was blocked by Context Aware Access. Possible solutions:\n\n 1. If'
-    ' you are using gcloud in an SSH session and your organization requires'
-    ' gcloud from a company registered device, please first RDP into your'
-    ' remote machine and log into Chrome.\n 2. If you are using a non-mTLS'
-    ' custom endpoint override, please switch to using an using an mTLS custom'
-    ' endpoint (go/google-api-mtls-endpoints) override instead, if it is'
-    ' available.\n\nIf you are not able to do either of the above, please apply'
-    ' for policy exemption via this link. go/gcloud-cba-exception'
+    ' you are using gcloud on cloudtop or other remote machines via SSH and'
+    ' your organization requires gcloud from a company managed device, please'
+    ' first CRD/RDP into your remote machine and log into Chrome. This would'
+    ' get your remote machine registered. After that, you should be able to run'
+    ' gcloud on that machine via SSH.\n\n 2. If you are using a non-mTLS custom'
+    ' endpoint override, please switch to using a mTLS custom endpoint'
+    ' (go/google-api-mtls-endpoints) override instead, if it is available.\n\n'
+    ' 3. Please do not use gcloud in Cloud Shell as it is not a Google managed'
+    ' device. Please choose corp machines instead, for example, gMac, gLinux,'
+    ' gWindows, or Cloudtop.\n\n If you are not able to do any of the above,'
+    ' please apply for policy exemption via go/gcloud-cba-exemption'
+    ' or reach out to go/gcloud-cba-investigation for investigation.'
 )
 
 
@@ -237,12 +244,23 @@ def _RepairECP(cert_config_file_path):
       sdk_root=None, url=None, platform_filter=platform
   )
 
-  already_installed = updater.EnsureInstalledAndRestart(
-      ['enterprise-certificate-proxy'],
-      'Device appears to be enrolled in Certificate Base Access but is missing'
-      ' criticial components. Installing enterprise-certificate-proxy and'
-      ' restarting gcloud.',
-  )
+  try:
+    already_installed = updater.EnsureInstalledAndRestart(
+        ['enterprise-certificate-proxy'],
+        'Device appears to be enrolled in Certificate Based Access but is'
+        ' missing critical components. Installing enterprise-certificate-proxy'
+        ' and restarting gcloud.',
+    )
+  except exceptions.RequiresAdminRightsError as e:
+    raise exceptions.Error(
+        'Enterprise Certificate Proxy cannot be repaired because you do not'
+        ' have permission to modify the Google Cloud SDK installation'
+        ' directory [{sdk_root}]. Please reinstall Google Cloud SDK in a'
+        ' location where you have write permissions, such as your home'
+        ' directory.'.format(
+            sdk_root=config.Paths().sdk_root
+        )
+    ) from e
 
   if already_installed:
     enterprise_certificate_config.update_config(

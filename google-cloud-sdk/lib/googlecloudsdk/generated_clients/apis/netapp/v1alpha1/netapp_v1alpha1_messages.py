@@ -2990,6 +2990,8 @@ class StoragePool(_messages.Message):
   Enums:
     EncryptionTypeValueValuesEnum: Output only. Specifies the current pool
       encryption key source.
+    QosTypeValueValuesEnum: Optional. QoS (Quality of Service) Type of the
+      storage pool
     ServiceLevelValueValuesEnum: Required. Service level of the storage pool
     StateValueValuesEnum: Output only. State of the storage pool
 
@@ -3002,6 +3004,8 @@ class StoragePool(_messages.Message):
     allowAutoTiering: Optional. True if the storage pool supports Auto Tiering
       enabled volumes. Default is false. Auto-tiering can be enabled after
       storage pool creation but it can't be disabled once enabled.
+    availableThroughputMibps: Output only. Available throughput of the storage
+      pool (in MiB/s).
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
     customPerformanceEnabled: Optional. True if using Independent Scaling of
@@ -3029,6 +3033,7 @@ class StoragePool(_messages.Message):
       projects/{project}/global/networks/{network}
     psaRange: Optional. This field is not implemented. The values provided in
       this field are ignored.
+    qosType: Optional. QoS (Quality of Service) Type of the storage pool
     replicaZone: Optional. Specifies the replica zone for regional
       storagePool.
     satisfiesPzi: Output only. Reserved for future use
@@ -3058,6 +3063,18 @@ class StoragePool(_messages.Message):
     ENCRYPTION_TYPE_UNSPECIFIED = 0
     SERVICE_MANAGED = 1
     CLOUD_KMS = 2
+
+  class QosTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. QoS (Quality of Service) Type of the storage pool
+
+    Values:
+      QOS_TYPE_UNSPECIFIED: Unspecified QoS Type
+      AUTO: QoS Type is Auto
+      MANUAL: QoS Type is Manual
+    """
+    QOS_TYPE_UNSPECIFIED = 0
+    AUTO = 1
+    MANUAL = 2
 
   class ServiceLevelValueValuesEnum(_messages.Enum):
     r"""Required. Service level of the storage pool
@@ -3123,31 +3140,33 @@ class StoragePool(_messages.Message):
 
   activeDirectory = _messages.StringField(1)
   allowAutoTiering = _messages.BooleanField(2)
-  capacityGib = _messages.IntegerField(3)
-  createTime = _messages.StringField(4)
-  customPerformanceEnabled = _messages.BooleanField(5)
-  description = _messages.StringField(6)
-  enableHotTierAutoResize = _messages.BooleanField(7)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 8)
-  globalAccessAllowed = _messages.BooleanField(9)
-  hotTierSizeGib = _messages.IntegerField(10)
-  kmsConfig = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  ldapEnabled = _messages.BooleanField(13)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  psaRange = _messages.StringField(16)
-  replicaZone = _messages.StringField(17)
-  satisfiesPzi = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  stateDetails = _messages.StringField(22)
-  totalIops = _messages.IntegerField(23)
-  totalThroughputMibps = _messages.IntegerField(24)
-  volumeCapacityGib = _messages.IntegerField(25)
-  volumeCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(27)
+  availableThroughputMibps = _messages.FloatField(3)
+  capacityGib = _messages.IntegerField(4)
+  createTime = _messages.StringField(5)
+  customPerformanceEnabled = _messages.BooleanField(6)
+  description = _messages.StringField(7)
+  enableHotTierAutoResize = _messages.BooleanField(8)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 9)
+  globalAccessAllowed = _messages.BooleanField(10)
+  hotTierSizeGib = _messages.IntegerField(11)
+  kmsConfig = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  ldapEnabled = _messages.BooleanField(14)
+  name = _messages.StringField(15)
+  network = _messages.StringField(16)
+  psaRange = _messages.StringField(17)
+  qosType = _messages.EnumField('QosTypeValueValuesEnum', 18)
+  replicaZone = _messages.StringField(19)
+  satisfiesPzi = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  stateDetails = _messages.StringField(24)
+  totalIops = _messages.IntegerField(25)
+  totalThroughputMibps = _messages.IntegerField(26)
+  volumeCapacityGib = _messages.IntegerField(27)
+  volumeCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(29)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):
@@ -3355,6 +3374,7 @@ class Volume(_messages.Message):
     state: Output only. State of the volume
     stateDetails: Output only. State details of the volume
     storagePool: Required. StoragePool name of the volume
+    throughputMibps: Optional. Throughput of the volume (in MiB/s)
     tieringPolicy: Tiering policy for the volume.
     unixPermissions: Optional. Default unix style permission (e.g. 777) the
       mount point will be created with. Applicable for NFS protocol types
@@ -3543,10 +3563,11 @@ class Volume(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 32)
   stateDetails = _messages.StringField(33)
   storagePool = _messages.StringField(34)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 35)
-  unixPermissions = _messages.StringField(36)
-  usedGib = _messages.IntegerField(37)
-  zone = _messages.StringField(38)
+  throughputMibps = _messages.FloatField(35)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 36)
+  unixPermissions = _messages.StringField(37)
+  usedGib = _messages.IntegerField(38)
+  zone = _messages.StringField(39)
 
 
 class WeeklySchedule(_messages.Message):

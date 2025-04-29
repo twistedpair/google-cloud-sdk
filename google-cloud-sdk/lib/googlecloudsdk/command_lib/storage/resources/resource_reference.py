@@ -102,7 +102,6 @@ class CloudResource(Resource):
 
   @property
   def scheme(self):
-    # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
 
   def get_formatted_acl(self):

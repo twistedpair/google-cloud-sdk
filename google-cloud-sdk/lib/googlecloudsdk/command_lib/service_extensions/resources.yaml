@@ -61,6 +61,19 @@ lbRouteExtension:
     help: |
       The ID of the `LbRouteExtension`.
 
+lbEdgeExtension:
+  name: LbEdgeExtension
+  collection: networkservices.projects.locations.lbEdgeExtensions
+  request_id_field: lbEdgeExtensionId
+  attributes:
+  - *project
+  - *location
+  - &lbEdgeExtension:
+    parameter_name: lbEdgeExtensionsId
+    attribute_name: lb_edge_extension
+    help: |
+      The ID of the `LbEdgeExtension`.
+
 lbObservabilityExtension:
   name: LbObservabilityExtension
   collection: networkservices.projects.locations.lbObservabilityExtensions

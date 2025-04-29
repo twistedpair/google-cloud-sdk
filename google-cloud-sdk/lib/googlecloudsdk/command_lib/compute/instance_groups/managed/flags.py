@@ -26,8 +26,10 @@ from typing import Any
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
+
 
 INSTANCE_TEMPLATE_ARG = compute_flags.ResourceArgument(
     '--template',
@@ -863,7 +865,7 @@ def AddTargetSizePolicyModeFlag(parser):
   )
 
 
-def AddWorkloadPolicyFlag(parser):
+def AddWorkloadPolicyFlag(parser: parser_arguments.ArgumentInterceptor):
   """Add workload policy flag."""
   parser.add_argument(
       '--workload-policy',
@@ -871,11 +873,30 @@ def AddWorkloadPolicyFlag(parser):
       metavar='WORKLOAD_POLICY',
       help=(
           'Specifies the workload policy for the managed instance group. It '
-          'can be a full or partial URL to the resource policies containing '
+          'can be a full or partial URL to a resource policy containing '
           'the workload policy.'
       ),
       hidden=True,
   )
+
+
+def AddRemoveWorkloadPolicyFlag(parser: parser_arguments.ArgumentInterceptor):
+  """Add remove workload policy flag."""
+  parser.add_argument(
+      '--remove-workload-policy',
+      action='store_true',
+      help=(
+          'Detaches the workload policy from the managed instance group.'
+      ),
+      hidden=True,
+  )
+
+
+def AddWorkloadPolicyFlags(parser: parser_arguments.ArgumentInterceptor):
+  """Add flags for managing workload policy."""
+  workload_policy_group = parser.add_group(mutex=True, hidden=True)
+  AddWorkloadPolicyFlag(workload_policy_group)
+  AddRemoveWorkloadPolicyFlag(workload_policy_group)
 
 
 class ArgMultiValueDict:

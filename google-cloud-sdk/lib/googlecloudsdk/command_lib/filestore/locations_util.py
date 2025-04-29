@@ -34,17 +34,41 @@ def GetRegionFromZone(zone):
   return '-'.join(zone.split('-')[:-1])
 
 
-def ExtractRegionsFromLocationsListResponse(response, args):
-  """Extract the regions from a list of GCP locations."""
-  del args  # args is not used but passed by modify_responses_hook.
-  for location in response:
+def ExtractRegionsFromLocationsListResponse(locations, limit):
+  """Extract the regions from a list of GCP locations.
+
+  Args:
+    locations: a list of location objects.
+    limit: int, The maximum number of records to yield. None if all available
+      records should be yielded.
+
+  Yields:
+    location objects that represent a GCP region.
+  """
+  for location in locations:
+    if limit is not None and limit <= 0:
+      return
     if IsRegional(location.locationId):
       yield location
+      if limit is not None:
+        limit -= 1
 
 
-def ExtractZonesFromLocationsListResponse(response, args):
-  """Extract the zones from a list of GCP locations."""
-  del args  # args is not used but passed by modify_responses_hook.
-  for location in response:
+def ExtractZonesFromLocationsListResponse(locations, limit):
+  """Extract the zones from a list of GCP locations.
+
+  Args:
+    locations: a list of location objects.
+    limit: int, The maximum number of records to yield. None if all available
+      records should be yielded.
+
+  Yields:
+    location objects that represent a GCP zone.
+  """
+  for location in locations:
+    if limit is not None and limit <= 0:
+      return
     if IsZonal(location.locationId):
       yield location
+      if limit is not None:
+        limit -= 1

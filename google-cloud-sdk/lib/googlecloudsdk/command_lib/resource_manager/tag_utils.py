@@ -292,6 +292,12 @@ def ParseTagGroup(args, original):
     tag_group = ExtractExistingTags(original, tag_group)
 
     for tag_key in tags_list:
+      if '=' in tag_key:
+        raise exceptions.InvalidArgumentException(
+            '--remove_tags',
+            'Please specify the tag key only in the namespaced format. i.e'
+            ' --remove-tags=foo/bar,foo2/bar2',
+        )
       if tag_key in tag_group:
         unused_removed_tag = tag_group.pop(tag_key)
         # remove the tag from the original tags

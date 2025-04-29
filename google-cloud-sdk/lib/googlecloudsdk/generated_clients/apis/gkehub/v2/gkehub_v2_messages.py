@@ -3419,9 +3419,6 @@ class RBACRoleBindingActuationState(_messages.Message):
   r"""**RBAC RoleBinding Actuation**: A membership-specific Feature state for
   the RBACRoleBindingActuation fleet feature.
 
-  Enums:
-    LifecycleStateValueValuesEnum:
-
   Messages:
     RbacrolebindingStatesValue: Output only. The state of RBACRoleBindings
       using custom roles that exist on the cluster, keyed by RBACRoleBinding
@@ -3429,25 +3426,11 @@ class RBACRoleBindingActuationState(_messages.Message):
       s/{scope}/rbacrolebindings/{rbacrolebinding}.
 
   Fields:
-    lifecycleState: A LifecycleStateValueValuesEnum attribute.
     rbacrolebindingStates: Output only. The state of RBACRoleBindings using
       custom roles that exist on the cluster, keyed by RBACRoleBinding
       resource name with format: projects/{project}/locations/{location}/scope
       s/{scope}/rbacrolebindings/{rbacrolebinding}.
-    stateDetails: A string attribute.
   """
-
-  class LifecycleStateValueValuesEnum(_messages.Enum):
-    r"""LifecycleStateValueValuesEnum enum type.
-
-    Values:
-      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
-      ACTIVE: <no description>
-      ERROR: <no description>
-    """
-    LIFECYCLE_STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    ERROR = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RbacrolebindingStatesValue(_messages.Message):
@@ -3478,9 +3461,7 @@ class RBACRoleBindingActuationState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 1)
-  rbacrolebindingStates = _messages.MessageField('RbacrolebindingStatesValue', 2)
-  stateDetails = _messages.StringField(3)
+  rbacrolebindingStates = _messages.MessageField('RbacrolebindingStatesValue', 1)
 
 
 class Reference(_messages.Message):
@@ -4348,8 +4329,8 @@ class WorkloadIdentityState(_messages.Message):
   feature.
 
   Fields:
-    description: A human-readable description of the current state or returned
-      error.
+    description: Deprecated, will erase after code is changed to use the new
+      field.
   """
 
   description = _messages.StringField(1)

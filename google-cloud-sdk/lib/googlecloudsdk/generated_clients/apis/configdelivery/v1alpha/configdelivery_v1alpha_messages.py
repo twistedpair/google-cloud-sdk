@@ -32,7 +32,8 @@ class AllAtOnceStrategyInfo(_messages.Message):
   rollout strategy.
 
   Fields:
-    clusters: resource bundle's deployment status for all targeted clusters.
+    clusters: Unordered list. resource bundle's deployment status for all
+      targeted clusters.
   """
 
   clusters = _messages.MessageField('ClusterInfo', 1, repeated=True)
@@ -82,8 +83,8 @@ class ClusterInfo(_messages.Message):
     initial: Output only. Initial state of the resource bundle prior to the
       deployment.
     membership: Output only. gkehub membership of target cluster
-    messages: Output only. Messages convey additional information related to
-      the deployment.
+    messages: Output only. Unordered list. Messages convey additional
+      information related to the deployment.
     startTime: Output only. Timestamp when reconciliation starts.
     state: Output only. State of the rollout for the cluster.
   """
@@ -1005,7 +1006,7 @@ class ListFleetPackagesResponse(_messages.Message):
     fleetPackages: The list of FleetPackage
     nextPageToken: A token identifying a page of results the server should
       return.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   fleetPackages = _messages.MessageField('FleetPackage', 1, repeated=True)
@@ -1046,7 +1047,7 @@ class ListReleasesResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     releases: The list of Releases
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1061,7 +1062,7 @@ class ListResourceBundlesResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     resourceBundles: The list of ResourceBundle.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1076,7 +1077,7 @@ class ListRolloutsResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     rollouts: The list of Rollouts
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1090,7 +1091,7 @@ class ListVariantsResponse(_messages.Message):
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
     variants: The list of Variants
   """
 
@@ -1518,10 +1519,10 @@ class ResourceBundleDeploymentInfo(_messages.Message):
       `ResourceBundle` deployment.
 
   Fields:
-    messages: Output only. Messages contains information related to the
-      `ResourceBundle` deployment. For example, in case of an error, indicate
-      the reason for the error. In case of a pending deployment, reason for
-      why the deployment of new release is pending.
+    messages: Output only. Unordered list. Messages contains information
+      related to the `ResourceBundle` deployment. For example, in case of an
+      error, indicate the reason for the error. In case of a pending
+      deployment, reason for why the deployment of new release is pending.
     release: Output only. Refers to a `ResourceBundle` release.
     syncState: Output only. Synchronization state of the `ResourceBundle`
       deployment.
@@ -1580,7 +1581,8 @@ class ResourceBundleTag(_messages.Message):
     name: Required. Name of the `ResourceBundle`. Format is
       projects/{p}/locations/{l}/resourceBundles/{r}.
     tag: Required. Tag refers to a version of the release in a
-      `ResourceBundle`.
+      `ResourceBundle`. This is a Git tag in the semantic version format
+      `vX.Y.Z`.
   """
 
   name = _messages.StringField(1)
@@ -1614,7 +1616,8 @@ class RollingStrategyInfo(_messages.Message):
   rollout strategy.
 
   Fields:
-    clusters: resource bundle's deployment status for all targeted clusters.
+    clusters: Unordered list. resource bundle's deployment status for all
+      targeted clusters.
   """
 
   clusters = _messages.MessageField('ClusterInfo', 1, repeated=True)
@@ -1892,8 +1895,8 @@ class Variant(_messages.Message):
     name: Identifier. Name follows format of projects/{project}/locations/{loc
       ation}/resourceBundles/{resource_bundle}/releases/{release}/variants/{va
       riant}
-    resources: Required. resources contain the kubernetes manifests (YAMLs)
-      for this variant.
+    resources: Required. Unordered list. resources contain the kubernetes
+      manifests (YAMLs) for this variant.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1939,7 +1942,7 @@ class VariantSelector(_messages.Message):
       location, name, and labels to generate the name of the variant for a
       target cluster. The variable syntax is similar to the unix shell
       variables. Available variables are `${membership.name}`,
-      `${membership.location`, `${membership.project}` and
+      `${membership.location}`, `${membership.project}` and
       `${membership.labels['label_name']}`. If you want to deploy a specific
       variant, say "default" to all the clusters, you can use "default"
       (string without any variables) as the variant_name_template.

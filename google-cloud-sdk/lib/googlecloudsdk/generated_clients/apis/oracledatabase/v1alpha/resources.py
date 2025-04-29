@@ -150,6 +150,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXADBVMCLUSTERS = (
+      'projects.locations.exadbVmClusters',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/exadbVmClusters/'
+              '{exadbVmClustersId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GIVERSIONS = (
       'projects.locations.giVersions',
       '{+name}',

@@ -39,6 +39,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_identityProviders = self.OrganizationsLocationsIdentityProvidersService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_zones_zonalProjects = self.OrganizationsLocationsZonesZonalProjectsService(self)
     self.organizations_locations_zones = self.OrganizationsLocationsZonesService(self)
@@ -52,6 +53,124 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     self.projects_locations_zonalServices = self.ProjectsLocationsZonalServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsIdentityProvidersService(base_api.BaseApiService):
+    """Service class for the organizations_locations_identityProviders resource."""
+
+    _NAME = 'organizations_locations_identityProviders'
+
+    def __init__(self, client):
+      super(EdgecontainerV1alpha.OrganizationsLocationsIdentityProvidersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Configures an identity provider in the infra cluster.
+
+      Args:
+        request: (EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IdentityProvider) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/identityProviders',
+        http_method='POST',
+        method_id='edgecontainer.organizations.locations.identityProviders.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/identityProviders',
+        request_field='createIdentityProviderRequest',
+        request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest',
+        response_type_name='IdentityProvider',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteIdentityProvider removes the identity provider from the infra cluster.
+
+      Args:
+        request: (EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IdentityProvider) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/identityProviders/{identityProvidersId}',
+        http_method='DELETE',
+        method_id='edgecontainer.organizations.locations.identityProviders.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['cluster', 'requestId', 'zoneId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest',
+        response_type_name='IdentityProvider',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetIdentityProvider gets the identity provider details.
+
+      Args:
+        request: (EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IdentityProvider) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/identityProviders/{identityProvidersId}',
+        http_method='GET',
+        method_id='edgecontainer.organizations.locations.identityProviders.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['cluster', 'zoneId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest',
+        response_type_name='IdentityProvider',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists identity providers that are configured in the infra cluster.
+
+      Args:
+        request: (EdgecontainerOrganizationsLocationsIdentityProvidersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIdentityProvidersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/identityProviders',
+        http_method='GET',
+        method_id='edgecontainer.organizations.locations.identityProviders.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['cluster', 'pageSize', 'pageToken', 'zoneId'],
+        relative_path='v1alpha/{+parent}/identityProviders',
+        request_field='',
+        request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersListRequest',
+        response_type_name='ListIdentityProvidersResponse',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_operations resource."""

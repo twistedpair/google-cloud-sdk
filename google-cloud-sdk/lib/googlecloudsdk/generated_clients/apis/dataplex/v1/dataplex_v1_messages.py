@@ -19,9 +19,7 @@ class DataplexOrganizationsLocationsEncryptionConfigsCreateRequest(_messages.Mes
 
   Fields:
     encryptionConfigId: Required. The ID of the EncryptionConfig to create.
-      The ID must contain only letters (a-z, A-Z), numbers (0-9), and hyphens
-      (-). The maximum size is 63 characters. The first character must be a
-      letter. The last character must be a letter or a number.
+      Currently, only a value of "default" is supported.
     googleCloudDataplexV1EncryptionConfig: A
       GoogleCloudDataplexV1EncryptionConfig resource to be passed as the
       request body.
@@ -3679,6 +3677,8 @@ class DataplexProjectsLocationsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -3689,10 +3689,11 @@ class DataplexProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
@@ -4285,7 +4286,7 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
 
 
 class GoogleCloudDataplexV1AspectTypeAuthorization(_messages.Message):
-  r"""Autorization for an AspectType.
+  r"""Authorization for an AspectType.
 
   Fields:
     alternateUsePermission: Immutable. The IAM permission grantable on the
@@ -4514,8 +4515,8 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
       running discovery periodically. Successive discovery runs must be
       scheduled at least 60 minutes apart. The default value is to run
-      discovery every 60 minutes. To explicitly set a timezone to the cron
-      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      discovery every 60 minutes.To explicitly set a timezone to the cron tab,
+      apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
       from IANA time zone database. For example, CRON_TZ=America/New_York 1 *
       * * *, or TZ=America/New_York 1 * * * *.
@@ -5107,9 +5108,12 @@ class GoogleCloudDataplexV1DataDiscoveryResult(_messages.Message):
 
   Fields:
     bigqueryPublishing: Output only. Configuration for metadata publishing.
+    scanStatistics: Output only. Describes result statistics of a data scan
+      discovery job.
   """
 
   bigqueryPublishing = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResultBigQueryPublishing', 1)
+  scanStatistics = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResultScanStatistics', 2)
 
 
 class GoogleCloudDataplexV1DataDiscoveryResultBigQueryPublishing(_messages.Message):
@@ -5118,9 +5122,37 @@ class GoogleCloudDataplexV1DataDiscoveryResultBigQueryPublishing(_messages.Messa
   Fields:
     dataset: Output only. The BigQuery dataset the discovered tables are
       published to.
+    location: Output only. The location of the BigQuery publishing dataset.
   """
 
   dataset = _messages.StringField(1)
+  location = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1DataDiscoveryResultScanStatistics(_messages.Message):
+  r"""Describes result statistics of a data scan discovery job.
+
+  Fields:
+    dataProcessedBytes: The data processed in bytes.
+    filesExcluded: The number of files excluded.
+    filesetsCreated: The number of filesets created.
+    filesetsDeleted: The number of filesets deleted.
+    filesetsUpdated: The number of filesets updated.
+    scannedFileCount: The number of files scanned.
+    tablesCreated: The number of tables created.
+    tablesDeleted: The number of tables deleted.
+    tablesUpdated: The number of tables updated.
+  """
+
+  dataProcessedBytes = _messages.IntegerField(1)
+  filesExcluded = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  filesetsCreated = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  filesetsDeleted = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  filesetsUpdated = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  scannedFileCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  tablesCreated = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  tablesDeleted = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  tablesUpdated = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDataplexV1DataDiscoverySpec(_messages.Message):
@@ -5513,7 +5545,8 @@ class GoogleCloudDataplexV1DataProfileSpecPostScanActionsBigQueryExport(_message
   Fields:
     resultsTable: Optional. The BigQuery table to export DataProfileScan
       results to. Format: //bigquery.googleapis.com/projects/PROJECT_ID/datase
-      ts/DATASET_ID/tables/TABLE_ID
+      ts/DATASET_ID/tables/TABLE_ID or
+      projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
   """
 
   resultsTable = _messages.StringField(1)
@@ -6037,7 +6070,8 @@ class GoogleCloudDataplexV1DataQualitySpecPostScanActionsBigQueryExport(_message
   Fields:
     resultsTable: Optional. The BigQuery table to export DataQualityScan
       results to. Format: //bigquery.googleapis.com/projects/PROJECT_ID/datase
-      ts/DATASET_ID/tables/TABLE_ID
+      ts/DATASET_ID/tables/TABLE_ID or
+      projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
   """
 
   resultsTable = _messages.StringField(1)
@@ -6275,7 +6309,7 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
       SUCCEEDED: Data scan job successfully completed.
       FAILED: Data scan job was unsuccessful.
       CANCELLED: Data scan job was cancelled.
-      CREATED: Data scan job was createed.
+      CREATED: Data scan job was created.
     """
     STATE_UNSPECIFIED = 0
     STARTED = 1
@@ -7008,7 +7042,7 @@ class GoogleCloudDataplexV1EncryptionConfigFailureDetails(_messages.Message):
     Values:
       UNKNOWN: The error code is not specified
       INTERNAL_ERROR: Error because of internal server error, will be retried
-        automatically..
+        automatically.
       REQUIRE_USER_ACTION: User action is required to resolve the error.
     """
     UNKNOWN = 0
@@ -8944,6 +8978,8 @@ class GoogleCloudDataplexV1MetadataJob(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the metadata job was created.
+    exportResult: Output only. Export job result.
+    exportSpec: Export job specification.
     importResult: Output only. Import job result.
     importSpec: Import job specification.
     labels: Optional. User-defined labels.
@@ -8964,9 +9000,11 @@ class GoogleCloudDataplexV1MetadataJob(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Unspecified.
       IMPORT: Import job.
+      EXPORT: Export job.
     """
     TYPE_UNSPECIFIED = 0
     IMPORT = 1
+    EXPORT = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -8993,14 +9031,93 @@ class GoogleCloudDataplexV1MetadataJob(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  importResult = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobResult', 2)
-  importSpec = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobSpec', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  status = _messages.MessageField('GoogleCloudDataplexV1MetadataJobStatus', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  exportResult = _messages.MessageField('GoogleCloudDataplexV1MetadataJobExportJobResult', 2)
+  exportSpec = _messages.MessageField('GoogleCloudDataplexV1MetadataJobExportJobSpec', 3)
+  importResult = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobResult', 4)
+  importSpec = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobSpec', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  status = _messages.MessageField('GoogleCloudDataplexV1MetadataJobStatus', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class GoogleCloudDataplexV1MetadataJobExportJobResult(_messages.Message):
+  r"""Summary results from a metadata export job. The results are a snapshot
+  of the metadata at the time when the job was created. The exported entries
+  are saved to a Cloud Storage bucket.
+
+  Fields:
+    errorMessage: Output only. The error message if the metadata export job
+      failed.
+    exportedEntries: Output only. The number of entries that were exported.
+  """
+
+  errorMessage = _messages.StringField(1)
+  exportedEntries = _messages.IntegerField(2)
+
+
+class GoogleCloudDataplexV1MetadataJobExportJobSpec(_messages.Message):
+  r"""Job specification for a metadata export job.
+
+  Fields:
+    outputPath: Required. The root path of the Cloud Storage bucket to export
+      the metadata to, in the format gs://{bucket}/. You can optionally
+      specify a custom prefix after the bucket name, in the format
+      gs://{bucket}/{prefix}/. The maximum length of the custom prefix is 128
+      characters. Dataplex constructs the object path for the exported files
+      by using the bucket name and prefix that you provide, followed by a
+      system-generated path.The bucket must be in the same VPC Service
+      Controls perimeter as the job.
+    scope: Required. The scope of the export job.
+  """
+
+  outputPath = _messages.StringField(1)
+  scope = _messages.MessageField('GoogleCloudDataplexV1MetadataJobExportJobSpecExportJobScope', 2)
+
+
+class GoogleCloudDataplexV1MetadataJobExportJobSpecExportJobScope(_messages.Message):
+  r"""The scope of the export job.
+
+  Fields:
+    aspectTypes: The aspect types that are in scope for the export job,
+      specified as relative resource names in the format projects/{project_id_
+      or_number}/locations/{location}/aspectTypes/{aspect_type_id}. Only
+      aspects that belong to the specified aspect types are affected by the
+      job.
+    entryGroups: The entry groups whose metadata you want to export, in the
+      format projects/{project_id_or_number}/locations/{location_id}/entryGrou
+      ps/{entry_group_id}. Only the entries in the specified entry groups are
+      exported.The entry groups must be in the same location and the same VPC
+      Service Controls perimeter as the job.If you set the job scope to be a
+      list of entry groups, then set the organization-level export flag to
+      false and don't provide a list of projects.
+    entryTypes: The entry types that are in scope for the export job,
+      specified as relative resource names in the format projects/{project_id_
+      or_number}/locations/{location}/entryTypes/{entry_type_id}. Only entries
+      that belong to the specified entry types are affected by the job.
+    organizationLevel: Whether the metadata export job is an organization-
+      level export job. If true, the job exports the entries from the same
+      organization and VPC Service Controls perimeter as the job. The project
+      that the job belongs to determines the VPC Service Controls perimeter.
+      If you set the job scope to be at the organization level, then don't
+      provide a list of projects or entry groups. If false, you must specify a
+      list of projects or a list of entry groups whose entries you want to
+      export.The default is false.
+    projects: The projects whose metadata you want to export, in the format
+      projects/{project_id_or_number}. Only the entries from the specified
+      projects are exported.The projects must be in the same organization and
+      VPC Service Controls perimeter as the job.If you set the job scope to be
+      a list of projects, then set the organization-level export flag to false
+      and don't provide a list of entry groups.
+  """
+
+  aspectTypes = _messages.StringField(1, repeated=True)
+  entryGroups = _messages.StringField(2, repeated=True)
+  entryTypes = _messages.StringField(3, repeated=True)
+  organizationLevel = _messages.BooleanField(4)
+  projects = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudDataplexV1MetadataJobImportJobResult(_messages.Message):
@@ -9060,8 +9177,8 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpec(_messages.Message):
     sourceStorageUri: Optional. The URI of a Cloud Storage bucket or folder
       (beginning with gs:// and ending with /) that contains the metadata
       import files for this job.A metadata import file defines the values to
-      set for each of the entries and aspects in a metadata job. For more
-      information about how to create a metadata import file and the file
+      set for each of the entries and aspects in a metadata import job. For
+      more information about how to create a metadata import file and the file
       requirements, see Metadata import file
       (https://cloud.google.com/dataplex/docs/import-metadata#metadata-import-
       file).You can provide multiple metadata import files in the same
@@ -10495,8 +10612,8 @@ class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
       running discovery periodically. Successive discovery runs must be
       scheduled at least 60 minutes apart. The default value is to run
-      discovery every 60 minutes. To explicitly set a timezone to the cron
-      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      discovery every 60 minutes.To explicitly set a timezone to the cron tab,
+      apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
       from IANA time zone database. For example, CRON_TZ=America/New_York 1 *
       * * *, or TZ=America/New_York 1 * * * *.

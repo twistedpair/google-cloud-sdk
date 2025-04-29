@@ -599,6 +599,13 @@ class VolumesAdapter(object):
     tiering_policy_message.coolingThresholdDays = tiering_policy.get(
         'cooling-threshold-days'
     )
+    if (
+        self.release_track == base.ReleaseTrack.BETA
+        or self.release_track == base.ReleaseTrack.ALPHA
+    ):
+      tiering_policy_message.hotTierBypassModeEnabled = tiering_policy.get(
+          'enable-hot-tier-bypass-mode'
+      )
     volume.tieringPolicy = tiering_policy_message
 
   def ParseHybridReplicationParameters(

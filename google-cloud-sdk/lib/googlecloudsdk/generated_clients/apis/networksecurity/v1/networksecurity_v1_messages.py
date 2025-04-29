@@ -1446,6 +1446,617 @@ class HttpHeaderMatch(_messages.Message):
   regexMatch = _messages.StringField(2)
 
 
+class InterceptDeployment(_messages.Message):
+  r"""A deployment represents a zonal intercept backend ready to accept
+  GENEVE-encapsulated traffic, e.g. a zonal instance group fronted by an
+  internal passthrough load balancer. Deployments are always part of a global
+  deployment group which represents a global intercept service.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the deployment.
+      See https://google.aip.dev/216.
+
+  Messages:
+    LabelsValue: Optional. Labels are key/value pairs that help to organize
+      and filter resources.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created. See
+      https://google.aip.dev/148#timestamps.
+    description: Optional. User-provided description of the deployment. Used
+      as additional context for the deployment.
+    forwardingRule: Required. Immutable. The regional forwarding rule that
+      fronts the interceptors, for example: `projects/123456789/regions/us-
+      central1/forwardingRules/my-rule`. See https://google.aip.dev/124.
+    interceptDeploymentGroup: Required. Immutable. The deployment group that
+      this deployment is a part of, for example:
+      `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
+      See https://google.aip.dev/124.
+    labels: Optional. Labels are key/value pairs that help to organize and
+      filter resources.
+    name: Immutable. Identifier. The resource name of this deployment, for
+      example: `projects/123456789/locations/us-
+      central1-a/interceptDeployments/my-dep`. See https://google.aip.dev/122
+      for more details.
+    reconciling: Output only. The current state of the resource does not match
+      the user's intended state, and the system is working to reconcile them.
+      This part of the normal operation (e.g. linking a new association to the
+      parent group). See https://google.aip.dev/128.
+    state: Output only. The current state of the deployment. See
+      https://google.aip.dev/216.
+    updateTime: Output only. The timestamp when the resource was most recently
+      updated. See https://google.aip.dev/148#timestamps.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the deployment. See
+    https://google.aip.dev/216.
+
+    Values:
+      STATE_UNSPECIFIED: State not set (this is not a valid state).
+      ACTIVE: The deployment is ready and in sync with the parent group.
+      CREATING: The deployment is being created.
+      DELETING: The deployment is being deleted.
+      OUT_OF_SYNC: The deployment is out of sync with the parent group. In
+        most cases, this is a result of a transient issue within the system
+        (e.g. a delayed data-path config) and the system is expected to
+        recover automatically. See the parent deployment group's state for
+        more details.
+      DELETE_FAILED: An attempt to delete the deployment has failed. This is a
+        terminal state and the deployment is not expected to recover. The only
+        permitted operation is to retry deleting the deployment.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    OUT_OF_SYNC = 4
+    DELETE_FAILED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are key/value pairs that help to organize and filter
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  forwardingRule = _messages.StringField(3)
+  interceptDeploymentGroup = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
+class InterceptDeploymentGroup(_messages.Message):
+  r"""A deployment group aggregates many zonal intercept backends
+  (deployments) into a single global intercept service. Consumers can connect
+  this service using an endpoint group.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the deployment
+      group. See https://google.aip.dev/216.
+
+  Messages:
+    LabelsValue: Optional. Labels are key/value pairs that help to organize
+      and filter resources.
+
+  Fields:
+    connectedEndpointGroups: Output only. The list of endpoint groups that are
+      connected to this resource.
+    createTime: Output only. The timestamp when the resource was created. See
+      https://google.aip.dev/148#timestamps.
+    description: Optional. User-provided description of the deployment group.
+      Used as additional context for the deployment group.
+    labels: Optional. Labels are key/value pairs that help to organize and
+      filter resources.
+    locations: Output only. The list of locations where the deployment group
+      is present.
+    name: Immutable. Identifier. The resource name of this deployment group,
+      for example:
+      `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
+      See https://google.aip.dev/122 for more details.
+    nestedDeployments: Output only. The list of Intercept Deployments that
+      belong to this group.
+    network: Required. Immutable. The network that will be used for all child
+      deployments, for example:
+      `projects/{project}/global/networks/{network}`. See
+      https://google.aip.dev/124.
+    reconciling: Output only. The current state of the resource does not match
+      the user's intended state, and the system is working to reconcile them.
+      This is part of the normal operation (e.g. adding a new deployment to
+      the group) See https://google.aip.dev/128.
+    state: Output only. The current state of the deployment group. See
+      https://google.aip.dev/216.
+    updateTime: Output only. The timestamp when the resource was most recently
+      updated. See https://google.aip.dev/148#timestamps.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the deployment group. See
+    https://google.aip.dev/216.
+
+    Values:
+      STATE_UNSPECIFIED: State not set (this is not a valid state).
+      ACTIVE: The deployment group is ready.
+      CREATING: The deployment group is being created.
+      DELETING: The deployment group is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are key/value pairs that help to organize and filter
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  connectedEndpointGroups = _messages.MessageField('InterceptDeploymentGroupConnectedEndpointGroup', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  locations = _messages.MessageField('InterceptLocation', 5, repeated=True)
+  name = _messages.StringField(6)
+  nestedDeployments = _messages.MessageField('InterceptDeploymentGroupDeployment', 7, repeated=True)
+  network = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+
+
+class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
+  r"""An endpoint group connected to this deployment group.
+
+  Fields:
+    name: Output only. The connected endpoint group's resource name, for
+      example:
+      `projects/123456789/locations/global/interceptEndpointGroups/my-eg`. See
+      https://google.aip.dev/124.
+  """
+
+  name = _messages.StringField(1)
+
+
+class InterceptDeploymentGroupDeployment(_messages.Message):
+  r"""A deployment belonging to this deployment group.
+
+  Enums:
+    StateValueValuesEnum: Output only. Most recent known state of the
+      deployment.
+
+  Fields:
+    name: Output only. The name of the Intercept Deployment, in the format: `p
+      rojects/{project}/locations/{location}/interceptDeployments/{intercept_d
+      eployment}`.
+    state: Output only. Most recent known state of the deployment.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Most recent known state of the deployment.
+
+    Values:
+      STATE_UNSPECIFIED: State not set (this is not a valid state).
+      ACTIVE: The deployment is ready and in sync with the parent group.
+      CREATING: The deployment is being created.
+      DELETING: The deployment is being deleted.
+      OUT_OF_SYNC: The deployment is out of sync with the parent group. In
+        most cases, this is a result of a transient issue within the system
+        (e.g. a delayed data-path config) and the system is expected to
+        recover automatically. See the parent deployment group's state for
+        more details.
+      DELETE_FAILED: An attempt to delete the deployment has failed. This is a
+        terminal state and the deployment is not expected to recover. The only
+        permitted operation is to retry deleting the deployment.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    OUT_OF_SYNC = 4
+    DELETE_FAILED = 5
+
+  name = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class InterceptEndpointGroup(_messages.Message):
+  r"""An endpoint group is a consumer frontend for a deployment group
+  (backend). In order to configure intercept for a network, consumers must
+  create: - An association between their network and the endpoint group. - A
+  security profile that points to the endpoint group. - A firewall rule that
+  references the security profile (group).
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the endpoint
+      group. See https://google.aip.dev/216.
+
+  Messages:
+    LabelsValue: Optional. Labels are key/value pairs that help to organize
+      and filter resources.
+
+  Fields:
+    associations: Output only. List of associations to this endpoint group.
+    connectedDeploymentGroup: Output only. Details about the connected
+      deployment group to this endpoint group.
+    createTime: Output only. The timestamp when the resource was created. See
+      https://google.aip.dev/148#timestamps.
+    description: Optional. User-provided description of the endpoint group.
+      Used as additional context for the endpoint group.
+    interceptDeploymentGroup: Required. Immutable. The deployment group that
+      this endpoint group is connected to, for example:
+      `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
+      See https://google.aip.dev/124.
+    labels: Optional. Labels are key/value pairs that help to organize and
+      filter resources.
+    name: Immutable. Identifier. The resource name of this endpoint group, for
+      example:
+      `projects/123456789/locations/global/interceptEndpointGroups/my-eg`. See
+      https://google.aip.dev/122 for more details.
+    reconciling: Output only. The current state of the resource does not match
+      the user's intended state, and the system is working to reconcile them.
+      This is part of the normal operation (e.g. adding a new association to
+      the group). See https://google.aip.dev/128.
+    state: Output only. The current state of the endpoint group. See
+      https://google.aip.dev/216.
+    updateTime: Output only. The timestamp when the resource was most recently
+      updated. See https://google.aip.dev/148#timestamps.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the endpoint group. See
+    https://google.aip.dev/216.
+
+    Values:
+      STATE_UNSPECIFIED: State not set (this is not a valid state).
+      ACTIVE: The endpoint group is ready and in sync with the target
+        deployment group.
+      CLOSED: The deployment group backing this endpoint group has been force-
+        deleted. This endpoint group cannot be used and interception is
+        effectively disabled.
+      CREATING: The endpoint group is being created.
+      DELETING: The endpoint group is being deleted.
+      OUT_OF_SYNC: The endpoint group is out of sync with the backing
+        deployment group. In most cases, this is a result of a transient issue
+        within the system (e.g. an inaccessible location) and the system is
+        expected to recover automatically. See the associations field for
+        details per network and location.
+      DELETE_FAILED: An attempt to delete the endpoint group has failed. This
+        is a terminal state and the endpoint group is not expected to recover.
+        The only permitted operation is to retry deleting the endpoint group.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CLOSED = 2
+    CREATING = 3
+    DELETING = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are key/value pairs that help to organize and filter
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  associations = _messages.MessageField('InterceptEndpointGroupAssociationDetails', 1, repeated=True)
+  connectedDeploymentGroup = _messages.MessageField('InterceptEndpointGroupConnectedDeploymentGroup', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  interceptDeploymentGroup = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+
+
+class InterceptEndpointGroupAssociation(_messages.Message):
+  r"""An endpoint group association represents a link between a network and an
+  endpoint group in the organization. Creating an association creates the
+  networking infrastructure linking the network to the endpoint group, but
+  does not enable intercept by itself. To enable intercept, the user must also
+  create a network firewall policy containing intercept rules and associate it
+  with the network.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the endpoint group
+      association.
+
+  Messages:
+    LabelsValue: Optional. Labels are key/value pairs that help to organize
+      and filter resources.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created. See
+      https://google.aip.dev/148#timestamps.
+    interceptEndpointGroup: Required. Immutable. The endpoint group that this
+      association is connected to, for example:
+      `projects/123456789/locations/global/interceptEndpointGroups/my-eg`. See
+      https://google.aip.dev/124.
+    labels: Optional. Labels are key/value pairs that help to organize and
+      filter resources.
+    locations: Output only. The list of locations where the association is
+      configured. This information is retrieved from the linked endpoint
+      group.
+    locationsDetails: Output only. The list of locations where the association
+      is present. This information is retrieved from the linked endpoint
+      group, and not configured as part of the association itself.
+    name: Immutable. Identifier. The resource name of this endpoint group
+      association, for example: `projects/123456789/locations/global/intercept
+      EndpointGroupAssociations/my-eg-association`. See
+      https://google.aip.dev/122 for more details.
+    network: Required. Immutable. The VPC network that is associated. for
+      example: `projects/123456789/global/networks/my-network`. See
+      https://google.aip.dev/124.
+    reconciling: Output only. The current state of the resource does not match
+      the user's intended state, and the system is working to reconcile them.
+      This part of the normal operation (e.g. adding a new location to the
+      target deployment group). See https://google.aip.dev/128.
+    state: Output only. Current state of the endpoint group association.
+    updateTime: Output only. The timestamp when the resource was most recently
+      updated. See https://google.aip.dev/148#timestamps.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the endpoint group association.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: The association is ready and in sync with the linked endpoint
+        group.
+      CREATING: The association is being created.
+      DELETING: The association is being deleted.
+      CLOSED: The association is disabled due to a breaking change in another
+        resource.
+      OUT_OF_SYNC: The association is out of sync with the linked endpoint
+        group. In most cases, this is a result of a transient issue within the
+        system (e.g. an inaccessible location) and the system is expected to
+        recover automatically. Check the `locations_details` field for more
+        details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are key/value pairs that help to organize and filter
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  interceptEndpointGroup = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  locations = _messages.MessageField('InterceptLocation', 4, repeated=True)
+  locationsDetails = _messages.MessageField('InterceptEndpointGroupAssociationLocationDetails', 5, repeated=True)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+
+
+class InterceptEndpointGroupAssociationDetails(_messages.Message):
+  r"""The endpoint group's view of a connected association.
+
+  Enums:
+    StateValueValuesEnum: Output only. Most recent known state of the
+      association.
+
+  Fields:
+    name: Output only. The connected association's resource name, for example:
+      `projects/123456789/locations/global/interceptEndpointGroupAssociations/
+      my-ega`. See https://google.aip.dev/124.
+    network: Output only. The associated network, for example:
+      projects/123456789/global/networks/my-network. See
+      https://google.aip.dev/124.
+    state: Output only. Most recent known state of the association.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Most recent known state of the association.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: The association is ready and in sync with the linked endpoint
+        group.
+      CREATING: The association is being created.
+      DELETING: The association is being deleted.
+      CLOSED: The association is disabled due to a breaking change in another
+        resource.
+      OUT_OF_SYNC: The association is out of sync with the linked endpoint
+        group. In most cases, this is a result of a transient issue within the
+        system (e.g. an inaccessible location) and the system is expected to
+        recover automatically. Check the `locations_details` field for more
+        details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class InterceptEndpointGroupAssociationLocationDetails(_messages.Message):
+  r"""Contains details about the state of an association in a specific cloud
+  location.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the association in
+      this location.
+
+  Fields:
+    location: Output only. The cloud location, e.g. "us-central1-a" or "asia-
+      south1".
+    state: Output only. The current state of the association in this location.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the association in this location.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: The association is ready and in sync with the linked endpoint
+        group.
+      OUT_OF_SYNC: The association is out of sync with the linked endpoint
+        group. In most cases, this is a result of a transient issue within the
+        system (e.g. an inaccessible location) and the system is expected to
+        recover automatically.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    OUT_OF_SYNC = 2
+
+  location = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class InterceptEndpointGroupConnectedDeploymentGroup(_messages.Message):
+  r"""The endpoint group's view of a connected deployment group.
+
+  Fields:
+    locations: Output only. The list of locations where the deployment group
+      is present.
+    name: Output only. The connected deployment group's resource name, for
+      example:
+      `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
+      See https://google.aip.dev/124.
+  """
+
+  locations = _messages.MessageField('InterceptLocation', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class InterceptLocation(_messages.Message):
+  r"""Details about intercept in a specific cloud location.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the association in
+      this location.
+
+  Fields:
+    location: Output only. The cloud location, e.g. "us-central1-a" or "asia-
+      south1".
+    state: Output only. The current state of the association in this location.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the association in this location.
+
+    Values:
+      STATE_UNSPECIFIED: State not set (this is not a valid state).
+      ACTIVE: The resource is ready and in sync in the location.
+      OUT_OF_SYNC: The resource is out of sync in the location. In most cases,
+        this is a result of a transient issue within the system (e.g. an
+        inaccessible location) and the system is expected to recover
+        automatically.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    OUT_OF_SYNC = 2
+
+  location = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class ListAddressGroupReferencesResponse(_messages.Message):
   r"""Response of the ListAddressGroupReferences method.
 
@@ -1602,6 +2213,66 @@ class ListGatewaySecurityPolicyRulesResponse(_messages.Message):
   gatewaySecurityPolicyRules = _messages.MessageField('GatewaySecurityPolicyRule', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListInterceptDeploymentGroupsResponse(_messages.Message):
+  r"""Response message for ListInterceptDeploymentGroups.
+
+  Fields:
+    interceptDeploymentGroups: The deployment groups from the specified
+      parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
+  """
+
+  interceptDeploymentGroups = _messages.MessageField('InterceptDeploymentGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInterceptDeploymentsResponse(_messages.Message):
+  r"""Response message for ListInterceptDeployments.
+
+  Fields:
+    interceptDeployments: The deployments from the specified parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
+    unreachable: Locations that could not be reached.
+  """
+
+  interceptDeployments = _messages.MessageField('InterceptDeployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListInterceptEndpointGroupAssociationsResponse(_messages.Message):
+  r"""Response message for ListInterceptEndpointGroupAssociations.
+
+  Fields:
+    interceptEndpointGroupAssociations: The associations from the specified
+      parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
+  """
+
+  interceptEndpointGroupAssociations = _messages.MessageField('InterceptEndpointGroupAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInterceptEndpointGroupsResponse(_messages.Message):
+  r"""Response message for ListInterceptEndpointGroups.
+
+  Fields:
+    interceptEndpointGroups: The endpoint groups from the specified parent.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. See
+      https://google.aip.dev/158 for more details.
+  """
+
+  interceptEndpointGroups = _messages.MessageField('InterceptEndpointGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -4087,6 +4758,430 @@ class NetworksecurityProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest
+  object.
+
+  Fields:
+    interceptDeploymentGroup: A InterceptDeploymentGroup resource to be passed
+      as the request body.
+    interceptDeploymentGroupId: Required. The ID to use for the new deployment
+      group, which will become the final component of the deployment group's
+      resource name.
+    parent: Required. The parent resource where this deployment group will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  interceptDeploymentGroup = _messages.MessageField('InterceptDeploymentGroup', 1)
+  interceptDeploymentGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The deployment group to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the deployment group to retrieve. Format: proj
+      ects/{project}/locations/{location}/interceptDeploymentGroups/{intercept
+      _deployment_group}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListInterceptDeploymentGroups` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListInterceptDeploymentGroups` must match the call that provided the
+      page token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of deployment
+      groups. Example: `projects/123456789/locations/global`. See
+      https://google.aip.dev/132 for more details.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest
+  object.
+
+  Fields:
+    interceptDeploymentGroup: A InterceptDeploymentGroup resource to be passed
+      as the request body.
+    name: Immutable. Identifier. The resource name of this deployment group,
+      for example:
+      `projects/123456789/locations/global/interceptDeploymentGroups/my-dg`.
+      See https://google.aip.dev/122 for more details.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the deployment group (e.g. `description`; *not*
+      `intercept_deployment_group.description`). See
+      https://google.aip.dev/161 for more details.
+  """
+
+  interceptDeploymentGroup = _messages.MessageField('InterceptDeploymentGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsCreateRequest
+  object.
+
+  Fields:
+    interceptDeployment: A InterceptDeployment resource to be passed as the
+      request body.
+    interceptDeploymentId: Required. The ID to use for the new deployment,
+      which will become the final component of the deployment's resource name.
+    parent: Required. The parent resource where this deployment will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  interceptDeployment = _messages.MessageField('InterceptDeployment', 1)
+  interceptDeploymentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsGetRequest object.
+
+  Fields:
+    name: Required. The name of the deployment to retrieve. Format: projects/{
+      project}/locations/{location}/interceptDeployments/{intercept_deployment
+      }
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListInterceptDeployments` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListInterceptDeployments` must match the call that provided the page
+      token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of deployments.
+      Example: `projects/123456789/locations/us-central1-a`. See
+      https://google.aip.dev/132 for more details.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsPatchRequest
+  object.
+
+  Fields:
+    interceptDeployment: A InterceptDeployment resource to be passed as the
+      request body.
+    name: Immutable. Identifier. The resource name of this deployment, for
+      example: `projects/123456789/locations/us-
+      central1-a/interceptDeployments/my-dep`. See https://google.aip.dev/122
+      for more details.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the deployment (e.g. `description`; *not*
+      `intercept_deployment.description`). See https://google.aip.dev/161 for
+      more details.
+  """
+
+  interceptDeployment = _messages.MessageField('InterceptDeployment', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsCrea
+  teRequest object.
+
+  Fields:
+    interceptEndpointGroupAssociation: A InterceptEndpointGroupAssociation
+      resource to be passed as the request body.
+    interceptEndpointGroupAssociationId: Optional. The ID to use for the new
+      association, which will become the final component of the endpoint
+      group's resource name. If not provided, the server will generate a
+      unique ID.
+    parent: Required. The parent resource where this association will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  interceptEndpointGroupAssociation = _messages.MessageField('InterceptEndpointGroupAssociation', 1)
+  interceptEndpointGroupAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsDele
+  teRequest object.
+
+  Fields:
+    name: Required. The association to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the association to retrieve. Format: projects/
+      {project}/locations/{location}/interceptEndpointGroupAssociations/{inter
+      cept_endpoint_group_association}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsList
+  Request object.
+
+  Fields:
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListInterceptEndpointGroups` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListInterceptEndpointGroups` must match the call that provided the page
+      token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of associations.
+      Example: `projects/123456789/locations/global`. See
+      https://google.aip.dev/132 for more details.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsPatc
+  hRequest object.
+
+  Fields:
+    interceptEndpointGroupAssociation: A InterceptEndpointGroupAssociation
+      resource to be passed as the request body.
+    name: Immutable. Identifier. The resource name of this endpoint group
+      association, for example: `projects/123456789/locations/global/intercept
+      EndpointGroupAssociations/my-eg-association`. See
+      https://google.aip.dev/122 for more details.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the association (e.g. `description`; *not*
+      `intercept_endpoint_group_association.description`). See
+      https://google.aip.dev/161 for more details.
+  """
+
+  interceptEndpointGroupAssociation = _messages.MessageField('InterceptEndpointGroupAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest
+  object.
+
+  Fields:
+    interceptEndpointGroup: A InterceptEndpointGroup resource to be passed as
+      the request body.
+    interceptEndpointGroupId: Required. The ID to use for the endpoint group,
+      which will become the final component of the endpoint group's resource
+      name.
+    parent: Required. The parent resource where this endpoint group will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  interceptEndpointGroup = _messages.MessageField('InterceptEndpointGroup', 1)
+  interceptEndpointGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The endpoint group to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the endpoint group to retrieve. Format: projec
+      ts/{project}/locations/{location}/interceptEndpointGroups/{intercept_end
+      point_group}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter expression. See
+      https://google.aip.dev/160#filtering for more details.
+    orderBy: Optional. Sort expression. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+      See https://google.aip.dev/158 for more details.
+    pageToken: Optional. A page token, received from a previous
+      `ListInterceptEndpointGroups` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListInterceptEndpointGroups` must match the call that provided the page
+      token. See https://google.aip.dev/158 for more details.
+    parent: Required. The parent, which owns this collection of endpoint
+      groups. Example: `projects/123456789/locations/global`. See
+      https://google.aip.dev/132 for more details.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest
+  object.
+
+  Fields:
+    interceptEndpointGroup: A InterceptEndpointGroup resource to be passed as
+      the request body.
+    name: Immutable. Identifier. The resource name of this endpoint group, for
+      example:
+      `projects/123456789/locations/global/interceptEndpointGroups/my-eg`. See
+      https://google.aip.dev/122 for more details.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
+    updateMask: Optional. The list of fields to update. Fields are specified
+      relative to the endpoint group (e.g. `description`; *not*
+      `intercept_endpoint_group.description`). See https://google.aip.dev/161
+      for more details.
+  """
+
+  interceptEndpointGroup = _messages.MessageField('InterceptEndpointGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsListRequest(_messages.Message):

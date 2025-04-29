@@ -678,11 +678,10 @@ class IamFoldersLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | `target:ex*` | The binding target's name starts with
-      "ex". | | `target:example` | The binding target's name is `example`. | |
-      `policy:example` | The binding policy's name is `example`. |
+      are: + `target` + `policy` Some examples of filter queries: *
+      `target:ex*`: The binding target's name starts with "ex". *
+      `target:example`: The binding target's name is `example`. *
+      `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -847,11 +846,10 @@ class IamOrganizationsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | `target:ex*` | The binding target's name starts with
-      "ex". | | `target:example` | The binding target's name is `example`. | |
-      `policy:example` | The binding policy's name is `example`. |
+      are: + `target` + `policy` Some examples of filter queries: *
+      `target:ex*`: The binding target's name starts with "ex". *
+      `target:example`: The binding target's name is `example`. *
+      `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -1149,11 +1147,10 @@ class IamProjectsLocationsPolicyBindingsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. Some eligible fields for filtering
-      are: + `target` + `policy` Some examples of filter queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | `target:ex*` | The binding target's name starts with
-      "ex". | | `target:example` | The binding target's name is `example`. | |
-      `policy:example` | The binding policy's name is `example`. |
+      are: + `target` + `policy` Some examples of filter queries: *
+      `target:ex*`: The binding target's name starts with "ex". *
+      `target:example`: The binding target's name is `example`. *
+      `policy:example`: The binding policy's name is `example`.
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values

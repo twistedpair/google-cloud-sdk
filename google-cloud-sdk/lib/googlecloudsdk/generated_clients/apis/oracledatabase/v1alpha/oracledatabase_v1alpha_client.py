@@ -49,6 +49,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     self.projects_locations_cloudVmClusters = self.ProjectsLocationsCloudVmClustersService(self)
     self.projects_locations_dbSystemShapes = self.ProjectsLocationsDbSystemShapesService(self)
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
+    self.projects_locations_exadbVmClusters = self.ProjectsLocationsExadbVmClustersService(self)
     self.projects_locations_giVersions = self.ProjectsLocationsGiVersionsService(self)
     self.projects_locations_odbNetworks_odbSubnets = self.ProjectsLocationsOdbNetworksOdbSubnetsService(self)
     self.projects_locations_odbNetworks = self.ProjectsLocationsOdbNetworksService(self)
@@ -1045,6 +1046,124 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsEntitlementsListRequest',
         response_type_name='ListEntitlementsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsExadbVmClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_exadbVmClusters resource."""
+
+    _NAME = 'projects_locations_exadbVmClusters'
+
+    def __init__(self, client):
+      super(OracledatabaseV1alpha.ProjectsLocationsExadbVmClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Exadb (Exascale) VM Cluster resource.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exadbVmClusters',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['exadbVmClusterId', 'requestId'],
+        relative_path='v1alpha/{+parent}/exadbVmClusters',
+        request_field='exadbVmCluster',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Exadb (Exascale) VM Cluster.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exadbVmClusters/{exadbVmClustersId}',
+        http_method='DELETE',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Exadb (Exascale) VM Cluster.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExadbVmCluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exadbVmClusters/{exadbVmClustersId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersGetRequest',
+        response_type_name='ExadbVmCluster',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the Exadb (Exascale) VM Clusters for the given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExadbVmClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exadbVmClusters',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/exadbVmClusters',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersListRequest',
+        response_type_name='ListExadbVmClustersResponse',
         supports_download=False,
     )
 

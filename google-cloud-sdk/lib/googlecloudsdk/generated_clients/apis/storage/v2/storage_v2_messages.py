@@ -111,6 +111,7 @@ class Bucket(_messages.Message):
       configuration. If there is no configuration, the hierarchical namespace
       feature will be disabled and have no effect on the bucket.
     iamConfig: Optional. The bucket's IAM config.
+    ipFilter: Optional. The bucket's IP filter configuration.
     labels: Optional. User-provided labels, in key/value pairs.
     lifecycle: Optional. The bucket's lifecycle config. See
       [https://developers.google.com/storage/docs/lifecycle]Lifecycle
@@ -136,7 +137,8 @@ class Bucket(_messages.Message):
       team's owner group.
     project: Immutable. The project which owns this bucket, in the format of
       "projects/{projectIdentifier}". {projectIdentifier} can be the project
-      ID or project number.
+      ID or project number. Output values will always be in project number
+      format.
     retentionPolicy: Optional. The bucket's retention policy. The retention
       policy enforces a minimum retention time for all objects contained in
       the bucket, based on their creation time. Any attempt to overwrite or
@@ -212,26 +214,27 @@ class Bucket(_messages.Message):
   hardDeleteTime = _messages.StringField(13)
   hierarchicalNamespace = _messages.MessageField('GoogleStorageV2HierarchicalNamespace', 14)
   iamConfig = _messages.MessageField('IamConfig', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  lifecycle = _messages.MessageField('Lifecycle', 17)
-  location = _messages.StringField(18)
-  locationType = _messages.StringField(19)
-  logging = _messages.MessageField('Logging', 20)
-  metageneration = _messages.IntegerField(21)
-  name = _messages.StringField(22)
-  objectRetention = _messages.MessageField('ObjectRetention', 23)
-  owner = _messages.MessageField('Owner', 24)
-  project = _messages.StringField(25)
-  retentionPolicy = _messages.MessageField('RetentionPolicy', 26)
-  rpo = _messages.StringField(27)
-  satisfiesPzi = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  softDeletePolicy = _messages.MessageField('SoftDeletePolicy', 30)
-  softDeleteTime = _messages.StringField(31)
-  storageClass = _messages.StringField(32)
-  updateTime = _messages.StringField(33)
-  versioning = _messages.MessageField('Versioning', 34)
-  website = _messages.MessageField('Website', 35)
+  ipFilter = _messages.MessageField('IpFilter', 16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  lifecycle = _messages.MessageField('Lifecycle', 18)
+  location = _messages.StringField(19)
+  locationType = _messages.StringField(20)
+  logging = _messages.MessageField('Logging', 21)
+  metageneration = _messages.IntegerField(22)
+  name = _messages.StringField(23)
+  objectRetention = _messages.MessageField('ObjectRetention', 24)
+  owner = _messages.MessageField('Owner', 25)
+  project = _messages.StringField(26)
+  retentionPolicy = _messages.MessageField('RetentionPolicy', 27)
+  rpo = _messages.StringField(28)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  softDeletePolicy = _messages.MessageField('SoftDeletePolicy', 31)
+  softDeleteTime = _messages.StringField(32)
+  storageClass = _messages.StringField(33)
+  updateTime = _messages.StringField(34)
+  versioning = _messages.MessageField('Versioning', 35)
+  website = _messages.MessageField('Website', 36)
 
 
 class BucketAccessControl(_messages.Message):
@@ -723,6 +726,33 @@ class IntelligenceConfig(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class IpFilter(_messages.Message):
+  r"""The [bucket IP filtering](https://cloud.google.com/storage/docs/ip-
+  filtering-overview) configuration. Specifies the network sources that can
+  access the bucket, as well as its underlying objects.
+
+  Fields:
+    allowCrossOrgVpcs: Optional. Whether or not to allow VPCs from orgs
+      different than the bucket's parent org to access the bucket. When set to
+      true, validations on the existence of the VPCs won't be performed. If
+      set to false, each VPC network source will be checked to belong to the
+      same org as the bucket as well as validated for existence.
+    mode: The state of the IP filter configuration. Valid values are `Enabled`
+      and `Disabled`. When set to `Enabled`, IP filtering rules are applied to
+      a bucket and all incoming requests to the bucket are evaluated against
+      these rules. When set to `Disabled`, IP filtering rules are not applied
+      to a bucket.".
+    publicNetworkSource: Public IPs allowed to operate or access the bucket.
+    vpcNetworkSources: Optional. / The list of network sources that are
+      allowed to access operations on the bucket or the underlying objects.
+  """
+
+  allowCrossOrgVpcs = _messages.BooleanField(1)
+  mode = _messages.StringField(2)
+  publicNetworkSource = _messages.MessageField('PublicNetworkSource', 3)
+  vpcNetworkSources = _messages.MessageField('VpcNetworkSource', 4, repeated=True)
+
+
 class Lifecycle(_messages.Message):
   r"""Lifecycle properties of a bucket. For more information, see
   https://cloud.google.com/storage/docs/lifecycle.
@@ -1124,6 +1154,18 @@ class ProjectTeam(_messages.Message):
 
   projectNumber = _messages.StringField(1)
   team = _messages.StringField(2)
+
+
+class PublicNetworkSource(_messages.Message):
+  r"""The public network IP address ranges that can access the bucket and its
+  data.
+
+  Fields:
+    allowedIpCidrRanges: Optional. The list of IPv4 and IPv6 cidr blocks that
+      are allowed to operate or access the bucket and its underlying objects.
+  """
+
+  allowedIpCidrRanges = _messages.StringField(1, repeated=True)
 
 
 class RenameFolderMetadata(_messages.Message):
@@ -1786,6 +1828,25 @@ class Versioning(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class VpcNetworkSource(_messages.Message):
+  r"""The list of VPC networks that can access the bucket.
+
+  Fields:
+    allowedIpCidrRanges: Optional. The list of public or private IPv4 and IPv6
+      CIDR ranges that can access the bucket. In the CIDR IP address block,
+      the specified IP address must be properly truncated, meaning all the
+      host bits must be zero or else the input is considered malformed. For
+      example, `192.0.2.0/24` is accepted but `192.0.2.1/24` is not.
+      Similarly, for IPv6, `2001:db8::/32` is accepted whereas
+      `2001:db8::1/32` is not.
+    network: Name of the network. Format:
+      `projects/PROJECT_ID/global/networks/NETWORK_NAME`
+  """
+
+  allowedIpCidrRanges = _messages.StringField(1, repeated=True)
+  network = _messages.StringField(2)
 
 
 class Website(_messages.Message):

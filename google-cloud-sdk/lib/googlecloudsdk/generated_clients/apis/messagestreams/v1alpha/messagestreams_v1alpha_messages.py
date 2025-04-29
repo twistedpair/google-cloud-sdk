@@ -134,11 +134,25 @@ class Destination(_messages.Message):
       delivered to the destination. If not set, the message will be delivered
       in the format it was originally delivered to the Stream. This field can
       only be set if `Stream.input_payload_format` is also set.
-    serviceEndpoint: Required. The URL of a endpoint to route traffic to. If a
-      DNS FQDN is provided as the endpoint, Message Streams will create a
-      peering zone to the consumer VPC and forward DNS requests to the VPC
-      specified by network config to resolve the service endpoint. See:
-      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
+    serviceEndpoint: Required. The URL of a endpoint to route traffic to. If
+      this is a Multi-Single Tenant Stream (i.e. when use_shared_pool is set
+      to false) then: If a DNS FQDN is provided as the endpoint, Message
+      Streams will create a peering zone to the consumer VPC and forward DNS
+      requests to the VPC specified by network config to resolve the service
+      endpoint. See: https://cloud.google.com/dns/docs/zones/zones-
+      overview#peering_zones If this is a Multi-Tenant Stream (i.e. when
+      use_shared_pool is set to true) then: - If the service_endpoint starts
+      with http:// or https:// then the Stream uses Harpoon to reach the HTTP
+      endpoint. - If the service_endpoint is set to pubsub://* and the
+      dynamic_http_headers_enabled is set to true then the stream uses the
+      X-Google-Destination-Pubsub-Topic header to identify the Pub/Sub topic
+      to be used when sending the message (see go/mi-ms-dynamic-stream-ug).
+      NOTE: when setting service_endpoint to pubsub://* then the
+      dynamic_http_headers_enabled MUST be set to true. - For stubby
+      endpoints, we follow the format described in go/cloud-pubsub-on-
+      borg#using-a-push-subscription-with-a-stubby-push-endpoint. The stubby
+      endpoint must implement the [`CloudEventReceiver`](cs/symbol:orchestrati
+      on.convoy.CloudEventReceiver) service.
   """
 
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
@@ -933,6 +947,65 @@ class MessagestreamsProjectsLocationsStreamsRetryPoliciesListRequest(_messages.M
   parent = _messages.StringField(3, required=True)
 
 
+class MetricsConfig(_messages.Message):
+  r"""The configuration for optional annotations on Metrics emitted by the
+  Stream resource.
+
+  Messages:
+    LabelsValue: Optional. Labels store a set of opaque key-value pairs that
+      are supplied by the client and optionally processed in the downstream
+      systems depending on the Stream filter. These are alternatively known as
+      System Labels, and are not visible to the end user without explicit
+      configuration. These labels are used to annotate the metrics emitted by
+      the Stream resource. Billing metrics will inherit these labels and be
+      used in the billing pipeline via MTX Transformations to reroute the
+      metrics to the correct billing resource.
+
+  Fields:
+    labels: Optional. Labels store a set of opaque key-value pairs that are
+      supplied by the client and optionally processed in the downstream
+      systems depending on the Stream filter. These are alternatively known as
+      System Labels, and are not visible to the end user without explicit
+      configuration. These labels are used to annotate the metrics emitted by
+      the Stream resource. Billing metrics will inherit these labels and be
+      used in the billing pipeline via MTX Transformations to reroute the
+      metrics to the correct billing resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels store a set of opaque key-value pairs that are
+    supplied by the client and optionally processed in the downstream systems
+    depending on the Stream filter. These are alternatively known as System
+    Labels, and are not visible to the end user without explicit
+    configuration. These labels are used to annotate the metrics emitted by
+    the Stream resource. Billing metrics will inherit these labels and be used
+    in the billing pipeline via MTX Transformations to reroute the metrics to
+    the correct billing resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class MutualTlsAuthConfig(_messages.Message):
   r"""Mutual TLS authentication mechanism configuration.
 
@@ -1398,6 +1471,7 @@ class Stream(_messages.Message):
     loggingConfig: Optional. Config to control Platform Logging for Streams.
     mediations: Optional. Mediations to define the way to modify the incoming
       message.
+    metricsConfig: Optional. Config to control Metrics for Streams.
     name: The resource name of the stream. Must be unique within the location
       of the project and must be in
       `projects/{project}/locations/{location}/streams/{stream}` format.
@@ -1512,15 +1586,16 @@ class Stream(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   loggingConfig = _messages.MessageField('LoggingConfig', 8)
   mediations = _messages.MessageField('Mediation', 9, repeated=True)
-  name = _messages.StringField(10)
-  replyBus = _messages.StringField(11)
-  retryPolicy = _messages.MessageField('InlineRetryPolicy', 12)
-  source = _messages.MessageField('Source', 13)
-  streamAction = _messages.MessageField('StreamAction', 14)
-  streamIdentityOverride = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  useSharedPool = _messages.BooleanField(18)
+  metricsConfig = _messages.MessageField('MetricsConfig', 10)
+  name = _messages.StringField(11)
+  replyBus = _messages.StringField(12)
+  retryPolicy = _messages.MessageField('InlineRetryPolicy', 13)
+  source = _messages.MessageField('Source', 14)
+  streamAction = _messages.MessageField('StreamAction', 15)
+  streamIdentityOverride = _messages.StringField(16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  useSharedPool = _messages.BooleanField(19)
 
 
 class StreamAction(_messages.Message):

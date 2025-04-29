@@ -588,6 +588,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -2060,6 +2061,7 @@ class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   """
 
 
+
 class GoogleFirestoreAdminV1Database(_messages.Message):
   r"""A Cloud Firestore Database.
 
@@ -2076,6 +2078,11 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     TypeValueValuesEnum: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
+
+  Messages:
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     appEngineIntegrationMode: The App Engine integration mode to use for this
@@ -2124,6 +2131,9 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       field is only populated for deleted databases.
     sourceInfo: Output only. Information about the provenance of this
       database.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     type: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -2184,7 +2194,6 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
         specified.
       ENTERPRISE: Enterprise edition.
     """
-
     DATABASE_EDITION_UNSPECIFIED = 0
     STANDARD = 1
     ENTERPRISE = 2
@@ -2234,14 +2243,38 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     FIRESTORE_NATIVE = 1
     DATASTORE_MODE = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   appEngineIntegrationMode = _messages.EnumField('AppEngineIntegrationModeValueValuesEnum', 1)
   cmekConfig = _messages.MessageField('GoogleFirestoreAdminV1CmekConfig', 2)
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 3)
   createTime = _messages.StringField(4)
   databaseEdition = _messages.EnumField('DatabaseEditionValueValuesEnum', 5)
-  deleteProtectionState = _messages.EnumField(
-      'DeleteProtectionStateValueValuesEnum', 6
-  )
+  deleteProtectionState = _messages.EnumField('DeleteProtectionStateValueValuesEnum', 6)
   deleteTime = _messages.StringField(7)
   earliestVersionTime = _messages.StringField(8)
   etag = _messages.StringField(9)
@@ -2249,15 +2282,14 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   keyPrefix = _messages.StringField(11)
   locationId = _messages.StringField(12)
   name = _messages.StringField(13)
-  pointInTimeRecoveryEnablement = _messages.EnumField(
-      'PointInTimeRecoveryEnablementValueValuesEnum', 14
-  )
+  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 14)
   previousId = _messages.StringField(15)
   sourceInfo = _messages.MessageField('GoogleFirestoreAdminV1SourceInfo', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  versionRetentionPeriod = _messages.StringField(20)
+  tags = _messages.MessageField('TagsValue', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  versionRetentionPeriod = _messages.StringField(21)
 
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
@@ -2490,6 +2522,7 @@ class GoogleFirestoreAdminV1FlatIndex(_messages.Message):
   """
 
 
+
 class GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions(_messages.Message):
   r"""The configuration options for using Google default encryption."""
 
@@ -2572,7 +2605,6 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
 
 class GoogleFirestoreAdminV1Index(_messages.Message):
   r"""Cloud Firestore indexes enable simple and complex queries against
-
   documents in a database.
 
   Enums:
@@ -2651,7 +2683,6 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
         contains any of the fields specified in the index. Non-existent fields
         are treated as having a NULL value when generating index entries.
     """
-
     DENSITY_UNSPECIFIED = 0
     SPARSE_ALL = 1
     SPARSE_ANY = 2
@@ -2708,9 +2739,7 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
 
   apiScope = _messages.EnumField('ApiScopeValueValuesEnum', 1)
   density = _messages.EnumField('DensityValueValuesEnum', 2)
-  fields = _messages.MessageField(
-      'GoogleFirestoreAdminV1IndexField', 3, repeated=True
-  )
+  fields = _messages.MessageField('GoogleFirestoreAdminV1IndexField', 3, repeated=True)
   multikey = _messages.BooleanField(4)
   name = _messages.StringField(5)
   queryScope = _messages.EnumField('QueryScopeValueValuesEnum', 6)
@@ -3038,6 +3067,11 @@ class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
 class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
   r"""The request message for FirestoreAdmin.RestoreDatabase.
 
+  Messages:
+    TagsValue: Optional. Immutable. Tags to be bound to the restored database.
+      The tags should be provided in the format of `tagKeys/{tag_key_id} ->
+      tagValues/{tag_value_id}`.
+
   Fields:
     backup: Required. Backup to restore from. Must be from the same project as
       the parent. The restored database will be created in the same location
@@ -3054,17 +3088,48 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
       database. If this field is not specified, the restored database will use
       the same encryption configuration as the backup, namely
       use_source_encryption.
+    tags: Optional. Immutable. Tags to be bound to the restored database. The
+      tags should be provided in the format of `tagKeys/{tag_key_id} ->
+      tagValues/{tag_value_id}`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Immutable. Tags to be bound to the restored database. The
+    tags should be provided in the format of `tagKeys/{tag_key_id} ->
+    tagValues/{tag_value_id}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
   encryptionConfig = _messages.MessageField('GoogleFirestoreAdminV1EncryptionConfig', 3)
+  tags = _messages.MessageField('TagsValue', 4)
 
 
 class GoogleFirestoreAdminV1SourceEncryptionOptions(_messages.Message):
   r"""The configuration options for using the same encryption method as the
   source.
   """
+
 
 
 class GoogleFirestoreAdminV1SourceInfo(_messages.Message):

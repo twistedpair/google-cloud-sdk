@@ -512,7 +512,7 @@ def AddCreateInstanceFlags(parser):
   )
 
   reservation_group = gce_setup_group.add_group(
-      help='Reservation configs.', hidden=True
+      help='Reservation configs.'
   )
   reservation_group.add_argument(
       '--reservation-type',

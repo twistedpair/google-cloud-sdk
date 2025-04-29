@@ -752,7 +752,7 @@ class CanaryDeployment(_messages.Message):
       phase. If this is not configured, there will be no predeploy job for
       this phase.
     verify: Optional. Whether to run verify tests after each percentage
-      deployment.
+      deployment via `skaffold verify`.
   """
 
   percentages = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
@@ -4235,7 +4235,8 @@ class PhaseConfig(_messages.Message):
     profiles: Optional. Skaffold profiles to use when rendering the manifest
       for this phase. These are in addition to the profiles list specified in
       the `DeliveryPipeline` stage.
-    verify: Optional. Whether to run verify tests after the deployment.
+    verify: Optional. Whether to run verify tests after the deployment via
+      `skaffold verify`.
   """
 
   percentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6028,10 +6029,10 @@ class Standard(_messages.Message):
 
   Fields:
     postdeploy: Optional. Configuration for the postdeploy job. If this is not
-      configured, postdeploy job will not be present.
+      configured, the postdeploy job will not be present.
     predeploy: Optional. Configuration for the predeploy job. If this is not
-      configured, predeploy job will not be present.
-    verify: Optional. Whether to verify a deployment.
+      configured, the predeploy job will not be present.
+    verify: Optional. Whether to verify a deployment via `skaffold verify`.
   """
 
   postdeploy = _messages.MessageField('Postdeploy', 1)

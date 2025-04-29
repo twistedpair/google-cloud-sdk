@@ -96,6 +96,8 @@ class StoragePoolsClient(object):
                              custom_performance_enabled=None,
                              total_throughput=None,
                              total_iops=None,
+                             hot_tier_size=None,
+                             enable_hot_tier_auto_resize=None,
                              labels=None):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
@@ -113,6 +115,8 @@ class StoragePoolsClient(object):
         custom_performance_enabled=custom_performance_enabled,
         total_throughput=total_throughput,
         total_iops=total_iops,
+        hot_tier_size=hot_tier_size,
+        enable_hot_tier_auto_resize=enable_hot_tier_auto_resize,
         labels=labels
     )
 
@@ -170,6 +174,8 @@ class StoragePoolsClient(object):
                                     replica_zone=None,
                                     total_throughput=None,
                                     total_iops=None,
+                                    hot_tier_size=None,
+                                    enable_hot_tier_auto_resize=None,
                                     labels=None):
     """Parses updates into a storage pool config.
 
@@ -183,6 +189,9 @@ class StoragePoolsClient(object):
       replica_zone: str, replica zone for storage pool
       total_throughput: int, total throughput of the storage pool
       total_iops: int, total IOPS of the storage pool
+      hot_tier_size: int, hot tier size of the storage pool
+      enable_hot_tier_auto_resize: bool, whether hot tier auto resize is enabled
+      for the storage pool
       labels: LabelsValue message, the new labels value, if any.
 
     Returns:
@@ -198,6 +207,8 @@ class StoragePoolsClient(object):
         replica_zone=replica_zone,
         total_throughput=total_throughput,
         total_iops=total_iops,
+        hot_tier_size=hot_tier_size,
+        enable_hot_tier_auto_resize=enable_hot_tier_auto_resize,
         labels=labels
     )
     return storage_pool
@@ -295,6 +306,8 @@ class StoragePoolsAdapter(object):
       custom_performance_enabled,
       total_throughput,
       total_iops,
+      hot_tier_size,
+      enable_hot_tier_auto_resize,
       labels,
   ):
     """Parses the command line arguments for Create Storage Pool into a config.
@@ -314,6 +327,9 @@ class StoragePoolsAdapter(object):
       custom_performance_enabled: Bool on whether custom performance is enabled
       total_throughput: Total throughput of the Storage Pool
       total_iops: Total IOPS of the Storage Pool
+      hot_tier_size: Hot tier size of the Storage Pool
+      enable_hot_tier_auto_resize: Bool on whether hot tier auto resize is
+        enabled
       labels: the parsed labels value
 
     Returns:
@@ -343,6 +359,10 @@ class StoragePoolsAdapter(object):
       storage_pool.totalThroughputMibps = total_throughput
     if total_iops is not None:
       storage_pool.totalIops = total_iops
+    if hot_tier_size is not None:
+      storage_pool.hotTierSizeGib = hot_tier_size
+    if enable_hot_tier_auto_resize is not None:
+      storage_pool.enableHotTierAutoResize = enable_hot_tier_auto_resize
     storage_pool.labels = labels
     return storage_pool
 
@@ -358,6 +378,8 @@ class StoragePoolsAdapter(object):
       replica_zone=None,
       total_throughput=None,
       total_iops=None,
+      hot_tier_size=None,
+      enable_hot_tier_auto_resize=None,
   ):
     """Parse update information into an updated Storage Pool message."""
     if capacity is not None:
@@ -376,6 +398,10 @@ class StoragePoolsAdapter(object):
       storagepool_config.totalThroughputMibps = total_throughput
     if total_iops is not None:
       storagepool_config.totalIops = total_iops
+    if hot_tier_size is not None:
+      storagepool_config.hotTierSizeGib = hot_tier_size
+    if enable_hot_tier_auto_resize is not None:
+      storagepool_config.enableHotTierAutoResize = enable_hot_tier_auto_resize
     if labels is not None:
       storagepool_config.labels = labels
     return storagepool_config

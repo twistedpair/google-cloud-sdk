@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 
 # Label names as to be stored in k8s object metadata
 SERVICE_LABEL = 'serving.knative.dev/service'
+WORKER_POOL_LABEL = 'run.googleapis.com/workerPool'
 # Used to force a new revision, and also to tie a particular request for changes
 # to a particular created revision.
 NONCE_LABEL = 'client.knative.dev/nonce'
@@ -65,7 +66,15 @@ class Revision(container_resource.ContainerResource):
 
   @property
   def service_name(self):
-    return self.labels[SERVICE_LABEL]
+    return self.labels[SERVICE_LABEL] if SERVICE_LABEL in self.labels else None
+
+  @property
+  def worker_pool_name(self):
+    return (
+        self.labels[WORKER_POOL_LABEL]
+        if WORKER_POOL_LABEL in self.labels
+        else None
+    )
 
   @property
   def serving_state(self):

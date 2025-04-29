@@ -89,6 +89,7 @@ def ConvertPriorityToInt(priority):
 
 def ConvertAction(action):
   return {
+      'goto-next': 'goto_next',
       'deny-403': 'deny(403)',
       'deny-404': 'deny(404)',
       'deny-502': 'deny(502)'

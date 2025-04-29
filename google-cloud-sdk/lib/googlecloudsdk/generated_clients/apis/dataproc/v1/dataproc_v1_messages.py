@@ -575,6 +575,49 @@ class ApplicationInfo(_messages.Message):
   quantileDataStatus = _messages.EnumField('QuantileDataStatusValueValuesEnum', 9)
 
 
+class AttachedDiskConfig(_messages.Message):
+  r"""Specifies the config of attached disk options for single VM instance.
+
+  Enums:
+    DiskTypeValueValuesEnum: Optional. Disk type.
+
+  Fields:
+    diskSizeGb: Optional. Disk size in GB.
+    diskType: Optional. Disk type.
+    provisionedIops: Optional. Indicates how many IOPS to provision for the
+      attached disk. This sets the number of I/O operations per second that
+      the disk can handle. See
+      https://cloud.google.com/compute/docs/disks/hyperdisks#hyperdisk-
+      features
+    provisionedThroughput: Optional. Indicates how much throughput to
+      provision for the attached disk. This sets the number of throughput mb
+      per second that the disk can handle. See
+      https://cloud.google.com/compute/docs/disks/hyperdisks#hyperdisk-
+      features
+  """
+
+  class DiskTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Disk type.
+
+    Values:
+      DISK_TYPE_UNSPECIFIED: Required unspecified disk type.
+      HYPERDISK_BALANCED: Hyperdisk Balanced disk type.
+      HYPERDISK_EXTREME: Hyperdisk Extreme disk type.
+      HYPERDISK_ML: Hyperdisk ML disk type.
+      HYPERDISK_THROUGHPUT: Hyperdisk Throughput disk type.
+    """
+    DISK_TYPE_UNSPECIFIED = 0
+    HYPERDISK_BALANCED = 1
+    HYPERDISK_EXTREME = 2
+    HYPERDISK_ML = 3
+    HYPERDISK_THROUGHPUT = 4
+
+  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 2)
+  provisionedIops = _messages.IntegerField(3)
+  provisionedThroughput = _messages.IntegerField(4)
+
+
 class AuthenticationConfig(_messages.Message):
   r"""Authentication configuration for a workload is used to set the default
   identity for the workload execution. The config specifies the type of
@@ -1277,6 +1320,13 @@ class ClusterConfig(_messages.Message):
       clusters/staging-bucket)). This field requires a Cloud Storage bucket
       name, not a gs://... URI to a Cloud Storage bucket.
     dataprocMetricConfig: Optional. The config for Dataproc metrics.
+    diagnosticBucket: Optional. A Cloud Storage bucket used to collect
+      checkpoint diagnostic data
+      (https://cloud.google.com/dataproc/docs/support/diagnose-
+      clusters#checkpoint_data). If you do not specify a diagnostic bucket,
+      Cloud Dataproc will use the Dataproc temp bucket to collect the
+      checkpoint diagnostic data. This field requires a Cloud Storage bucket
+      name, not a gs://... URI to a Cloud Storage bucket.
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
@@ -1342,20 +1392,21 @@ class ClusterConfig(_messages.Message):
   clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
   configBucket = _messages.StringField(4)
   dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 5)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
-  endpointConfig = _messages.MessageField('EndpointConfig', 7)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 8)
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 9)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 10, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 11)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 12)
-  metastoreConfig = _messages.MessageField('MetastoreConfig', 13)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 14)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 15)
-  securityConfig = _messages.MessageField('SecurityConfig', 16)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 17)
-  tempBucket = _messages.StringField(18)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 19)
+  diagnosticBucket = _messages.StringField(6)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
+  endpointConfig = _messages.MessageField('EndpointConfig', 8)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 9)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 10)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 11, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 12)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 13)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 14)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 15)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 16)
+  securityConfig = _messages.MessageField('SecurityConfig', 17)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 18)
+  tempBucket = _messages.StringField(19)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 20)
 
 
 class ClusterMetrics(_messages.Message):
@@ -4750,9 +4801,12 @@ class DiagnoseClusterResults(_messages.Message):
 
 
 class DiskConfig(_messages.Message):
-  r"""Specifies the config of disk options for a group of VM instances.
+  r"""Specifies the config of boot disk and attached disk options for a group
+  of VM instances.
 
   Fields:
+    attachedDiskConfigs: Optional. A list of attached disk configs for a group
+      of VM instances.
     bootDiskProvisionedIops: Optional. Indicates how many IOPS to provision
       for the disk. This sets the number of I/O operations per second that the
       disk can handle. This field is supported only if boot_disk_type is
@@ -4781,12 +4835,13 @@ class DiskConfig(_messages.Message):
       vCPUs selected.
   """
 
-  bootDiskProvisionedIops = _messages.IntegerField(1)
-  bootDiskProvisionedThroughput = _messages.IntegerField(2)
-  bootDiskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  bootDiskType = _messages.StringField(4)
-  localSsdInterface = _messages.StringField(5)
-  numLocalSsds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  attachedDiskConfigs = _messages.MessageField('AttachedDiskConfig', 1, repeated=True)
+  bootDiskProvisionedIops = _messages.IntegerField(2)
+  bootDiskProvisionedThroughput = _messages.IntegerField(3)
+  bootDiskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(5)
+  localSsdInterface = _messages.StringField(6)
+  numLocalSsds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class DriverRunner(_messages.Message):

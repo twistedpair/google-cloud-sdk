@@ -1783,13 +1783,22 @@ class ContinuousBackupInfo(_messages.Message):
 
   Fields:
     earliestRestorableTime: Output only. The earliest restorable time that can
-      be restored to. Output only field.
+      be restored to. If continuous backups and recovery was recently enabled,
+      the earliest restorable time is the creation time of the earliest
+      eligible backup within this cluster's continuous backup recovery window.
+      After a cluster has had continuous backups enabled for the duration of
+      its recovery window, the earliest restorable time becomes "now minus the
+      recovery window". For example, assuming a point in time recovery is
+      attempted at 04/16/2025 3:23:00PM with a 14d recovery window, the
+      earliest restorable time would be 04/02/2025 3:23:00PM. This field is
+      only visible if the CLUSTER_VIEW_CONTINUOUS_BACKUP cluster view is
+      provided.
     enabledTime: Output only. When ContinuousBackup was most recently enabled.
       Set to null if ContinuousBackup is not enabled.
     encryptionInfo: Output only. The encryption information for the WALs and
       backups required for ContinuousBackup.
     schedule: Output only. Days of the week on which a continuous backup is
-      taken. Output only field. Ignored if passed into the request.
+      taken.
   """
 
   class ScheduleValueListEntryValuesEnum(_messages.Enum):
@@ -2249,6 +2258,13 @@ class Instance(_messages.Message):
   It's the main unit of computing resources in AlloyDB.
 
   Enums:
+    ActivationPolicyValueValuesEnum: Optional. Specifies whether an instance
+      needs to spin up. Once the instance is active, the activation policy can
+      be updated to the `NEVER` to stop the instance. Likewise, the activation
+      policy can be updated to `ALWAYS` to start the instance. There are
+      restrictions around when an instance can/cannot be activated (for
+      example, a read pool instance should be stopped before stopping primary
+      etc.). Please refer to the API documentation for more details.
     AvailabilityTypeValueValuesEnum: Availability type of an Instance. If
       empty, defaults to REGIONAL for primary instances. For read pools,
       availability_type is always UNSPECIFIED. Instances in the read pools are
@@ -2279,6 +2295,13 @@ class Instance(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    activationPolicy: Optional. Specifies whether an instance needs to spin
+      up. Once the instance is active, the activation policy can be updated to
+      the `NEVER` to stop the instance. Likewise, the activation policy can be
+      updated to `ALWAYS` to start the instance. There are restrictions around
+      when an instance can/cannot be activated (for example, a read pool
+      instance should be stopped before stopping primary etc.). Please refer
+      to the API documentation for more details.
     annotations: Annotations to allow client tools to store small amount of
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
     availabilityType: Availability type of an Instance. If empty, defaults to
@@ -2356,6 +2379,24 @@ class Instance(_messages.Message):
     writableNode: Output only. This is set for the read-write VM of the
       PRIMARY instance only.
   """
+
+  class ActivationPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies whether an instance needs to spin up. Once the
+    instance is active, the activation policy can be updated to the `NEVER` to
+    stop the instance. Likewise, the activation policy can be updated to
+    `ALWAYS` to start the instance. There are restrictions around when an
+    instance can/cannot be activated (for example, a read pool instance should
+    be stopped before stopping primary etc.). Please refer to the API
+    documentation for more details.
+
+    Values:
+      ACTIVATION_POLICY_UNSPECIFIED: The policy is not specified.
+      ALWAYS: The instance is running.
+      NEVER: The instance is not running.
+    """
+    ACTIVATION_POLICY_UNSPECIFIED = 0
+    ALWAYS = 1
+    NEVER = 2
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
     r"""Availability type of an Instance. If empty, defaults to REGIONAL for
@@ -2509,34 +2550,35 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
-  clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 3)
-  createTime = _messages.StringField(4)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
-  deleteTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  gceZone = _messages.StringField(9)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
-  ipAddress = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  machineConfig = _messages.MessageField('MachineConfig', 13)
-  name = _messages.StringField(14)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 15)
-  nodes = _messages.MessageField('Node', 16, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 17)
-  outboundPublicIpAddresses = _messages.StringField(18, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 19)
-  publicIpAddress = _messages.StringField(20)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 21)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 22)
-  reconciling = _messages.BooleanField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  writableNode = _messages.MessageField('Node', 28)
+  activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 3)
+  clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 4)
+  createTime = _messages.StringField(5)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 6)
+  deleteTime = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  gceZone = _messages.StringField(10)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
+  ipAddress = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  machineConfig = _messages.MessageField('MachineConfig', 14)
+  name = _messages.StringField(15)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 16)
+  nodes = _messages.MessageField('Node', 17, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 18)
+  outboundPublicIpAddresses = _messages.StringField(19, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 20)
+  publicIpAddress = _messages.StringField(21)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 22)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 23)
+  reconciling = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  writableNode = _messages.MessageField('Node', 29)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -3292,7 +3334,7 @@ class RestartInstanceRequest(_messages.Message):
 
 class RestoreClusterRequest(_messages.Message):
   r"""Message for restoring a Cluster from a backup or another cluster at a
-  given point in time.
+  given point in time. NEXT_ID: 11
 
   Fields:
     backupSource: Backup source.
@@ -4199,6 +4241,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         read intensive workload.
       SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
         limit.
+      SIGNAL_TYPE_MAX_SERVER_MEMORY: Indicates that the instance's max server
+        memory is configured higher than the recommended value.
+      SIGNAL_TYPE_LARGE_ROWS: Indicates that the database has large rows
+        beyond the recommended limit.
+      SIGNAL_TYPE_HIGH_WRITE_PRESSURE: Heavy write pressure on the database
+        rows.
+      SIGNAL_TYPE_HIGH_READ_PRESSURE: Heavy read pressure on the database
+        rows.
+      SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED: Encryption org policy
+        not satisfied.
+      SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
+        satisfied.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4290,6 +4344,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
     SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
     SIGNAL_TYPE_MEMORY_LIMIT = 89
+    SIGNAL_TYPE_MAX_SERVER_MEMORY = 90
+    SIGNAL_TYPE_LARGE_ROWS = 91
+    SIGNAL_TYPE_HIGH_WRITE_PRESSURE = 92
+    SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
+    SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
+    SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4867,6 +4927,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         read intensive workload.
       SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
         limit.
+      SIGNAL_TYPE_MAX_SERVER_MEMORY: Indicates that the instance's max server
+        memory is configured higher than the recommended value.
+      SIGNAL_TYPE_LARGE_ROWS: Indicates that the database has large rows
+        beyond the recommended limit.
+      SIGNAL_TYPE_HIGH_WRITE_PRESSURE: Heavy write pressure on the database
+        rows.
+      SIGNAL_TYPE_HIGH_READ_PRESSURE: Heavy read pressure on the database
+        rows.
+      SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED: Encryption org policy
+        not satisfied.
+      SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
+        satisfied.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4958,6 +5030,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
     SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
     SIGNAL_TYPE_MEMORY_LIMIT = 89
+    SIGNAL_TYPE_MAX_SERVER_MEMORY = 90
+    SIGNAL_TYPE_LARGE_ROWS = 91
+    SIGNAL_TYPE_HIGH_WRITE_PRESSURE = 92
+    SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
+    SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
+    SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -5411,9 +5489,10 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       ON_PREM: On premises database product.
       PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
+      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
+      PRODUCT_TYPE_COMPUTE_ENGINE: Compute Engine self managed databases
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
-      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
     PRODUCT_TYPE_CLOUD_SQL = 1
@@ -5425,8 +5504,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     ON_PREM = 7
     PRODUCT_TYPE_MEMORYSTORE = 8
     PRODUCT_TYPE_BIGTABLE = 9
-    PRODUCT_TYPE_OTHER = 10
-    PRODUCT_TYPE_FIRESTORE = 11
+    PRODUCT_TYPE_FIRESTORE = 10
+    PRODUCT_TYPE_COMPUTE_ENGINE = 11
+    PRODUCT_TYPE_OTHER = 12
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

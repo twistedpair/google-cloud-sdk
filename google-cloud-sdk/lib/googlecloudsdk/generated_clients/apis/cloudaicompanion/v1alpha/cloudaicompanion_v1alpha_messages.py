@@ -14,6 +14,19 @@ from apitools.base.py import extra_types
 package = 'cloudaicompanion'
 
 
+class AttemptStats(_messages.Message):
+  r"""Status for the execution attempt.
+
+  Fields:
+    endTime: The end time of the execution for the current attempt.
+    startTime: The start time of the execution for the current attempt. This
+      could be in the future if it's been scheduled.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -75,6 +88,94 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AuthConfig(_messages.Message):
+  r"""The AuthConfig resource use to hold channels and connection config data.
+
+  Enums:
+    CredentialTypeValueValuesEnum: Optional. Credential type of the auth
+      config.
+    StateValueValuesEnum: Output only. The status of the auth config.
+
+  Fields:
+    credentialType: Optional. Credential type of the auth config.
+    description: Optional. A description of the auth config.
+    displayName: Optional. The name of the auth config.
+    name: Optional. Resource name of the auth config. For more information,
+      see https://cloud.google.com/application-integration/docs/configure-
+      authentication-profiles"
+      projects/{project}/locations/{location}/authConfigs/{authConfig}
+    overrideValidTime: Optional. User provided expiry time to override. For
+      the example of Salesforce, username/password credentials can be valid
+      for 6 months depending on the instance settings.
+    reason: Output only. The reason / details of the current status.
+    state: Output only. The status of the auth config.
+    validTime: Optional. The time until the auth config is valid. Empty or max
+      value is considered the auth config won't expire.
+  """
+
+  class CredentialTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Credential type of the auth config.
+
+    Values:
+      CREDENTIAL_TYPE_UNSPECIFIED: Unspecified credential type
+      USERNAME_AND_PASSWORD: Regular username/password pair.
+      API_KEY: API key.
+      OAUTH2_AUTHORIZATION_CODE: OAuth 2.0 Authorization Code Grant Type.
+      OAUTH2_IMPLICIT: OAuth 2.0 Implicit Grant Type.
+      OAUTH2_CLIENT_CREDENTIALS: OAuth 2.0 Client Credentials Grant Type.
+      OAUTH2_RESOURCE_OWNER_CREDENTIALS: OAuth 2.0 Resource Owner Credentials
+        Grant Type.
+      JWT: JWT Token.
+      AUTH_TOKEN: Auth Token, e.g. bearer token.
+      SERVICE_ACCOUNT: Service Account which can be used to generate token for
+        authentication.
+      CLIENT_CERTIFICATE_ONLY: Client Certificate only.
+      OIDC_TOKEN: Google OIDC ID Token
+    """
+    CREDENTIAL_TYPE_UNSPECIFIED = 0
+    USERNAME_AND_PASSWORD = 1
+    API_KEY = 2
+    OAUTH2_AUTHORIZATION_CODE = 3
+    OAUTH2_IMPLICIT = 4
+    OAUTH2_CLIENT_CREDENTIALS = 5
+    OAUTH2_RESOURCE_OWNER_CREDENTIALS = 6
+    JWT = 7
+    AUTH_TOKEN = 8
+    SERVICE_ACCOUNT = 9
+    CLIENT_CERTIFICATE_ONLY = 10
+    OIDC_TOKEN = 11
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of the auth config.
+
+    Values:
+      STATE_UNSPECIFIED: Status not specified.
+      VALID: Valid Auth config.
+      INVALID: General invalidity, if it doesn't fits in the detailed issue
+        below.
+      SOFT_DELETED: Auth config soft deleted.
+      EXPIRED: Auth config expired.
+      UNAUTHORIZED: Auth config unauthorized.
+      UNSUPPORTED: Auth config not supported.
+    """
+    STATE_UNSPECIFIED = 0
+    VALID = 1
+    INVALID = 2
+    SOFT_DELETED = 3
+    EXPIRED = 4
+    UNAUTHORIZED = 5
+    UNSUPPORTED = 6
+
+  credentialType = _messages.EnumField('CredentialTypeValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  overrideValidTime = _messages.StringField(5)
+  reason = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  validTime = _messages.StringField(8)
 
 
 class Binding(_messages.Message):
@@ -176,6 +277,47 @@ class BooleanParameterArray(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudLoggingDetails(_messages.Message):
+  r"""Cloud Logging details for execution info
+
+  Enums:
+    CloudLoggingSeverityValueValuesEnum: Optional. Severity selected by the
+      customer for the logs to be sent to Cloud Logging, for the integration
+      version getting executed.
+
+  Fields:
+    cloudLoggingSeverity: Optional. Severity selected by the customer for the
+      logs to be sent to Cloud Logging, for the integration version getting
+      executed.
+    enableCloudLogging: Optional. Status of whether Cloud Logging is enabled
+      or not for the integration version getting executed.
+  """
+
+  class CloudLoggingSeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. Severity selected by the customer for the logs to be sent to
+    Cloud Logging, for the integration version getting executed.
+
+    Values:
+      CLOUD_LOGGING_SEVERITY_UNSPECIFIED: Unspecified
+      INFO: If Severity selected is `INFO`, then all the Integration Execution
+        States (`IN_PROCESS`, `ON_HOLD`, `SUCCEEDED`, `SUSPENDED`, `ERROR`,
+        `CANCELLED`) will be sent to Cloud Logging.
+      ERROR: If Severity selected is `ERROR`, then only the following
+        Integration Execution States (`ERROR`, `CANCELLED`) will be sent to
+        Cloud Logging.
+      WARNING: If Severity selected is `WARNING`, then only the following
+        Integration Execution States (`ERROR`, `CANCELLED`) will be sent to
+        Cloud Logging.
+    """
+    CLOUD_LOGGING_SEVERITY_UNSPECIFIED = 0
+    INFO = 1
+    ERROR = 2
+    WARNING = 3
+
+  cloudLoggingSeverity = _messages.EnumField('CloudLoggingSeverityValueValuesEnum', 1)
+  enableCloudLogging = _messages.BooleanField(2)
 
 
 class CloudSchedulerConfig(_messages.Message):
@@ -644,6 +786,127 @@ class EventParameter(_messages.Message):
   value = _messages.MessageField('ValueType', 2)
 
 
+class Execution(_messages.Message):
+  r"""The Execution contains detailed information of an individual integration
+  execution.
+
+  Enums:
+    StateValueValuesEnum: Output only. Status of the execution.
+
+  Messages:
+    RequestVariablesValue: Optional. Variables provided in the request.
+    ResponseVariablesValue: Optional. Variables returned as part of the
+      response.
+
+  Fields:
+    cloudLoggingDetails: Cloud Logging details for the integration version
+    containTaskVariables: Indicates if the task execution contains variables.
+    createTime: Output only. Time the execution is created.
+    executionAttemptStats: Start and end time of each execution attempt.
+    integrationVersionNumber: Indicates which snapshot of integration is used
+      for this execution.
+    integrationVersionUserLabel: Optional. User-defined label that annotates
+      the executed integration version.
+    name: Identifier. Execution resource name.
+    replayInfo: Output only. Replay info for the execution
+    requestVariables: Optional. Variables provided in the request.
+    responseVariables: Optional. Variables returned as part of the response.
+    state: Output only. Status of the execution.
+    taskExecutions: Optional. List of task executions.
+    triggerId: The ID of the trigger invoked at the start of the execution.
+    updateTime: Output only. Time the execution is recently updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the execution.
+
+    Values:
+      STATE_UNSPECIFIED: Default.
+      ON_HOLD: Execution is scheduled and awaiting to be triggered.
+      IN_PROCESS: Execution is processing.
+      SUCCEEDED: Execution successfully finished. There are no more changes
+        after this state.
+      FAILED: Execution failed. There's no more change after this state.
+      CANCELLED: Execution is cancelled. There's no more change after this
+        state.
+      RETRY_ON_HOLD: Execution failed and is waiting for retry.
+      SUSPENDED: Execution suspended and waiting for manual intervention.
+    """
+    STATE_UNSPECIFIED = 0
+    ON_HOLD = 1
+    IN_PROCESS = 2
+    SUCCEEDED = 3
+    FAILED = 4
+    CANCELLED = 5
+    RETRY_ON_HOLD = 6
+    SUSPENDED = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestVariablesValue(_messages.Message):
+    r"""Optional. Variables provided in the request.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestVariablesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseVariablesValue(_messages.Message):
+    r"""Optional. Variables returned as part of the response.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseVariablesValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cloudLoggingDetails = _messages.MessageField('CloudLoggingDetails', 1)
+  containTaskVariables = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  executionAttemptStats = _messages.MessageField('AttemptStats', 4, repeated=True)
+  integrationVersionNumber = _messages.IntegerField(5)
+  integrationVersionUserLabel = _messages.StringField(6)
+  name = _messages.StringField(7)
+  replayInfo = _messages.MessageField('ReplayInfo', 8)
+  requestVariables = _messages.MessageField('RequestVariablesValue', 9)
+  responseVariables = _messages.MessageField('ResponseVariablesValue', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  taskExecutions = _messages.MessageField('TaskExecution', 12, repeated=True)
+  triggerId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -734,6 +997,23 @@ class IntegrationBranchResponse(_messages.Message):
   integrationBranch = _messages.MessageField('IntegrationBranch', 1)
 
 
+class IntegrationConfigParameter(_messages.Message):
+  r"""Integration Config Parameter is defined in the integration config and
+  are used to provide external configuration for integration. It provide
+  information about data types of the expected parameters and provide any
+  default values or value. They can also be used to add custom attributes.
+
+  Fields:
+    parameter: Optional. Integration Parameter to provide the default value,
+      data type and attributes required for the Integration config variables.
+    value: Values for the defined keys. Each value can either be string, int,
+      double or any proto message or a serialized object.
+  """
+
+  parameter = _messages.MessageField('IntegrationParameter', 1)
+  value = _messages.MessageField('ValueType', 2)
+
+
 class IntegrationDocumentRequest(_messages.Message):
   r"""The request for generating description of an integration.
 
@@ -770,6 +1050,7 @@ class IntegrationParameter(_messages.Message):
     dataType: Type of the parameter.
     defaultValue: Default values for the defined keys. Each value can either
       be string, int, double or any proto message or a serialized object.
+    description: Optional. Description of the parameter.
     displayName: The name (without prefix) to be displayed in the UI for this
       parameter. E.g. if the key is "foo.bar.myName", then the name would be
       "myName".
@@ -833,11 +1114,12 @@ class IntegrationParameter(_messages.Message):
 
   dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
   defaultValue = _messages.MessageField('ValueType', 2)
-  displayName = _messages.StringField(3)
-  inputOutputType = _messages.EnumField('InputOutputTypeValueValuesEnum', 4)
-  isTransient = _messages.BooleanField(5)
-  jsonSchema = _messages.StringField(6)
-  key = _messages.StringField(7)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  inputOutputType = _messages.EnumField('InputOutputTypeValueValuesEnum', 5)
+  isTransient = _messages.BooleanField(6)
+  jsonSchema = _messages.StringField(7)
+  key = _messages.StringField(8)
 
 
 class IntegrationSkeleton(_messages.Message):
@@ -882,27 +1164,66 @@ class IntegrationSkeletonsResponse(_messages.Message):
 class IntegrationVersion(_messages.Message):
   r"""The integration version definition.
 
+  Enums:
+    StateValueValuesEnum: Output only. User should not set it as an input.
+
   Fields:
     description: Optional. The integration description.
     errorCatcherConfigs: Optional. Error Catch Task configuration for the
       integration. It's optional.
+    integrationConfigParameters: Optional. Config Parameters that are expected
+      to be passed to the integration when an integration is published. This
+      consists of all the parameters that are expected to provide
+      configuration in the integration execution. This gives the user the
+      ability to provide default values, value, add information like
+      connection url, project based configuration value and also provide data
+      types of each parameter.
     integrationParameters: Optional. Parameters that are expected to be passed
       to the integration when an event is triggered. This consists of all the
       parameters that are expected in the integration execution. This gives
       the user the ability to provide default values, add information like PII
       and also provide data types of each parameter.
     name: Optional. Auto-generated primary key.
+    snapshotNumber: Optional. An increasing sequence that is set when a new
+      snapshot is created. The last created snapshot can be identified by
+      [workflow_name, org_id latest(snapshot_number)]. However, last created
+      snapshot need not be same as the HEAD. So users should always use "HEAD"
+      tag to identify the head.
+    state: Output only. User should not set it as an input.
     taskConfigs: Optional. Task configuration for the integration. It's
       optional, but the integration doesn't do anything without task_configs.
     triggerConfigs: Optional. Trigger configurations.
+    userLabel: Optional. A user-defined label that annotates an integration
+      version. Typically, this is only set when the integration version is
+      created.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. User should not set it as an input.
+
+    Values:
+      INTEGRATION_STATE_UNSPECIFIED: Default.
+      DRAFT: Draft.
+      ACTIVE: Active.
+      ARCHIVED: Archived.
+      SNAPSHOT: Snapshot.
+    """
+    INTEGRATION_STATE_UNSPECIFIED = 0
+    DRAFT = 1
+    ACTIVE = 2
+    ARCHIVED = 3
+    SNAPSHOT = 4
 
   description = _messages.StringField(1)
   errorCatcherConfigs = _messages.MessageField('ErrorCatcherConfig', 2, repeated=True)
-  integrationParameters = _messages.MessageField('IntegrationParameter', 3, repeated=True)
-  name = _messages.StringField(4)
-  taskConfigs = _messages.MessageField('TaskConfig', 5, repeated=True)
-  triggerConfigs = _messages.MessageField('TriggerConfig', 6, repeated=True)
+  integrationConfigParameters = _messages.MessageField('IntegrationConfigParameter', 3, repeated=True)
+  integrationParameters = _messages.MessageField('IntegrationParameter', 4, repeated=True)
+  name = _messages.StringField(5)
+  snapshotNumber = _messages.IntegerField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  taskConfigs = _messages.MessageField('TaskConfig', 8, repeated=True)
+  triggerConfigs = _messages.MessageField('TriggerConfig', 9, repeated=True)
+  userLabel = _messages.StringField(10)
 
 
 class JavascriptRecommendation(_messages.Message):
@@ -1345,6 +1666,42 @@ class ReplaceTaskResponse(_messages.Message):
   taskResponseStatus = _messages.MessageField('TaskResponseStatus', 2, repeated=True)
 
 
+class ReplayInfo(_messages.Message):
+  r"""Contains the details of the execution info: this includes the replay
+  reason and replay tree connecting executions in a parent-child relationship
+
+  Enums:
+    ReplayModeValueValuesEnum: Replay mode for the execution
+
+  Fields:
+    originalExecutionId: If this execution is a replay of another execution,
+      then this field contains the original execution id.
+    replayMode: Replay mode for the execution
+    replayReason: reason for replay
+    replayedExecutionIds: If this execution has been replayed, then this field
+      contains the execution ids of the replayed executions.
+  """
+
+  class ReplayModeValueValuesEnum(_messages.Enum):
+    r"""Replay mode for the execution
+
+    Values:
+      REPLAY_MODE_UNSPECIFIED: Default value.
+      REPLAY_MODE_FROM_BEGINNING: Replay the original execution from the
+        beginning.
+      REPLAY_MODE_POINT_OF_FAILURE: Replay the execution from the first failed
+        task.
+    """
+    REPLAY_MODE_UNSPECIFIED = 0
+    REPLAY_MODE_FROM_BEGINNING = 1
+    REPLAY_MODE_POINT_OF_FAILURE = 2
+
+  originalExecutionId = _messages.StringField(1)
+  replayMode = _messages.EnumField('ReplayModeValueValuesEnum', 2)
+  replayReason = _messages.StringField(3)
+  replayedExecutionIds = _messages.StringField(4, repeated=True)
+
+
 class Repository(_messages.Message):
   r"""Repository contains RAG indexing settings for the provided Git
   repository
@@ -1625,6 +1982,121 @@ class TaskConfig(_messages.Message):
   taskId = _messages.StringField(8)
 
 
+class TaskExecution(_messages.Message):
+  r"""Execution of a single task within an integration
+
+  Messages:
+    VariablesValue: Optional. Variables used during the execution.
+
+  Fields:
+    name: Identifier. Task execution resource name.
+    taskExecutionDetails: Details of the task execution.
+    taskExecutionMetadata: Optional. Metadata of the task execution.
+    variables: Optional. Variables used during the execution.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VariablesValue(_messages.Message):
+    r"""Optional. Variables used during the execution.
+
+    Messages:
+      AdditionalProperty: An additional property for a VariablesValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  name = _messages.StringField(1)
+  taskExecutionDetails = _messages.MessageField('TaskExecutionDetails', 2, repeated=True)
+  taskExecutionMetadata = _messages.MessageField('TaskExecutionMetadata', 3)
+  variables = _messages.MessageField('VariablesValue', 4)
+
+
+class TaskExecutionDetails(_messages.Message):
+  r"""Details of the task execution.
+
+  Enums:
+    TaskExecutionStateValueValuesEnum: Output only. The execution state of
+      this task.
+
+  Fields:
+    taskAttemptStats: List for the current task execution attempts.
+    taskExecutionState: Output only. The execution state of this task.
+    taskNumber: Pointer to the task config it used for execution.
+  """
+
+  class TaskExecutionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The execution state of this task.
+
+    Values:
+      STATE_UNSPECIFIED: Default value.
+      IN_PROCESS: Task is under processing.
+      SUCCEED: Task execution successfully finished. There are no more changes
+        after this state.
+      FAILED: Task execution failed. There's no more change after this state.
+      FATAL: Task execution failed and cause the whole integration execution
+        to fail immediately. There's no more change after this state.
+      RETRY_ON_HOLD: Task execution failed and is waiting for retry.
+      CANCELLED: Task execution cancelled when in progress. This happens when
+        integration execution was cancelled or any other task fell into a
+        fatal state.
+      SUSPENDED: Task is a SuspensionTask which has executed once, creating a
+        pending suspension.
+    """
+    STATE_UNSPECIFIED = 0
+    IN_PROCESS = 1
+    SUCCEED = 2
+    FAILED = 3
+    FATAL = 4
+    RETRY_ON_HOLD = 5
+    CANCELLED = 6
+    SUSPENDED = 7
+
+  taskAttemptStats = _messages.MessageField('AttemptStats', 1, repeated=True)
+  taskExecutionState = _messages.EnumField('TaskExecutionStateValueValuesEnum', 2)
+  taskNumber = _messages.StringField(3)
+
+
+class TaskExecutionMetadata(_messages.Message):
+  r"""Metadata of the task execution.
+
+  Fields:
+    ancestorIterationNumbers: Optional. Ancestor iteration number for the task
+      (it will only be non-empty if the task is under 'private integration').
+    ancestorTaskNumbers: Optional. Ancestor task number for the task (it will
+      only be non-empty if the task is under 'private integration').
+    executionAttempt: The execution attempt number this execution belongs to.
+    privateIntegrationName: Optional. The direct integration which the
+      execution belongs to.
+    task: The task name associated with this execution.
+    taskAttempt: The task attempt number this execution belongs to.
+    taskLabel: The task label associated with this execution.
+    taskNumber: The task number associated with this execution.
+  """
+
+  ancestorIterationNumbers = _messages.StringField(1, repeated=True)
+  ancestorTaskNumbers = _messages.StringField(2, repeated=True)
+  executionAttempt = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  privateIntegrationName = _messages.StringField(4)
+  task = _messages.StringField(5)
+  taskAttempt = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  taskLabel = _messages.StringField(7)
+  taskNumber = _messages.StringField(8)
+
+
 class TaskResponseStatus(_messages.Message):
   r"""Message for task response status.
 
@@ -1695,7 +2167,9 @@ class TriggerConfig(_messages.Message):
       additional business context about the task.
     errorCatcherId: Optional. Optional Error catcher id of the error catch
       flow which will be executed when execution error happens in the task
+    inputVariables: Optional. List of input variables for the api trigger.
     label: Optional. The user created label for a particular trigger.
+    outputVariables: Optional. List of output variables for the api trigger.
     properties: Optional. Configurable properties of the trigger, not to be
       confused with integration parameters. E.g. "name" is a property for API
       triggers and "subscription" is a property for Pub/sub triggers.
@@ -1766,13 +2240,54 @@ class TriggerConfig(_messages.Message):
   cloudSchedulerConfig = _messages.MessageField('CloudSchedulerConfig', 1)
   description = _messages.StringField(2)
   errorCatcherId = _messages.StringField(3)
-  label = _messages.StringField(4)
-  properties = _messages.MessageField('PropertiesValue', 5)
-  startTasks = _messages.MessageField('NextTask', 6, repeated=True)
-  trigger = _messages.StringField(7)
-  triggerId = _messages.StringField(8)
-  triggerNumber = _messages.StringField(9)
-  triggerType = _messages.EnumField('TriggerTypeValueValuesEnum', 10)
+  inputVariables = _messages.MessageField('Variables', 4)
+  label = _messages.StringField(5)
+  outputVariables = _messages.MessageField('Variables', 6)
+  properties = _messages.MessageField('PropertiesValue', 7)
+  startTasks = _messages.MessageField('NextTask', 8, repeated=True)
+  trigger = _messages.StringField(9)
+  triggerId = _messages.StringField(10)
+  triggerNumber = _messages.StringField(11)
+  triggerType = _messages.EnumField('TriggerTypeValueValuesEnum', 12)
+
+
+class TroubleshootExecutionResponse(_messages.Message):
+  r"""Response for troubleshooting an integration execution.
+
+  Fields:
+    detailedExplanation: Detailed explanation of the root cause of the
+      integration execution failure.
+    displayMessage: Display message to be shown to the user. Example - If
+      integration execution succeeded, this field value can be "Integration
+      execution succeeded. No troubleshooting needed.".
+    errorMessage: Error message of the integration execution, if the execution
+      failed.
+    executionId: The execution id of the integration execution to be
+      troubleshooted.
+    rootCause: Root cause of the integration execution failure.
+  """
+
+  detailedExplanation = _messages.StringField(1)
+  displayMessage = _messages.StringField(2)
+  errorMessage = _messages.StringField(3)
+  executionId = _messages.StringField(4)
+  rootCause = _messages.StringField(5)
+
+
+class TroubleshootPromptInput(_messages.Message):
+  r"""The input, used for constructing the prompt, required for
+  troubleshooting an integration execution.
+
+  Fields:
+    authConfig: The auth configs used in the integration version.
+    execution: The integration execution logs.
+    integrationVersion: The integration version configs, used at the time of
+      integration execution.
+  """
+
+  authConfig = _messages.MessageField('AuthConfig', 1)
+  execution = _messages.MessageField('Execution', 2)
+  integrationVersion = _messages.MessageField('IntegrationVersion', 3)
 
 
 class ValueType(_messages.Message):
@@ -1799,6 +2314,16 @@ class ValueType(_messages.Message):
   jsonValue = _messages.StringField(7)
   stringArray = _messages.MessageField('StringParameterArray', 8)
   stringValue = _messages.StringField(9)
+
+
+class Variables(_messages.Message):
+  r"""Variables names mapped to api trigger.
+
+  Fields:
+    names: Optional. List of variable names.
+  """
+
+  names = _messages.StringField(1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

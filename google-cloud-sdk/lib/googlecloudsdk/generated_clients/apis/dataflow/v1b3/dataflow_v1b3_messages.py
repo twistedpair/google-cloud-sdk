@@ -4912,6 +4912,10 @@ class MetricUpdate(_messages.Message):
   r"""Describes the state of a metric.
 
   Fields:
+    boundedTrie: Worker-computed aggregate value for the "Trie" aggregation
+      kind. The only possible value type is a BoundedTrieNode. Introduced this
+      field to avoid breaking older SDKs when Dataflow service starts to
+      populate the `bounded_trie` field.
     cumulative: True if this metric is reported as the total cumulative
       aggregate value accumulated since the worker started working on this
       WorkItem. By default this is false, indicating that this metric is
@@ -4950,18 +4954,19 @@ class MetricUpdate(_messages.Message):
       the metrics API.
   """
 
-  cumulative = _messages.BooleanField(1)
-  distribution = _messages.MessageField('extra_types.JsonValue', 2)
-  gauge = _messages.MessageField('extra_types.JsonValue', 3)
-  internal = _messages.MessageField('extra_types.JsonValue', 4)
-  kind = _messages.StringField(5)
-  meanCount = _messages.MessageField('extra_types.JsonValue', 6)
-  meanSum = _messages.MessageField('extra_types.JsonValue', 7)
-  name = _messages.MessageField('MetricStructuredName', 8)
-  scalar = _messages.MessageField('extra_types.JsonValue', 9)
-  set = _messages.MessageField('extra_types.JsonValue', 10)
-  trie = _messages.MessageField('extra_types.JsonValue', 11)
-  updateTime = _messages.StringField(12)
+  boundedTrie = _messages.MessageField('extra_types.JsonValue', 1)
+  cumulative = _messages.BooleanField(2)
+  distribution = _messages.MessageField('extra_types.JsonValue', 3)
+  gauge = _messages.MessageField('extra_types.JsonValue', 4)
+  internal = _messages.MessageField('extra_types.JsonValue', 5)
+  kind = _messages.StringField(6)
+  meanCount = _messages.MessageField('extra_types.JsonValue', 7)
+  meanSum = _messages.MessageField('extra_types.JsonValue', 8)
+  name = _messages.MessageField('MetricStructuredName', 9)
+  scalar = _messages.MessageField('extra_types.JsonValue', 10)
+  set = _messages.MessageField('extra_types.JsonValue', 11)
+  trie = _messages.MessageField('extra_types.JsonValue', 12)
+  updateTime = _messages.StringField(13)
 
 
 class MetricValue(_messages.Message):

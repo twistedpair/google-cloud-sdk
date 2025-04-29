@@ -152,7 +152,7 @@ class WinCrypt(object):
                           ctypes.byref(key_len))
 
     # Now, export public key
-    byte_array_type = ctypes.c_byte * key_len.value
+    byte_array_type = wintypes.BYTE * key_len.value
     key_data = byte_array_type()
     if not self.crypt_export_key(key,
                                  user_crypto_key,
@@ -184,7 +184,7 @@ class WinCrypt(object):
     decoded_message = base64.b64decode(enc_message)
     little_endian_message = decoded_message[::-1]
     data_len = ctypes.c_ulong(len(little_endian_message))
-    data_buf = (ctypes.c_byte * data_len.value).from_buffer_copy(
+    data_buf = (wintypes.BYTE * data_len.value).from_buffer_copy(
         little_endian_message)
 
     hash_object = None

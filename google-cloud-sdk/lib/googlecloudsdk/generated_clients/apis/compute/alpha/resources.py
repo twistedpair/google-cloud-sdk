@@ -422,7 +422,10 @@ class Collections(enum.Enum):
   PREVIEWFEATURES = (
       'previewFeatures',
       'projects/{project}/global/previewFeatures/{resourceId}',
-      {},
+      {
+          '':
+              'projects/{project}/global/previewFeatures/{previewFeature}',
+      },
       ['project', 'resourceId'],
       True
   )

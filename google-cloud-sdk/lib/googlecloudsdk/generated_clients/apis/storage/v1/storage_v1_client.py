@@ -1825,7 +1825,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.move',
         ordered_params=['bucket', 'sourceObject', 'destinationObject'],
         path_params=['bucket', 'destinationObject', 'sourceObject'],
-        query_params=['ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'ifSourceGenerationMatch', 'ifSourceGenerationNotMatch', 'ifSourceMetagenerationMatch', 'ifSourceMetagenerationNotMatch', 'userProject'],
+        query_params=['ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'ifSourceGenerationMatch', 'ifSourceGenerationNotMatch', 'ifSourceMetagenerationMatch', 'ifSourceMetagenerationNotMatch', 'projection', 'userProject'],
         relative_path='b/{bucket}/o/{sourceObject}/moveTo/o/{destinationObject}',
         request_field='',
         request_type_name='StorageObjectsMoveRequest',

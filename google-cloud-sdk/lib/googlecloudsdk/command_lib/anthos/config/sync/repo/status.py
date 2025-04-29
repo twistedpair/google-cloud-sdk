@@ -82,15 +82,16 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
 
   Returns:
     A list of RepoStatus.
-
   """
   if targets and targets not in ['all', 'fleet-clusters', 'config-controller']:
     raise exceptions.ConfigSyncError(
-        '--targets must be one of "all", "fleet-clusters" and "config-controller"'
+        '--targets must be one of "all", "fleet-clusters" and'
+        ' "config-controller"'
     )
   if targets != 'fleet-clusters' and membership:
     raise exceptions.ConfigSyncError(
-        '--membership should only be specified when --targets=fleet-clusters')
+        '--membership should only be specified when --targets=fleet-clusters'
+    )
   if status not in ['all', 'synced', 'error', 'pending', 'stalled']:
     raise exceptions.ConfigSyncError(
         '--status must be one of "all", "synced", "pending", "error", "stalled"'
@@ -344,7 +345,7 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  utils.GetConfigManagement(membership)
+  utils.AssertConfigSyncEnabled(membership)
 
   params = []
   if not namespaces or '*' in namespaces:
@@ -406,7 +407,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  utils.GetConfigManagement(membership)
+  utils.AssertConfigSyncEnabled(membership)
   params = []
   if not namespace:
     params = ['--all-namespaces']
@@ -469,21 +470,27 @@ class DetailedStatus:
     self.errors = errors
 
   def EqualTo(self, result):
-    return self.source == result.source and self.commit == result.commit and self.status == result.status
+    return (
+        self.source == result.source
+        and self.commit == result.commit
+        and self.status == result.status
+    )
 
 
 class ManagedResource:
   """ManagedResource represent a managed resource across multiple clusters."""
 
-  def __init__(self,
-               group='',
-               kind='',
-               namespace='',
-               name='',
-               source_hash='',
-               status='',
-               conditions=None,
-               clusters=None):
+  def __init__(
+      self,
+      group='',
+      kind='',
+      namespace='',
+      name='',
+      source_hash='',
+      status='',
+      conditions=None,
+      clusters=None,
+  ):
     if not conditions:
       self.conditions = None
     else:
@@ -566,20 +573,27 @@ def DescribeRepo(project, name, namespace, source, repo_cluster,
 
   Returns:
     It returns an instance of DescribeResult
-
   """
   if name and source or namespace and source:
     raise exceptions.ConfigSyncError(
         '--sync-name and --sync-namespace cannot be specified together with '
-        '--source.')
+        '--source.'
+    )
   if name and not namespace or namespace and not name:
     raise exceptions.ConfigSyncError(
-        '--sync-name and --sync-namespace must be specified together.')
+        '--sync-name and --sync-namespace must be specified together.'
+    )
   if managed_resources not in [
-      'all', 'current', 'inprogress', 'notfound', 'failed', 'unknown'
+      'all',
+      'current',
+      'inprogress',
+      'notfound',
+      'failed',
+      'unknown',
   ]:
     raise exceptions.ConfigSyncError(
-        '--managed-resources must be one of all, current, inprogress, notfound, failed or unknown'
+        '--managed-resources must be one of all, current, inprogress, notfound,'
+        ' failed or unknown'
     )
 
   repo_cross_clusters = RawRepos()
@@ -747,22 +761,34 @@ def _GetStatusForRepo(obj):
   # The following logic applies to Config Sync versions between 1.9.0 and
   # 1.10.0 where .status.rendering status is present but syncing condition
   # is not supported.
-  stalled_ts = _GetPathValue(stalled, ['lastUpdateTime'],
-                             '2000-01-01T23:50:20Z')
-  reconciling_ts = _GetPathValue(reconciling, ['lastUpdateTime'],
-                                 '2000-01-01T23:50:20Z')
-  rendering_ts = _GetPathValue(obj, ['status', 'rendering', 'lastUpdate'],
-                               '2000-01-01T23:50:20Z')
-  source_ts = _GetPathValue(obj, ['status', 'source', 'lastUpdate'],
-                            '2000-01-01T23:50:20Z')
-  sync_ts = _GetPathValue(obj, ['status', 'sync', 'lastUpdate'],
-                          '2000-01-01T23:50:20Z')
+  stalled_ts = _GetPathValue(
+      stalled, ['lastUpdateTime'], '2000-01-01T23:50:20Z'
+  )
+  reconciling_ts = _GetPathValue(
+      reconciling, ['lastUpdateTime'], '2000-01-01T23:50:20Z'
+  )
+  rendering_ts = _GetPathValue(
+      obj, ['status', 'rendering', 'lastUpdate'], '2000-01-01T23:50:20Z'
+  )
+  source_ts = _GetPathValue(
+      obj, ['status', 'source', 'lastUpdate'], '2000-01-01T23:50:20Z'
+  )
+  sync_ts = _GetPathValue(
+      obj, ['status', 'sync', 'lastUpdate'], '2000-01-01T23:50:20Z'
+  )
   stalled_time = _TimeFromString(stalled_ts)
   reconciling_time = _TimeFromString(reconciling_ts)
   rendering_time = _TimeFromString(rendering_ts)
   source_time = _TimeFromString(source_ts)
   sync_time = _TimeFromString(sync_ts)
-  if stalled_time > rendering_time and stalled_time > source_time and stalled_time > sync_time or reconciling_time > rendering_time and reconciling_time > source_time and stalled_time > sync_time:
+  if (
+      stalled_time > rendering_time
+      and stalled_time > source_time
+      and stalled_time > sync_time
+      or reconciling_time > rendering_time
+      and reconciling_time > source_time
+      and stalled_time > sync_time
+  ):
     return SingleRepoStatus('PENDING', [], '')
   if rendering_time > source_time and rendering_time > sync_time:
     errors = _GetPathValue(obj, ['status', 'rendering', 'errors'], [])

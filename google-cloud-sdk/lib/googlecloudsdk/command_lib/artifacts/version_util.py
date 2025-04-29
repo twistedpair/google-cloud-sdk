@@ -130,9 +130,9 @@ def ListVersions(args):
 
   if args.limit is not None and args.filter is not None:
     if server_filter is not None:
-      # Use server-side paging with server-side filtering.
+      # Apply limit to server-side page_size to improve performance when
+      # server-side filter is used.
       page_size = args.limit
-      args.page_size = args.limit
     else:
       # Fall back to client-side paging with client-side filtering.
       page_size = None

@@ -786,7 +786,7 @@ class CORSPolicy(_messages.Message):
       response header. You can specify up to five allowed methods.
     allowOrigins: Optional. A list of origins that are allowed to do CORS
       requests. This translates to the `Access-Control-Allow-Origin` response
-      header. You can specify up to 25 allowed origins.
+      header. You can specify up to 100 allowed origins.
     disabled: Optional. If `true`, specifies that the CORS policy is disabled.
       The default value is `false`, which indicates that the CORS policy is in
       effect.
@@ -1548,7 +1548,7 @@ class ExtensionChainExtension(_messages.Message):
       `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
       assumed as supported.
     timeout: Optional. Specifies the timeout for each individual message on
-      the stream. The timeout must be between `10`-`1000` milliseconds.
+      the stream. The timeout must be between `10`-`10000` milliseconds.
       Required for callout extensions. This field is not supported for plugin
       extensions. Setting it results in a validation error.
   """

@@ -597,6 +597,7 @@ class BareMetalCluster(_messages.Message):
       name differ, the local name is used in the admin cluster controller
       logs. You use the cluster name when accessing the cluster using bmctl
       and kubectl.
+    localNamespace: Output only. The namespace of the cluster.
     maintenanceConfig: Maintenance configuration.
     maintenanceStatus: Output only. Status of on-going maintenance tasks.
     name: Immutable. The bare metal user cluster resource name.
@@ -690,23 +691,24 @@ class BareMetalCluster(_messages.Message):
   fleet = _messages.MessageField('Fleet', 13)
   loadBalancer = _messages.MessageField('BareMetalLoadBalancerConfig', 14)
   localName = _messages.StringField(15)
-  maintenanceConfig = _messages.MessageField('BareMetalMaintenanceConfig', 16)
-  maintenanceStatus = _messages.MessageField('BareMetalMaintenanceStatus', 17)
-  name = _messages.StringField(18)
-  networkConfig = _messages.MessageField('BareMetalNetworkConfig', 19)
-  nodeAccessConfig = _messages.MessageField('BareMetalNodeAccessConfig', 20)
-  nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 21)
-  osEnvironmentConfig = _messages.MessageField('BareMetalOsEnvironmentConfig', 22)
-  proxy = _messages.MessageField('BareMetalProxyConfig', 23)
-  reconciling = _messages.BooleanField(24)
-  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  status = _messages.MessageField('ResourceStatus', 27)
-  storage = _messages.MessageField('BareMetalStorageConfig', 28)
-  uid = _messages.StringField(29)
-  updateTime = _messages.StringField(30)
-  upgradePolicy = _messages.MessageField('BareMetalClusterUpgradePolicy', 31)
-  validationCheck = _messages.MessageField('ValidationCheck', 32)
+  localNamespace = _messages.StringField(16)
+  maintenanceConfig = _messages.MessageField('BareMetalMaintenanceConfig', 17)
+  maintenanceStatus = _messages.MessageField('BareMetalMaintenanceStatus', 18)
+  name = _messages.StringField(19)
+  networkConfig = _messages.MessageField('BareMetalNetworkConfig', 20)
+  nodeAccessConfig = _messages.MessageField('BareMetalNodeAccessConfig', 21)
+  nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 22)
+  osEnvironmentConfig = _messages.MessageField('BareMetalOsEnvironmentConfig', 23)
+  proxy = _messages.MessageField('BareMetalProxyConfig', 24)
+  reconciling = _messages.BooleanField(25)
+  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  status = _messages.MessageField('ResourceStatus', 28)
+  storage = _messages.MessageField('BareMetalStorageConfig', 29)
+  uid = _messages.StringField(30)
+  updateTime = _messages.StringField(31)
+  upgradePolicy = _messages.MessageField('BareMetalClusterUpgradePolicy', 32)
+  validationCheck = _messages.MessageField('ValidationCheck', 33)
 
 
 class BareMetalClusterOperationsConfig(_messages.Message):
@@ -1489,6 +1491,8 @@ class BareMetalStandaloneCluster(_messages.Message):
       not modifiable. When the local name and cluster name differ, the local
       name is used in the admin cluster controller logs. You use the cluster
       name when accessing the cluster using bmctl and kubectl.
+    localNamespace: Output only. The kubernetes namespace where the custom
+      resource exists.
     maintenanceConfig: Maintenance configuration.
     maintenanceStatus: Output only. Status of on-going maintenance tasks.
     name: Immutable. The bare metal standalone cluster resource name.
@@ -1595,24 +1599,25 @@ class BareMetalStandaloneCluster(_messages.Message):
   fleet = _messages.MessageField('Fleet', 11)
   loadBalancer = _messages.MessageField('BareMetalStandaloneLoadBalancerConfig', 12)
   localName = _messages.StringField(13)
-  maintenanceConfig = _messages.MessageField('BareMetalStandaloneMaintenanceConfig', 14)
-  maintenanceStatus = _messages.MessageField('BareMetalStandaloneMaintenanceStatus', 15)
-  name = _messages.StringField(16)
-  networkConfig = _messages.MessageField('BareMetalStandaloneNetworkConfig', 17)
-  nodeAccessConfig = _messages.MessageField('BareMetalStandaloneNodeAccessConfig', 18)
-  nodeConfig = _messages.MessageField('BareMetalStandaloneWorkloadNodeConfig', 19)
-  osEnvironmentConfig = _messages.MessageField('BareMetalStandaloneOsEnvironmentConfig', 20)
-  profile = _messages.EnumField('ProfileValueValuesEnum', 21)
-  proxy = _messages.MessageField('BareMetalStandaloneProxyConfig', 22)
-  reconciling = _messages.BooleanField(23)
-  securityConfig = _messages.MessageField('BareMetalStandaloneSecurityConfig', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  status = _messages.MessageField('ResourceStatus', 26)
-  storage = _messages.MessageField('BareMetalStandaloneStorageConfig', 27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  upgradePolicy = _messages.MessageField('BareMetalStandaloneClusterUpgradePolicy', 30)
-  validationCheck = _messages.MessageField('ValidationCheck', 31)
+  localNamespace = _messages.StringField(14)
+  maintenanceConfig = _messages.MessageField('BareMetalStandaloneMaintenanceConfig', 15)
+  maintenanceStatus = _messages.MessageField('BareMetalStandaloneMaintenanceStatus', 16)
+  name = _messages.StringField(17)
+  networkConfig = _messages.MessageField('BareMetalStandaloneNetworkConfig', 18)
+  nodeAccessConfig = _messages.MessageField('BareMetalStandaloneNodeAccessConfig', 19)
+  nodeConfig = _messages.MessageField('BareMetalStandaloneWorkloadNodeConfig', 20)
+  osEnvironmentConfig = _messages.MessageField('BareMetalStandaloneOsEnvironmentConfig', 21)
+  profile = _messages.EnumField('ProfileValueValuesEnum', 22)
+  proxy = _messages.MessageField('BareMetalStandaloneProxyConfig', 23)
+  reconciling = _messages.BooleanField(24)
+  securityConfig = _messages.MessageField('BareMetalStandaloneSecurityConfig', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  status = _messages.MessageField('ResourceStatus', 27)
+  storage = _messages.MessageField('BareMetalStandaloneStorageConfig', 28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  upgradePolicy = _messages.MessageField('BareMetalStandaloneClusterUpgradePolicy', 31)
+  validationCheck = _messages.MessageField('ValidationCheck', 32)
 
 
 class BareMetalStandaloneClusterOperationsConfig(_messages.Message):

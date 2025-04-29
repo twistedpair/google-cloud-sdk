@@ -2580,11 +2580,13 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
   r"""Defines properties that can be part of the entity type.
 
   Enums:
+    GroundingConfigValueValuesEnum: Grounding config of the entity type.
     OccurrenceTypeValueValuesEnum: Occurrence type limits the number of
       instances an entity type appears in the document.
 
   Fields:
     displayName: User defined name for the property.
+    groundingConfig: Grounding config of the entity type.
     name: The name of the property. Follows the same guidelines as the
       EntityType name.
     occurrenceType: Occurrence type limits the number of instances an entity
@@ -2592,6 +2594,21 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
     valueType: A reference to the value type of the property. This type is
       subject to the same conventions as the `Entity.base_types` field.
   """
+
+  class GroundingConfigValueValuesEnum(_messages.Enum):
+    r"""Grounding config of the entity type.
+
+    Values:
+      GROUNDING_CONFIG_UNSPECIFIED: Unspecified grounding config. It defaults
+        to `STRICT` grounding.
+      STRICT: Strict grounding.
+      RELAXED: Relaxed grounding.
+      NO_GROUNDING: Allow no grounding.
+    """
+    GROUNDING_CONFIG_UNSPECIFIED = 0
+    STRICT = 1
+    RELAXED = 2
+    NO_GROUNDING = 3
 
   class OccurrenceTypeValueValuesEnum(_messages.Enum):
     r"""Occurrence type limits the number of instances an entity type appears
@@ -2613,9 +2630,10 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
     REQUIRED_MULTIPLE = 4
 
   displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 3)
-  valueType = _messages.StringField(4)
+  groundingConfig = _messages.EnumField('GroundingConfigValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 4)
+  valueType = _messages.StringField(5)
 
 
 class GoogleCloudDocumentaiV1DocumentSchemaMetadata(_messages.Message):

@@ -36,12 +36,16 @@ from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.universe_descriptor import universe_descriptor
 
 
-def WarnIfSettingNonExistentRegionZone(value, zonal=True):
+def WarnIfSettingNonExistentRegionZone(value, zonal=True) -> bool:
   """Warn if setting 'compute/region' or 'compute/zone' to wrong value."""
-  zonal_msg = ('{} is not a valid zone. Run `gcloud compute zones list` to '
-               'get all zones.'.format(value))
-  regional_msg = ('{} is not a valid region. Run `gcloud compute regions list`'
-                  'to get all regions.'.format(value))
+  zonal_msg = (
+      '{} is not a valid zone. Run `gcloud compute zones list` to '
+      'get all zones.'.format(value)
+  )
+  regional_msg = (
+      '{} is not a valid region. Run `gcloud compute regions list`'
+      'to get all regions.'.format(value)
+  )
   if not value:
     log.warning(zonal_msg if zonal else regional_msg)
     return True
@@ -62,12 +66,15 @@ def WarnIfSettingNonExistentRegionZone(value, zonal=True):
           project=properties.VALUES.core.project.GetOrFail(), region=value
       ),
   )]
+
   try:
     errors = []
     client.MakeRequests(zone_request if zonal else region_request, errors)
     if errors and 404 in errors[0]:
       log.warning(zonal_msg if zonal else regional_msg)
       return True
+    elif not errors:
+      return False
   except (
       calliope_exceptions.ToolException,
       apitools_exceptions.HttpError,
@@ -211,7 +218,8 @@ def WarnIfSettingProjectWhenAdcExists(project):
   if not os.path.isfile(config.ADCFilePath()):
     return False
   credentials, _ = c_creds.GetGoogleAuthDefault().load_credentials_from_file(
-      config.ADCFilePath())
+      config.ADCFilePath()
+  )
   if credentials.quota_project_id == project:
     return False
   log.warning(
@@ -219,7 +227,8 @@ def WarnIfSettingProjectWhenAdcExists(project):
       ' Application Default Credentials file. This might result in unexpected'
       ' quota issues.\n\nTo update your Application Default Credentials quota'
       ' project, use the `gcloud auth application-default set-quota-project`'
-      ' command.')
+      ' command.'
+  )
   return True
 
 
@@ -233,8 +242,7 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
   #
   # If the above conditions are met, check that the project being set exists
   # and is accessible to the current user, otherwise show a warning.
-  if (scope == properties.Scope.USER and
-      properties.VALUES.core.account.Get()):
+  if scope == properties.Scope.USER and properties.VALUES.core.account.Get():
     project_ref = command_lib_util.ParseProject(project)
     try:
       with base.WithLegacyQuota():
@@ -266,5 +274,6 @@ def WarnIfActivateUseClientCertificate(value):
         'this version of gcloud. When a command sends requests to such '
         'services, the requests will be executed without using a client '
         'certificate.\n\n'
-        'Please run $ gcloud topic client-certificate for more information.')
+        'Please run $ gcloud topic client-certificate for more information.'
+    )
     log.warning(mtls_not_supported_msg)

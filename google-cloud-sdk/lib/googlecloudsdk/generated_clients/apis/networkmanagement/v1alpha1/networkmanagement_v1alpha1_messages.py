@@ -97,9 +97,12 @@ class AbortInfo(_messages.Message):
         configuration was missing.
       ROUTE_CONFIG_NOT_FOUND: Aborted because expected route configuration was
         missing.
-      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT: Aborted because a PSC
+      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT: Aborted because PSC
         endpoint selection for the Google-managed service is ambiguous
         (several PSC endpoints satisfy test input).
+      GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT: Aborted because endpoint
+        selection for the Google-managed service is ambiguous (several
+        endpoints satisfy test input).
       SOURCE_PSC_CLOUD_SQL_UNSUPPORTED: Aborted because tests with a PSC-based
         Cloud SQL instance as a source are not supported.
       SOURCE_REDIS_CLUSTER_UNSUPPORTED: Aborted because tests with a Redis
@@ -151,16 +154,17 @@ class AbortInfo(_messages.Message):
     FIREWALL_CONFIG_NOT_FOUND = 26
     ROUTE_CONFIG_NOT_FOUND = 27
     GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 28
-    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 29
-    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 30
-    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 31
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 32
-    NON_ROUTABLE_IP_ADDRESS = 33
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 34
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 35
-    INVALID_JUSTIFICATION = 36
-    NO_SERVERLESS_IP_RANGES = 37
-    ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED = 38
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT = 29
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 30
+    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 31
+    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 32
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 33
+    NON_ROUTABLE_IP_ADDRESS = 34
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 35
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 36
+    INVALID_JUSTIFICATION = 37
+    NO_SERVERLESS_IP_RANGES = 38
+    ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED = 39
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -1091,16 +1095,16 @@ class DropInfo(_messages.Message):
         based VPN tunnel remote selector.
       PRIVATE_TRAFFIC_TO_INTERNET: Packet with internal destination address
         sent to the internet gateway.
-      PRIVATE_GOOGLE_ACCESS_DISALLOWED: Instance with only an internal IP
-        address tries to access Google API and services, but private Google
-        access is not enabled in the subnet.
+      PRIVATE_GOOGLE_ACCESS_DISALLOWED: Endpoint with only an internal IP
+        address tries to access Google API and services, but Private Google
+        Access is not enabled in the subnet or is not applicable.
       PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED: Source endpoint tries
         to access Google API and services through the VPN tunnel to another
         network, but Private Google Access needs to be enabled in the source
         endpoint network.
-      NO_EXTERNAL_ADDRESS: Instance with only an internal IP address tries to
-        access external hosts, but Cloud NAT is not enabled in the subnet,
-        unless special configurations on a VM allow this connection.
+      NO_EXTERNAL_ADDRESS: Endpoint with only an internal IP address tries to
+        access external hosts, but there is no matching Cloud NAT gateway in
+        the subnet.
       UNKNOWN_INTERNAL_ADDRESS: Destination internal address cannot be
         resolved to a known target. If this is a shared VPC scenario, verify
         if the service project ID is provided as test input. Otherwise, verify
@@ -1144,9 +1148,15 @@ class DropInfo(_messages.Message):
         endpoint is not authorized. See [Authorizing with authorized
         networks](https://cloud.google.com/sql/docs/mysql/authorize-networks)
         for more details.
+      ALLOY_DB_INSTANCE_UNAUTHORIZED_ACCESS: Access to the AlloyDB instance
+        endpoint is not authorized. See [AlloyDB Connection
+        Overview](https://cloud.google.com/alloydb/docs/connection-overview)
+        for more details.
       DROPPED_INSIDE_GKE_SERVICE: Packet was dropped inside Google Kubernetes
         Engine Service.
       DROPPED_INSIDE_CLOUD_SQL_SERVICE: Packet was dropped inside Cloud SQL
+        Service.
+      DROPPED_INSIDE_ALLOY_DB_SERVICE: Packet was dropped inside AlloyDB
         Service.
       GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped because there is
         no peering between the originating network and the Google Managed
@@ -1170,14 +1180,23 @@ class DropInfo(_messages.Message):
         a Cloud SQL instance to an external IP address is not allowed. The
         Cloud SQL instance is not configured to send packets to external IP
         addresses.
+      ALLOY_DB_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC: Packet sent from
+        a AlloyDB instance to an external IP address is not allowed. The
+        AlloyDB instance is not configured to send packets to external IP
+        addresses.
       PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION: Packet sent from a
         Cloud SQL instance with only a public IP address to a private IP
         address.
       CLOUD_SQL_INSTANCE_NO_ROUTE: Packet was dropped because there is no
         route from a Cloud SQL instance to a destination network.
+      ALLOY_DB_INSTANCE_NO_ROUTE: Packet was dropped because there is no route
+        from a AlloyDB instance to a destination network.
       CLOUD_SQL_CONNECTOR_REQUIRED: Packet was dropped because the Cloud SQL
         instance requires all connections to use Cloud SQL connectors and to
         target the Cloud SQL proxy port (3307).
+      ALLOY_DB_AUTH_PROXY_REQUIRED: Packet was dropped because the AlloyDB
+        instance requires all connections to use AlloyDB Auth Proxy and to
+        target the AlloyDB Auth Proxy port (5433).
       CLOUD_FUNCTION_NOT_ACTIVE: Packet could be dropped because the Cloud
         Function is not in an active status.
       VPC_CONNECTOR_NOT_SET: Packet could be dropped because no VPC connector
@@ -1275,6 +1294,24 @@ class DropInfo(_messages.Message):
       PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED: Sending packets processed by
         the Private NAT Gateways to the Private Service Connect endpoints is
         not supported.
+      PSC_PORT_MAPPING_PORT_MISMATCH: Packet is sent to the PSC port mapping
+        service, but its destination port does not match any port mapping
+        rules.
+      PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED: Sending packets
+        directly to the PSC port mapping service without going through the PSC
+        connection is not supported.
+      UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION: Packet with destination
+        IP address within the reserved NAT64 range is dropped due to matching
+        a route of an unsupported type.
+      TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED: Packet could be
+        dropped because hybrid endpoint like a VPN gateway or Interconnect is
+        not allowed to send traffic to the Internet.
+      NO_MATCHING_NAT64_GATEWAY: Packet with destination IP address within the
+        reserved NAT64 range is dropped due to no matching NAT gateway in the
+        subnet.
+      LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH: Packet is dropped due to
+        being sent to a backend of a passthrough load balancer that doesn't
+        use the same IP version as the frontend.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1311,57 +1348,68 @@ class DropInfo(_messages.Message):
     TRAFFIC_TYPE_BLOCKED = 32
     GKE_MASTER_UNAUTHORIZED_ACCESS = 33
     CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 34
-    DROPPED_INSIDE_GKE_SERVICE = 35
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 36
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 37
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 38
-    GKE_PSC_ENDPOINT_MISSING = 39
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 40
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 41
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 42
-    GKE_CONTROL_PLANE_NO_ROUTE = 43
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 44
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 45
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 46
-    CLOUD_SQL_CONNECTOR_REQUIRED = 47
-    CLOUD_FUNCTION_NOT_ACTIVE = 48
-    VPC_CONNECTOR_NOT_SET = 49
-    VPC_CONNECTOR_NOT_RUNNING = 50
-    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 51
-    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 52
-    FORWARDING_RULE_REGION_MISMATCH = 53
-    PSC_CONNECTION_NOT_ACCEPTED = 54
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 55
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 56
-    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 57
-    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 58
-    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 59
-    PSC_TRANSITIVITY_NOT_PROPAGATED = 60
-    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 61
-    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 62
-    CLOUD_RUN_REVISION_NOT_READY = 63
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 64
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 65
-    CLOUD_NAT_NO_ADDRESSES = 66
-    ROUTING_LOOP = 67
-    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 68
-    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 69
-    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 70
-    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 71
-    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 72
-    REDIS_INSTANCE_UNSUPPORTED_PORT = 73
-    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 74
-    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 75
-    REDIS_INSTANCE_NO_EXTERNAL_IP = 76
-    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 77
-    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 78
-    REDIS_CLUSTER_UNSUPPORTED_PORT = 79
-    REDIS_CLUSTER_NO_EXTERNAL_IP = 80
-    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 81
-    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 82
-    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 83
-    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 84
-    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 85
+    ALLOY_DB_INSTANCE_UNAUTHORIZED_ACCESS = 35
+    DROPPED_INSIDE_GKE_SERVICE = 36
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 37
+    DROPPED_INSIDE_ALLOY_DB_SERVICE = 38
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 39
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 40
+    GKE_PSC_ENDPOINT_MISSING = 41
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 42
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 43
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 44
+    GKE_CONTROL_PLANE_NO_ROUTE = 45
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 46
+    ALLOY_DB_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 47
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 48
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 49
+    ALLOY_DB_INSTANCE_NO_ROUTE = 50
+    CLOUD_SQL_CONNECTOR_REQUIRED = 51
+    ALLOY_DB_AUTH_PROXY_REQUIRED = 52
+    CLOUD_FUNCTION_NOT_ACTIVE = 53
+    VPC_CONNECTOR_NOT_SET = 54
+    VPC_CONNECTOR_NOT_RUNNING = 55
+    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 56
+    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 57
+    FORWARDING_RULE_REGION_MISMATCH = 58
+    PSC_CONNECTION_NOT_ACCEPTED = 59
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 60
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 61
+    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 62
+    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 63
+    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 64
+    PSC_TRANSITIVITY_NOT_PROPAGATED = 65
+    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 66
+    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 67
+    CLOUD_RUN_REVISION_NOT_READY = 68
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 69
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 70
+    CLOUD_NAT_NO_ADDRESSES = 71
+    ROUTING_LOOP = 72
+    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 73
+    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 74
+    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 75
+    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 76
+    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 77
+    REDIS_INSTANCE_UNSUPPORTED_PORT = 78
+    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 79
+    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 80
+    REDIS_INSTANCE_NO_EXTERNAL_IP = 81
+    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 82
+    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 83
+    REDIS_CLUSTER_UNSUPPORTED_PORT = 84
+    REDIS_CLUSTER_NO_EXTERNAL_IP = 85
+    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 86
+    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 87
+    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 88
+    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 89
+    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 90
+    PSC_PORT_MAPPING_PORT_MISMATCH = 91
+    PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 92
+    UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 93
+    TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 94
+    NO_MATCHING_NAT64_GATEWAY = 95
+    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 96
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -1833,6 +1881,8 @@ class GoogleServiceInfo(_messages.Message):
       GOOGLE_API_VPC_SC: Google API via VPC Service Controls.
         https://cloud.google.com/vpc/docs/configure-private-service-connect-
         apis
+      SERVERLESS_VPC_ACCESS: Google API via Serverless VPC Access.
+        https://cloud.google.com/vpc/docs/serverless-vpc-access
     """
     GOOGLE_SERVICE_TYPE_UNSPECIFIED = 0
     IAP = 1
@@ -1841,6 +1891,7 @@ class GoogleServiceInfo(_messages.Message):
     GOOGLE_API = 4
     GOOGLE_API_PSC = 5
     GOOGLE_API_VPC_SC = 6
+    SERVERLESS_VPC_ACCESS = 7
 
   googleServiceType = _messages.EnumField('GoogleServiceTypeValueValuesEnum', 1)
   sourceIp = _messages.StringField(2)
@@ -1858,6 +1909,7 @@ class InstanceInfo(_messages.Message):
     networkUri: URI of a Compute Engine network.
     pscNetworkAttachmentUri: URI of the PSC network attachment the NIC is
       attached to (if relevant).
+    running: Indicates whether the Compute Engine instance is running.
     serviceAccount: Service account authorized for the instance.
     uri: URI of a Compute Engine instance.
   """
@@ -1869,8 +1921,9 @@ class InstanceInfo(_messages.Message):
   networkTags = _messages.StringField(5, repeated=True)
   networkUri = _messages.StringField(6)
   pscNetworkAttachmentUri = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  uri = _messages.StringField(9)
+  running = _messages.BooleanField(8)
+  serviceAccount = _messages.StringField(9)
+  uri = _messages.StringField(10)
 
 
 class ListAppliancesResponse(_messages.Message):
@@ -3257,7 +3310,7 @@ class Rule(_messages.Message):
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
       (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
+    permissions: A permission is a string of form `..` (e.g.,
       'storage.buckets.list'). A value of '*' matches all permissions, and a
       verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
   """

@@ -472,8 +472,6 @@ class FileProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -483,10 +481,9 @@ class FileProjectsLocationsListRequest(_messages.Message):
 
   extraLocationTypes = _messages.StringField(1, repeated=True)
   filter = _messages.StringField(2)
-  includeUnrevealedLocations = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(6)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class FileProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -710,6 +707,14 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       service consumers do not recognize. This is a required field for tenants
       onboarding to Maintenance Window notifications (go/slm-rollout-
       maintenance-policies#prerequisites).
+    consumerProjectNumber: Optional. The consumer_project_number associated
+      with this Apigee instance. This field is added specifically to support
+      Apigee integration with SLM Rollout and UMM. It represents the numerical
+      project ID of the GCP project that consumes this Apigee instance. It is
+      used for SLM rollout notifications and UMM integration, enabling proper
+      mapping to customer projects and log delivery for Apigee instances. This
+      field complements consumer_project_id and may be used for specific
+      Apigee scenarios where the numerical ID is required.
     createTime: Output only. Timestamp when the resource was created.
     instanceType: Optional. The instance_type of this instance of format: proj
       ects/{project_number}/locations/{location_id}/instanceTypes/{instance_ty
@@ -956,22 +961,23 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   consumerDefinedName = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  instanceType = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 5)
-  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 6)
-  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 7)
-  name = _messages.StringField(8)
-  notificationParameters = _messages.MessageField('NotificationParametersValue', 9)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 10)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 11, repeated=True)
-  slmInstanceTemplate = _messages.StringField(12)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 13)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  tenantProjectId = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  consumerProjectNumber = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  instanceType = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 6)
+  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 7)
+  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 8)
+  name = _messages.StringField(9)
+  notificationParameters = _messages.MessageField('NotificationParametersValue', 10)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 11)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 12, repeated=True)
+  slmInstanceTemplate = _messages.StringField(13)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 14)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  tenantProjectId = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):

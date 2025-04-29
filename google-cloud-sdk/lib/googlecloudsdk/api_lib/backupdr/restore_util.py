@@ -409,3 +409,27 @@ class ComputeUtil(object):
           values=[reservation],
       )
     return None
+
+
+class DiskUtil(object):
+  """Util class for Restoring Disk."""
+
+  @staticmethod
+  def ParseLabels(client_messages: types.ModuleType, labels: Dict[str, Any]):
+    """Parses the labels data into client messages.
+
+    Args:
+      client_messages:
+      labels: A dictionary containing the labels
+
+    Returns:
+      List of parsed client messages for Labels
+    """
+    return client_messages.DiskRestoreProperties.LabelsValue(
+        additionalProperties=[
+            client_messages.DiskRestoreProperties.LabelsValue.AdditionalProperty(
+                key=key, value=value
+            )
+            for key, value in labels.items()
+        ]
+    )

@@ -1229,6 +1229,18 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         read intensive workload.
       SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
         limit.
+      SIGNAL_TYPE_MAX_SERVER_MEMORY: Indicates that the instance's max server
+        memory is configured higher than the recommended value.
+      SIGNAL_TYPE_LARGE_ROWS: Indicates that the database has large rows
+        beyond the recommended limit.
+      SIGNAL_TYPE_HIGH_WRITE_PRESSURE: Heavy write pressure on the database
+        rows.
+      SIGNAL_TYPE_HIGH_READ_PRESSURE: Heavy read pressure on the database
+        rows.
+      SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED: Encryption org policy
+        not satisfied.
+      SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
+        satisfied.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1320,6 +1332,12 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
     SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
     SIGNAL_TYPE_MEMORY_LIMIT = 89
+    SIGNAL_TYPE_MAX_SERVER_MEMORY = 90
+    SIGNAL_TYPE_LARGE_ROWS = 91
+    SIGNAL_TYPE_HIGH_WRITE_PRESSURE = 92
+    SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
+    SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
+    SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1897,6 +1915,18 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         read intensive workload.
       SIGNAL_TYPE_MEMORY_LIMIT: Indicates that the instance is nearing memory
         limit.
+      SIGNAL_TYPE_MAX_SERVER_MEMORY: Indicates that the instance's max server
+        memory is configured higher than the recommended value.
+      SIGNAL_TYPE_LARGE_ROWS: Indicates that the database has large rows
+        beyond the recommended limit.
+      SIGNAL_TYPE_HIGH_WRITE_PRESSURE: Heavy write pressure on the database
+        rows.
+      SIGNAL_TYPE_HIGH_READ_PRESSURE: Heavy read pressure on the database
+        rows.
+      SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED: Encryption org policy
+        not satisfied.
+      SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
+        satisfied.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1988,6 +2018,12 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_INEFFICIENT_QUERY = 87
     SIGNAL_TYPE_READ_INTENSIVE_WORKLOAD = 88
     SIGNAL_TYPE_MEMORY_LIMIT = 89
+    SIGNAL_TYPE_MAX_SERVER_MEMORY = 90
+    SIGNAL_TYPE_LARGE_ROWS = 91
+    SIGNAL_TYPE_HIGH_WRITE_PRESSURE = 92
+    SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
+    SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
+    SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -3582,9 +3618,10 @@ class Product(_messages.Message):
       ON_PREM: On premises database product.
       PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
+      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
+      PRODUCT_TYPE_COMPUTE_ENGINE: Compute Engine self managed databases
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
-      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
     PRODUCT_TYPE_CLOUD_SQL = 1
@@ -3596,8 +3633,9 @@ class Product(_messages.Message):
     ON_PREM = 7
     PRODUCT_TYPE_MEMORYSTORE = 8
     PRODUCT_TYPE_BIGTABLE = 9
-    PRODUCT_TYPE_OTHER = 10
-    PRODUCT_TYPE_FIRESTORE = 11
+    PRODUCT_TYPE_FIRESTORE = 10
+    PRODUCT_TYPE_COMPUTE_ENGINE = 11
+    PRODUCT_TYPE_OTHER = 12
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

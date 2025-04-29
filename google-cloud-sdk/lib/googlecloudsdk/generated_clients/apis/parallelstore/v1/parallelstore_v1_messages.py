@@ -154,8 +154,8 @@ class Instance(_messages.Message):
       Gibibytes (GiB). Allowed values are between 12000 and 100000, in
       multiples of 4000; e.g., 12000, 16000, 20000, ...
     createTime: Output only. The time when the instance was created.
-    daosVersion: Output only. Deprecated 'daos_version' field. Output only.
-      The version of DAOS software running in the instance.
+    daosVersion: Output only. Deprecated: The version of DAOS software running
+      in the instance.
     deploymentType: Optional. Immutable. The deployment type of the instance.
       Allowed values are: * `SCRATCH`: the instance is a scratch instance. *
       `PERSISTENT`: the instance is a persistent instance.

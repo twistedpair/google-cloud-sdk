@@ -1730,12 +1730,15 @@ def AddInvokerIamCheckFlag(parser):
   )
 
 
-def AddRegionsArg(parser, hidden=True):
+def AddRegionsArg(parser, hidden=False):
   """Add a multi-regional 'regions' arg."""
   parser.add_argument(
       '--regions',
       hidden=hidden,
-      help='Regions in which the multi-region Service can be found.',
+      help=(
+          'Comma-separated list of regions in which the multi-region Service'
+          ' can be found.'
+      ),
   )
 
 

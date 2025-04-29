@@ -23,7 +23,9 @@ import random
 import re
 import string
 import sys
+import types
 
+from apitools.base.protorpclite import protojson
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import exceptions
@@ -35,6 +37,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute.managed_instance_groups import auto_healing_utils
 from googlecloudsdk.command_lib.compute.managed_instance_groups import update_instances_utils
@@ -1458,11 +1461,16 @@ def CreateInstanceFlexibilityPolicy(args, messages, igm_resource=None):
   return ValueOrNone(instance_flexibility_policy)
 
 
-def CreateResourcePolicies(messages, args):
+def CreateResourcePolicies(
+    messages: types.ModuleType, args: parser_extensions.Namespace
+):
   """Creates resource policies from args."""
   policy = messages.InstanceGroupManagerResourcePolicies()
   if args.IsKnownAndSpecified('workload_policy'):
     policy.workloadPolicy = args.workload_policy
+  elif args.IsKnownAndSpecified('remove_workload_policy'):
+    RegisterResourcePoliciesPatchEncoders(messages)
+    return policy
 
   return ValueOrNone(policy)
 
@@ -2353,6 +2361,47 @@ def RegisterInstanceSelectionsPatchEncoders(messages):
   )(
       messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue
   )
+
+
+def RegisterResourcePoliciesPatchEncoders(messages: types.ModuleType) -> None:
+  """Registers encoders that will handle null values for resource policies in ResourcePolicies message."""
+
+  def _ResourcePoliciesEncoder(message):
+    """Encoder for Resource Policies message.
+
+    It works around issues with proto encoding of ResourcePolicies
+    with null values by directly encoding a message with None value into
+    json, skipping proto-based encoding.
+
+    Args:
+      message: an instance of InstanceGroupManagerResourcePolicies
+
+    Returns:
+      JSON string with null value.
+    """
+
+    if message.workloadPolicy is None:
+      return 'null'
+    return protojson.encode_message(message)
+
+  def _ResourcePoliciesDecoder(data):
+    """Decoder for Resource Policies message.
+
+    Args:
+      data: JSON representation of Resource Policies.
+
+    Returns:
+      Instance of InstanceGroupManagerResourcePolicies.
+    """
+
+    return protojson.decode_message(
+        messages.InstanceGroupManagerResourcePolicies, data
+    )
+
+  encoding.RegisterCustomMessageCodec(
+      encoder=_ResourcePoliciesEncoder,
+      decoder=_ResourcePoliciesDecoder,
+  )(messages.InstanceGroupManagerResourcePolicies)
 
 
 def CreateTargetSizePolicy(messages, mode):

@@ -99,8 +99,26 @@ def GetParentFromPositionalArguments(args):
     # Use organization property as backup for legacy behavior.
     parent = properties.VALUES.scc.organization.Get()
 
-  if parent is None and hasattr(args, "organization"):
-    parent = args.organization
+  organization = (
+      getattr(args, "organization", None)
+      if hasattr(args, "organization")
+      else None
+  )
+  project = getattr(args, "project", None) if hasattr(args, "project") else None
+  folder = getattr(args, "folder", None) if hasattr(args, "folder") else None
+
+  if organization:
+    parent = (
+        f"organizations/{organization}"
+        if id_pattern.match(organization)
+        else organization
+    )
+
+  elif project:
+    parent = f"projects/{project}" if id_pattern.match(project) else project
+
+  elif folder:
+    parent = f"folders/{folder}" if id_pattern.match(folder) else folder
 
   if parent is None and hasattr(args, "project"):
     parent = args.project

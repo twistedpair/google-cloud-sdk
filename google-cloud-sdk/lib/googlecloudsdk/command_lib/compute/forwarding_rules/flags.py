@@ -166,6 +166,7 @@ def ForwardingRuleArgumentForServiceAttachment(required=False):
       plural=False,
       required=required,
       regional_collection='compute.forwardingRules',
+      global_collection='compute.globalForwardingRules',
       short_help='Target forwarding rule that receives forwarded traffic.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 

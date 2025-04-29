@@ -755,10 +755,8 @@ def ApplyLogConfigArgs(
       messages.BackendService.ProtocolValueValuesEnum.SSL,
       messages.BackendService.ProtocolValueValuesEnum.UDP,
       messages.BackendService.ProtocolValueValuesEnum.UNSPECIFIED,
+      messages.BackendService.ProtocolValueValuesEnum.H2C,
   ]
-
-  if hasattr(messages.BackendService.ProtocolValueValuesEnum, 'H2C'):
-    valid_protocols.append(messages.BackendService.ProtocolValueValuesEnum.H2C)
 
   if logging_specified and backend_service.protocol not in valid_protocols:
     raise exceptions.InvalidArgumentException(

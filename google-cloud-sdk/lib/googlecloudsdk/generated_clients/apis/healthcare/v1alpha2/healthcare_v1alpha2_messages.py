@@ -778,8 +778,8 @@ class Dataset(_messages.Message):
       key.
     name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
-    satisfiesPzi: Output only. For future use.
-    satisfiesPzs: Output only. For future use.
+    satisfiesPzi: Output only. Whether the dataset satisfies zone isolation.
+    satisfiesPzs: Output only. Whether the dataset satisfies zone separation.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
       defaults to UTC. This is used for parsing times in resources, such as
@@ -1740,27 +1740,6 @@ class FieldMetadata(_messages.Message):
   paths = _messages.StringField(2, repeated=True)
 
 
-class GcsSource(_messages.Message):
-  r"""Specifies the configuration for importing data from Cloud Storage.
-
-  Fields:
-    uri: Points to a Cloud Storage URI containing file(s) to import. The URI
-      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
-      can include wildcards in `object_id` and thus identify multiple files.
-      Supported wildcards: * `*` to match 0 or more non-separator characters *
-      `**` to match 0 or more characters (including separators). Must be used
-      at the end of a path and with no other wildcards in the path. Can also
-      be used with a file extension (such as .ndjson), which imports all files
-      with the extension in the specified directory and its sub-directories.
-      For example, `gs://my-bucket/my-directory/**.ndjson` imports all files
-      with `.ndjson` extensions in `my-directory/` and its sub-directories. *
-      `?` to match 1 character Files matching the wildcard are expected to
-      contain content only, no metadata.
-  """
-
-  uri = _messages.StringField(1)
-
-
 class GoogleCloudHealthcareV1alpha2AnnotationBigQueryDestination(_messages.Message):
   r"""The BigQuery table for export.
 
@@ -2251,6 +2230,27 @@ class GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination(_messages.Message):
   contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
   messageView = _messages.EnumField('MessageViewValueValuesEnum', 2)
   uriPrefix = _messages.StringField(3)
+
+
+class GoogleCloudHealthcareV1alpha2Hl7v2GcsSource(_messages.Message):
+  r"""Specifies the configuration for importing data from Cloud Storage.
+
+  Fields:
+    uri: Points to a Cloud Storage URI containing file(s) to import. The URI
+      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
+      can include wildcards in `object_id` and thus identify multiple files.
+      Supported wildcards: * `*` to match 0 or more non-separator characters *
+      `**` to match 0 or more characters (including separators). Must be used
+      at the end of a path and with no other wildcards in the path. Can also
+      be used with a file extension (such as .ndjson), which imports all files
+      with the extension in the specified directory and its sub-directories.
+      For example, `gs://my-bucket/my-directory/**.ndjson` imports all files
+      with `.ndjson` extensions in `my-directory/` and its sub-directories. *
+      `?` to match 1 character Files matching the wildcard are expected to
+      contain content only, no metadata.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest(_messages.Message):
@@ -4421,7 +4421,7 @@ class ImportMessagesRequest(_messages.Message):
       location.
   """
 
-  gcsSource = _messages.MessageField('GcsSource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1alpha2Hl7v2GcsSource', 1)
 
 
 class ImportMessagesResponse(_messages.Message):

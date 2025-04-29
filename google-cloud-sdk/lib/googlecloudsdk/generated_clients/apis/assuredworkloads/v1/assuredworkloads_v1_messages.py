@@ -51,7 +51,7 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(
       [here](https://cloud.google.com/asset-inventory/docs/supported-asset-
       types).
     pageSize: Optional. Page size. If a value is not specified, the default
-      value of 10 is used.
+      value of 10 is used. The maximum value is 50.
     pageToken: Optional. The page token from the previous response. It needs
       to be passed in the second and following requests.
     project: The source type is a project. Specify the project's relative

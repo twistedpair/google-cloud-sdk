@@ -1441,8 +1441,8 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_
       detection` * `event-threat-detection` * `security-health-analytics` *
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
       aws` * `cloud-run-threat-detection`
-    showEligibleModulesOnly: Set to `true` to show only modules that are in
-      scope. By default, all modules are shown.
+    showEligibleModulesOnly: Optional. Set to `true` to show only modules that
+      are in scope. By default, all modules are shown.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1494,9 +1494,9 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
       threat-detection-aws` * `cloud-run-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
-    updateMask: Required. The fields to update. Accepts the following values:
-      * `intended_enablement_state` * `modules` If omitted, then all eligible
-      fields are updated.
+    updateMask: Optional. Required. The fields to update. Accepts the
+      following values: * `intended_enablement_state` * `modules` If omitted,
+      then all eligible fields are updated.
     validateOnly: Optional. When set to `true`, the request will be validated
       (including IAM checks), but no service will be updated. An `OK` response
       indicates that the request is valid, while an error response indicates
@@ -1637,9 +1637,10 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
       icsCustomModules/{custom_module}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
-    updateMask: Required. The fields to update. The following values are
-      valid: * `custom_config` * `enablement_state` If you omit this field or
-      set it to the wildcard value `*`, then all eligible fields are updated.
+    updateMask: Optional. Required. The fields to update. The following values
+      are valid: * `custom_config` * `enablement_state` If you omit this field
+      or set it to the wildcard value `*`, then all eligible fields are
+      updated.
     validateOnly: Optional. When set to `true`, the request will be validated
       (including IAM checks), but no module will be updated. An `OK` response
       indicates that the request is valid, while an error response indicates
@@ -1944,8 +1945,8 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetReq
       detection` * `event-threat-detection` * `security-health-analytics` *
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
       aws` * `cloud-run-threat-detection`
-    showEligibleModulesOnly: Set to `true` to show only modules that are in
-      scope. By default, all modules are shown.
+    showEligibleModulesOnly: Optional. Set to `true` to show only modules that
+      are in scope. By default, all modules are shown.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1995,9 +1996,9 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
       threat-detection-aws` * `cloud-run-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
-    updateMask: Required. The fields to update. Accepts the following values:
-      * `intended_enablement_state` * `modules` If omitted, then all eligible
-      fields are updated.
+    updateMask: Optional. Required. The fields to update. Accepts the
+      following values: * `intended_enablement_state` * `modules` If omitted,
+      then all eligible fields are updated.
     validateOnly: Optional. When set to `true`, the request will be validated
       (including IAM checks), but no service will be updated. An `OK` response
       indicates that the request is valid, while an error response indicates
@@ -2138,9 +2139,10 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
       icsCustomModules/{custom_module}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
-    updateMask: Required. The fields to update. The following values are
-      valid: * `custom_config` * `enablement_state` If you omit this field or
-      set it to the wildcard value `*`, then all eligible fields are updated.
+    updateMask: Optional. Required. The fields to update. The following values
+      are valid: * `custom_config` * `enablement_state` If you omit this field
+      or set it to the wildcard value `*`, then all eligible fields are
+      updated.
     validateOnly: Optional. When set to `true`, the request will be validated
       (including IAM checks), but no module will be updated. An `OK` response
       indicates that the request is valid, while an error response indicates
@@ -2478,8 +2480,8 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(
       detection` * `event-threat-detection` * `security-health-analytics` *
       `vm-threat-detection` * `web-security-scanner` * `vm-threat-detection-
       aws` * `cloud-run-threat-detection`
-    showEligibleModulesOnly: Set to `true` to show only modules that are in
-      scope. By default, all modules are shown.
+    showEligibleModulesOnly: Optional. Set to `true` to show only modules that
+      are in scope. By default, all modules are shown.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2531,9 +2533,9 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
       threat-detection-aws` * `cloud-run-threat-detection`
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
-    updateMask: Required. The fields to update. Accepts the following values:
-      * `intended_enablement_state` * `modules` If omitted, then all eligible
-      fields are updated.
+    updateMask: Optional. Required. The fields to update. Accepts the
+      following values: * `intended_enablement_state` * `modules` If omitted,
+      then all eligible fields are updated.
     validateOnly: Optional. When set to `true`, the request will be validated
       (including IAM checks), but no service will be updated. An `OK` response
       indicates that the request is valid, while an error response indicates
@@ -2674,9 +2676,10 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
       icsCustomModules/{custom_module}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
-    updateMask: Required. The fields to update. The following values are
-      valid: * `custom_config` * `enablement_state` If you omit this field or
-      set it to the wildcard value `*`, then all eligible fields are updated.
+    updateMask: Optional. Required. The fields to update. The following values
+      are valid: * `custom_config` * `enablement_state` If you omit this field
+      or set it to the wildcard value `*`, then all eligible fields are
+      updated.
     validateOnly: Optional. When set to `true`, the request will be validated
       (including IAM checks), but no module will be updated. An `OK` response
       indicates that the request is valid, while an error response indicates

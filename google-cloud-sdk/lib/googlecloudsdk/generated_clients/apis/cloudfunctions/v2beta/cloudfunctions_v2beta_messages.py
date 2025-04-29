@@ -182,13 +182,14 @@ class BuildConfig(_messages.Message):
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
       This configuration is only applicable to 1st Gen functions, 2nd Gen
-      functions can only use Artifact Registry. Deprecated: Container Registry
-      option will no longer be available after March 2025:
-      https://cloud.google.com/artifact-registry/docs/transition/transition-
-      from-gcr Please use Artifact Registry instead, which is the default
-      choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
-      `docker_repository` field is specified, this field should either be left
-      unspecified or set to `ARTIFACT_REGISTRY`.
+      functions can only use Artifact Registry. Deprecated: as of March 2025,
+      `CONTAINER_REGISTRY` option is no longer available in response to
+      Container Registry's deprecation: https://cloud.google.com/artifact-
+      registry/docs/transition/transition-from-gcr Please use Artifact
+      Registry instead, which is the default choice. If unspecified, it
+      defaults to `ARTIFACT_REGISTRY`. If `docker_repository` field is
+      specified, this field should either be left unspecified or set to
+      `ARTIFACT_REGISTRY`.
 
   Messages:
     EnvironmentVariablesValue: User-provided build-time environment variables
@@ -200,13 +201,14 @@ class BuildConfig(_messages.Message):
       deployment of the function.
     dockerRegistry: Docker Registry to use for this deployment. This
       configuration is only applicable to 1st Gen functions, 2nd Gen functions
-      can only use Artifact Registry. Deprecated: Container Registry option
-      will no longer be available after March 2025:
-      https://cloud.google.com/artifact-registry/docs/transition/transition-
-      from-gcr Please use Artifact Registry instead, which is the default
-      choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
-      `docker_repository` field is specified, this field should either be left
-      unspecified or set to `ARTIFACT_REGISTRY`.
+      can only use Artifact Registry. Deprecated: as of March 2025,
+      `CONTAINER_REGISTRY` option is no longer available in response to
+      Container Registry's deprecation: https://cloud.google.com/artifact-
+      registry/docs/transition/transition-from-gcr Please use Artifact
+      Registry instead, which is the default choice. If unspecified, it
+      defaults to `ARTIFACT_REGISTRY`. If `docker_repository` field is
+      specified, this field should either be left unspecified or set to
+      `ARTIFACT_REGISTRY`.
     dockerRepository: Repository in Artifact Registry to which the function
       docker image will be pushed after it is built by Cloud Build. If
       specified by user, it is created and managed by user with a customer
@@ -251,12 +253,13 @@ class BuildConfig(_messages.Message):
   class DockerRegistryValueValuesEnum(_messages.Enum):
     r"""Docker Registry to use for this deployment. This configuration is only
     applicable to 1st Gen functions, 2nd Gen functions can only use Artifact
-    Registry. Deprecated: Container Registry option will no longer be
-    available after March 2025: https://cloud.google.com/artifact-
-    registry/docs/transition/transition-from-gcr Please use Artifact Registry
-    instead, which is the default choice. If unspecified, it defaults to
-    `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this field
-    should either be left unspecified or set to `ARTIFACT_REGISTRY`.
+    Registry. Deprecated: as of March 2025, `CONTAINER_REGISTRY` option is no
+    longer available in response to Container Registry's deprecation:
+    https://cloud.google.com/artifact-registry/docs/transition/transition-
+    from-gcr Please use Artifact Registry instead, which is the default
+    choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+    `docker_repository` field is specified, this field should either be left
+    unspecified or set to `ARTIFACT_REGISTRY`.
 
     Values:
       DOCKER_REGISTRY_UNSPECIFIED: Unspecified.

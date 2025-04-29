@@ -72,7 +72,9 @@ class ComputeBeta(base_api.BaseApiClient):
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
     self.instantSnapshots = self.InstantSnapshotsService(self)
+    self.interconnectAttachmentGroups = self.InterconnectAttachmentGroupsService(self)
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
+    self.interconnectGroups = self.InterconnectGroupsService(self)
     self.interconnectLocations = self.InterconnectLocationsService(self)
     self.interconnectRemoteLocations = self.InterconnectRemoteLocationsService(self)
     self.interconnects = self.InterconnectsService(self)
@@ -91,7 +93,6 @@ class ComputeBeta(base_api.BaseApiClient):
     self.nodeTypes = self.NodeTypesService(self)
     self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
     self.packetMirrorings = self.PacketMirroringsService(self)
-    self.previewFeatures = self.PreviewFeaturesService(self)
     self.projects = self.ProjectsService(self)
     self.publicAdvertisedPrefixes = self.PublicAdvertisedPrefixesService(self)
     self.publicDelegatedPrefixes = self.PublicDelegatedPrefixesService(self)
@@ -8700,6 +8701,250 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class InterconnectAttachmentGroupsService(base_api.BaseApiService):
+    """Service class for the interconnectAttachmentGroups resource."""
+
+    _NAME = 'interconnectAttachmentGroups'
+
+    def __init__(self, client):
+      super(ComputeBeta.InterconnectAttachmentGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified InterconnectAttachmentGroup in the given scope.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.interconnectAttachmentGroups.delete',
+        ordered_params=['project', 'interconnectAttachmentGroup'],
+        path_params=['interconnectAttachmentGroup', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}',
+        request_field='',
+        request_type_name='ComputeInterconnectAttachmentGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified InterconnectAttachmentGroup resource in the given scope.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectAttachmentGroups.get',
+        ordered_params=['project', 'interconnectAttachmentGroup'],
+        path_params=['interconnectAttachmentGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}',
+        request_field='',
+        request_type_name='ComputeInterconnectAttachmentGroupsGetRequest',
+        response_type_name='InterconnectAttachmentGroup',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectAttachmentGroups.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeInterconnectAttachmentGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetOperationalStatus(self, request, global_params=None):
+      r"""Returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsGetOperationalStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentGroupsGetOperationalStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOperationalStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOperationalStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectAttachmentGroups.getOperationalStatus',
+        ordered_params=['project', 'interconnectAttachmentGroup'],
+        path_params=['interconnectAttachmentGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}/getOperationalStatus',
+        request_field='',
+        request_type_name='ComputeInterconnectAttachmentGroupsGetOperationalStatusRequest',
+        response_type_name='InterconnectAttachmentGroupsGetOperationalStatusResponse',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectAttachmentGroups.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups',
+        request_field='interconnectAttachmentGroup',
+        request_type_name='ComputeInterconnectAttachmentGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the InterconnectAttachmentGroups for a project in the given scope.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentGroupsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectAttachmentGroups.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups',
+        request_field='',
+        request_type_name='ComputeInterconnectAttachmentGroupsListRequest',
+        response_type_name='InterconnectAttachmentGroupsListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.interconnectAttachmentGroups.patch',
+        ordered_params=['project', 'interconnectAttachmentGroup'],
+        path_params=['interconnectAttachmentGroup', 'project'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}',
+        request_field='interconnectAttachmentGroupResource',
+        request_type_name='ComputeInterconnectAttachmentGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectAttachmentGroups.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeInterconnectAttachmentGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectAttachmentGroups.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInterconnectAttachmentGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class InterconnectAttachmentsService(base_api.BaseApiService):
     """Service class for the interconnectAttachments resource."""
 
@@ -8914,6 +9159,276 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/interconnectAttachments/{resource}/testIamPermissions',
         request_field='testPermissionsRequest',
         request_type_name='ComputeInterconnectAttachmentsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InterconnectGroupsService(base_api.BaseApiService):
+    """Service class for the interconnectGroups resource."""
+
+    _NAME = 'interconnectGroups'
+
+    def __init__(self, client):
+      super(ComputeBeta.InterconnectGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CreateMembers(self, request, global_params=None):
+      r"""Create Interconnects with redundancy by creating them in a specified interconnect group.
+
+      Args:
+        request: (ComputeInterconnectGroupsCreateMembersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateMembers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateMembers.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectGroups.createMembers',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}/createMembers',
+        request_field='interconnectGroupsCreateMembersRequest',
+        request_type_name='ComputeInterconnectGroupsCreateMembersRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified InterconnectGroup in the given scope.
+
+      Args:
+        request: (ComputeInterconnectGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.interconnectGroups.delete',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}',
+        request_field='',
+        request_type_name='ComputeInterconnectGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified InterconnectGroup resource in the given scope.
+
+      Args:
+        request: (ComputeInterconnectGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectGroups.get',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}',
+        request_field='',
+        request_type_name='ComputeInterconnectGroupsGetRequest',
+        response_type_name='InterconnectGroup',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInterconnectGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectGroups.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/interconnectGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeInterconnectGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetOperationalStatus(self, request, global_params=None):
+      r"""Returns the interconnectStatuses for the specified InterconnectGroup.
+
+      Args:
+        request: (ComputeInterconnectGroupsGetOperationalStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectGroupsGetOperationalStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOperationalStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOperationalStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectGroups.getOperationalStatus',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}/getOperationalStatus',
+        request_field='',
+        request_type_name='ComputeInterconnectGroupsGetOperationalStatusRequest',
+        response_type_name='InterconnectGroupsGetOperationalStatusResponse',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a InterconnectGroup in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeInterconnectGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectGroups.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/interconnectGroups',
+        request_field='interconnectGroup',
+        request_type_name='ComputeInterconnectGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the InterconnectGroups for a project in the given scope.
+
+      Args:
+        request: (ComputeInterconnectGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectGroupsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectGroups.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/interconnectGroups',
+        request_field='',
+        request_type_name='ComputeInterconnectGroupsListRequest',
+        response_type_name='InterconnectGroupsListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified InterconnectGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInterconnectGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.interconnectGroups.patch',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}',
+        request_field='interconnectGroupResource',
+        request_type_name='ComputeInterconnectGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInterconnectGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectGroups.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeInterconnectGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInterconnectGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectGroups.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInterconnectGroupsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
@@ -9537,6 +10052,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeLicensesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates a License resource in the specified project. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+
+      Args:
+        request: (ComputeLicensesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.licenses.update',
+        ordered_params=['project', 'license'],
+        path_params=['license', 'project'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/global/licenses/{license}',
+        request_field='licenseResource',
+        request_type_name='ComputeLicensesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12735,94 +13276,6 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputePacketMirroringsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
-        supports_download=False,
-    )
-
-  class PreviewFeaturesService(base_api.BaseApiService):
-    """Service class for the previewFeatures resource."""
-
-    _NAME = 'previewFeatures'
-
-    def __init__(self, client):
-      super(ComputeBeta.PreviewFeaturesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Returns the details of the given PreviewFeature.
-
-      Args:
-        request: (ComputePreviewFeaturesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (PreviewFeature) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.previewFeatures.get',
-        ordered_params=['project', 'resourceId'],
-        path_params=['project', 'resourceId'],
-        query_params=[],
-        relative_path='projects/{project}/global/previewFeatures/{resourceId}',
-        request_field='',
-        request_type_name='ComputePreviewFeaturesGetRequest',
-        response_type_name='PreviewFeature',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Returns the details of the given PreviewFeature.
-
-      Args:
-        request: (ComputePreviewFeaturesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (PreviewFeatureList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.previewFeatures.list',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
-        relative_path='projects/{project}/global/previewFeatures',
-        request_field='',
-        request_type_name='ComputePreviewFeaturesListRequest',
-        response_type_name='PreviewFeatureList',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      r"""Patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
-
-      Args:
-        request: (ComputePreviewFeaturesUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='PATCH',
-        method_id='compute.previewFeatures.update',
-        ordered_params=['project', 'resourceId'],
-        path_params=['project', 'resourceId'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/global/previewFeatures/{resourceId}',
-        request_field='previewFeature',
-        request_type_name='ComputePreviewFeaturesUpdateRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -16970,7 +17423,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.regionNetworkFirewallPolicies.addAssociation',
         ordered_params=['project', 'region', 'firewallPolicy'],
         path_params=['firewallPolicy', 'project', 'region'],
-        query_params=['replaceExistingAssociation', 'requestId'],
+        query_params=['associatedPolicyToBeReplaced', 'replaceExistingAssociation', 'requestId'],
         relative_path='projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}/addAssociation',
         request_field='firewallPolicyAssociation',
         request_type_name='ComputeRegionNetworkFirewallPoliciesAddAssociationRequest',
@@ -17260,6 +17713,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}',
         request_field='firewallPolicyResource',
         request_type_name='ComputeRegionNetworkFirewallPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchAssociation(self, request, global_params=None):
+      r"""Updates an association for the specified network firewall policy.
+
+      Args:
+        request: (ComputeRegionNetworkFirewallPoliciesPatchAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkFirewallPolicies.patchAssociation',
+        ordered_params=['project', 'region', 'firewallPolicy'],
+        path_params=['firewallPolicy', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}/patchAssociation',
+        request_field='firewallPolicyAssociation',
+        request_type_name='ComputeRegionNetworkFirewallPoliciesPatchAssociationRequest',
         response_type_name='Operation',
         supports_download=False,
     )

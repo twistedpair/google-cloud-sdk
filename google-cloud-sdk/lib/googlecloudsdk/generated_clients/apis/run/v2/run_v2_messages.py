@@ -294,6 +294,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
       POSTPONED_RETRY: System will retry later; current attempt failed.
       INTERNAL: An internal error occurred. Further information may be in the
         message.
+      VPC_NETWORK_NOT_FOUND: User-provided VPC network was not found.
     """
     COMMON_REASON_UNDEFINED = 0
     UNKNOWN = 1
@@ -310,6 +311,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
     IMMEDIATE_RETRY = 12
     POSTPONED_RETRY = 13
     INTERNAL = 14
+    VPC_NETWORK_NOT_FOUND = 15
 
   class RevisionReasonValueValuesEnum(_messages.Enum):
     r"""Output only. A reason for the revision condition.

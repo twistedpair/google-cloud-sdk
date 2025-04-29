@@ -36,8 +36,9 @@ class AppProfile(_messages.Message):
       [Wikipedia](https://en.wikipedia.org/wiki/HTTP_ETag) and [RFC
       7232](https://tools.ietf.org/html/rfc7232#section-2.3) for more details.
     multiClusterRoutingUseAny: Use a multi-cluster routing policy.
-    name: The unique name of the app profile. Values are of the form
-      `projects/{project}/instances/{instance}/appProfiles/_a-zA-Z0-9*`.
+    name: The unique name of the app profile, up to 50 characters long. Values
+      are of the form `projects/{project}/instances/{instance}/appProfiles/_a-
+      zA-Z0-9*`.
     priority: This field has been deprecated in favor of
       `standard_isolation.priority`. If you set this field,
       `standard_isolation.priority` will be set instead. The priority of
@@ -425,8 +426,9 @@ class BigtableadminProjectsInstancesAppProfilesPatchRequest(_messages.Message):
     appProfile: A AppProfile resource to be passed as the request body.
     ignoreWarnings: If true, ignore safety checks when updating the app
       profile.
-    name: The unique name of the app profile. Values are of the form
-      `projects/{project}/instances/{instance}/appProfiles/_a-zA-Z0-9*`.
+    name: The unique name of the app profile, up to 50 characters long. Values
+      are of the form `projects/{project}/instances/{instance}/appProfiles/_a-
+      zA-Z0-9*`.
     updateMask: Required. The subset of app profile fields which should be
       replaced. If unset, all fields will be replaced.
   """
@@ -3466,6 +3468,8 @@ class LogicalView(_messages.Message):
   r"""A SQL logical view object that can be referenced in SQL queries.
 
   Fields:
+    deletionProtection: Optional. Set to true to make the LogicalView
+      protected against deletion.
     etag: Optional. The etag for this logical view. This may be sent on update
       requests to ensure that the client has an up-to-date value before
       proceeding. The server returns an ABORTED error on a mismatched etag.
@@ -3474,9 +3478,10 @@ class LogicalView(_messages.Message):
     query: Required. The logical view's select query.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2)
-  query = _messages.StringField(3)
+  deletionProtection = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  query = _messages.StringField(4)
 
 
 class MaterializedView(_messages.Message):

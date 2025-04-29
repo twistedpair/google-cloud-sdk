@@ -3025,8 +3025,7 @@ class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message)
       fact tables which will be expensive.
     filter: Filter that enables you to drill-down on specific dimension
       values.
-    limit: Maximum number of result items to return. The default and maximum
-      value that can be returned is 14400.
+    limit: Maximum number of result items to return.
     name: Required. Resource name for which the interactive query will be
       executed. Use the following format in your request:
       `organizations/{org}/environments/{env}/optimizedStats/{dimensions}`
@@ -3043,7 +3042,7 @@ class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message)
     sonar: Routes the query to API Monitoring for the last hour.
     sort: Flag that specifies whether the sort order should be ascending or
       descending. Valid values include `DESC` and `ASC`.
-    sortby: Comma-separated list of columns to sort the final result.
+    sortby: Comma-separated list of metrics to sort the final result.
     timeRange: Required. Time interval for the interactive query. Time range
       is specified in GMT as `start~end`. For example: `04/15/2017
       00:00~05/15/2017 23:59`
@@ -3668,8 +3667,7 @@ class ApigeeOrganizationsEnvironmentsStatsGetRequest(_messages.Message):
       fact tables which will be expensive.
     filter: Filter that enables you to drill down on specific dimension
       values.
-    limit: Maximum number of result items to return. The default and maximum
-      value that can be returned is 14400.
+    limit: Maximum number of result items to return.
     name: Required. Resource name for which the interactive query will be
       executed. Use the following format in your request:
       `organizations/{org}/environments/{env}/stats/{dimensions}` Dimensions
@@ -3686,7 +3684,7 @@ class ApigeeOrganizationsEnvironmentsStatsGetRequest(_messages.Message):
     sonar: Routes the query to API Monitoring for the last hour.
     sort: Flag that specifies whether the sort order should be ascending or
       descending. Valid values include: `DESC` and `ASC`.
-    sortby: Comma-separated list of columns to sort the final result.
+    sortby: Comma-separated list of metrics to sort the final result.
     timeRange: Time interval for the interactive query. Time range is
       specified in GMT as `start~end`. For example: `04/15/2017
       00:00~05/15/2017 23:59`
@@ -4216,8 +4214,7 @@ class ApigeeOrganizationsHostStatsGetRequest(_messages.Message):
     envgroupHostname: Required. Hostname for which the interactive query will
       be executed.
     filter: Flag that enables drill-down on specific dimension values.
-    limit: Maximum number of result items to return. The default and maximum
-      value that can be returned is 14400.
+    limit: Maximum number of result items to return.
     name: Required. Resource name for which the interactive query will be
       executed. Use the following format in your request:
       `organizations/{org}/hostStats/{dimensions}` Dimensions let you view
@@ -4232,7 +4229,7 @@ class ApigeeOrganizationsHostStatsGetRequest(_messages.Message):
       `sum(message_count),sum(error_count)`
     sort: Flag that specifies if the sort order should be ascending or
       descending. Valid values are `DESC` and `ASC`.
-    sortby: Comma-separated list of columns to sort the final result.
+    sortby: Comma-separated list of metrics to sort the final result.
     timeRange: Time interval for the interactive query. Time range is
       specified in GMT as `start~end`. For example: `04/15/2017
       00:00~05/15/2017 23:59`
@@ -4669,8 +4666,7 @@ class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
       be executed.
     filter: Filter that enables you to drill-down on specific dimension
       values.
-    limit: Maximum number of result items to return. The default and maximum
-      value that can be returned is 14400.
+    limit: Maximum number of result items to return.
     name: Required. Resource name for which the interactive query will be
       executed. Use the following format in your request:
       `organizations/{organization_id}/optimizedHostStats/{dimensions}`
@@ -4686,7 +4682,7 @@ class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
       `sum(message_count),sum(error_count)`
     sort: Flag that specifies whether the sort order should be ascending or
       descending. Valid values include `DESC` and `ASC`.
-    sortby: Comma-separated list of columns used to sort the final result.
+    sortby: Comma-separated list of metrics used to sort the final result.
     timeRange: Required. Time interval for the interactive query. Time range
       is specified in GMT as `start~end`. For example: `04/15/2017
       00:00~05/15/2017 23:59`.
@@ -5995,7 +5991,7 @@ class GoogleCloudApigeeV1AdvancedApiOpsConfig(_messages.Message):
     enabled: Flag that specifies whether the Advanced API Ops add-on is
       enabled.
     expiresAt: Output only. Time at which the Advanced API Ops add-on expires
-      in in milliseconds since epoch. If unspecified, the add-on will never
+      in milliseconds since epoch. If unspecified, the add-on will never
       expire.
   """
 
@@ -6689,8 +6685,7 @@ class GoogleCloudApigeeV1ApiSecurityConfig(_messages.Message):
   Fields:
     enabled: Flag that specifies whether the API security add-on is enabled.
     expiresAt: Output only. Time at which the API Security add-on expires in
-      in milliseconds since epoch. If unspecified, the add-on will never
-      expire.
+      milliseconds since epoch. If unspecified, the add-on will never expire.
     state: Output only. The state of the API Security add-on.
     updateTime: Output only. The latest update time.
   """
@@ -8167,7 +8162,8 @@ class GoogleCloudApigeeV1DeveloperApp(_messages.Message):
   Fields:
     apiProducts: List of API products associated with the developer app.
     appFamily: Developer app family.
-    appId: ID of the developer app.
+    appId: ID of the developer app. This ID is not user specified but is
+      automatically generated on app creation. appId is a UUID.
     attributes: List of attributes for the developer app.
     callbackUrl: Callback URL used by OAuth 2.0 authorization servers to
       communicate authorization codes back to developer apps.
@@ -9522,7 +9518,7 @@ class GoogleCloudApigeeV1IntegrationConfig(_messages.Message):
 
   Fields:
     enabled: Flag that specifies whether the Integration add-on is enabled.
-    expiresAt: Output only. Time at which the Integration add-on expires in in
+    expiresAt: Output only. Time at which the Integration add-on expires in
       milliseconds since epoch. If unspecified, the add-on will never expire.
   """
 
@@ -10349,8 +10345,7 @@ class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
   Fields:
     enabled: Flag that specifies whether the Monetization add-on is enabled.
     expiresAt: Output only. Time at which the Monetization add-on expires in
-      in milliseconds since epoch. If unspecified, the add-on will never
-      expire.
+      milliseconds since epoch. If unspecified, the add-on will never expire.
   """
 
   enabled = _messages.BooleanField(1)
@@ -10647,7 +10642,7 @@ class GoogleCloudApigeeV1OperationMetadataProgress(_messages.Message):
 
 
 class GoogleCloudApigeeV1OptimizedStats(_messages.Message):
-  r"""A GoogleCloudApigeeV1OptimizedStats object.
+  r"""Encapsulates a response format for JavaScript Optimized Scenario.
 
   Fields:
     Response: Wraps the `stats` response for JavaScript Optimized Scenario
@@ -10675,7 +10670,7 @@ class GoogleCloudApigeeV1OptimizedStatsNode(_messages.Message):
   metrics.
 
   Fields:
-    data: A extra_types.JsonValue attribute.
+    data: List of data values.
   """
 
   data = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)

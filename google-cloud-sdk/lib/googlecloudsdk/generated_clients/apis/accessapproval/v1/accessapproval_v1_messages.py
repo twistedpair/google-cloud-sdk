@@ -47,6 +47,10 @@ class AccessApprovalSettings(_messages.Message):
       that indicates that an ancestor of this Project or Folder has set
       active_key_version (this field will always be unset for the organization
       since organizations do not have ancestors).
+    approvalPolicy: Optional. Policy for approval. This contains all policies.
+    effectiveApprovalPolicy: Output only. Policy for approval included
+      inherited settings to understand the exact policy applied to this
+      resource. This is a read-only field.
     enrolledAncestor: Output only. This field is read only (not settable via
       UpdateAccessApprovalSettings method). If the field is true, that
       indicates that at least one service is enrolled for Access Approval in
@@ -114,16 +118,18 @@ class AccessApprovalSettings(_messages.Message):
 
   activeKeyVersion = _messages.StringField(1)
   ancestorHasActiveKeyVersion = _messages.BooleanField(2)
-  enrolledAncestor = _messages.BooleanField(3)
-  enrolledServices = _messages.MessageField('EnrolledService', 4, repeated=True)
-  invalidKeyVersion = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  notificationEmails = _messages.StringField(7, repeated=True)
-  notificationPubsubTopic = _messages.StringField(8)
-  preferNoBroadApprovalRequests = _messages.BooleanField(9)
-  preferredRequestExpirationDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  requestScopeMaxWidthPreference = _messages.EnumField('RequestScopeMaxWidthPreferenceValueValuesEnum', 11)
-  requireCustomerVisibleJustification = _messages.BooleanField(12)
+  approvalPolicy = _messages.MessageField('CustomerApprovalApprovalPolicy', 3)
+  effectiveApprovalPolicy = _messages.MessageField('CustomerApprovalApprovalPolicy', 4)
+  enrolledAncestor = _messages.BooleanField(5)
+  enrolledServices = _messages.MessageField('EnrolledService', 6, repeated=True)
+  invalidKeyVersion = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  notificationEmails = _messages.StringField(9, repeated=True)
+  notificationPubsubTopic = _messages.StringField(10)
+  preferNoBroadApprovalRequests = _messages.BooleanField(11)
+  preferredRequestExpirationDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  requestScopeMaxWidthPreference = _messages.EnumField('RequestScopeMaxWidthPreferenceValueValuesEnum', 13)
+  requireCustomerVisibleJustification = _messages.BooleanField(14)
 
 
 class AccessLocations(_messages.Message):
@@ -650,6 +656,8 @@ class ApproveDecision(_messages.Message):
     expireTime: The time at which the approval expires.
     invalidateTime: If set, denotes the timestamp at which the approval is
       invalidated.
+    policyApproved: True when the request has been approved by the customer's
+      defined policy.
     signatureInfo: The signature for the ApprovalRequest and details on how it
       was signed.
   """
@@ -658,7 +666,8 @@ class ApproveDecision(_messages.Message):
   autoApproved = _messages.BooleanField(2)
   expireTime = _messages.StringField(3)
   invalidateTime = _messages.StringField(4)
-  signatureInfo = _messages.MessageField('SignatureInfo', 5)
+  policyApproved = _messages.BooleanField(5)
+  signatureInfo = _messages.MessageField('SignatureInfo', 6)
 
 
 class AugmentedInfo(_messages.Message):
@@ -671,6 +680,42 @@ class AugmentedInfo(_messages.Message):
   """
 
   command = _messages.StringField(1)
+
+
+class CustomerApprovalApprovalPolicy(_messages.Message):
+  r"""Represents all the policies that can be set for Customer Approval.
+
+  Enums:
+    JustificationBasedApprovalPolicyValueValuesEnum: Optional. Policy for
+      approval based on the justification given.
+
+  Fields:
+    justificationBasedApprovalPolicy: Optional. Policy for approval based on
+      the justification given.
+  """
+
+  class JustificationBasedApprovalPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. Policy for approval based on the justification given.
+
+    Values:
+      JUSTIFICATION_BASED_APPROVAL_POLICY_UNSPECIFIED: Default value for
+        proto.
+      JUSTIFICATION_BASED_APPROVAL_ENABLED_ALL: Instant approval is enabled
+        for all accesses.
+      JUSTIFICATION_BASED_APPROVAL_ENABLED_EXTERNAL_JUSTIFICATIONS: Instant
+        approval is enabled for external justifications.
+      JUSTIFICATION_BASED_APPROVAL_NOT_ENABLED: Instant approval is not
+        enabled for any accesses.
+      JUSTIFICATION_BASED_APPROVAL_INHERITED: Instant approval is inherited
+        from the parent.
+    """
+    JUSTIFICATION_BASED_APPROVAL_POLICY_UNSPECIFIED = 0
+    JUSTIFICATION_BASED_APPROVAL_ENABLED_ALL = 1
+    JUSTIFICATION_BASED_APPROVAL_ENABLED_EXTERNAL_JUSTIFICATIONS = 2
+    JUSTIFICATION_BASED_APPROVAL_NOT_ENABLED = 3
+    JUSTIFICATION_BASED_APPROVAL_INHERITED = 4
+
+  justificationBasedApprovalPolicy = _messages.EnumField('JustificationBasedApprovalPolicyValueValuesEnum', 1)
 
 
 class DismissApprovalRequestMessage(_messages.Message):

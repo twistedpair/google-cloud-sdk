@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  BATCHPREDICTIONJOBS = (
+      'batchPredictionJobs',
+      '{+name}',
+      {
+          '':
+              'batchPredictionJobs/{batchPredictionJobsId}',
+      },
+      ['name'],
+      True
+  )
   DATASETS = (
       'datasets',
       '{+name}',
@@ -1127,6 +1137,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RAGENGINECONFIG_OPERATIONS = (
+      'projects.locations.ragEngineConfig.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragEngineConfig/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_REASONINGENGINES = (
       'projects.locations.reasoningEngines',
       '{+name}',
@@ -1190,17 +1211,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'serverlessRayJobs/{serverlessRayJobsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_SESSIONS = (
-      'projects.locations.sessions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/sessions/'
-              '{sessionsId}',
       },
       ['name'],
       True

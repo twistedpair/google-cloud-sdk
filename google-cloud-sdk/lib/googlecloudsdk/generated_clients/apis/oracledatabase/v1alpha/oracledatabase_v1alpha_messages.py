@@ -1231,8 +1231,8 @@ class CloudVmCluster(_messages.Message):
     backupOdbSubnet: Optional. The name of the backup OdbSubnet associated
       with the VM Cluster. Format: projects/{project}/locations/{location}/odb
       Networks/{odb_network}/odbSubnets/{odb_subnet}
-    backupSubnetCidr: Required. CIDR range of the backup subnet.
-    cidr: Required. Network settings. CIDR to use for cluster IP allocation.
+    backupSubnetCidr: Optional. CIDR range of the backup subnet.
+    cidr: Optional. Network settings. CIDR to use for cluster IP allocation.
     createTime: Output only. The date and time that the VM cluster was
       created.
     displayName: Optional. User friendly name for this resource.
@@ -1246,7 +1246,7 @@ class CloudVmCluster(_messages.Message):
     labels: Optional. Labels or tags associated with the VM Cluster.
     name: Identifier. The name of the VM Cluster resource with the format:
       projects/{project}/locations/{region}/cloudVmClusters/{cloud_vm_cluster}
-    network: Required. The name of the VPC network. Format:
+    network: Optional. The name of the VPC network. Format:
       projects/{project}/global/networks/{network}
     odbNetwork: Optional. The name of the OdbNetwork associated with the VM
       Cluster. Format:
@@ -1828,6 +1828,155 @@ class Entitlement(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
+class ExadbVmCluster(_messages.Message):
+  r"""ExadbVmCluster represents a cluster of VMs that are used to run Exadata
+  workloads. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/ExadbVmCluster/
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the
+      ExadbVmCluster.
+
+  Fields:
+    displayName: Required. The display name for the ExadbVmCluster. The name
+      does not have to be unique within your project. The name must be 1-255
+      characters long and can only contain alphanumeric characters.
+    gcpOracleZone: Optional. Google Cloud Platform location where Oracle Exadb
+      vm cluster is hosted. Example: us-east4-b-r1, us-central1-a.
+    labels: Optional. The labels or tags associated with the ExadbVmCluster.
+    name: Identifier. The name of the ExadbVmCluster resource in the following
+      format:
+      projects/{project}/locations/{region}/exadbVmClusters/{exadb_vm_cluster}
+    properties: Optional. The properties of the ExadbVmCluster.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the ExadbVmCluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  gcpOracleZone = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  properties = _messages.MessageField('ExadbVmClusterProperties', 5)
+
+
+class ExadbVmClusterProperties(_messages.Message):
+  r"""The properties of an ExadbVmCluster.
+
+  Enums:
+    LicenseTypeValueValuesEnum: Required. The license type of the
+      ExadbVmCluster.
+
+  Fields:
+    backupOdbSubnet: Required. The name of the backup OdbSubnet associated
+      with the ExadbVmCluster. Format: projects/{project}/locations/{location}
+      /odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    clusterName: Required. The cluster name for Exascale vm cluster. The
+      cluster name must begin with an alphabetic character and may contain
+      hyphens(-) but can not contain underscores(_). It should be not more
+      than 11 characters and is not case sensitive. OCI Cluster name.
+    dataCollectionOptions: Optional. Indicates user preference for data
+      collection options.
+    enabledEcpuCount: Required. The number of ECPUs enabled for an exadata vm
+      cluster on exascale infrastructure.
+    exascaleDbStorageVaultId: Optional. The OCID for exadata database storage
+      vault.
+    gridImageId: Required. Grid setup will be done using the grid image id.
+    licenseType: Required. The license type of the ExadbVmCluster.
+    nodeCount: Required. The number of nodes in the ExadbVmCluster.
+    odbNetwork: Optional. The name of the OdbNetwork associated with the
+      ExadbVmCluster. Format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
+      optional but if specified, this should match the parent ODBNetwork of
+      the client_subnet_id and backup_subnet_id.
+    odbSubnet: Required. The name of the OdbSubnet associated with the
+      ExadbVmCluster for IP allocation. Format: projects/{project}/locations/{
+      location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    sshPublicKeys: Required. The SSH public keys for the ExadbVmCluster.
+    storageVaultProperties: Optional. The properties of the storage vault
+      associated with the ExadbVmCluster.
+    totalEcpuCount: Required. The total number of ECPUs available (enabled +
+      reserved) for an exadata vm cluster on exascale infrastructure.
+    vmFileSystemStorage: Required. The memory allocated in GBs.
+  """
+
+  class LicenseTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The license type of the ExadbVmCluster.
+
+    Values:
+      LICENSE_TYPE_UNSPECIFIED: Unspecified.
+      LISCENSE_INCLUDED: Default islicense included.
+      BRING_YOUR_OWN_LICENSE: Bring your own license.
+    """
+    LICENSE_TYPE_UNSPECIFIED = 0
+    LISCENSE_INCLUDED = 1
+    BRING_YOUR_OWN_LICENSE = 2
+
+  backupOdbSubnet = _messages.StringField(1)
+  clusterName = _messages.StringField(2)
+  dataCollectionOptions = _messages.MessageField('ExadbVmClusterPropertiesDataCollectionOptions', 3)
+  enabledEcpuCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  exascaleDbStorageVaultId = _messages.StringField(5)
+  gridImageId = _messages.StringField(6)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 7)
+  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  odbNetwork = _messages.StringField(9)
+  odbSubnet = _messages.StringField(10)
+  sshPublicKeys = _messages.StringField(11, repeated=True)
+  storageVaultProperties = _messages.MessageField('StorageVaultProperties', 12)
+  totalEcpuCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 14)
+
+
+class ExadbVmClusterPropertiesDataCollectionOptions(_messages.Message):
+  r"""Data collection options for diagnostics.
+
+  Fields:
+    diagnosticsEventsEnabled: Optional. Indicates whether to enable data
+      collection for diagnostics.
+    healthMonitoringEnabled: Optional. Indicates whether to enable health
+      monitoring.
+    incidentLogsEnabled: Optional. Indicates whether to enable incident logs
+      and trace collection.
+  """
+
+  diagnosticsEventsEnabled = _messages.BooleanField(1)
+  healthMonitoringEnabled = _messages.BooleanField(2)
+  incidentLogsEnabled = _messages.BooleanField(3)
+
+
+class ExadbVmClusterStorageDetails(_messages.Message):
+  r"""The storage allocation for the exadbvmcluster, in gigabytes (GB).
+
+  Fields:
+    totalSizeGbs: Optional. The storage allocation for the exadbvmcluster, in
+      gigabytes (GB).
+  """
+
+  totalSizeGbs = _messages.IntegerField(1)
+
+
 class GenerateAutonomousDatabaseWalletRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.GenerateWallet`.
 
@@ -2017,6 +2166,19 @@ class ListEntitlementsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListExadbVmClustersResponse(_messages.Message):
+  r"""The response for `ExadbVmCluster.List`.
+
+  Fields:
+    exadbVmClusters: The list of ExadbVmClusters.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  exadbVmClusters = _messages.MessageField('ExadbVmCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListGiVersionsResponse(_messages.Message):
   r"""The response for `GiVersion.List`.
 
@@ -2050,10 +2212,13 @@ class ListOdbNetworksResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     odbNetworks: The list of ODB Networks.
+    unreachable: Unreachable locations when listing resources across all
+      locations using wildcard location '-'.
   """
 
   nextPageToken = _messages.StringField(1)
   odbNetworks = _messages.MessageField('OdbNetwork', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOdbSubnetsResponse(_messages.Message):
@@ -2063,10 +2228,13 @@ class ListOdbSubnetsResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     odbSubnets: The list of ODB Subnets.
+    unreachable: Unreachable locations when listing resources across all
+      locations using wildcard location '-'.
   """
 
   nextPageToken = _messages.StringField(1)
   odbSubnets = _messages.MessageField('OdbSubnet', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -3238,6 +3406,91 @@ class OracledatabaseProjectsLocationsEntitlementsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class OracledatabaseProjectsLocationsExadbVmClustersCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersCreateRequest object.
+
+  Fields:
+    exadbVmCluster: A ExadbVmCluster resource to be passed as the request
+      body.
+    exadbVmClusterId: Required. The ID of the ExadbVmCluster to create. This
+      value is restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$) and must be a
+      maximum of 63 characters in length. The value must start with a letter
+      and end with a letter or a number.
+    parent: Required. The value for parent of the ExadbVmCluster in the
+      following format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  exadbVmCluster = _messages.MessageField('ExadbVmCluster', 1)
+  exadbVmClusterId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the ExadbVmCluster in the following format: pr
+      ojects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}
+      .
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersGetRequest object.
+
+  Fields:
+    name: Required. The name of the ExadbVmCluster in the following format: pr
+      ojects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 ExadbVmClusters will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for ExadbVmClusters in the following
+      format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class OracledatabaseProjectsLocationsGetRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsGetRequest object.
 
@@ -3736,6 +3989,22 @@ class Status(_messages.Message):
 
 class StopAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.Stop`."""
+
+
+class StorageVaultProperties(_messages.Message):
+  r"""The storage vault properties for the ExadbVmCluster.
+
+  Fields:
+    additionalFlashCachePercent: Optional. The size of additional flash cache
+      in percentage of high capacity database storage.
+    displayName: Optional. The name of the exadata database storage vault. The
+      display name does not have to be unique.
+    highCapacityDatabaseStorage: Optional. The storage capacity per VM.
+  """
+
+  additionalFlashCachePercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(2)
+  highCapacityDatabaseStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 3)
 
 
 class SwitchoverAutonomousDatabaseRequest(_messages.Message):

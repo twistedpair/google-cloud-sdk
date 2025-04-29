@@ -257,6 +257,33 @@ def AddStoragePoolTotalIopsArg(parser):
       help="""Integer indicating total IOPS of the Storage Pool""",
   )
 
+
+def AddStoragePoolHotTierSizeArg(parser):
+  """Adds the Hot Tier Size arg to the arg parser."""
+  parser.add_argument(
+      '--hot-tier-size',
+      type=arg_parsers.BinarySize(
+          default_unit='GiB/s',
+          suggested_binary_size_scales=['GiB/s'],
+          type_abbr='B/s',
+      ),
+      help="""The hot tier size of the Storage Pool in GiB/s units.
+              If no throughput unit is specified, GiB/s is assumed.""",
+      hidden=True,
+  )
+
+
+def AddStoragePoolEnableHotTierAutoResizeArg(parser):
+  """Adds the Enable Hot Tier Auto Resize arg to the arg parser."""
+  parser.add_argument(
+      '--enable-hot-tier-auto-resize',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Storage Pool is allowed to use hot tier auto resize""",
+      hidden=True,
+  )
+
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 
 
@@ -285,6 +312,8 @@ def AddStoragePoolCreateArgs(parser, release_track):
     AddStoragePoolCustomPerformanceEnabledArg(parser)
     AddStoragePoolTotalThroughputArg(parser)
     AddStoragePoolTotalIopsArg(parser)
+    AddStoragePoolHotTierSizeArg(parser)
+    AddStoragePoolEnableHotTierAutoResizeArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -312,6 +341,8 @@ def AddStoragePoolUpdateArgs(parser, release_track):
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolTotalThroughputArg(parser)
     AddStoragePoolTotalIopsArg(parser)
+    AddStoragePoolHotTierSizeArg(parser)
+    AddStoragePoolEnableHotTierAutoResizeArg(parser)
 
 
 def AddStoragePoolSwitchArg(parser):

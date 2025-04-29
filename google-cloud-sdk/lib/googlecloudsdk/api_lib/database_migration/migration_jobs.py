@@ -168,11 +168,11 @@ class MigrationJobsClient(object):
       migration_job.labels = update_result.labels
       update_fields.append('labels')
 
-  def _GetConversionWorkspace(self, conversion_workspace_ref):
+  def _GetConversionWorkspace(self, conversion_workspace_name):
     """Returns the conversion workspace.
 
     Args:
-      conversion_workspace_ref: str, the reference of the conversion workspace.
+      conversion_workspace_name: str, the reference of the conversion workspace.
 
     Raises:
       BadArgumentException: Unable to fetch latest commit for the specified
@@ -182,7 +182,7 @@ class MigrationJobsClient(object):
         release_track=self.release_track,
     )
     conversion_workspace = cw_client.crud.Read(
-        name=conversion_workspace_ref.RelativeName(),
+        name=conversion_workspace_name,
     )
     if conversion_workspace.latestCommitId is None:
       raise exceptions.BadArgumentException(
@@ -215,7 +215,7 @@ class MigrationJobsClient(object):
       conversion_workspace_obj.commitId = args.commit_id
     else:
       conversion_workspace = self._GetConversionWorkspace(
-          conversion_workspace_ref
+          conversion_workspace_ref.RelativeName()
       )
       conversion_workspace_obj.commitId = conversion_workspace.latestCommitId
     return conversion_workspace_obj
@@ -518,12 +518,12 @@ class MigrationJobsClient(object):
     return sqlserver_source_config
 
   def _GetHeterogeneousMigrationJobConfig(
-      self, conversion_workspace_ref, args
+      self, conversion_workspace_name, args
   ):
     """Returns the heterogeneous migration job config.
 
     Args:
-      conversion_workspace_ref: str, the reference of the conversion workspace.
+      conversion_workspace_name: str, the name of the conversion workspace.
       args: argparse.Namespace, The arguments that this command was invoked
         with.
 
@@ -535,7 +535,7 @@ class MigrationJobsClient(object):
     """
     if self._IsHeterogeneousConfigKnownAndSpecified(args):
       conversion_workspace = self._GetConversionWorkspace(
-          conversion_workspace_ref
+          conversion_workspace_name
       )
       if (
           conversion_workspace.destination.engine
@@ -631,7 +631,7 @@ class MigrationJobsClient(object):
       )
       heterogeneous_config_key, heterogeneous_config_obj = (
           self._GetHeterogeneousMigrationJobConfig(
-              conversion_workspace_ref, args
+              conversion_workspace_ref.RelativeName(), args
           )
       )
       if heterogeneous_config_key is not None:
@@ -684,6 +684,71 @@ class MigrationJobsClient(object):
       migration_job_obj.objectsConfig = self._GetMigrationJobObjectsConfig(args)
 
     return migration_job_obj
+
+  def _UpdateHeterogeneousMigrationJobConfigUpdateFields(
+      self, args, update_fields, source_engine, destination_engine
+  ):
+    """Update the heterogeneous migration job config update fields."""
+    config_key = '{}To{}Config'.format(
+        source_engine, destination_engine.title()
+    )
+    source_config_key = '{}.{}SourceConfig'.format(config_key, source_engine)
+    destination_config_key = '{}.{}DestinationConfig'.format(
+        config_key, destination_engine
+    )
+    if args.IsKnownAndSpecified('max_concurrent_full_dump_connections'):
+      update_fields.append(
+          '{}.maxConcurrentFullDumpConnections'.format(source_config_key)
+      )
+    if args.IsKnownAndSpecified('max_concurrent_cdc_connections'):
+      update_fields.append(
+          '{}.maxConcurrentCdcConnections'.format(source_config_key)
+      )
+    if args.IsKnownAndSpecified('max_concurrent_destination_connections'):
+      update_fields.append(
+          '{}.maxConcurrentDestinationConnections'.format(
+              destination_config_key
+          )
+      )
+    if args.IsKnownAndSpecified('transaction_timeout'):
+      update_fields.append(
+          '{}.transactionTimeout'.format(destination_config_key)
+      )
+
+  def _UpdateHeterogeneousMigrationJobConfig(
+      self, args, migration_job, update_fields
+  ):
+    """Update the heterogeneous migration job config for the migration job."""
+    heterogeneous_config_key, heterogeneous_config_obj = (
+        self._GetHeterogeneousMigrationJobConfig(
+            migration_job.conversionWorkspace.name, args
+        )
+    )
+    if heterogeneous_config_key == 'oracleToPostgresConfig':
+      migration_job.oracleToPostgresConfig = heterogeneous_config_obj
+      self._UpdateHeterogeneousMigrationJobConfigUpdateFields(
+          args,
+          update_fields,
+          'oracle',
+          'postgres',
+      )
+    elif heterogeneous_config_key == 'sqlserverToPostgresConfig':
+      migration_job.sqlserverToPostgresConfig = heterogeneous_config_obj
+      self._UpdateHeterogeneousMigrationJobConfigUpdateFields(
+          args,
+          update_fields,
+          'sqlserver',
+          'postgres',
+      )
+    else:
+      raise Error(
+          'Cannot update heterogeneous migration job configuration for '
+          'source engine: {source_engine} and destination engine: '
+          '{destination_engine}'.format(
+              source_engine=migration_job.conversionWorkspace.source.engine,
+              destination_engine=migration_job.conversionWorkspace.destination.engine,
+          )
+      )
 
   def _UpdateConnectivity(self, migration_job, args):
     """Update connectivity method for the migration job."""
@@ -859,6 +924,12 @@ class MigrationJobsClient(object):
       self._UpdateSqlserverHomogeneousMigrationJobConfig(args, migration_job)
 
     self._UpdateMigrationJobObjectsConfig(args, migration_job)
+
+    if self._IsHeterogeneousConfigKnownAndSpecified(args):
+      self._UpdateHeterogeneousMigrationJobConfig(
+          args, migration_job, update_fields
+      )
+
     return migration_job, update_fields
 
   def _GetExistingMigrationJob(self, name):

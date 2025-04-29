@@ -97,10 +97,12 @@ class Approved(_messages.Message):
     actor: Output only. Username of the user who approved the grant.
     reason: Output only. The reason provided by the approver for approving the
       grant.
+    stepId: Output only. The ID of the step that was approved.
   """
 
   actor = _messages.StringField(1)
   reason = _messages.StringField(2)
+  stepId = _messages.StringField(3)
 
 
 class AuditTrail(_messages.Message):
@@ -138,10 +140,12 @@ class Denied(_messages.Message):
     actor: Output only. Username of the user who denied the grant.
     reason: Output only. The reason provided by the approver for denying the
       grant.
+    stepId: Output only. The ID of the step that was denied.
   """
 
   actor = _messages.StringField(1)
   reason = _messages.StringField(2)
+  stepId = _messages.StringField(3)
 
 
 class DenyGrantRequest(_messages.Message):
@@ -377,9 +381,6 @@ class Grant(_messages.Message):
       REVOKED: Access was revoked by a user. This is a terminal state.
       ENDED: System took back access as the requested duration was over. This
         is a terminal state.
-      WITHDRAWING: Access is being withdrawn.
-      WITHDRAWN: Grant was withdrawn by the grant owner. This is a terminal
-        state.
     """
     STATE_UNSPECIFIED = 0
     APPROVAL_AWAITED = 1
@@ -392,8 +393,6 @@ class Grant(_messages.Message):
     REVOKING = 8
     REVOKED = 9
     ENDED = 10
-    WITHDRAWING = 11
-    WITHDRAWN = 12
 
   additionalEmailRecipients = _messages.StringField(1, repeated=True)
   auditTrail = _messages.MessageField('AuditTrail', 2)
@@ -2173,11 +2172,13 @@ class Step(_messages.Message):
       notified when a grant is pending approval.
     approvers: Optional. The potential set of approvers in this step. This
       list must contain at most one entry.
+    id: Output only. Step ID used to identify the step in the workflow.
   """
 
   approvalsNeeded = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   approverEmailRecipients = _messages.StringField(2, repeated=True)
   approvers = _messages.MessageField('AccessControlEntry', 3, repeated=True)
+  id = _messages.StringField(4)
 
 
 class Timeline(_messages.Message):

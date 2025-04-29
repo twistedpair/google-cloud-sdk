@@ -73,6 +73,8 @@ def StartFirestoreEmulator(args, log_file=None):
     start_args.append('--import-data={0}'.format(args.import_data))
   if args.export_on_exit:
     start_args.append('--export-on-exit={0}'.format(args.export_on_exit))
+  if args.licenses:
+    start_args.append('--licenses')
   exec_args = ArgsForFirestoreEmulator(start_args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))

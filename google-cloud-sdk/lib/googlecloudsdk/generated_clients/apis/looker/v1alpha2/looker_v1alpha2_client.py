@@ -377,13 +377,13 @@ class LookerV1alpha2(base_api.BaseApiClient):
 
     ProxySearchDirectGroups.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:proxySearchDirectGroups',
-        http_method='GET',
+        http_method='POST',
         method_id='looker.projects.locations.instances.proxySearchDirectGroups',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['groupsApiOauthToken', 'searchDirectGroupsRequest_orderBy', 'searchDirectGroupsRequest_pageSize', 'searchDirectGroupsRequest_pageToken', 'searchDirectGroupsRequest_parent', 'searchDirectGroupsRequest_query'],
+        query_params=[],
         relative_path='v1alpha2/{+name}:proxySearchDirectGroups',
-        request_field='',
+        request_field='proxySearchDirectGroupsRequest',
         request_type_name='LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest',
         response_type_name='ProxySearchDirectGroupsResponse',
         supports_download=False,

@@ -502,7 +502,7 @@ class ExtensionChainExtension(_messages.Message):
       `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
       assumed as supported.
     timeout: Optional. Specifies the timeout for each individual message on
-      the stream. The timeout must be between `10`-`1000` milliseconds.
+      the stream. The timeout must be between `10`-`10000` milliseconds.
       Required for callout extensions. This field is not supported for plugin
       extensions. Setting it results in a validation error.
   """
@@ -6651,6 +6651,8 @@ class ServiceLbPolicy(_messages.Message):
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
     failoverConfig: Optional. Configuration related to health based failover.
+    isolationConfig: Optional. Configuration to provide isolation support for
+      the associated Backend Service.
     labels: Optional. Set of label tags associated with the ServiceLbPolicy
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
@@ -6716,10 +6718,11 @@ class ServiceLbPolicy(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   failoverConfig = _messages.MessageField('ServiceLbPolicyFailoverConfig', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  isolationConfig = _messages.MessageField('ServiceLbPolicyIsolationConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
@@ -6752,6 +6755,53 @@ class ServiceLbPolicyFailoverConfig(_messages.Message):
   """
 
   failoverHealthThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ServiceLbPolicyIsolationConfig(_messages.Message):
+  r"""Configuration to provide isolation support for the associated Backend
+  Service.
+
+  Enums:
+    IsolationGranularityValueValuesEnum: Optional. The isolation granularity
+      of the load balancer.
+    IsolationModeValueValuesEnum: Optional. The isolation mode of the load
+      balancer.
+
+  Fields:
+    isolationGranularity: Optional. The isolation granularity of the load
+      balancer.
+    isolationMode: Optional. The isolation mode of the load balancer.
+  """
+
+  class IsolationGranularityValueValuesEnum(_messages.Enum):
+    r"""Optional. The isolation granularity of the load balancer.
+
+    Values:
+      ISOLATION_GRANULARITY_UNSPECIFIED: No isolation is configured for the
+        backend service. Traffic can overflow based on the load balancing
+        algorithm.
+      REGION: Traffic for this service will be isolated at the cloud region
+        level.
+    """
+    ISOLATION_GRANULARITY_UNSPECIFIED = 0
+    REGION = 1
+
+  class IsolationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The isolation mode of the load balancer.
+
+    Values:
+      ISOLATION_MODE_UNSPECIFIED: No isolation mode is configured for the
+        backend service.
+      NEAREST: Traffic will be sent to the nearest region.
+      STRICT: Traffic will fail if no serving backends are available in the
+        same region as the load balancer.
+    """
+    ISOLATION_MODE_UNSPECIFIED = 0
+    NEAREST = 1
+    STRICT = 2
+
+  isolationGranularity = _messages.EnumField('IsolationGranularityValueValuesEnum', 1)
+  isolationMode = _messages.EnumField('IsolationModeValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):

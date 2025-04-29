@@ -693,27 +693,40 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages
     Values:
       ATTRIBUTES_TYPE_UNSPECIFIED: No AttributesType specified.
       AZURE_AD_GROUPS_MAIL: Used to get the user's group claims from the
-        Microsoft Entra ID identity provider using configuration provided in
-        ExtraAttributesOAuth2Client and `mail` property of the
+        Microsoft Entra ID identity provider using the configuration provided
+        in ExtraAttributesOAuth2Client. The `mail` property of the
         `microsoft.graph.group` object is used for claim mapping. See
         https://learn.microsoft.com/en-
         us/graph/api/resources/group?view=graph-rest-1.0#properties for more
-        details on `microsoft.graph.group` properties. The attributes obtained
-        from idntity provider are mapped to `assertion.groups`.
+        details on `microsoft.graph.group` properties. The group mail
+        addresses of the user's groups that are returned from Microsoft Entra
+        ID can be mapped by using the following attributes: * OIDC:
+        `assertion.groups` * SAML: `assertion.attributes.groups`
       AZURE_AD_GROUPS_ID: Used to get the user's group claims from the
-        Microsoft Entra ID identity provider using configuration provided in
-        ExtraAttributesOAuth2Client and `id` property of the
+        Microsoft Entra ID identity provider using the configuration provided
+        in ExtraAttributesOAuth2Client. The `id` property of the
         `microsoft.graph.group` object is used for claim mapping. See
         https://learn.microsoft.com/en-
         us/graph/api/resources/group?view=graph-rest-1.0#properties for more
-        details on `microsoft.graph.group` properties. The group IDs obtained
-        from Microsoft Entra ID are present in `assertion. groups` for OIDC
-        providers and `assertion.attributes.groups` for SAML providers for
-        attribute mapping.
+        details on `microsoft.graph.group` properties. The group IDs of the
+        user's groups that are returned from Microsoft Entra ID can be mapped
+        by using the following attributes: * OIDC: `assertion.groups` * SAML:
+        `assertion.attributes.groups`
+      AZURE_AD_GROUPS_DISPLAY_NAME: Used to get the user's group claims from
+        the Microsoft Entra ID identity provider using the configuration
+        provided in ExtraAttributesOAuth2Client. The `displayName` property of
+        the `microsoft.graph.group` object is used for claim mapping. See
+        https://learn.microsoft.com/en-
+        us/graph/api/resources/group?view=graph-rest-1.0#properties for more
+        details on `microsoft.graph.group` properties. The display names of
+        the user's groups that are returned from Microsoft Entra ID can be
+        mapped by using the following attributes: * OIDC: `assertion.groups` *
+        SAML: `assertion.attributes.groups`
     """
     ATTRIBUTES_TYPE_UNSPECIFIED = 0
     AZURE_AD_GROUPS_MAIL = 1
     AZURE_AD_GROUPS_ID = 2
+    AZURE_AD_GROUPS_DISPLAY_NAME = 3
 
   attributesType = _messages.EnumField('AttributesTypeValueValuesEnum', 1)
   clientId = _messages.StringField(2)
@@ -1290,6 +1303,101 @@ class IamLocationsWorkforcePoolsProvidersPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workforcePoolProvider = _messages.MessageField('WorkforcePoolProvider', 3)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent to create scim tenant. Format: 'locations/{lo
+      cation}/workforcePools/{workforce_pool}/providers/{provider}'
+    workforcePoolProviderScimTenant: A WorkforcePoolProviderScimTenant
+      resource to be passed as the request body.
+    workforcePoolProviderScimTenantId: Required. The ID to use for the scim
+      tenant, which becomes the final component of the resource name. This
+      value should be 4-32 characters, and may contain the characters
+      [a-z0-9-].
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workforcePoolProviderScimTenant = _messages.MessageField('WorkforcePoolProviderScimTenant', 2)
+  workforcePoolProviderScimTenantId = _messages.StringField(3)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the scim tenant to delete. Format: `locations/
+      {location}/workforcePools/{workforce_pool}/providers/{provider}/scimTena
+      nts/{scim_tenant}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsGetRequest object.
+
+  Fields:
+    name: Required. The name of the scim tenant to retrieve. Format: `location
+      s/{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTe
+      nants/{scim_tenant}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsListRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of scim tenants to return. If
+      unspecified, at most 1 scim tenant will be returned.
+    pageToken: Optional. A page token, received from a previous
+      `ListScimTenants` call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent to list scim tenants. Format: 'locations/{loc
+      ation}/workforcePools/{workforce_pool}/providers/{provider}'
+    showDeleted: Optional. Whether to return soft-deleted scim tenants.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the SCIM Tenant. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {workforce_pool_provider}/scimTenants/{scim_tenant}`
+    updateMask: Optional. The list of fields to update.
+    workforcePoolProviderScimTenant: A WorkforcePoolProviderScimTenant
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workforcePoolProviderScimTenant = _messages.MessageField('WorkforcePoolProviderScimTenant', 3)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the scim tenant to undelete. Format: `location
+      s/{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTe
+      nants/{scim_tenant}`
+    undeleteWorkforcePoolProviderScimTenantRequest: A
+      UndeleteWorkforcePoolProviderScimTenantRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolProviderScimTenantRequest = _messages.MessageField('UndeleteWorkforcePoolProviderScimTenantRequest', 2)
 
 
 class IamLocationsWorkforcePoolsProvidersUndeleteRequest(_messages.Message):
@@ -4132,6 +4240,20 @@ class ListWorkforcePoolProviderKeysResponse(_messages.Message):
   workforcePoolProviderKeys = _messages.MessageField('WorkforcePoolProviderKey', 2, repeated=True)
 
 
+class ListWorkforcePoolProviderScimTenantsResponse(_messages.Message):
+  r"""Response message for ListWorkforcePoolProviderScimTenants.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    workforcePoolProviderScimTenants: Output only. A list of scim tenants.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workforcePoolProviderScimTenants = _messages.MessageField('WorkforcePoolProviderScimTenant', 2, repeated=True)
+
+
 class ListWorkforcePoolProvidersResponse(_messages.Message):
   r"""Response message for ListWorkforcePoolProviders.
 
@@ -4379,7 +4501,10 @@ class Oidc(_messages.Message):
       with or without the HTTPS prefix. For example: ``` //iam.googleapis.com/
       projects//locations//workloadIdentityPools//providers/ https://iam.googl
       eapis.com/projects//locations//workloadIdentityPools//providers/ ```
-    issuerUri: Required. The OIDC issuer URL. Must be an HTTPS endpoint.
+    issuerUri: Required. The OIDC issuer URL. Must be an HTTPS endpoint. Used
+      per OpenID Connect Discovery 1.0 spec to locate the provider's public
+      keys (via `jwks_uri`) for verifying tokens like the OIDC ID token. These
+      public key types must be 'EC' or 'RSA'.
     jwksJson: Optional. OIDC JWKs in JSON String format. For details on the
       definition of a JWK, see https://tools.ietf.org/html/rfc7517. If not
       set, the `jwks_uri` from the discovery document(fetched from the .well-
@@ -5529,6 +5654,10 @@ class UndeleteWorkforcePoolProviderRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePoolProvider."""
 
 
+class UndeleteWorkforcePoolProviderScimTenantRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolProviderScimTenant."""
+
+
 class UndeleteWorkforcePoolRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePool."""
 
@@ -5980,6 +6109,83 @@ class WorkforcePoolProviderKey(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   use = _messages.EnumField('UseValueValuesEnum', 5)
+
+
+class WorkforcePoolProviderScimTenant(_messages.Message):
+  r"""Represents a scim tenant. Used for provisioning and managing identity
+  data (such as Users and Groups) in cross-domain environments.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the tenant.
+
+  Messages:
+    ClaimMappingValue: Optional. Maps BYOID claims to SCIM claims.
+
+  Fields:
+    baseUri: Output only. Represents the base URI as defined in [RFC 7644,
+      Section 1.3](https://datatracker.ietf.org/doc/html/rfc7644#section-1.3).
+      Clients must use this as the root address for managing resources under
+      the tenant. Format:
+      https://iamscim.googleapis.com/{version}/{tenant_id}/
+    claimMapping: Optional. Maps BYOID claims to SCIM claims.
+    description: Optional. The user-specified description of the scim tenant.
+      Cannot exceed 256 characters.
+    displayName: Optional. The user-specified display name of the scim tenant.
+      Cannot exceed 32 characters.
+    name: Identifier. The resource name of the SCIM Tenant. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {workforce_pool_provider}/scimTenants/{scim_tenant}`
+    purgeTime: Output only. The timestamp when the scim tenant is going to be
+      purged.
+    state: Output only. The state of the tenant.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the tenant.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The tenant is active and may be used to provision users and
+        groups.
+      DELETED: The tenant is soft-deleted. Soft-deleted tenants are
+        permanently deleted after approximately 30 days.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ClaimMappingValue(_messages.Message):
+    r"""Optional. Maps BYOID claims to SCIM claims.
+
+    Messages:
+      AdditionalProperty: An additional property for a ClaimMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ClaimMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ClaimMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  baseUri = _messages.StringField(1)
+  claimMapping = _messages.MessageField('ClaimMappingValue', 2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  purgeTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class WorkloadIdentityPool(_messages.Message):

@@ -186,44 +186,6 @@ class ApplicationEndpoint(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDeleteRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesDel
-  eteRequest object.
-
-  Fields:
-    name: Required. The resource name of the BrowserDlpRule using the form: `o
-      rganizations/{organization_id}/locations/global/partnerTenants/{partner_
-      tenant_id}/browserDlpRules/{browser_dlp_rule_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGet
-  Request object.
-
-  Fields:
-    name: Required. The resource name of the BrowserDlpRule using the form: `o
-      rganizations/{organization_id}/locations/global/partnerTenants/{partner_
-      tenant_id}/browserDlpRules/{browser_dlp_rule_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesTes
   tIamPermissionsRequest object.
@@ -3818,21 +3780,6 @@ class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Me
   verb = _messages.StringField(7)
 
 
-class GoogleCloudBeyondcorpPartnerservicesV1alphaBrowserDlpRule(_messages.Message):
-  r"""Browser DLP Rule for a PartnerTenant
-
-  Fields:
-    group: Required. The group to which this Rule should be applied to.
-    name: Output only. Unique resource name. The name is ignored when creating
-      BrowserDlpRule.
-    ruleSetting: Required. The policy settings to apply.
-  """
-
-  group = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaGroup', 1)
-  name = _messages.StringField(2)
-  ruleSetting = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting', 3)
-
-
 class GoogleCloudBeyondcorpPartnerservicesV1alphaGroup(_messages.Message):
   r"""Message to capture group information
 
@@ -3922,45 +3869,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message
   name = _messages.StringField(4)
   partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 5)
   updateTime = _messages.StringField(6)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaRuleSetting(_messages.Message):
-  r"""Message to capture settings for a BrowserDlpRule
-
-  Messages:
-    ValueValue: Required. The value of the Setting.
-
-  Fields:
-    type: Required. Immutable. The type of the Setting. .
-    value: Required. The value of the Setting.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ValueValue(_messages.Message):
-    r"""Required. The value of the Setting.
-
-    Messages:
-      AdditionalProperty: An additional property for a ValueValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ValueValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  type = _messages.StringField(1)
-  value = _messages.MessageField('ValueValue', 2)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1mainPartnerServiceOperationMetadata(_messages.Message):

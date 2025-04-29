@@ -117,6 +117,33 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchForResourceType(self, request, global_params=None):
+      r"""List BackupPlanAssociations for a given resource type.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchBackupPlanAssociationsForResourceTypeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchForResourceType')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchForResourceType.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations:fetchForResourceType',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlanAssociations.fetchForResourceType',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'resourceType'],
+        relative_path='v1/{+parent}/backupPlanAssociations:fetchForResourceType',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeRequest',
+        response_type_name='FetchBackupPlanAssociationsForResourceTypeResponse',
+        supports_download=False,
+    )
+
     def FetchForResourceTypeOld(self, request, global_params=None):
       r"""List BackupPlanAssociations for a given resource type. DEPRECATED.
 

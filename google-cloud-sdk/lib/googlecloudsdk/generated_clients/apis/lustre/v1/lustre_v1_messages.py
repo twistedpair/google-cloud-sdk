@@ -14,11 +14,14 @@ package = 'lustre'
 
 
 class ExportDataRequest(_messages.Message):
-  r"""Message for exporting data from Lustre.
+  r"""Export data from Managed Lustre to a Cloud Storage bucket.
 
   Fields:
-    gcsPath: Cloud Storage destination.
-    lustrePath: Lustre path source.
+    gcsPath: The URI to a Cloud Storage bucket, or a path within a bucket,
+      using the format `gs:////`. If a path inside the bucket is specified, it
+      must end with a forward slash (`/`).
+    lustrePath: The root directory path to the Managed Lustre file system.
+      Must start with `/`. Default is `/`.
     requestId: Optional. UUID to identify requests.
     serviceAccount: Optional. User-specified service account used to perform
       the transfer. If unspecified, the Managed Lustre service agent is used.
@@ -31,10 +34,13 @@ class ExportDataRequest(_messages.Message):
 
 
 class GcsPath(_messages.Message):
-  r"""Cloud Storage as the source of a data transfer.
+  r"""Specifies a Cloud Storage bucket and, optionally, a path inside the
+  bucket.
 
   Fields:
-    uri: Required. URI to a Cloud Storage path in the format: `gs://`.
+    uri: Required. The URI to a Cloud Storage bucket, or a path within a
+      bucket, using the format `gs:////`. If a path inside the bucket is
+      specified, it must end with a forward slash (`/`).
   """
 
   uri = _messages.StringField(1)
@@ -54,12 +60,13 @@ class ImportDataRequest(_messages.Message):
 
   Fields:
     gcsPath: The Cloud Storage source bucket and, optionally, path inside the
-      bucket.
+      bucket. If a path inside the bucket is specified, it must end with a
+      forward slash (`/`).
     lustrePath: Lustre path destination.
     requestId: Optional. UUID to identify requests.
     serviceAccount: Optional. User-specified service account used to perform
-      the transfer. If unspecified, the default Lustre P4 service account will
-      be used.
+      the transfer. If unspecified, the default Managed Lustre service agent
+      will be used.
   """
 
   gcsPath = _messages.MessageField('GcsPath', 1)
@@ -96,6 +103,8 @@ class Instance(_messages.Message):
     network: Required. Immutable. The full name of the VPC network to which
       the instance is connected. Must be in the format
       `projects/{project_id}/global/networks/{network_name}`.
+    perUnitStorageThroughput: Optional. The throughput of the instance in
+      MB/s/TiB. Valid values are 250, 500, 1000. Default value is 1000.
     state: Output only. The state of the instance.
     updateTime: Output only. Timestamp when the instance was last updated.
   """
@@ -153,8 +162,9 @@ class Instance(_messages.Message):
   mountPoint = _messages.StringField(7)
   name = _messages.StringField(8)
   network = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  perUnitStorageThroughput = _messages.IntegerField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -279,11 +289,13 @@ class Location(_messages.Message):
 
 
 class LustrePath(_messages.Message):
-  r"""LustrePath represents a path in the Lustre file system.
+  r"""The root directory path to the Lustre file system.
 
   Fields:
-    path: Optional. Root directory path to the Managed Lustre file system,
-      starting with `/`. Defaults to `/` if unset.
+    path: Optional. The root directory path to the Managed Lustre file system.
+      Must start with `/`. Default is `/`. If you're importing data into
+      Managed Lustre, any path other than the default must already exist on
+      the file system.
   """
 
   path = _messages.StringField(1)
@@ -359,7 +371,7 @@ class LustreProjectsLocationsInstancesExportDataRequest(_messages.Message):
   Fields:
     exportDataRequest: A ExportDataRequest resource to be passed as the
       request body.
-    name: Required. Name of the resource.
+    name: Required. The name of the Managed Lustre instance.
   """
 
   exportDataRequest = _messages.MessageField('ExportDataRequest', 1)

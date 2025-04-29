@@ -38,8 +38,9 @@ def EscapeFileName(ref):
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      filesId=
-      ref.filesId.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E"),
+      filesId=ref.filesId.replace("/", "%2F")
+      .replace("+", "%2B")
+      .replace("^", "%5E"),
   )
 
 
@@ -65,8 +66,9 @@ def EscapeFileNameFromIDs(project_id, location_id, repo_id, file_id):
       projectsId=project_id,
       locationsId=location_id,
       repositoriesId=repo_id,
-      filesId=
-      file_id.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E"),
+      filesId=file_id.replace("/", "%2F")
+      .replace("+", "%2B")
+      .replace("^", "%5E"),
   )
 
 
@@ -120,14 +122,18 @@ def ListGenericFiles(args):
           locationsId=location,
           repositoriesId=repo,
           packagesId=package,
-          versionsId=version))
+          versionsId=version,
+      )
+  )
   arg_filters = 'owner="{}"'.format(version_path)
   repo_path = resources.Resource.RelativeName(
       resources.REGISTRY.Create(
           "artifactregistry.projects.locations.repositories",
           projectsId=project,
           locationsId=location,
-          repositoriesId=repo))
+          repositoriesId=repo,
+      )
+  )
   files = requests.ListFiles(client, messages, repo_path, arg_filters)
 
   return files
@@ -166,9 +172,9 @@ def ListFiles(args):
 
   if args.limit is not None and args.filter is not None:
     if server_filter is not None:
-      # Use server-side paging with server-side filtering.
+      # Apply limit to server-side page_size to improve performance when
+      # server-side filter is used.
       page_size = args.limit
-      args.page_size = args.limit
     else:
       # Fall back to client-side paging with client-side filtering.
       page_size = None
@@ -181,12 +187,16 @@ def ListFiles(args):
 
   # Parse fully qualified path in package argument
   if package:
-    if re.match(r"projects\/.*\/locations\/.*\/repositories\/.*\/packages\/.*",
-                package):
-      params = package.replace("projects/", "", 1).replace(
-          "/locations/", " ", 1).replace("/repositories/", " ",
-                                         1).replace("/packages/", " ",
-                                                    1).split(" ")
+    if re.match(
+        r"projects\/.*\/locations\/.*\/repositories\/.*\/packages\/.*", package
+    ):
+      params = (
+          package.replace("projects/", "", 1)
+          .replace("/locations/", " ", 1)
+          .replace("/repositories/", " ", 1)
+          .replace("/packages/", " ", 1)
+          .split(" ")
+      )
       project, location, repo, package = [params[i] for i in range(len(params))]
 
   # Escape slashes, pluses and carets in package name
@@ -197,7 +207,8 @@ def ListFiles(args):
   # Retrieve version from tag name
   if version and tag:
     raise exceptions.InvalidInputValueError(
-        "Specify either --version or --tag with --package argument.")
+        "Specify either --version or --tag with --package argument."
+    )
   if package and tag:
     tag_path = resources.Resource.RelativeName(
         resources.REGISTRY.Create(
@@ -206,7 +217,9 @@ def ListFiles(args):
             locationsId=location,
             repositoriesId=repo,
             packagesId=package,
-            tagsId=tag))
+            tagsId=tag,
+        )
+    )
     version = requests.GetVersionFromTag(client, messages, tag_path)
 
   if package and version:
@@ -217,7 +230,9 @@ def ListFiles(args):
             locationsId=location,
             repositoriesId=repo,
             packagesId=package,
-            versionsId=version))
+            versionsId=version,
+        )
+    )
     server_filter = 'owner="{}"'.format(version_path)
   elif package:
     package_path = resources.Resource.RelativeName(
@@ -226,29 +241,34 @@ def ListFiles(args):
             projectsId=project,
             locationsId=location,
             repositoriesId=repo,
-            packagesId=package))
+            packagesId=package,
+        )
+    )
     server_filter = 'owner="{}"'.format(package_path)
   elif version or tag:
     raise exceptions.InvalidInputValueError(
-        "Package name is required when specifying version or tag.")
+        "Package name is required when specifying version or tag."
+    )
 
   repo_path = resources.Resource.RelativeName(
       resources.REGISTRY.Create(
           "artifactregistry.projects.locations.repositories",
           projectsId=project,
           locationsId=location,
-          repositoriesId=repo))
+          repositoriesId=repo,
+      )
+  )
   server_args = {
       "client": client,
       "messages": messages,
       "repo": repo_path,
       "server_filter": server_filter,
       "page_size": page_size,
-      "order_by": order_by
+      "order_by": order_by,
   }
   server_args_skipped, lfiles = util.RetryOnInvalidArguments(
-      requests.ListFiles,
-      **server_args)
+      requests.ListFiles, **server_args
+  )
 
   if not server_args_skipped:
     # If server-side filter or sort-by is parsed correctly and the request

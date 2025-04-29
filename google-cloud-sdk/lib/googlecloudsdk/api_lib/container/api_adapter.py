@@ -831,6 +831,8 @@ class CreateClusterOptions(object):
       enable_authorized_networks_on_private_endpoint=None,
       patch_update=None,
       anonymous_authentication_config=None,
+      enable_auto_ipam=None,
+      enable_k8s_tokens_via_dns=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1114,6 +1116,8 @@ class CreateClusterOptions(object):
     )
     self.anonymous_authentication_config = anonymous_authentication_config
     self.patch_update = patch_update
+    self.enable_auto_ipam = enable_auto_ipam
+    self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
 
 
 class UpdateClusterOptions(object):
@@ -1285,6 +1289,9 @@ class UpdateClusterOptions(object):
       service_account_verification_keys=None,
       anonymous_authentication_config=None,
       patch_update=None,
+      enable_auto_ipam=None,
+      disable_auto_ipam=None,
+      enable_k8s_tokens_via_dns=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1498,6 +1505,9 @@ class UpdateClusterOptions(object):
     self.service_account_signing_keys = service_account_signing_keys
     self.anonymous_authentication_config = anonymous_authentication_config
     self.patch_update = patch_update
+    self.enable_auto_ipam = enable_auto_ipam
+    self.disable_auto_ipam = disable_auto_ipam
+    self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
 
 
 class SetMasterAuthOptions(object):
@@ -3067,6 +3077,12 @@ class APIAdapter(object):
           options, self.messages
       )
 
+    if options.enable_auto_ipam is not None:
+      if cluster.ipAllocationPolicy is None:
+        cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy()
+      cluster.ipAllocationPolicy.autoIpamConfig = self.messages.AutoIpamConfig(
+          enabled=True
+      )
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -4943,6 +4959,7 @@ class APIAdapter(object):
         or options.enable_master_authorized_networks is not None
         or options.enable_google_cloud_access is not None
         or options.enable_authorized_networks_on_private_endpoint is not None
+        or options.enable_k8s_tokens_via_dns is not None
     ):
       cp_endpoints_config = self._GetDesiredControlPlaneEndpointsConfig(
           cluster_ref, options
@@ -5061,7 +5078,14 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           userManagedKeysConfig=updated_user_managed_keys_config
       )
-
+    if options.disable_auto_ipam:
+      update = self.messages.ClusterUpdate(
+          desiredAutoIpamConfig=self.messages.AutoIpamConfig(enabled=False)
+      )
+    if options.enable_auto_ipam:
+      update = self.messages.ClusterUpdate(
+          desiredAutoIpamConfig=self.messages.AutoIpamConfig(enabled=True)
+      )
     if options.anonymous_authentication_config is not None:
       modes = {
           'LIMITED': (
@@ -7174,10 +7198,19 @@ class APIAdapter(object):
     """Gets the DesiredControlPlaneEndpointsConfig from options."""
     cp_endpoints_config = self.messages.ControlPlaneEndpointsConfig()
     # update dnsEndpointConfig sub-section
-    if options.enable_dns_access is not None:
-      cp_endpoints_config.dnsEndpointConfig = self.messages.DNSEndpointConfig(
-          allowExternalTraffic=options.enable_dns_access
-      )
+    if(
+        options.enable_dns_access is not None
+        or options.enable_k8s_tokens_via_dns is not None
+    ):
+      cp_endpoints_config.dnsEndpointConfig = self.messages.DNSEndpointConfig()
+      if options.enable_dns_access is not None:
+        cp_endpoints_config.dnsEndpointConfig.allowExternalTraffic = (
+            options.enable_dns_access
+        )
+      if options.enable_k8s_tokens_via_dns is not None:
+        cp_endpoints_config.dnsEndpointConfig.enableK8sTokensViaDns = (
+            options.enable_k8s_tokens_via_dns
+        )
     # update ipEndpointConfig sub-section
     if (
         options.enable_ip_access is not None
@@ -7251,6 +7284,11 @@ class APIAdapter(object):
       self._InitDNSEndpointConfigIfRequired(cluster)
       cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.allowExternalTraffic = (
           options.enable_dns_access
+      )
+    if options.enable_k8s_tokens_via_dns is not None:
+      self._InitDNSEndpointConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.enableK8sTokensViaDns = (
+          options.enable_k8s_tokens_via_dns
       )
     if options.enable_ip_access is not None:
       self._InitIPEndpointsConfigIfRequired(cluster)

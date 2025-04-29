@@ -409,18 +409,3 @@ def AddMacsecPreSharedKeyNameForRomoveKey(parser):
       The name of pre-shared key being removed from MACsec configuration of the
       interconnect.
       """)
-
-
-def AddInterconnectGroups(parser):
-  """Adds groups flag to the argparse.ArgumentParser."""
-  parser.add_argument(
-      '--groups',
-      type=arg_parsers.ArgList(max_length=16),
-      hidden=True,
-      required=False,
-      default=[],
-      metavar='INTERCONNECT_GROUP',
-      help="""\
-      Interconnect groups of which the interconnect is a member.
-      """,
-  )

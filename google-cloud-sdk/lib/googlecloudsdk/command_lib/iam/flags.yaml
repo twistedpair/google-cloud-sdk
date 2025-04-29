@@ -551,6 +551,27 @@ workforce_pool_installed_app:
     help_text: |-
       A description for the workforce pool installed app. Cannot exceed 256 characters in length.
 
+workforce_pool_provider_scim_tenant:
+  display_name:
+    api_field: workforcePoolProviderScimTenant.displayName
+    arg_name: display-name
+    help_text: |-
+      Optional, user-specified display name for the SCIM tenant (max 32 characters).
+  description:
+    api_field: workforcePoolProviderScimTenant.description
+    arg_name: description
+    help_text: |-
+      Optional, user-specified description for the SCIM tenant (max 256 characters).
+  claim_mapping:
+    api_field: workforcePoolProviderScimTenant.claimMapping
+    arg_name: claim-mapping
+    metavar: KEY=VALUE
+    type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+    # TODO(b/412401165): Add specific SCIM claim mapping examples and link to relevant docs when available.
+    help_text: |-
+      A comma-separated list of KEY=VALUE pairs defining attribute mappings.
+
+
 workforce_pool_provider:
   display_name:
     api_field: workforcePoolProvider.displayName

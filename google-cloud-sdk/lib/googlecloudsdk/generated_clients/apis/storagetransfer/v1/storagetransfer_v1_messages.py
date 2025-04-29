@@ -249,7 +249,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ErrorLogEntry(_messages.Message):
   r"""An entry describing an error that has occurred.
 
@@ -565,10 +564,13 @@ class LoggingConfig(_messages.Message):
         are logged as INFO.
       FAILED: `LoggableAction` terminated in an error state. `FAILED` actions
         are logged as ERROR.
+      SKIPPED: The `COPY` action was skipped for this file. Only supported for
+        agent-based transfers. `SKIPPED` actions are logged as INFO.
     """
     LOGGABLE_ACTION_STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
     FAILED = 2
+    SKIPPED = 3
 
   class LogActionsValueListEntryValuesEnum(_messages.Enum):
     r"""LogActionsValueListEntryValuesEnum enum type.

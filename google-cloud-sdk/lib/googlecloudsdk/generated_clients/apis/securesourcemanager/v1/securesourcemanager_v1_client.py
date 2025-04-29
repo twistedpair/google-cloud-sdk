@@ -546,7 +546,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new repository in a given project and location. **Host: Data Plane**.
+      r"""Creates a new repository in a given project and location. The Repository.Instance field is required in the request body for requests using the securesourcemanager.googleapis.com endpoint.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest) input message
@@ -600,7 +600,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Repository. **Host: Data Plane**.
+      r"""Deletes a Repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesDeleteRequest) input message
@@ -654,7 +654,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets metadata of a repository. **Host: Data Plane**.
+      r"""Gets metadata of a repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesGetRequest) input message
@@ -708,7 +708,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Repositories in a given project and location. **Host: Data Plane**.
+      r"""Lists Repositories in a given project and location. The instance field is required in the query parameter for requests using the securesourcemanager.googleapis.com endpoint.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesListRequest) input message

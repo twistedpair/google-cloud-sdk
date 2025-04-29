@@ -83,18 +83,31 @@ class GenerateIdTokenRequest(_messages.Message):
       invalid.
     includeEmail: Include the service account email in the token. If set to
       `true`, the token will contain `email` and `email_verified` claims.
+    organizationNumberIncluded: Include the organization number of the service
+      account in the token. If set to `true`, the token will contain a
+      `google.organization_number` claim. The value of the claim will be
+      `null` if the service account isn't associated with an organization.
   """
 
   audience = _messages.StringField(1)
   delegates = _messages.StringField(2, repeated=True)
   includeEmail = _messages.BooleanField(3)
+  organizationNumberIncluded = _messages.BooleanField(4)
 
 
 class GenerateIdTokenResponse(_messages.Message):
   r"""A GenerateIdTokenResponse object.
 
   Fields:
-    token: The OpenId Connect ID token.
+    token: The OpenId Connect ID token. The token is a JSON Web Token (JWT)
+      that contains a payload with claims. See the [JSON Web Token
+      spec](https://tools.ietf.org/html/rfc7519) for more information. Here is
+      an example of a decoded JWT payload: ``` { "iss":
+      "https://accounts.google.com", "iat": 1496953245, "exp": 1496953245,
+      "aud": "https://www.example.com", "sub": "107517467455664443765", "azp":
+      "107517467455664443765", "email": "my-iam-account@my-
+      project.iam.gserviceaccount.com", "email_verified": true, "google": {
+      "organization_number": 123456 } } ```
   """
 
   token = _messages.StringField(1)

@@ -144,7 +144,7 @@ def _GetResourceGroups(cluster_name, name, namespace):
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  utils.GetConfigManagement(cluster_name)
+  utils.AssertConfigSyncEnabled(cluster_name)
   if not namespace:
     params = ['--all-namespaces']
   else:

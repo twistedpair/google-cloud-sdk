@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.api_lib.backupdr.restore_util import ComputeUtil
+from googlecloudsdk.api_lib.backupdr.restore_util import DiskUtil
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.backupdr import util as command_util
 from googlecloudsdk.core import resources
@@ -83,6 +84,20 @@ class DiskRestoreConfig(util.RestrictedDict):
         "TargetZone",
         "TargetRegion",
         "TargetProject",
+        "ReplicaZones",
+        "Description",
+        "Labels",
+        "Licenses",
+        "ConfidentialCompute",
+        "Type",
+        "AccessMode",
+        "ResourcePolicies",
+        "ProvisionedIops",
+        "KmsKey",
+        "Architecture",
+        "Size",
+        "ProvisionedThroughput",
+        "StoragePool",
     ]
     super(DiskRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -443,6 +458,96 @@ class BackupsClient(util.BackupDrClientBase):
           self.messages.DiskTargetEnvironment(
               zone=restore_config["TargetZone"],
               project=restore_config["TargetProject"],
+          )
+      )
+    elif target_region is not None:
+      restore_request.regionDiskTargetEnvironment = (
+          self.messages.RegionDiskTargetEnvironment(
+              region=restore_config["TargetRegion"],
+              project=restore_config["TargetProject"],
+              replicaZones=restore_config["ReplicaZones"],
+          )
+      )
+
+    # Description
+    if "Description" in restore_config:
+      restore_request.diskRestoreProperties.description = restore_config[
+          "Description"
+      ]
+
+    # Labels
+    if "Labels" in restore_config:
+      labels_message = DiskUtil.ParseLabels(
+          self.messages, restore_config["Labels"]
+      )
+      if labels_message:
+        restore_request.diskRestoreProperties.labels = labels_message
+
+    # Licenses
+    if "Licenses" in restore_config:
+      restore_request.diskRestoreProperties.licenses = restore_config[
+          "Licenses"
+      ]
+
+    # ConfidentialCompute
+    if "ConfidentialCompute" in restore_config:
+      restore_request.diskRestoreProperties.enableConfidentialCompute = (
+          restore_config["ConfidentialCompute"]
+      )
+
+    # Type
+    if "Type" in restore_config:
+      restore_request.diskRestoreProperties.type = restore_config["Type"]
+
+    # Size
+    if "Size" in restore_config:
+      restore_request.diskRestoreProperties.sizeGb = restore_config["Size"]
+
+    # StoragePool
+    if "StoragePool" in restore_config:
+      restore_request.diskRestoreProperties.storagePool = restore_config[
+          "StoragePool"
+      ]
+
+    # Architecture
+    if "Architecture" in restore_config:
+      restore_request.diskRestoreProperties.architecture = (
+          self.messages.DiskRestoreProperties.ArchitectureValueValuesEnum(
+              restore_config["Architecture"]
+          )
+      )
+
+    # AccessMode
+    if "AccessMode" in restore_config:
+      restore_request.diskRestoreProperties.accessMode = (
+          self.messages.DiskRestoreProperties.AccessModeValueValuesEnum(
+              restore_config["AccessMode"]
+          )
+      )
+
+    # ResourcePolicies
+    if "ResourcePolicies" in restore_config:
+      restore_request.diskRestoreProperties.resourcePolicy = restore_config[
+          "ResourcePolicies"
+      ]
+
+    # ProvisionedIops
+    if "ProvisionedIops" in restore_config:
+      restore_request.diskRestoreProperties.provisionedIops = restore_config[
+          "ProvisionedIops"
+      ]
+
+    # ProvisionedThroughput
+    if "ProvisionedThroughput" in restore_config:
+      restore_request.diskRestoreProperties.provisionedThroughput = (
+          restore_config["ProvisionedThroughput"]
+      )
+
+    # KmsKey
+    if "KmsKey" in restore_config:
+      restore_request.diskRestoreProperties.diskEncryptionKey = (
+          self.messages.CustomerEncryptionKey(
+              kmsKeyName=restore_config["KmsKey"],
           )
       )
 

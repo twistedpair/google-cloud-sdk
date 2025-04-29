@@ -684,6 +684,9 @@ class Instance(_messages.Message):
       CreateInstance request.
     disableProxyAccess: Optional. If true, the notebook instance will not
       register with the proxy.
+    enableDeletionProtection: Optional. If true, deletion protection will be
+      enabled for this Workbench Instance. If false, deletion protection will
+      be disabled for this Workbench Instance.
     enableThirdPartyIdentity: Optional. Flag that specifies that a notebook
       can be accessed with third party identity provider.
     gceSetup: Optional. Compute Engine setup for the notebook. Uses notebook-
@@ -817,21 +820,22 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(1)
   creator = _messages.StringField(2)
   disableProxyAccess = _messages.BooleanField(3)
-  enableThirdPartyIdentity = _messages.BooleanField(4)
-  gceSetup = _messages.MessageField('GceSetup', 5)
-  healthInfo = _messages.MessageField('HealthInfoValue', 6)
-  healthState = _messages.EnumField('HealthStateValueValuesEnum', 7)
-  id = _messages.StringField(8)
-  instanceOwners = _messages.StringField(9, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  proxyUri = _messages.StringField(12)
-  satisfiesPzi = _messages.BooleanField(13)
-  satisfiesPzs = _messages.BooleanField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  thirdPartyProxyUrl = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 18, repeated=True)
+  enableDeletionProtection = _messages.BooleanField(4)
+  enableThirdPartyIdentity = _messages.BooleanField(5)
+  gceSetup = _messages.MessageField('GceSetup', 6)
+  healthInfo = _messages.MessageField('HealthInfoValue', 7)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 8)
+  id = _messages.StringField(9)
+  instanceOwners = _messages.StringField(10, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  proxyUri = _messages.StringField(13)
+  satisfiesPzi = _messages.BooleanField(14)
+  satisfiesPzs = _messages.BooleanField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  thirdPartyProxyUrl = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 19, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1727,14 +1731,13 @@ class ShieldedInstanceConfig(_messages.Message):
       boot integrity of the VM instance. The attestation is performed against
       the integrity policy baseline. This baseline is initially derived from
       the implicitly trusted boot image when the VM instance is created.
-      Enabled by default.
     enableSecureBoot: Optional. Defines whether the VM instance has Secure
       Boot enabled. Secure Boot helps ensure that the system only runs
       authentic software by verifying the digital signature of all boot
       components, and halting the boot process if signature verification
       fails. Disabled by default.
     enableVtpm: Optional. Defines whether the VM instance has the vTPM
-      enabled. Enabled by default.
+      enabled.
   """
 
   enableIntegrityMonitoring = _messages.BooleanField(1)

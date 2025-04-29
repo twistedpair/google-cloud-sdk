@@ -218,6 +218,8 @@ class CodeCompilationConfig(_messages.Message):
   Fields:
     assertionSchema: Optional. The default schema (BigQuery dataset ID) for
       assertions.
+    builtinAssertionNamePrefix: Optional. The prefix to prepend to built-in
+      assertion names.
     databaseSuffix: Optional. The suffix that should be appended to all
       database (Google Cloud project ID) names.
     defaultDatabase: Optional. The default database (Google Cloud project ID).
@@ -261,14 +263,15 @@ class CodeCompilationConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   assertionSchema = _messages.StringField(1)
-  databaseSuffix = _messages.StringField(2)
-  defaultDatabase = _messages.StringField(3)
-  defaultLocation = _messages.StringField(4)
-  defaultNotebookRuntimeOptions = _messages.MessageField('NotebookRuntimeOptions', 5)
-  defaultSchema = _messages.StringField(6)
-  schemaSuffix = _messages.StringField(7)
-  tablePrefix = _messages.StringField(8)
-  vars = _messages.MessageField('VarsValue', 9)
+  builtinAssertionNamePrefix = _messages.StringField(2)
+  databaseSuffix = _messages.StringField(3)
+  defaultDatabase = _messages.StringField(4)
+  defaultLocation = _messages.StringField(5)
+  defaultNotebookRuntimeOptions = _messages.MessageField('NotebookRuntimeOptions', 6)
+  defaultSchema = _messages.StringField(7)
+  schemaSuffix = _messages.StringField(8)
+  tablePrefix = _messages.StringField(9)
+  vars = _messages.MessageField('VarsValue', 10)
 
 
 class ColumnDescriptor(_messages.Message):
@@ -3066,6 +3069,7 @@ class WorkflowConfig(_messages.Message):
       created.
     cronSchedule: Optional. Optional schedule (in cron format) for automatic
       execution of this workflow config.
+    disabled: Optional. Disables automatic creation of workflow invocations.
     internalMetadata: Output only. All the metadata information that is used
       internally to serve the resource. For example: timestamps, flags, status
       fields, etc. The format of this field is a JSON string.
@@ -3089,13 +3093,14 @@ class WorkflowConfig(_messages.Message):
 
   createTime = _messages.StringField(1)
   cronSchedule = _messages.StringField(2)
-  internalMetadata = _messages.StringField(3)
-  invocationConfig = _messages.MessageField('InvocationConfig', 4)
-  name = _messages.StringField(5)
-  recentScheduledExecutionRecords = _messages.MessageField('ScheduledExecutionRecord', 6, repeated=True)
-  releaseConfig = _messages.StringField(7)
-  timeZone = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  disabled = _messages.BooleanField(3)
+  internalMetadata = _messages.StringField(4)
+  invocationConfig = _messages.MessageField('InvocationConfig', 5)
+  name = _messages.StringField(6)
+  recentScheduledExecutionRecords = _messages.MessageField('ScheduledExecutionRecord', 7, repeated=True)
+  releaseConfig = _messages.StringField(8)
+  timeZone = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class WorkflowInvocation(_messages.Message):

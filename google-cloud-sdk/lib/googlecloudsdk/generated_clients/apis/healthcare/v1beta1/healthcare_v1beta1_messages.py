@@ -1521,8 +1521,8 @@ class Dataset(_messages.Message):
       key.
     name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
-    satisfiesPzi: Output only. For future use.
-    satisfiesPzs: Output only. For future use.
+    satisfiesPzi: Output only. Whether the dataset satisfies zone isolation.
+    satisfiesPzs: Output only. Whether the dataset satisfies zone separation.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
       defaults to UTC. This is used for parsing times in resources, such as

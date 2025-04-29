@@ -687,13 +687,13 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
     append: Optional. This field controls whether or not certain repeated
       settings in the update request overwrite or append to existing settings
       on the binding. If true, then append. Otherwise overwrite. So far, only
-      scoped_access_settings with reauth_settings supports appending. Global
+      scoped_access_settings with session_settings supports appending. Global
       access_levels, access_levels in scoped_access_settings,
-      dry_run_access_levels, reauth_settings, and session_settings are not
-      compatible with append functionality, and the request will return an
-      error if append=true when these settings are in the update_mask. The
-      request will also return an error if append=true when
-      "scoped_access_settings" is not set in the update_mask.
+      dry_run_access_levels, and session_settings are not compatible with
+      append functionality, and the request will return an error if
+      append=true when these settings are in the update_mask. The request will
+      also return an error if append=true when "scoped_access_settings" is not
+      set in the update_mask.
     gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
       request body.
     name: Immutable. Identifier. Assigned by the server during creation. The

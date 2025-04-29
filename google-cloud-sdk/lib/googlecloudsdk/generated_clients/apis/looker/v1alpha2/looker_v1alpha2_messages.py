@@ -788,43 +788,14 @@ class LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest(_messages.M
   r"""A LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest object.
 
   Fields:
-    groupsApiOauthToken: Required. OAuth token to use with the Groups API
     name: Required. Format:
       `projects/{project}/locations/{location}/instances/{instance}`.
-    searchDirectGroupsRequest_orderBy: The ordering of membership relation for
-      the display name or email in the response. The syntax for this field can
-      be found at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
-      Example: Sort by the ascending display name: order_by="group_name" or
-      order_by="group_name asc". Sort by the descending display name:
-      order_by="group_name desc". Sort by the ascending group key:
-      order_by="group_key" or order_by="group_key asc". Sort by the descending
-      group key: order_by="group_key desc".
-    searchDirectGroupsRequest_pageSize: The default page size is 200 (max
-      1000).
-    searchDirectGroupsRequest_pageToken: The `next_page_token` value returned
-      from a previous list request, if any
-    searchDirectGroupsRequest_parent: [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the group
-      to search transitive memberships in. Format: groups/{group_id}, where
-      group_id is always '-' as this API will search across all groups for a
-      given member.
-    searchDirectGroupsRequest_query: Required. A CEL expression that MUST
-      include member specification AND label(s). Users can search on label
-      attributes of groups. CONTAINS match ('in') is supported on labels.
-      Identity-mapped groups are uniquely identified by both a `member_key_id`
-      and a `member_key_namespace`, which requires an additional query input:
-      `member_key_namespace`. Example query: `member_key_id ==
-      'member_key_id_value' && 'label_value' in labels`
+    proxySearchDirectGroupsRequest: A ProxySearchDirectGroupsRequest resource
+      to be passed as the request body.
   """
 
-  groupsApiOauthToken = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  searchDirectGroupsRequest_orderBy = _messages.StringField(3)
-  searchDirectGroupsRequest_pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  searchDirectGroupsRequest_pageToken = _messages.StringField(5)
-  searchDirectGroupsRequest_parent = _messages.StringField(6)
-  searchDirectGroupsRequest_query = _messages.StringField(7)
+  name = _messages.StringField(1, required=True)
+  proxySearchDirectGroupsRequest = _messages.MessageField('ProxySearchDirectGroupsRequest', 2)
 
 
 class LookerProjectsLocationsInstancesRestartRequest(_messages.Message):
@@ -1203,6 +1174,18 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class ProxySearchDirectGroupsRequest(_messages.Message):
+  r"""Request wrapper for proxy to Groups API SearchDirectGroups
+
+  Fields:
+    groupsApiOauthToken: Required. OAuth token to use with the Groups API
+    searchDirectGroupsRequest: Required. request to Groups API
+  """
+
+  groupsApiOauthToken = _messages.StringField(1)
+  searchDirectGroupsRequest = _messages.MessageField('SearchDirectGroupsRequest', 2)
+
+
 class ProxySearchDirectGroupsResponse(_messages.Message):
   r"""Response wrapper for proxy to Groups API SearchDirectGroups
 
@@ -1288,6 +1271,42 @@ class RestrictionEvaluations(_messages.Message):
   """
 
   memberRestrictionEvaluation = _messages.MessageField('RestrictionEvaluation', 1)
+
+
+class SearchDirectGroupsRequest(_messages.Message):
+  r"""The request message for MembershipsService.SearchDirectGroups.
+
+  Fields:
+    orderBy: The ordering of membership relation for the display name or email
+      in the response. The syntax for this field can be found at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+      Example: Sort by the ascending display name: order_by="group_name" or
+      order_by="group_name asc". Sort by the descending display name:
+      order_by="group_name desc". Sort by the ascending group key:
+      order_by="group_key" or order_by="group_key asc". Sort by the descending
+      group key: order_by="group_key desc".
+    pageSize: The default page size is 200 (max 1000).
+    pageToken: The `next_page_token` value returned from a previous list
+      request, if any
+    parent: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to search transitive memberships in. Format: groups/{group_id}, where
+      group_id is always '-' as this API will search across all groups for a
+      given member.
+    query: Required. A CEL expression that MUST include member specification
+      AND label(s). Users can search on label attributes of groups. CONTAINS
+      match ('in') is supported on labels. Identity-mapped groups are uniquely
+      identified by both a `member_key_id` and a `member_key_namespace`, which
+      requires an additional query input: `member_key_namespace`. Example
+      query: `member_key_id == 'member_key_id_value' && 'label_value' in
+      labels`
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  query = _messages.StringField(5)
 
 
 class SearchDirectGroupsResponse(_messages.Message):
@@ -1506,13 +1525,3 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
-encoding.AddCustomJsonFieldMapping(
-    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_orderBy', 'searchDirectGroupsRequest.orderBy')
-encoding.AddCustomJsonFieldMapping(
-    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_pageSize', 'searchDirectGroupsRequest.pageSize')
-encoding.AddCustomJsonFieldMapping(
-    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_pageToken', 'searchDirectGroupsRequest.pageToken')
-encoding.AddCustomJsonFieldMapping(
-    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_parent', 'searchDirectGroupsRequest.parent')
-encoding.AddCustomJsonFieldMapping(
-    LookerProjectsLocationsInstancesProxySearchDirectGroupsRequest, 'searchDirectGroupsRequest_query', 'searchDirectGroupsRequest.query')

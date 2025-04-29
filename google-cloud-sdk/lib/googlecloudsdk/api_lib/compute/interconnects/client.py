@@ -97,7 +97,6 @@ class Interconnect(object):
       label_fingerprint,
       macsec_enabled,
       macsec,
-      groups,
   ):
     """Make a tuple for interconnect patch request."""
     kwargs = {}
@@ -105,29 +104,6 @@ class Interconnect(object):
       kwargs['labels'] = labels
     if label_fingerprint is not None:
       kwargs['labelFingerprint'] = label_fingerprint
-    if groups:
-      return (
-          self._client.interconnects,
-          'Patch',
-          self._messages.ComputeInterconnectsPatchRequest(
-              interconnect=self.ref.Name(),
-              interconnectResource=self._messages.Interconnect(
-                  name=None,
-                  description=description,
-                  interconnectType=interconnect_type,
-                  linkType=link_type,
-                  nocContactEmail=noc_contact_email,
-                  requestedLinkCount=requested_link_count,
-                  location=location,
-                  adminEnabled=admin_enabled,
-                  macsecEnabled=macsec_enabled,
-                  macsec=macsec,
-                  interconnectGroups=groups,
-                  **kwargs
-              ),
-              project=self.ref.project,
-          ),
-      )
     return (
         self._client.interconnects,
         'Patch',
@@ -274,7 +250,6 @@ class Interconnect(object):
       label_fingerprint=None,
       macsec_enabled=None,
       macsec=None,
-      groups=None,
   ):
     """Patch an interconnect."""
     requests = [
@@ -290,7 +265,6 @@ class Interconnect(object):
             label_fingerprint,
             macsec_enabled,
             macsec,
-            groups,
         )
     ]
     if not only_generate_request:

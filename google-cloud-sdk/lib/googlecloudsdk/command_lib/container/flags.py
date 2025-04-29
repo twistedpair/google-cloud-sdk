@@ -5615,7 +5615,6 @@ https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
       '--confidential-node-type',
       choices=choices,
       default=None,
-      hidden=True,
       help=help_text,
   )
 
@@ -7334,4 +7333,57 @@ def AddPatchUpdateFlag(parser):
           max_length=1,
       ),
       metavar='PATCH_UPDATE',
+  )
+
+
+def AddAutoIpamFlag(parser, hidden=False, is_update=False):
+  """Adds a enable-auto-ipam/disable-auto-ipam to the given cluster parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
+  """
+
+  if is_update:
+    group = parser.add_group(mutex=True, hidden=hidden)
+    group.add_argument(
+        '--disable-auto-ipam',
+        action='store_const',
+        const=True,
+        help="""\
+            Disable Auto IP Address Management (Auto IPAM) feature for the cluster.
+            """,
+        hidden=hidden,
+    )
+    group.add_argument(
+        '--enable-auto-ipam',
+        action='store_const',
+        const=True,
+        help="""\
+            Enable Auto IP Address Management (Auto IPAM) feature for the cluster.
+            """,
+        hidden=hidden,
+    )
+  else:
+    parser.add_argument(
+        '--enable-auto-ipam',
+        action='store_const',
+        const=True,
+        help="""\
+            Enable Auto IP Address Management (Auto IPAM) feature for the cluster.
+            """,
+        hidden=hidden,
+    )
+
+
+def AddEnableK8sTokensViaDnsFlag(parser):
+  """Adds the --enable-k8s-tokens-via-dns flag to parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--enable-k8s-tokens-via-dns',
+      default=None,
+      hidden=True,
+      action='store_true',
+      help=help_text,
   )

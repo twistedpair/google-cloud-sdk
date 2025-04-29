@@ -2095,6 +2095,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'geminicloudassist': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.geminicloudassist.v1alpha',
+                    client_classpath='geminicloudassist_v1alpha_client.GeminicloudassistV1alpha',
+                    base_url='https://geminicloudassist.googleapis.com/',
+                    messages_modulepath='geminicloudassist_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'genomics': {
         'v1':
             APIDef(

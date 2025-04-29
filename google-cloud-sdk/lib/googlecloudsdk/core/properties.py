@@ -1297,6 +1297,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.firebasedataconnect = self._Add(
         'firebasedataconnect', command='gcloud firebase-data-connect')
     self.firestore = self._Add('firestore', command='gcloud firestore')
+    self.geminicloudassist = self._Add(
+        'geminicloudassist', command='gcloud geminicloudassist', hidden=True
+    )
     self.genomics = self._Add('genomics', command='gcloud genomics')
     self.gkebackup = self._Add('gkebackup', hidden=True)
     self.gkehub = self._Add('gkehub', hidden=True)

@@ -381,9 +381,6 @@ class Grant(_messages.Message):
       REVOKED: Access was revoked by a user. This is a terminal state.
       ENDED: System took back access as the requested duration was over. This
         is a terminal state.
-      WITHDRAWING: Access is being withdrawn.
-      WITHDRAWN: Grant was withdrawn by the grant owner. This is a terminal
-        state.
     """
     STATE_UNSPECIFIED = 0
     APPROVAL_AWAITED = 1
@@ -396,8 +393,6 @@ class Grant(_messages.Message):
     REVOKING = 8
     REVOKED = 9
     ENDED = 10
-    WITHDRAWING = 11
-    WITHDRAWN = 12
 
   additionalEmailRecipients = _messages.StringField(1, repeated=True)
   auditTrail = _messages.MessageField('AuditTrail', 2)

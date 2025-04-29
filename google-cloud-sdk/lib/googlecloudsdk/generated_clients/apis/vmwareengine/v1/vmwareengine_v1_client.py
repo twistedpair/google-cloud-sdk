@@ -2171,33 +2171,6 @@ class VmwareengineV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def AcceleratePrivateCloudDeletion(self, request, global_params=None):
-      r"""Accelerates the deletion of a private cloud that is currently in soft deletion A `PrivateCloud` resource in soft deletion has `PrivateCloud.state` set to `SOFT_DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed.
-
-      Args:
-        request: (VmwareengineProjectsLocationsPrivateCloudsAcceleratePrivateCloudDeletionRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('AcceleratePrivateCloudDeletion')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AcceleratePrivateCloudDeletion.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:acceleratePrivateCloudDeletion',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.privateClouds.acceleratePrivateCloudDeletion',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:acceleratePrivateCloudDeletion',
-        request_field='acceleratePrivateCloudDeletionRequest',
-        request_type_name='VmwareengineProjectsLocationsPrivateCloudsAcceleratePrivateCloudDeletionRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a new `PrivateCloud` resource in a given project and location. Private clouds of type `STANDARD` and `TIME_LIMITED` are zonal resources, `STRETCHED` private clouds are regional. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud.
 
@@ -2383,6 +2356,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='privateCloud',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PrivateCloudDeletionNow(self, request, global_params=None):
+      r"""Accelerates the deletion of a private cloud that is currently in soft deletion A `PrivateCloud` resource in soft deletion has `PrivateCloud.state` set to `SOFT_DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsPrivateCloudDeletionNowRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PrivateCloudDeletionNow')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PrivateCloudDeletionNow.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:privateCloudDeletionNow',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.privateCloudDeletionNow',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:privateCloudDeletionNow',
+        request_field='acceleratePrivateCloudDeletionRequest',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsPrivateCloudDeletionNowRequest',
         response_type_name='Operation',
         supports_download=False,
     )

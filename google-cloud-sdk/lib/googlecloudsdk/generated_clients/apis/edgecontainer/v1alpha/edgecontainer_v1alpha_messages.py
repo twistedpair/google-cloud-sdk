@@ -452,6 +452,22 @@ class ControlPlaneEncryption(_messages.Message):
   resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 5)
 
 
+class CreateIdentityProviderRequest(_messages.Message):
+  r"""Request proto to configure the identity provider for an organization.
+
+  Fields:
+    identityProvider: Required. The identity provider to configure.
+    identityProviderId: Required. The identity provider id.
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+  """
+
+  identityProvider = _messages.MessageField('IdentityProvider', 1)
+  identityProviderId = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+
+
 class Details(_messages.Message):
   r"""The created connection details.
 
@@ -504,6 +520,83 @@ class EdgecontainerOrganizationsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest
+  object.
+
+  Fields:
+    createIdentityProviderRequest: A CreateIdentityProviderRequest resource to
+      be passed as the request body.
+    parent: Required. The resource name of the identity provider to configure.
+      e.g. organizations/{organization}/locations/{location}
+  """
+
+  createIdentityProviderRequest = _messages.MessageField('CreateIdentityProviderRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest
+  object.
+
+  Fields:
+    cluster: The fully qualified name of the target BMUC for which the
+      identity provider is to be configured.
+    name: Required. The resource name of the identity provider to delete. The
+      name to be formatted as: organizations/{organization}/locations/{locatio
+      n}/identityProviders/{identity_provider}
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+    zoneId: The zone id of the target zone of the infra cluster for which the
+      identity provider is to be configured.
+  """
+
+  cluster = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zoneId = _messages.StringField(4)
+
+
+class EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest object.
+
+  Fields:
+    cluster: The cluster name of the target BMUC for which the identity
+      provider is configured.
+    name: Required. The canonical resource name of the identity provider. E.g.
+      organizations/*/locations/*/identityProviders/*
+    zoneId: The zone id of the target zone for which the identity provider is
+      configured.
+  """
+
+  cluster = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  zoneId = _messages.StringField(3)
+
+
+class EdgecontainerOrganizationsLocationsIdentityProvidersListRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsIdentityProvidersListRequest
+  object.
+
+  Fields:
+    cluster: The fully qualified name of the target BMUC for which the
+      identity provider is to be configured.
+    pageSize: Optional. The maximum number of resources to list.
+    pageToken: Optional. A page token received from previous list request.
+    parent: Required. The parent organization and region for the identity
+      providers.
+    zoneId: The zone id of the target zone of the infra cluster for which the
+      identity provider is to be configured.
+  """
+
+  cluster = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  zoneId = _messages.StringField(5)
 
 
 class EdgecontainerOrganizationsLocationsListRequest(_messages.Message):
@@ -1218,6 +1311,63 @@ class GoogleGroupAuthenticationConfig(_messages.Message):
   enable = _messages.BooleanField(1)
 
 
+class IdentityProvider(_messages.Message):
+  r"""Represents an identity provider resource which represents the identity
+  provider configuration for the organization.
+
+  Messages:
+    LabelsValue: Optional. Labels associated with this resource.
+
+  Fields:
+    cluster: The fully qualified name of the target BMUC for which the
+      identity provider is to be configured.
+    createTime: Output only. The time when the identity provider was created.
+    deleteTime: Output only. The time when the identity provider was deleted.
+    labels: Optional. Labels associated with this resource.
+    name: Identifier. The canonical resource name of the identity provider.
+      E.g. organizations/{organization}/locations/{location}/identityProviders
+      /{identity_provider}
+    oidcConfig: The OIDC provider configuration.
+    updateTime: Output only. The time when the identity provider was last
+      updated.
+    zoneId: The zone id of the target zone of the infra cluster for which the
+      identity provider is to be configured.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels associated with this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cluster = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  oidcConfig = _messages.MessageField('OIDCProviderConfig', 6)
+  updateTime = _messages.StringField(7)
+  zoneId = _messages.StringField(8)
+
+
 class Ingress(_messages.Message):
   r"""Config for the Ingress add-on which allows customers to create an
   Ingress object to manage external access to the servers in a cluster. The
@@ -1244,6 +1394,18 @@ class ListClustersResponse(_messages.Message):
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListIdentityProvidersResponse(_messages.Message):
+  r"""Response proto to list the identity providers for an organization.
+
+  Fields:
+    identityProviders: A list of identity providers matching the request.
+    nextPageToken: A token to retrieve next page of results.
+  """
+
+  identityProviders = _messages.MessageField('IdentityProvider', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1906,6 +2068,24 @@ class NodePool(_messages.Message):
   nodeVersion = _messages.StringField(9)
   site = _messages.StringField(10)
   updateTime = _messages.StringField(11)
+
+
+class OIDCProviderConfig(_messages.Message):
+  r"""Represents the OIDC provider configuration.
+
+  Fields:
+    clientId: Required. The client id of the identity provider.
+    clientSecret: Optional. The client secret of the identity provider.
+    issuerUri: Required. The issuer uri of the identity provider.
+    scopes: Required. The scopes of the identity provider.
+    userClaim: Optional. The user claim of the identity provider.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  issuerUri = _messages.StringField(3)
+  scopes = _messages.StringField(4)
+  userClaim = _messages.StringField(5)
 
 
 class Operation(_messages.Message):

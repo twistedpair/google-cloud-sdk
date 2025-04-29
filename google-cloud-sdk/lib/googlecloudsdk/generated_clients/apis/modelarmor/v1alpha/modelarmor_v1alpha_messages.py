@@ -1026,10 +1026,14 @@ class SanitizationMetadata(_messages.Message):
   Fields:
     errorCode: Error code if any.
     errorMessage: Error message if any.
+    ignorePartialInvocationFailures: Passthrough field defined in
+      TemplateMetadata to indicate whether to ignore partial invocation
+      failures.
   """
 
   errorCode = _messages.IntegerField(1)
   errorMessage = _messages.StringField(2)
+  ignorePartialInvocationFailures = _messages.BooleanField(3)
 
 
 class SanitizationResult(_messages.Message):

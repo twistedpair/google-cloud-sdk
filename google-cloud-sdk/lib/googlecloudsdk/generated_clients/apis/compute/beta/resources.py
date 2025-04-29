@@ -251,12 +251,27 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instantSnapshot'],
       True
   )
+  INTERCONNECTATTACHMENTGROUPS = (
+      'interconnectAttachmentGroups',
+      'projects/{project}/global/interconnectAttachmentGroups/'
+      '{interconnectAttachmentGroup}',
+      {},
+      ['project', 'interconnectAttachmentGroup'],
+      True
+  )
   INTERCONNECTATTACHMENTS = (
       'interconnectAttachments',
       'projects/{project}/regions/{region}/interconnectAttachments/'
       '{interconnectAttachment}',
       {},
       ['project', 'region', 'interconnectAttachment'],
+      True
+  )
+  INTERCONNECTGROUPS = (
+      'interconnectGroups',
+      'projects/{project}/global/interconnectGroups/{interconnectGroup}',
+      {},
+      ['project', 'interconnectGroup'],
       True
   )
   INTERCONNECTLOCATIONS = (
@@ -394,13 +409,6 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
       {},
       ['project', 'region', 'packetMirroring'],
-      True
-  )
-  PREVIEWFEATURES = (
-      'previewFeatures',
-      'projects/{project}/global/previewFeatures/{resourceId}',
-      {},
-      ['project', 'resourceId'],
       True
   )
   PROJECTS = (

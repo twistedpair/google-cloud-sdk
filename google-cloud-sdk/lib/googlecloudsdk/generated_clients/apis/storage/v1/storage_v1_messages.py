@@ -1889,8 +1889,10 @@ class StandardQueryParameters(_messages.Message):
 
     Values:
       json: Responses with Content-Type of application/json
+      media: Responses containing object data
     """
     json = 0
+    media = 1
 
   alt = _messages.EnumField('AltValueValuesEnum', 1, default='json')
   fields = _messages.StringField(2)
@@ -3684,6 +3686,9 @@ class StorageObjectsListRequest(_messages.Message):
 class StorageObjectsMoveRequest(_messages.Message):
   r"""A StorageObjectsMoveRequest object.
 
+  Enums:
+    ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
+
   Fields:
     bucket: Name of the bucket in which the object resides.
     destinationObject: Name of the destination object. For information about
@@ -3733,6 +3738,7 @@ class StorageObjectsMoveRequest(_messages.Message):
       value. `ifSourceMetagenerationMatch` and
       `ifSourceMetagenerationNotMatch` conditions are mutually exclusive: it's
       an error for both of them to be set in the request.
+    projection: Set of properties to return. Defaults to noAcl.
     sourceObject: Name of the source object. For information about how to URL
       encode object names to be path safe, see [Encoding URI Path
       Parts](https://cloud.google.com/storage/docs/request-
@@ -3740,6 +3746,16 @@ class StorageObjectsMoveRequest(_messages.Message):
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
+
+  class ProjectionValueValuesEnum(_messages.Enum):
+    r"""Set of properties to return. Defaults to noAcl.
+
+    Values:
+      full: Include all properties.
+      noAcl: Omit the owner, acl property.
+    """
+    full = 0
+    noAcl = 1
 
   bucket = _messages.StringField(1, required=True)
   destinationObject = _messages.StringField(2, required=True)
@@ -3751,8 +3767,9 @@ class StorageObjectsMoveRequest(_messages.Message):
   ifSourceGenerationNotMatch = _messages.IntegerField(8)
   ifSourceMetagenerationMatch = _messages.IntegerField(9)
   ifSourceMetagenerationNotMatch = _messages.IntegerField(10)
-  sourceObject = _messages.StringField(11, required=True)
-  userProject = _messages.StringField(12)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 11)
+  sourceObject = _messages.StringField(12, required=True)
+  userProject = _messages.StringField(13)
 
 
 class StorageObjectsPatchRequest(_messages.Message):

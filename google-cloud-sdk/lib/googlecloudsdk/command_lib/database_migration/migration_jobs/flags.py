@@ -404,7 +404,7 @@ def AddRestartFailedObjectsFlag(parser):
   )
 
 
-def AddHeterogeneousMigrationConfigFlag(parser):
+def AddHeterogeneousMigrationConfigFlag(parser, is_update=False):
   """Adds heterogeneous migration flag group to the given parser."""
   heterogeneous_migration_config = parser.add_group(
       (
@@ -413,7 +413,9 @@ def AddHeterogeneousMigrationConfigFlag(parser):
           ' PostgreSQL migrations.'
       ),
   )
-  AddHeterogeneousMigrationSourceConfigFlags(heterogeneous_migration_config)
+  AddHeterogeneousMigrationSourceConfigFlags(
+      heterogeneous_migration_config, is_update
+  )
   AddHeterogeneousMigrationDestinationConfigFlags(
       heterogeneous_migration_config
   )
@@ -442,7 +444,7 @@ def AddHeterogeneousMigrationDestinationConfigFlags(parser):
   )
 
 
-def AddHeterogeneousMigrationSourceConfigFlags(parser):
+def AddHeterogeneousMigrationSourceConfigFlags(parser, is_update=False):
   """Adds heterogeneous migration source config flag group to the parser."""
   source_config = parser.add_group(
       (
@@ -466,30 +468,31 @@ def AddHeterogeneousMigrationSourceConfigFlags(parser):
         """,
       type=int,
   )
-  skip_full_dump_group = source_config.add_group(
-      'Configuration for skipping full dump.',
-  )
-  skip_full_dump_group.add_argument(
-      '--skip-full-dump',
-      help="""\
-        Whether to skip full dump or not.
-        """,
-      action='store_true',
-  )
-  cdc_start_position_group = skip_full_dump_group.add_group(
-      'Configuration for CDC start position.',
-      mutex=True,
-  )
-  cdc_start_position_group.add_argument(
-      '--oracle-cdc-start-position',
-      help="""\
-        Oracle schema change number (SCN) to start CDC data migration from.
-        """,
-      type=int,
-  )
-  cdc_start_position_group.add_argument(
-      '--sqlserver-cdc-start-position',
-      help="""\
-        Sqlserver log squence number (LSN) to start CDC data migration from.
-        """
-  )
+  if not is_update:
+    skip_full_dump_group = source_config.add_group(
+        'Configuration for skipping full dump.',
+    )
+    skip_full_dump_group.add_argument(
+        '--skip-full-dump',
+        help="""\
+          Whether to skip full dump or not.
+          """,
+        action='store_true',
+    )
+    cdc_start_position_group = skip_full_dump_group.add_group(
+        'Configuration for CDC start position.',
+        mutex=True,
+    )
+    cdc_start_position_group.add_argument(
+        '--oracle-cdc-start-position',
+        help="""\
+          Oracle schema change number (SCN) to start CDC data migration from.
+          """,
+        type=int,
+    )
+    cdc_start_position_group.add_argument(
+        '--sqlserver-cdc-start-position',
+        help="""\
+          Sqlserver log squence number (LSN) to start CDC data migration from.
+          """
+    )

@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_IDENTITYPROVIDERS = (
+      'organizations.locations.identityProviders',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'identityProviders/{identityProvidersId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',

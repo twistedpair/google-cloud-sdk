@@ -4475,24 +4475,6 @@ class VmwareengineProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsPrivateCloudsAcceleratePrivateCloudDeletionRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsPrivateCloudsAcceleratePrivateCloudDeleti
-  onRequest object.
-
-  Fields:
-    acceleratePrivateCloudDeletionRequest: A
-      AcceleratePrivateCloudDeletionRequest resource to be passed as the
-      request body.
-    name: Required. The resource name of the private cloud in softdeletion.
-      Resource names are schemeless URIs that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
-  """
-
-  acceleratePrivateCloudDeletionRequest = _messages.MessageField('AcceleratePrivateCloudDeletionRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest
   object.
@@ -5747,6 +5729,25 @@ class VmwareengineProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):
   privateCloud = _messages.MessageField('PrivateCloud', 2)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsPrivateCloudDeletionNowRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsPrivateCloudDeletionNowRequest
+  object.
+
+  Fields:
+    acceleratePrivateCloudDeletionRequest: A
+      AcceleratePrivateCloudDeletionRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the private cloud in softdeletion.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
+  """
+
+  acceleratePrivateCloudDeletionRequest = _messages.MessageField('AcceleratePrivateCloudDeletionRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsResetNsxCredentialsRequest(_messages.Message):

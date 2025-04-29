@@ -204,13 +204,13 @@ class CloudFunction(_messages.Message):
 
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
-      Deprecated: Container Registry option will no longer be available after
-      March 2025: https://cloud.google.com/artifact-
-      registry/docs/transition/transition-from-gcr Please use Artifact
-      Registry instead, which is the default choice. If unspecified, it
-      defaults to `ARTIFACT_REGISTRY`. If `docker_repository` field is
-      specified, this field should either be left unspecified or set to
-      `ARTIFACT_REGISTRY`.
+      Deprecated: as of March 2025, `CONTAINER_REGISTRY` option is no longer
+      available in response to Container Registry's deprecation:
+      https://cloud.google.com/artifact-registry/docs/transition/transition-
+      from-gcr Please use Artifact Registry instead, which is the default
+      choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+      `docker_repository` field is specified, this field should either be left
+      unspecified or set to `ARTIFACT_REGISTRY`.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
     StatusValueValuesEnum: Output only. Status of the function deployment.
@@ -257,8 +257,9 @@ class CloudFunction(_messages.Message):
       revised, making this field obsolete. It was never revealed to public.
       The URL of a customer provided buildpack stack.
     description: User-provided description of a function.
-    dockerRegistry: Docker Registry to use for this deployment. Deprecated:
-      Container Registry option will no longer be available after March 2025:
+    dockerRegistry: Docker Registry to use for this deployment. Deprecated: as
+      of March 2025, `CONTAINER_REGISTRY` option is no longer available in
+      response to Container Registry's deprecation:
       https://cloud.google.com/artifact-registry/docs/transition/transition-
       from-gcr Please use Artifact Registry instead, which is the default
       choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
@@ -366,13 +367,13 @@ class CloudFunction(_messages.Message):
   """
 
   class DockerRegistryValueValuesEnum(_messages.Enum):
-    r"""Docker Registry to use for this deployment. Deprecated: Container
-    Registry option will no longer be available after March 2025:
-    https://cloud.google.com/artifact-registry/docs/transition/transition-
-    from-gcr Please use Artifact Registry instead, which is the default
-    choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
-    `docker_repository` field is specified, this field should either be left
-    unspecified or set to `ARTIFACT_REGISTRY`.
+    r"""Docker Registry to use for this deployment. Deprecated: as of March
+    2025, `CONTAINER_REGISTRY` option is no longer available in response to
+    Container Registry's deprecation: https://cloud.google.com/artifact-
+    registry/docs/transition/transition-from-gcr Please use Artifact Registry
+    instead, which is the default choice. If unspecified, it defaults to
+    `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this field
+    should either be left unspecified or set to `ARTIFACT_REGISTRY`.
 
     Values:
       DOCKER_REGISTRY_UNSPECIFIED: Unspecified.

@@ -21,9 +21,13 @@ class BigquerydatatransferProjectsDataSourcesCheckValidCredsRequest(_messages.Me
   Fields:
     checkValidCredsRequest: A CheckValidCredsRequest resource to be passed as
       the request body.
-    name: Required. The data source in the form:
-      `projects/{project_id}/dataSources/{data_source_id}` or `projects/{proje
-      ct_id}/locations/{location_id}/dataSources/{data_source_id}`.
+    name: Required. The name of the data source. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/dataSources/{data_source_id}` If you are using
+      the regionalized method, the name should be in the following form: * `pr
+      ojects/{project_id}/locations/{location_id}/dataSources/{data_source_id}
+      `
   """
 
   checkValidCredsRequest = _messages.MessageField('CheckValidCredsRequest', 1)
@@ -34,9 +38,13 @@ class BigquerydatatransferProjectsDataSourcesGetRequest(_messages.Message):
   r"""A BigquerydatatransferProjectsDataSourcesGetRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/dataSources/{data_source_id}` or `projec
-      ts/{project_id}/locations/{location_id}/dataSources/{data_source_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/dataSources/{data_source_id}` If you are using
+      the regionalized method, the name should be in the following form: * `pr
+      ojects/{project_id}/locations/{location_id}/dataSources/{data_source_id}
+      `
   """
 
   name = _messages.StringField(1, required=True)
@@ -83,9 +91,13 @@ class BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest(_me
   Fields:
     checkValidCredsRequest: A CheckValidCredsRequest resource to be passed as
       the request body.
-    name: Required. The data source in the form:
-      `projects/{project_id}/dataSources/{data_source_id}` or `projects/{proje
-      ct_id}/locations/{location_id}/dataSources/{data_source_id}`.
+    name: Required. The name of the data source. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/dataSources/{data_source_id}` If you are using
+      the regionalized method, the name should be in the following form: * `pr
+      ojects/{project_id}/locations/{location_id}/dataSources/{data_source_id}
+      `
   """
 
   checkValidCredsRequest = _messages.MessageField('CheckValidCredsRequest', 1)
@@ -96,9 +108,13 @@ class BigquerydatatransferProjectsLocationsDataSourcesGetRequest(_messages.Messa
   r"""A BigquerydatatransferProjectsLocationsDataSourcesGetRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/dataSources/{data_source_id}` or `projec
-      ts/{project_id}/locations/{location_id}/dataSources/{data_source_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/dataSources/{data_source_id}` If you are using
+      the regionalized method, the name should be in the following form: * `pr
+      ojects/{project_id}/locations/{location_id}/dataSources/{data_source_id}
+      `
   """
 
   name = _messages.StringField(1, required=True)
@@ -231,9 +247,12 @@ class BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest(_message
   object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
-      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
+    name: Required. The name of the resource to delete. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -243,9 +262,12 @@ class BigquerydatatransferProjectsLocationsTransferConfigsGetRequest(_messages.M
   r"""A BigquerydatatransferProjectsLocationsTransferConfigsGetRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
-      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -265,7 +287,10 @@ class BigquerydatatransferProjectsLocationsTransferConfigsListRequest(_messages.
       `ListTransfersResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which transfer configs
-      should be returned: `projects/{project_id}` or
+      should be returned. If you are using the regionless method, the location
+      must be `US` and `parent` should be in the following form: *
+      `projects/{project_id} If you are using the regionalized method,
+      `parent` should be in the following form: *
       `projects/{project_id}/locations/{location_id}`
   """
 
@@ -339,11 +364,13 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsDeleteRequest(_mes
   object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
-      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
-      runs/{run_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` If you
+      are using the regionalized method, the name should be in the following
+      form: * `projects/{project_id}/locations/{location_id}/transferConfigs/{
+      config_id}/runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -354,11 +381,13 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsGetRequest(_messag
   object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
-      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
-      runs/{run_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` If you
+      are using the regionalized method, the name should be in the following
+      form: * `projects/{project_id}/locations/{location_id}/transferConfigs/{
+      config_id}/runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -381,9 +410,11 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest(_messa
       `ListTransferRunsResponse` outputs a `next_page` token, which can be
       used as the `page_token` value to request the next page of list results.
     parent: Required. Name of transfer configuration for which transfer runs
-      should be retrieved. Format of transfer configuration resource name is:
-      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
-      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
+      should be retrieved. If you are using the regionless method, the
+      location must be `US` and the name should be in the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
     runAttempt: Indicates how run attempts are to be pulled.
     states: When specified, only transfer runs with requested states are
       returned.
@@ -442,10 +473,13 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsTransferLogsListRe
       of `ListTransferLogsRequest` list results. For multiple-page results,
       `ListTransferLogsResponse` outputs a `next_page` token, which can be
       used as the `page_token` value to request the next page of list results.
-    parent: Required. Transfer run name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
-      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
-      runs/{run_id}`
+    parent: Required. Transfer run name. If you are using the regionless
+      method, the location must be `US` and the name should be in the
+      following form: *
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` If you
+      are using the regionalized method, the name should be in the following
+      form: * `projects/{project_id}/locations/{location_id}/transferConfigs/{
+      config_id}/runs/{run_id}`
   """
 
   class MessageTypesValueValuesEnum(_messages.Enum):
@@ -475,9 +509,12 @@ class BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest(_m
   object.
 
   Fields:
-    parent: Required. Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
-      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
+    parent: Required. Transfer configuration name. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
     scheduleTransferRunsRequest: A ScheduleTransferRunsRequest resource to be
       passed as the request body.
   """
@@ -492,9 +529,12 @@ class BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest
   object.
 
   Fields:
-    parent: Required. Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
-      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
+    parent: Required. Transfer configuration name. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
     startManualTransferRunsRequest: A StartManualTransferRunsRequest resource
       to be passed as the request body.
   """
@@ -576,9 +616,12 @@ class BigquerydatatransferProjectsTransferConfigsDeleteRequest(_messages.Message
   r"""A BigquerydatatransferProjectsTransferConfigsDeleteRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
-      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
+    name: Required. The name of the resource to delete. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -588,9 +631,12 @@ class BigquerydatatransferProjectsTransferConfigsGetRequest(_messages.Message):
   r"""A BigquerydatatransferProjectsTransferConfigsGetRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
-      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -609,7 +655,10 @@ class BigquerydatatransferProjectsTransferConfigsListRequest(_messages.Message):
       `ListTransfersResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which transfer configs
-      should be returned: `projects/{project_id}` or
+      should be returned. If you are using the regionless method, the location
+      must be `US` and `parent` should be in the following form: *
+      `projects/{project_id} If you are using the regionalized method,
+      `parent` should be in the following form: *
       `projects/{project_id}/locations/{location_id}`
   """
 
@@ -681,11 +730,13 @@ class BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest(_messages.Mes
   r"""A BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
-      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
-      runs/{run_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` If you
+      are using the regionalized method, the name should be in the following
+      form: * `projects/{project_id}/locations/{location_id}/transferConfigs/{
+      config_id}/runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -695,11 +746,13 @@ class BigquerydatatransferProjectsTransferConfigsRunsGetRequest(_messages.Messag
   r"""A BigquerydatatransferProjectsTransferConfigsRunsGetRequest object.
 
   Fields:
-    name: Required. The field will contain name of the resource requested, for
-      example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
-      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
-      runs/{run_id}`
+    name: Required. The name of the resource requested. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` If you
+      are using the regionalized method, the name should be in the following
+      form: * `projects/{project_id}/locations/{location_id}/transferConfigs/{
+      config_id}/runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -721,9 +774,11 @@ class BigquerydatatransferProjectsTransferConfigsRunsListRequest(_messages.Messa
       `ListTransferRunsResponse` outputs a `next_page` token, which can be
       used as the `page_token` value to request the next page of list results.
     parent: Required. Name of transfer configuration for which transfer runs
-      should be retrieved. Format of transfer configuration resource name is:
-      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
-      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
+      should be retrieved. If you are using the regionless method, the
+      location must be `US` and the name should be in the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
     runAttempt: Indicates how run attempts are to be pulled.
     states: When specified, only transfer runs with requested states are
       returned.
@@ -782,10 +837,13 @@ class BigquerydatatransferProjectsTransferConfigsRunsTransferLogsListRequest(_me
       of `ListTransferLogsRequest` list results. For multiple-page results,
       `ListTransferLogsResponse` outputs a `next_page` token, which can be
       used as the `page_token` value to request the next page of list results.
-    parent: Required. Transfer run name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
-      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
-      runs/{run_id}`
+    parent: Required. Transfer run name. If you are using the regionless
+      method, the location must be `US` and the name should be in the
+      following form: *
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` If you
+      are using the regionalized method, the name should be in the following
+      form: * `projects/{project_id}/locations/{location_id}/transferConfigs/{
+      config_id}/runs/{run_id}`
   """
 
   class MessageTypesValueValuesEnum(_messages.Enum):
@@ -813,9 +871,12 @@ class BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest(_messages.M
   r"""A BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest object.
 
   Fields:
-    parent: Required. Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
-      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
+    parent: Required. Transfer configuration name. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
     scheduleTransferRunsRequest: A ScheduleTransferRunsRequest resource to be
       passed as the request body.
   """
@@ -829,9 +890,12 @@ class BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest(_message
   object.
 
   Fields:
-    parent: Required. Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
-      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
+    parent: Required. Transfer configuration name. If you are using the
+      regionless method, the location must be `US` and the name should be in
+      the following form: *
+      `projects/{project_id}/transferConfigs/{config_id}` If you are using the
+      regionalized method, the name should be in the following form: * `projec
+      ts/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
     startManualTransferRunsRequest: A StartManualTransferRunsRequest resource
       to be passed as the request body.
   """

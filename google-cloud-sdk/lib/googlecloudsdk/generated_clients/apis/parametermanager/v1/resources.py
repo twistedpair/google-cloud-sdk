@@ -41,6 +41,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
+      'projects.locations.keyRings.cryptoKeys',
+      'projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/'
+      'cryptoKeys/{cryptoKeysId}',
+      {},
+      ['projectsId', 'locationsId', 'keyRingsId', 'cryptoKeysId'],
+      True
+  )
   PROJECTS_LOCATIONS_PARAMETERS = (
       'projects.locations.parameters',
       '{+name}',

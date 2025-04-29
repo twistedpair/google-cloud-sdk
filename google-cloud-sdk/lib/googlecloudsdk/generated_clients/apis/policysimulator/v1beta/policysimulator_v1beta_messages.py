@@ -960,6 +960,8 @@ class GoogleCloudPolicysimulatorV1betaAccessPolicySimulation(_messages.Message):
     name: Identifier. The resource name of the simulation. Output only.
       {projects|folders|organizations}/{resource-
       id}/locations/{location}/accessPolicySimulations/{simulation_id}
+    observationPeriod: Output only. The observation period for access requests
+      evaluated during the simulation.
     simulationSummary: Output only. Summary of simulation results. Output
       only.
     startTime: Output only. The time when the simulation started. Output only.
@@ -986,9 +988,10 @@ class GoogleCloudPolicysimulatorV1betaAccessPolicySimulation(_messages.Message):
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
   name = _messages.StringField(4)
-  simulationSummary = _messages.MessageField('GoogleCloudPolicysimulatorV1betaAccessPolicySimulationAccessPolicySimulationSummary', 5)
-  startTime = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  observationPeriod = _messages.MessageField('GoogleCloudPolicysimulatorV1betaObservationPeriod', 5)
+  simulationSummary = _messages.MessageField('GoogleCloudPolicysimulatorV1betaAccessPolicySimulationAccessPolicySimulationSummary', 6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class GoogleCloudPolicysimulatorV1betaAccessPolicySimulationAccessChangeSummary(_messages.Message):
@@ -1970,6 +1973,18 @@ class GoogleCloudPolicysimulatorV1betaMutation(_messages.Message):
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   denyPolicyOverlay = _messages.MessageField('GoogleCloudPolicysimulatorV1betaDenyPolicyOverlay', 2)
+
+
+class GoogleCloudPolicysimulatorV1betaObservationPeriod(_messages.Message):
+  r"""Represents data observation period.
+
+  Fields:
+    endTime: The end of the observation period.
+    startTime: The start of the observation period.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay(_messages.Message):
@@ -3377,7 +3392,7 @@ class GoogleIamV1Rule(_messages.Message):
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
       (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
+    permissions: A permission is a string of form `..` (e.g.,
       'storage.buckets.list'). A value of '*' matches all permissions, and a
       verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
   """

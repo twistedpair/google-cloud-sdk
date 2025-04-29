@@ -89,16 +89,6 @@ def ValidateFieldConfig(unused_ref, args, request):
   Raises:
     InvalidArgumentException: If the field configuration is invalid.
   """
-  if len(args.field_config) == 1 and args.field_config[0].vectorConfig:
-    # Allow single vector config in composite indexes surface.
-    pass
-  elif len(args.field_config) < 2:
-    raise exceptions.InvalidArgumentException(
-        '--field-config',
-        'Composite indexes must be configured with at least 2 fields. For '
-        'single-field index management, use the commands under `gcloud '
-        'firestore indexes fields`.')
-
   invalid_field_configs = []
   for field_config in args.field_config:
     # Because of the way declarative ArgDict parsing works, the type of

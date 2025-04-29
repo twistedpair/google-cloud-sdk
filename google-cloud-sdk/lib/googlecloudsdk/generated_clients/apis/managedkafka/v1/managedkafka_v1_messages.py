@@ -130,6 +130,20 @@ class CapacityConfig(_messages.Message):
   vcpuCount = _messages.IntegerField(2)
 
 
+class CertificateAuthorityServiceConfig(_messages.Message):
+  r"""A configuration for the Google Certificate Authority Service.
+
+  Fields:
+    caPool: Required. The name of the CA pool to pull CA certificates from.
+      Structured like:
+      projects/{project}/locations/{location}/caPools/{ca_pool}. The CA pool
+      does not need to be in the same project or location as the Kafka
+      cluster.
+  """
+
+  caPool = _messages.StringField(1)
+
+
 class Cluster(_messages.Message):
   r"""An Apache Kafka cluster deployed in a location.
 
@@ -151,6 +165,7 @@ class Cluster(_messages.Message):
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the cluster.
+    tlsConfig: Optional. TLS configuration for the Kafka cluster.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
@@ -201,7 +216,8 @@ class Cluster(_messages.Message):
   satisfiesPzi = _messages.BooleanField(7)
   satisfiesPzs = _messages.BooleanField(8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  tlsConfig = _messages.MessageField('TlsConfig', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ConnectAccessConfig(_messages.Message):
@@ -554,44 +570,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class FetchBrokerDetailsResponse(_messages.Message):
-  r"""Response for FetchBrokerDetails.
-
-  Messages:
-    BrokersPerZoneValue: Output only. The count of brokers in each zone.
-
-  Fields:
-    brokersPerZone: Output only. The count of brokers in each zone.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class BrokersPerZoneValue(_messages.Message):
-    r"""Output only. The count of brokers in each zone.
-
-    Messages:
-      AdditionalProperty: An additional property for a BrokersPerZoneValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type BrokersPerZoneValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a BrokersPerZoneValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 1)
 
 
 class GcpConfig(_messages.Message):
@@ -1062,18 +1040,6 @@ class ManagedkafkaProjectsLocationsClustersDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest(_messages.Message):
-  r"""A ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest object.
-
-  Fields:
-    name: Required. The name of the cluster whose broker details to return.
-      Structured like:
-      projects/{project}/locations/{location}/clusters/{cluster}.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class ManagedkafkaProjectsLocationsClustersGetRequest(_messages.Message):
@@ -1947,6 +1913,17 @@ class TaskRetryPolicy(_messages.Message):
   minimumBackoff = _messages.StringField(2)
 
 
+class TlsConfig(_messages.Message):
+  r"""The TLS configuration for the Kafka cluster.
+
+  Fields:
+    trustConfig: Optional. The configuration of the broker truststore. If
+      specified, clients can use mTLS for authentication.
+  """
+
+  trustConfig = _messages.MessageField('TrustConfig', 1)
+
+
 class Topic(_messages.Message):
   r"""A Kafka topic in a given cluster.
 
@@ -2001,6 +1978,17 @@ class Topic(_messages.Message):
   name = _messages.StringField(2)
   partitionCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   replicationFactor = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class TrustConfig(_messages.Message):
+  r"""Sources of CA certificates to install in the broker's truststore.
+
+  Fields:
+    casConfigs: Optional. Configuration for the Google Certificate Authority
+      Service. Maximum 10.
+  """
+
+  casConfigs = _messages.MessageField('CertificateAuthorityServiceConfig', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

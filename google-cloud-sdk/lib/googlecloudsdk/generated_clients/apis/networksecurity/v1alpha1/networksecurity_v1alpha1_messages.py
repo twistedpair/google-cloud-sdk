@@ -964,8 +964,7 @@ class CustomMirroringProfile(_messages.Message):
   (mirroring). It is used by mirroring rules with a MIRROR action.
 
   Enums:
-    MirroringEndpointGroupTypeValueValuesEnum: Output only. The type of the
-      mirroring endpoint group this Profile is attached to.
+    MirroringEndpointGroupTypeValueValuesEnum: Output only.
 
   Fields:
     mirroringDeploymentGroups: Optional. The target downstream
@@ -975,13 +974,11 @@ class CustomMirroringProfile(_messages.Message):
     mirroringEndpointGroup: Required. The target MirroringEndpointGroup. When
       a mirroring rule with this security profile attached matches a packet, a
       replica will be mirrored to the location-local target in this group.
-    mirroringEndpointGroupType: Output only. The type of the mirroring
-      endpoint group this Profile is attached to.
+    mirroringEndpointGroupType: Output only.
   """
 
   class MirroringEndpointGroupTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of the mirroring endpoint group this Profile is
-    attached to.
+    r"""Output only.
 
     Values:
       MIRRORING_ENDPOINT_GROUP_TYPE_UNSPECIFIED: Default value. This value is
@@ -1423,11 +1420,14 @@ class ForwardingRule(_messages.Message):
     ipAddress: Required. The IP address of the forwarding rule.
     name: Required. The canonical forwarding rule name:
       projects/{project_number}/regions/{region}/forwardingRules/{id}
+    network: Required. The network of the forwarding rule, in the format of
+      projects/{project_number}/global/networks/{id}.
   """
 
   incarnationId = _messages.IntegerField(1)
   ipAddress = _messages.StringField(2)
   name = _messages.StringField(3)
+  network = _messages.StringField(4)
 
 
 class GatewayAttachment(_messages.Message):
@@ -8592,7 +8592,7 @@ class PartnerSSEEnvironment(_messages.Message):
         the state is omitted.
       PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
         Access](https://www.paloaltonetworks.com/sase/access).
-      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet.
+      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG.
     """
     SECURITY_SERVICE_UNSPECIFIED = 0
     PALO_ALTO_PRISMA_ACCESS = 1
@@ -8694,6 +8694,8 @@ class PartnerSSEGateway(_messages.Message):
     partnerSubnetRange: Optional. Subnet range of the partner-owned subnet.
     partnerVpcSubnetRange: Optional. Subnet range of the partner_vpc This
       field is deprecated. Use partner_subnet_range instead.
+    proberSubnetRanges: Output only. [Output only] Subnet ranges for Google-
+      issued probe packets. It's populated only for Prisma Access partners.
     sseBgpAsn: Output only. [Output Only] ASN of SSE BGP
     sseBgpIps: Output only. [Output Only] IP of SSE BGP
     sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
@@ -8774,20 +8776,21 @@ class PartnerSSEGateway(_messages.Message):
   partnerSseRealm = _messages.StringField(7)
   partnerSubnetRange = _messages.StringField(8)
   partnerVpcSubnetRange = _messages.StringField(9)
-  sseBgpAsn = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(11, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(12)
-  sseNetwork = _messages.StringField(13)
-  sseProject = _messages.StringField(14)
-  sseSubnetRange = _messages.StringField(15)
-  sseTargetIp = _messages.StringField(16)
-  sseVpcSubnetRange = _messages.StringField(17)
-  sseVpcTargetIp = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 20)
-  timezone = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  vni = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  proberSubnetRanges = _messages.StringField(10, repeated=True)
+  sseBgpAsn = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(12, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(13)
+  sseNetwork = _messages.StringField(14)
+  sseProject = _messages.StringField(15)
+  sseSubnetRange = _messages.StringField(16)
+  sseTargetIp = _messages.StringField(17)
+  sseVpcSubnetRange = _messages.StringField(18)
+  sseVpcTargetIp = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 21)
+  timezone = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  vni = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
@@ -9108,7 +9111,7 @@ class SACRealm(_messages.Message):
         the state is omitted.
       PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
         Access](https://www.paloaltonetworks.com/sase/access).
-      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet.
+      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG.
     """
     SECURITY_SERVICE_UNSPECIFIED = 0
     PALO_ALTO_PRISMA_ACCESS = 1
@@ -9122,27 +9125,18 @@ class SACRealm(_messages.Message):
         omitted.
       PENDING_PARTNER_ATTACHMENT: This realm has never been attached to a
         partner realm. Used only for Prisma Access.
-      PARTNER_ATTACHED: This realm is currently attached to a partner realm.
-        Used only for Prisma Access.
-      PARTNER_DETACHED: This realm was once attached to a partner realm but
-        has been detached. Used only for Prisma Access.
+      PARTNER_ATTACHED: This realm is currently attached to a partner.
+      PARTNER_DETACHED: This realm was once attached to a partner but has been
+        detached.
       KEY_EXPIRED: This realm is not attached to a partner realm, and its
         pairing key has expired and needs key regeneration. Used only for
         Prisma Access.
-      KEY_VALIDATION_PENDING: API key is pending validation for Symantec.
-      KEY_VALIDATED: API key validation succeeded for Symantec, and customers
-        can proceed to further steps.
-      KEY_INVALID: API key validation failed for Symantec, please use a new
-        API key.
     """
     STATE_UNSPECIFIED = 0
     PENDING_PARTNER_ATTACHMENT = 1
     PARTNER_ATTACHED = 2
     PARTNER_DETACHED = 3
     KEY_EXPIRED = 4
-    KEY_VALIDATION_PENDING = 5
-    KEY_VALIDATED = 6
-    KEY_INVALID = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -9195,9 +9189,11 @@ class SACRealmPairingKey(_messages.Message):
 class SACRealmSACRealmSymantecOptions(_messages.Message):
   r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
 
+  Enums:
+    SymantecConnectionStateValueValuesEnum: Output only. [Output only]
+      Connection status to Symantec API.
+
   Fields:
-    apiKey: Optional. Deprecated; use secret_id instead to pass the location
-      of the API key in Secret Manager.
     availableSymantecSites: Output only. Symantec site IDs that the user can
       choose to connect to.
     secretId: Optional. API Key used to call Symantec APIs on the user's
@@ -9212,12 +9208,31 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
     secretPath: Optional. A secret ID or secret name can be specified, but it
       will be parsed and stored as secret URI in the format of
       "projects/{PROJECT_NUMBER}/secrets/my-secret".
+    symantecConnectionState: Output only. [Output only] Connection status to
+      Symantec API.
   """
 
-  apiKey = _messages.StringField(1)
-  availableSymantecSites = _messages.StringField(2, repeated=True)
-  secretId = _messages.StringField(3)
-  secretPath = _messages.StringField(4)
+  class SymantecConnectionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. [Output only] Connection status to Symantec API.
+
+    Values:
+      SYMANTEC_CONNECTION_STATE_UNSPECIFIED: The default value. This value is
+        used if the state is omitted.
+      SUCCEEDED: Successfully made a request to Symantec API.
+      READ_SECRET_FAILED: Cannot access the API key in the provided
+        secret_path.
+      REQUEST_TO_SYMANTEC_FAILED: Failed to get a successful response from
+        Symantec API due to an invalid API key or Symantec API unavailability.
+    """
+    SYMANTEC_CONNECTION_STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    READ_SECRET_FAILED = 2
+    REQUEST_TO_SYMANTEC_FAILED = 3
+
+  availableSymantecSites = _messages.StringField(1, repeated=True)
+  secretId = _messages.StringField(2)
+  secretPath = _messages.StringField(3)
+  symantecConnectionState = _messages.EnumField('SymantecConnectionStateValueValuesEnum', 4)
 
 
 class SSEGatewayReference(_messages.Message):

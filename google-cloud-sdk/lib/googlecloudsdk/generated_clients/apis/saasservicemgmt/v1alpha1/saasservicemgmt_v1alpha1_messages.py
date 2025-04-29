@@ -92,26 +92,6 @@ class Aggregate(_messages.Message):
   group = _messages.StringField(2)
 
 
-class Artifact(_messages.Message):
-  r"""Artifacts are OCI Images that contain all of the artifacts needed to
-  provision a unit. Metadata such as, type of the engine used to actuate the
-  artifact (e.g. terraform, helm etc) and version will come from the image
-  manifest. If the hostname is omitted, it will be assumed to be the regional
-  path to Artifact Registry (eg. us-east1-docker.pkg.dev).
-
-  Fields:
-    engine: Output only. Type of the engine used to actuate the artifact. e.g.
-      terraform, helm etc.
-    package: Required. Immutable. URI to an artifact used by the Unit
-      (required unless unitKind is set).
-    version: Output only. Version metadata if present on the artifact.
-  """
-
-  engine = _messages.StringField(1)
-  package = _messages.StringField(2)
-  version = _messages.StringField(3)
-
-
 class Blueprint(_messages.Message):
   r"""Blueprints are OCI Images that contain all of the artifacts needed to
   provision a unit. Metadata such as, type of the engine used to actuate the
@@ -1074,8 +1054,6 @@ class Release(_messages.Message):
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
-    artifact: Optional. Immutable. Artifact is an OCI Image that contains all
-      of the artifacts needed to provision a unit.
     blueprint: Optional. Blueprints are OCI Images that contain all of the
       artifacts needed to provision a unit.
     createTime: Output only. The timestamp when the resource was created.
@@ -1161,19 +1139,18 @@ class Release(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  artifact = _messages.MessageField('Artifact', 2)
-  blueprint = _messages.MessageField('Blueprint', 3)
-  createTime = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  inputVariableDefaults = _messages.MessageField('UnitVariable', 6, repeated=True)
-  inputVariables = _messages.MessageField('UnitVariable', 7, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  outputVariables = _messages.MessageField('UnitVariable', 10, repeated=True)
-  releaseRequirements = _messages.MessageField('ReleaseRequirements', 11)
-  uid = _messages.StringField(12)
-  unitKind = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  blueprint = _messages.MessageField('Blueprint', 2)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  inputVariableDefaults = _messages.MessageField('UnitVariable', 5, repeated=True)
+  inputVariables = _messages.MessageField('UnitVariable', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  outputVariables = _messages.MessageField('UnitVariable', 9, repeated=True)
+  releaseRequirements = _messages.MessageField('ReleaseRequirements', 10)
+  uid = _messages.StringField(11)
+  unitKind = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ReleaseRequirements(_messages.Message):
@@ -4367,7 +4344,7 @@ class Unit(_messages.Message):
       OPERATION_MODE_MANUAL: In manual mode, changes to Unit will have no
         effect until a corresponding operation is created.
       OPERATION_MODE_AUTOMATIC: In automatic mode, deployments will
-        automatically create unit operations to reflect changes reconcilled on
+        automatically create unit operations to reflect changes reconciled on
         unit.
     """
     OPERATION_MODE_UNSPECIFIED = 0

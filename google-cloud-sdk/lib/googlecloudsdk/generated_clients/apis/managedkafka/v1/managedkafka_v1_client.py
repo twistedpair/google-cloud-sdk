@@ -60,7 +60,7 @@ class ManagedkafkaV1(base_api.BaseApiClient):
           }
 
     def AddAclEntry(self, request, global_params=None):
-      r"""Adds an acl entry to an acl. Creates the acl if it does not exist yet.
+      r"""Incremental update: Adds an acl entry to an acl. Creates the acl if it does not exist yet.
 
       Args:
         request: (ManagedkafkaProjectsLocationsClustersAclsAddAclEntryRequest) input message
@@ -222,7 +222,7 @@ class ManagedkafkaV1(base_api.BaseApiClient):
     )
 
     def RemoveAclEntry(self, request, global_params=None):
-      r"""Removes an acl entry from an acl. Deletes the acl if its acl entries become empty (i.e. if the removed entry was the last one in the acl).
+      r"""Incremental update: Removes an acl entry from an acl. Deletes the acl if its acl entries become empty (i.e. if the removed entry was the last one in the acl).
 
       Args:
         request: (ManagedkafkaProjectsLocationsClustersAclsRemoveAclEntryRequest) input message
@@ -572,33 +572,6 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ManagedkafkaProjectsLocationsClustersDeleteRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def FetchBrokerDetails(self, request, global_params=None):
-      r"""Returns the properties of brokers in a cluster.
-
-      Args:
-        request: (ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchBrokerDetailsResponse) The response message.
-      """
-      config = self.GetMethodConfig('FetchBrokerDetails')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    FetchBrokerDetails.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:fetchBrokerDetails',
-        http_method='GET',
-        method_id='managedkafka.projects.locations.clusters.fetchBrokerDetails',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:fetchBrokerDetails',
-        request_field='',
-        request_type_name='ManagedkafkaProjectsLocationsClustersFetchBrokerDetailsRequest',
-        response_type_name='FetchBrokerDetailsResponse',
         supports_download=False,
     )
 

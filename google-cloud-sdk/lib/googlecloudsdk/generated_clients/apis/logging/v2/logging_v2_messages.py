@@ -953,10 +953,42 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FieldSource(_messages.Message):
+  r"""LINT.IfChange A source that can be used to represent a field in a query
+  construct.
+
+  Fields:
+    aliasRef: The alias name for a field that has already been aliased within
+      a different ProjectedField type elsewhere in the query model. The alias
+      must be defined in the QueryBuilderConfig's field_sources list,
+      otherwise the model is invalid.
+    field: This will be the field that is selected using the . annotation to
+      display the drill down value. For example:
+      "json_payload.labels.message".
+    isJson: Whether the field is a JSON field. This value is used to determine
+      JSON extractions in generated SQL queries.
+    literalValue: A literal like "1,2,3 as testArray" or other singular
+      constants like 'foo'. Note: this is not a viable option for the order_by
+      since sorting based on a constant doesn't return anything useful.
+    projectedField: A projected field option for when a user wants to use a
+      field with some additional transformations such as casting or
+      extractions.
+    variableRef: The variable name for dashboard template variable support.
+  """
+
+  aliasRef = _messages.StringField(1)
+  field = _messages.StringField(2)
+  isJson = _messages.BooleanField(3)
+  literalValue = _messages.MessageField('extra_types.JsonValue', 4)
+  projectedField = _messages.MessageField('ProjectedField', 5)
+  variableRef = _messages.StringField(6)
+
+
 class FilterExpression(_messages.Message):
-  r"""Ex: { field: json_payload.message.error_code, value: 400, comparator:
-  EQUAL_TO} The field will be schema field that is selected using the .
-  annotation to display the drill down value. The value will be the user
+  r"""This is a leaf of the FilterPredicate. Ex: { field:
+  json_payload.message.error_code, filter_value: {numeric_value: 400},
+  comparator: EQUAL_TO} The field will be schema field that is selected using
+  the . annotation to display the drill down value. The value will be the user
   inputted text that the filter is comparing against.
 
   Enums:
@@ -966,8 +998,14 @@ class FilterExpression(_messages.Message):
     booleanFilterValue: The boolean value to use for the filter. Set if the
       field is a boolean type.
     comparator: The comparison type to use for the filter.
-    field: The field to use for the filter. This will be the field that is
-      selected using the . annotation to display the drill down value.
+    field: A string attribute.
+    fieldSource: Can be one of the FieldSource types: field name, alias ref,
+      variable ref, or a literal value.
+    fieldSourceValue: The field. This will be the field that is set as the
+      Right Hand Side of the filter.
+    isNegation: Determines if the NOT flag should be added to the comparator.
+    literalValue: The Value will be used to hold user defined constants set as
+      the Right Hand Side of the filter.
     numericFilterValue: The numeric value to use for the filter. Set if the
       field is a numeric type.
     stringFilterValue: The string value to use for the filter. Set if the
@@ -991,6 +1029,10 @@ class FilterExpression(_messages.Message):
       IS_NOT_NULL: IS_NOT_NULL will be slightly different in the fact that it
         will not require the value field to be inputted. For simplicity, the
         value field will be set to an empty string when IS_NOT_NULL is used
+      IS_NULL: Requires the filter_value to be a Value type with null_value
+        set to true.
+      IN: The value is in the inputted array value.
+      LIKE: The value is like the inputted value.
     """
     COMPARATOR_UNSPECIFIED = 0
     EQUALS = 1
@@ -1002,12 +1044,19 @@ class FilterExpression(_messages.Message):
     GREATER_THAN_EQUALS = 7
     LESS_THAN_EQUALS = 8
     IS_NOT_NULL = 9
+    IS_NULL = 10
+    IN = 11
+    LIKE = 12
 
   booleanFilterValue = _messages.BooleanField(1)
   comparator = _messages.EnumField('ComparatorValueValuesEnum', 2)
   field = _messages.StringField(3)
-  numericFilterValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  stringFilterValue = _messages.StringField(5)
+  fieldSource = _messages.MessageField('FieldSource', 4)
+  fieldSourceValue = _messages.MessageField('FieldSource', 5)
+  isNegation = _messages.BooleanField(6)
+  literalValue = _messages.MessageField('extra_types.JsonValue', 7)
+  numericFilterValue = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  stringFilterValue = _messages.StringField(9)
 
 
 class FilterPredicate(_messages.Message):
@@ -1019,7 +1068,12 @@ class FilterPredicate(_messages.Message):
       single value with no joining of different operator types
 
   Fields:
+    childPredicates: The children of the filter predicate. This equates to the
+      branches of the filter predicate that could contain further nested
+      leaves.
     expressions: The expressions to use for the filter.
+    leafPredicate: The leaves of the filter predicate. This equates to the
+      last leaves of the filter predicate associated with an operator.
     operatorType: The operator type for the filter. Currently there is no
       support for multiple levels of nesting, so this will be a single value
       with no joining of different operator types
@@ -1034,13 +1088,39 @@ class FilterPredicate(_messages.Message):
       OPERATOR_TYPE_UNSPECIFIED: Invalid value, do not use.
       AND: AND will be the default operator type.
       OR: OR operator type.
+      LEAF: LEAF operator type.
     """
     OPERATOR_TYPE_UNSPECIFIED = 0
     AND = 1
     OR = 2
+    LEAF = 3
 
-  expressions = _messages.MessageField('FilterExpression', 1, repeated=True)
-  operatorType = _messages.EnumField('OperatorTypeValueValuesEnum', 2)
+  childPredicates = _messages.MessageField('FilterPredicate', 1, repeated=True)
+  expressions = _messages.MessageField('FilterExpression', 2, repeated=True)
+  leafPredicate = _messages.MessageField('FilterExpression', 3)
+  operatorType = _messages.EnumField('OperatorTypeValueValuesEnum', 4)
+
+
+class FunctionApplication(_messages.Message):
+  r"""Defines the aggregation function to apply to this field. This message is
+  used only when operation is set to AGGREGATE.
+
+  Fields:
+    parameters: Optional. Parameters to be applied to the aggregation.
+      Aggregations that support or require parameters are listed above.
+    type: Required. Specifies the aggregation function. Use one of the
+      following string identifiers: "average": Computes the average (AVG).
+      Applies only to numeric values. "count": Counts the number of values
+      (COUNT). "count-distinct": Counts the number of distinct values (COUNT
+      DISTINCT). "count-distinct-approx": Approximates the count of distinct
+      values (APPROX_COUNT_DISTINCT). "max": Finds the maximum value (MAX).
+      Applies only to numeric values. "min": Finds the minimum value (MIN).
+      Applies only to numeric values. "sum": Computes the sum (SUM). Applies
+      only to numeric values.
+  """
+
+  parameters = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+  type = _messages.StringField(2)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -8704,11 +8784,17 @@ class Policy(_messages.Message):
 
 
 class ProjectedField(_messages.Message):
-  r"""One of the selected fields in a query. This equates to a single field in
-  the SELECT clause in SQL.
+  r"""Represents a field selected in the query, analogous to an item in a SQL
+  SELECT clause. It specifies the source field and optionally applies
+  transformations like aggregation, casting, regex extraction, or assigns an
+  alias. Use ProjectedField when you need more than just the raw source field
+  name (for which you might use FieldSource directly in QueryBuilderConfig's
+  field_sources list if no transformations or specific operation type are
+  needed).
 
   Enums:
-    OperationValueValuesEnum: The setting for the field.
+    OperationValueValuesEnum: Specifies the role of this field (direct
+      selection, grouping, or aggregation).
 
   Fields:
     aggregationFunction: The aggregation function for the field.
@@ -8719,9 +8805,10 @@ class ProjectedField(_messages.Message):
       with a number: 1stAlias
     cast: The cast for the field. This can any SQL cast type. Examples: -
       STRING - CHAR - DATE - TIMESTAMP - DATETIME - INT - FLOAT
-    field: The field name. This will be the field that is selected using the .
-      annotation to display the drill down value.
-    operation: The setting for the field.
+    field: The field name. This will be the field that is selected using the
+      dot notation to display the drill down value.
+    operation: Specifies the role of this field (direct selection, grouping,
+      or aggregation).
     regexExtraction: The re2 extraction for the field. This will be used to
       extract the value from the field using REGEXP_EXTRACT. More information
       on re2 can be found here: https://github.com/google/re2/wiki/Syntax.
@@ -8730,6 +8817,7 @@ class ProjectedField(_messages.Message):
       REGEXP_EXTRACT(JSON_VALUE(field),"request(.*(autoscaler.*)$)")in SQL. -
       "\(test_value\)$" will be converted to
       REGEXP_EXTRACT(JSON_VALUE(field),"request(\(test_value\)$)") in SQL.
+    sqlAggregationFunction: The function to apply to the field.
     truncationGranularity: The truncation granularity when grouping by a
       time/date field. This will be used to truncate the field to the
       granularity specified. This can be either a date or a time granularity
@@ -8740,13 +8828,20 @@ class ProjectedField(_messages.Message):
   """
 
   class OperationValueValuesEnum(_messages.Enum):
-    r"""The setting for the field.
+    r"""Specifies the role of this field (direct selection, grouping, or
+    aggregation).
 
     Values:
-      FIELD_OPERATION_UNSPECIFIED: Invalid value, do not use.
-      NO_SETTING: No settings will be applied.
-      GROUP_BY: The field will be grouped by.
-      AGGREGATE: The field will be aggregated.
+      FIELD_OPERATION_UNSPECIFIED: Invalid value. Operation must be specified.
+      NO_SETTING: Select the field directly without grouping or aggregation.
+        Corresponds to including the raw field (potentially with cast, regex,
+        or alias) in the SELECT list.
+      GROUP_BY: Group the query results by the distinct values of this field.
+        Corresponds to including the field (potentially truncated) in the
+        GROUP BY clause.
+      AGGREGATE: Apply an aggregation function to this field across grouped
+        results. Corresponds to applying a function like COUNT, SUM, AVG in
+        the SELECT list. Requires aggregation_function to be set.
     """
     FIELD_OPERATION_UNSPECIFIED = 0
     NO_SETTING = 1
@@ -8759,15 +8854,20 @@ class ProjectedField(_messages.Message):
   field = _messages.StringField(4)
   operation = _messages.EnumField('OperationValueValuesEnum', 5)
   regexExtraction = _messages.StringField(6)
-  truncationGranularity = _messages.StringField(7)
+  sqlAggregationFunction = _messages.MessageField('FunctionApplication', 7)
+  truncationGranularity = _messages.StringField(8)
 
 
 class QueryBuilderConfig(_messages.Message):
-  r"""Used to build a query in place of SQL. This query builder format will be
-  converted to BigQuery SQL query syntax to retrieve data and chart
-  visualizations.
+  r"""Defines a structured query configuration that can be used instead of
+  writing raw SQL. This configuration represents the components of a SQL query
+  (FROM, SELECT, WHERE, ORDER BY, LIMIT) and is typically converted into an
+  executable query (e.g., BigQuery SQL) by the backend service to retrieve
+  data for analysis or visualization.
 
   Fields:
+    fieldSources: Defines the items to include in the query result, analogous
+      to a SQL SELECT clause.
     fields: The fields to select in the query. This equates to the SELECT
       clause in SQL.
     filter: The filter to use for the query. This equates to the WHERE clause
@@ -8788,12 +8888,13 @@ class QueryBuilderConfig(_messages.Message):
       LIMIT 100
   """
 
-  fields = _messages.MessageField('ProjectedField', 1, repeated=True)
-  filter = _messages.MessageField('FilterPredicate', 2)
-  limit = _messages.IntegerField(3)
-  orderBys = _messages.MessageField('SortOrderParameter', 4, repeated=True)
-  resourceNames = _messages.StringField(5, repeated=True)
-  searchTerm = _messages.StringField(6)
+  fieldSources = _messages.MessageField('FieldSource', 1, repeated=True)
+  fields = _messages.MessageField('ProjectedField', 2, repeated=True)
+  filter = _messages.MessageField('FilterPredicate', 3)
+  limit = _messages.IntegerField(4)
+  orderBys = _messages.MessageField('SortOrderParameter', 5, repeated=True)
+  resourceNames = _messages.StringField(6, repeated=True)
+  searchTerm = _messages.StringField(7)
 
 
 class QueryBuilderQueryStep(_messages.Message):
@@ -9732,14 +9833,15 @@ class Settings(_messages.Message):
 
 
 class SortOrderParameter(_messages.Message):
-  r"""A sort order for a query based on a column. LINT.IfChange
+  r"""A sort order for a query based on a column.
 
   Enums:
     SortOrderDirectionValueValuesEnum: The sort order to use for the query.
 
   Fields:
-    field: The field to use for the element. This will be the field that is
-      selected using the . annotation to display the drill down value.
+    field: A string attribute.
+    fieldSource: The field to sort on. Can be one of the FieldSource types:
+      field name, alias ref, variable ref, or a literal value.
     sortOrderDirection: The sort order to use for the query.
   """
 
@@ -9760,7 +9862,8 @@ class SortOrderParameter(_messages.Message):
     SORT_ORDER_DESCENDING = 3
 
   field = _messages.StringField(1)
-  sortOrderDirection = _messages.EnumField('SortOrderDirectionValueValuesEnum', 2)
+  fieldSource = _messages.MessageField('FieldSource', 2)
+  sortOrderDirection = _messages.EnumField('SortOrderDirectionValueValuesEnum', 3)
 
 
 class Sorting(_messages.Message):

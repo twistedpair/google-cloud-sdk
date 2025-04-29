@@ -5137,6 +5137,10 @@ class NodeKubeletConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
       Controls the maximum number of processes allowed to run in a pod. The
       value must be greater than or equal to 1024 and less than 4194304.
+    singleProcessOomKill: Optional. Defines whether to enable single process
+      OOM killer. If true, will prevent the memory.oom.group flag from being
+      set for container cgroups in cgroups v2. This causes processes in the
+      container to be OOM killed individually instead of as a group.
     topologyManager: Optional. Controls Topology Manager configuration on the
       node. For more information, see:
       https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/
@@ -5160,7 +5164,8 @@ class NodeKubeletConfig(_messages.Message):
   maxParallelImagePulls = _messages.IntegerField(16, variant=_messages.Variant.INT32)
   memoryManager = _messages.MessageField('MemoryManager', 17)
   podPidsLimit = _messages.IntegerField(18)
-  topologyManager = _messages.MessageField('TopologyManager', 19)
+  singleProcessOomKill = _messages.BooleanField(19)
+  topologyManager = _messages.MessageField('TopologyManager', 20)
 
 
 class NodeLabels(_messages.Message):
@@ -7256,11 +7261,15 @@ class SoleTenantConfig(_messages.Message):
   tenant node groups should back the node pool.
 
   Fields:
+    minNodeCpus: Optional. The minimum number of virtual CPUs this instance
+      will consume when running on a sole-tenant node. This field can only be
+      set if the node pool is created in a shared sole-tenant node group.
     nodeAffinities: NodeAffinities used to match to a shared sole tenant node
       group.
   """
 
-  nodeAffinities = _messages.MessageField('NodeAffinity', 1, repeated=True)
+  minNodeCpus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('NodeAffinity', 2, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

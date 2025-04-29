@@ -492,12 +492,23 @@ def AddVolumeMultipleEndpointsArg(parser):
   )
 
 
-def AddVolumeTieringPolicyArg(parser, messages):
+def AddVolumeTieringPolicyArg(parser, messages, release_track):
   """Adds the --tiering-policy arg to the arg parser."""
-  tiering_policy_arg_spec = {
-      'tier-action': messages.TieringPolicy.TierActionValueValuesEnum,
-      'cooling-threshold-days': int,
-  }
+  if (release_track == calliope_base.ReleaseTrack.BETA or
+      release_track == calliope_base.ReleaseTrack.ALPHA):
+    tiering_policy_arg_spec = {
+        'tier-action': messages.TieringPolicy.TierActionValueValuesEnum,
+        'cooling-threshold-days': int,
+        'enable-hot-tier-bypass-mode': arg_parsers.ArgBoolean(
+            truthy_strings=netapp_util.truthy,
+            falsey_strings=netapp_util.falsey,
+        ),
+    }
+  else:
+    tiering_policy_arg_spec = {
+        'tier-action': messages.TieringPolicy.TierActionValueValuesEnum,
+        'cooling-threshold-days': int,
+    }
   tiering_policy_help = """\
       Tiering Policy contains auto tiering policy on a volume.
 
@@ -609,7 +620,7 @@ def AddVolumeCreateArgs(parser, release_track):
   ):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
-  AddVolumeTieringPolicyArg(parser, messages)
+  AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeHybridReplicationParametersArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
 
@@ -654,5 +665,5 @@ def AddVolumeUpdateArgs(parser, release_track):
   ):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
-  AddVolumeTieringPolicyArg(parser, messages)
+  AddVolumeTieringPolicyArg(parser, messages, release_track)
   labels_util.AddUpdateLabelsFlags(parser)

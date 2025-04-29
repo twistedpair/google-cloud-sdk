@@ -693,11 +693,11 @@ class BigqueryDatasetsGetRequest(_messages.Message):
 
     Values:
       DATASET_VIEW_UNSPECIFIED: The default value. Default to the FULL view.
-      METADATA: Includes metadata information for the dataset, such as
-        location, etag, lastModifiedTime, etc.
-      ACL: Includes ACL information for the dataset, which defines dataset
+      METADATA: Updates metadata information for the dataset, such as
+        friendlyName, description, labels, etc.
+      ACL: Updates ACL information for the dataset, which defines dataset
         access for one or more entities.
-      FULL: Includes both dataset metadata and ACL information.
+      FULL: Updates both dataset metadata and ACL information.
     """
     DATASET_VIEW_UNSPECIFIED = 0
     METADATA = 1
@@ -764,6 +764,11 @@ class BigqueryDatasetsListRequest(_messages.Message):
 class BigqueryDatasetsPatchRequest(_messages.Message):
   r"""A BigqueryDatasetsPatchRequest object.
 
+  Enums:
+    UpdateModeValueValuesEnum: Optional. Specifies the fields of dataset that
+      update/patch operation is targeting By default, both metadata and ACL
+      fields are updated.
+
   Fields:
     accessPolicyVersion: Optional. The version of the provided access policy
       schema. Valid values are 0, 1, and 3. Requests specifying an invalid
@@ -783,12 +788,33 @@ class BigqueryDatasetsPatchRequest(_messages.Message):
     dataset: A Dataset resource to be passed as the request body.
     datasetId: Required. Dataset ID of the dataset being updated
     projectId: Required. Project ID of the dataset being updated
+    updateMode: Optional. Specifies the fields of dataset that update/patch
+      operation is targeting By default, both metadata and ACL fields are
+      updated.
   """
+
+  class UpdateModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the fields of dataset that update/patch operation
+    is targeting By default, both metadata and ACL fields are updated.
+
+    Values:
+      UPDATE_MODE_UNSPECIFIED: The default value. Default to the UPDATE_FULL.
+      UPDATE_METADATA: Includes metadata information for the dataset, such as
+        friendlyName, description, labels, etc.
+      UPDATE_ACL: Includes ACL information for the dataset, which defines
+        dataset access for one or more entities.
+      UPDATE_FULL: Includes both dataset metadata and ACL information.
+    """
+    UPDATE_MODE_UNSPECIFIED = 0
+    UPDATE_METADATA = 1
+    UPDATE_ACL = 2
+    UPDATE_FULL = 3
 
   accessPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   dataset = _messages.MessageField('Dataset', 2)
   datasetId = _messages.StringField(3, required=True)
   projectId = _messages.StringField(4, required=True)
+  updateMode = _messages.EnumField('UpdateModeValueValuesEnum', 5)
 
 
 class BigqueryDatasetsUndeleteRequest(_messages.Message):
@@ -809,6 +835,11 @@ class BigqueryDatasetsUndeleteRequest(_messages.Message):
 class BigqueryDatasetsUpdateRequest(_messages.Message):
   r"""A BigqueryDatasetsUpdateRequest object.
 
+  Enums:
+    UpdateModeValueValuesEnum: Optional. Specifies the fields of dataset that
+      update/patch operation is targeting By default, both metadata and ACL
+      fields are updated.
+
   Fields:
     accessPolicyVersion: Optional. The version of the provided access policy
       schema. Valid values are 0, 1, and 3. Requests specifying an invalid
@@ -828,12 +859,33 @@ class BigqueryDatasetsUpdateRequest(_messages.Message):
     dataset: A Dataset resource to be passed as the request body.
     datasetId: Required. Dataset ID of the dataset being updated
     projectId: Required. Project ID of the dataset being updated
+    updateMode: Optional. Specifies the fields of dataset that update/patch
+      operation is targeting By default, both metadata and ACL fields are
+      updated.
   """
+
+  class UpdateModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the fields of dataset that update/patch operation
+    is targeting By default, both metadata and ACL fields are updated.
+
+    Values:
+      UPDATE_MODE_UNSPECIFIED: The default value. Default to the UPDATE_FULL.
+      UPDATE_METADATA: Includes metadata information for the dataset, such as
+        friendlyName, description, labels, etc.
+      UPDATE_ACL: Includes ACL information for the dataset, which defines
+        dataset access for one or more entities.
+      UPDATE_FULL: Includes both dataset metadata and ACL information.
+    """
+    UPDATE_MODE_UNSPECIFIED = 0
+    UPDATE_METADATA = 1
+    UPDATE_ACL = 2
+    UPDATE_FULL = 3
 
   accessPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   dataset = _messages.MessageField('Dataset', 2)
   datasetId = _messages.StringField(3, required=True)
   projectId = _messages.StringField(4, required=True)
+  updateMode = _messages.EnumField('UpdateModeValueValuesEnum', 5)
 
 
 class BigqueryJobsCancelRequest(_messages.Message):
@@ -5193,8 +5245,7 @@ class JobStatistics2(_messages.Message):
     queryInfo: Output only. Query optimization information for a QUERY job.
     queryPlan: Output only. Describes execution plan for the query.
     referencedRoutines: Output only. Referenced routines for the job.
-    referencedTables: Output only. Referenced tables for the job. Queries that
-      reference more than 50 tables will not have a complete list.
+    referencedTables: Output only. Referenced tables for the job.
     reservationUsage: Output only. Job resource usage breakdown by
       reservation. This field reported misleading information and will no
       longer be populated.
@@ -6889,6 +6940,9 @@ class QueryTimelineSample(_messages.Message):
       query, if no other query in the reservation needs additional slots.
     pendingUnits: Total units of work remaining for the query. This number can
       be revised (increased or decreased) while the query is running.
+    shuffleRamUsageRatio: Total shuffle usage ratio in shuffle RAM per
+      reservation of this query. This will be provided for reservation
+      customers only.
     totalSlotMs: Cumulative slot-ms consumed by the query.
   """
 
@@ -6897,7 +6951,8 @@ class QueryTimelineSample(_messages.Message):
   elapsedMs = _messages.IntegerField(3)
   estimatedRunnableUnits = _messages.IntegerField(4)
   pendingUnits = _messages.IntegerField(5)
-  totalSlotMs = _messages.IntegerField(6)
+  shuffleRamUsageRatio = _messages.FloatField(6)
+  totalSlotMs = _messages.IntegerField(7)
 
 
 class RangePartitioning(_messages.Message):

@@ -158,12 +158,29 @@ class BootDiskConfig(_messages.Message):
 
   Fields:
     customerEncryptionKey: Optional. Customer encryption key for boot disk.
+    diskSizeGb: Optional. Size of the boot disk in GB. It must be larger than
+      or equal to the size of the image.
     enableConfidentialCompute: Optional. Whether the boot disk will be created
       with confidential compute mode.
+    provisionedIops: Optional. Indicates how many IOPS to provision for the
+      disk. This sets the number of I/O operations per second that the disk
+      can handle. To learn more about IOPS, see [Provisioning persistent disk
+      performance](https://cloud.google.com/compute/docs/disks/performance#pro
+      visioned-iops).
+    provisionedThroughput: Optional. Indicates how much throughput to
+      provision for the disk. This sets the number of throughput MB per second
+      that the disk can handle.
+    sourceImage: Optional. Image from which boot disk is to be created. If not
+      specified, the default image for the runtime version will be used.
+      Example: `projects/$PROJECT_ID/global/images/$IMAGE_NAME`.
   """
 
   customerEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
-  enableConfidentialCompute = _messages.BooleanField(2)
+  diskSizeGb = _messages.IntegerField(2)
+  enableConfidentialCompute = _messages.BooleanField(3)
+  provisionedIops = _messages.IntegerField(4)
+  provisionedThroughput = _messages.IntegerField(5)
+  sourceImage = _messages.StringField(6)
 
 
 class ChipCoordinate(_messages.Message):
@@ -1342,6 +1359,41 @@ class Range(_messages.Message):
   step = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class ReportFaultyVmRequest(_messages.Message):
+  r"""Request for ReportFaultyVm.
+
+  Enums:
+    FaultBehaviorValueValuesEnum: Required. The general type of behavior that
+      prompted the customer to report.
+
+  Fields:
+    description: Optional. A string used to describe the fault.
+    faultBehavior: Required. The general type of behavior that prompted the
+      customer to report.
+    workerId: Required. A string used to uniquely distinguish a worker within
+      a TPU node.
+  """
+
+  class FaultBehaviorValueValuesEnum(_messages.Enum):
+    r"""Required. The general type of behavior that prompted the customer to
+    report.
+
+    Values:
+      FAULT_BEHAVIOR_UNSPECIFIED: The behavior is not specified.
+      PERFORMANCE: Poor performance.
+      SILENT_DATA_CORRUPTION: Suspected silent data corruption.
+      CHIP_ERROR: The behavior is unrecoverable chip error.
+    """
+    FAULT_BEHAVIOR_UNSPECIFIED = 0
+    PERFORMANCE = 1
+    SILENT_DATA_CORRUPTION = 2
+    CHIP_ERROR = 3
+
+  description = _messages.StringField(1)
+  faultBehavior = _messages.EnumField('FaultBehaviorValueValuesEnum', 2)
+  workerId = _messages.StringField(3)
+
+
 class Reservation(_messages.Message):
   r"""A reservation describes the amount of a resource 'allotted' for a
   defined period of time.
@@ -1971,6 +2023,19 @@ class TpuProjectsLocationsNodesPerformMaintenanceRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   performMaintenanceRequest = _messages.MessageField('PerformMaintenanceRequest', 2)
+
+
+class TpuProjectsLocationsNodesReportVmAsFaultyRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesReportVmAsFaultyRequest object.
+
+  Fields:
+    name: Required. The name of the TPU node to report as faulty.
+    reportFaultyVmRequest: A ReportFaultyVmRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reportFaultyVmRequest = _messages.MessageField('ReportFaultyVmRequest', 2)
 
 
 class TpuProjectsLocationsNodesSimulateMaintenanceEventRequest(_messages.Message):

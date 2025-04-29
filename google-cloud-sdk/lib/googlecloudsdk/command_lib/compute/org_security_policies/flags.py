@@ -235,6 +235,9 @@ def AddAction(parser, required=True):
       '--action',
       choices={
           'allow': 'Allows the request from HTTP(S) Load Balancing.',
+          'goto-next': (
+              'Defers enforcement to the next policy in the hierarchy.'
+          ),
           'deny': '(DEPRECATED) Only used for Hierarchical Firewalls.',
           'deny-403': (
               'Denies the request from HTTP(S) Load Balancing, with an HTTP '

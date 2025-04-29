@@ -5,6 +5,88 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 520.0.0 (2025-04-29)
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.35 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.35>.
+* Added the new runtime go 1.24 support for devappserver2.
+
+### Cloud Bigtable
+
+* Rebuilt cbt cli with golang.org/x/net v0.38.0 which fixed CVE-2025-22870.
+
+### Cloud Filestore
+
+* Modified `gcloud filestore regions list` and `gcloud filestore zones list` to limit the number of resources only after filtering the resources for being regions/zones respectively.
+
+### Cloud IAM
+
+* Added the following commands for the [Managed Workload Identity](https://cloud.google.com/iam/docs/managed-workload-identity) feature:
+
+  * `gcloud iam workload-identity-pools`
+    * `iam-policy` commands
+    * `--mode`, `--inline-certificate-issuance-config-file`, `--inline-trust-config-file` flags
+  * `gcloud iam workload-identity-pools namespaces`
+  * `gcloud iam workload-identity-pools managed-identities`
+
+### Cloud Managed Kafka
+
+* Added Alpha ACL commands.
+
+### Cloud Run
+
+* Added `--regions` flag in `gcloud beta run deploy`, and `gcloud beta run multi-region-services`.
+
+### Compute Engine
+
+* Added `--global-producer-forwarding-rule` flag to service attachments.
+* Fixed crash when running `gcloud compute reset-windows-password` on Windows
+  with Python >= 3.12.
+  * Attempting to run this command would result in the following error:
+    "ctypes.ArgumentError: argument 5: TypeError: expected LP_c_ubyte instance
+    instead of c_byte_Array_276".
+  * This issue was reported at
+    <https://issuetracker.google.com/issues/398776180>.
+* Added `--snapshot-region` flag to `gcloud beta compute resource-policies create` to create regional snapshots schedule.
+* Added `goto-next` as an option for `--action` flag for the following commands:
+  - `gcloud compute org-security-policies rules create|update`.
+
+### Database Migration
+
+* Added `--max-concurrent-full-dump-connections`,
+  `--max-concurrent-cdc-connections`, `--max-concurrent-destination-connections`
+  and `--transaction-timeout` flags to
+  `gcloud database-migration migration-jobs update`.
+
+### Kpt
+
+* Updated kpt to v1.0.0-beta.56. See <https://github.com/kptdev/kpt/releases/tag/v1.0.0-beta.56> for more details.
+
+### Kubernetes Engine
+
+* Added `--confidential-node-type` flag to allow creation of confidential nodes
+of types: sev, sev_snp_tdx.
+
+### Network Connectivity
+
+* Added `--immutable` flag to `gcloud network-connectivity internal-ranges
+  create` command.
+
+### Security Command Center
+
+*   Added `--organization`, `--project`, `--folder` flags to `gcloud scc findings list` command to list source's findings for organization, project and folder levels.
+*   Added `--organization`, `--project`, `--folder` flags to `gcloud scc notifications list` to list scc's notification configs for organization, project and folder levels.
+
+### Workbench
+
+*   Added `--reservation-type`,`--reservation-key`,`--reservation-values` flags to `gcloud workbench instances create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 519.0.0 (2025-04-22)
 
 ### Breaking Changes
