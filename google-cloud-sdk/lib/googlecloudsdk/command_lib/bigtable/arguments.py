@@ -372,7 +372,7 @@ class ArgAdder(object):
         type=arg_parsers.ArgBoolean(),
         help='Whether the view is protected from deletion.',
         required=required,
-        default=False,
+        default=None,
     )
     return self
 

@@ -336,6 +336,10 @@ class CLILoader(object):
     """
     self.__modules.append((name, path, component))
 
+  def GetModules(self):
+    """Returns modules added to this CLI tool."""
+    return self.__modules
+
   def RegisterPreRunHook(self, func,
                          include_commands=None, exclude_commands=None):
     """Register a function to be run before command execution.

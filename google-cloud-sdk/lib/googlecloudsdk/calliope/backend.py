@@ -620,12 +620,23 @@ class CommandGroup(CommandCommon):
         not allow_empty
         and not self._groups_to_load
         and not self._commands_to_load
+        and not any(self._GetMappedSubmodules())
     ):
       raise command_loading.LayoutException(
           'Group {0} has no subgroups or commands'.format(self.dotted_name)
       )
     # Initialize the sub-parser so sub groups can be found.
     self.SubParser()
+
+  def _GetMappedSubmodules(self):
+    """Yields registered modules (if any) under this command group."""
+    module_path = '.'.join(
+        # For e.g. ['gcloud', 'beta', 'foo', 'bar'], ignore 'gcloud' and 'beta'.
+        self._path[1 + bool(self.ReleaseTrack().prefix):]
+    ).replace('-', '_')
+    for m in self._cli_generator.GetModules():
+      if m[0].startswith(module_path + '.'):
+        yield m
 
   def CopyAllSubElementsTo(self, other_group, ignore):
     """Copies all the sub groups and commands from this group to the other.

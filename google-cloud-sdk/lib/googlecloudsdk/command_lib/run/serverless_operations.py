@@ -1348,7 +1348,7 @@ class ServerlessOperations(object):
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
   def ListRevisions(
-      self, namespace_ref, service_name, limit=None, page_size=100
+      self, namespace_ref, label_selector, limit=None, page_size=100
   ):
     """List all revisions for the given service.
 
@@ -1356,7 +1356,8 @@ class ServerlessOperations(object):
 
     Args:
       namespace_ref: Resource, namespace to list revisions in
-      service_name: str, The service for which to list revisions.
+      label_selector: str, label selector for either a service or worker pool
+        for which to list revisions.
       limit: Optional[int], max number of revisions to list.
       page_size: Optional[int], number of revisions to fetch at a time
 
@@ -1367,12 +1368,11 @@ class ServerlessOperations(object):
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
     )
-    if service_name is not None:
-      # For now, same as the service name, and keeping compatible with
-      # 'service-less' operation.
-      request.labelSelector = 'serving.knative.dev/service = {}'.format(
-          service_name
-      )
+    if label_selector is not None:
+      # If provided this will be either:
+      # 1. 'serving.knative.dev/service = <service>' or
+      # 2. 'run.googleapis.com/workerPool = <worker_pool>'.
+      request.labelSelector = label_selector
     try:
       for result in list_pager.YieldFromList(
           service=self._client.namespaces_revisions,

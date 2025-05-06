@@ -1184,8 +1184,7 @@ def GetOsloginState(
           base.ReleaseTrack.ALPHA,
           base.ReleaseTrack.BETA,
       ]
-      and oslogin_state.third_party_user
-      or oslogin_state.require_certificates
+      and (oslogin_state.third_party_user or oslogin_state.require_certificates)
   ):
     user_email = quote(user_email, safe=':@')
     ValidateCertificate(oslogin_state, project.name, zone, instance.id)
@@ -1220,7 +1219,14 @@ def GetOsloginState(
       raise NotImplementedError(
           'SSH using federated workforce identities is not yet generally '
           'available (GA). Please use `gcloud beta compute ssh` to SSH using '
-          'a third-party identity.')
+          'a third-party identity.'
+      )
+    if oslogin_state.require_certificates:
+      raise NotImplementedError(
+          'SSH using certificates is not yet generally available (GA). Please'
+          ' use `gcloud beta compute ssh` to SSH to VMs that require'
+          ' certificate authentication.'
+      )
     login_profile = oslogin.GetLoginProfile(
         user_email,
         project.name,
@@ -1909,6 +1915,7 @@ class SCPCommand(object):
       compress=False,
       port=None,
       identity_file=None,
+      cert_file=None,
       options=None,
       extra_flags=None,
       iap_tunnel_args=None,
@@ -1926,6 +1933,7 @@ class SCPCommand(object):
       compress: bool, enable compression.
       port: str, port.
       identity_file: str, path to private key file.
+      cert_file: str, path to OpenSSH certificate file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to scp invocation. Both binary
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
@@ -1940,6 +1948,7 @@ class SCPCommand(object):
     self.compress = compress
     self.port = port
     self.identity_file = identity_file
+    self.cert_file = cert_file
     self.identity_list = identity_list
     self.options = options or {}
     self.extra_flags = extra_flags or []
@@ -2030,6 +2039,9 @@ class SCPCommand(object):
 
     if self.port:
       args.extend(['-P', self.port])
+
+    if self.cert_file and env.suite is Suite.OPENSSH:
+      self.options['CertificateFile'] = self.cert_file
 
     if self.identity_list:
       for identity_file in self.identity_list:

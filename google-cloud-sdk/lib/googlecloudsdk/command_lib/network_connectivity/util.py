@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+from typing import Any
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta.networkconnectivity_v1beta_messages import GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute
@@ -144,7 +145,7 @@ def ClearLabels(unused_ref, args, patch_request):
 
 
 def ValidateMigration(unused_ref, args, request):
-  """Validates migration parameters."""
+  """Validates internal range migration parameters."""
   if not args.IsSpecified("usage") or args.usage != "for-migration":
     if args.IsSpecified("migration_source") or args.IsSpecified(
         "migration_target"
@@ -173,6 +174,30 @@ def ValidateMigration(unused_ref, args, request):
   if args.migration_source == args.migration_target:
     raise InvalidInputError(
         "migration_source and migration_target cannot be the same."
+    )
+  return request
+
+
+def ValidateAllocationOptions(ref: Any, args: argparse.Namespace, request: Any):
+  """Validates internal range allocation options."""
+
+  del ref  # Unused.
+  if (
+      args.IsSpecified("allocation_strategy")
+      and args.allocation_strategy == "RANDOM_FIRST_N_AVAILABLE"
+  ):
+    if (
+        not args.IsSpecified("first_available_ranges_lookup_size")
+        or args.first_available_ranges_lookup_size < 1
+    ):
+      raise InvalidInputError(
+          "first_available_ranges_lookup_size must be set and greater than 0"
+          " when allocation_strategy is RANDOM_FIRST_N_AVAILABLE."
+      )
+  elif args.IsSpecified("first_available_ranges_lookup_size"):
+    raise InvalidInputError(
+        "first_available_ranges_lookup_size can only be set when"
+        " allocation_strategy is RANDOM_FIRST_N_AVAILABLE."
     )
   return request
 

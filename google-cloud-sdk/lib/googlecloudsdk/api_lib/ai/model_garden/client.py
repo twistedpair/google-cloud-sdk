@@ -420,7 +420,11 @@ class ModelGardenClient(object):
     return self._projects_locations_service.Deploy(request)
 
   def ListPublisherModels(
-      self, limit=None, batch_size=100, list_hf_models=False, model_filter=None
+      self,
+      limit=None,
+      batch_size=100,
+      list_hf_models=False,
+      model_filter=None,
   ):
     """List publisher models in Model Garden.
 

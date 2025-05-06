@@ -123,6 +123,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     compute_client = compute_holder.client
 
     oslogin_state = ssh.OsloginState()
+    cert_file = None
     if on_prem:
       iap_tunnel_args = iap_tunnel.CreateOnPremSshTunnelArgs(
           args, release_track, remote.host)
@@ -157,6 +158,11 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
             messages=compute_holder.client.messages)
         remote.user = oslogin_state.user
 
+      if (oslogin_state.third_party_user or oslogin_state.require_certificates):
+        cert_file = ssh.CertFileFromInstance(
+            project.name, instance_ref.zone, instance.id
+        )
+
       # identity_file_list will be None if security keys are not enabled.
       identity_file_list = ssh.WriteSecurityKeys(oslogin_state)
       if not args.plain:
@@ -177,8 +183,8 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
         remote.host = ssh_utils.GetExternalIPAddress(instance)
 
     cmd = ssh.SCPCommand(
-        srcs, dst, identity_file=identity_file, options=options,
-        recursive=recursive, compress=compress, port=port,
+        srcs, dst, identity_file=identity_file, cert_file=cert_file,
+        options=options, recursive=recursive, compress=compress, port=port,
         extra_flags=extra_flags, iap_tunnel_args=iap_tunnel_args,
         identity_list=identity_file_list)
 

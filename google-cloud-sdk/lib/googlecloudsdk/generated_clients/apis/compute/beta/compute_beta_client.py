@@ -11877,6 +11877,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RequestRemovePeering(self, request, global_params=None):
+      r"""Requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS.
+
+      Args:
+        request: (ComputeNetworksRequestRemovePeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RequestRemovePeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RequestRemovePeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networks.requestRemovePeering',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/networks/{network}/requestRemovePeering',
+        request_field='networksRequestRemovePeeringRequest',
+        request_type_name='ComputeNetworksRequestRemovePeeringRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SwitchToCustomMode(self, request, global_params=None):
       r"""Switches the network mode from auto subnet mode to custom subnet mode.
 

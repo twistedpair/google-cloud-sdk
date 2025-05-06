@@ -78,6 +78,15 @@ ENABLE_WORKLOAD_CERTIFICATE_FLAG = base.Argument(
     hidden=True,
 )
 
+MESH_DATAPLANE_FLAG = base.Argument(
+    '--mesh-dataplane',
+    help='Configures the mesh dataplane mode used by the Service.',
+    action=arg_parsers.StoreOnceAction,
+    type=str,
+    choices=['sidecar', 'proxyless-grpc'],
+    hidden=True,
+)
+
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
     'external': 'Visible from outside the cluster.',
@@ -320,6 +329,15 @@ def AddWorkerFlag(parser):
   )
 
 
+def AddWorkerPoolFlag(parser):
+  """Add a worker pool resource flag."""
+  parser.add_argument(
+      '--worker-pool',
+      required=False,
+      help='Limit matched revisions to the given worker.',
+  )
+
+
 def AddRegionArg(parser):
   """Add a region arg."""
   parser.add_argument(
@@ -414,6 +432,18 @@ created revision."""
 def AddDeployTagFlag(parser, help_text=_DEFAULT_DEPLOY_TAG_HELP):
   """Add flag to specify a tag for the new revision."""
   parser.add_argument('--tag', help=help_text)
+
+
+def AddDeployFromComposeArgument(parser):
+  """Add argument to specify the compose yaml file to be used for deploying to Cloud Run."""
+  parser.add_argument(
+      'compose_file',
+      type=str,
+      nargs='?',
+      default=None,
+      help='The compose yaml file to deploy from a Compose '
+      'directory to Cloud Run.',
+  )
 
 
 def AddTrafficTagsFlags(parser):
@@ -1048,10 +1078,6 @@ def _ProbeFlag(probe_type, supported_keys):
   Returns:
     A flag.
   """
-  tcp_socket_port = ''
-  if 'tcpSocket.port' in supported_keys:
-    tcp_socket_port = '+ tcpSocket.port: integer'
-
   def _LimitKeys(key):
     if key not in supported_keys:
       raise serverless_exceptions.ArgumentError(
@@ -1059,27 +1085,18 @@ def _ProbeFlag(probe_type, supported_keys):
       )
     return key
 
+  supported_keys_str = ', '.join(supported_keys)
   return base.Argument(
       '--{}-probe'.format(probe_type),
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(
           key_type=_LimitKeys,
       ),
-      help="""\
+      help=f"""\
           Comma separated settings for {probe_type} probe in the form KEY=VALUE.
           Each key stands for a field of the probe described in
           https://cloud.google.com/run/docs/reference/rest/v1/Container#Probe.
-          Currently supported keys are:
-
-            + initialDelaySeconds: integer
-            + timeoutSeconds: integer
-            + periodSeconds: integer
-            + failureThreshold: integer
-            + httpGet.port: integer
-            + httpGet.path: string
-            + grpc.port: integer
-            + grpc.service: string
-            {tcp_socket_port}
+          Currently supported keys are: {supported_keys_str}.
 
           For example, to set a probe with 10s timeout and HTTP probe requests
           sent to 8080 port of the container:
@@ -1089,7 +1106,7 @@ def _ProbeFlag(probe_type, supported_keys):
           To remove existing probe:
 
               $ --{probe_type}-probe=""
-          """.format(probe_type=probe_type, tcp_socket_port=tcp_socket_port),
+          """.format(probe_type=probe_type, supported_keys=supported_keys_str),
   )
 
 
@@ -1474,11 +1491,10 @@ def AddServiceMaxInstancesFlag(parser):
       '--max',
       type=ScaleValue,
       help=(
-          'The maximum number of container instances  to run for this Service. '
+          'The maximum number of container instances to run for this Service. '
           'This instance limit will be divided among all Revisions receiving a '
           'percentage of traffic and can be modified without deploying a new '
-          'Revision. Once service-max-instances is enabled for a service, it '
-          'cannot be disabled.'
+          'Revision.'
       ),
   )
 
@@ -1489,8 +1505,7 @@ def AddServiceMaxInstancesFlag(parser):
       help=(
           'The maximum number of container instances for this Service to run. '
           'This instance limit will be divided among all Revisions receiving a '
-          'percentage of traffic. Once service-max-instances is enabled for a '
-          'service, it cannot be disabled.'
+          'percentage of traffic.'
       ),
   )
 
@@ -3134,6 +3149,13 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
             str(args.enable_workload_certificate).lower(),
         )
     )
+  if FlagIsExplicitlySet(args, 'mesh_dataplane'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            revision.MESH_DATAPLANE_ANNOTATION,
+            args.mesh_dataplane,
+        )
+    )
 
   if FlagIsExplicitlySet(args, 'base_image'):
     changes.append(
@@ -4721,6 +4743,18 @@ def AddDryRunFlag(parser):
       help=(
           'If set to true, only validates the configuration. The configuration'
           ' will not be applied.'
+      ),
+  )
+
+
+def AddDebugFlag(parser):
+  """Add --debug or -d flag."""
+  parser.add_argument(
+      '-d', '--debug',
+      action='store_true',
+      default=False,
+      help=(
+          'If set to true, enables debug mode'
       ),
   )
 

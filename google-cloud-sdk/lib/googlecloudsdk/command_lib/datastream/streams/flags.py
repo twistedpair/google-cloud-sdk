@@ -142,6 +142,32 @@ _SALESFORCE_EXCLUDED_OBJECTS_HELP_TEXT = """\
   ```
 """
 
+_MONGODB_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the MongoDB data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+      "databases": [
+        {
+          "database":"sample_database",
+          "collections": [
+            {
+              "collection": "sample_collection",
+              "fields": [
+                {
+                  "field": "sample_field",
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ```
+"""
+
 
 def AddDisplayNameFlag(parser, required=True):
   """Adds a --display-name flag to the given parser."""
@@ -212,4 +238,8 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_all_excluded_objects.add_argument(
       '--salesforce-excluded-objects',
       help=_SALESFORCE_EXCLUDED_OBJECTS_HELP_TEXT,
+  )
+  backfill_all_excluded_objects.add_argument(
+      '--mongodb-excluded-objects',
+      help=_MONGODB_EXCLUDED_OBJECTS_HELP_TEXT,
   )

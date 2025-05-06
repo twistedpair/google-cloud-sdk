@@ -143,8 +143,7 @@ class CloudnumberregistryProjectsLocationsRegistryBooksDeleteRequest(_messages.M
   r"""A CloudnumberregistryProjectsLocationsRegistryBooksDeleteRequest object.
 
   Fields:
-    force: Optional. If set to true, any node events and historical events
-      associated with this registry book will also be deleted.
+    force: Optional. If set to true, all associated resources will be deleted.
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -174,28 +173,6 @@ class CloudnumberregistryProjectsLocationsRegistryBooksGetRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
-class CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsShowRequest(_messages.Message):
-  r"""A
-  CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsShowRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ShowHistoricalEventsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class CloudnumberregistryProjectsLocationsRegistryBooksListRequest(_messages.Message):
   r"""A CloudnumberregistryProjectsLocationsRegistryBooksListRequest object.
 
@@ -214,29 +191,6 @@ class CloudnumberregistryProjectsLocationsRegistryBooksListRequest(_messages.Mes
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsShowRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsShowRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    ipRange: Required. The IP range of node events to list.
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ShowNodeEventsRequest
-  """
-
-  filter = _messages.StringField(1)
-  ipRange = _messages.StringField(2)
-  orderBy = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  parent = _messages.StringField(6, required=True)
 
 
 class CloudnumberregistryProjectsLocationsRegistryBooksPatchRequest(_messages.Message):
@@ -387,208 +341,12 @@ class CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesPatchRequest
   updateMask = _messages.StringField(4)
 
 
-class CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest(_messages.Message):
-  r"""A
-  CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest
-  object.
-
-  Fields:
-    attributeKeys: Optional. A list of attribute keys owned by the registry
-      nodes.
-    ipRange: Optional. IP range to filter for registry node.
-    keywords: Optional. A list of keywords that are contained by the attribute
-      values within registry nodes.
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Name of the parent resource
-    source: Optional. Source filter of the registry nodes.
-  """
-
-  attributeKeys = _messages.StringField(1, repeated=True)
-  ipRange = _messages.StringField(2)
-  keywords = _messages.StringField(3, repeated=True)
-  orderBy = _messages.StringField(4)
-  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(6)
-  parent = _messages.StringField(7, required=True)
-  source = _messages.StringField(8)
-
-
-class CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsCreateRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsCreate
-  Request object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    resourceImport: A ResourceImport resource to be passed as the request
-      body.
-    resourceImportId: Required. Id of the requesting object
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  resourceImport = _messages.MessageField('ResourceImport', 3)
-  resourceImportId = _messages.StringField(4)
-
-
-class CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsDeleteRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsDelete
-  Request object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsGetRequest(_messages.Message):
-  r"""A
-  CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsListRequest(_messages.Message):
-  r"""A
-  CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListRegistryNodesRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsPatchRequest(_messages.Message):
-  r"""A
-  CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsPatchRequest
-  object.
-
-  Fields:
-    name: Required. Identifier. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    resourceImport: A ResourceImport resource to be passed as the request
-      body.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the RegistryNode resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  resourceImport = _messages.MessageField('ResourceImport', 3)
-  updateMask = _messages.StringField(4)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
-
-
-class HistoricalEvent(_messages.Message):
-  r"""Message describing HistoricalEvent object
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    ipRange: Required. IP range of registry node to view history.
-    labels: Optional. Labels as key value pairs
-    name: Required. Identifier. name of resource
-    nodeEvents: Output only. List of node events of IP range.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  ipRange = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  nodeEvents = _messages.MessageField('NodeEvent', 5, repeated=True)
-  updateTime = _messages.StringField(6)
 
 
 class ImportInfo(_messages.Message):
@@ -658,21 +416,6 @@ class ListRegistryNodesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   registryNodes = _messages.MessageField('RegistryNode', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListResourceImportsResponse(_messages.Message):
-  r"""Message for response to listing resource imports.
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    resourceImports: The list of ResourceImport
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  resourceImports = _messages.MessageField('ResourceImport', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -754,53 +497,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class NodeEvent(_messages.Message):
-  r"""Message describing NodeEvent object
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Required. Identifier. name of resource
-    postEventNode: Output only. The registry node before the node event.
-    preEventNode: Output only. The registry node before the node event.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  postEventNode = _messages.MessageField('RegistryNode', 4)
-  preEventNode = _messages.MessageField('RegistryNode', 5)
-  updateTime = _messages.StringField(6)
 
 
 class Operation(_messages.Message):
@@ -1029,113 +725,6 @@ class RegistryNode(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
-
-
-class ResourceImport(_messages.Message):
-  r"""Message describing ResourceImport object.
-
-  Enums:
-    AddOnPlatformValueValuesEnum: Required. The add-on platform that the
-      resource import is for.
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    addOnPlatform: Required. The add-on platform that the resource import is
-      for.
-    createTime: Output only. [Output only] Create time stamp
-    description: Optional. The description of the resource import.
-    labels: Optional. Labels as key value pairs
-    name: Required. Identifier. Name of the resource.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  class AddOnPlatformValueValuesEnum(_messages.Enum):
-    r"""Required. The add-on platform that the resource import is for.
-
-    Values:
-      ADD_ON_PLATFORM_UNSPECIFIED: Unspecified add-on platform.
-      ADD_ON_PLATFORM_GCE: Google Compute Engine.
-    """
-    ADD_ON_PLATFORM_UNSPECIFIED = 0
-    ADD_ON_PLATFORM_GCE = 1
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  addOnPlatform = _messages.EnumField('AddOnPlatformValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-
-
-class SearchRegistryNodesResponse(_messages.Message):
-  r"""Message represents the response of registry search API.
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    registryNodes: The list of RegistryNode.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  registryNodes = _messages.MessageField('RegistryNode', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ShowHistoricalEventsResponse(_messages.Message):
-  r"""Message for response to listing NodeEvents
-
-  Fields:
-    historicalEvents: The list of NodeEvent
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  historicalEvents = _messages.MessageField('HistoricalEvent', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ShowNodeEventsResponse(_messages.Message):
-  r"""Message for response to listing NodeEvents
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    nodeEvents: The list of NodeEvent
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  nodeEvents = _messages.MessageField('NodeEvent', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -49,6 +49,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_machines = self.ProjectsLocationsMachinesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_serviceAccounts = self.ProjectsLocationsServiceAccountsService(self)
     self.projects_locations_vpnConnections = self.ProjectsLocationsVpnConnectionsService(self)
     self.projects_locations_zonalServices = self.ProjectsLocationsZonalServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1069,6 +1070,151 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='EdgecontainerProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServiceAccountsService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceAccounts resource."""
+
+    _NAME = 'projects_locations_serviceAccounts'
+
+    def __init__(self, client):
+      super(EdgecontainerV1alpha.ProjectsLocationsServiceAccountsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateServiceAccount creates the project service account CR in the project namespace in the cluster (infra cluster for V2, user cluster for V1).
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.serviceAccounts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceAccountId'],
+        relative_path='v1alpha/{+parent}/serviceAccounts',
+        request_field='serviceAccount',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteServiceAccount deletes the project service account CR in the project namespace in the cluster (infra cluster for V2, user cluster for V1).
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}',
+        http_method='DELETE',
+        method_id='edgecontainer.projects.locations.serviceAccounts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetServiceAccount gets the service account details.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.serviceAccounts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsGetRequest',
+        response_type_name='ServiceAccount',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListServiceAccounts lists the details of all the service account resources for a project in the cluster (infra cluster for V2, user cluster for V1).
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceAccountsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.serviceAccounts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/serviceAccounts',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsListRequest',
+        response_type_name='ListServiceAccountsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateServiceAccount updates the corresponding project service account CR in the project namespace in the cluster (infra cluster for V2, user cluster for V1).
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}',
+        http_method='PATCH',
+        method_id='edgecontainer.projects.locations.serviceAccounts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='serviceAccount',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

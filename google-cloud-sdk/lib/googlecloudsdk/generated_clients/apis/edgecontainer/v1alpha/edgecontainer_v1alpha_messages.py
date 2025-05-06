@@ -1083,6 +1083,87 @@ class EdgecontainerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class EdgecontainerProjectsLocationsServiceAccountsCreateRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the identity provider to configure.
+      e.g. project/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+    serviceAccountId: Required. The service account id.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceAccount = _messages.MessageField('ServiceAccount', 3)
+  serviceAccountId = _messages.StringField(4)
+
+
+class EdgecontainerProjectsLocationsServiceAccountsDeleteRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsDeleteRequest object.
+
+  Fields:
+    name: Required. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerProjectsLocationsServiceAccountsGetRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsGetRequest object.
+
+  Fields:
+    name: Required. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerProjectsLocationsServiceAccountsListRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsListRequest object.
+
+  Fields:
+    filter: Optional. Only resources matching this filter will be listed.
+    orderBy: Optional. Specifies the order in which resources will be listed.
+      Order by fields for the result.
+    pageSize: Optional. The maximum number of resources to list.
+    pageToken: Optional. A page token received from previous list request.
+    parent: Required. The parent location, which owns this collection of
+      project service accounts.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class EdgecontainerProjectsLocationsServiceAccountsPatchRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsPatchRequest object.
+
+  Fields:
+    name: Identifier. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+  updateMask = _messages.StringField(3)
+
+
 class EdgecontainerProjectsLocationsVpnConnectionsCreateRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsVpnConnectionsCreateRequest object.
 
@@ -1460,6 +1541,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListServiceAccountsResponse(_messages.Message):
+  r"""List ServiceAccounts Response.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results.
+    serviceAccounts: List of ServiceAccounts matching the request.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListVpnConnectionsResponse(_messages.Message):
@@ -2324,6 +2419,78 @@ class ServerConfig(_messages.Message):
   channels = _messages.MessageField('ChannelsValue', 1)
   defaultVersion = _messages.StringField(2)
   versions = _messages.MessageField('Version', 3, repeated=True)
+
+
+class ServiceAccount(_messages.Message):
+  r"""Represents the service account resource.
+
+  Messages:
+    LabelsValue: Optional. Labels associated with this resource.
+
+  Fields:
+    createTime: Output only. The time when the project service account was
+      created.
+    key: Optional. service account keys.
+    labels: Optional. Labels associated with this resource.
+    name: Identifier. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+    updateTime: Output only. The time when the project service account was
+      last updated.
+    zone: Required. The zone id of the zone on which the project service
+      account has to be created.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels associated with this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  key = _messages.MessageField('ServiceAccountKey', 2, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  zone = _messages.StringField(6)
+
+
+class ServiceAccountKey(_messages.Message):
+  r"""ServiceAccountKey contains the key components of a service account key.
+
+  Fields:
+    algorithm: Required. The algorithm of the key. Currently only ES256 keys
+      are supported.
+    expiryTime: Required. The expiration date for the key.
+    id: Required. The ID of the key. This is used to determine which key to
+      verify against.
+    key: Required. The base64 encoded public key to verify against.
+    validStartTime: Required. The start date when the key becomes valid.
+  """
+
+  algorithm = _messages.StringField(1)
+  expiryTime = _messages.StringField(2)
+  id = _messages.StringField(3)
+  key = _messages.StringField(4)
+  validStartTime = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

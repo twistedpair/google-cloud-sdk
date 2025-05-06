@@ -254,7 +254,7 @@ def AddAdvancedOptions(parser, required=False, enable_large_body_size=False):
   if enable_large_body_size:
     parser.add_argument(
         '--request-body-inspection-size',
-        choices=['8KB', '128KB'],
+        choices=['8KB', '16KB', '32KB', '48KB', '64KB'],
         type=lambda x: x.upper(),
         required=required,
         help='Maximum request body inspection size.',

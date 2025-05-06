@@ -622,6 +622,17 @@ class BatchCreateResourceValueConfigsResponse(_messages.Message):
   resourceValueConfigs = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceValueConfig', 1, repeated=True)
 
 
+class BigQueryDestination(_messages.Message):
+  r"""The destination big query dataset to export findings to.
+
+  Fields:
+    dataset: Required. The relative resource name of the destination dataset,
+      in the form projects/{projectId}/datasets/{datasetId}.
+  """
+
+  dataset = _messages.StringField(1)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1609,6 +1620,22 @@ class Exfiltration(_messages.Message):
   sources = _messages.MessageField('ExfilResource', 1, repeated=True)
   targets = _messages.MessageField('ExfilResource', 2, repeated=True)
   totalExfiltratedBytes = _messages.IntegerField(3)
+
+
+class ExportFindingsRequest(_messages.Message):
+  r"""Request message for exporting findings to external big query.
+
+  Fields:
+    bigQueryDestination: Required. The destination big query dataset to export
+      findings to.
+    exportTime: Required. Export all SCC findings whose event_time is smaller
+      than this export_time.
+    filter: Optional. For future milestones.
+  """
+
+  bigQueryDestination = _messages.MessageField('BigQueryDestination', 1)
+  exportTime = _messages.StringField(2)
+  filter = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
@@ -9711,6 +9738,20 @@ class SecuritycenterFoldersSourcesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class SecuritycenterFoldersSourcesLocationsFindingsExportRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesLocationsFindingsExportRequest object.
+
+  Fields:
+    exportFindingsRequest: A ExportFindingsRequest resource to be passed as
+      the request body.
+    parent: Required. The relative name of the export scope. Example formats:
+      organizations/{organization}/sources/-/locations/{location}
+  """
+
+  exportFindingsRequest = _messages.MessageField('ExportFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritycenterFoldersSourcesLocationsFindingsExternalSystemsPatchRequest(_messages.Message):
   r"""A
   SecuritycenterFoldersSourcesLocationsFindingsExternalSystemsPatchRequest
@@ -11217,6 +11258,21 @@ class SecuritycenterOrganizationsSourcesLocationsFindingsCreateRequest(_messages
   parent = _messages.StringField(3, required=True)
 
 
+class SecuritycenterOrganizationsSourcesLocationsFindingsExportRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSourcesLocationsFindingsExportRequest
+  object.
+
+  Fields:
+    exportFindingsRequest: A ExportFindingsRequest resource to be passed as
+      the request body.
+    parent: Required. The relative name of the export scope. Example formats:
+      organizations/{organization}/sources/-/locations/{location}
+  """
+
+  exportFindingsRequest = _messages.MessageField('ExportFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritycenterOrganizationsSourcesLocationsFindingsExternalSystemsPatchRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsSourcesLocationsFindingsExternalSystemsPatc
   hRequest object.
@@ -12233,6 +12289,20 @@ class SecuritycenterProjectsSourcesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsSourcesLocationsFindingsExportRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesLocationsFindingsExportRequest object.
+
+  Fields:
+    exportFindingsRequest: A ExportFindingsRequest resource to be passed as
+      the request body.
+    parent: Required. The relative name of the export scope. Example formats:
+      organizations/{organization}/sources/-/locations/{location}
+  """
+
+  exportFindingsRequest = _messages.MessageField('ExportFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SecuritycenterProjectsSourcesLocationsFindingsExternalSystemsPatchRequest(_messages.Message):

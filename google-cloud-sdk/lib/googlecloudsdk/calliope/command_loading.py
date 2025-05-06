@@ -327,9 +327,12 @@ def _LoadCommandWithPartials(impl_file, path):
   partial_files = pkg_resources.GetFilesFromDirectory(
       partials_dir, f'_{command_name}_*.yaml'
   )
+
   command_data_list = []
+  command_path = re.escape(os.path.join(partials_dir, f'_{command_name}'))
   for partial_file in partial_files:
-    command_data_list.extend(_CustomLoadYamlFile(partial_file))
+    if re.match(fr'{command_path}_(alpha|beta|ga)\.yaml', partial_file):
+      command_data_list.extend(_CustomLoadYamlFile(partial_file))
 
   _ValidateCommandWithPartials(command_data_list, path)
   return command_data_list

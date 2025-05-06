@@ -16,6 +16,7 @@
 
 
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
@@ -372,6 +373,65 @@ def AddGcsProfileGroup(parser, release_track, required=True):
       '--root-path',
       help="""The root path inside the Cloud Storage bucket.""",
       required=False)
+
+
+def AddMongodbProfileGroup(parser, required=True):
+  """Adds necessary mongodb profile flags to the given parser."""
+  mongodb_profile = parser.add_group()
+  mongodb_profile.add_argument(
+      '--mongodb-host-addresses',
+      help="""IP or hostname and port of the MongoDB source database.""",
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='IPv4_ADDRESS_OR_HOSTNAME:PORT',
+      required=required,
+  )
+  mongodb_profile.add_argument(
+      '--mongodb-replica-set',
+      help="""Replica set of the MongoDB source database.""",
+  )
+  mongodb_profile.add_argument(
+      '--mongodb-username',
+      help="""Username Datastream will use to connect to the database.""",
+      required=required,
+  )
+  password_group = mongodb_profile.add_group(required=required, mutex=True)
+  password_group.add_argument(
+      '--mongodb-password',
+      help="""\
+          Password for the user that Datastream will be using to
+          connect to the database.
+          This field is not returned on request, and the value is encrypted
+          when stored in Datastream.""",
+      default='',
+  )
+  password_group.add_argument(
+      '--mongodb-prompt-for-password',
+      action='store_true',
+      help='Prompt for the password used to connect to the database.',
+  )
+  password_group.add_argument(
+      '--mongodb-secret-manager-stored-password',
+      help=(
+          'Path to secret manager, storing the password for the user used to'
+          ' connect to the database.'
+      ),
+      default='',
+  )
+  connection_format_group = mongodb_profile.add_group(
+      required=required, mutex=True
+  )
+  connection_format_group.add_argument(
+      '--mongodb-srv-connection-format',
+      help="""SRV Connection format for the MongoDB source database.""",
+      action='store_true',
+      default=False,
+  )
+  connection_format_group.add_argument(
+      '--mongodb-standard-connection-format',
+      help="""Standard connection format for the MongoDB source database.""",
+      action='store_true',
+      default=False,
+  )
 
 
 def AddDepthGroup(parser):

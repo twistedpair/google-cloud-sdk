@@ -1829,6 +1829,7 @@ class GoogleCloudDocumentaiV1DocumentEntityNormalizedValue(_messages.Message):
     integerValue: Integer value.
     moneyValue: Money value. See also: https://github.com/googleapis/googleapi
       s/blob/master/google/type/money.proto
+    signatureValue: A boolean attribute.
     text: Optional. An optional field to store a normalized string. For some
       entity types, one of respective `structured_value` fields may also be
       populated. Also not all the types of `structured_value` will be
@@ -1847,7 +1848,8 @@ class GoogleCloudDocumentaiV1DocumentEntityNormalizedValue(_messages.Message):
   floatValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
   integerValue = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   moneyValue = _messages.MessageField('GoogleTypeMoney', 7)
-  text = _messages.StringField(8)
+  signatureValue = _messages.BooleanField(8)
+  text = _messages.StringField(9)
 
 
 class GoogleCloudDocumentaiV1DocumentEntityRelation(_messages.Message):

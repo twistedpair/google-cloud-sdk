@@ -3889,6 +3889,7 @@ class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
       must either be organizations/ or projects/. If it is unspecified, it
       defaults to the organization where the project provided in name is
       located.
+    semanticSearch: Optional. Internal only.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3897,6 +3898,7 @@ class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   query = _messages.StringField(5)
   scope = _messages.StringField(6)
+  semanticSearch = _messages.BooleanField(7)
 
 
 class Empty(_messages.Message):

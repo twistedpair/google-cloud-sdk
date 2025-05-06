@@ -1047,10 +1047,8 @@ class Repository(_messages.Message):
     name: The name of the repository, for example: `projects/p1/locations/us-
       central1/repositories/repo1`. For each location in a project, repository
       names must be unique.
-    satisfiesPzi: Output only. If set, the repository satisfies physical zone
-      isolation.
-    satisfiesPzs: Output only. If set, the repository satisfies physical zone
-      separation.
+    satisfiesPzi: Output only. Whether or not this repository satisfies PZI.
+    satisfiesPzs: Output only. Whether or not this repository satisfies PZS.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.

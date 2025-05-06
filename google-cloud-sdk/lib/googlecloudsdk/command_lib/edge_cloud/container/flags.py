@@ -461,12 +461,27 @@ def AddLocalDiskKMSKey(parser):
   )
 
 
-def AddNodeLabels(parser):
+def AddNodeLabelsForCreateNodePool(parser):
   parser.add_argument(
       '--node-labels',
       help="""
       Comma-delimited list of key-value pairs that comprise labels for the
-      individual nodes in the node pool.
+      individual nodes in the node pool. This flag sets the Kubernetes
+      labels, unlike `--labels` which sets the cloud resource labels.
+      """,
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def AddNodeLabelsForUpdateNodePool(parser):
+  parser.add_argument(
+      '--node-labels',
+      help="""
+      Comma-delimited list of key-value pairs that comprise labels for the
+      individual nodes in the node pool. This flag updates the Kubernetes
+      labels, unlike `--update-labels`, `--remove-labels`, and `--clear-labels`
+      which update the cloud resource labels.
       """,
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),

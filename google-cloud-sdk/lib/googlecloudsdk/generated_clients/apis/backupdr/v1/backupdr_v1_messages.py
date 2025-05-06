@@ -1283,42 +1283,6 @@ class BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest(_messages.Mes
   requestId = _messages.StringField(2)
 
 
-class BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOldRequest(_messages.Message):
-  r"""A BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOld
-  Request object.
-
-  Fields:
-    filter: Optional. A filter expression that filters the results fetched in
-      the response. The expression must specify the field name, a comparison
-      operator, and the value that you want to use for filtering. Supported
-      fields: * resource * backup_plan * state * data_source * cloud_sql_insta
-      nce_backup_plan_association_properties.instance_create_time
-    orderBy: Optional. A comma-separated list of fields to order by, sorted in
-      ascending order. Use "desc" after a field name for descending. Supported
-      fields: * name
-    pageSize: Optional. The maximum number of BackupPlanAssociations to
-      return. The service may return fewer than this value. If unspecified, at
-      most 50 BackupPlanAssociations will be returned. The maximum value is
-      100; values above 100 will be coerced to 100.
-    pageToken: Optional. A page token, received from a previous call of
-      `FetchBackupPlanAssociationsForResourceType`. Provide this to retrieve
-      the subsequent page. When paginating, all other parameters provided to
-      `FetchBackupPlanAssociationsForResourceType` must match the call that
-      provided the page token.
-    parent: Required. The parent resource name. Format:
-      projects/{project}/locations/{location}
-    resourceType: Required. The type of the GCP resource. Ex:
-      sql.googleapis.com/Instance
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  resourceType = _messages.StringField(6)
-
-
 class BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeRequest(_messages.Message):
   r"""A
   BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeRequest

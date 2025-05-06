@@ -942,7 +942,7 @@ class VpcAccessChanges(config_changes.TemplateConfigChanger):
       )
     elif self.vpc_egress == 'private-ranges-only':
       resource.template.vpc_access.egress = (
-          vendor_settings.VpcAccessEgress.PRIVATE_RANGES_ONLY
+          vendor_settings.VpcAccess.VpcEgress.PRIVATE_RANGES_ONLY
       )
     return resource
 

@@ -13898,10 +13898,10 @@ class ComputeAlpha(base_api.BaseApiClient):
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
         method_id='compute.previewFeatures.get',
-        ordered_params=['project', 'resourceId'],
-        path_params=['project', 'resourceId'],
+        ordered_params=['project', 'previewFeature'],
+        path_params=['previewFeature', 'project'],
         query_params=[],
-        relative_path='projects/{project}/global/previewFeatures/{resourceId}',
+        relative_path='projects/{project}/global/previewFeatures/{previewFeature}',
         request_field='',
         request_type_name='ComputePreviewFeaturesGetRequest',
         response_type_name='PreviewFeature',
@@ -13950,11 +13950,11 @@ class ComputeAlpha(base_api.BaseApiClient):
     Update.method_config = lambda: base_api.ApiMethodInfo(
         http_method='PATCH',
         method_id='compute.previewFeatures.update',
-        ordered_params=['project', 'resourceId'],
-        path_params=['project', 'resourceId'],
+        ordered_params=['project', 'previewFeature'],
+        path_params=['previewFeature', 'project'],
         query_params=['requestId'],
-        relative_path='projects/{project}/global/previewFeatures/{resourceId}',
-        request_field='previewFeature',
+        relative_path='projects/{project}/global/previewFeatures/{previewFeature}',
+        request_field='previewFeatureResource',
         request_type_name='ComputePreviewFeaturesUpdateRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -21751,6 +21751,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeReservationSubBlocksListRequest',
         response_type_name='ReservationSubBlocksListResponse',
+        supports_download=False,
+    )
+
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Allows customers to perform maintenance on a reservation subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationSubBlocks.performMaintenance',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/performMaintenance',
+        request_field='',
+        request_type_name='ComputeReservationSubBlocksPerformMaintenanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

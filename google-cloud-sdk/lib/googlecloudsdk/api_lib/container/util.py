@@ -130,6 +130,7 @@ NC_MEMORY_MANAGER_POLICY = 'policy'
 NC_TOPOLOGY_MANAGER = 'topologyManager'
 NC_TOPOLOGY_MANAGER_POLICY = 'policy'
 NC_TOPOLOGY_MANAGER_SCOPE = 'scope'
+NC_SINGLE_PROCESS_OOMKILL = 'singleProcessOomKill'
 
 NC_CC_PRIVATE_CR_CONFIG = 'privateRegistryAccessConfig'
 NC_CC_PRIVATE_CR_CONFIG_ENABLED = 'enabled'
@@ -800,6 +801,7 @@ def LoadSystemConfigFromYAML(
         NC_IMAGE_MAXIMUM_GC_AGE: str,
         NC_TOPOLOGY_MANAGER: dict,
         NC_MEMORY_MANAGER: dict,
+        NC_SINGLE_PROCESS_OOMKILL: bool,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields
@@ -838,6 +840,9 @@ def LoadSystemConfigFromYAML(
     node_config.kubeletConfig.imageMaximumGcAge = kubelet_config_opts.get(
         NC_IMAGE_MAXIMUM_GC_AGE
     )
+    node_config.kubeletConfig.singleProcessOomKill = kubelet_config_opts.get(
+        NC_SINGLE_PROCESS_OOMKILL
+    )
     # node_config.kubeletConfig.topologyManager = kubelet_config_opts.get(
     #     NC_TOPOLOGY_MANAGER
     # )
@@ -847,7 +852,7 @@ def LoadSystemConfigFromYAML(
      # Parse memory manager.
     memory_manager_opts = kubelet_config_opts.get(NC_MEMORY_MANAGER)
     if memory_manager_opts:
-      node_config.kubeletConfig.memoryManager = messages.MemoryManagerConfig()
+      node_config.kubeletConfig.memoryManager = messages.MemoryManager()
       memory_manager_policy = memory_manager_opts.get(NC_MEMORY_MANAGER_POLICY)
       if memory_manager_policy:
         node_config.kubeletConfig.memoryManager.policy = memory_manager_policy
@@ -855,7 +860,7 @@ def LoadSystemConfigFromYAML(
     topology_manager_opts = kubelet_config_opts.get(NC_TOPOLOGY_MANAGER)
     if topology_manager_opts:
       node_config.kubeletConfig.topologyManager = (
-          messages.TopologyManagerConfig()
+          messages.TopologyManager()
       )
       topology_manager_policy = topology_manager_opts.get(
           NC_TOPOLOGY_MANAGER_POLICY

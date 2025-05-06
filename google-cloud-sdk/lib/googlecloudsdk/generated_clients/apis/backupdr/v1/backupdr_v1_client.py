@@ -144,33 +144,6 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def FetchForResourceTypeOld(self, request, global_params=None):
-      r"""List BackupPlanAssociations for a given resource type. DEPRECATED.
-
-      Args:
-        request: (BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOldRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FetchBackupPlanAssociationsForResourceTypeResponse) The response message.
-      """
-      config = self.GetMethodConfig('FetchForResourceTypeOld')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    FetchForResourceTypeOld.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations:fetchForResourceTypeOld',
-        http_method='GET',
-        method_id='backupdr.projects.locations.backupPlanAssociations.fetchForResourceTypeOld',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'resourceType'],
-        relative_path='v1/{+parent}/backupPlanAssociations:fetchForResourceTypeOld',
-        request_field='',
-        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeOldRequest',
-        response_type_name='FetchBackupPlanAssociationsForResourceTypeResponse',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details of a single BackupPlanAssociation.
 

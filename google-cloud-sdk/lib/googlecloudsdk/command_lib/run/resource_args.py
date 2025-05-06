@@ -548,10 +548,13 @@ def GetRouteResourceSpec():
   )
 
 
-def GetRevisionResourceSpec():
+# For Worker Pool revisions, we don't use the namespace attribute.
+def GetRevisionResourceSpec(is_worker_pool_revision=False):
   return concepts.ResourceSpec(
       'run.namespaces.revisions',
-      namespacesId=NamespaceAttributeConfig(),
+      namespacesId=NamespaceAttributeConfig()
+      if not is_worker_pool_revision
+      else concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       revisionsId=RevisionAttributeConfig(),
       resource_name='revision',
   )

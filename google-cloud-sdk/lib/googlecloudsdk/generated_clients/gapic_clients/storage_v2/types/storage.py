@@ -2990,7 +2990,8 @@ class Bucket(proto.Message):
             bucket, in the format of
             "projects/{projectIdentifier}".
             {projectIdentifier} can be the project ID or
-            project number.
+            project number. Output values will always be in
+            project number format.
         metageneration (int):
             Output only. The metadata generation of this
             bucket.

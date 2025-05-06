@@ -172,6 +172,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GIVERSIONS_MINORVERSIONS = (
+      'projects.locations.giVersions.minorVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/giVersions/'
+              '{giVersionsId}/minorVersions/{minorVersionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ODBNETWORKS = (
       'projects.locations.odbNetworks',
       '{+name}',

@@ -866,7 +866,7 @@ def AddServiceAccountFlag(parser):
       running function, and determines what permissions the function has.
 
       If not provided, the function will use the project's default service
-      account.
+      account for Compute Engine.
       """,
   )
 

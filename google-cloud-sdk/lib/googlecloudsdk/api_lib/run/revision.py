@@ -38,6 +38,8 @@ ENABLE_WORKLOAD_CERTIFICATE_ANNOTATION = (
     'run.googleapis.com/enable-workload-certificate'
 )
 # gcloud-disable-gdu-domain
+MESH_DATAPLANE_ANNOTATION = 'run.googleapis.com/mesh-dataplane'
+# gcloud-disable-gdu-domain
 BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME = (
     'run.googleapis.com/linux-base-image-update'
 )

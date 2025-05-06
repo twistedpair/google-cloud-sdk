@@ -100,9 +100,7 @@ def _GetQuotaLimit(region, project, accelerator_type):
       'aiplatform.googleapis.com',
       _ACCELERATOR_TYPE_TO_QUOTA_ID_MAP[accelerator_type],
   )
-  # Skip the last item in the list because it only contains the list of
-  # supported region.
-  for region_info in accelerator_quota.dimensionsInfos[:-1]:
+  for region_info in accelerator_quota.dimensionsInfos:
     if region_info.applicableLocations[0] == region:
       return region_info.details.value or 0
   return 0
@@ -283,7 +281,8 @@ def CheckAcceleratorQuota(
   quota_limit = _GetQuotaLimit(args.region, project, accelerator_type)
   if quota_limit < accelerator_count:
     raise core_exceptions.Error(
-        f'The project does not have enough quota for {accelerator_type} in'
+        'The project does not have enough quota for'
+        f' {_ACCELERATOR_TYPE_TP_QUOTA_METRIC_MAP[accelerator_type]} in'
         f' {args.region} to'
         f' deploy the model. The quota limit is {quota_limit} and you are'
         f' requesting for {accelerator_count}. Please'
@@ -294,7 +293,8 @@ def CheckAcceleratorQuota(
   current_usage = _GetQuotaUsage(args.region, project, accelerator_type)
   if current_usage + accelerator_count > quota_limit:
     raise core_exceptions.Error(
-        f'The project does not have enough quota for {accelerator_type} in'
+        'The project does not have enough quota for'
+        f' {_ACCELERATOR_TYPE_TP_QUOTA_METRIC_MAP[accelerator_type]} in'
         f' {args.region} to'
         f' deploy the model. The current usage is {current_usage} out of'
         f' {quota_limit} and you are'

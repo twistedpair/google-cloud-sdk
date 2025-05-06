@@ -20,6 +20,7 @@ from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
 from googlecloudsdk.api_lib.datastream import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope.arg_parsers import HostPort
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -172,6 +173,29 @@ class ConnectionProfilesClient:
     gcs_profile.rootPath = args.root_path if args.root_path else '/'
     return gcs_profile
 
+  def _GetMongodbProfile(self, args):
+    """Returns the MongoDB profile message based on the given args."""
+    addresses = []
+    for host_address in args.mongodb_host_addresses:
+      hostport = HostPort.Parse(host_address)
+      addresses.append(
+          self._messages.HostAddress(
+              hostname=hostport.host, port=int(hostport.port)
+          )
+      )
+    profile = self._messages.MongodbProfile(
+        hostAddresses=addresses,
+        username=args.mongodb_username,
+        replicaSet=args.mongodb_replica_set,
+        password=args.mongodb_password,
+        secretManagerStoredPassword=args.mongodb_secret_manager_stored_password,
+    )
+    if args.mongodb_srv_connection_format:
+      profile.srvConnectionFormat = {}
+    if args.mongodb_standard_connection_format:
+      profile.standardConnectionFormat = {}
+    return profile
+
   def _ParseSslConfig(self, data):
     return self._messages.MysqlSslConfig(
         clientKey=data.get('client_key'),
@@ -261,6 +285,8 @@ class ConnectionProfilesClient:
       connection_profile_obj.salesforceProfile = self._GetSalesforceProfile(
           args
       )
+    elif cp_type == 'MONGODB':
+      connection_profile_obj.mongodbProfile = self._GetMongodbProfile(args)
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,
@@ -608,6 +634,42 @@ class ConnectionProfilesClient:
           'salesforceProfile.oauth2ClientCredentials.secretManagerStoredClientSecret'
       )
 
+  def _UpdateMongodbProfile(self, connection_profile, args, update_fields):
+    """Updates MongoDB connection profile."""
+    if args.IsSpecified('mongodb_host_addresses'):
+      addresses = []
+      for host_address in args.mongodb_host_addresses:
+        hostname, port = host_address.split(':')
+        addresses.append(
+            self._messages.HostAddress(hostname=hostname, port=int(port))
+        )
+      connection_profile.mongodbProfile.hostAddresses = addresses
+      update_fields.append('monogodbProfile.hostAddresses')
+    if args.IsSpecified('mongodb_replica_set'):
+      connection_profile.mongodbProfile.replicaSet = args.mongodb_replica_set
+      update_fields.append('mongodbProfile.replicaSet')
+    if args.IsSpecified('mongodb_srv_connection_format') or args.IsSpecified(
+        'mongodb_standard_connection_format'
+    ):
+      if args.mongodb_srv_connection_format:
+        connection_profile.mongodbProfile.srvConnectionFormat = {}
+      if args.mongodb_standard_connection_format:
+        connection_profile.mongodbProfile.standardConnectionFormat = {}
+      update_fields.append('mongodbProfile.srvConnectionFormat')
+      update_fields.append('mongodbProfile.standardConnectionFormat')
+    if args.IsSpecified('mongodb_username'):
+      connection_profile.mongodbProfile.username = args.mongodb_username
+      update_fields.append('mongodbProfile.username')
+    if args.IsSpecified('mongodb_password') or args.IsSpecified(
+        'mongodb_secret_manager_stored_password'
+    ):
+      connection_profile.mongodbProfile.password = args.mongodb_password
+      connection_profile.mongodbProfile.secretManagerStoredPassword = (
+          args.mongodb_secret_manager_stored_password
+      )
+      update_fields.append('mongodbProfile.password')
+      update_fields.append('mongodbProfile.secretManagerStoredPassword')
+
   def _GetExistingConnectionProfile(self, name):
     get_req = (
         self._messages.DatastreamProjectsLocationsConnectionProfilesGetRequest(
@@ -655,6 +717,8 @@ class ConnectionProfilesClient:
     elif cp_type == 'BIGQUERY':
       # There are currently no parameters that can be updated in a bigquery CP.
       pass
+    elif cp_type == 'MONGODB':
+      self._UpdateMongodbProfile(connection_profile, args, update_fields)
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,

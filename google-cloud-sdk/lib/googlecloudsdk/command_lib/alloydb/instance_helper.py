@@ -171,11 +171,16 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       outbound_public_ip=args.outbound_public_ip,
   )
 
-  if args.allowed_psc_projects or args.psc_network_attachment_uri is not None:
+  if (
+      args.allowed_psc_projects
+      or args.psc_network_attachment_uri is not None
+      or args.psc_auto_connections is not None
+  ):
     instance_resource.pscInstanceConfig = PscInstanceConfig(
         alloydb_messages=alloydb_messages,
         allowed_psc_projects=args.allowed_psc_projects,
         psc_network_attachment_uri=args.psc_network_attachment_uri,
+        psc_auto_connections=args.psc_auto_connections,
     )
 
   return instance_resource
@@ -271,11 +276,16 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
       authorized_external_networks=args.authorized_external_networks,
       outbound_public_ip=args.outbound_public_ip,
   )
-  if args.allowed_psc_projects or args.psc_network_attachment_uri is not None:
+  if (
+      args.allowed_psc_projects
+      or args.psc_network_attachment_uri is not None
+      or args.psc_auto_connections is not None
+  ):
     instance_resource.pscInstanceConfig = PscInstanceConfig(
         alloydb_messages=alloydb_messages,
         allowed_psc_projects=args.allowed_psc_projects,
         psc_network_attachment_uri=args.psc_network_attachment_uri,
+        psc_auto_connections=args.psc_auto_connections,
     )
   return instance_resource
 
@@ -463,12 +473,16 @@ def ConstructInstanceAndUpdatePathsFromArgs(
       args.allowed_psc_projects is not None
       or args.psc_network_attachment_uri is not None
       or args.clear_psc_network_attachment_uri
+      or args.psc_auto_connections is not None
+      or args.clear_psc_auto_connections
   ):
     instance_resource.pscInstanceConfig = PscInstanceConfig(
         alloydb_messages=alloydb_messages,
         allowed_psc_projects=args.allowed_psc_projects,
         psc_network_attachment_uri=args.psc_network_attachment_uri,
         clear_psc_network_attachment_uri=args.clear_psc_network_attachment_uri,
+        psc_auto_connections=args.psc_auto_connections,
+        clear_psc_auto_connections=args.clear_psc_auto_connections,
     )
   if (
       args.psc_network_attachment_uri is not None
@@ -477,6 +491,8 @@ def ConstructInstanceAndUpdatePathsFromArgs(
     paths.append('pscInstanceConfig.pscInterfaceConfigs')
   if args.allowed_psc_projects is not None:
     paths.append('pscInstanceConfig.allowedConsumerProjects')
+  if args.psc_auto_connections is not None or args.clear_psc_auto_connections:
+    paths.append('pscInstanceConfig.pscAutoConnections')
   return instance_resource, paths
 
 
@@ -889,6 +905,8 @@ def PscInstanceConfig(**kwargs):
   clear_psc_network_attachment_uri = kwargs.get(
       'clear_psc_network_attachment_uri'
   )
+  psc_auto_connections = kwargs.get('psc_auto_connections')
+  clear_psc_auto_connections = kwargs.get('clear_psc_auto_connections')
 
   psc_instance_config = alloydb_messages.PscInstanceConfig()
   if allowed_psc_projects:
@@ -902,6 +920,14 @@ def PscInstanceConfig(**kwargs):
             psc_network_attachment_uri=psc_network_attachment_uri,
         )
     )
+  if clear_psc_auto_connections:
+    psc_instance_config.pscAutoConnections = []
+  elif psc_auto_connections is not None:
+    psc_instance_config.pscAutoConnections = _PscAutoConnections(
+        alloydb_messages=alloydb_messages,
+        psc_auto_connections=psc_auto_connections,
+    )
+
   return psc_instance_config
 
 
@@ -913,6 +939,27 @@ def _PscInterfaceConfig(
   psc_interface_config = alloydb_messages.PscInterfaceConfig()
   psc_interface_config.networkAttachmentResource = psc_network_attachment_uri
   return psc_interface_config
+
+
+def _PscAutoConnections(
+    alloydb_messages,
+    psc_auto_connections=None,
+):
+  """Generates the PSC auto connections for the instance."""
+  out_psc_auto_connections = []
+  for connection in psc_auto_connections:
+    config = alloydb_messages.PscAutoConnectionConfig()
+    config.consumerProject = connection.get('project')
+    config.consumerNetwork = connection.get('network')
+
+    if config.consumerProject and config.consumerNetwork:
+      out_psc_auto_connections.append(config)
+    else:
+      raise DetailedArgumentError(
+          'Invalid PSC auto connection. Please provide both project and network'
+          ' for the PSC auto connection.'
+      )
+  return out_psc_auto_connections
 
 
 def _ParseAssignInboundPublicIp(assign_inbound_public_ip):

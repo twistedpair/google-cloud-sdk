@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.backupdr import util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -90,6 +91,47 @@ def AddLicensesArg(parser, required=False):
           'A list of URIs to license resources. The provided licenses will be'
           ' added onto the created disks to indicate the licensing and billing'
           ' policies.'
+      ),
+  )
+
+
+def AddGuestOsFeaturesArgs(parser, required=False):
+  """Adds a --guest-os-features flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    required: Whether the argument is required or not.
+  """
+  guest_os_features_options = (
+      'VIRTIO_SCSI_MULTIQUEUE',
+      'WINDOWS',
+      'MULTI_IP_SUBNET',
+      'UEFI_COMPATIBLE',
+      'SEV_CAPABLE',
+      'SEV_LIVE_MIGRATABLE',
+      'SEV_LIVE_MIGRATABLE_V2',
+      'SEV_SNP_CAPABLE',
+      'GVNIC',
+      'IDPF',
+      'TDX_CAPABLE',
+      'SUSPEND_RESUME_COMPATIBLE',
+  )
+  guest_os_features_validator = util.GetOneOfValidator(
+      'guest-os-features', guest_os_features_options
+  )
+  parser.add_argument(
+      '--guest-os-features',
+      type=arg_parsers.ArgList(guest_os_features_validator),
+      metavar='GUEST_OS_FEATURES',
+      required=required,
+      help=(
+          'Enables one or more features for VM instances that use the image'
+          ' for their boot disks. See the descriptions of supported features'
+          ' at: https://cloud.google.com/compute/docs/images/'
+          'create-delete-deprecate-private-images#guest-os-features.'
+          ' GUEST_OS_FEATURE must be one of: {}.'.format(
+              ', '.join(guest_os_features_options)
+          )
       ),
   )
 

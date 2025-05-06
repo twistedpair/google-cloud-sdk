@@ -1,0 +1,59 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: datastream v1 MongodbProfile export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- hostAddresses
+- username
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  hostAddresses:
+    description: List of host addresses for a MongoDB cluster.
+    type: array
+    items:
+      $ref: HostAddress.yaml
+  password:
+    description: |-
+      Password for the MongoDB connection. Mutually exclusive with the
+      `secret_manager_stored_password` field.
+    type: string
+  replicaSet:
+    description: |-
+      Name of the replica set. Only needed for self hosted replica set type
+      MongoDB cluster.
+    type: string
+  secretManagerStoredPassword:
+    description: |-
+      A reference to a Secret Manager resource name storing the SQLServer
+      connection password. Mutually exclusive with the `password` field.
+    type: string
+  srvConnectionFormat:
+    description: Srv connection format.
+    type: srvconnectionformat
+  standardConnectionFormat:
+    description: Standard connection format.
+    type: standardconnectionformat
+  username:
+    description: Username for the MongoDB connection.
+    type: string

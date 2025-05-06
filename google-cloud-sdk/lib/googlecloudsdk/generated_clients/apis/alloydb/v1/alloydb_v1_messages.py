@@ -2585,6 +2585,13 @@ class InstanceNetworkConfig(_messages.Message):
   r"""Metadata related to instance-level network configuration.
 
   Fields:
+    allocatedIpRangeOverride: Optional. Name of the allocated IP range for the
+      private IP AlloyDB instance, for example: "google-managed-services-
+      default". If set, the instance IPs will be created from this allocated
+      range and will override the IP range used by the parent cluster. The
+      range name must comply with [RFC 1035](http://go/rfc/1035).
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
     authorizedExternalNetworks: Optional. A list of external network
       authorized to access this instance.
     enableOutboundPublicIp: Optional. Enabling an outbound public IP address
@@ -2597,10 +2604,11 @@ class InstanceNetworkConfig(_messages.Message):
       `projects/{project_number}/global/networks/{network_id}`.
   """
 
-  authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
-  enableOutboundPublicIp = _messages.BooleanField(2)
-  enablePublicIp = _messages.BooleanField(3)
-  network = _messages.StringField(4)
+  allocatedIpRangeOverride = _messages.StringField(1)
+  authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 2, repeated=True)
+  enableOutboundPublicIp = _messages.BooleanField(3)
+  enablePublicIp = _messages.BooleanField(4)
+  network = _messages.StringField(5)
 
 
 class InstanceUpgradeDetails(_messages.Message):

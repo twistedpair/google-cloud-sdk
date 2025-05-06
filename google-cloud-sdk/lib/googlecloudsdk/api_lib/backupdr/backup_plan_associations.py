@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.command_lib.backupdr import util as command_util
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.backupdr.v1 import backupdr_v1_messages
 
@@ -91,3 +92,22 @@ class BackupPlanAssociationsClient(util.BackupDrClientBase):
         triggerBackupRequest=trigger_backup_request,
     )
     return self.service.TriggerBackup(request)
+
+  def FetchForResourceType(
+      self,
+      location,
+      resource_type,
+      filter_expression=None,
+      page_size=None,
+      order_by=None,
+  ):
+    project = properties.VALUES.core.project.GetOrFail()
+    parent = "projects/{}/locations/{}".format(project, location)
+    request = self.messages.BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeRequest(
+        parent=parent,
+        resourceType=resource_type,
+        pageSize=page_size,
+        filter=filter_expression,
+        orderBy=order_by,
+    )
+    return self.service.FetchForResourceType(request)

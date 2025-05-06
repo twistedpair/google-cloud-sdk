@@ -41,6 +41,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CONNECTIONS_REPOSITORIES = (
+      'projects.locations.connections.repositories',
+      'projects/{projectsId}/locations/{locationsId}/connections/'
+      '{connectionsId}/repositories/{repositoriesId}',
+      {},
+      ['projectsId', 'locationsId', 'connectionsId', 'repositoriesId'],
+      True
+  )
   PROJECTS_LOCATIONS_FLEETPACKAGES = (
       'projects.locations.fleetPackages',
       '{+name}',

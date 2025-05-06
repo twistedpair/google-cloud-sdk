@@ -4355,9 +4355,6 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 ::
 
                     "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
 
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this

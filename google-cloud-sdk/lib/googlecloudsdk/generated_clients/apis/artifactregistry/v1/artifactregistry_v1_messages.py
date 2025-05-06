@@ -3190,10 +3190,8 @@ class Repository(_messages.Message):
     registryUri: Output only. The repository endpoint, for example: `us-
       docker.pkg.dev/my-proj/my-repo`.
     remoteRepositoryConfig: Configuration specific for a Remote Repository.
-    satisfiesPzi: Output only. If set, the repository satisfies physical zone
-      isolation.
-    satisfiesPzs: Output only. If set, the repository satisfies physical zone
-      separation.
+    satisfiesPzi: Output only. Whether or not this repository satisfies PZI.
+    satisfiesPzs: Output only. Whether or not this repository satisfies PZS.
     sbomConfig: Optional. Config and state for sbom generation for resources
       within this Repository.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
@@ -3659,8 +3657,9 @@ class UploadGenericArtifactRequest(_messages.Message):
     versionId: The ID of the version of the generic artifact. If the version
       does not exist, a new version will be created. The version_id must start
       and end with a letter or number, can only contain lowercase letters,
-      numbers, hyphens and periods, i.e. [a-z0-9-.] and cannot exceed a total
-      of 128 characters. Creating a version called `latest` is not allowed.
+      numbers, the following characters [-.+~:], i.e.[a-z0-9-.+~:] and cannot
+      exceed a total of 128 characters. Creating a version called `latest` is
+      not allowed.
   """
 
   filename = _messages.StringField(1)

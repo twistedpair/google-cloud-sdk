@@ -350,6 +350,40 @@ class GoogleCloudRecaptchaenterpriseV1AssessmentEnvironment(_messages.Message):
   version = _messages.StringField(2)
 
 
+class GoogleCloudRecaptchaenterpriseV1Bot(_messages.Message):
+  r"""Bot information and metadata.
+
+  Enums:
+    BotTypeValueValuesEnum: Optional. Enumerated field representing the type
+      of bot.
+
+  Fields:
+    botType: Optional. Enumerated field representing the type of bot.
+    name: Optional. Enumerated string value that indicates the identity of the
+      bot, formatted in kebab-case.
+  """
+
+  class BotTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Enumerated field representing the type of bot.
+
+    Values:
+      BOT_TYPE_UNSPECIFIED: Default unspecified type.
+      AI_AGENT: Software program that interacts with a site and performs tasks
+        autonomously.
+      CONTENT_SCRAPER: Software that extracts specific data from sites for
+        use.
+      SEARCH_INDEXER: Software that crawls sites and stores content for the
+        purpose of efficient retrieval, likely as part of a search engine.
+    """
+    BOT_TYPE_UNSPECIFIED = 0
+    AI_AGENT = 1
+    CONTENT_SCRAPER = 2
+    SEARCH_INDEXER = 3
+
+  botType = _messages.EnumField('BotTypeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
   r"""Metrics related to challenges.
 
@@ -1081,6 +1115,8 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
     score: Output only. Legitimate event score from 0.0 to 1.0. (1.0 means
       very likely legitimate traffic while 0.0 means very likely non-
       legitimate traffic).
+    verifiedBots: Output only. Bots with identities that have been verified by
+      reCAPTCHA and detected in the event.
   """
 
   class ChallengeValueValuesEnum(_messages.Enum):
@@ -1131,6 +1167,7 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
   extendedVerdictReasons = _messages.StringField(2, repeated=True)
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 3, repeated=True)
   score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  verifiedBots = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Bot', 5, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1ScoreDistribution(_messages.Message):

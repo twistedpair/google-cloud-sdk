@@ -183,6 +183,7 @@ def PopulateClusterMessage(req, messages, args):
     req.cluster.controlPlane.local.controlPlaneNodeStorageSchema = (
         args.control_plane_node_storage_schema
     )
+  SetContainerRuntimeConfig(req, args, messages)
 
 
 def PopulateClusterAlphaMessage(req, args):
@@ -202,7 +203,6 @@ def PopulateClusterAlphaMessage(req, args):
     )
   resource_args.SetSystemAddonsConfig(args, req)
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
-  SetContainerRuntimeConfig(req, args)
   EnableClusterIsolationConfig(req, args)
 
 
@@ -279,14 +279,14 @@ def ValidateClusterCreateRequest(req, release_track):
   return None
 
 
-def SetContainerRuntimeConfig(req, args):
+def SetContainerRuntimeConfig(req, args, messages):
   """Set container runtime config in the cluster request message.
 
   Args:
     req: Create cluster request message.
     args: Command line arguments.
+    messages: Message module of edgecontainer cluster.
   """
-  messages = util.GetMessagesModule(base.ReleaseTrack.ALPHA)
   if flags.FlagIsExplicitlySet(args, 'container_default_runtime_class'):
     req.cluster.containerRuntimeConfig = messages.ContainerRuntimeConfig()
     if args.container_default_runtime_class.upper() == 'GVISOR':

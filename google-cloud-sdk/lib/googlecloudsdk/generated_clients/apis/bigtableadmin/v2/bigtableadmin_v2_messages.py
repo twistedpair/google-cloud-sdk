@@ -1581,9 +1581,8 @@ class BigtableadminProjectsInstancesTablesSchemaBundlesListRequest(_messages.Mes
 
   Fields:
     pageSize: The maximum number of schema bundles to return. If the value is
-      positive, the server may return at most this value. If unspecified, or
-      the value is non-positive, the server will return the maximum allowed
-      page size.
+      positive, the server may return at most this value. If unspecified, the
+      server will return the maximum allowed page size.
     pageToken: A page token, received from a previous `ListSchemaBundles`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListSchemaBundles` must match the call
@@ -3094,6 +3093,12 @@ class Instance(_messages.Message):
       `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
       associated with a given resource. * Keys and values must both be under
       128 bytes.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing" Tags and Labels (above) are both used to
+      bind metadata to resources, with different use-cases. See
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
+      in-depth overview on the difference between tags and labels.
 
   Fields:
     createTime: Output only. A commit timestamp representing when this
@@ -3116,6 +3121,12 @@ class Instance(_messages.Message):
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the instance.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing" Tags and Labels (above) are both used to
+      bind metadata to resources, with different use-cases. See
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
+      in-depth overview on the difference between tags and labels.
     type: The type of the instance. Defaults to `PRODUCTION`.
   """
 
@@ -3181,6 +3192,35 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing" Tags and Labels (above) are both used to
+    bind metadata to resources, with different use-cases. See
+    https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
+    in-depth overview on the difference between tags and labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
@@ -3188,7 +3228,8 @@ class Instance(_messages.Message):
   satisfiesPzi = _messages.BooleanField(5)
   satisfiesPzs = _messages.BooleanField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  tags = _messages.MessageField('TagsValue', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class Intersection(_messages.Message):
@@ -4303,6 +4344,12 @@ class Table(_messages.Message):
       statistics about the entire table contents. For statistics about a
       specific column family, see ColumnFamilyStats in the mapped ColumnFamily
       collection above.
+    tieredStorageConfig: Rules to specify what data is stored in each storage
+      tier. Different tiers store data differently, providing different trade-
+      offs between cost and performance. Different parts of a table can be
+      stored separately on different tiers. If a config is specified, tiered
+      storage is enabled for this table. Otherwise, tiered storage is
+      disabled. Only SSD instances can configure tiered storage.
   """
 
   class GranularityValueValuesEnum(_messages.Enum):
@@ -4385,6 +4432,7 @@ class Table(_messages.Message):
   restoreInfo = _messages.MessageField('RestoreInfo', 8)
   rowKeySchema = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 9)
   stats = _messages.MessageField('TableStats', 10)
+  tieredStorageConfig = _messages.MessageField('TieredStorageConfig', 11)
 
 
 class TableProgress(_messages.Message):
@@ -4479,6 +4527,32 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TieredStorageConfig(_messages.Message):
+  r"""Config for tiered storage. A valid config must have a valid
+  TieredStorageRule. Otherwise the whole TieredStorageConfig must be unset. By
+  default all data is stored in the SSD tier (only SSD instances can configure
+  tiered storage).
+
+  Fields:
+    infrequentAccess: Rule to specify what data is stored in the infrequent
+      access(IA) tier. The IA tier allows storing more data per node with
+      reduced performance.
+  """
+
+  infrequentAccess = _messages.MessageField('TieredStorageRule', 1)
+
+
+class TieredStorageRule(_messages.Message):
+  r"""Rule to specify what data is stored in a storage tier.
+
+  Fields:
+    includeIfOlderThan: Include cells older than the given age. For the
+      infrequent access tier, this value must be at least 30 days.
+  """
+
+  includeIfOlderThan = _messages.StringField(1)
 
 
 class Type(_messages.Message):

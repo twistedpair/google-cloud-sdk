@@ -88,6 +88,7 @@ class DiskRestoreConfig(util.RestrictedDict):
         "Description",
         "Labels",
         "Licenses",
+        "GuestOsFeatures",
         "ConfidentialCompute",
         "Type",
         "AccessMode",
@@ -550,6 +551,17 @@ class BackupsClient(util.BackupDrClientBase):
               kmsKeyName=restore_config["KmsKey"],
           )
       )
+
+    # GuestOsFeatures
+    if "GuestOsFeatures" in restore_config:
+      guest_os_features = []
+      for feature in restore_config["GuestOsFeatures"]:
+        guest_os_features.append(
+            self.messages.GuestOsFeature(
+                type=self.messages.GuestOsFeature.TypeValueValuesEnum(feature)
+            )
+        )
+      restore_request.diskRestoreProperties.guestOsFeature = guest_os_features
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(
         name=resource.RelativeName(), restoreBackupRequest=restore_request

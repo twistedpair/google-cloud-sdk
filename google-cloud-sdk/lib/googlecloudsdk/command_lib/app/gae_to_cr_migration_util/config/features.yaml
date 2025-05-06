@@ -1,0 +1,177 @@
+---
+unsupported:
+- path:
+    admin_api: inboundServices
+    app_yaml: inbound_services
+  severity: major
+  reason: Cloud Run does not support GAE bundled services.
+- path:
+    admin_api: handlers
+    app_yaml: handlers
+  severity: major
+  reason: No support for routing based on url patterns.
+- path:
+    admin_api: errorHandlers
+    app_yaml: error_handlers
+  severity: major
+  reason: No support for routing based on url patterns.
+- path:
+    admin_api: appEngineApis
+    app_yaml: app_engine_apis
+  severity: major
+  reason: No support for App Engine bundled services.
+- path:
+    admin_api: buildEnvVariables
+    app_yaml: build_env_variables
+  severity: major
+  reason: No support for passing environment vars to buildpacks at the time of building.
+- path:
+    admin_api: automaticScaling.standardSchedulerSettings.minInstances
+    app_yaml: automatic_scaling.min_instances
+  range:
+    max: 1000
+    min: 0
+  severity: major
+  reason: Cloud Run supports automatic scaling min instances values between 0 to 1000.
+  flags:
+  - --min-instances
+- path:
+    admin_api: automaticScaling.standardSchedulerSettings.maxInstances
+    app_yaml: automatic_scaling.max_instances
+  range:
+    max: 1000 //check what is the upper limit for max instances its default value is 100.
+    min: 0
+  severity: major
+  reason: Cloud Run supports automatic scaling max instances values between 0 to 1000.
+  flags:
+  - --max-instances
+- path:
+    admin_api: manualScaling.instances
+    app_yaml: manual_scaling.instances
+  range:
+    max: 1000
+    min: 0
+  severity: major
+  reason: Cloud Run supports manual scaling values between 0 and 1000.
+  flags:
+  - --min-instances
+  - --max-instances
+- path:
+    admin_api: basicScaling.maxInstances
+    app_yaml: basic_scaling.max_instances
+  range:
+    max: 1000
+    min: 0
+  severity: major
+  reason: Cloud Run supports basic scaling values between 0 and 1000.
+  flags:
+  - --min-instances
+  - --max-instances
+- path:
+    admin_api: automaticScaling.maxConcurrentRequests
+    app_yaml: automatic_scaling.max_concurrent_requests
+  range:
+    max: 1000
+    min: 1
+  severity: major
+  reason: Cloud Run supports concurrency values between 1 and 1000.
+  flags:
+  - --concurrency
+- path:
+    admin_api: automaticScaling.targetConcurrentRequests
+    app_yaml: automatic_scaling.target_concurrent_requests
+  range:
+    max: 1000
+    min: 1
+  severity: major
+  reason: Cloud Run supports concurrency values between 1 and 1000.
+  flags:
+  - --concurrency
+value_limited:
+- path:
+    admin_api: runtimeConfig.pythonVersion
+    app_yaml: runtime_config.python_version
+  known_values:
+  - 2
+  - 3
+  allowed_values:
+  - 3
+  severity: major
+  reason: Cloud Run supports Python 3 runtime only.
+- path:
+    admin_api: runtime
+    app_yaml: runtime
+  known_values:
+  - aspnetcore
+  - custom
+  - java
+  - python39
+  - python310
+  - python311
+  - python312
+  - php81
+  - php82
+  - php83
+  - ruby30
+  - ruby31
+  - ruby32
+  - go120
+  - go121
+  - go122
+  - go123
+  - go124
+  - go125
+  - nodejs16
+  - nodejs18
+  - nodejs20
+  allowed_values:
+  - aspnetcore
+  - custom
+  - java
+  - python39
+  - python310
+  - python311
+  - python312
+  - php81
+  - php82
+  - php83
+  - ruby30
+  - ruby31
+  - ruby32
+  - go120
+  - go121
+  - go122
+  - go123
+  - go124
+  - go125
+  - nodejs16
+  - nodejs18
+  - nodejs20
+  severity: major
+  reason: Cloud Run supports App Engine standard Gen2 runtimes. Older runtimes are not compatible.
+supported:
+- path:
+    admin_api: entrypoint.shell
+    app_yaml: entrypoint
+  flags:
+  - --command
+- path:
+    admin_api: envVariables
+    app_yaml: env_variables
+  flags:
+  - --set-env-vars
+- path:
+    admin_api: vpcAccessConnector.name
+    app_yaml: vpc_access_connector.name
+  flags:
+  - --vpc-connector
+- path:
+    admin_api: vpcAccessConnector.egressSetting
+    app_yaml: vpc_access_connector.egress_setting
+  flags:
+  - --vpc-egress
+- path:
+    admin_api: serviceAccount
+    app_yaml: service_account
+  flags:
+  - --service-account

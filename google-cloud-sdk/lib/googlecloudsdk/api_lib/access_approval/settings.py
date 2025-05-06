@@ -71,6 +71,7 @@ def Update(
     notification_pubsub_topic,
     request_scope_max_width_preference,
     require_customer_visible_justification,
+    approval_policy,
     update_mask,
 ):
   """Update the access approval settings for a resource.
@@ -92,6 +93,7 @@ def Update(
       justification (i.e. Vector Case) is required for a Googler to create an
       Access Ticket to send to the customer when attempting to access customer
       resources.
+    approval_policy: the policy for approving requests
     update_mask: which fields to update
 
   Returns:
@@ -114,6 +116,7 @@ def Update(
       notificationPubsubTopic=notification_pubsub_topic,
       requestScopeMaxWidthPreference=request_scope_max_width_preference,
       requireCustomerVisibleJustification=require_customer_visible_justification,
+      approvalPolicy=approval_policy,
   )
 
   if 'organizations/' in name:

@@ -311,6 +311,35 @@ _SALESFORCE_UPDATE_SOURCE_CONFIG_HELP_TEXT = """
   ```
 """
 
+_MONGODB_SOURCE_CONFIG_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the configuration for MongoDB Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "includeObjects": {},
+      "excludeObjects": {
+        "databases": [
+          {
+            "database": "sampleDb",
+            "collections": [
+              {
+                "collection": "sampleCollection",
+                "fields": [
+                  {
+                    "field": "SAMPLE_FIELD",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+
 
 def ConnectionProfileAttributeConfig(name='connection_profile'):
   return concepts.ResourceParameterAttributeConfig(
@@ -588,6 +617,10 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       help=_SALESFORCE_UPDATE_SOURCE_CONFIG_HELP_TEXT
       if verb == 'update'
       else _SALESFORCE_CREATE_SOURCE_CONFIG_HELP_TEXT,
+  )
+  source_config_parser_group.add_argument(
+      '--mongodb-source-config',
+      help=_MONGODB_SOURCE_CONFIG_HELP_TEXT,
   )
 
   destination_parser = parser.add_group(required=required)

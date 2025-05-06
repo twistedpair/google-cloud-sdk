@@ -3045,6 +3045,7 @@ def AddLabelsFlag(parser, hidden=False, for_node_pool=False):
     help_text = """\
 Labels to apply to the Google Cloud resources of node pools in the
 Kubernetes Engine cluster. These are unrelated to Kubernetes labels.
+Warning: Updating this label will causes the node(s) to be recreated.
 
 Examples:
 
@@ -5317,6 +5318,7 @@ imageGcHighThresholdPercent         | integer (The value must be between [10, 85
 imageMinimumGcAge                   | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
 imageMaximumGcAge                   | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
 allowedUnsafeSysctls                | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
+singleProcessOomKill                | true or false
 
 List of supported keys in memoryManager in 'kubeletConfig'.
 KEY                                        | VALUE
@@ -6735,6 +6737,26 @@ def AddEnableBackupRestoreFlag(parser):
       default=None,
       help=help_text,
       hidden=False,
+  )
+
+
+def AddEnableLustreCSIDriverFlag(parser, hidden=True):
+  """Adds --enable-lustre-csi-driver flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+    Enable the Lustre CSI Driver GKE add-on. This add-on is disabled by default.
+    """
+  parser.add_argument(
+      '--enable-lustre-csi-driver',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
   )
 
 

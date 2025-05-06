@@ -1475,6 +1475,7 @@ class MongodbProfile(_messages.Message):
       resource name storing the SQLServer connection password. Mutually
       exclusive with the `password` field.
     srvConnectionFormat: Srv connection format.
+    sslConfig: Optional. SSL configuration for the MongoDB connection.
     standardConnectionFormat: Standard connection format.
     username: Required. Username for the MongoDB connection.
   """
@@ -1484,8 +1485,9 @@ class MongodbProfile(_messages.Message):
   replicaSet = _messages.StringField(3)
   secretManagerStoredPassword = _messages.StringField(4)
   srvConnectionFormat = _messages.MessageField('SrvConnectionFormat', 5)
-  standardConnectionFormat = _messages.MessageField('StandardConnectionFormat', 6)
-  username = _messages.StringField(7)
+  sslConfig = _messages.MessageField('MongodbSslConfig', 6)
+  standardConnectionFormat = _messages.MessageField('StandardConnectionFormat', 7)
+  username = _messages.StringField(8)
 
 
 class MongodbSourceConfig(_messages.Message):
@@ -1498,6 +1500,40 @@ class MongodbSourceConfig(_messages.Message):
 
   excludeObjects = _messages.MessageField('MongodbCluster', 1)
   includeObjects = _messages.MessageField('MongodbCluster', 2)
+
+
+class MongodbSslConfig(_messages.Message):
+  r"""MongoDB SSL configuration information.
+
+  Fields:
+    caCertificate: Optional. Input only. PEM-encoded certificate of the CA
+      that signed the source database server's certificate.
+    caCertificateSet: Output only. Indicates whether the ca_certificate field
+      is set.
+    clientCertificate: Optional. Input only. PEM-encoded certificate that will
+      be used by the replica to authenticate against the source database
+      server. If this field is used then the 'client_key' and the
+      'ca_certificate' fields are mandatory.
+    clientCertificateSet: Output only. Indicates whether the
+      client_certificate field is set.
+    clientKey: Optional. Input only. PEM-encoded private key associated with
+      the Client Certificate. If this field is used then the
+      'client_certificate' and the 'ca_certificate' fields are mandatory.
+    clientKeySet: Output only. Indicates whether the client_key field is set.
+    secretManagerStoredClientKey: Optional. Input only. A reference to a
+      Secret Manager resource name storing the PEM-encoded private key
+      associated with the Client Certificate. If this field is used then the
+      'client_certificate' and the 'ca_certificate' fields are mandatory.
+      Mutually exclusive with the `client_key` field.
+  """
+
+  caCertificate = _messages.StringField(1)
+  caCertificateSet = _messages.BooleanField(2)
+  clientCertificate = _messages.StringField(3)
+  clientCertificateSet = _messages.BooleanField(4)
+  clientKey = _messages.StringField(5)
+  clientKeySet = _messages.BooleanField(6)
+  secretManagerStoredClientKey = _messages.StringField(7)
 
 
 class MostRecentStartPosition(_messages.Message):

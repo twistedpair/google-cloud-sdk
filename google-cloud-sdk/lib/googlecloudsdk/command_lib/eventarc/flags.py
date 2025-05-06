@@ -1611,6 +1611,7 @@ def AddKafkaSourceAuthGroup(parser, required=False):
   _AddKafkaSourceSASLUsernameArg(sasl_group, required=True)
   _AddKafkaSourceSASLPasswordArg(sasl_group, required=True)
   tls_group = auth_group.add_group(
+      hidden=True,
       mutex=False,
       help=(
           'Flags for specifying mutual TLS authentication with the Kafka'
@@ -1644,7 +1645,7 @@ def _AddKafkaSourceSASLUsernameArg(parser, required=False):
   The SASL username to use for authentication with the Kafka broker.
   This flag is required if --sasl-mechanism is set.
   Examples:
-  $ gcloud eventarc kafka-sources create example-kafka-source --sasl-username=my-username
+  $ gcloud eventarc kafka-sources create example-kafka-source --sasl-username='projects/123/secrets/my-username/versions/1'
   """
   parser.add_argument(
       '--sasl-username',

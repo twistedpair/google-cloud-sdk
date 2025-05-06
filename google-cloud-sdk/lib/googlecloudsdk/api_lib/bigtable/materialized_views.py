@@ -63,10 +63,12 @@ def Create(
 
   instance_ref = materialized_view_ref.Parent()
 
+  materialized_view = msgs.MaterializedView(query=query)
+  if deletion_protection is not None:
+    materialized_view.deletionProtection = deletion_protection
+
   msg = msgs.BigtableadminProjectsInstancesMaterializedViewsCreateRequest(
-      materializedView=msgs.MaterializedView(
-          query=query, deletionProtection=deletion_protection
-      ),
+      materializedView=materialized_view,
       materializedViewId=materialized_view_ref.Name(),
       parent=instance_ref.RelativeName(),
   )

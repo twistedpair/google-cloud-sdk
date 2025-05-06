@@ -198,21 +198,21 @@ def Restore(database_ref, backup_ref, encryption_type=None, kms_key=None):
   return client.projects_instances_databases.Restore(req)
 
 
-def Update(database_ref, enable_drop_protection, add_kms_keys=None):
+def Update(database_ref, enable_drop_protection, kms_keys=None):
   """Update a database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
 
-  if enable_drop_protection and add_kms_keys:
+  if enable_drop_protection and kms_keys:
     raise errors.NoFieldsSpecifiedError(
         'Multiple updates requested. Both flag --[no-]enable-drop-protection'
-        ' and --add-kms-keys were specified. Please specify only one flag.'
+        ' and --kms-keys were specified. Please specify only one flag.'
     )
 
-  if enable_drop_protection is None and add_kms_keys is None:
+  if enable_drop_protection is None and kms_keys is None:
     raise errors.NoFieldsSpecifiedError(
         'No updates requested. Need to specify either flag '
-        '--[no-]enable-drop-protection OR --add-kms-keys.'
+        '--[no-]enable-drop-protection OR --kms-keys.'
     )
 
   database_obj = None
@@ -223,11 +223,11 @@ def Update(database_ref, enable_drop_protection, add_kms_keys=None):
         name=database_ref.RelativeName(),
         enableDropProtection=enable_drop_protection,
     )
-  elif add_kms_keys is not None:
+  elif kms_keys is not None:
     update_mask.append('encryption_config')
     database_obj = msgs.Database(
         name=database_ref.RelativeName(),
-        encryptionConfig=msgs.EncryptionConfig(kmsKeyNames=add_kms_keys),
+        encryptionConfig=msgs.EncryptionConfig(kmsKeyNames=kms_keys),
     )
   req = msgs.SpannerProjectsInstancesDatabasesPatchRequest(
       database=database_obj,

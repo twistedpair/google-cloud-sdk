@@ -22,9 +22,13 @@ from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.calliope import exceptions
 
 
+IMPORT_TYPE = 'IMPORT'
+EXPORT_TYPE = 'EXPORT'
+
+
 def GenerateMetadataJob(args):
   """Generates a Metadata Job."""
-  if args.type == 'IMPORT':
+  if args.type == IMPORT_TYPE:
     module = dataplex_api.GetMessageModule()
     return module.GoogleCloudDataplexV1MetadataJob(
         labels=dataplex_api.CreateLabels(
@@ -34,6 +38,17 @@ def GenerateMetadataJob(args):
             args.type
         ),
         importSpec=GenerateImportMetadataJobSpec(args),
+    )
+  elif args.type == EXPORT_TYPE:
+    module = dataplex_api.GetMessageModule()
+    return module.GoogleCloudDataplexV1MetadataJob(
+        labels=dataplex_api.CreateLabels(
+            module.GoogleCloudDataplexV1MetadataJob, args
+        ),
+        type=module.GoogleCloudDataplexV1MetadataJob.TypeValueValuesEnum(
+            args.type
+        ),
+        exportSpec=GenerateExportMetadataJobSpec(args),
     )
   raise exceptions.BadArgumentException(
       '--type', 'Current type is not supported in Gcloud.'
@@ -63,6 +78,29 @@ def GenerateImportMetadataJobSpec(args):
         args.import_log_level
     )
   return import_job_spec
+
+
+def GenerateExportMetadataJobSpec(args):
+  """Generates a Metadata Export Job Spec."""
+  module = dataplex_api.GetMessageModule()
+  export_job_spec = module.GoogleCloudDataplexV1MetadataJobExportJobSpec(
+      outputPath=args.export_output_path,
+      scope=module.GoogleCloudDataplexV1MetadataJobExportJobSpecExportJobScope(
+          entryTypes=args.export_entry_types,
+          aspectTypes=args.export_aspect_types,
+      ),
+  )
+  if hasattr(args, 'export_organization_level') and args.IsSpecified(
+      'export_organization_level'
+  ):
+    export_job_spec.scope.organizationLevel = args.export_organization_level
+  elif hasattr(args, 'export_projects') and args.IsSpecified('export_projects'):
+    export_job_spec.scope.projects = args.export_projects
+  elif hasattr(args, 'export_entry_groups') and args.IsSpecified(
+      'export_entry_groups'
+  ):
+    export_job_spec.scope.entryGroups = args.export_entry_groups
+  return export_job_spec
 
 
 def WaitForOperation(operation):

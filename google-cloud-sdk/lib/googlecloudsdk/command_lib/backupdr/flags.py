@@ -532,7 +532,7 @@ def AddUnlockBackupMinEnforcedRetention(parser):
   )
 
 
-def AddBackupVaultAccessRestrictionEnumFlag(parser):
+def AddBackupVaultAccessRestrictionEnumFlag(parser, command: str):
   """Adds Backup Vault's Access Restriction flag to the parser."""
   choices = [
       'within-project',
@@ -540,22 +540,56 @@ def AddBackupVaultAccessRestrictionEnumFlag(parser):
       'unrestricted',
       'within-org-but-unrestricted-for-ba',
   ]
+  if command == 'create':
+    help_text = (
+        'Authorize certain sources and destinations for data being sent into,'
+        ' or restored from, the backup vault being created. This choice '
+        ' determines the type of resources that can be stored.'
+        ' Restricting access to within your project or organization limits'
+        ' the resources to those managed through the Google Cloud console'
+        ' (e.g., Compute Engine VMs). Unrestricted access is required for'
+        ' resources managed through the management console (e.g., VMware'
+        ' Engine VMs, databases, and file systems).'
+    )
+    default = 'within-org'
+    hidden = False
+  else:
+    help_text = """
+Authorize certain sources and destinations for data being sent into, or restored from the current backup vault.
+
+Access restrictions can be modified to be more or less restrictive.
+
+    ::: More restrictive access restriction update will fail by default if there will be non compliant Data Sources.
+    To allow such updates, use the --force-update-access-restriction flag.
+    :::  For Google Cloud Console resources, the following changes are allowed to make access restrictions more restrictive:
+        *   `UNRESTRICTED` to `WITHIN_PROJECT` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA` / `WITHIN_ORGANIZATION`
+        *   `WITHIN_PROJECT` to `WITHIN_ORGANIZATION` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA`
+
+    ::: For Management Server resources, the following changes are allowed to make access restrictions more restrictive:
+        *   `UNRESTRICTED` to `WITHIN_PROJECT` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA` / `WITHIN_ORGANIZATION`
+        *   `WITHIN_PROJECT` to `WITHIN_ORGANIZATION` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA`
+
+    :::   For both Google Cloud Console and Management Server resources, the following changes are allowed to make access restrictions more restrictive:
+        *   `UNRESTRICTED` to `WITHIN_PROJECT` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA` / `WITHIN_ORGANIZATION`
+        *   `WITHIN_PROJECT` to `WITHIN_ORGANIZATION` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA`
+
+    ::: For Google Cloud Console resources,  the following changes are allowed to make access restrictions less restrictive:
+        *   `WITHIN_ORGANIZATION` to `UNRESTRICTED` / `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA`
+        *   `WITHIN_PROJECT` to `UNRESTRICTED`
+        *   `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA` to `UNRESTRICTED`
+
+    ::: For Management Server resources, the following changes are allowed to make access restrictions less restrictive:
+        *   `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA` to `UNRESTRICTED`
+    """
+    default = None
+    hidden = True
 
   parser.add_argument(
       '--access-restriction',
       choices=choices,
-      default='within-org',
-      hidden=False,
-      help=(
-          'Authorize certain sources and destinations for data being sent into,'
-          ' or restored from, the backup vault being created. This choice is'
-          ' permanent and determines the type of resources that can be stored.'
-          ' Restricting access to within your project or organization limits'
-          ' the resources to those managed through the Google Cloud console'
-          ' (e.g., Compute Engine VMs). Unrestricted access is required for'
-          ' resources managed through the management console (e.g., VMware'
-          ' Engine VMs, databases, and file systems).'
-      ),
+      default=default,
+      hidden=hidden,
+      help=help_text,
   )
 
 

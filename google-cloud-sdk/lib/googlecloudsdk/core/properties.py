@@ -1249,6 +1249,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudresourcesearch = self._Add('cloudresourcesearch', hidden=True)
     self.cloudscheduler = self._Add(
         'cloudscheduler', command='gcloud scheduler')
+    self.cloudshell = self._Add(
+        'cloudshell', command='gcloud cloud-shell', hidden=True)
     self.cloudtasks = self._Add('cloudtasks', command='gcloud tasks')
     self.cloudtrace = self._Add('cloudtrace', command='gcloud trace')
     self.composer = self._Add('composer', command='gcloud composer')

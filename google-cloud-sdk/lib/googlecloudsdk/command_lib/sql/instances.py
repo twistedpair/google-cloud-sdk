@@ -527,6 +527,18 @@ class _BaseInstances(object):
           ),
       )
 
+    if args.IsKnownAndSpecified('custom_subject_alternative_names'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.customSubjectAlternativeNames = (
+          args.custom_subject_alternative_names
+      )
+
+    if args.IsKnownAndSpecified('clear_custom_subject_alternative_names'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.customSubjectAlternativeNames = []
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -554,18 +566,6 @@ class _BaseInstances(object):
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
         )
-
-      if args.IsKnownAndSpecified('custom_subject_alternative_names'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.customSubjectAlternativeNames = (
-            args.custom_subject_alternative_names
-        )
-
-      if args.IsKnownAndSpecified('clear_custom_subject_alternative_names'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.customSubjectAlternativeNames = []
 
     return settings
 

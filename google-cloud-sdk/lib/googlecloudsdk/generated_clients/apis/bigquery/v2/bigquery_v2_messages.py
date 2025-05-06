@@ -4551,8 +4551,8 @@ class JobConfigurationLoad(_messages.Message):
     timePartitioning: Time-based partitioning specification for the
       destination table. Only one of timePartitioning and rangePartitioning
       should be specified.
-    timeZone: Optional. [Experimental] Default time zone that will apply when
-      parsing timestamp values that have no specific time zone.
+    timeZone: Optional. Default time zone that will apply when parsing
+      timestamp values that have no specific time zone.
     timestampFormat: Optional. Date format used for parsing TIMESTAMP values.
     useAvroLogicalTypes: Optional. If sourceFormat is set to "AVRO", indicates
       whether to interpret logical types as the corresponding BigQuery data

@@ -34,6 +34,8 @@ class AuditReport(_messages.Message):
     reportSummary: Output only. Report summary with compliance, violation
       counts etc.
     scope: Output only. The parent scope on which the report was generated.
+    scopeId: Output only. The ID/ Number for the scope on which the audit
+      report was generated.
   """
 
   class ReportGenerationStateValueValuesEnum(_messages.Enum):
@@ -67,6 +69,7 @@ class AuditReport(_messages.Message):
   reportGenerationState = _messages.EnumField('ReportGenerationStateValueValuesEnum', 8)
   reportSummary = _messages.MessageField('ReportSummary', 9)
   scope = _messages.StringField(10)
+  scopeId = _messages.StringField(11)
 
 
 class AuditScopeReport(_messages.Message):
@@ -675,12 +678,14 @@ class ControlDetails(_messages.Message):
       VIOLATION: Violation.
       MANUAL_REVIEW_NEEDED: MANUAL_REVIEW_NEEDED, requires manual review
       ERROR: Error while computing status.
+      AUDIT_NOT_SUPPORTED: Cannot be audited
     """
     COMPLIANCE_STATE_UNSPECIFIED = 0
     COMPLIANT = 1
     VIOLATION = 2
     MANUAL_REVIEW_NEEDED = 3
     ERROR = 4
+    AUDIT_NOT_SUPPORTED = 5
 
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
   control = _messages.MessageField('Control', 2)

@@ -3015,6 +3015,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'observability': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.observability.v1',
+                    client_classpath='observability_v1_client.ObservabilityV1',
+                    base_url='https://observability.googleapis.com/',
+                    messages_modulepath='observability_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'ondemandscanning': {
         'v1':
             APIDef(

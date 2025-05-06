@@ -977,12 +977,14 @@ class GoogleCloudPolicysimulatorV1betaAccessPolicySimulation(_messages.Message):
       RUNNING: The `AccessPolicySimulation` is currently running.
       SUCCEEDED: The `AccessPolicySimulation` has successfully completed.
       FAILED: The `AccessPolicySimulation` has finished with an error.
+      CANCELLED: The `AccessPolicySimulation` has been cancelled.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
     RUNNING = 2
     SUCCEEDED = 3
     FAILED = 4
+    CANCELLED = 5
 
   changeOverlay = _messages.MessageField('GoogleCloudPolicysimulatorV1betaChangeOverlay', 1)
   createTime = _messages.StringField(2)

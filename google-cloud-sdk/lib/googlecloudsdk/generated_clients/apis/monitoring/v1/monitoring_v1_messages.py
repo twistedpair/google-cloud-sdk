@@ -1371,6 +1371,8 @@ class MonitoredProject(_messages.Message):
 
   Fields:
     createTime: Output only. The time when this MonitoredProject was created.
+    isTombstoned: Output only. Set if the project has been tombstoned by the
+      user.
     name: Immutable. The resource name of the MonitoredProject. On input, the
       resource name includes the scoping project ID and monitored project ID.
       On output, it contains the equivalent project numbers. Example: location
@@ -1379,7 +1381,8 @@ class MonitoredProject(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
+  isTombstoned = _messages.BooleanField(2)
+  name = _messages.StringField(3)
 
 
 class MonitoredResource(_messages.Message):
@@ -3049,7 +3052,7 @@ class VisibilityCondition(_messages.Message):
 
   Fields:
     templateVariableCondition: A condition whose evaluation is based on the
-      value of a template variable.
+      value of a template1 variable.
   """
 
   templateVariableCondition = _messages.MessageField('TemplateVariableCondition', 1)

@@ -358,7 +358,7 @@ class KafkaSourceClientV1(base.EventarcClientBase):
       return self._messages.AuthenticationConfig(
           saslAuth=self._messages.SaslAuthConfig(
               mechanism=self._ConvertSaslMechanismToEnum(sasl_mechanism),
-              username=sasl_username,
+              usernameSecret=sasl_username,
               passwordSecret=sasl_password,
           ),
           mutualTlsAuth=None,

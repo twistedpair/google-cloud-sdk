@@ -2025,8 +2025,8 @@ class TpuProjectsLocationsNodesPerformMaintenanceRequest(_messages.Message):
   performMaintenanceRequest = _messages.MessageField('PerformMaintenanceRequest', 2)
 
 
-class TpuProjectsLocationsNodesReportVmAsFaultyRequest(_messages.Message):
-  r"""A TpuProjectsLocationsNodesReportVmAsFaultyRequest object.
+class TpuProjectsLocationsNodesReportFaultyVmRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesReportFaultyVmRequest object.
 
   Fields:
     name: Required. The name of the TPU node to report as faulty.

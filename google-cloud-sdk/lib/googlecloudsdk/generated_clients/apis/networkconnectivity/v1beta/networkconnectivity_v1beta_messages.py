@@ -268,16 +268,17 @@ class GoogleCloudNetworkconnectivityV1betaExportPscConfig(_messages.Message):
   propagation for specific types of Private Service Connect endpoints.
 
   Fields:
-    globalGapis: Optional. Controls whether Private Service Connect endpoints
-      for global Google APIs should be propagated. The default value is false.
-    regionalIlbAndRegionalGapis: Optional. Controls whether Private Service
-      Connect endpoints for regional ILBs and regional Google APIs should be
-      propagated. Default value is true if export_psc is true. Otherwise, the
-      default value is false.
+    globalGoogleApis: Optional. Controls whether Private Service Connect
+      endpoints for global Google APIs should be propagated. The default value
+      is false.
+    publishedServicesAndRegionalGoogleApis: Optional. Controls whether Private
+      Service Connect endpoints for regional ILBs and regional Google APIs
+      should be propagated. Default value is true if export_psc is true.
+      Otherwise, the default value is false.
   """
 
-  globalGapis = _messages.BooleanField(1)
-  regionalIlbAndRegionalGapis = _messages.BooleanField(2)
+  globalGoogleApis = _messages.BooleanField(1)
+  publishedServicesAndRegionalGoogleApis = _messages.BooleanField(2)
 
 
 class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
@@ -3059,192 +3060,6 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolic
-  yRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareInstancesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesSetIamPolic
-  yRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareInstancesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesTestIamPerm
-  issionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIa
-  mPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsSetIa
-  mPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsTestI
-  amPermissionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetI
-  amPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsSetI
-  amPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsTest
-  IamPermissionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGetRequest object.
 
@@ -4746,12 +4561,6 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
-encoding.AddCustomJsonFieldMapping(
-    NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

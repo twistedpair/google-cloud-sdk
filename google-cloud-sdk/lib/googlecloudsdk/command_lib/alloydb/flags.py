@@ -424,6 +424,52 @@ def ClearPSCNetworkAttachmentUri(parser):
   )
 
 
+def AddPSCAutoConnections(parser):
+  """Adds the `--psc-auto-connections` flag to the parser."""
+  parser.add_argument(
+      '--psc-auto-connections',
+      required=False,
+      type=arg_parsers.ArgObject(
+          spec={
+              'project': str,
+              'network': str,
+          },
+          required_keys=['project', 'network'],
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=(
+          'Comma-separated list of consumer project and consumer network pairs'
+          ' to create endpoints for Private Service Connect (PSC) connectivity'
+          ' for the instance. Only instances in PSC-enabled clusters are'
+          ' allowed to set this field. Both project and network must be'
+          ' specified. (e.g.,'
+          ' `--psc-auto-connections=project=project1,network=projects/vpc-host-project1/global/networks/network1`'
+          ' `--psc-auto-connections=project=project2,network=projects/vpc-host-project2/global/networks/network2`)'
+      ),
+  )
+
+
+def ClearPSCAutoConnections(parser):
+  """Adds the `--clear-psc-auto-connections` flag to the parser."""
+  parser.add_argument(
+      '--clear-psc-auto-connections',
+      action='store_true',
+      help="""Remove all PSC auto connections for an AlloyDB instance.""",
+  )
+
+
+def AddPSCAutoConnectionGroup(parser):
+  """Adds PSC auto connection flags to the parser."""
+  psc_auto_connection_group = parser.add_group(
+      mutex=True,
+      required=False,
+      help='PSC auto connection options for an AlloyDB instance.',
+  )
+
+  AddPSCAutoConnections(psc_auto_connection_group)
+  ClearPSCAutoConnections(psc_auto_connection_group)
+
+
 def AddNetwork(parser):
   """Adds the `--network` flag to the parser."""
   parser.add_argument(
@@ -1890,7 +1936,6 @@ def _AddRemoveDenyMaintenancePeriod(group):
   group.add_argument(
       '--remove-deny-maintenance-period',
       required=False,
-      hidden=True,
       action='store_true',
       default=False,
       help='Remove the deny maintenance period.',
@@ -1902,7 +1947,6 @@ def _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages):
   group.add_argument(
       '--deny-maintenance-period-start-date',
       required=True,
-      hidden=True,
       type=_GetDate(alloydb_messages),
       help=(
           'Date when the deny maintenance period begins, that is 2020-11-01 or'
@@ -1912,7 +1956,6 @@ def _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages):
   group.add_argument(
       '--deny-maintenance-period-end-date',
       required=True,
-      hidden=True,
       type=_GetDate(alloydb_messages),
       help=(
           'Date when the deny maintenance period ends, that is 2020-11-01 or'
@@ -1922,7 +1965,6 @@ def _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages):
   group.add_argument(
       '--deny-maintenance-period-time',
       required=True,
-      hidden=True,
       type=_GetTimeOfDay(alloydb_messages),
       help=(
           'Time when the deny maintenance period starts and ends, for example'
@@ -1942,7 +1984,7 @@ def AddDenyMaintenancePeriod(parser, alloydb_messages, update=False):
   """
   if update:
     parent_group = parser.add_group(
-        mutex=True, hidden=True, help='Specify maintenance deny period.'
+        mutex=True, help='Specify maintenance deny period.'
     )
     child_group = parent_group.add_group(
         help='Specify preferred day and time for maintenance deny period.'
@@ -1951,7 +1993,6 @@ def AddDenyMaintenancePeriod(parser, alloydb_messages, update=False):
     _AddDenyMaintenancePeriodDateAndTime(child_group, alloydb_messages)
   else:
     group = parser.add_group(
-        hidden=True,
         help='Specify preferred day and time for maintenance deny period.',
     )
     _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages)

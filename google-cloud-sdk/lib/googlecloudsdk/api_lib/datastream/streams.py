@@ -71,6 +71,12 @@ class StreamsClient:
               self._messages, args.salesforce_excluded_objects
           )
       )
+    elif args.mongodb_excluded_objects:
+      return self._messages.BackfillAllStrategy(
+          mongodbExcludedObjects=util.ParseMongodbFile(
+              self._messages, args.mongodb_excluded_objects
+          )
+      )
     return self._messages.BackfillAllStrategy()
 
   def _ParseOracleSourceConfig(self, oracle_source_config_file, release_track):
@@ -212,6 +218,15 @@ class StreamsClient:
         self._messages.SalesforceSourceConfig,
     )
 
+  def _ParseMongodbSourceConfig(self, mongodb_source_config_file):
+    """Parses a mongodb_source_config into the MongodbSourceConfig message."""
+
+    return util.ParseMessageAndValidateSchema(
+        mongodb_source_config_file,
+        'MongodbSourceConfig',
+        self._messages.MongodbSourceConfig,
+    )
+
   def _ParseGcsDestinationConfig(
       self, gcs_destination_config_file, release_track
   ):
@@ -305,6 +320,10 @@ class StreamsClient:
     elif args.salesforce_source_config:
       stream_source_config.salesforceSourceConfig = (
           self._ParseSalesforceSourceConfig(args.salesforce_source_config)
+      )
+    elif args.mongodb_source_config:
+      stream_source_config.mongodbSourceConfig = self._ParseMongodbSourceConfig(
+          args.mongodb_source_config
       )
     stream_obj.sourceConfig = stream_source_config
 

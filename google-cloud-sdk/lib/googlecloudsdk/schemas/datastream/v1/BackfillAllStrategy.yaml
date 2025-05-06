@@ -25,6 +25,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  mongodbExcludedObjects:
+    description: MongoDB data source objects to avoid backfilling
+    $ref: MongodbCluster.yaml
   mysqlExcludedObjects:
     description: MySQL data source objects to avoid backfilling.
     $ref: MysqlRdbms.yaml

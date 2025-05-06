@@ -33,6 +33,8 @@ class ReplicationsClient(object):
   def __init__(self, release_track=base.ReleaseTrack.BETA):
     if release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaReplicationsAdapter()
+    elif release_track == base.ReleaseTrack.ALPHA:
+      self._adapter = AlphaReplicationsAdapter()
     elif release_track == base.ReleaseTrack.GA:
       self._adapter = ReplicationsAdapter()
     else:
@@ -511,6 +513,20 @@ class BetaReplicationsAdapter(ReplicationsAdapter):
   def __init__(self):
     super(BetaReplicationsAdapter, self).__init__()
     self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_api_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_api_util.GetMessagesModule(
+        release_track=self.release_track
+    )
+
+
+class AlphaReplicationsAdapter(BetaReplicationsAdapter):
+  """Adapter for the Alpha Cloud NetApp Files API Replication resource."""
+
+  def __init__(self):
+    super(AlphaReplicationsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.ALPHA
     self.client = netapp_api_util.GetClientInstance(
         release_track=self.release_track
     )

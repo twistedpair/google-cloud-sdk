@@ -271,6 +271,52 @@ class Api(_messages.Message):
   version = _messages.StringField(7)
 
 
+class Aspect(_messages.Message):
+  r"""Aspect represents Generic aspect. It is used to configure an aspect
+  without making direct changes to service.proto
+
+  Messages:
+    SpecValue: Content of the configuration. The underlying schema should be
+      defined by Aspect owners as protobuf message under
+      `apiserving/configaspects/proto`.
+
+  Fields:
+    kind: The type of this aspect configuration.
+    spec: Content of the configuration. The underlying schema should be
+      defined by Aspect owners as protobuf message under
+      `apiserving/configaspects/proto`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SpecValue(_messages.Message):
+    r"""Content of the configuration. The underlying schema should be defined
+    by Aspect owners as protobuf message under
+    `apiserving/configaspects/proto`.
+
+    Messages:
+      AdditionalProperty: An additional property for a SpecValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SpecValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  kind = _messages.StringField(1)
+  spec = _messages.MessageField('SpecValue', 2)
+
+
 class AuthProvider(_messages.Message):
   r"""Configuration for an authentication provider, including support for
   [JSON Web Token (JWT)](https://tools.ietf.org/html/draft-ietf-oauth-json-
@@ -435,6 +481,11 @@ class BackendRule(_messages.Message):
     jwtAudience: The JWT audience is used when generating a JWT ID token for
       the backend. This ID token will be added in the HTTP "authorization"
       header, and sent to the backend.
+    loadBalancingPolicy: The load balancing policy used for connection to the
+      application backend. Defined as an arbitrary string to accomondate
+      custom load balancing policies supported by the underlying channel, but
+      suggest most users use one of the standard policies, such as the
+      default, "RoundRobin".
     minDeadline: Deprecated, do not use.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
@@ -518,12 +569,13 @@ class BackendRule(_messages.Message):
   deadline = _messages.FloatField(2)
   disableAuth = _messages.BooleanField(3)
   jwtAudience = _messages.StringField(4)
-  minDeadline = _messages.FloatField(5)
-  operationDeadline = _messages.FloatField(6)
-  overridesByRequestProtocol = _messages.MessageField('OverridesByRequestProtocolValue', 7)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 8)
-  protocol = _messages.StringField(9)
-  selector = _messages.StringField(10)
+  loadBalancingPolicy = _messages.StringField(5)
+  minDeadline = _messages.FloatField(6)
+  operationDeadline = _messages.FloatField(7)
+  overridesByRequestProtocol = _messages.MessageField('OverridesByRequestProtocolValue', 8)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 9)
+  protocol = _messages.StringField(10)
+  selector = _messages.StringField(11)
 
 
 class BatchCreateAdminOverridesResponse(_messages.Message):
@@ -995,9 +1047,9 @@ class Documentation(_messages.Message):
     rules: A list of documentation rules that apply to individual API
       elements. **NOTE:** All service configuration rules follow "last one
       wins" order.
-    sectionOverrides: Specifies section and content to override boilerplate
-      content provided by go/api-docgen. Currently overrides following
-      sections: 1. rest.service.client_libraries
+    sectionOverrides: Specifies section and content to override the
+      boilerplate content. Currently overrides following sections: 1.
+      rest.service.client_libraries
     serviceRootUrl: Specifies the service root url if the default one (the
       service name from the yaml file) is not suitable. This can be seen in
       any fully specified service urls as well as sections that show a base
@@ -1029,8 +1081,7 @@ class DocumentationRule(_messages.Message):
       trailing comments taken from the proto source definition of the proto
       element.
     disableReplacementWords: String of comma or space separated case-sensitive
-      words for which method/field name replacement will be disabled by
-      go/api-docgen.
+      words for which method/field name replacement will be disabled.
     selector: The selector is a comma-separated list of patterns for any
       element such as a method, a field, an enum value. Each pattern is a
       qualified name of the element which may end in "*", indicating a
@@ -1365,10 +1416,15 @@ class ExperimentalFeatures(_messages.Message):
       `rest` transport is enabled. By default, asynchronous REST clients will
       not be generated. This feature will be enabled by default 1 month after
       launching the feature in preview packages.
+    unversionedPackageDisabled: Disables generation of an unversioned Python
+      package for this client library. This means that the module names will
+      need to be versioned in import statements. For example `import
+      google.cloud.library_v2` instead of `import google.cloud.library`.
   """
 
   protobufPythonicTypesEnabled = _messages.BooleanField(1)
   restAsyncIoEnabled = _messages.BooleanField(2)
+  unversionedPackageDisabled = _messages.BooleanField(3)
 
 
 class Field(_messages.Message):
@@ -1599,6 +1655,11 @@ class GoogleApiService(_messages.Message):
       IDL during the normalization process. It is an error to specify an API
       interface here which cannot be resolved against the associated IDL
       files.
+    aspects: Configuration aspects. This is a repeated field to allow multiple
+      aspects to be configured. The kind field in each ConfigAspect specifies
+      the type of aspect. The spec field contains the configuration for that
+      aspect. The schema for the spec field is defined by the backend service
+      owners.
     authentication: Auth configuration.
     backend: API backend configuration.
     billing: Billing configuration.
@@ -1657,33 +1718,34 @@ class GoogleApiService(_messages.Message):
   """
 
   apis = _messages.MessageField('Api', 1, repeated=True)
-  authentication = _messages.MessageField('Authentication', 2)
-  backend = _messages.MessageField('Backend', 3)
-  billing = _messages.MessageField('Billing', 4)
-  configVersion = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  context = _messages.MessageField('Context', 6)
-  control = _messages.MessageField('Control', 7)
-  customError = _messages.MessageField('CustomError', 8)
-  documentation = _messages.MessageField('Documentation', 9)
-  endpoints = _messages.MessageField('Endpoint', 10, repeated=True)
-  enums = _messages.MessageField('Enum', 11, repeated=True)
-  http = _messages.MessageField('Http', 12)
-  id = _messages.StringField(13)
-  logging = _messages.MessageField('Logging', 14)
-  logs = _messages.MessageField('LogDescriptor', 15, repeated=True)
-  metrics = _messages.MessageField('MetricDescriptor', 16, repeated=True)
-  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 17, repeated=True)
-  monitoring = _messages.MessageField('Monitoring', 18)
-  name = _messages.StringField(19)
-  producerProjectId = _messages.StringField(20)
-  publishing = _messages.MessageField('Publishing', 21)
-  quota = _messages.MessageField('Quota', 22)
-  sourceInfo = _messages.MessageField('SourceInfo', 23)
-  systemParameters = _messages.MessageField('SystemParameters', 24)
-  systemTypes = _messages.MessageField('Type', 25, repeated=True)
-  title = _messages.StringField(26)
-  types = _messages.MessageField('Type', 27, repeated=True)
-  usage = _messages.MessageField('Usage', 28)
+  aspects = _messages.MessageField('Aspect', 2, repeated=True)
+  authentication = _messages.MessageField('Authentication', 3)
+  backend = _messages.MessageField('Backend', 4)
+  billing = _messages.MessageField('Billing', 5)
+  configVersion = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  context = _messages.MessageField('Context', 7)
+  control = _messages.MessageField('Control', 8)
+  customError = _messages.MessageField('CustomError', 9)
+  documentation = _messages.MessageField('Documentation', 10)
+  endpoints = _messages.MessageField('Endpoint', 11, repeated=True)
+  enums = _messages.MessageField('Enum', 12, repeated=True)
+  http = _messages.MessageField('Http', 13)
+  id = _messages.StringField(14)
+  logging = _messages.MessageField('Logging', 15)
+  logs = _messages.MessageField('LogDescriptor', 16, repeated=True)
+  metrics = _messages.MessageField('MetricDescriptor', 17, repeated=True)
+  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 18, repeated=True)
+  monitoring = _messages.MessageField('Monitoring', 19)
+  name = _messages.StringField(20)
+  producerProjectId = _messages.StringField(21)
+  publishing = _messages.MessageField('Publishing', 22)
+  quota = _messages.MessageField('Quota', 23)
+  sourceInfo = _messages.MessageField('SourceInfo', 24)
+  systemParameters = _messages.MessageField('SystemParameters', 25)
+  systemTypes = _messages.MessageField('Type', 26, repeated=True)
+  title = _messages.StringField(27)
+  types = _messages.MessageField('Type', 28, repeated=True)
+  usage = _messages.MessageField('Usage', 29)
 
 
 class GoogleApiServiceusageV1OperationMetadata(_messages.Message):
@@ -1908,7 +1970,7 @@ class GoogleApiServiceusageV2betaAnalysis(_messages.Message):
     AnalysisTypeValueValuesEnum: Output only. The type of analysis.
 
   Fields:
-    analysis: Output only. Analysis result of updating a policy.
+    analysisResult: Output only. Analysis result of updating a policy.
     analysisType: Output only. The type of analysis.
     displayName: Output only. The user friendly display name of the analysis
       type. E.g. service dependency analysis, service resource usage analysis,
@@ -1929,7 +1991,7 @@ class GoogleApiServiceusageV2betaAnalysis(_messages.Message):
     ANALYSIS_TYPE_DEPENDENCY = 1
     ANALYSIS_TYPE_RESOURCE_USAGE = 2
 
-  analysis = _messages.MessageField('GoogleApiServiceusageV2betaAnalysisResult', 1)
+  analysisResult = _messages.MessageField('GoogleApiServiceusageV2betaAnalysisResult', 1)
   analysisType = _messages.EnumField('AnalysisTypeValueValuesEnum', 2)
   displayName = _messages.StringField(3)
   service = _messages.StringField(4)
@@ -2143,13 +2205,10 @@ class GroupState(_messages.Message):
   Fields:
     group: Output only. The group referenced by this state.
     name: Output only. The resource name of the group state.
-    state: Output only. The state of this group with respect to the consumer
-      parent.
   """
 
   group = _messages.MessageField('GoogleApiServiceusageV2betaGroup', 1)
   name = _messages.StringField(2)
-  state = _messages.MessageField('State', 3)
 
 
 class Http(_messages.Message):
@@ -2467,8 +2526,9 @@ class JavaSettings(_messages.Message):
       option set in the protobuf. This should be used **only** by APIs who
       have already set the language_settings.java.package_name" field in
       gapic.yaml. API teams should use the protobuf java_package option where
-      possible. Example of a YAML configuration:: publishing: java_settings:
-      library_package: com.google.cloud.pubsub.v1
+      possible. Example of a YAML configuration:: publishing:
+      library_settings: java_settings: library_package:
+      com.google.cloud.pubsub.v1
     serviceClassNames: Configure the Java class name to use instead of the
       service's for its corresponding generated GAPIC client. Keys are fully-
       qualified service names as they appear in the protobuf (including the
@@ -4159,10 +4219,10 @@ class ServiceusageConsumerPoliciesAnalyzeRequest(_messages.Message):
   Fields:
     analyzeConsumerPolicyRequest: A AnalyzeConsumerPolicyRequest resource to
       be passed as the request body.
-    name: Required. The name used to retrieve the existing consumer policy.
-      Format: `projects/100/consumerPolicies/default`,
-      `folders/101/consumerPolicies/default`,
-      `organizations/102/consumerPolicies/default`.
+    name: Output only. The resource name of the policy. Only the `default`
+      policy is supported: `projects/12345/consumerPolicies/default`,
+      `folders/12345/consumerPolicies/default`,
+      `organizations/12345/consumerPolicies/default`.
   """
 
   analyzeConsumerPolicyRequest = _messages.MessageField('AnalyzeConsumerPolicyRequest', 1)
@@ -4801,21 +4861,14 @@ class Usage(_messages.Message):
 
 
 class UsageRule(_messages.Message):
-  r"""Usage configuration rules for the service. NOTE: Under development. Use
-  this rule to configure unregistered calls for the service. Unregistered
-  calls are calls that do not contain consumer project identity. (Example:
-  calls that do not contain an API key). By default, API methods do not allow
-  unregistered calls, and each method call must be identified by a consumer
-  project identity. Use this rule to allow/disallow unregistered calls.
-  Example of an API that wants to allow unregistered calls for entire service.
-  usage: rules: - selector: "*" allow_unregistered_calls: true Example of a
-  method that wants to allow unregistered calls. usage: rules: - selector:
-  "google.example.library.v1.LibraryService.CreateBook"
-  allow_unregistered_calls: true
+  r"""Usage configuration rules for the service.
 
   Fields:
-    allowUnregisteredCalls: If true, the selected method allows unregistered
-      calls, e.g. calls that don't identify any user or application.
+    allowUnregisteredCalls:  Use this rule to configure unregistered calls for
+      the service. Unregistered calls are calls that do not contain consumer
+      project identity. (Example: calls that do not contain an API key).
+      WARNING: By default, API methods do not allow unregistered calls, and
+      each method call must be identified by a consumer project identity.
     selector: Selects the methods to which this rule applies. Use '*' to
       indicate all methods in all APIs. Refer to selector for syntax details.
     skipServiceControl: If true, the selected method should skip service

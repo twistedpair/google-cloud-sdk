@@ -146,6 +146,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICEACCOUNTS = (
+      'projects.locations.serviceAccounts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/serviceAccounts/'
+              '{serviceAccountsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_VPNCONNECTIONS = (
       'projects.locations.vpnConnections',
       '{+name}',

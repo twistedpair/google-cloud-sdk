@@ -5,6 +5,126 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 521.0.0 (2025-05-06)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Deprecated/removed `128KB` choice from `--request-body-inspection-size` flag
+*   **(Compute Engine)** in `gcloud compute security-policies create` and in `gcloud compute
+*   **(Compute Engine)** security-policies update`, replaced with other size variants.
+
+
+### Google Cloud CLI
+
+* Updated Linux bundled Python for the `gcloud` CLI to 3.12.9.
+
+### AI
+
+*  Fixed an issue in `gcloud beta ai model-garden deploy` in accelerator quota
+checking, and returned full quota name in error messages.
+*  Added `full-resource-name` flag to `gcloud beta ai model-garden models list`.
+*  Added table to list deploy and predict capability to `gcloud beta ai model-garden models list`.
+*  Renamed `list-supported-hugging-face-models` flag to `can-deploy-hugging-face-models` for `gcloud beta ai model-garden models list`.
+
+### AlloyDB
+
+* Added flag `--psc-auto-connections` to create or update instance with Private Service Connect enabled with a list of PSC auto connections to the following commands in the GA track:
+  * `gcloud alloydb instances create`
+  * `gcloud alloydb instances create-secondary`
+  * `gcloud alloydb instances update`
+
+* Added flag `--clear-psc-auto-connections` to remove all PSC auto connections from an instance with Private Service Connect enabled to the following commands in the GA track:
+  * `gcloud alloydb instances update`
+* Added the following flags for configuring maintenance deny periods to `gcloud alloydb clusters create` and `gcloud alloydb clusters update` in the GA track. The commands include:
+  * `--deny-maintenance-period-start-date`
+  * `--deny-maintenance-period-end-date`
+  * `--deny-maintenance-period-time`
+  * `--remove-deny-maintenance-period` (update only)
+
+### BigQuery
+
+* Added support for `--job_timeout_ms` flag for `bq query` command with `--rpc`.
+* Added error message that `--service_account` flag is not supported.
+* Added support for `--source_column_match` flag for `bq load` command.
+  When you load CSV files into BigQuery, you can now use this flag to load
+  columns based on header names or column position. This feature is in preview.
+* Fixed the local discovery document loading for reservations.
+* Added multiple flags for `bq load` command: `--time_zone` flag to specify a
+  customized time zone; `--date_format`, `--datetime_format`, `--time_format`
+  and `--timestamp_format` flags to define how date and time values are
+  formatted in source files; `--null_markers` flag to define the strings that
+  represent NULL values in CSV files.
+* Promoted `gcloud bq migration-workflows` to GA.
+
+### Cloud Bigtable
+
+* Added deletion-protection support for `gcloud bigtable logical-views`.
+
+### Cloud Datastream
+
+*   Support MySQL GTID streams.
+*   Added `--type=mongodb` and associated configuration flags to
+    `gcloud datastream connection-profiles create` and
+    `gcloud datastream streams create` which supports the creation
+    of Datastream connection profiles to MongoDB compatible clusters.
+
+### Cloud Managed Kafka
+
+* Completed minor bug fixes for ACL commands.
+* Promoted ACL commands to GA.
+
+### Cloud Managed Lustre
+
+*   Added help text example commands to documentation for `gcloud lustre`.
+
+### Cloud NetApp
+
+* Added alpha support for netapp volume replications.
+
+### Cloud SQL
+
+*   Made `--custom-subject-alternative-names` and
+    `--clear-custom-subject-alternative-names` flags available for GA.
+*   Updated 'cloud-sql-proxy' packaged component to use 2.16.0 of the Cloud SQL Proxy.
+
+### Cloud Spanner
+
+* Promoted `gcloud spanner instance-partitions create` to GA.
+* Promoted `gcloud spanner instance-partitions delete` to GA.
+
+### Compute Engine
+
+* Added `--source-snapshot-region` flag to `gcloud beta compute instances create` to create instance.
+* Promoted `gcloud compute advice calendar-mode` command to beta.
+
+### Distributed Cloud Edge
+
+* Added `--container-default-runtime-class` flag to `gcloud edge-cloud container clusters create` command to allow for specifying a default container runtime class for the cluster.
+* Added `--container-default-runtime-class` flag to `gcloud edge-cloud container clusters update` command to allow for specifying a default container runtime class for the cluster.
+
+### Kubernetes Engine
+
+* Added the kubelet config option `singleProcessOomKill` to
+`gcloud container clusters create`, `gcloud container node-pools create`, and
+`gcloud container node-pools update` commands. This option enables
+single-process termination on Out of Memory (OOM) events.
+* Added a warning to `--labels` flag documentation for
+`gcloud container node-pools update` indicating node recreation upon update.
+* Updated default kubectl from 1.31.6 to 1.32.4.
+* Adds kubectl for new rapid channel GKE version (1.33.0).
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.15
+  * kubectl.1.29 (1.29.14)
+  * kubectl.1.30 (1.30.12)
+  * kubectl.1.31 (1.31.8)
+  * kubectl.1.32 (1.32.4)
+  * kubectl.1.33 (1.33.0)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 520.0.0 (2025-04-29)
 
 ### App Engine
@@ -29,6 +149,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     * `iam-policy` commands
     * `--mode`, `--inline-certificate-issuance-config-file`, `--inline-trust-config-file` flags
   * `gcloud iam workload-identity-pools namespaces`
+    * `describe`, `create`, `update`, `delete`, `undelete`, `list` commands
   * `gcloud iam workload-identity-pools managed-identities`
 
 ### Cloud Managed Kafka

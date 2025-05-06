@@ -1059,6 +1059,33 @@ class SecuritycenterV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Export(self, request, global_params=None):
+      r"""Kicks off an LRO to export findings for an organization to the customer's BigQuery dataset.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesLocationsFindingsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/sources/{sourcesId}/locations/{locationsId}/findings:export',
+        http_method='POST',
+        method_id='securitycenter.folders.sources.locations.findings.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/findings:export',
+        request_field='exportFindingsRequest',
+        request_type_name='SecuritycenterFoldersSourcesLocationsFindingsExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.
 
@@ -3151,6 +3178,33 @@ class SecuritycenterV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Kicks off an LRO to export findings for an organization to the customer's BigQuery dataset.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesLocationsFindingsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/sources/{sourcesId}/locations/{locationsId}/findings:export',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.locations.findings.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/findings:export',
+        request_field='exportFindingsRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesLocationsFindingsExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.
 
@@ -4525,6 +4579,33 @@ class SecuritycenterV2(base_api.BaseApiClient):
       super(SecuritycenterV2.ProjectsSourcesLocationsFindingsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Export(self, request, global_params=None):
+      r"""Kicks off an LRO to export findings for an organization to the customer's BigQuery dataset.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesLocationsFindingsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/sources/{sourcesId}/locations/{locationsId}/findings:export',
+        http_method='POST',
+        method_id='securitycenter.projects.sources.locations.findings.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/findings:export',
+        request_field='exportFindingsRequest',
+        request_type_name='SecuritycenterProjectsSourcesLocationsFindingsExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.

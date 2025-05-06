@@ -42,6 +42,9 @@ properties:
   labels:
     description: Labels.
     $ref: LabelsValue.yaml
+  mongodbProfile:
+    description: MongoDB Connection Profile configuration.
+    $ref: MongodbProfile.yaml
   mysqlProfile:
     description: MySQL ConnectionProfile configuration.
     $ref: MysqlProfile.yaml

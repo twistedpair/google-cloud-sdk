@@ -332,6 +332,8 @@ class CloudFunction(_messages.Message):
       complete list of possible choices, see the [`gcloud` command reference](
       https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
       runtime).
+    satisfiesPzi: Output only.
+    satisfiesPzs: Output only.
     secretEnvironmentVariables: Secret environment variables configuration.
     secretVolumes: Secret volumes configuration.
     serviceAccountEmail: The email of the function's service account. If
@@ -545,19 +547,21 @@ class CloudFunction(_messages.Message):
   pinnedRuntimeVersionPolicy = _messages.MessageField('PinnedRuntimeVersionPolicy', 26)
   runDockerfile = _messages.StringField(27)
   runtime = _messages.StringField(28)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 29, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 30, repeated=True)
-  serviceAccountEmail = _messages.StringField(31)
-  sourceArchiveUrl = _messages.StringField(32)
-  sourceRepository = _messages.MessageField('SourceRepository', 33)
-  sourceToken = _messages.StringField(34)
-  sourceUploadUrl = _messages.StringField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  timeout = _messages.StringField(37)
-  updateTime = _messages.StringField(38)
-  versionId = _messages.IntegerField(39)
-  vpcConnector = _messages.StringField(40)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 41)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 31, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 32, repeated=True)
+  serviceAccountEmail = _messages.StringField(33)
+  sourceArchiveUrl = _messages.StringField(34)
+  sourceRepository = _messages.MessageField('SourceRepository', 35)
+  sourceToken = _messages.StringField(36)
+  sourceUploadUrl = _messages.StringField(37)
+  status = _messages.EnumField('StatusValueValuesEnum', 38)
+  timeout = _messages.StringField(39)
+  updateTime = _messages.StringField(40)
+  versionId = _messages.IntegerField(41)
+  vpcConnector = _messages.StringField(42)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 43)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

@@ -962,11 +962,19 @@ class FieldSource(_messages.Message):
       a different ProjectedField type elsewhere in the query model. The alias
       must be defined in the QueryBuilderConfig's field_sources list,
       otherwise the model is invalid.
+    columnType: The type of the selected field. This comes from the schema.
+      Can be one of the BigQuery data types: - STRING - INT64 - FLOAT64 - BOOL
+      - TIMESTAMP - DATE - RECORD - JSON
     field: This will be the field that is selected using the . annotation to
       display the drill down value. For example:
       "json_payload.labels.message".
-    isJson: Whether the field is a JSON field. This value is used to determine
-      JSON extractions in generated SQL queries.
+    isJson: Whether the field is a JSON field, or has a parent that is a JSON
+      field. This value is used to determine JSON extractions in generated SQL
+      queries. Note that this is_json flag may be true when the column_type is
+      not JSON if the parent is a JSON field. Ex: - A json_payload.message
+      field might have is_json=true, since the 'json_payload' parent is of
+      type JSON, and columnType='STRING' if the 'message' field is of type
+      STRING.
     literalValue: A literal like "1,2,3 as testArray" or other singular
       constants like 'foo'. Note: this is not a viable option for the order_by
       since sorting based on a constant doesn't return anything useful.
@@ -977,11 +985,12 @@ class FieldSource(_messages.Message):
   """
 
   aliasRef = _messages.StringField(1)
-  field = _messages.StringField(2)
-  isJson = _messages.BooleanField(3)
-  literalValue = _messages.MessageField('extra_types.JsonValue', 4)
-  projectedField = _messages.MessageField('ProjectedField', 5)
-  variableRef = _messages.StringField(6)
+  columnType = _messages.StringField(2)
+  field = _messages.StringField(3)
+  isJson = _messages.BooleanField(4)
+  literalValue = _messages.MessageField('extra_types.JsonValue', 5)
+  projectedField = _messages.MessageField('ProjectedField', 6)
+  variableRef = _messages.StringField(7)
 
 
 class FilterExpression(_messages.Message):

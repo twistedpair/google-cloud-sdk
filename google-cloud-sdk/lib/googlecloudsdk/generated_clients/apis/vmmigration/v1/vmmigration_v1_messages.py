@@ -30,6 +30,22 @@ class AccessKeyCredentials(_messages.Message):
   sessionToken = _messages.StringField(3)
 
 
+class AdaptationFlag(_messages.Message):
+  r"""AdaptationFlag to be used as configuration of the OS adaptation process.
+
+  Fields:
+    boolValue: A boolean value.
+    name: Optional. The name of the flag.
+    stringValue: A string value, for example, in case of multiple operating
+      systems,the flag 'file_system_id' requires the actual file system id
+      that will be used.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  stringValue = _messages.StringField(3)
+
+
 class AdaptingOSStep(_messages.Message):
   r"""AdaptingOSStep contains specific step details."""
 
@@ -1027,6 +1043,8 @@ class ComputeEngineTargetDefaults(_messages.Message):
     MetadataValue: The metadata key/value pairs to assign to the VM.
 
   Fields:
+    adaptationFlags: Optional. AdaptationFlags the set of flags used during OS
+      adaptation.
     additionalLicenses: Additional licenses to assign to the VM.
     appliedLicense: Output only. The OS license returned from the adaptation
       module report.
@@ -1170,28 +1188,29 @@ class ComputeEngineTargetDefaults(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  additionalLicenses = _messages.StringField(1, repeated=True)
-  appliedLicense = _messages.MessageField('AppliedLicense', 2)
-  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 3)
-  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 4)
-  computeScheduling = _messages.MessageField('ComputeScheduling', 5)
-  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 6)
-  enableIntegrityMonitoring = _messages.BooleanField(7)
-  enableVtpm = _messages.BooleanField(8)
-  encryption = _messages.MessageField('Encryption', 9)
-  hostname = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 12)
-  machineType = _messages.StringField(13)
-  machineTypeSeries = _messages.StringField(14)
-  metadata = _messages.MessageField('MetadataValue', 15)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
-  networkTags = _messages.StringField(17, repeated=True)
-  secureBoot = _messages.BooleanField(18)
-  serviceAccount = _messages.StringField(19)
-  targetProject = _messages.StringField(20)
-  vmName = _messages.StringField(21)
-  zone = _messages.StringField(22)
+  adaptationFlags = _messages.MessageField('AdaptationFlag', 1, repeated=True)
+  additionalLicenses = _messages.StringField(2, repeated=True)
+  appliedLicense = _messages.MessageField('AppliedLicense', 3)
+  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 4)
+  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 5)
+  computeScheduling = _messages.MessageField('ComputeScheduling', 6)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 7)
+  enableIntegrityMonitoring = _messages.BooleanField(8)
+  enableVtpm = _messages.BooleanField(9)
+  encryption = _messages.MessageField('Encryption', 10)
+  hostname = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 13)
+  machineType = _messages.StringField(14)
+  machineTypeSeries = _messages.StringField(15)
+  metadata = _messages.MessageField('MetadataValue', 16)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 17, repeated=True)
+  networkTags = _messages.StringField(18, repeated=True)
+  secureBoot = _messages.BooleanField(19)
+  serviceAccount = _messages.StringField(20)
+  targetProject = _messages.StringField(21)
+  vmName = _messages.StringField(22)
+  zone = _messages.StringField(23)
 
 
 class ComputeEngineTargetDetails(_messages.Message):
@@ -1212,6 +1231,8 @@ class ComputeEngineTargetDetails(_messages.Message):
     MetadataValue: The metadata key/value pairs to assign to the VM.
 
   Fields:
+    adaptationFlags: Optional. Flags to be used as configuration of the OS
+      adaptation process.
     additionalLicenses: Additional licenses to assign to the VM.
     appliedLicense: The OS license returned from the adaptation module report.
     bootConversion: Optional. By default the virtual machine will keep its
@@ -1351,28 +1372,29 @@ class ComputeEngineTargetDetails(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  additionalLicenses = _messages.StringField(1, repeated=True)
-  appliedLicense = _messages.MessageField('AppliedLicense', 2)
-  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 3)
-  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 4)
-  computeScheduling = _messages.MessageField('ComputeScheduling', 5)
-  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 6)
-  enableIntegrityMonitoring = _messages.BooleanField(7)
-  enableVtpm = _messages.BooleanField(8)
-  encryption = _messages.MessageField('Encryption', 9)
-  hostname = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 12)
-  machineType = _messages.StringField(13)
-  machineTypeSeries = _messages.StringField(14)
-  metadata = _messages.MessageField('MetadataValue', 15)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
-  networkTags = _messages.StringField(17, repeated=True)
-  project = _messages.StringField(18)
-  secureBoot = _messages.BooleanField(19)
-  serviceAccount = _messages.StringField(20)
-  vmName = _messages.StringField(21)
-  zone = _messages.StringField(22)
+  adaptationFlags = _messages.MessageField('AdaptationFlag', 1, repeated=True)
+  additionalLicenses = _messages.StringField(2, repeated=True)
+  appliedLicense = _messages.MessageField('AppliedLicense', 3)
+  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 4)
+  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 5)
+  computeScheduling = _messages.MessageField('ComputeScheduling', 6)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 7)
+  enableIntegrityMonitoring = _messages.BooleanField(8)
+  enableVtpm = _messages.BooleanField(9)
+  encryption = _messages.MessageField('Encryption', 10)
+  hostname = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 13)
+  machineType = _messages.StringField(14)
+  machineTypeSeries = _messages.StringField(15)
+  metadata = _messages.MessageField('MetadataValue', 16)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 17, repeated=True)
+  networkTags = _messages.StringField(18, repeated=True)
+  project = _messages.StringField(19)
+  secureBoot = _messages.BooleanField(20)
+  serviceAccount = _messages.StringField(21)
+  vmName = _messages.StringField(22)
+  zone = _messages.StringField(23)
 
 
 class ComputeScheduling(_messages.Message):
@@ -2188,6 +2210,8 @@ class ImageImportOsAdaptationParameters(_messages.Message):
       apply to the imported image.
 
   Fields:
+    adaptationFlags: Optional. Flags to be used as configuration of the OS
+      adaptation process.
     bootConversion: Optional. By default the image will keep its existing boot
       option. Setting this property will trigger an internal process which
       will convert the image from using the existing boot option to another.
@@ -2231,9 +2255,10 @@ class ImageImportOsAdaptationParameters(_messages.Message):
     COMPUTE_ENGINE_LICENSE_TYPE_PAYG = 1
     COMPUTE_ENGINE_LICENSE_TYPE_BYOL = 2
 
-  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 1)
-  generalize = _messages.BooleanField(2)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 3)
+  adaptationFlags = _messages.MessageField('AdaptationFlag', 1, repeated=True)
+  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 2)
+  generalize = _messages.BooleanField(3)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 4)
 
 
 class ImageImportStep(_messages.Message):

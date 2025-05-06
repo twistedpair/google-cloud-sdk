@@ -107,15 +107,73 @@ def GenerateDataDiscoverySpec(args: parser_extensions.Namespace):
   module = dataplex_api.GetMessageModule()
 
   datadiscoveryspec = module.GoogleCloudDataplexV1DataDiscoverySpec()
+
+  # BigQuery publishing config.
   datadiscoveryspec.bigqueryPublishingConfig = (
-      module.GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(
-          connection=args.bigquery_publishing_connection
-      )
+      module.GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig()
   )
+  if args.IsKnownAndSpecified('bigquery_publishing_connection'):
+    datadiscoveryspec.bigqueryPublishingConfig.connection = (
+        args.bigquery_publishing_connection
+    )
   if args.IsKnownAndSpecified('bigquery_publishing_table_type'):
     datadiscoveryspec.bigqueryPublishingConfig.tableType = module.GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig.TableTypeValueValuesEnum(
         args.bigquery_publishing_table_type
     )
+  if args.IsKnownAndSpecified('bigquery_publishing_dataset_location'):
+    datadiscoveryspec.bigqueryPublishingConfig.location = (
+        args.bigquery_publishing_dataset_location
+    )
+
+  # Storage config.
+  datadiscoveryspec.storageConfig = (
+      module.GoogleCloudDataplexV1DataDiscoverySpecStorageConfig()
+  )
+  if args.IsKnownAndSpecified('storage_include_patterns'):
+    datadiscoveryspec.storageConfig.includePatterns = (
+        args.storage_include_patterns
+    )
+  if args.IsKnownAndSpecified('storage_exclude_patterns'):
+    datadiscoveryspec.storageConfig.excludePatterns = (
+        args.storage_exclude_patterns
+    )
+
+  # CSV options.
+  datadiscoveryspec.storageConfig.csvOptions = (
+      module.GoogleCloudDataplexV1DataDiscoverySpecStorageConfigCsvOptions()
+  )
+  if args.IsKnownAndSpecified('csv_delimiter'):
+    datadiscoveryspec.storageConfig.csvOptions.delimiter = args.csv_delimiter
+  if args.IsKnownAndSpecified('csv_header_row_count'):
+    try:
+      datadiscoveryspec.storageConfig.csvOptions.headerRows = int(
+          args.csv_header_row_count
+      )
+    except ValueError:
+      raise ValueError(
+          'csv_header_row_count must be an integer, but got'
+          f' {args.csv_header_row_count}'
+      )
+  if args.IsKnownAndSpecified('csv_quote_character'):
+    datadiscoveryspec.storageConfig.csvOptions.quote = args.csv_quote_character
+  if args.IsKnownAndSpecified('csv_encoding'):
+    datadiscoveryspec.storageConfig.csvOptions.encoding = args.csv_encoding
+  if args.IsKnownAndSpecified('csv_disable_type_inference'):
+    datadiscoveryspec.storageConfig.csvOptions.typeInferenceDisabled = (
+        args.csv_disable_type_inference
+    )
+
+  # JSON options.
+  datadiscoveryspec.storageConfig.jsonOptions = (
+      module.GoogleCloudDataplexV1DataDiscoverySpecStorageConfigJsonOptions()
+  )
+  if args.IsKnownAndSpecified('json_encoding'):
+    datadiscoveryspec.storageConfig.jsonOptions.encoding = args.json_encoding
+  if args.IsKnownAndSpecified('json_disable_type_inference'):
+    datadiscoveryspec.storageConfig.jsonOptions.typeInferenceDisabled = (
+        args.json_disable_type_inference
+    )
+
   return datadiscoveryspec
 
 

@@ -175,6 +175,13 @@ def ParseSalesforceOrgFile(messages, salesforce_org_file):
   )
 
 
+def ParseMongodbFile(messages, mongodb_file):
+  """Parses a mongodb_file into the MongodbCluster message."""
+  return ParseMessageAndValidateSchema(
+      mongodb_file, 'MongodbCluster', messages.MongodbCluster
+  )
+
+
 def CreateMessageWithCamelCaseConversion(
     message_type, parsed_yaml, schema_path=None
 ):
@@ -428,6 +435,41 @@ def ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(messages,
   postgresql_rdbms_msg = messages.PostgresqlRdbms(
       postgresqlSchemas=postgresql_schema_msg_list)
   return postgresql_rdbms_msg
+
+
+def ParseMongodbField(messages, mongodb_field_object):
+  """Parses a raw mongodb field json/yaml into the MongodbField message."""
+  return messages.MongodbField(field=mongodb_field_object.get('field', ''))
+
+
+def ParseMongodbCollection(messages, mongodb_collection_object):
+  """Parses a raw mongodb database json/yaml into the MongodbCollection message."""
+  fields_raw = mongodb_collection_object.get('fields', [])
+  fields_msg_list = []
+  for field in fields_raw:
+    fields_msg_list.append(ParseMongodbField(messages, field))
+  return messages.MongodbCollection(
+      collection=mongodb_collection_object.get('collection', ''),
+      fields=fields_msg_list,
+  )
+
+
+def ParseMongodbDatabase(messages, mongodb_database_object):
+  """Parses a raw mongodb database json/yaml into the MongodbDatabase message."""
+  collections_raw = mongodb_database_object.get('collections', [])
+  collections_msg_list = []
+  for collection in collections_raw:
+    collections_msg_list.append(ParseMongodbCollection(messages, collection))
+  return messages.MongodbDatabase(collections=collections_msg_list)
+
+
+def ParseMongodbCluster(messages, mongodb_cluster_object):
+  """Parses a raw mongodb cluster json/yaml into the MongodbCluster message."""
+  databases_raw = mongodb_cluster_object.get('databases', [])
+  databases_msg_list = []
+  for database in databases_raw:
+    databases_msg_list.append(ParseMongodbDatabase(messages, database))
+  return messages.MongodbCluster(databases=databases_msg_list)
 
 
 def UpdateV1alpha1ToV1MaskFields(field_mask):

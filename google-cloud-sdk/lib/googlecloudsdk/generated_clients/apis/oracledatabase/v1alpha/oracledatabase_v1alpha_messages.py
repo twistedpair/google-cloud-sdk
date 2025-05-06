@@ -2205,6 +2205,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMinorVersionsResponse(_messages.Message):
+  r"""The response for `MinorVersion.List`.
+
+  Fields:
+    minorVersions: The list of MinorVersions.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  minorVersions = _messages.MessageField('MinorVersion', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOdbNetworksResponse(_messages.Message):
   r"""The response for `OdbNetwork.List`.
 
@@ -2488,6 +2501,24 @@ class MaintenanceWindow(_messages.Message):
   patchingMode = _messages.EnumField('PatchingModeValueValuesEnum', 7)
   preference = _messages.EnumField('PreferenceValueValuesEnum', 8)
   weeksOfMonth = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
+
+
+class MinorVersion(_messages.Message):
+  r"""MinorVersion represents a minor version of a GI.
+  https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/GiMinorVersionSummary/
+
+  Fields:
+    gridImageId: Optional. The ID of the Grid Image.
+    name: Identifier. The name of the MinorVersion resource with the format: p
+      rojects/{project}/locations/{region}/giVersions/{gi_version}/minorVersio
+      ns/{minor_version}
+    version: Optional. The valid Oracle grid infrastructure software version.
+  """
+
+  gridImageId = _messages.StringField(1)
+  name = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class OdbNetwork(_messages.Message):
@@ -3530,6 +3561,43 @@ class OracledatabaseProjectsLocationsGiVersionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class OracledatabaseProjectsLocationsGiVersionsMinorVersionsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGiVersionsMinorVersionsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the MinorVersion resource with the format: pro
+      jects/{project}/locations/{location}/giVersions/{gi_version}/minorVersio
+      ns/{minor_version}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Only shapeFamily is supported in this format:
+      `shape_family="{shapeFamily}" AND version="{version}"`.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      a maximum of 50 System Versions will be returned. The maximum value is
+      1000; values above 1000 will be reset to 1000.
+    pageToken: Optional. A token identifying the requested page of results to
+      return. All fields except the filter should remain the same as in the
+      request that provided this page token.
+    parent: Required. The parent value for the MinorVersion resource with the
+      format: projects/{project}/locations/{location}/giVersions/{gi_version}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class OracledatabaseProjectsLocationsListRequest(_messages.Message):

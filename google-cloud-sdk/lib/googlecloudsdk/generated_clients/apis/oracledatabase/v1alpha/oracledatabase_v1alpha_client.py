@@ -50,6 +50,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     self.projects_locations_dbSystemShapes = self.ProjectsLocationsDbSystemShapesService(self)
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
     self.projects_locations_exadbVmClusters = self.ProjectsLocationsExadbVmClustersService(self)
+    self.projects_locations_giVersions_minorVersions = self.ProjectsLocationsGiVersionsMinorVersionsService(self)
     self.projects_locations_giVersions = self.ProjectsLocationsGiVersionsService(self)
     self.projects_locations_odbNetworks_odbSubnets = self.ProjectsLocationsOdbNetworksOdbSubnetsService(self)
     self.projects_locations_odbNetworks = self.ProjectsLocationsOdbNetworksService(self)
@@ -1164,6 +1165,70 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsExadbVmClustersListRequest',
         response_type_name='ListExadbVmClustersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGiVersionsMinorVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_giVersions_minorVersions resource."""
+
+    _NAME = 'projects_locations_giVersions_minorVersions'
+
+    def __init__(self, client):
+      super(OracledatabaseV1alpha.ProjectsLocationsGiVersionsMinorVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single minor version.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsGiVersionsMinorVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MinorVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/giVersions/{giVersionsId}/minorVersions/{minorVersionsId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.giVersions.minorVersions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsGiVersionsMinorVersionsGetRequest',
+        response_type_name='MinorVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the valid minor versions for the given project, location, gi version and shape family.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMinorVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/giVersions/{giVersionsId}/minorVersions',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.giVersions.minorVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/minorVersions',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest',
+        response_type_name='ListMinorVersionsResponse',
         supports_download=False,
     )
 

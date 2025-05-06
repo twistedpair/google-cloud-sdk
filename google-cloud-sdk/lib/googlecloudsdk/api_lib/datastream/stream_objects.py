@@ -100,6 +100,12 @@ class StreamObjectsClient:
               objectName=args.salesforce_object_name
           )
       )
+    elif args.mongodb_database:
+      object_identifier.mongodbIdentifier = (
+          self._messages.MongodbObjectIdentifier(
+              database=args.mongodb_database, collection=args.mongodb_collection
+          )
+      )
 
     stream_ref = self._resource_parser.Create(
         'datastream.projects.locations.streams',

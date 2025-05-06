@@ -18,12 +18,13 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.bigtable import util
 
 
-def Create(logical_view_ref, query):
+def Create(logical_view_ref, query, deletion_protection):
   """Create a logical view.
 
   Args:
     logical_view_ref: A resource reference to the logical view to create.
     query: The query of the logical view.
+    deletion_protection: The deletion protection of the logical view.
 
   Returns:
     Created logical view resource object.
@@ -34,8 +35,12 @@ def Create(logical_view_ref, query):
 
   instance_ref = logical_view_ref.Parent()
 
+  logical_view = msgs.LogicalView(query=query)
+  if deletion_protection is not None:
+    logical_view.deletionProtection = deletion_protection
+
   msg = msgs.BigtableadminProjectsInstancesLogicalViewsCreateRequest(
-      logicalView=msgs.LogicalView(query=query),
+      logicalView=logical_view,
       logicalViewId=logical_view_ref.Name(),
       parent=instance_ref.RelativeName(),
   )
@@ -96,12 +101,13 @@ def List(instance_ref):
   )
 
 
-def Update(logical_view_ref, query):
+def Update(logical_view_ref, query, deletion_protection):
   """Update a logical view.
 
   Args:
     logical_view_ref: A resource reference to the logical view to update.
     query: The new query of the logical view.
+    deletion_protection: The new deletion protection of the logical view.
 
   Returns:
     Long running operation.
@@ -116,6 +122,10 @@ def Update(logical_view_ref, query):
   if query:
     changed_fields.append('query')
     logical_view.query = query
+
+  if deletion_protection is not None:
+    changed_fields.append('deletion_protection')
+    logical_view.deletionProtection = deletion_protection
 
   msg = msgs.BigtableadminProjectsInstancesLogicalViewsPatchRequest(
       logicalView=logical_view,

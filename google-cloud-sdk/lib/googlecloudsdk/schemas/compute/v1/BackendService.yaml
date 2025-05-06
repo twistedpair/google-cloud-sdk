@@ -449,6 +449,7 @@ properties:
     type: string
     enum:
     - GRPC
+    - H2C
     - HTTP
     - HTTP2
     - HTTPS

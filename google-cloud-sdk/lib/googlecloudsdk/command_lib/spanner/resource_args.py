@@ -179,8 +179,8 @@ def InstanceAttributeConfig():
 def InstancePartitionAttributeConfig():
   """Get instance partition resource attribute with default value."""
   return concepts.ResourceParameterAttributeConfig(
-      name='instance-partition',
-      help_text='The Cloud Spanner instance partition for the {resource}.',
+      name='instance partition',
+      help_text='The Spanner instance partition for the {resource}.',
   )
 
 
@@ -242,7 +242,7 @@ def GetInstanceResourceSpec():
 def GetInstancePartitionResourceSpec():
   return concepts.ResourceSpec(
       'spanner.projects.instances.instancePartitions',
-      resource_name='instance-partition',
+      resource_name='instance partition',
       instancePartitionsId=InstancePartitionAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
@@ -317,7 +317,7 @@ def AddInstanceResourceArg(parser, verb, positional=True):
 
 
 def AddInstancePartitionResourceArg(parser, verb, positional=True):
-  """Add a resource argument for a Cloud Spanner instance partition.
+  """Add a resource argument for a Spanner instance partition.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -331,7 +331,7 @@ def AddInstancePartitionResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetInstancePartitionResourceSpec(),
-      'The Cloud Spanner instance partition {}.'.format(verb),
+      'The Spanner instance partition {}.'.format(verb),
       required=True,
   ).AddToParser(parser)
 

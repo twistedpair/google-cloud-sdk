@@ -15,10 +15,13 @@
 """Cloud Backup and DR Backup Vaults client."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
+from collections.abc import Mapping, Sequence
 import enum
+from typing import Any
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.backupdr import util
@@ -42,12 +45,12 @@ class BackupVaultsClient(util.BackupDrClientBase):
   def Create(
       self,
       resource,
-      backup_min_enforced_retention,
-      description,
-      labels,
-      effective_time,
-      access_restriction,
-  ):
+      backup_min_enforced_retention: str,
+      description: str | None,
+      labels: Mapping[str, str] | None,
+      effective_time: str | None,
+      access_restriction: str | None,
+  ) -> Any:
 
     parent = resource.Parent().RelativeName()
     backup_vault_id = resource.Name()
@@ -68,7 +71,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
     )
     return self.service.Create(request)
 
-  def ParseAccessRestrictionEnum(self, access_restriction_str):
+  def ParseAccessRestrictionEnum(self, access_restriction_str: str | None):
     if access_restriction_str is None:
       return (
           self.messages.BackupVault.AccessRestrictionValueValuesEnum.WITHIN_ORGANIZATION
@@ -101,10 +104,10 @@ class BackupVaultsClient(util.BackupDrClientBase):
   def Delete(
       self,
       resource,
-      ignore_inactive_datasources,
-      ignore_backup_plan_references,
-      allow_missing,
-  ):
+      ignore_inactive_datasources: bool,
+      ignore_backup_plan_references: bool,
+      allow_missing: bool,
+  ) -> Any:
     request_id = command_util.GenerateRequestId()
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDeleteRequest(
         name=resource.RelativeName(),
@@ -116,7 +119,12 @@ class BackupVaultsClient(util.BackupDrClientBase):
 
     return self.service.Delete(request)
 
-  def List(self, parent_ref, page_size=100, limit=None):
+  def List(
+      self,
+      parent_ref,
+      limit=None,
+      page_size: int = 100,
+  ) -> Sequence[Any]:
     request = self.messages.BackupdrProjectsLocationsBackupVaultsListRequest(
         parent=parent_ref.RelativeName()
     )
@@ -131,7 +139,11 @@ class BackupVaultsClient(util.BackupDrClientBase):
     )
 
   def ParseUpdate(
-      self, description, effective_time, backup_min_enforced_retention
+      self,
+      description: str | None,
+      effective_time: str | None,
+      backup_min_enforced_retention: str | None,
+      access_restriction: str | None,
   ):
     updated_bv = self.messages.BackupVault()
     if description is not None:
@@ -142,9 +154,20 @@ class BackupVaultsClient(util.BackupDrClientBase):
       updated_bv.backupMinimumEnforcedRetentionDuration = (
           backup_min_enforced_retention
       )
+    if access_restriction is not None:
+      access_restriction_enum = self.ParseAccessRestrictionEnum(
+          access_restriction
+      )
+      updated_bv.accessRestriction = access_restriction_enum
     return updated_bv
 
-  def Update(self, resource, backup_vault, update_mask, force_update):
+  def Update(
+      self,
+      resource,
+      backup_vault,
+      force_update: bool,
+      update_mask: str | None,
+  ) -> Any:
     request_id = command_util.GenerateRequestId()
     request = self.messages.BackupdrProjectsLocationsBackupVaultsPatchRequest(
         backupVault=backup_vault,
@@ -155,7 +178,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
     )
     return self.service.Patch(request)
 
-  def Describe(self, resource):
+  def Describe(self, resource) -> Any:
     request = self.messages.BackupdrProjectsLocationsBackupVaultsGetRequest(
         name=resource.RelativeName(),
     )

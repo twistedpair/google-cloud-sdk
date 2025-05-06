@@ -63,22 +63,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_REGISTRYBOOKS_HISTORICALEVENTS = (
-      'projects.locations.registryBooks.historicalEvents',
-      'projects/{projectsId}/locations/{locationsId}/registryBooks/'
-      '{registryBooksId}/historicalEvents',
-      {},
-      ['projectsId', 'locationsId', 'registryBooksId'],
-      True
-  )
-  PROJECTS_LOCATIONS_REGISTRYBOOKS_NODEEVENTS = (
-      'projects.locations.registryBooks.nodeEvents',
-      'projects/{projectsId}/locations/{locationsId}/registryBooks/'
-      '{registryBooksId}/nodeEvents',
-      {},
-      ['projectsId', 'locationsId', 'registryBooksId'],
-      True
-  )
   PROJECTS_LOCATIONS_REGISTRYBOOKS_REGISTRYNODES = (
       'projects.locations.registryBooks.registryNodes',
       '{+name}',
@@ -86,17 +70,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/registryBooks/'
               '{registryBooksId}/registryNodes/{registryNodesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_REGISTRYBOOKS_RESOURCEIMPORTS = (
-      'projects.locations.registryBooks.resourceImports',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/registryBooks/'
-              '{registryBooksId}/resourceImports/{resourceImportsId}',
       },
       ['name'],
       True

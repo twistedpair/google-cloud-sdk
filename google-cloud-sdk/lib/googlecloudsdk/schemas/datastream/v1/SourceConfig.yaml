@@ -27,6 +27,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  mongodbSourceConfig:
+    description: MongoDB data source configuration.
+    $ref: MongodbSourceConfig.yaml
   mysqlSourceConfig:
     description: MySQL data source configuration.
     $ref: MysqlSourceConfig.yaml

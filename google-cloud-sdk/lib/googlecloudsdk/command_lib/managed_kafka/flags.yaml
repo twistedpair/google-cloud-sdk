@@ -289,6 +289,7 @@ etag:
   arg_name: etag
   api_field: acl.etag
   type: str
+  required: true
   help_text: |
     etag returned in the response to a previous create or describe
     command. The etag is used for concurrency control, to ensure that the
@@ -329,6 +330,6 @@ acl-entry-host:
   api_field: aclEntry.host
   arg_name: host
   type: str
-  default: "```*```"
+  default: '*'
   help_text: |
     The host. Must be set to "```*```" for Managed Service for Apache Kafka.

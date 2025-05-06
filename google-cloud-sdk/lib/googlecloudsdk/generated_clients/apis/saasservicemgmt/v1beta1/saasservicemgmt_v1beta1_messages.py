@@ -443,6 +443,16 @@ class FlagRevision(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class FlagUpdate(_messages.Message):
+  r"""FlagUpdate is a UnitOperation that pushes new flag values to Units.
+
+  Fields:
+    flagRelease: Required. Flag release being applied by UnitOperation.
+  """
+
+  flagRelease = _messages.StringField(1)
+
+
 class FromMapping(_messages.Message):
   r"""Output variables whose values will be passed on to dependencies
 
@@ -932,6 +942,11 @@ class Rollout(_messages.Message):
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
+    flagRelease: Optional. Immutable. Name of the FlagRelease to be rolled out
+      to the target Units. Release and FlagRelease are mutually exclusive.
+      Note: `release` comment needs to be adjusted to mention that "Release
+      and FlagRelease are mutually exclusive" when visibility restriction will
+      be lifted.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
     name: Identifier. The resource name (full URI of the resource) following
@@ -1065,21 +1080,22 @@ class Rollout(_messages.Message):
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
   etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  parentRollout = _messages.StringField(8)
-  release = _messages.StringField(9)
-  rolloutKind = _messages.StringField(10)
-  rolloutOrchestrationStrategy = _messages.StringField(11)
-  rootRollout = _messages.StringField(12)
-  startTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateMessage = _messages.StringField(15)
-  stateTransitionTime = _messages.StringField(16)
-  stats = _messages.MessageField('RolloutStats', 17)
-  uid = _messages.StringField(18)
-  unitFilter = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  flagRelease = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  parentRollout = _messages.StringField(9)
+  release = _messages.StringField(10)
+  rolloutKind = _messages.StringField(11)
+  rolloutOrchestrationStrategy = _messages.StringField(12)
+  rootRollout = _messages.StringField(13)
+  startTime = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateMessage = _messages.StringField(16)
+  stateTransitionTime = _messages.StringField(17)
+  stats = _messages.MessageField('RolloutStats', 18)
+  uid = _messages.StringField(19)
+  unitFilter = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class RolloutControl(_messages.Message):
@@ -3096,6 +3112,7 @@ class Unit(_messages.Message):
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
+    flagRevisions: Optional. Flag revisions used by this Unit.
     inputVariables: Optional. Output only. Indicates the current input
       variables deployed by the unit
     labels: Optional. The labels on the resource, which can be used for
@@ -3259,23 +3276,24 @@ class Unit(_messages.Message):
   dependencies = _messages.MessageField('UnitDependency', 4, repeated=True)
   dependents = _messages.MessageField('UnitDependency', 5, repeated=True)
   etag = _messages.StringField(6)
-  inputVariables = _messages.MessageField('UnitVariable', 7, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maintenance = _messages.MessageField('MaintenanceSettings', 9)
-  managementMode = _messages.EnumField('ManagementModeValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  ongoingOperations = _messages.StringField(12, repeated=True)
-  outputVariables = _messages.MessageField('UnitVariable', 13, repeated=True)
-  pendingOperations = _messages.StringField(14, repeated=True)
-  release = _messages.StringField(15)
-  scheduledOperations = _messages.StringField(16, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  systemCleanupAt = _messages.StringField(18)
-  systemManagedState = _messages.EnumField('SystemManagedStateValueValuesEnum', 19)
-  tenant = _messages.StringField(20)
-  uid = _messages.StringField(21)
-  unitKind = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
+  flagRevisions = _messages.StringField(7, repeated=True)
+  inputVariables = _messages.MessageField('UnitVariable', 8, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maintenance = _messages.MessageField('MaintenanceSettings', 10)
+  managementMode = _messages.EnumField('ManagementModeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  ongoingOperations = _messages.StringField(13, repeated=True)
+  outputVariables = _messages.MessageField('UnitVariable', 14, repeated=True)
+  pendingOperations = _messages.StringField(15, repeated=True)
+  release = _messages.StringField(16)
+  scheduledOperations = _messages.StringField(17, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  systemCleanupAt = _messages.StringField(19)
+  systemManagedState = _messages.EnumField('SystemManagedStateValueValuesEnum', 20)
+  tenant = _messages.StringField(21)
+  uid = _messages.StringField(22)
+  unitKind = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
 
 
 class UnitCondition(_messages.Message):
@@ -3367,6 +3385,9 @@ class UnitKind(_messages.Message):
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
     createTime: Output only. The timestamp when the resource was created.
+    defaultFlagRevisions: Optional. Default revisions of flags for this
+      UnitKind. Newly created units will use the flag default_flag_revisions
+      present at the time of creation.
     defaultRelease: Optional. A reference to the Release object to use as
       default for creating new units of this UnitKind (optional). If not
       specified, a new unit must explicitly reference which release to use for
@@ -3455,16 +3476,17 @@ class UnitKind(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  defaultRelease = _messages.StringField(3)
-  dependencies = _messages.MessageField('Dependency', 4, repeated=True)
-  etag = _messages.StringField(5)
-  inputVariableMappings = _messages.MessageField('VariableMapping', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  outputVariableMappings = _messages.MessageField('VariableMapping', 9, repeated=True)
-  saas = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  defaultFlagRevisions = _messages.StringField(3, repeated=True)
+  defaultRelease = _messages.StringField(4)
+  dependencies = _messages.MessageField('Dependency', 5, repeated=True)
+  etag = _messages.StringField(6)
+  inputVariableMappings = _messages.MessageField('VariableMapping', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  outputVariableMappings = _messages.MessageField('VariableMapping', 10, repeated=True)
+  saas = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class UnitOperation(_messages.Message):
@@ -3510,6 +3532,7 @@ class UnitOperation(_messages.Message):
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
+    flagUpdate: A FlagUpdate attribute.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
     name: Identifier. The resource name (full URI of the resource) following
@@ -3646,17 +3669,18 @@ class UnitOperation(_messages.Message):
   engineState = _messages.StringField(6)
   errorCategory = _messages.EnumField('ErrorCategoryValueValuesEnum', 7)
   etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  parentUnitOperation = _messages.StringField(11)
-  provision = _messages.MessageField('Provision', 12)
-  rollout = _messages.StringField(13)
-  schedule = _messages.MessageField('Schedule', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  unit = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  upgrade = _messages.MessageField('Upgrade', 19)
+  flagUpdate = _messages.MessageField('FlagUpdate', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  parentUnitOperation = _messages.StringField(12)
+  provision = _messages.MessageField('Provision', 13)
+  rollout = _messages.StringField(14)
+  schedule = _messages.MessageField('Schedule', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  unit = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  upgrade = _messages.MessageField('Upgrade', 20)
 
 
 class UnitOperationCondition(_messages.Message):

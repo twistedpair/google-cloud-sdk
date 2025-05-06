@@ -125,13 +125,25 @@ class InterconnectGroup(object):
     )
 
   def _MakePatchRequestTuple(
-      self, topology_capability, interconnects, **kwargs
+      self,
+      topology_capability,
+      interconnects,
+      interconnects_to_remove,
+      **kwargs
   ):
     """Make a tuple for interconnect group patch request."""
     messages = self._messages
+    additional_properties = self._MakeAdditionalProperties(interconnects)
+    if interconnects_to_remove:
+      additional_properties += [
+          self._messages.InterconnectGroup.InterconnectsValue.AdditionalProperty(
+              key=interconnect, value=None
+          )
+          for interconnect in interconnects_to_remove
+      ]
     group_params = {
         'interconnects': messages.InterconnectGroup.InterconnectsValue(
-            additionalProperties=self._MakeAdditionalProperties(interconnects)
+            additionalProperties=additional_properties
         ),
     }
     group_params.update(kwargs)
@@ -238,13 +250,17 @@ class InterconnectGroup(object):
       self,
       topology_capability=None,
       interconnects=(),
+      interconnects_to_remove=(),
       only_generate_request=False,
       **kwargs
   ):
     """Patch description, topology capability and member interconnects of an interconnect group."""
     requests = [
         self._MakePatchRequestTuple(
-            topology_capability, interconnects, **kwargs
+            topology_capability,
+            interconnects,
+            interconnects_to_remove,
+            **kwargs
         )
     ]
     if not only_generate_request:
