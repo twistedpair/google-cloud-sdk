@@ -125,7 +125,6 @@ def GenerateDataDiscoverySpec(args: parser_extensions.Namespace):
         args.bigquery_publishing_dataset_location
     )
 
-  # Storage config.
   datadiscoveryspec.storageConfig = (
       module.GoogleCloudDataplexV1DataDiscoverySpecStorageConfig()
   )
@@ -242,6 +241,28 @@ def GenerateUpdateMask(args: parser_extensions.Namespace):
       ),
       'bigquery_publishing_connection': (
           'dataDiscoverySpec.bigqueryPublishingConfig.connection'
+      ),
+      'bigquery_publishing_dataset_location': (
+          'dataDiscoverySpec.bigqueryPublishingConfig.location'
+      ),
+      'storage_include_patterns': (
+          'dataDiscoverySpec.storageConfig.includePatterns'
+      ),
+      'storage_exclude_patterns': (
+          'dataDiscoverySpec.storageConfig.excludePatterns'
+      ),
+      'csv_delimiter': 'dataDiscoverySpec.storageConfig.csvOptions.delimiter',
+      'csv_header_row_count': (
+          'dataDiscoverySpec.storageConfig.csvOptions.headerRows'
+      ),
+      'csv_quote_character': 'dataDiscoverySpec.storageConfig.csvOptions.quote',
+      'csv_encoding': 'dataDiscoverySpec.storageConfig.csvOptions.encoding',
+      'csv_disable_type_inference': (
+          'dataDiscoverySpec.storageConfig.csvOptions.typeInferenceDisabled'
+      ),
+      'json_encoding': 'dataDiscoverySpec.storageConfig.jsonOptions.encoding',
+      'json_disable_type_inference': (
+          'dataDiscoverySpec.storageConfig.jsonOptions.typeInferenceDisabled'
       ),
   }
 

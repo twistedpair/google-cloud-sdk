@@ -2305,22 +2305,22 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
   Fields:
     filePatterns: Required. Patterns to identify a set of files in Google
       Cloud Storage. For more information, see [Wildcard Names]
-      (https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames).
-      Note: Currently, bucket wildcards are not supported. Examples of valid
-      `file_patterns`: * `gs://bucket_name/dir/*`: matches all files in
-      `bucket_name/dir` directory * `gs://bucket_name/dir/**`: matches all
-      files in `bucket_name/dir` and all subdirectories *
-      `gs://bucket_name/file*`: matches files prefixed by `file` in
-      `bucket_name` * `gs://bucket_name/??.txt`: matches files with two
-      characters followed by `.txt` in `bucket_name` *
-      `gs://bucket_name/[aeiou].txt`: matches files that contain a single
-      vowel character followed by `.txt` in `bucket_name` *
-      `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
-      or `m` followed by `.txt` in `bucket_name` * `gs://bucket_name/a/*/b`:
-      matches all files in `bucket_name` that match the `a/*/b` pattern, such
-      as `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
-      `gs://another_bucket/a.txt` You can combine wildcards to match complex
-      sets of files, for example: `gs://bucket_name/[a-m]??.j*g`
+      (https://cloud.google.com/storage/docs/wildcards). Note: Currently,
+      bucket wildcards are not supported. Examples of valid `file_patterns`: *
+      `gs://bucket_name/dir/*`: matches all files in `bucket_name/dir`
+      directory * `gs://bucket_name/dir/**`: matches all files in
+      `bucket_name/dir` and all subdirectories * `gs://bucket_name/file*`:
+      matches files prefixed by `file` in `bucket_name` *
+      `gs://bucket_name/??.txt`: matches files with two characters followed by
+      `.txt` in `bucket_name` * `gs://bucket_name/[aeiou].txt`: matches files
+      that contain a single vowel character followed by `.txt` in
+      `bucket_name` * `gs://bucket_name/[a-m].txt`: matches files that contain
+      `a`, `b`, ... or `m` followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/a/*/b`: matches all files in `bucket_name` that match
+      the `a/*/b` pattern, such as `a/c/b`, `a/d/b` *
+      `gs://another_bucket/a.txt`: matches `gs://another_bucket/a.txt` You can
+      combine wildcards to match complex sets of files, for example:
+      `gs://bucket_name/[a-m]??.j*g`
     sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
       not all files contained in this fileset are represented here.
   """
@@ -2587,7 +2587,16 @@ class GoogleCloudDatacatalogV1MigrationConfig(_messages.Message):
 
     Values:
       TAG_TEMPLATE_MIGRATION_UNSPECIFIED: Default value. Migration of Tag
-        Templates from Data Catalog to Dataplex is not performed.
+        Templates from Data Catalog to Dataplex is not performed. For projects
+        that are under an organization, the project inherits the
+        organization's configuration when you set the project-level
+        configuration to unspecified (`TAG_TEMPLATE_MIGRATION_UNSPECIFIED`).
+        This means that when migration is enabled at the organization level,
+        and the project-level configuration is unspecified, the project is
+        migrated. To explicitly opt-in or opt-out individual projects, set the
+        project-level configuration to enabled
+        (`TAG_TEMPLATE_MIGRATION_ENABLED`) or disabled
+        (`TAG_TEMPLATE_MIGRATION_DISABLED`).
       TAG_TEMPLATE_MIGRATION_ENABLED: Migration of Tag Templates from Data
         Catalog to Dataplex is enabled.
       TAG_TEMPLATE_MIGRATION_DISABLED: Migration of Tag Templates from Data
@@ -3301,7 +3310,16 @@ class GoogleCloudDatacatalogV1SetConfigRequest(_messages.Message):
 
     Values:
       TAG_TEMPLATE_MIGRATION_UNSPECIFIED: Default value. Migration of Tag
-        Templates from Data Catalog to Dataplex is not performed.
+        Templates from Data Catalog to Dataplex is not performed. For projects
+        that are under an organization, the project inherits the
+        organization's configuration when you set the project-level
+        configuration to unspecified (`TAG_TEMPLATE_MIGRATION_UNSPECIFIED`).
+        This means that when migration is enabled at the organization level,
+        and the project-level configuration is unspecified, the project is
+        migrated. To explicitly opt-in or opt-out individual projects, set the
+        project-level configuration to enabled
+        (`TAG_TEMPLATE_MIGRATION_ENABLED`) or disabled
+        (`TAG_TEMPLATE_MIGRATION_DISABLED`).
       TAG_TEMPLATE_MIGRATION_ENABLED: Migration of Tag Templates from Data
         Catalog to Dataplex is enabled.
       TAG_TEMPLATE_MIGRATION_DISABLED: Migration of Tag Templates from Data

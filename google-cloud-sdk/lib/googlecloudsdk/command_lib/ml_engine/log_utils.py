@@ -151,10 +151,6 @@ def _GetLabelAttributes(log_entry):
   """Reads the label attributes of the given log entry."""
   label_attributes = {'task_name': 'unknown_task'}
 
-  # TODO(b/36233192): task_name will not be available in labels but only in
-  # resource_labels. Given that logs have 30 day retention, we should eventually
-  # remove the code that checks for task_name and ml.googleapis.com/task_name in
-  # labels.
   labels = _ToDict(log_entry.labels)
   resource_labels = {} if not log_entry.resource else _ToDict(
       log_entry.resource.labels)

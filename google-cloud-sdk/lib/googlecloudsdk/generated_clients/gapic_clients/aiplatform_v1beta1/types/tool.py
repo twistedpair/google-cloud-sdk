@@ -313,9 +313,9 @@ class FunctionCall(proto.Message):
             Required. The name of the function to call. Matches
             [FunctionDeclaration.name].
         args (google.protobuf.struct_pb2.Struct):
-            Optional. Required. The function parameters and values in
-            JSON object format. See [FunctionDeclaration.parameters] for
-            parameter details.
+            Optional. The function parameters and values in JSON object
+            format. See [FunctionDeclaration.parameters] for parameter
+            details.
     """
 
     id: str = proto.Field(
@@ -592,6 +592,13 @@ class VertexAISearch(proto.Message):
             Optional. Fully-qualified Vertex AI Search engine resource
             ID. Format:
             ``projects/{project}/locations/{location}/collections/{collection}/engines/{engine}``
+        max_results (int):
+            Optional. Number of search results to return
+            per query. The default value is 10.
+            The maximumm allowed value is 10.
+        filter (str):
+            Optional. Filter strings to be passed to the
+            search API.
     """
 
     datastore: str = proto.Field(
@@ -601,6 +608,14 @@ class VertexAISearch(proto.Message):
     engine: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+    max_results: int = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=4,
     )
 
 
@@ -894,8 +909,8 @@ class RagRetrievalConfig(proto.Message):
 
             Attributes:
                 model_name (str):
-                    Optional. The model name used for ranking. Format:
-                    ``gemini-1.5-pro``
+                    Optional. The model name used for ranking. See `Supported
+                    models <https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference#supported-models>`__.
 
                     This field is a member of `oneof`_ ``_model_name``.
             """

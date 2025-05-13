@@ -2149,7 +2149,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets IAM policies for one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Gets the IAM policy of a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetIamPolicyRequest) input message
@@ -2176,7 +2176,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkloadIdentityPoolManagedIdentitys in a namespace. If `show_deleted` is set to `true`, then deleted managed identites are also listed.
+      r"""Lists all non-deleted WorkloadIdentityPoolManagedIdentitys in a namespace. If `show_deleted` is set to `true`, then deleted managed identities are also listed.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRequest) input message
@@ -2311,7 +2311,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets IAM policies on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Sets the IAM policies on a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetIamPolicyRequest) input message
@@ -2338,7 +2338,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Returns the caller's permissions on a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesTestIamPermissionsRequest) input message
@@ -2729,7 +2729,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets IAM policies for one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Gets the IAM policy of a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetIamPolicyRequest) input message
@@ -2891,7 +2891,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets IAM policies on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Sets the IAM policies on a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetIamPolicyRequest) input message
@@ -2918,7 +2918,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Returns the caller's permissions on a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesTestIamPermissionsRequest) input message
@@ -3491,7 +3491,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets IAM policies for one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Gets the IAM policy of a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsGetIamPolicyRequest) input message
@@ -3572,7 +3572,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets IAM policies on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Sets the IAM policies on a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsSetIamPolicyRequest) input message
@@ -3599,7 +3599,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+      r"""Returns the caller's permissions on a WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsTestIamPermissionsRequest) input message

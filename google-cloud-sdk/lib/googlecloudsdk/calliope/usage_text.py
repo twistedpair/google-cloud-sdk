@@ -179,8 +179,6 @@ def _GetFlagMetavar(flag, metavar=None, name=None, markdown=False):
 def _QuoteValue(value):
   """Returns value quoted, with preference for "..."."""
   quoted = repr(value)
-  if quoted.startswith('u'):
-    quoted = quoted[1:]
   if quoted.startswith("'") and '"' not in value:
     quoted = '"' + quoted[1:-1] + '"'
   return quoted
@@ -263,7 +261,13 @@ def GetFlagUsage(
         ])
       else:
         default = arg.default
-      usage += '; default={0}'.format(_QuoteValue(default))
+      default_text = _QuoteValue(default)
+      # Use codeblock if necessary to display literal * _ ` markdown characters.
+      if markdown and re.search(
+          f'[{base.MARKDOWN_BOLD}{base.MARKDOWN_ITALIC}{base.MARKDOWN_CODE}]',
+          default_text):
+        default_text = '```{}```'.format(default_text)
+      usage += '; default={0}'.format(default_text)
   return usage
 
 

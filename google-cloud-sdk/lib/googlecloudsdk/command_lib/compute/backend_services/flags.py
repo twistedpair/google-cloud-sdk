@@ -302,14 +302,15 @@ def AddExternalMigration(parser: parser_arguments.ArgumentInterceptor):
       type=lambda x: x.replace('-', '_').upper(),
       default=None,
       help="""\
-      Specifies the canary migration state. Possible values are PREPARE,
+      Specifies the migration state. Possible values are PREPARE,
       TEST_BY_PERCENTAGE, and TEST_ALL_TRAFFIC.
 
       To begin the migration from EXTERNAL to EXTERNAL_MANAGED, the state must
       be changed to PREPARE. The state must be changed to TEST_ALL_TRAFFIC
       before the loadBalancingScheme can be changed to EXTERNAL_MANAGED.
       Optionally, the TEST_BY_PERCENTAGE state can be used to migrate traffic
-      by percentage using externalManagedMigrationTestingPercentage.
+      by percentage using the --external-managed-migration-testing-percentage
+      flag.
     """,
   )
   group.add_argument(
@@ -333,7 +334,7 @@ def AddExternalMigration(parser: parser_arguments.ArgumentInterceptor):
       '--load-balancing-scheme',
       choices=['EXTERNAL', 'EXTERNAL_MANAGED'],
       help="""\
-      Only for the Global external ALB migration.
+      Only for the Global external Application Load Balancer migration.
 
       The value of this field must be EXTERNAL or EXTERNAL_MANAGED.
     """,

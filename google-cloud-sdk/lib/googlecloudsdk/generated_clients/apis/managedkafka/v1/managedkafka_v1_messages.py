@@ -144,6 +144,53 @@ class CertificateAuthorityServiceConfig(_messages.Message):
   caPool = _messages.StringField(1)
 
 
+class CheckCompatibilityRequest(_messages.Message):
+  r"""Request for CheckCompatibility.
+
+  Enums:
+    SchemaTypeValueValuesEnum: Optional. The schema type of the schema.
+
+  Fields:
+    references: Optional. The schema references used by the schema.
+    schema: Required. The schema payload
+    schemaType: Optional. The schema type of the schema.
+    verbose: Optional. If true, the response will contain the compatibility
+      check result with reasons for failed checks. The default is false.
+  """
+
+  class SchemaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The schema type of the schema.
+
+    Values:
+      SCHEMA_TYPE_UNSPECIFIED: No schema type. The default will be AVRO.
+      AVRO: Avro schema type.
+      JSON: JSON schema type.
+      PROTOBUF: Protobuf schema type.
+    """
+    SCHEMA_TYPE_UNSPECIFIED = 0
+    AVRO = 1
+    JSON = 2
+    PROTOBUF = 3
+
+  references = _messages.MessageField('SchemaReference', 1, repeated=True)
+  schema = _messages.StringField(2)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 3)
+  verbose = _messages.BooleanField(4)
+
+
+class CheckCompatibilityResponse(_messages.Message):
+  r"""Response for CheckCompatibility.
+
+  Fields:
+    is_compatible: The compatibility check result. If true, the schema is
+      compatible with the resource.
+    messages: Failure reasons if verbose = true.
+  """
+
+  is_compatible = _messages.BooleanField(1)
+  messages = _messages.StringField(2, repeated=True)
+
+
 class Cluster(_messages.Message):
   r"""An Apache Kafka cluster deployed in a location.
 
@@ -151,9 +198,13 @@ class Cluster(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the cluster.
 
   Messages:
+    BrokersPerZoneValue: Output only. Only populated when FULL view is
+      requested. The number of brokers per zone.
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
+    brokersPerZone: Output only. Only populated when FULL view is requested.
+      The number of brokers per zone.
     capacityConfig: Required. Capacity configuration for the Kafka cluster.
     createTime: Output only. The time when the cluster was created.
     gcpConfig: Required. Configuration properties for a Kafka cluster deployed
@@ -184,6 +235,32 @@ class Cluster(_messages.Message):
     DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class BrokersPerZoneValue(_messages.Message):
+    r"""Output only. Only populated when FULL view is requested. The number of
+    brokers per zone.
+
+    Messages:
+      AdditionalProperty: An additional property for a BrokersPerZoneValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type BrokersPerZoneValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BrokersPerZoneValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels as key value pairs.
 
@@ -207,17 +284,18 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityConfig = _messages.MessageField('CapacityConfig', 1)
-  createTime = _messages.StringField(2)
-  gcpConfig = _messages.MessageField('GcpConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  rebalanceConfig = _messages.MessageField('RebalanceConfig', 6)
-  satisfiesPzi = _messages.BooleanField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  tlsConfig = _messages.MessageField('TlsConfig', 10)
-  updateTime = _messages.StringField(11)
+  brokersPerZone = _messages.MessageField('BrokersPerZoneValue', 1)
+  capacityConfig = _messages.MessageField('CapacityConfig', 2)
+  createTime = _messages.StringField(3)
+  gcpConfig = _messages.MessageField('GcpConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  rebalanceConfig = _messages.MessageField('RebalanceConfig', 7)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  tlsConfig = _messages.MessageField('TlsConfig', 11)
+  updateTime = _messages.StringField(12)
 
 
 class ConnectAccessConfig(_messages.Message):
@@ -563,6 +641,98 @@ class ConsumerTopicMetadata(_messages.Message):
   partitions = _messages.MessageField('PartitionsValue', 1)
 
 
+class Context(_messages.Message):
+  r"""Context represents an independent schema grouping in a schema registry
+  instance.
+
+  Fields:
+    name: Identifier. The name of the context. Structured like: `projects/{pro
+      ject}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{
+      context}` The context name {context} can contain the following: * Up to
+      255 characters. * Allowed characters: letters (uppercase or lowercase),
+      numbers, and the following special characters: `.`, `-`, `_`, `+`, `%`,
+      and `~`.
+    subjects: Optional. The subjects of the context.
+  """
+
+  name = _messages.StringField(1)
+  subjects = _messages.StringField(2, repeated=True)
+
+
+class CreateSchemaRegistryRequest(_messages.Message):
+  r"""Request to create a schema registry instance.
+
+  Fields:
+    schemaRegistry: Required. The schema registry instance to create. The name
+      field is ignored.
+    schemaRegistryId: Required. The schema registry instance ID to use for
+      this schema registry. The ID must contain only letters (a-z, A-Z),
+      numbers (0-9), and underscores (-). The maximum length is 63 characters.
+      The ID must not start with a number.
+  """
+
+  schemaRegistry = _messages.MessageField('SchemaRegistry', 1)
+  schemaRegistryId = _messages.StringField(2)
+
+
+class CreateVersionRequest(_messages.Message):
+  r"""Request for CreateVersion.
+
+  Enums:
+    SchemaTypeValueValuesEnum: Optional. The type of the schema. It is
+      optional. If not specified, the schema type will be AVRO.
+
+  Fields:
+    id: Optional. The schema ID of the schema. If not specified, the schema ID
+      will be generated by the server. If the schema ID is specified, it must
+      not be used by an existing schema that is different from the schema to
+      be created.
+    normalize: Optional. If true, the schema will be normalized before being
+      stored. The default is false.
+    references: Optional. The schema references used by the schema.
+    schema: Required. The schema payload
+    schemaType: Optional. The type of the schema. It is optional. If not
+      specified, the schema type will be AVRO.
+    version: Optional. The version to create. It is optional. If not
+      specified, the version will be created with the max version ID of the
+      subject increased by 1. If the version ID is specified, it will be used
+      as the new version ID and must not be used by an existing version of the
+      subject.
+  """
+
+  class SchemaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the schema. It is optional. If not specified,
+    the schema type will be AVRO.
+
+    Values:
+      SCHEMA_TYPE_UNSPECIFIED: No schema type. The default will be AVRO.
+      AVRO: Avro schema type.
+      JSON: JSON schema type.
+      PROTOBUF: Protobuf schema type.
+    """
+    SCHEMA_TYPE_UNSPECIFIED = 0
+    AVRO = 1
+    JSON = 2
+    PROTOBUF = 3
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  normalize = _messages.BooleanField(2)
+  references = _messages.MessageField('SchemaReference', 3, repeated=True)
+  schema = _messages.StringField(4)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 5)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class CreateVersionResponse(_messages.Message):
+  r"""Response for CreateVersion.
+
+  Fields:
+    id: The unique identifier of the schema created.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -586,6 +756,67 @@ class GcpConfig(_messages.Message):
 
   accessConfig = _messages.MessageField('AccessConfig', 1)
   kmsKey = _messages.StringField(2)
+
+
+class HttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
 class ListAclsResponse(_messages.Message):
@@ -690,6 +921,16 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListSchemaRegistriesResponse(_messages.Message):
+  r"""Request for ListSchemaRegistries.
+
+  Fields:
+    schemaRegistries: The schema registry instances.
+  """
+
+  schemaRegistries = _messages.MessageField('SchemaRegistry', 1, repeated=True)
+
+
 class ListTopicsResponse(_messages.Message):
   r"""Response for ListTopics.
 
@@ -783,6 +1024,44 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LookupVersionRequest(_messages.Message):
+  r"""Request for LookupVersion.
+
+  Enums:
+    SchemaTypeValueValuesEnum: Optional. The schema type of the schema.
+
+  Fields:
+    deleted: Optional. If true, soft-deleted versions will be included in
+      lookup, no matter if the subject is active or soft-deleted. If false,
+      soft-deleted versions will be excluded. The default is false.
+    normalize: Optional. If true, the schema will be normalized before being
+      looked up. The default is false.
+    references: Optional. The schema references used by the schema.
+    schema: Required. The schema payload
+    schemaType: Optional. The schema type of the schema.
+  """
+
+  class SchemaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The schema type of the schema.
+
+    Values:
+      SCHEMA_TYPE_UNSPECIFIED: No schema type. The default will be AVRO.
+      AVRO: Avro schema type.
+      JSON: JSON schema type.
+      PROTOBUF: Protobuf schema type.
+    """
+    SCHEMA_TYPE_UNSPECIFIED = 0
+    AVRO = 1
+    JSON = 2
+    PROTOBUF = 3
+
+  deleted = _messages.BooleanField(1)
+  normalize = _messages.BooleanField(2)
+  references = _messages.MessageField('SchemaReference', 3, repeated=True)
+  schema = _messages.StringField(4)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 5)
 
 
 class ManagedkafkaProjectsLocationsClustersAclsAddAclEntryRequest(_messages.Message):
@@ -1045,11 +1324,34 @@ class ManagedkafkaProjectsLocationsClustersDeleteRequest(_messages.Message):
 class ManagedkafkaProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsClustersGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Specifies which parts of the Cluster
+      resource should be returned in the response.
+
   Fields:
     name: Required. The name of the cluster whose configuration to return.
+    view: Optional. Specifies which parts of the Cluster resource should be
+      returned in the response.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies which parts of the Cluster resource should be
+    returned in the response.
+
+    Values:
+      CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the BASIC view.
+      CLUSTER_VIEW_BASIC: Include the basic metadata of the Cluster. This is
+        the default value (for both ListClusters and GetCluster).
+      CLUSTER_VIEW_FULL: Include everything, including data fetched from the
+        Kafka cluster source of truth.
+    """
+    CLUSTER_VIEW_UNSPECIFIED = 0
+    CLUSTER_VIEW_BASIC = 1
+    CLUSTER_VIEW_FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class ManagedkafkaProjectsLocationsClustersListRequest(_messages.Message):
@@ -1551,6 +1853,813 @@ class ManagedkafkaProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ManagedkafkaProjectsLocationsSchemaRegistriesCompatibilityCheckCompatibilityRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesCompatibilityCheckCompati
+  bilityRequest object.
+
+  Fields:
+    checkCompatibilityRequest: A CheckCompatibilityRequest resource to be
+      passed as the request body.
+    name: Required. The name of the resource to check compatibility for. The
+      format is either of following: * projects/{project}/locations/{location}
+      /schemaRegistries/{schema_registry}/compatibility/subjects/*/versions:
+      Check compatibility with one or more versions of the specified subject.
+      * projects/{project}/locations/{location}/schemaRegistries/{schema_regis
+      try}/compatibility/subjects/{subject}/versions/{version}: Check
+      compatibility with a specific version of the subject.
+  """
+
+  checkCompatibilityRequest = _messages.MessageField('CheckCompatibilityRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesConfigDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesConfigDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of subject to delete the config for. The
+      format is * projects/{project}/locations/{location}/schemaRegistries/{sc
+      hema_registry}/config/{subject}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesConfigGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesConfigGetRequest object.
+
+  Fields:
+    defaultToGlobal: Optional. If true, the config will fall back to the
+      config at the global level if no subject level config is found.
+    name: Required. The resource name to get the config for. It can be either
+      of following: * projects/{project}/locations/{location}/schemaRegistries
+      /{schema_registry}/config: Get config at global level. * projects/{proje
+      ct}/locations/{location}/schemaRegistries/{schema_registry}/config/{subj
+      ect}: Get config for a specific subject.
+  """
+
+  defaultToGlobal = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesConfigUpdateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesConfigUpdateRequest
+  object.
+
+  Fields:
+    name: Required. The resource name to update the config for. It can be
+      either of following: * projects/{project}/locations/{location}/schemaReg
+      istries/{schema_registry}/config: Update config at global level. * proje
+      cts/{project}/locations/{location}/schemaRegistries/{schema_registry}/co
+      nfig/{subject}: Update config for a specific subject.
+    updateSchemaConfigRequest: A UpdateSchemaConfigRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateSchemaConfigRequest = _messages.MessageField('UpdateSchemaConfigRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsCompatibilityCheckCompatibilityRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsCompatibilityChec
+  kCompatibilityRequest object.
+
+  Fields:
+    checkCompatibilityRequest: A CheckCompatibilityRequest resource to be
+      passed as the request body.
+    name: Required. The name of the resource to check compatibility for. The
+      format is either of following: * projects/{project}/locations/{location}
+      /schemaRegistries/{schema_registry}/compatibility/subjects/*/versions:
+      Check compatibility with one or more versions of the specified subject.
+      * projects/{project}/locations/{location}/schemaRegistries/{schema_regis
+      try}/compatibility/subjects/{subject}/versions/{version}: Check
+      compatibility with a specific version of the subject.
+  """
+
+  checkCompatibilityRequest = _messages.MessageField('CheckCompatibilityRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigDeleteRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of subject to delete the config for. The
+      format is * projects/{project}/locations/{location}/schemaRegistries/{sc
+      hema_registry}/config/{subject}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigGetRequest
+  object.
+
+  Fields:
+    defaultToGlobal: Optional. If true, the config will fall back to the
+      config at the global level if no subject level config is found.
+    name: Required. The resource name to get the config for. It can be either
+      of following: * projects/{project}/locations/{location}/schemaRegistries
+      /{schema_registry}/config: Get config at global level. * projects/{proje
+      ct}/locations/{location}/schemaRegistries/{schema_registry}/config/{subj
+      ect}: Get config for a specific subject.
+  """
+
+  defaultToGlobal = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigUpdateRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigUpdateRequest
+  object.
+
+  Fields:
+    name: Required. The resource name to update the config for. It can be
+      either of following: * projects/{project}/locations/{location}/schemaReg
+      istries/{schema_registry}/config: Update config at global level. * proje
+      cts/{project}/locations/{location}/schemaRegistries/{schema_registry}/co
+      nfig/{subject}: Update config for a specific subject.
+    updateSchemaConfigRequest: A UpdateSchemaConfigRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateSchemaConfigRequest = _messages.MessageField('UpdateSchemaConfigRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the context to return. Structured like: `proje
+      cts/{project}/locations/{location}/schemaRegistries/{schema_registry}/co
+      ntexts/{context}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsListRequest
+  object.
+
+  Fields:
+    parent: Required. The parent of the contexts. Structured like: `projects/{
+      project}/locations/{location}/schemaRegistries/{schema_registry}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the mode. The format is * projects/{p
+      roject}/locations/{location}/schemaRegistries/{schema_registry}/mode/{su
+      bject}: mode for a schema registry, or * projects/{project}/locations/{l
+      ocation}/schemaRegistries/{schema_registry}/contexts/{context}/mode/{sub
+      ject}: mode for a specific subject in a specific context
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeUpdateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeUpdateRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the mode. The format is * projects/{p
+      roject}/locations/{location}/schemaRegistries/{schema_registry}/mode/{su
+      bject}: mode for a schema registry, or * projects/{project}/locations/{l
+      ocation}/schemaRegistries/{schema_registry}/contexts/{context}/mode/{sub
+      ject}: mode for a specific subject in a specific context
+    updateSchemaModeRequest: A UpdateSchemaModeRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateSchemaModeRequest = _messages.MessageField('UpdateSchemaModeRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the schema to return. Structured like: `projec
+      ts/{project}/locations/{location}/schemaRegistries/{schema_registry}/sch
+      emas/ids/{schema}`
+    subject: Optional. Used to limit the search for the schema ID to a
+      specific subject, otherwise the schema ID will be searched for in all
+      subjects in the given specified context.
+  """
+
+  name = _messages.StringField(1, required=True)
+  subject = _messages.StringField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetSchemaRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetSchemaRequest
+  object.
+
+  Fields:
+    name: Required. The name of the schema to return. Structured like: `projec
+      ts/{project}/locations/{location}/schemaRegistries/{schema_registry}/sch
+      emas/ids/{schema}`
+    subject: Optional. Used to limit the search for the schema ID to a
+      specific subject, otherwise the schema ID will be searched for in all
+      subjects in the given specified context.
+  """
+
+  name = _messages.StringField(1, required=True)
+  subject = _messages.StringField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasSubjectsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasSubjectsLi
+  stRequest object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      subjects. The default is false.
+    parent: Required. The schema resource whose associated subjects are to be
+      listed. Structured like: `projects/{project}/locations/{location}/schema
+      Registries/{schema_registry}/schemas/ids/{schema}` or `projects/{project
+      }/locations/{location}/schemaRegistries/{schema_registry}/contexts/{cont
+      ext}/schemas/ids/{schema}`
+    subject: Optional. The subject to filter the subjects by.
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  subject = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasTypesListRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasTypesListRequest
+  object.
+
+  Fields:
+    parent: Required. The parent schema registry whose schema types are to be
+      listed. Structured like: `projects/{project}/locations/{location}/schema
+      Registries/{schema_registry}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasVersionsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasVersionsLi
+  stRequest object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      versions of the schema, even if the subject is soft-deleted. The default
+      is false.
+    parent: Required. The schema whose schema versions are to be listed.
+      Structured like: `projects/{project}/locations/{location}/schemaRegistri
+      es/{schema_registry}/schemas/ids/{schema}` or `projects/{project}/locati
+      ons/{location}/schemaRegistries/{schema_registry}/contexts/{context}/sch
+      emas/ids/{schema}`
+    subject: Optional. The subject to filter the subjects by.
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  subject = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsDeleteRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the subject to delete. Structured like: `proje
+      cts/{project}/locations/{location}/schemaRegistries/{schema_registry}/su
+      bjects/{subject}` or `projects/{project}/locations/{location}/schemaRegi
+      stries/{schema_registry}/contexts/{context}/subjects/{subject}`
+    permanent: Optional. If true, the subject and all associated metadata
+      including the schema ID will be deleted permanently. Otherwise, only the
+      subject is soft-deleted. The default is false. Soft-deleted subjects can
+      still be searched in ListSubjects API call with deleted=true query
+      parameter. A soft-delete of a subject must be performed before a hard-
+      delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+  permanent = _messages.BooleanField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsListRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsListRequest
+  object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      subjects. The default is false.
+    parent: Required. The parent schema registry/context whose subjects are to
+      be listed. Structured like: `projects/{project}/locations/{location}/sch
+      emaRegistries/{schema_registry}` or `projects/{project}/locations/{locat
+      ion}/schemaRegistries/{schema_registry}/contexts/{context}`
+    subjectPrefix: Optional. The context to filter the subjects by, in the
+      format of `:.{context}:`. If unset, all subjects in the registry are
+      returned. Set to empty string or add as '?subjectPrefix=' at the end of
+      this request to list subjects in the default context.
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  subjectPrefix = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsLookupVersionRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsLookupVer
+  sionRequest object.
+
+  Fields:
+    lookupVersionRequest: A LookupVersionRequest resource to be passed as the
+      request body.
+    parent: Required. The subject to lookup the schema in. Structured like: `p
+      rojects/{project}/locations/{location}/schemaRegistries/{schema_registry
+      }/subjects/{subject}` or `projects/{project}/locations/{location}/schema
+      Registries/{schema_registry}/contexts/{context}/subjects/{subject}`
+  """
+
+  lookupVersionRequest = _messages.MessageField('LookupVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsCreateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsC
+  reateRequest object.
+
+  Fields:
+    createVersionRequest: A CreateVersionRequest resource to be passed as the
+      request body.
+    parent: Required. The subject to create the version for. Structured like:
+      `projects/{project}/locations/{location}/schemaRegistries/{schema_regist
+      ry}/subjects/{subject}` or `projects/{project}/locations/{location}/sche
+      maRegistries/{schema_registry}/contexts/{context}/subjects/{subject}`
+  """
+
+  createVersionRequest = _messages.MessageField('CreateVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsD
+  eleteRequest object.
+
+  Fields:
+    name: Required. The name of the subject version to delete. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}/versions/{version}` or `projects/{project}/
+      locations/{location}/schemaRegistries/{schema_registry}/contexts/{contex
+      t}/subjects/{subject}/versions/{version}`
+    permanent: Optional. If true, both the version and the referenced schema
+      ID will be permanently deleted. The default is false. If false, the
+      version will be deleted but the schema ID will be retained. Soft-deleted
+      versions can still be searched in ListVersions API call with
+      deleted=true query parameter. A soft-delete of a version must be
+      performed before a hard-delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+  permanent = _messages.BooleanField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsG
+  etRequest object.
+
+  Fields:
+    deleted: Optional. If true, no matter if the subject/version is soft-
+      deleted or not, it returns the version details. If false, it returns
+      NOT_FOUND error if the subject/version is soft-deleted. The default is
+      false.
+    name: Required. The name of the subject to return versions. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}/versions/{version}` or `projects/{project}/
+      locations/{location}/schemaRegistries/{schema_registry}/contexts/{contex
+      t}/subjects/{subject}/versions/{version}`
+  """
+
+  deleted = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsGetSchemaRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsG
+  etSchemaRequest object.
+
+  Fields:
+    deleted: Optional. If true, no matter if the subject/version is soft-
+      deleted or not, it returns the version details. If false, it returns
+      NOT_FOUND error if the subject/version is soft-deleted. The default is
+      false.
+    name: Required. The name of the subject to return versions. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}/versions/{version}` or `projects/{project}/
+      locations/{location}/schemaRegistries/{schema_registry}/contexts/{contex
+      t}/subjects/{subject}/versions/{version}`
+  """
+
+  deleted = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsL
+  istRequest object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      versions of an active or soft-deleted subject. The default is false.
+    parent: Required. The subject whose versions are to be listed. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}` or `projects/{project}/locations/{location
+      }/schemaRegistries/{schema_registry}/contexts/{context}/subjects/{subjec
+      t}`
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsReferencedbyListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsR
+  eferencedbyListRequest object.
+
+  Fields:
+    parent: Required. The version to list referenced by. Structured like: `pro
+      jects/{project}/locations/{location}/schemaRegistries/{schema_registry}/
+      subjects/{subject}/versions/{version}` or `projects/{project}/locations/
+      {location}/schemaRegistries/{schema_registry}/contexts/{context}/subject
+      s/{subject}/versions/{version}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesCreateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesCreateRequest object.
+
+  Fields:
+    createSchemaRegistryRequest: A CreateSchemaRegistryRequest resource to be
+      passed as the request body.
+    parent: Required. The parent whose schema registry instance is to be
+      created. Structured like: `projects/{project}/locations/{location}`
+  """
+
+  createSchemaRegistryRequest = _messages.MessageField('CreateSchemaRegistryRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the schema registry instance to delete.
+      Structured like: `projects/{project}/locations/{location}/schemaRegistri
+      es/{schema_registry}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesGetRequest object.
+
+  Fields:
+    name: Required. The name of the schema registry instance to return.
+      Structured like: `projects/{project}/locations/{location}/schemaRegistri
+      es/{schema_registry}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesListRequest object.
+
+  Fields:
+    parent: Required. The parent whose schema registry instances are to be
+      listed. Structured like: `projects/{project}/locations/{location}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesModeGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesModeGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the mode. The format is * projects/{p
+      roject}/locations/{location}/schemaRegistries/{schema_registry}/mode/{su
+      bject}: mode for a schema registry, or * projects/{project}/locations/{l
+      ocation}/schemaRegistries/{schema_registry}/contexts/{context}/mode/{sub
+      ject}: mode for a specific subject in a specific context
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesModeUpdateRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesModeUpdateRequest object.
+
+  Fields:
+    name: Required. The resource name of the mode. The format is * projects/{p
+      roject}/locations/{location}/schemaRegistries/{schema_registry}/mode/{su
+      bject}: mode for a schema registry, or * projects/{project}/locations/{l
+      ocation}/schemaRegistries/{schema_registry}/contexts/{context}/mode/{sub
+      ject}: mode for a specific subject in a specific context
+    updateSchemaModeRequest: A UpdateSchemaModeRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateSchemaModeRequest = _messages.MessageField('UpdateSchemaModeRequest', 2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetRequest object.
+
+  Fields:
+    name: Required. The name of the schema to return. Structured like: `projec
+      ts/{project}/locations/{location}/schemaRegistries/{schema_registry}/sch
+      emas/ids/{schema}`
+    subject: Optional. Used to limit the search for the schema ID to a
+      specific subject, otherwise the schema ID will be searched for in all
+      subjects in the given specified context.
+  """
+
+  name = _messages.StringField(1, required=True)
+  subject = _messages.StringField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetSchemaRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetSchemaRequest
+  object.
+
+  Fields:
+    name: Required. The name of the schema to return. Structured like: `projec
+      ts/{project}/locations/{location}/schemaRegistries/{schema_registry}/sch
+      emas/ids/{schema}`
+    subject: Optional. Used to limit the search for the schema ID to a
+      specific subject, otherwise the schema ID will be searched for in all
+      subjects in the given specified context.
+  """
+
+  name = _messages.StringField(1, required=True)
+  subject = _messages.StringField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSchemasSubjectsListRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSchemasSubjectsListRequest
+  object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      subjects. The default is false.
+    parent: Required. The schema resource whose associated subjects are to be
+      listed. Structured like: `projects/{project}/locations/{location}/schema
+      Registries/{schema_registry}/schemas/ids/{schema}` or `projects/{project
+      }/locations/{location}/schemaRegistries/{schema_registry}/contexts/{cont
+      ext}/schemas/ids/{schema}`
+    subject: Optional. The subject to filter the subjects by.
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  subject = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSchemasTypesListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSchemasTypesListRequest
+  object.
+
+  Fields:
+    parent: Required. The parent schema registry whose schema types are to be
+      listed. Structured like: `projects/{project}/locations/{location}/schema
+      Registries/{schema_registry}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSchemasVersionsListRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSchemasVersionsListRequest
+  object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      versions of the schema, even if the subject is soft-deleted. The default
+      is false.
+    parent: Required. The schema whose schema versions are to be listed.
+      Structured like: `projects/{project}/locations/{location}/schemaRegistri
+      es/{schema_registry}/schemas/ids/{schema}` or `projects/{project}/locati
+      ons/{location}/schemaRegistries/{schema_registry}/contexts/{context}/sch
+      emas/ids/{schema}`
+    subject: Optional. The subject to filter the subjects by.
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  subject = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the subject to delete. Structured like: `proje
+      cts/{project}/locations/{location}/schemaRegistries/{schema_registry}/su
+      bjects/{subject}` or `projects/{project}/locations/{location}/schemaRegi
+      stries/{schema_registry}/contexts/{context}/subjects/{subject}`
+    permanent: Optional. If true, the subject and all associated metadata
+      including the schema ID will be deleted permanently. Otherwise, only the
+      subject is soft-deleted. The default is false. Soft-deleted subjects can
+      still be searched in ListSubjects API call with deleted=true query
+      parameter. A soft-delete of a subject must be performed before a hard-
+      delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+  permanent = _messages.BooleanField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsListRequest
+  object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      subjects. The default is false.
+    parent: Required. The parent schema registry/context whose subjects are to
+      be listed. Structured like: `projects/{project}/locations/{location}/sch
+      emaRegistries/{schema_registry}` or `projects/{project}/locations/{locat
+      ion}/schemaRegistries/{schema_registry}/contexts/{context}`
+    subjectPrefix: Optional. The context to filter the subjects by, in the
+      format of `:.{context}:`. If unset, all subjects in the registry are
+      returned. Set to empty string or add as '?subjectPrefix=' at the end of
+      this request to list subjects in the default context.
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  subjectPrefix = _messages.StringField(3)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsLookupVersionRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsLookupVersionRequest
+  object.
+
+  Fields:
+    lookupVersionRequest: A LookupVersionRequest resource to be passed as the
+      request body.
+    parent: Required. The subject to lookup the schema in. Structured like: `p
+      rojects/{project}/locations/{location}/schemaRegistries/{schema_registry
+      }/subjects/{subject}` or `projects/{project}/locations/{location}/schema
+      Registries/{schema_registry}/contexts/{context}/subjects/{subject}`
+  """
+
+  lookupVersionRequest = _messages.MessageField('LookupVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsCreateRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsCreateRequest
+  object.
+
+  Fields:
+    createVersionRequest: A CreateVersionRequest resource to be passed as the
+      request body.
+    parent: Required. The subject to create the version for. Structured like:
+      `projects/{project}/locations/{location}/schemaRegistries/{schema_regist
+      ry}/subjects/{subject}` or `projects/{project}/locations/{location}/sche
+      maRegistries/{schema_registry}/contexts/{context}/subjects/{subject}`
+  """
+
+  createVersionRequest = _messages.MessageField('CreateVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsDeleteRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the subject version to delete. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}/versions/{version}` or `projects/{project}/
+      locations/{location}/schemaRegistries/{schema_registry}/contexts/{contex
+      t}/subjects/{subject}/versions/{version}`
+    permanent: Optional. If true, both the version and the referenced schema
+      ID will be permanently deleted. The default is false. If false, the
+      version will be deleted but the schema ID will be retained. Soft-deleted
+      versions can still be searched in ListVersions API call with
+      deleted=true query parameter. A soft-delete of a version must be
+      performed before a hard-delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+  permanent = _messages.BooleanField(2)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetRequest
+  object.
+
+  Fields:
+    deleted: Optional. If true, no matter if the subject/version is soft-
+      deleted or not, it returns the version details. If false, it returns
+      NOT_FOUND error if the subject/version is soft-deleted. The default is
+      false.
+    name: Required. The name of the subject to return versions. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}/versions/{version}` or `projects/{project}/
+      locations/{location}/schemaRegistries/{schema_registry}/contexts/{contex
+      t}/subjects/{subject}/versions/{version}`
+  """
+
+  deleted = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetSchemaRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetSchema
+  Request object.
+
+  Fields:
+    deleted: Optional. If true, no matter if the subject/version is soft-
+      deleted or not, it returns the version details. If false, it returns
+      NOT_FOUND error if the subject/version is soft-deleted. The default is
+      false.
+    name: Required. The name of the subject to return versions. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}/versions/{version}` or `projects/{project}/
+      locations/{location}/schemaRegistries/{schema_registry}/contexts/{contex
+      t}/subjects/{subject}/versions/{version}`
+  """
+
+  deleted = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsListRequest(_messages.Message):
+  r"""A
+  ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsListRequest
+  object.
+
+  Fields:
+    deleted: Optional. If true, the response will include soft-deleted
+      versions of an active or soft-deleted subject. The default is false.
+    parent: Required. The subject whose versions are to be listed. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}/subjects/{subject}` or `projects/{project}/locations/{location
+      }/schemaRegistries/{schema_registry}/contexts/{context}/subjects/{subjec
+      t}`
+  """
+
+  deleted = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsReferencedbyListRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsReference
+  dbyListRequest object.
+
+  Fields:
+    parent: Required. The version to list referenced by. Structured like: `pro
+      jects/{project}/locations/{location}/schemaRegistries/{schema_registry}/
+      subjects/{subject}/versions/{version}` or `projects/{project}/locations/
+      {location}/schemaRegistries/{schema_registry}/contexts/{context}/subject
+      s/{subject}/versions/{version}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class NetworkConfig(_messages.Message):
   r"""The configuration of a Virtual Private Cloud (VPC) network that can
   access the Kafka cluster.
@@ -1768,6 +2877,196 @@ class ResumeConnectorRequest(_messages.Message):
 
 class ResumeConnectorResponse(_messages.Message):
   r"""Response for ResumeConnector."""
+
+
+class Schema(_messages.Message):
+  r"""Schema for a Kafka message.
+
+  Enums:
+    SchemaTypeValueValuesEnum: Optional. The schema type of the schema.
+
+  Fields:
+    references: Optional. The schema references used by the schema.
+    schema: The schema payload.
+    schemaType: Optional. The schema type of the schema.
+  """
+
+  class SchemaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The schema type of the schema.
+
+    Values:
+      SCHEMA_TYPE_UNSPECIFIED: No schema type. The default will be AVRO.
+      AVRO: Avro schema type.
+      JSON: JSON schema type.
+      PROTOBUF: Protobuf schema type.
+    """
+    SCHEMA_TYPE_UNSPECIFIED = 0
+    AVRO = 1
+    JSON = 2
+    PROTOBUF = 3
+
+  references = _messages.MessageField('SchemaReference', 1, repeated=True)
+  schema = _messages.StringField(2)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 3)
+
+
+class SchemaConfig(_messages.Message):
+  r"""SchemaConfig represents configuration for a schema registry or a
+  specific subject.
+
+  Enums:
+    CompatibilityValueValuesEnum: Required. The compatibility type of the
+      schema. The default value is BACKWARD. If unset in a SchemaSubject-level
+      SchemaConfig, defaults to the global value. If unset in a
+      SchemaRegistry-level SchemaConfig, reverts to the default value.
+
+  Fields:
+    alias: Optional. The subject to which this subject is an alias of. Only
+      applicable for subject config.
+    compatibility: Required. The compatibility type of the schema. The default
+      value is BACKWARD. If unset in a SchemaSubject-level SchemaConfig,
+      defaults to the global value. If unset in a SchemaRegistry-level
+      SchemaConfig, reverts to the default value.
+    normalize: Optional. If true, the schema will be normalized before being
+      stored or looked up. The default is false. If unset in a SchemaSubject-
+      level SchemaConfig, the global value will be used. If unset in a
+      SchemaRegistry-level SchemaConfig, reverts to the default value.
+  """
+
+  class CompatibilityValueValuesEnum(_messages.Enum):
+    r"""Required. The compatibility type of the schema. The default value is
+    BACKWARD. If unset in a SchemaSubject-level SchemaConfig, defaults to the
+    global value. If unset in a SchemaRegistry-level SchemaConfig, reverts to
+    the default value.
+
+    Values:
+      NONE: No compatibility check.
+      BACKWARD: Backwards compatible with the most recent version.
+      BACKWARD_TRANSITIVE: Backwards compatible with all previous versions.
+      FORWARD: Forwards compatible with the most recent version.
+      FORWARD_TRANSITIVE: Forwards compatible with all previous versions.
+      FULL: Backwards and forwards compatible with the most recent version.
+      FULL_TRANSITIVE: Backwards and forwards compatible with all previous
+        versions.
+    """
+    NONE = 0
+    BACKWARD = 1
+    BACKWARD_TRANSITIVE = 2
+    FORWARD = 3
+    FORWARD_TRANSITIVE = 4
+    FULL = 5
+    FULL_TRANSITIVE = 6
+
+  alias = _messages.StringField(1)
+  compatibility = _messages.EnumField('CompatibilityValueValuesEnum', 2)
+  normalize = _messages.BooleanField(3)
+
+
+class SchemaMode(_messages.Message):
+  r"""SchemaMode represents the mode of a schema registry or a specific
+  subject. Four modes are supported: * NONE: This is the default mode for a
+  subject and essentially means that the subject does not have any mode set.
+  This means the subject will follow the schema registry's mode. * READONLY:
+  The schema registry is in read-only mode. * READWRITE: The schema registry
+  is in read-write mode, which allows limited write operations on the schema.
+  * IMPORT: The schema registry is in import mode, which allows more editing
+  operations on the schema for data importing purposes.
+
+  Enums:
+    ModeValueValuesEnum: Required. The mode type of a schema registry
+      (READWRITE by default) or of a subject (NONE by default, which means use
+      the global schema registry setting).
+
+  Fields:
+    mode: Required. The mode type of a schema registry (READWRITE by default)
+      or of a subject (NONE by default, which means use the global schema
+      registry setting).
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Required. The mode type of a schema registry (READWRITE by default) or
+    of a subject (NONE by default, which means use the global schema registry
+    setting).
+
+    Values:
+      NONE: No mode.
+      READONLY: READONLY mode.
+      READWRITE: READWRITE mode.
+      IMPORT: IMPORT mode.
+    """
+    NONE = 0
+    READONLY = 1
+    READWRITE = 2
+    IMPORT = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+
+
+class SchemaReference(_messages.Message):
+  r"""SchemaReference is a reference to a schema.
+
+  Fields:
+    name: Required. The name of the reference.
+    subject: Required. The subject of the reference.
+    version: Required. The version of the reference.
+  """
+
+  name = _messages.StringField(1)
+  subject = _messages.StringField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class SchemaRegistry(_messages.Message):
+  r"""SchemaRegistry is a schema registry instance.
+
+  Fields:
+    contexts: Output only. The contexts of the schema registry instance.
+    name: Identifier. The name of the schema registry instance. Structured
+      like: `projects/{project}/locations/{location}/schemaRegistries/{schema_
+      registry}` The instance name {schema_registry} can contain the
+      following: * Up to 255 characters. * Letters (uppercase or lowercase),
+      numbers, and underscores.
+  """
+
+  contexts = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class SchemaVersion(_messages.Message):
+  r"""Version of a schema.
+
+  Enums:
+    SchemaTypeValueValuesEnum: Optional. The schema type of the schema.
+
+  Fields:
+    id: Required. The schema ID.
+    references: Optional. The schema references used by the schema.
+    schema: Required. The schema payload.
+    schemaType: Optional. The schema type of the schema.
+    subject: Required. The subject of the version.
+    version: Required. The version ID
+  """
+
+  class SchemaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The schema type of the schema.
+
+    Values:
+      SCHEMA_TYPE_UNSPECIFIED: No schema type. The default will be AVRO.
+      AVRO: Avro schema type.
+      JSON: JSON schema type.
+      PROTOBUF: Protobuf schema type.
+    """
+    SCHEMA_TYPE_UNSPECIFIED = 0
+    AVRO = 1
+    JSON = 2
+    PROTOBUF = 3
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  references = _messages.MessageField('SchemaReference', 2, repeated=True)
+  schema = _messages.StringField(3)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 4)
+  subject = _messages.StringField(5)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1989,6 +3288,81 @@ class TrustConfig(_messages.Message):
   """
 
   casConfigs = _messages.MessageField('CertificateAuthorityServiceConfig', 1, repeated=True)
+
+
+class UpdateSchemaConfigRequest(_messages.Message):
+  r"""Request for updating schema config. On a SchemaSubject-level
+  SchemaConfig, an unset field will be removed from the SchemaConfig.
+
+  Enums:
+    CompatibilityValueValuesEnum: Required. The compatibility type of the
+      schemas. Cannot be unset for a SchemaRegistry-level SchemaConfig. If
+      unset on a SchemaSubject-level SchemaConfig, removes the compatibility
+      field for the SchemaConfig.
+
+  Fields:
+    compatibility: Required. The compatibility type of the schemas. Cannot be
+      unset for a SchemaRegistry-level SchemaConfig. If unset on a
+      SchemaSubject-level SchemaConfig, removes the compatibility field for
+      the SchemaConfig.
+    normalize: Optional. If true, the schema will be normalized before being
+      stored or looked up. The default is false. Cannot be unset for a
+      SchemaRegistry-level SchemaConfig. If unset on a SchemaSubject-level
+      SchemaConfig, removes the normalize field for the SchemaConfig.
+  """
+
+  class CompatibilityValueValuesEnum(_messages.Enum):
+    r"""Required. The compatibility type of the schemas. Cannot be unset for a
+    SchemaRegistry-level SchemaConfig. If unset on a SchemaSubject-level
+    SchemaConfig, removes the compatibility field for the SchemaConfig.
+
+    Values:
+      NONE: No compatibility check.
+      BACKWARD: Backwards compatible with the most recent version.
+      BACKWARD_TRANSITIVE: Backwards compatible with all previous versions.
+      FORWARD: Forwards compatible with the most recent version.
+      FORWARD_TRANSITIVE: Forwards compatible with all previous versions.
+      FULL: Backwards and forwards compatible with the most recent version.
+      FULL_TRANSITIVE: Backwards and forwards compatible with all previous
+        versions.
+    """
+    NONE = 0
+    BACKWARD = 1
+    BACKWARD_TRANSITIVE = 2
+    FORWARD = 3
+    FORWARD_TRANSITIVE = 4
+    FULL = 5
+    FULL_TRANSITIVE = 6
+
+  compatibility = _messages.EnumField('CompatibilityValueValuesEnum', 1)
+  normalize = _messages.BooleanField(2)
+
+
+class UpdateSchemaModeRequest(_messages.Message):
+  r"""Request for updating schema registry or subject mode.
+
+  Enums:
+    ModeValueValuesEnum: Required. The mode type.
+
+  Fields:
+    mode: Required. The mode type.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Required. The mode type.
+
+    Values:
+      NONE: No mode.
+      READONLY: READONLY mode.
+      READWRITE: READWRITE mode.
+      IMPORT: IMPORT mode.
+    """
+    NONE = 0
+    READONLY = 1
+    READWRITE = 2
+    IMPORT = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

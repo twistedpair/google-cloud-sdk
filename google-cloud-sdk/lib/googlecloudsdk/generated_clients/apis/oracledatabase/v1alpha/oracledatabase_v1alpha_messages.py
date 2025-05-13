@@ -43,7 +43,7 @@ class AutonomousDatabase(_messages.Message):
 
   Fields:
     adminPassword: Optional. The password for the default ADMIN user.
-    cidr: Optional. The subnet CIDR range for the Autonmous Database.
+    cidr: Optional. The subnet CIDR range for the Autonomous Database.
     createTime: Output only. The date and time that the Autonomous Database
       was created.
     database: Optional. The name of the Autonomous Database. The database name
@@ -3548,6 +3548,9 @@ class OracledatabaseProjectsLocationsGiVersionsListRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsGiVersionsListRequest object.
 
   Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Only the shape and gi_version fields are supported in this format:
+      `shape="{shape}"`.
     pageSize: Optional. The maximum number of items to return. If unspecified,
       a maximum of 50 Oracle Grid Infrastructure (GI) versions will be
       returned. The maximum value is 1000; values above 1000 will be reset to
@@ -3558,9 +3561,10 @@ class OracledatabaseProjectsLocationsGiVersionsListRequest(_messages.Message):
       following format: Format: projects/{project}/locations/{location}.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class OracledatabaseProjectsLocationsGiVersionsMinorVersionsGetRequest(_messages.Message):
@@ -3924,7 +3928,7 @@ class ScheduledOperationDetails(_messages.Message):
 
 
 class SourceConfig(_messages.Message):
-  r"""The source configuration for the standby Autonomnous Database.
+  r"""The source configuration for the standby Autonomous Database.
 
   Fields:
     automaticBackupsReplicationEnabled: Optional. This field specifies if the
@@ -4076,7 +4080,7 @@ class StorageVaultProperties(_messages.Message):
 
 
 class SwitchoverAutonomousDatabaseRequest(_messages.Message):
-  r"""The request for `AutonomousDatabase.Switchover`.
+  r"""The request for `OracleDatabase.SwitchoverAutonomousDatabase`.
 
   Fields:
     peerAutonomousDatabase: Required. The peer database name to switch over

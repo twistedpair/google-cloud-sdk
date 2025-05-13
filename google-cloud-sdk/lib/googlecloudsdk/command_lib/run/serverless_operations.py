@@ -44,6 +44,7 @@ from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.run import task
+from googlecloudsdk.api_lib.run import worker_pool as worker_pool_lib
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
@@ -298,6 +299,21 @@ class ServerlessOperations(object):
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
+  def ListWorkerPools(self, namespace_ref):
+    """Returns all worker pools in the namespace."""
+    messages = self.messages_module
+    request = messages.RunNamespacesWorkerpoolsListRequest(
+        parent=namespace_ref.RelativeName()
+    )
+    try:
+      with metrics.RecordDuration(metric_names.LIST_WORKER_POOLS):
+        response = self._client.namespaces_workerpools.List(request)
+      return [
+          worker_pool_lib.WorkerPool(item, messages) for item in response.items
+      ]
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+
   def ListConfigurations(self, namespace_ref):
     """Returns all configurations in the namespace."""
     messages = self.messages_module
@@ -362,6 +378,24 @@ class ServerlessOperations(object):
         as_dict = encoding.MessageToPyValue(operation.response)
         as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
         return service.Service(as_pb, self.messages_module)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+  def GetWorkerPool(self, worker_pool_ref):
+    """Return the relevant WorkerPool from the server, or None if 404."""
+    messages = self.messages_module
+    worker_pool_get_request = messages.RunNamespacesWorkerpoolsGetRequest(
+        name=worker_pool_ref.RelativeName()
+    )
+
+    try:
+      with metrics.RecordDuration(metric_names.GET_WORKER_POOL):
+        worker_pool_get_response = self._client.namespaces_workerpools.Get(
+            worker_pool_get_request
+        )
+        return worker_pool_lib.WorkerPool(worker_pool_get_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:

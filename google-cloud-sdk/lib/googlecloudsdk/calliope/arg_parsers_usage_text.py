@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+from typing import Union
 
 import six
 
@@ -147,6 +148,21 @@ def _Punctuate(text):
     return clean_text + '.'
 
 
+def _Capitalize(text: str, ignore: bool = False) -> Union[str, None]:
+  """Capitalizes the first letter of text.
+
+  Args:
+    text: The text to capitalize.
+    ignore: Whether to ignore the capitalization request.
+
+  Returns:
+    The capitalized text.
+  """
+  if not text or ignore:
+    return text
+  return text[0].upper() + text[1:]
+
+
 def FormatHelpText(field_name, required, help_text=None):
   """Defaults and formats specific attribute of help text.
 
@@ -161,9 +177,11 @@ def FormatHelpText(field_name, required, help_text=None):
   if help_text:
     defaulted_help_text = _Punctuate(help_text)
   elif field_name:
-    defaulted_help_text = 'Sets `{}` value.'.format(field_name)
+    defaulted_help_text = _Capitalize(
+        'sets `{}` value.'.format(field_name), required
+    )
   else:
-    defaulted_help_text = 'Sets value.'
+    defaulted_help_text = _Capitalize('sets value.', required)
 
   if required:
     return 'Required, {}'.format(defaulted_help_text)

@@ -2,7 +2,8 @@ project:
   name: project
   collection: managedkafka.projects
   attributes:
-  - parameter_name: projectsId
+  - &project
+    parameter_name: projectsId
     attribute_name: project
     help: |
       The project name.
@@ -12,6 +13,7 @@ location:
   name: location
   collection: managedkafka.projects.locations
   attributes:
+  - *project
   - &location
     parameter_name: locationsId
     attribute_name: location
@@ -126,3 +128,16 @@ operation:
     attribute_name: operation
     help: |
       The operation name.
+
+schema_registry:
+  name: schema_registry
+  collection: managedkafka.projects.locations.schemaRegistries
+  request_id_field: createSchemaRegistryRequest.schemaRegistryId
+  attributes:
+  - *project
+  - *location
+  - &schema_registry
+    parameter_name: schemaRegistriesId
+    attribute_name: schema_registry
+    help: |
+      The schema registry name.

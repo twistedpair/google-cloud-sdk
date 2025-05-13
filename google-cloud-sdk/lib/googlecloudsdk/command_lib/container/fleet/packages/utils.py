@@ -16,6 +16,7 @@
 
 import glob
 import os
+import pathlib
 
 from googlecloudsdk.core import yaml
 
@@ -118,9 +119,7 @@ def _AllFilesUnderDir(path):
 
 
 def _VariantNameFromPath(path):
-  file_name = path.split('/')[-1]
-  variant_name = file_name.split('.')[0]
-  return variant_name
+  return pathlib.Path(path).stem
 
 
 def _VariantNameFromDir(path):
@@ -136,7 +135,9 @@ def ExpandPathForUser(path):
 
 def _ExpandPathForUserAndVars(path):
   user_expanded_path = os.path.expanduser(path)
-  vars_expanded_path = os.path.expandvars(user_expanded_path)
+  vars_expanded_path = user_expanded_path
+  if '$' in vars_expanded_path:
+    vars_expanded_path = os.path.expandvars(vars_expanded_path)
   return vars_expanded_path
 
 
@@ -196,8 +197,11 @@ def VariantsFromGlobPattern(glob_pattern):
       {'us-a': [resources...], 'us-b': [resources...]}
   """
   user_expanded_glob = os.path.expanduser(glob_pattern)
-  expanded_glob = os.path.expandvars(user_expanded_glob)
+  expanded_glob = user_expanded_glob
+  if '$' in expanded_glob:
+    expanded_glob = os.path.expandvars(expanded_glob)
   paths = glob.glob(expanded_glob)
+  paths.sort()
   variants = {}
   if len(paths) == 1:
     if os.path.isfile(paths[0]):

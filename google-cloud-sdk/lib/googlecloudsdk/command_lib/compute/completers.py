@@ -343,6 +343,40 @@ class RegionInstantSnapshotsCompleter(ListCommandCompleter):
         **kwargs)
 
 
+class InstantSnapshotGroupsCompleter(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstantSnapshotGroupsCompleter, self).__init__(
+        completers=[
+            RegionInstantSnapshotGroupsCompleter,
+            ZoneInstantSnapshotGroupsCompleter,
+        ],
+        **kwargs
+    )
+
+
+class ZoneInstantSnapshotGroupsCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ZoneInstantSnapshotGroupsCompleter, self).__init__(
+        collection='compute.instantSnapshotGroups',
+        list_command='alpha compute instant-snapshot-groups list --uri',
+        api_version='alpha',
+        **kwargs
+    )
+
+
+class RegionInstantSnapshotGroupsCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionInstantSnapshotGroupsCompleter, self).__init__(
+        collection='compute.regionInstantSnapshotGroups',
+        list_command='alpha compute instant-snapshot-groups list --uri',
+        api_version='alpha',
+        **kwargs
+    )
+
+
 class MachineTypesCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):

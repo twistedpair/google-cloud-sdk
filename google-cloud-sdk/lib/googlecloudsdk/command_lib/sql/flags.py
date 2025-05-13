@@ -2733,6 +2733,20 @@ def AddEnableDataCache(parser, show_negated_in_help=True, hidden=False):
   )
 
 
+def AddEnableDbAlignedAtomicWrites(parser):
+  """Adds '--enable-db-aligned-atomic-writes' flag to the parser."""
+  parser.add_argument(
+      '--enable-db-aligned-atomic-writes',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=False,
+      help=(
+          'Enabling DB Aligned Atomic Writes will reformat the underlying'
+          ' filesystem to use write block size similar to the DB block size.'
+      ),
+      hidden=True,
+  )
+
+
 def AddReplicationLagMaxSecondsForRecreate(parser):
   """Adds the '--replication-lag-max-seconds-for-recreate' flag to the parser for instances patch action.
 

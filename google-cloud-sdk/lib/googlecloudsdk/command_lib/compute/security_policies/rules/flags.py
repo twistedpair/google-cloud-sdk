@@ -394,7 +394,7 @@ def AddRedirectOptions(parser):
 
 def AddRateLimitOptions(
     parser,
-    support_fairshare=False,
+    support_rpc_status=False,
 ):
   """Adds rate limiting related arguments to the argparse."""
   parser.add_argument(
@@ -548,7 +548,7 @@ def AddRateLimitOptions(
       the traffic will continue to be banned by the rate limit after
       the rate falls below the threshold.
       """)
-  if support_fairshare:
+  if support_rpc_status:
     parser.add_argument(
         '--exceed-action-rpc-status-code',
         type=int,

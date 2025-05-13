@@ -1023,7 +1023,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['force', 'requestId', 'updateMask', 'validateOnly'],
+        query_params=['force', 'forceUpdateAccessRestriction', 'requestId', 'updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='backupVault',
         request_type_name='BackupdrProjectsLocationsBackupVaultsPatchRequest',

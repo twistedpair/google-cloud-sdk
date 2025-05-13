@@ -81,6 +81,7 @@ class ActionType(enum.Enum):
 
 
 def AddCommonArgs(parser,
+                  with_resource_manager_tags=False,
                   for_update=False,
                   with_egress_support=False,
                   with_service_account=False):
@@ -260,6 +261,16 @@ def AddCommonArgs(parser,
   # Add egress deny firewall cli support.
   if with_egress_support:
     AddArgsForEgress(parser, ruleset_parser, for_update)
+
+  if with_resource_manager_tags:
+    parser.add_argument(
+        '--resource-manager-tags',
+        type=arg_parsers.ArgDict(),
+        metavar='KEY=VALUE',
+        help="""\
+            A comma-separated list of Resource Manager tags to apply to the firewall.
+        """,
+    )
 
 
 def AddArgsForEgress(parser, ruleset_parser, for_update=False):
@@ -483,77 +494,66 @@ def SortFirewallPolicyRules(client, rules):
   return ingress_org_firewall_rule + egress_org_firewall_rule
 
 
-def ConvertFirewallPolicyRulesToEffectiveFwRules(
-    client,
-    firewall_policy,
-    support_network_firewall_policy,
-    support_region_network_firewall_policy=True,
-    support_packet_mirroring_rules=False):
+def ConvertFirewallPolicyRulesToEffectiveFwRules(client, firewall_policy):
   """Convert organization firewall policy rules to effective firewall rules."""
   result = []
   for rule in firewall_policy.rules:
-    item = ConvertFirewallPolicyRule(
-        client,
-        firewall_policy,
-        rule,
-        support_network_firewall_policy,
-        support_region_network_firewall_policy=support_region_network_firewall_policy)
-    if support_packet_mirroring_rules:
-      item.update({'rule_type': 'FIREWALL_RULE'})
+    item = ConvertFirewallPolicyRule(client, firewall_policy, rule)
+    item.update({'rule_type': 'FIREWALL_RULE'})
     result.append(item)
 
-  if support_packet_mirroring_rules:
-    for rule in firewall_policy.packetMirroringRules:
-      item = ConvertFirewallPolicyRule(
-          client,
-          firewall_policy,
-          rule,
-          support_network_firewall_policy,
-          support_region_network_firewall_policy=support_region_network_firewall_policy)
-      item.update({'rule_type': 'PACKET_MIRRORING_RULE'})
-      result.append(item)
+  for rule in firewall_policy.packetMirroringRules:
+    item = ConvertFirewallPolicyRule(client, firewall_policy, rule)
+    item.update({'rule_type': 'PACKET_MIRRORING_RULE'})
+    result.append(item)
 
   return result
 
 
-def ConvertFirewallPolicyRule(
-    client,
-    firewall_policy,
-    rule,
-    support_network_firewall_policy,
-    support_region_network_firewall_policy=True):
+def ConvertFirewallPolicyRule(client, firewall_policy, rule):
   """Convert rule to effective firewall rule output."""
   item = {}
-  if (firewall_policy.type == client.messages
-      .NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-      .TypeValueValuesEnum.HIERARCHY or firewall_policy.type == client
-      .messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-      .TypeValueValuesEnum.HIERARCHY or
-      (support_region_network_firewall_policy and
-       firewall_policy.type == client.messages.
-       RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-       .TypeValueValuesEnum.HIERARCHY)):
+  if (
+      firewall_policy.type
+      == client.messages.NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.HIERARCHY
+      or firewall_policy.type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.HIERARCHY
+      or firewall_policy.type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.HIERARCHY
+  ):
     item.update({'type': 'org-firewall'})
-  elif support_network_firewall_policy and (
-      firewall_policy.type == client.messages
-      .NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-      .TypeValueValuesEnum.NETWORK or firewall_policy.type == client.messages
-      .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-      .TypeValueValuesEnum.NETWORK or
-      (support_region_network_firewall_policy and
-       firewall_policy.type == client.messages.
-       RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-       .TypeValueValuesEnum.NETWORK)):
+  elif (
+      firewall_policy.type
+      == client.messages.NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK
+      or firewall_policy.type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK
+      or firewall_policy.type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK
+  ):
     item.update({'type': 'network-firewall-policy'})
-  elif support_network_firewall_policy and (
-      firewall_policy.type == client.messages
-      .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-      .TypeValueValuesEnum.NETWORK_REGIONAL or
-      (support_region_network_firewall_policy and
-       firewall_policy.type == client.messages.
-       RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-       .TypeValueValuesEnum.NETWORK_REGIONAL)):
+  elif (
+      firewall_policy.type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK_REGIONAL
+      or firewall_policy.type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK_REGIONAL
+  ):
     item.update({'type': 'network-regional-firewall-policy'})
+  elif (
+      firewall_policy.type
+      == client.messages.NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM
+      or firewall_policy.type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_GLOBAL
+      or firewall_policy.type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_GLOBAL
+  ):
+    item.update({'type': 'system-network-firewall-policy'})
+  elif (
+      firewall_policy.type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_REGIONAL
+      or firewall_policy.type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_REGIONAL
+  ):
+    item.update({'type': 'system-network-regional-firewall-policy'})
   else:
     item.update({'type': 'unknown'})
   item.update({'description': rule.description})

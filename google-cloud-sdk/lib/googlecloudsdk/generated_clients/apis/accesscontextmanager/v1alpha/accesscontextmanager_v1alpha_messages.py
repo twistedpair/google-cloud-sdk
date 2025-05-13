@@ -61,13 +61,16 @@ class AccessLevelFeatures(_messages.Message):
   Fields:
     canBeNested: Output only. Indicates that the access level is able to be
       nested in other access levels.
-    hasRemediations: Output only. Indicates whether there is a remediation
-      defined within access level conditions. Set to false if deny is the only
-      configured result for all conditions.
+    hasAmendableConditions: Output only. Indicates whether there is a
+      amendable response defined within access level conditions. Set to false
+      if deny is the only configured result for all conditions.
+    hasRemediations: Output only. Deprecated field that needs to be cleaned up
+      after Pantheon validation.
   """
 
   canBeNested = _messages.BooleanField(1)
-  hasRemediations = _messages.BooleanField(2)
+  hasAmendableConditions = _messages.BooleanField(2)
+  hasRemediations = _messages.BooleanField(3)
 
 
 class AccessPolicy(_messages.Message):
@@ -1148,7 +1151,7 @@ class Condition(_messages.Message):
     risk: The request must have acceptable risk profile. Following constraints
       apply to its use: - It cannot be negated and cannot be nested. - If set,
       no other attributes can be applied within a Condition. - If set, you may
-      optionally specify a remediation result.
+      optionally specify a amendable response.
     unsatisfiedResult: The result to apply if the condition is not met.
     vpcNetworkSources: The request must originate from one of the provided VPC
       networks in Google Cloud. Cannot specify this field together with
@@ -2553,11 +2556,13 @@ class UnsatisfiedResult(_messages.Message):
       not met.
 
   Fields:
-    remediations: List of remediations to apply if the condition is not met.
-      If ALL remediations are satisfied, the condition is as well. For
-      example, a successful user reauthentication may resolve a failing risk
-      condition. - It applies only when result_type == REMEDIATION - Only a
-      single remediation i.e. "remediation.reauth" is allowed today.
+    amendments: List of amendments to apply if the condition is not met. If
+      ALL amendments are satisfied, the condition is as well. For example, a
+      successful user reauthentication may resolve a failing risk condition. -
+      It applies only when result_type == AMENDABLE. - Only a single amendment
+      i.e. "responses.reauthRequired" is allowed today.
+    remediations: Deprecated field that needs to be cleaned up after Pantheon
+      validation.
     resultType: The type of result to apply if the condition is not met.
   """
 
@@ -2566,14 +2571,18 @@ class UnsatisfiedResult(_messages.Message):
 
     Values:
       DENY: Default type of result.
-      REMEDIATION: The result is remediation. Currently, the only supported
-        remediation is reauth.
+      REMEDIATION: Deprecated field that needs to be cleaned up after Pantheon
+        validation.
+      AMENDABLE: The result is amendable. Currently, the only supported
+        amendable is reauth.
     """
     DENY = 0
     REMEDIATION = 1
+    AMENDABLE = 2
 
-  remediations = _messages.StringField(1, repeated=True)
-  resultType = _messages.EnumField('ResultTypeValueValuesEnum', 2)
+  amendments = _messages.StringField(1, repeated=True)
+  remediations = _messages.StringField(2, repeated=True)
+  resultType = _messages.EnumField('ResultTypeValueValuesEnum', 3)
 
 
 class UserManagedRisk(_messages.Message):

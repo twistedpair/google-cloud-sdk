@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2024 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,4 +41,28 @@ projects_locations_dns_threat_detectors:
     parameter_name: dnsThreatDetectorsId
     attribute_name: dns_threat_detector
     help: The dnsThreatDetector id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_mirroring_endpoint_groups:
+  name: mirroringEndpointGroup
+  plural_name: mirroringEndpointGroups
+  collection: networksecurity.projects.locations.mirroringEndpointGroups
+  attributes:
+  - *project
+  - *location
+  - &mirroringEndpointGroup
+    parameter_name: mirroringEndpointGroupsId
+    attribute_name: mirroring_endpoint_group
+    help: The mirroringEndpointGroup id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_mirroring_endpoints:
+  name: mirroringEndpoint
+  plural_name: mirroringEndpoints
+  collection: networksecurity.projects.locations.mirroringEndpoints
+  attributes:
+  - *project
+  - *location
+  - &mirroringEndpoint
+    parameter_name: mirroringEndpointsId
+    attribute_name: mirroring_endpoint
+    help: The mirroringEndpoint id of the {resource} resource.
   disable_auto_completers: false

@@ -3603,6 +3603,7 @@ class DiscoveryNote(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents an SBOM Reference.
+      SECRET: This represents a secret.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -3617,6 +3618,7 @@ class DiscoveryNote(_messages.Message):
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
     SBOM_REFERENCE = 12
+    SECRET = 13
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -4412,6 +4414,9 @@ class LayerDetails(_messages.Message):
 
   Fields:
     baseImages: The base images the layer is found within.
+    chainId: The layer chain ID (sha256 hash) of the layer in the container
+      image. https://github.com/opencontainers/image-
+      spec/blob/main/config.md#layer-chainid
     command: The layer build command that was used to build the layer. This
       may not be found in all layers depending on how the container image is
       built.
@@ -4421,9 +4426,10 @@ class LayerDetails(_messages.Message):
   """
 
   baseImages = _messages.MessageField('BaseImage', 1, repeated=True)
-  command = _messages.StringField(2)
-  diffId = _messages.StringField(3)
-  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  chainId = _messages.StringField(2)
+  command = _messages.StringField(3)
+  diffId = _messages.StringField(4)
+  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class License(_messages.Message):
@@ -4605,6 +4611,7 @@ class Note(_messages.Message):
     relatedNoteNames: Other notes related to this note.
     relatedUrl: URLs associated with this note.
     sbomReference: A note describing an SBOM reference.
+    secret: A note describing a secret.
     shortDescription: A one sentence description of this note.
     updateTime: Output only. The time this note was last updated. This field
       can be used as a filter in list requests.
@@ -4634,6 +4641,7 @@ class Note(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents an SBOM Reference.
+      SECRET: This represents a secret.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -4648,6 +4656,7 @@ class Note(_messages.Message):
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
     SBOM_REFERENCE = 12
+    SECRET = 13
 
   attestation = _messages.MessageField('AttestationNote', 1)
   build = _messages.MessageField('BuildNote', 2)
@@ -4665,11 +4674,12 @@ class Note(_messages.Message):
   relatedNoteNames = _messages.StringField(14, repeated=True)
   relatedUrl = _messages.MessageField('RelatedUrl', 15, repeated=True)
   sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
-  shortDescription = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  upgrade = _messages.MessageField('UpgradeNote', 19)
-  vulnerability = _messages.MessageField('VulnerabilityNote', 20)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 21)
+  secret = _messages.MessageField('SecretNote', 17)
+  shortDescription = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  upgrade = _messages.MessageField('UpgradeNote', 20)
+  vulnerability = _messages.MessageField('VulnerabilityNote', 21)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 22)
 
 
 class Occurrence(_messages.Message):
@@ -4705,6 +4715,7 @@ class Occurrence(_messages.Message):
       which the occurrence applies. For example,
       `https://gcr.io/project/image@sha256:123abc` for a Docker image.
     sbomReference: Describes a specific SBOM reference occurrences.
+    secret: Describes a secret.
     updateTime: Output only. The time this occurrence was last updated.
     upgrade: Describes an available package upgrade on the linked resource.
     vulnerability: Describes a security vulnerability.
@@ -4731,6 +4742,7 @@ class Occurrence(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents an SBOM Reference.
+      SECRET: This represents a secret.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -4745,6 +4757,7 @@ class Occurrence(_messages.Message):
     DSSE_ATTESTATION = 10
     VULNERABILITY_ASSESSMENT = 11
     SBOM_REFERENCE = 12
+    SECRET = 13
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)
@@ -4762,9 +4775,10 @@ class Occurrence(_messages.Message):
   remediation = _messages.StringField(14)
   resourceUri = _messages.StringField(15)
   sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 16)
-  updateTime = _messages.StringField(17)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 18)
-  vulnerability = _messages.MessageField('VulnerabilityOccurrence', 19)
+  secret = _messages.MessageField('SecretOccurrence', 17)
+  updateTime = _messages.StringField(18)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 19)
+  vulnerability = _messages.MessageField('VulnerabilityOccurrence', 20)
 
 
 class PackageIssue(_messages.Message):
@@ -5465,6 +5479,82 @@ class SbomReferenceIntotoPredicate(_messages.Message):
   location = _messages.StringField(2)
   mimeType = _messages.StringField(3)
   referrerId = _messages.StringField(4)
+
+
+class SecretLocation(_messages.Message):
+  r"""The location of the secret.
+
+  Fields:
+    fileLocation: The secret is found from a file.
+  """
+
+  fileLocation = _messages.MessageField('GrafeasV1FileLocation', 1)
+
+
+class SecretNote(_messages.Message):
+  r"""The note representing a secret."""
+
+
+class SecretOccurrence(_messages.Message):
+  r"""The occurrence provides details of a secret.
+
+  Enums:
+    KindValueValuesEnum: Required. Type of secret.
+
+  Fields:
+    kind: Required. Type of secret.
+    locations: Optional. Locations where the secret is detected.
+    statuses: Optional. Status of the secret.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Required. Type of secret.
+
+    Values:
+      SECRET_KIND_UNSPECIFIED: Unspecified
+      SECRET_KIND_UNKNOWN: The secret kind is unknown.
+      SECRET_KIND_GCP_SERVICE_ACCOUNT_KEY: A GCP service account key per:
+        https://cloud.google.com/iam/docs/creating-managing-service-account-
+        keys
+    """
+    SECRET_KIND_UNSPECIFIED = 0
+    SECRET_KIND_UNKNOWN = 1
+    SECRET_KIND_GCP_SERVICE_ACCOUNT_KEY = 2
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  locations = _messages.MessageField('SecretLocation', 2, repeated=True)
+  statuses = _messages.MessageField('SecretStatus', 3, repeated=True)
+
+
+class SecretStatus(_messages.Message):
+  r"""The status of the secret with a timestamp.
+
+  Enums:
+    StatusValueValuesEnum: Optional. The status of the secret.
+
+  Fields:
+    message: Optional. Optional message about the status code.
+    status: Optional. The status of the secret.
+    updateTime: Optional. The time the secret status was last updated.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Optional. The status of the secret.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified
+      UNKNOWN: The status of the secret is unknown.
+      VALID: The secret is valid.
+      INVALID: The secret is invalid.
+    """
+    STATUS_UNSPECIFIED = 0
+    UNKNOWN = 1
+    VALID = 2
+    INVALID = 3
+
+  message = _messages.StringField(1)
+  status = _messages.EnumField('StatusValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

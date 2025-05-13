@@ -1320,6 +1320,50 @@ class DataplexProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message)
   updateMask = _messages.StringField(6)
 
 
+class DataplexProjectsLocationsEntryGroupsEntryLinksCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsEntryLinksCreateRequest object.
+
+  Fields:
+    entryLinkId: Required. Entry Link identifier * Must contain only lowercase
+      letters, numbers and hyphens. * Must start with a letter. * Must be
+      between 1-63 characters. * Must end with a number or a letter. * Must be
+      unique within the EntryGroup.
+    googleCloudDataplexV1EntryLink: A GoogleCloudDataplexV1EntryLink resource
+      to be passed as the request body.
+    parent: Required. The resource name of the parent Entry Group: projects/{p
+      roject_id_or_number}/locations/{location_id}/entryGroups/{entry_group_id
+      }.
+  """
+
+  entryLinkId = _messages.StringField(1)
+  googleCloudDataplexV1EntryLink = _messages.MessageField('GoogleCloudDataplexV1EntryLink', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsEntryGroupsEntryLinksDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsEntryLinksDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the Entry Link: projects/{project_id_
+      or_number}/locations/{location_id}/entryGroups/{entry_group_id}/entryLin
+      ks/{entry_link_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsEntryGroupsEntryLinksGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsEntryLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the Entry Link: projects/{project_id_
+      or_number}/locations/{location_id}/entryGroups/{entry_group_id}/entryLin
+      ks/{entry_link_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest object.
 
@@ -7341,6 +7385,66 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
   transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 7)
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class GoogleCloudDataplexV1EntryLink(_messages.Message):
+  r"""EntryLink represents a link between two Entries.
+
+  Fields:
+    createTime: Output only. The time when the Entry Link was created.
+    entryLinkType: Required. Immutable. Relative resource name of the Entry
+      Link Type used to create this Entry Link, of the form: `projects/{projec
+      t_id_or_number}/locations/{location_id}/entryLinkTypes/{entry_link_type_
+      id}.
+    entryReferences: Required. Specifies the Entries referenced in the Entry
+      Link. There should be exactly two entry references.
+    name: Output only. Immutable. Identifier. The relative resource name of
+      the Entry Link, of the form: projects/{project_id_or_number}/locations/{
+      location_id}/entryGroups/{entry_group_id}/entryLinks/{entry_link_id}
+    updateTime: Output only. The time when the Entry Link was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  entryLinkType = _messages.StringField(2)
+  entryReferences = _messages.MessageField('GoogleCloudDataplexV1EntryLinkEntryReference', 3, repeated=True)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class GoogleCloudDataplexV1EntryLinkEntryReference(_messages.Message):
+  r"""Reference to the Entry that is linked through the Entry Link.
+
+  Enums:
+    TypeValueValuesEnum: Required. Immutable. The reference type of the Entry.
+
+  Fields:
+    name: Required. Immutable. The relative resource name of the referenced
+      Entry, of the form: projects/{project_id_or_number}/locations/{location_
+      id}/entryGroups/{entry_group_id}/entries/{entry_id}
+    path: Immutable. The path in the Entry that is referenced in the Entry
+      Link. Empty path denotes that the Entry itself is referenced in the
+      Entry Link.
+    type: Required. Immutable. The reference type of the Entry.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The reference type of the Entry.
+
+    Values:
+      UNSPECIFIED: Unspecified reference type. Implies that the Entry is
+        referenced in a non-directional Entry Link.
+      SOURCE: The Entry is referenced as the source of the directional Entry
+        Link.
+      TARGET: The Entry is referenced as the target of the directional Entry
+        Link.
+    """
+    UNSPECIFIED = 0
+    SOURCE = 1
+    TARGET = 2
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class GoogleCloudDataplexV1EntryLinkEvent(_messages.Message):

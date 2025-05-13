@@ -79,7 +79,7 @@ def AddSecurityProfileResource(
     arg_name = arg_name[2:]
 
   organization_resource_spec = concepts.ResourceParameterAttributeConfig(
-      f"{arg_name}-organization",
+      "organization",
       "Organization ID of the Security Profile.",
       parameter_name="organizationsId",
       fallthroughs=[
@@ -97,7 +97,7 @@ def AddSecurityProfileResource(
   )
 
   location_resource_spec = concepts.ResourceParameterAttributeConfig(
-      "{prefix}-location".format(prefix=arg_name),
+      "location",
       """
       Location of the {resource}.
       NOTE: Only `global` security profiles are supported.
@@ -118,7 +118,7 @@ def AddSecurityProfileResource(
   )
 
   profile_id_resource_spec = concepts.ResourceParameterAttributeConfig(
-      "{prefix}-profile".format(prefix=arg_name),
+      "name",
       "Name of security profile {resource}.",
       parameter_name="securityProfilesId",
   )
@@ -139,7 +139,7 @@ def AddSecurityProfileResource(
           hidden=True,
           help="Flag to preserve backward compatibility.",
       )
-      # Insert at beginning of fallthroughs, otherwis the fallthrough that
+      # Insert at beginning of fallthroughs, otherwise the fallthrough that
       # takes the value from the SPG resource will be used.
       organization_resource_spec.fallthroughs.insert(
           0, deps.ArgFallthrough(org_flag_alias)
@@ -163,6 +163,7 @@ def AddSecurityProfileResource(
       required=required,
       group_help=help_text,
       group=group,
+      prefixes=True,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 

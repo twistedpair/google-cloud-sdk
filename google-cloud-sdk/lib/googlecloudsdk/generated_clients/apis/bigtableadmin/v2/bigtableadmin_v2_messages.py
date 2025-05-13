@@ -2432,12 +2432,9 @@ class DataBoostIsolationReadOnly(_messages.Message):
       COMPUTE_BILLING_OWNER_UNSPECIFIED: Unspecified value.
       HOST_PAYS: The host Cloud Project containing the targeted Bigtable
         Instance / Table pays for compute.
-      REQUESTER_PAYS: The requester Cloud Project targeting the Bigtable
-        Instance / Table with Data Boost pays for compute.
     """
     COMPUTE_BILLING_OWNER_UNSPECIFIED = 0
     HOST_PAYS = 1
-    REQUESTER_PAYS = 2
 
   computeBillingOwner = _messages.EnumField('ComputeBillingOwnerValueValuesEnum', 1)
 

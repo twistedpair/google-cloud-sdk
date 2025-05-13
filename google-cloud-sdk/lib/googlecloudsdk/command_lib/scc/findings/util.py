@@ -25,6 +25,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.scc import securitycenter_client
 from googlecloudsdk.command_lib.scc import errors
 from googlecloudsdk.command_lib.scc import util as scc_util
+from googlecloudsdk.core.util import times
 
 
 def ValidateMutexOnFindingAndSourceAndOrganization(args):
@@ -370,3 +371,28 @@ def GetApiVersionUsingDeprecatedArgs(args, deprecated_args):
   else:
     parent = args.parent
   return scc_util.GetVersionFromArguments(args, parent, deprecated_args)
+
+
+def ValidateAndFormatExportTime(export_time):
+  """Validates the export time."""
+  try:
+    read_time_dt = times.ParseDateTime(export_time)
+    return times.FormatDateTime(read_time_dt)
+  except (times.DateTimeSyntaxError, times.DateTimeValueError) as e:
+    raise errors.InvalidSCCInputError(
+        "Invalid export time format. Please provide a valid date/time. Example:"
+        " 2024-08-20T12:00:00Z"
+    ) from e
+
+
+def ValidateDataset(dataset):
+  """Validates the dataset."""
+  dataset_pattern = re.compile(
+      "^projects/[a-zA-Z0-9-]+/datasets/[a-zA-Z0-9_]+$"
+  )
+  if not dataset_pattern.match(dataset):
+    raise errors.InvalidSCCInputError(
+        "Dataset must match the pattern"
+        " projects/[a-zA-Z0-9-]+/datasets/[a-zA-Z0-9_]+."
+    )
+  return dataset

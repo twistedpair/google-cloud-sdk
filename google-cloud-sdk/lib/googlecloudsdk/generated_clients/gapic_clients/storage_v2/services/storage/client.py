@@ -1174,7 +1174,10 @@ class StorageClient(metaclass=StorageClientMeta):
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
         r"""Gets the IAM policy for a specified bucket. The ``resource``
-        field in the request should be ``projects/_/buckets/{bucket}``.
+        field in the request should be ``projects/_/buckets/{bucket}``
+        for a bucket, or
+        ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
+        for a managed folder.
 
         .. code-block:: python
 
@@ -1309,6 +1312,11 @@ class StorageClient(metaclass=StorageClientMeta):
         if regex_match and regex_match.group("bucket"):
             header_params["bucket"] = regex_match.group("bucket")
 
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
         if header_params:
             metadata = tuple(metadata) + (
                 gapic_v1.routing_header.to_grpc_metadata(header_params),
@@ -1337,7 +1345,10 @@ class StorageClient(metaclass=StorageClientMeta):
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
         r"""Updates an IAM policy for the specified bucket. The ``resource``
-        field in the request should be ``projects/_/buckets/{bucket}``.
+        field in the request should be ``projects/_/buckets/{bucket}``
+        for a bucket, or
+        ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
+        for a managed folder.
 
         .. code-block:: python
 
@@ -1468,6 +1479,11 @@ class StorageClient(metaclass=StorageClientMeta):
         header_params = {}
 
         routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.resource)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
         regex_match = routing_param_regex.match(request.resource)
         if regex_match and regex_match.group("bucket"):
             header_params["bucket"] = regex_match.group("bucket")

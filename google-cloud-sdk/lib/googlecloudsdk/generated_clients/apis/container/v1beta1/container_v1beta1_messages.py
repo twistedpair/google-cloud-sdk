@@ -4549,10 +4549,13 @@ class LustreCsiDriverConfig(_messages.Message):
   r"""Configuration for the Lustre CSI driver.
 
   Fields:
+    enableLegacyLustrePort: If set to true, the Lustre CSI driver will install
+      Lustre kernel modules using port 6988.
     enabled: Whether the Lustre CSI driver is enabled for this cluster.
   """
 
-  enabled = _messages.BooleanField(1)
+  enableLegacyLustrePort = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
 
 
 class MaintenanceExclusionOptions(_messages.Message):
@@ -5688,6 +5691,16 @@ class NodeKubeletConfig(_messages.Message):
     memoryManager: Optional. Controls NUMA-aware Memory Manager configuration
       on the node. For more information, see:
       https://kubernetes.io/docs/tasks/administer-cluster/memory-manager/
+    nodeSwapSizeGib: Optional. Defines Swap memory size available to container
+      workloads. To enable Swap, set a positive integer which does not exceed
+      50% of the boot disk size. The swap file is placed on boot disk by
+      default. Swap_size is subtracted from the boot disk size when
+      calculating reserved ephemeral storage
+      https://cloud.google.com/kubernetes-engine/docs/concepts/plan-node-
+      sizes#local_ephemeral_storage_reservation. System pods cannot use swap.
+      Swap is not supported on all TPU machines and some GPU (A4X, A4, A3)
+      machines. Swap is not supported on CgroupV1. Swap is disabled if the
+      field is unspecified or set to 0.
     podPidsLimit: Set the Pod PID limits. See
       https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
       Controls the maximum number of processes allowed to run in a pod. The
@@ -5718,9 +5731,10 @@ class NodeKubeletConfig(_messages.Message):
   insecureKubeletReadonlyPortEnabled = _messages.BooleanField(15)
   maxParallelImagePulls = _messages.IntegerField(16, variant=_messages.Variant.INT32)
   memoryManager = _messages.MessageField('MemoryManager', 17)
-  podPidsLimit = _messages.IntegerField(18)
-  singleProcessOomKill = _messages.BooleanField(19)
-  topologyManager = _messages.MessageField('TopologyManager', 20)
+  nodeSwapSizeGib = _messages.IntegerField(18)
+  podPidsLimit = _messages.IntegerField(19)
+  singleProcessOomKill = _messages.BooleanField(20)
+  topologyManager = _messages.MessageField('TopologyManager', 21)
 
 
 class NodeLabels(_messages.Message):

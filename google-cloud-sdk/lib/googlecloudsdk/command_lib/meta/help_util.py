@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ def TimeIt(message):
     start = time.time()
     yield
     elapsed_time = time.time() - start
-    log.status.Print('{} took {}'.format(message, elapsed_time))
+    log.status.Print('{} took {} seconds'.format(message, elapsed_time))
 
 
 class DiffAccumulator(object):
@@ -306,15 +306,19 @@ class HelpUpdater(object):
     """Update() helper method. Returns the number of changed help doc files."""
     with file_utils.TemporaryDirectory() as temp_dir:
       pb = console_io.ProgressBar(label='Generating Help Document Files')
+
       with TimeIt('Creating walker'):
         walker = self._generator(
             self._cli, temp_dir, pb.SetProgress, restrict=restrict)
+
       start = time.time()
       pb.Start()
       walker.Walk(hidden=True)
       pb.Finish()
       elapsed_time = time.time() - start
-      log.info('Generating Help Document Files took {}'.format(elapsed_time))
+      log.info(
+          'Generating Help Document Files took {} seconds'.format(elapsed_time)
+      )
 
       diff = HelpAccumulator(restrict=restrict)
       with TimeIt('Diffing'):

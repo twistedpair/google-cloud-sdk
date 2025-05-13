@@ -28,7 +28,7 @@ class GoogleCloudOsloginControlplaneRegionalV1alphaSignSshPublicKeyRequest(_mess
   Fields:
     appEngineInstance: The App Engine instance to sign the SSH public key for.
       Expected format:
-      services/{service}/versions/{version}/instances/{instance}
+      apps/{app}/services/{service}/versions/{version}/instances/{instance}
     computeInstance: The Compute instance to sign the SSH public key for.
       Expected format:
       projects/{project}/zones/{zone}/instances/{numeric_instance_id}

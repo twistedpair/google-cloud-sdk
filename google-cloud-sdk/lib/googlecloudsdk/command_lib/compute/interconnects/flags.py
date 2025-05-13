@@ -409,3 +409,27 @@ def AddMacsecPreSharedKeyNameForRomoveKey(parser):
       The name of pre-shared key being removed from MACsec configuration of the
       interconnect.
       """)
+
+
+def AddAaiEnabled(parser):
+  """Adds enabled flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--enabled',
+      default=None,
+      action='store_true',
+      help="""\
+      Enable or disable application awareness on the interconnect. Application awareness enablement will fail
+      if the application awareness configuration is not specified. Use --no-enabled to disable
+      it.""",
+  )
+
+
+def AddAaiProfileDescription(parser):
+  """Adds enabled flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--profile-description',
+      default='',
+      required=False,
+      help="""\
+      Add profile description for application awareness.""",
+  )

@@ -599,6 +599,16 @@ def GetTaskResourceSpec(prompt=False):
   )
 
 
+def GetV1WorkerPoolResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.namespaces.workerpools',
+      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      workerpoolsId=WorkerPoolAttributeConfig(prompt),
+      resource_name='WorkerPool',
+      api_version='v1',
+  )
+
+
 # TODO(b/322180968): Once Worker API is ready, replace Service related
 # references.
 def GetWorkerResourceSpec(prompt=False):
@@ -611,7 +621,7 @@ def GetWorkerResourceSpec(prompt=False):
   )
 
 
-def GetWorkerPoolResourceSpec(prompt=False):
+def GetV2WorkerPoolResourceSpec(prompt=False):
   return concepts.ResourceSpec(
       'run.projects.locations.workerPools',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
@@ -622,7 +632,7 @@ def GetWorkerPoolResourceSpec(prompt=False):
   )
 
 
-def GetWorkerPoolRevisionResourceSpec(prompt=False):
+def GetV2WorkerPoolRevisionResourceSpec(prompt=False):
   return concepts.ResourceSpec(
       'run.projects.locations.workerPools.revisions',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,

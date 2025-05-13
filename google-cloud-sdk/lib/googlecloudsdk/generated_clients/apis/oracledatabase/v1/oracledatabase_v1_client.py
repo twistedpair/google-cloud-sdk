@@ -382,7 +382,7 @@ class OracledatabaseV1(base_api.BaseApiClient):
     )
 
     def Switchover(self, request, global_params=None):
-      r"""Initiates a switchover of specified autonomous deatabase to the associated peer database.
+      r"""Initiates a switchover of specified autonomous database to the associated peer database.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest) input message
@@ -858,7 +858,7 @@ class OracledatabaseV1(base_api.BaseApiClient):
         method_id='oracledatabase.projects.locations.giVersions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/giVersions',
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsGiVersionsListRequest',

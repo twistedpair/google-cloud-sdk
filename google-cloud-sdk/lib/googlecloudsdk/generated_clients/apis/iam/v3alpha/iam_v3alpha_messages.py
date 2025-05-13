@@ -1869,6 +1869,11 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
   object.
 
   Fields:
+    filter: Optional. Filtering currently only supports the kind of policies
+      to return, and must be in the format "policy_kind={policy_kind}". If
+      String is empty, bindings bound to all kinds of policies would be
+      returned. The only supported values are:
+      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", "policy_kind=ACCESS"
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -1896,10 +1901,11 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
       `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  target = _messages.StringField(4)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  target = _messages.StringField(5)
 
 
 class IamOrganizationsLocationsAccessPoliciesCreateRequest(_messages.Message):
@@ -2177,6 +2183,11 @@ class IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_
   object.
 
   Fields:
+    filter: Optional. Filtering currently only supports the kind of policies
+      to return, and must be in the format "policy_kind={policy_kind}". If
+      String is empty, bindings bound to all kinds of policies would be
+      returned. The only supported values are:
+      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", "policy_kind=ACCESS"
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -2204,10 +2215,11 @@ class IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_
       `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  target = _messages.StringField(4)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  target = _messages.StringField(5)
 
 
 class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesCreateRequest(_messages.Message):
@@ -2615,6 +2627,11 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
   object.
 
   Fields:
+    filter: Optional. Filtering currently only supports the kind of policies
+      to return, and must be in the format "policy_kind={policy_kind}". If
+      String is empty, bindings bound to all kinds of policies would be
+      returned. The only supported values are:
+      "policy_kind=PRINCIPAL_ACCESS_BOUNDARY", "policy_kind=ACCESS"
     pageSize: Optional. The maximum number of policy bindings to return. The
       service may return fewer than this value. If unspecified, at most 50
       policy bindings will be returned. The maximum value is 1000; values
@@ -2642,10 +2659,11 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
       `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  target = _messages.StringField(4)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  target = _messages.StringField(5)
 
 
 class IamProjectsLocationsPolicyPortersCreateRequest(_messages.Message):

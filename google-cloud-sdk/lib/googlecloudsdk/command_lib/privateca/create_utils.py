@@ -140,7 +140,7 @@ def CreateCAFromArgs(args, is_subordinate):
     subject_config.subjectAltName = (
         source_ca.config.subjectConfig.subjectAltName
     )
-  flags.ValidateSubjectConfig(subject_config, is_ca=True)
+  flags.ValidateSubjectConfig(subject_config)
 
   # Populate x509 params to default.
   x509_parameters = flags.ParseX509Parameters(args, is_ca_command=True)

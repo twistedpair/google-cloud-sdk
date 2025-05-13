@@ -97,6 +97,8 @@ class Interconnect(object):
       label_fingerprint,
       macsec_enabled,
       macsec,
+      aai_enabled,
+      application_aware_interconnect,
   ):
     """Make a tuple for interconnect patch request."""
     kwargs = {}
@@ -104,6 +106,10 @@ class Interconnect(object):
       kwargs['labels'] = labels
     if label_fingerprint is not None:
       kwargs['labelFingerprint'] = label_fingerprint
+    if aai_enabled is not None:
+      kwargs['aaiEnabled'] = aai_enabled
+    if application_aware_interconnect is not None:
+      kwargs['applicationAwareInterconnect'] = application_aware_interconnect
     return (
         self._client.interconnects,
         'Patch',
@@ -250,6 +256,8 @@ class Interconnect(object):
       label_fingerprint=None,
       macsec_enabled=None,
       macsec=None,
+      aai_enabled=None,
+      application_aware_interconnect=None,
   ):
     """Patch an interconnect."""
     requests = [
@@ -265,6 +273,8 @@ class Interconnect(object):
             label_fingerprint,
             macsec_enabled,
             macsec,
+            aai_enabled,
+            application_aware_interconnect,
         )
     ]
     if not only_generate_request:

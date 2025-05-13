@@ -447,6 +447,15 @@ def InsightsConfig(sql_messages,
   return insights_config
 
 
+def DbAlignedAtomicWritesConfig(sql_messages, db_aligned_atomic_writes=None):
+  """Generates the db aligned atomic writes Config for the instance."""
+  if db_aligned_atomic_writes is None:
+    return None
+  return sql_messages.DbAlignedAtomicWritesConfig(
+      dbAlignedAtomicWrites=db_aligned_atomic_writes
+  )
+
+
 def ConnectionPoolConfig(
     sql_messages,
     enable_connection_pooling=None,

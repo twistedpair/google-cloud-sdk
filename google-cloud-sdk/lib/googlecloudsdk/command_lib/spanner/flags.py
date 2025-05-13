@@ -719,43 +719,68 @@ def AddCommonListArgs(parser, additional_choices=None):
       required=False,
       text='For backup operations, the name of the backup '
       'the operations are executing on.').AddToParser(parser)
+  InstancePartition(
+      positional=False,
+      required=False,
+      hidden=False,
+      text=(
+          'For instance partition operations, the name of the instance '
+          'partition the operation is executing on.'
+      ),
+  ).AddToParser(parser)
 
   type_choices = {
-      'INSTANCE':
+      'INSTANCE': (
           'Returns instance operations for the given instance. '
-          'Note, type=INSTANCE does not work with --database or --backup.',
-      'DATABASE':
+          'Note, type=INSTANCE does not work with --database or --backup.'
+      ),
+      'DATABASE': (
           'If only the instance is specified (--instance), returns all '
           'database operations associated with the databases in the '
           'instance. When a database is specified (--database), the command '
-          'would return database operations for the given database.',
-      'BACKUP':
+          'would return database operations for the given database.'
+      ),
+      'BACKUP': (
           'If only the instance is specified (--instance), returns all '
           'backup operations associated with backups in the instance. When '
           'a backup is specified (--backup), only the backup operations for '
-          'the given backup are returned.',
-      'DATABASE_RESTORE':
+          'the given backup are returned.'
+      ),
+      'INSTANCE_PARTITION': (
+          'If only the instance is specified (--instance), returns all '
+          'instance partition operations associated with instance partitions '
+          'in the instance. When an instance partition is specified '
+          '(--instance-partition), only the instance partition operations '
+          'for the given instance partition are returned. '
+      ),
+      'DATABASE_RESTORE': (
           'Database restore operations are returned for all databases in '
           'the given instance (--instance only) or only those associated '
-          'with the given database (--database)',
-      'DATABASE_CHANGE_QUORUM':
+          'with the given database (--database)'
+      ),
+      'DATABASE_CHANGE_QUORUM': (
           'Database change quorum operations are returned for all databases '
           'in the given instance (--instance only) or only those associated '
-          'with the given database (--database).',
-      'DATABASE_CREATE':
+          'with the given database (--database).'
+      ),
+      'DATABASE_CREATE': (
           'Database create operations are returned for all databases in '
           'the given instance (--instance only) or only those associated '
-          'with the given database (--database)',
-      'DATABASE_UPDATE_DDL':
+          'with the given database (--database)'
+      ),
+      'DATABASE_UPDATE_DDL': (
           'Database update DDL operations are returned for all databases in '
           'the given instance (--instance only) or only those associated '
-          'with the given database (--database)',
-      'INSTANCE_CONFIG_CREATE':
+          'with the given database (--database)'
+      ),
+      'INSTANCE_CONFIG_CREATE': (
           'Instance configuration create operations are returned for the '
-          'given instance configuration (--instance-config).',
-      'INSTANCE_CONFIG_UPDATE':
+          'given instance configuration (--instance-config).'
+      ),
+      'INSTANCE_CONFIG_UPDATE': (
           'Instance configuration update operations are returned for the '
           'given instance configuration (--instance-config).'
+      ),
   }
 
   if additional_choices is not None:
@@ -827,6 +852,15 @@ def AddCommonCancelArgs(parser):
       required=False,
       text='For a backup operation, the name of the backup '
       'the operation is executing on.').AddToParser(parser)
+  InstancePartition(
+      positional=False,
+      required=False,
+      hidden=False,
+      text=(
+          'For an instance partition operation, the name of the instance '
+          'partition the operation is executing on.'
+      ),
+  ).AddToParser(parser)
   OperationId().AddToParser(parser)
 
 

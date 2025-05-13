@@ -3795,44 +3795,46 @@ class InlineCertificateIssuanceConfig(_messages.Message):
   Enums:
     KeyAlgorithmValueValuesEnum: Optional. Key algorithm to use when
       generating the key pair. This key pair will be used to create the
-      certificate. If unspecified, this will default to ECDSA_P256.
+      certificate. If not specified, this will default to ECDSA_P256.
 
   Messages:
-    CaPoolsValue: Optional. A required mapping of a cloud region to the CA
-      pool resource located in that region used for certificate issuance,
-      adhering to these constraints: * Key format: A supported cloud region
-      name equivalent to the location identifier in the corresponding map
-      entry's value. * Value format: A valid CA pool resource path format
-      like: "projects/{project}/locations/{location}/caPools/{ca_pool}" *
-      Region Matching: Workloads are ONLY issued certificates from CA pools
-      within the same region. Also the CA pool region (in value) must match
-      the workload's region (key).
+    CaPoolsValue: Optional. A required mapping of a Google Cloud region to the
+      CA pool resource located in that region. The CA pool is used for
+      certificate issuance, adhering to the following constraints: * Key
+      format: A supported cloud region name equivalent to the location
+      identifier in the corresponding map entry's value. * Value format: A
+      valid CA pool resource path format like:
+      "projects/{project}/locations/{location}/caPools/{ca_pool}" * Region
+      Matching: Workloads are ONLY issued certificates from CA pools within
+      the same region. Also the CA pool region (in value) must match the
+      workload's region (key).
 
   Fields:
-    caPools: Optional. A required mapping of a cloud region to the CA pool
-      resource located in that region used for certificate issuance, adhering
-      to these constraints: * Key format: A supported cloud region name
-      equivalent to the location identifier in the corresponding map entry's
-      value. * Value format: A valid CA pool resource path format like:
+    caPools: Optional. A required mapping of a Google Cloud region to the CA
+      pool resource located in that region. The CA pool is used for
+      certificate issuance, adhering to the following constraints: * Key
+      format: A supported cloud region name equivalent to the location
+      identifier in the corresponding map entry's value. * Value format: A
+      valid CA pool resource path format like:
       "projects/{project}/locations/{location}/caPools/{ca_pool}" * Region
       Matching: Workloads are ONLY issued certificates from CA pools within
       the same region. Also the CA pool region (in value) must match the
       workload's region (key).
     keyAlgorithm: Optional. Key algorithm to use when generating the key pair.
-      This key pair will be used to create the certificate. If unspecified,
+      This key pair will be used to create the certificate. If not specified,
       this will default to ECDSA_P256.
     lifetime: Optional. Lifetime of the workload certificates issued by the CA
-      pool. Must be between 10 hours - 30 days. If unspecified, this will be
-      defaulted to 24 hours.
+      pool. Must be between 10 hours and 30 days. If not specified, this will
+      be defaulted to 24 hours.
     rotationWindowPercentage: Optional. Rotation window percentage indicating
       when certificate rotation should be initiated based on remaining
-      lifetime. Must be between 10 - 80. If unspecified, this will be
+      lifetime. Must be between 10 and 80. If not specified, this will be
       defaulted to 50.
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
     r"""Optional. Key algorithm to use when generating the key pair. This key
-    pair will be used to create the certificate. If unspecified, this will
+    pair will be used to create the certificate. If not specified, this will
     default to ECDSA_P256.
 
     Values:
@@ -3853,11 +3855,12 @@ class InlineCertificateIssuanceConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CaPoolsValue(_messages.Message):
-    r"""Optional. A required mapping of a cloud region to the CA pool resource
-    located in that region used for certificate issuance, adhering to these
-    constraints: * Key format: A supported cloud region name equivalent to the
-    location identifier in the corresponding map entry's value. * Value
-    format: A valid CA pool resource path format like:
+    r"""Optional. A required mapping of a Google Cloud region to the CA pool
+    resource located in that region. The CA pool is used for certificate
+    issuance, adhering to the following constraints: * Key format: A supported
+    cloud region name equivalent to the location identifier in the
+    corresponding map entry's value. * Value format: A valid CA pool resource
+    path format like:
     "projects/{project}/locations/{location}/caPools/{ca_pool}" * Region
     Matching: Workloads are ONLY issued certificates from CA pools within the
     same region. Also the CA pool region (in value) must match the workload's
@@ -3898,38 +3901,37 @@ class InlineTrustConfig(_messages.Message):
 
   Messages:
     AdditionalTrustBundlesValue: Optional. Maps specific trust domains (e.g.,
-      "example.com") to their corresponding TrustStore objects, which contain
-      the trusted root certificates for that domain. There can be a maximum of
-      10 trust domain entries in this map. Note that a trust domain
-      automatically trusts itself and don't need to be specified here. If
-      however, this WorkloadIdentityPool's trust domain contains any trust
-      anchors in the additional_trust_bundles map, those trust anchors will be
-      *appended to* the Trust Bundle automatically derived from your
+      "example.com") to their corresponding TrustStore, which contain the
+      trusted root certificates for that domain. There can be a maximum of 10
+      trust domain entries in this map. Note that a trust domain automatically
+      trusts itself and don't need to be specified here. If however, this
+      WorkloadIdentityPool's trust domain contains any trust anchors in the
+      additional_trust_bundles map, those trust anchors will be *appended to*
+      the trust bundle automatically derived from your
       InlineCertificateIssuanceConfig's ca_pools.
 
   Fields:
     additionalTrustBundles: Optional. Maps specific trust domains (e.g.,
-      "example.com") to their corresponding TrustStore objects, which contain
-      the trusted root certificates for that domain. There can be a maximum of
-      10 trust domain entries in this map. Note that a trust domain
-      automatically trusts itself and don't need to be specified here. If
-      however, this WorkloadIdentityPool's trust domain contains any trust
-      anchors in the additional_trust_bundles map, those trust anchors will be
-      *appended to* the Trust Bundle automatically derived from your
+      "example.com") to their corresponding TrustStore, which contain the
+      trusted root certificates for that domain. There can be a maximum of 10
+      trust domain entries in this map. Note that a trust domain automatically
+      trusts itself and don't need to be specified here. If however, this
+      WorkloadIdentityPool's trust domain contains any trust anchors in the
+      additional_trust_bundles map, those trust anchors will be *appended to*
+      the trust bundle automatically derived from your
       InlineCertificateIssuanceConfig's ca_pools.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalTrustBundlesValue(_messages.Message):
     r"""Optional. Maps specific trust domains (e.g., "example.com") to their
-    corresponding TrustStore objects, which contain the trusted root
-    certificates for that domain. There can be a maximum of 10 trust domain
-    entries in this map. Note that a trust domain automatically trusts itself
-    and don't need to be specified here. If however, this
-    WorkloadIdentityPool's trust domain contains any trust anchors in the
-    additional_trust_bundles map, those trust anchors will be *appended to*
-    the Trust Bundle automatically derived from your
-    InlineCertificateIssuanceConfig's ca_pools.
+    corresponding TrustStore, which contain the trusted root certificates for
+    that domain. There can be a maximum of 10 trust domain entries in this
+    map. Note that a trust domain automatically trusts itself and don't need
+    to be specified here. If however, this WorkloadIdentityPool's trust domain
+    contains any trust anchors in the additional_trust_bundles map, those
+    trust anchors will be *appended to* the trust bundle automatically derived
+    from your InlineCertificateIssuanceConfig's ca_pools.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -4501,10 +4503,10 @@ class Oidc(_messages.Message):
       with or without the HTTPS prefix. For example: ``` //iam.googleapis.com/
       projects//locations//workloadIdentityPools//providers/ https://iam.googl
       eapis.com/projects//locations//workloadIdentityPools//providers/ ```
-    issuerUri: Required. The OIDC issuer URL. Must be an HTTPS endpoint. Used
-      per OpenID Connect Discovery 1.0 spec to locate the provider's public
-      keys (via `jwks_uri`) for verifying tokens like the OIDC ID token. These
-      public key types must be 'EC' or 'RSA'.
+    issuerUri: Required. The OIDC issuer URL. Must be an HTTPS endpoint. Per
+      OpenID Connect Discovery 1.0 spec, the OIDC issuer URL is used to locate
+      the provider's public keys (via `jwks_uri`) for verifying tokens like
+      the OIDC ID token. These public key types must be 'EC' or 'RSA'.
     jwksJson: Optional. OIDC JWKs in JSON String format. For details on the
       definition of a JWK, see https://tools.ietf.org/html/rfc7517. If not
       set, the `jwks_uri` from the discovery document(fetched from the .well-
@@ -4872,10 +4874,11 @@ class QueryGrantableRolesRequest(_messages.Message):
     ViewValueValuesEnum:
 
   Fields:
-    fullResourceName: Required. The full resource name to query from the list
-      of grantable roles. The name follows the Google Cloud Platform resource
-      format. For example, a Cloud Platform project with id `my-project` will
-      be named `//cloudresourcemanager.googleapis.com/projects/my-project`.
+    fullResourceName: Required. Required. The full resource name to query from
+      the list of grantable roles. The name follows the Google Cloud Platform
+      resource format. For example, a Cloud Platform project with id `my-
+      project` will be named
+      `//cloudresourcemanager.googleapis.com/projects/my-project`.
     pageSize: Optional limit on the number of roles to include in the
       response. The default is 300, and the maximum is 2,000.
     pageToken: Optional pagination token returned in an earlier
@@ -5585,15 +5588,15 @@ class TrustAnchor(_messages.Message):
 
 class TrustStore(_messages.Message):
   r"""Trust store that contains trust anchors and optional intermediate CAs
-  used in PKI to build trust chain and verify client's identity.
+  used in PKI to build trust chain and verify a client's identity.
 
   Fields:
     intermediateCas: Optional. Set of intermediate CA certificates used for
-      building the trust chain to trust anchor. IMPORTANT: * Intermediate CAs
-      are only supported when configuring x509 federation.
-    trustAnchors: Required. List of Trust Anchors to be used while performing
+      building the trust chain to the trust anchor. Important: Intermediate
+      CAs are only supported for X.509 federation.
+    trustAnchors: Required. List of trust anchors to be used while performing
       validation against a given TrustStore. The incoming end entity's
-      certificate must be chained up to one of the trust anchors here.
+      certificate must be in the trust chain of one of the trust anchors here.
   """
 
   intermediateCas = _messages.MessageField('IntermediateCA', 1, repeated=True)
@@ -6673,10 +6676,10 @@ class X509(_messages.Message):
   a client identity if the client has a certificate that chains up to this CA.
 
   Fields:
-    trustStore: Required. A Trust store, use this trust store as a wrapper to
+    trustStore: Required. A TrustStore. Use this trust store as a wrapper to
       config the trust anchor and optional intermediate cas to help build the
-      trust chain for the incoming end entity certificate. Follow the x509
-      guidelines to define those PEM encoded certs. Only 1 trust store is
+      trust chain for the incoming end entity certificate. Follow the X.509
+      guidelines to define those PEM encoded certs. Only one trust store is
       currently supported.
   """
 

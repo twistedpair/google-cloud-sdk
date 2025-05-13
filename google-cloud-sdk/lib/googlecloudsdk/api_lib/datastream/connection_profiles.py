@@ -177,12 +177,17 @@ class ConnectionProfilesClient:
     """Returns the MongoDB profile message based on the given args."""
     addresses = []
     for host_address in args.mongodb_host_addresses:
-      hostport = HostPort.Parse(host_address)
-      addresses.append(
-          self._messages.HostAddress(
-              hostname=hostport.host, port=int(hostport.port)
-          )
-      )
+      if args.mongodb_srv_connection_format:
+        addresses.append(
+            self._messages.HostAddress(hostname=host_address)
+        )
+      else:
+        hostport = HostPort.Parse(host_address)
+        addresses.append(
+            self._messages.HostAddress(
+                hostname=hostport.host, port=int(hostport.port)
+            )
+        )
     profile = self._messages.MongodbProfile(
         hostAddresses=addresses,
         username=args.mongodb_username,

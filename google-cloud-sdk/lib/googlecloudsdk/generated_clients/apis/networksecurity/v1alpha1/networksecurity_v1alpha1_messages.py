@@ -505,15 +505,11 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
   r"""Describes the properties of a single source.
 
   Fields:
-    principals: Optional. A list of identities derived from the client's
-      certificate. This field is under development and we don't recommend
-      using it at this time. Limited to 5 principals.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 5 resources.
   """
 
-  principals = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 1, repeated=True)
-  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 2, repeated=True)
+  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 1, repeated=True)
 
 
 class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):

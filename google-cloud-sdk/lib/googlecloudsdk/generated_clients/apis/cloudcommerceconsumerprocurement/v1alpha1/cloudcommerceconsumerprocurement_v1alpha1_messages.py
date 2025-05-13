@@ -243,25 +243,6 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolEnumerateL
   parent = _messages.StringField(3, required=True)
 
 
-class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest(_messages.Message):
-  r"""A
-  CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest
-  object.
-
-  Fields:
-    googleCloudCommerceConsumerProcurementV1alpha1LicensePool: A
-      GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool resource to be
-      passed as the request body.
-    name: Identifier. Format:
-      `billingAccounts/{billing_account}/orders/{order}/licensePool`
-    updateMask: Required. The list of fields to update.
-  """
-
-  googleCloudCommerceConsumerProcurementV1alpha1LicensePool = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolUnassignRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolUnassi
   gnRequest object.
@@ -395,6 +376,24 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest(_message
 
   googleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersUpdateLicensePoolRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersUpdateLicensePool
+  Request object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1LicensePool: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool resource to be
+      passed as the request body.
+    name: Identifier. Format:
+      `billingAccounts/{billing_account}/orders/{order}/licensePool`
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1LicensePool = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CloudcommerceconsumerprocurementProjectsCheckEntitlementsRequest(_messages.Message):

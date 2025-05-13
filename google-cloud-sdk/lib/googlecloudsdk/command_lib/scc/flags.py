@@ -71,7 +71,8 @@ LOCATION_FLAG = base.Argument(
       the resource is located and applicable. The `location` attribute can be
       provided as part of the fully specified resource name or with the `--location`
       argument on the command line. The default location is `global`.
-
+      NOTE: If you override the endpoint to a [regional endpoint](https://cloud.google.com/security-command-center/docs/reference/rest/index.html?rep_location=global#regional-service-endpoint)
+      you must specify the correct [data location](https://cloud.google.com/security-command-center/docs/data-residency-support#locations) using this flag.
       The default location on this command is unrelated to the default location
       that is specified when data residency controls are enabled
       for Security Command Center.""",
@@ -128,9 +129,13 @@ def GetDefaultParent():
   if id_pattern.match(parent):
     # Prepend organizations/ if only number value is provided.
     parent = "organizations/" + parent
-  if not (organization_resource_pattern.match(parent) or
-          parent.startswith("projects/") or parent.startswith("folders/")):
+  if not (
+      organization_resource_pattern.match(parent)
+      or parent.startswith("projects/")
+      or parent.startswith("folders/")
+  ):
     raise errors.InvalidSCCInputError(
         """Parent must match either [0-9]+, organizations/[0-9]+, projects/.*
-      or folders/.*.""")
+      or folders/.*."""
+    )
   return parent

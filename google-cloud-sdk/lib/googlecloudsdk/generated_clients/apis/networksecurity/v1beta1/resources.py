@@ -300,6 +300,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SACATTACHMENTS = (
+      'projects.locations.sacAttachments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sacAttachments/'
+              '{sacAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SACREALMS = (
+      'projects.locations.sacRealms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sacRealms/'
+              '{sacRealmsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVERTLSPOLICIES = (
       'projects.locations.serverTlsPolicies',
       '{+name}',

@@ -251,6 +251,21 @@ def ParseChangeStreamRetentionPeriod(retention_period):
   )
 
 
+def ParseTieredStorageConfigDuration(duration):
+  """Parses tiered storage config duration from the string.
+
+  Args:
+    duration: Tiered storage config duration in the format of a valid gcloud
+      datetime duration string, such as `10d`, `1w`, `36h`.
+
+  Returns:
+    A string of duration counted in seconds, such as `259200s`
+  """
+  return ConvertDurationToSeconds(
+      duration, '--tiered-storage-infrequent-access-older-than'
+  )
+
+
 def AddFieldToUpdateMask(field, req):
   """Adding a new field to the update mask of the updateTableRequest.
 
@@ -289,6 +304,16 @@ def RefreshUpdateMask(unused_ref, args, req):
     req = AddFieldToUpdateMask('automatedBackupPolicy', req)
   if args.automated_backup_retention_period:
     req = AddFieldToUpdateMask('automatedBackupPolicy.retentionPeriod', req)
+  # TODO: b/379182385 - Remove this check once the flag is released in GA.
+  #
+  # We need this to verify that the flag exists in this release track.
+  if hasattr(args, 'clear_tiered_storage_config'):
+    if args.clear_tiered_storage_config:
+      req = AddFieldToUpdateMask('tieredStorageConfig', req)
+    if args.tiered_storage_infrequent_access_older_than:
+      req = AddFieldToUpdateMask(
+          'tieredStorageConfig.infrequentAccess.includeIfOlderThan', req
+      )
   if args.row_key_schema_definition_file or args.clear_row_key_schema:
     req = AddFieldToUpdateMask('rowKeySchema', req)
   return req
@@ -302,12 +327,17 @@ def AddAdditionalArgs():
   )
 
 
+def AddAdditionalArgsAlphaBeta():
+  """Adds additional flags for alpha and beta."""
+  return AddAdditionalArgs() + AddTieredStorageConfigUpdateTableArgs()
+
+
 def AddChangeStreamConfigUpdateTableArgs():
   """Adds the change stream commands to update table CLI.
 
   This can't be defined in the yaml because that automatically generates the
   inverse for any boolean args and we don't want the nonsensical
-  'no-clear-change-stream-retention-period`. We use store_const to only allow
+  `no-clear-change-stream-retention-period`. We use store_const to only allow
   `clear-change-stream-retention-period` or `change-stream-retention-period`
   arguments
 
@@ -335,6 +365,39 @@ def AddChangeStreamConfigUpdateTableArgs():
               'hours (h), minutes (m), and seconds (s). If not already '
               'specified, enables a change stream for the table. Examples: `5d`'
               ' or `48h`.'
+          ),
+      )
+  )
+  return [argument_group]
+
+
+def AddTieredStorageConfigUpdateTableArgs():
+  """Adds the tiered storage config commands to update table CLI.
+
+  This can't be defined in the yaml because that automatically generates the
+  inverse for any boolean args and we don't want the nonsensical
+  `no-clear-tiered-storage-config`. We use store_const to only allow
+  `clear-tiered-storage-config`.
+
+  Returns:
+    Argument group containing tiered storage config args
+  """
+  argument_group = base.ArgumentGroup(mutex=True)
+  argument_group.AddArgument(
+      base.Argument(
+          '--clear-tiered-storage-config',
+          help='Disables the tiered storage config.',
+          action='store_const',
+          const=True,
+      )
+  )
+  argument_group.AddArgument(
+      base.Argument(
+          '--tiered-storage-infrequent-access-older-than',
+          help=(
+              'The age at which data should be moved to infrequent access'
+              ' storage.\n\nSee `$ gcloud topic datetimes` for information on'
+              ' absolute duration formats.'
           ),
       )
   )
@@ -462,6 +525,37 @@ def HandleAutomatedBackupPolicyUpdateTableArgs(unused_ref, args, req):
     req.table.automatedBackupPolicy = CreateAutomatedBackupPolicy(
         args.automated_backup_retention_period, None
     )
+  return req
+
+
+def HandleTieredStorageArgs(unused_ref, args, req):
+  """Handle tiered storage args for update table CLI.
+
+  Args:
+    unused_ref: the gcloud resource (unused).
+    args: the input arguments.
+    req: the original updateTableRequest.
+
+  Returns:
+    req: the updateTableRequest with tiered storage config handled.
+  """
+  # TODO: b/379182385 - Remove this check once the flag is released in GA.
+  #
+  # We need this to verify that the flag exists in this release track.
+  if not hasattr(args, 'clear_tiered_storage_config'):
+    return req
+
+  if args.clear_tiered_storage_config:
+    req.table.tieredStorageConfig = None
+  if args.tiered_storage_infrequent_access_older_than:
+    req.table.tieredStorageConfig = util.GetAdminMessages().TieredStorageConfig(
+        infrequentAccess=util.GetAdminMessages().TieredStorageRule(
+            includeIfOlderThan=ParseTieredStorageConfigDuration(
+                args.tiered_storage_infrequent_access_older_than
+            )
+        )
+    )
+
   return req
 
 

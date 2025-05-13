@@ -141,6 +141,23 @@ from .types import (
     StringArray,
     Tensor,
 )
+from .vertex_rag_data import (
+    CorpusStatus,
+    FileStatus,
+    ImportRagFilesConfig,
+    RagChunk,
+    RagCorpus,
+    RagEmbeddingModelConfig,
+    RagEngineConfig,
+    RagFile,
+    RagFileChunkingConfig,
+    RagFileParsingConfig,
+    RagFileTransformationConfig,
+    RagManagedDbConfig,
+    RagVectorDbConfig,
+    UploadRagFileConfig,
+    VertexAiSearchConfig,
+)
 
 __all__ = (
     'ApiAuth',
@@ -253,4 +270,19 @@ __all__ = (
     'Int64Array',
     'StringArray',
     'Tensor',
+    'CorpusStatus',
+    'FileStatus',
+    'ImportRagFilesConfig',
+    'RagChunk',
+    'RagCorpus',
+    'RagEmbeddingModelConfig',
+    'RagEngineConfig',
+    'RagFile',
+    'RagFileChunkingConfig',
+    'RagFileParsingConfig',
+    'RagFileTransformationConfig',
+    'RagManagedDbConfig',
+    'RagVectorDbConfig',
+    'UploadRagFileConfig',
+    'VertexAiSearchConfig',
 )

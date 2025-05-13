@@ -126,7 +126,7 @@ class CloudlocationfinderV1alpha(base_api.BaseApiClient):
         method_id='cloudlocationfinder.projects.locations.cloudLocations.search',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken', 'query', 'sourceCloudLocation'],
+        query_params=['pageSize', 'pageToken', 'query', 'sourceCloudLocation'],
         relative_path='v1alpha/{+parent}/cloudLocations:search',
         request_field='',
         request_type_name='CloudlocationfinderProjectsLocationsCloudLocationsSearchRequest',

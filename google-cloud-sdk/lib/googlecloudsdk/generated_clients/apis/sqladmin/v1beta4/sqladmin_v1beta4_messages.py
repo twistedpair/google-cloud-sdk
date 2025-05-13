@@ -1806,6 +1806,17 @@ class DatabasesListResponse(_messages.Message):
   kind = _messages.StringField(2)
 
 
+class DbAlignedAtomicWritesConfig(_messages.Message):
+  r"""Database aligned atomic writes configurations.
+
+  Fields:
+    dbAlignedAtomicWrites: Whether database aligned atomic writes is enabled
+      for the instance.
+   """
+
+  dbAlignedAtomicWrites = _messages.BooleanField(1)
+
+
 class DemoteContext(_messages.Message):
   r"""This context is used to demote an existing standalone instance to be a
   Cloud SQL read replica for an external database server.
@@ -4151,6 +4162,7 @@ class Settings(_messages.Message):
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not. WARNING:
       Changing this restarts the instance.
+    dbAlignedAtomicWritesConfig: Configuration for DB Aligned Atomic Writes.
     deletionProtectionEnabled: Configuration to protect against accidental
       instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
@@ -4375,31 +4387,32 @@ class Settings(_messages.Message):
   dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 15)
   databaseFlags = _messages.MessageField('DatabaseFlags', 16, repeated=True)
   databaseReplicationEnabled = _messages.BooleanField(17)
-  deletionProtectionEnabled = _messages.BooleanField(18)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 19, repeated=True)
-  edition = _messages.EnumField('EditionValueValuesEnum', 20)
-  enableDataplexIntegration = _messages.BooleanField(21)
-  enableGoogleMlIntegration = _messages.BooleanField(22)
-  insightsConfig = _messages.MessageField('InsightsConfig', 23)
-  instanceVersion = _messages.StringField(24)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 25)
-  kind = _messages.StringField(26)
-  locationPreference = _messages.MessageField('LocationPreference', 27)
-  maintenanceVersion = _messages.StringField(28)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 29)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 30)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 31)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(32)
-  replicationLagMaxSeconds = _messages.IntegerField(33, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 34)
-  retainBackupsOnDelete = _messages.BooleanField(35)
-  settingsVersion = _messages.IntegerField(36)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 37)
-  storageAutoResize = _messages.BooleanField(38)
-  storageAutoResizeLimit = _messages.IntegerField(39)
-  tier = _messages.StringField(40)
-  timeZone = _messages.StringField(41)
-  userLabels = _messages.MessageField('UserLabelsValue', 42)
+  dbAlignedAtomicWritesConfig = _messages.MessageField('DbAlignedAtomicWritesConfig', 18)
+  deletionProtectionEnabled = _messages.BooleanField(19)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 20, repeated=True)
+  edition = _messages.EnumField('EditionValueValuesEnum', 21)
+  enableDataplexIntegration = _messages.BooleanField(22)
+  enableGoogleMlIntegration = _messages.BooleanField(23)
+  insightsConfig = _messages.MessageField('InsightsConfig', 24)
+  instanceVersion = _messages.StringField(25)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 26)
+  kind = _messages.StringField(27)
+  locationPreference = _messages.MessageField('LocationPreference', 28)
+  maintenanceVersion = _messages.StringField(29)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 30)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 31)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 32)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(33)
+  replicationLagMaxSeconds = _messages.IntegerField(34, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 35)
+  retainBackupsOnDelete = _messages.BooleanField(36)
+  settingsVersion = _messages.IntegerField(37)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 38)
+  storageAutoResize = _messages.BooleanField(39)
+  storageAutoResizeLimit = _messages.IntegerField(40)
+  tier = _messages.StringField(41)
+  timeZone = _messages.StringField(42)
+  userLabels = _messages.MessageField('UserLabelsValue', 43)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

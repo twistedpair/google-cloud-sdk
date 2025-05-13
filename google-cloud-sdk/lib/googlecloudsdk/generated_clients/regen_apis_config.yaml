@@ -1852,6 +1852,8 @@ apis:
       default: true
     v1alpha:
       discovery_doc: modelarmor_v1alpha.json
+    v1beta:
+      discovery_doc: modelarmor_v1beta.json
   cloudaicompanion:
     v1alpha:
       discovery_doc: cloudaicompanion_v1alpha.json

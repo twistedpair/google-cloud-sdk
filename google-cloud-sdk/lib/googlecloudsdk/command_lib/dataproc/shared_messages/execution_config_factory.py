@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.dataproc.shared_messages import (
+    authentication_config_factory as acf)
 import six
 
 
@@ -29,13 +31,23 @@ class ExecutionConfigFactory(object):
   ExecutionConfig message from parsed arguments.
   """
 
-  def __init__(self, dataproc):
+  def __init__(self, dataproc, auth_config_factory_override=None):
     """Factory class for ExecutionConfig message.
 
     Args:
       dataproc: A api_lib.dataproc.Dataproc instance.
+      auth_config_factory_override: Override the default
+      AuthenticationConfigFactory instance. This is a keyword argument.
     """
     self.dataproc = dataproc
+
+    self.auth_config_factory = auth_config_factory_override
+    if not self.auth_config_factory:
+      self.auth_config_factory = (
+          acf.AuthenticationConfigFactory(
+              self.dataproc
+          )
+      )
 
   def GetMessage(self, args):
     """Builds an ExecutionConfig instance.
@@ -77,6 +89,12 @@ class ExecutionConfigFactory(object):
 
     if args.staging_bucket:
       kwargs['stagingBucket'] = args.staging_bucket
+
+    authentication_config = (
+        self.auth_config_factory.GetMessage(args)
+    )
+    if authentication_config:
+      kwargs['authenticationConfig'] = authentication_config
 
     if not kwargs:
       return None
@@ -126,3 +144,5 @@ def AddArguments(parser):
       [gcloud topic datetimes](https://cloud.google.com/sdk/gcloud/reference/topic/datetimes)
       for information on duration formats.""",
   )
+
+  acf.AddArguments(parser)

@@ -34,10 +34,16 @@ class ByteDataItem(_messages.Message):
       BYTE_ITEM_TYPE_UNSPECIFIED: Unused
       PLAINTEXT_UTF8: plain text
       PDF: PDF
+      WORD_DOCUMENT: DOCX, DOCM, DOTX, DOTM
+      EXCEL_DOCUMENT: XLSX, XLSM, XLTX, XLYM
+      POWERPOINT_DOCUMENT: PPTX, PPTM, POTX, POTM, POT
     """
     BYTE_ITEM_TYPE_UNSPECIFIED = 0
     PLAINTEXT_UTF8 = 1
     PDF = 2
+    WORD_DOCUMENT = 3
+    EXCEL_DOCUMENT = 4
+    POWERPOINT_DOCUMENT = 5
 
   byteData = _messages.BytesField(1)
   byteDataType = _messages.EnumField('ByteDataTypeValueValuesEnum', 2)

@@ -573,6 +573,11 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                 'uri': '/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}/chat/completions',
                 'body': 'http_body',
             },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=endpoints/*}/chat/completions',
+                'body': 'http_body',
+            },
             ]
             request, metadata = self._interceptor.pre_chat_completions(request, metadata)
             pb_request = prediction_service.ChatCompletionsRequest.pb(request)

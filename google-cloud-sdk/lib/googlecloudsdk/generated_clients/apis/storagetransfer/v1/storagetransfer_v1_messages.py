@@ -1795,6 +1795,16 @@ class TransferJob(_messages.Message):
       field. When the field is not set, the job never executes a transfer,
       unless you invoke RunTransferJob or update the job to have a non-empty
       schedule.
+    serviceAccount: Optional. The service account to be used to access
+      resources in the consumer project in the transfer job. We accept `email`
+      or `uniqueId` for the service account. Service account format is
+      projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID} See https://cloud
+      .google.com/iam/docs/reference/credentials/rest/v1/projects.serviceAccou
+      nts/generateAccessToken#path-parameters for details. Caller requires the
+      following IAM permission on the specified service account:
+      `iam.serviceAccounts.actAs`. project-PROJECT_NUMBER@storage-transfer-
+      service.iam.gserviceaccount.com requires the following IAM permission on
+      the specified service account: `iam.serviceAccounts.getAccessToken`
     status: Status of the job. This value MUST be specified for
       `CreateTransferJobRequests`. **Note:** The effect of the new job status
       takes place during a subsequent job run. For example, if you change the
@@ -1838,8 +1848,9 @@ class TransferJob(_messages.Message):
   projectId = _messages.StringField(10)
   replicationSpec = _messages.MessageField('ReplicationSpec', 11)
   schedule = _messages.MessageField('Schedule', 12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  transferSpec = _messages.MessageField('TransferSpec', 14)
+  serviceAccount = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  transferSpec = _messages.MessageField('TransferSpec', 15)
 
 
 class TransferManifest(_messages.Message):

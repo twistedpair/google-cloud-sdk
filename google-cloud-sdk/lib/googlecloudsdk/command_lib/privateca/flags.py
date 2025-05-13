@@ -1039,7 +1039,7 @@ def ValidateIdentityConstraints(
     raise privateca_exceptions.UserAbortException('Aborted by user.')
 
 
-def ValidateSubjectConfig(subject_config, is_ca):
+def ValidateSubjectConfig(subject_config):
   """Validates a SubjectConfig object."""
   san_names = []
   if subject_config.subjectAltName:
@@ -1060,24 +1060,12 @@ def ValidateSubjectConfig(subject_config, is_ca):
         ' subject alternative name.',
     )
 
-  if (
-      is_ca
-      and not subject_config.subject.organization
-      and not subject_config.subject.rdnSequence
-  ):
-    raise exceptions.InvalidArgumentException(
-        '--subject',
-        'An organization must be provided for a certificate authority'
-        ' certificate.',
-    )
 
-
-def ParseSubjectFlags(args, is_ca):
+def ParseSubjectFlags(args):
   """Parses subject flags into a subject config.
 
   Args:
     args: The parser that contains all the flag values
-    is_ca: Whether to parse this subject as a CA or not.
 
   Returns:
     A subject config representing the parsed flags.
@@ -1094,7 +1082,7 @@ def ParseSubjectFlags(args, is_ca):
   if SanFlagsAreSpecified(args):
     subject_config.subjectAltName = ParseSanFlags(args)
 
-  ValidateSubjectConfig(subject_config, is_ca=is_ca)
+  ValidateSubjectConfig(subject_config)
 
   return subject_config
 

@@ -28,8 +28,7 @@ from googlecloudsdk.core import resources
 
 
 class VolumesClient(object):
-  """Wrapper for working with Storage Pool in the Cloud NetApp Files API Client.
-  """
+  """Wrapper for working with Storage Pool in the Cloud NetApp Files API Client."""
 
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     self.release_track = release_track
@@ -40,8 +39,11 @@ class VolumesClient(object):
     elif self.release_track == base.ReleaseTrack.GA:
       self._adapter = VolumesAdapter()
     else:
-      raise ValueError('[{}] is not a valid API version.'.format(
-          util.VERSION_MAP[release_track]))
+      raise ValueError(
+          '[{}] is not a valid API version.'.format(
+              util.VERSION_MAP[release_track]
+          )
+      )
 
   @property
   def client(self):
@@ -65,8 +67,11 @@ class VolumesClient(object):
     """
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(
-            self.client.projects_locations_operations), operation_ref,
-        'Waiting for [{0}] to finish'.format(operation_ref.Name()))
+            self.client.projects_locations_operations
+        ),
+        operation_ref,
+        'Waiting for [{0}] to finish'.format(operation_ref.Name()),
+    )
 
   def ListVolumes(self, location_ref, limit=None):
     """Make API calls to List active Cloud NetApp Volumes.
@@ -80,7 +85,8 @@ class VolumesClient(object):
       Generator that yields the Cloud NetApp Volumes.
     """
     request = self.messages.NetappProjectsLocationsVolumesListRequest(
-        parent=location_ref)
+        parent=location_ref
+    )
     # Check for unreachable locations.
     response = self.client.projects_locations_volumes.List(request)
     for location in response.unreachable:
@@ -164,13 +170,15 @@ class VolumesClient(object):
   def GetVolume(self, volume_ref):
     """Get Cloud NetApp Volume information."""
     request = self.messages.NetappProjectsLocationsVolumesGetRequest(
-        name=volume_ref.RelativeName())
+        name=volume_ref.RelativeName()
+    )
     return self.client.projects_locations_volumes.Get(request)
 
   def DeleteVolume(self, volume_ref, async_, force):
     """Deletes an existing Cloud NetApp Volume."""
     request = self.messages.NetappProjectsLocationsVolumesDeleteRequest(
-        name=volume_ref.RelativeName(), force=force)
+        name=volume_ref.RelativeName(), force=force
+    )
     return self._DeleteVolume(async_, request)
 
   def _DeleteVolume(self, async_, request):
@@ -178,7 +186,8 @@ class VolumesClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=constants.OPERATIONS_COLLECTION)
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
   def RevertVolume(self, volume_ref, snapshot_id, async_):
@@ -186,7 +195,9 @@ class VolumesClient(object):
     request = self.messages.NetappProjectsLocationsVolumesRevertRequest(
         name=volume_ref.RelativeName(),
         revertVolumeRequest=self.messages.RevertVolumeRequest(
-            snapshotId=snapshot_id))
+            snapshotId=snapshot_id
+        ),
+    )
     revert_op = self.client.projects_locations_volumes.Revert(request)
     if async_:
       return revert_op
@@ -194,6 +205,32 @@ class VolumesClient(object):
         revert_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
+
+  def RestoreVolume(
+      self, volume_ref, backup, file_list, restore_destination_path, async_
+  ):
+    """Restores specific files from a backup to a volume."""
+    request = self.messages.NetappProjectsLocationsVolumesRestoreRequest(
+        name=volume_ref.RelativeName(),
+        restoreBackupFilesRequest=self.messages.RestoreBackupFilesRequest(
+            backup=backup,
+            fileList=file_list,
+            restoreDestinationPath=restore_destination_path,
+        ),
+    )
+    if self.release_track == base.ReleaseTrack.ALPHA:
+      restore_op = self.client.projects_locations_volumes.Restore(request)
+      if async_:
+        return restore_op
+      operation_ref = resources.REGISTRY.ParseRelativeName(
+          restore_op.name, collection=constants.OPERATIONS_COLLECTION
+      )
+      return self.WaitForOperation(operation_ref)
+    raise ValueError(
+        '[{}] is not a valid API version.'.format(
+            util.VERSION_MAP[self.release_track]
+        )
+    )
 
   def ParseUpdatedVolumeConfig(
       self,
@@ -258,12 +295,14 @@ class VolumesClient(object):
     Returns:
       an Operation or Volume message.
     """
-    update_op = self._adapter.UpdateVolume(volume_ref, volume_config,
-                                           update_mask)
+    update_op = self._adapter.UpdateVolume(
+        volume_ref, volume_config, update_mask
+    )
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=constants.OPERATIONS_COLLECTION)
+        update_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
 
@@ -284,7 +323,6 @@ class VolumesAdapter(object):
 
     Returns:
       Volume message populated with Export Policy values.
-
     """
     if not export_policy:
       return
@@ -295,9 +333,9 @@ class VolumesAdapter(object):
         if key == 'allowed-clients':
           simple_export_policy_rule.allowedClients = val
         if key == 'access-type':
-          simple_export_policy_rule.accessType = (
-              self.messages.SimpleExportPolicyRule.AccessTypeValueValuesEnum
-              .lookup_by_name(val))
+          simple_export_policy_rule.accessType = self.messages.SimpleExportPolicyRule.AccessTypeValueValuesEnum.lookup_by_name(
+              val
+          )
         if key == 'has-root-access':
           simple_export_policy_rule.hasRootAccess = val
         if key == 'kerberos-5-read-only':
@@ -328,7 +366,6 @@ class VolumesAdapter(object):
 
     Returns:
       Volume message populated with protocol values.
-
     """
     protocols_config = []
     for protocol in protocols:
@@ -563,15 +600,14 @@ class VolumesAdapter(object):
 
     Returns:
       Volume message populated with Backup Config values.
-
     """
     backup_config_message = self.messages.BackupConfig()
     # Iterate through backup_config.
     for backup_policy in backup_config.get('backup-policies', []):
       backup_config_message.backupPolicies.append(backup_policy)
     backup_config_message.backupVault = backup_config.get('backup-vault', '')
-    backup_config_message.scheduledBackupEnabled = (
-        backup_config.get('enable-scheduled-backups', None)
+    backup_config_message.scheduledBackupEnabled = backup_config.get(
+        'enable-scheduled-backups', None
     )
     volume.backupConfig = backup_config_message
 
@@ -637,7 +673,8 @@ class VolumesAdapter(object):
         hybrid_replication_parameters.get('peer-svm-name')
     )
     for ip_address in hybrid_replication_parameters.get(
-        'peer-ip-addresses', []):
+        'peer-ip-addresses', []
+    ):
       hybrid_replication_parameters_message.peerIpAddresses.append(ip_address)
     hybrid_replication_parameters_message.clusterLocation = (
         hybrid_replication_parameters.get('cluster-location')

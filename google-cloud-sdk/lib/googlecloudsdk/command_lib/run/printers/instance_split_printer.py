@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.run import traffic_pair
+from googlecloudsdk.api_lib.run import instance_split_pair
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -28,10 +28,8 @@ INSTANCE_SPLIT_PRINTER_FORMAT = 'instancesplit'
 _LATEST_READY_REV_UNSPECIFIED = '-'
 
 
-# TODO(b/322180968): Once Worker API is ready, replace traffic related
-# references to instance split one from API / messages.
 def _TransformInstanceSplitPair(pair):
-  """Transforms a single TrafficTargetPair into a marker class structure."""
+  """Transforms a single InstanceSplitPair into a marker class structure."""
   console = console_attr.GetConsoleAttr()
   return (
       pair.displayPercent,
@@ -40,7 +38,7 @@ def _TransformInstanceSplitPair(pair):
 
 
 def _TransformInstanceSplitPairs(instance_split_pairs):
-  """Transforms a List[TrafficTargetPair] into a marker class structure."""
+  """Transforms a List[InstanceSplitPair] into a marker class structure."""
   instance_split_section = cp.Section(
       [cp.Table(_TransformInstanceSplitPair(p) for p in instance_split_pairs)]
   )
@@ -50,39 +48,38 @@ def _TransformInstanceSplitPairs(instance_split_pairs):
   )
 
 
-def TransformInstanceSplitFields(worker_record):
+def TransformInstanceSplitFields(worker_pool_record):
   """Transforms a worker's instance split fields into a marker class structure to print.
 
   Generates the custom printing format for a worker's instance split using the
   marker classes defined in custom_printer_base.
 
   Args:
-    worker_record: A Worker object.
+    worker_pool_record: A WorkerPool object.
 
   Returns:
     A custom printer marker object describing the instance split fields
     print format.
   """
-  no_status = worker_record.status is None
-  instance_split_pairs = traffic_pair.GetTrafficTargetPairs(
-      worker_record.spec_traffic,
-      worker_record.status_traffic,
-      True,  # is_platform_managed
+  no_status = worker_pool_record.status is None
+  instance_split_pairs = instance_split_pair.GetInstanceSplitPairs(
+      worker_pool_record.spec_split,
+      worker_pool_record.status_split,
       (
           _LATEST_READY_REV_UNSPECIFIED
           if no_status
-          else worker_record.status.latestReadyRevisionName
+          else worker_pool_record.status.latestReadyRevisionName
       ),
   )
   return _TransformInstanceSplitPairs(instance_split_pairs)
 
 
 class InstanceSplitPrinter(cp.CustomPrinterBase):
-  """Prints a worker's instance split in a custom human-readable format."""
+  """Prints a worker pool's instance split in a custom human-readable format."""
 
   def Print(self, resources, single=False, intermediate=False):
     """Overrides ResourcePrinter.Print to set single=True."""
-    # The update-instance-split command returns a List[TrafficTargetPair] as its
+    # The update-instance-split command returns a List[InstanceSplitPair] as its
     # result. In order to print the custom human-readable format, this printer
     # needs to process all records in the result at once (to compute column
     # widths). By default, ResourcePrinter interprets a List[*] as a list of
@@ -92,5 +89,5 @@ class InstanceSplitPrinter(cp.CustomPrinterBase):
     super(InstanceSplitPrinter, self).Print(resources, True, intermediate)
 
   def Transform(self, record):
-    """Transforms a List[TrafficTargetPair] into a marker class format."""
+    """Transforms a List[InstanceSplitPair] into a marker class format."""
     return _TransformInstanceSplitPairs(record)

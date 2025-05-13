@@ -142,8 +142,6 @@ class ReleasesClient(object):
       location,
       lifecycle=None,
       variants=None,
-      use_nested_variants=False,
-      clh_variants=False,
   ):
     """Create Release for a ResourceBundle.
 
@@ -154,9 +152,6 @@ class ReleasesClient(object):
       location: Valid GCP location (e.g., uc-central1)
       lifecycle: Lifecycle of the Release.
       variants: Variants of the Release.
-      use_nested_variants: Whether to create nested variant resources.
-      clh_variants: Boolean flag to create variants sent in the request as a
-        separate resource.
 
     Returns:
       Created Release resource.
@@ -164,36 +159,7 @@ class ReleasesClient(object):
     fully_qualified_path = _FullyQualifiedPath(
         project, location, resource_bundle, version
     )
-    variants_value = self._VariantsValueFromInputVariants(variants)
-    if not use_nested_variants:
-      # Obsolete behavior, create Release with variants sent inline
-      labels_value = None
-      if clh_variants:
-        labels_value = self.messages.Release.LabelsValue(
-            additionalProperties=[
-                self.messages.Release.LabelsValue.AdditionalProperty(
-                    key='configdelivery-variant-storage-strategy',
-                    value='nested',
-                )
-            ]
-        )
-      release = self.messages.Release(
-          name=fully_qualified_path,
-          labels=labels_value,
-          lifecycle=self.GetLifecycleEnum(lifecycle),
-          variants=variants_value,
-          version=version,
-      )
-      create_request = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesCreateRequest(
-          parent=_ParentPath(project, location, resource_bundle),
-          release=release,
-          releaseId=version.replace('.', '-'),
-      )
-      return waiter.WaitFor(
-          self.release_waiter,
-          self._service.Create(create_request),
-          f'Creating Release {fully_qualified_path}',
-      )
+
     # Create Draft Release, create nested Variant resources, then updates
     # release to have those variants. Publishes release at update step, if
     # necessary.

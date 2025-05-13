@@ -61,6 +61,32 @@ def PrepareUpdateWithSubnets(_, args, request):
   return MapSubnetsToNetworkConfig(_, args, request)
 
 
+def PrepareUpdateWithCaPools(_, args, request):
+  """Prepare the update request with the information from the CA pool flag.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+    The updated request with the CA pool.
+  """
+  if not args.ca_pools:
+    return request
+
+  # The cluster is not created yet if only the CA pool flag is set. This is
+  # because we don't formally map the CA pool to the request the same way we do
+  # for other flags. Instead, CA pools require special handling with the use of
+  # hooks.
+  if not request.cluster:
+    request.cluster = {}
+
+  ca_pool_update_mask = "tlsConfig.trustConfig.casConfigs"
+  request.updateMask = AppendUpdateMask(request.updateMask, ca_pool_update_mask)
+  return MapCaPoolsToCASConfig(_, args, request)
+
+
 def AppendUpdateMask(update_mask, new_mask):
   """Handles appending a new mask to an existing mask.
 
@@ -95,6 +121,35 @@ def MapSubnetsToNetworkConfig(_, args, request):
     request.cluster.gcpConfig.accessConfig.networkConfigs.append(
         encoding.DictToMessage(
             network_config, _MESSAGE.NetworkConfig
+        )
+    )
+  return request
+
+
+def MapCaPoolsToCASConfig(_, args, request):
+  """Maps the list of CA pools from the flag to the API fields in the request.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+    The updated request with CertificateAuthorityServiceConfig in the JSON
+    format.
+  """
+  if not args.ca_pools:
+    return request
+
+  # Reference the existing CAS config if already created for the request.
+  if not request.cluster.tlsConfig:
+    request.cluster.tlsConfig = {}
+  request.cluster.tlsConfig.trustConfig = {"casConfigs": []}
+  for ca_pool in args.ca_pools:
+    cas_config = {"caPool": ca_pool}
+    request.cluster.tlsConfig.trustConfig.casConfigs.append(
+        encoding.DictToMessage(
+            cas_config, _MESSAGE.CertificateAuthorityServiceConfig
         )
     )
   return request

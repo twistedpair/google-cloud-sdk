@@ -611,12 +611,12 @@ def AddSecurityProfileGroup(parser):
           ' apply_security_profile_group action. Allowed formats are: a)'
           ' http(s)://<namespace>/<api>/organizations/<org_id>/locations/global/securityProfileGroups/<profile>'
           ' b) (//)<namespace>/organizations/<org_id>/locations/global/securityProfileGroups/<profile>'
-          ' c) <profile>. In case "c" gCloud CLI will create a reference'
+          ' c) <profile>. In case "c" `gcloud` CLI will create a reference'
           ' matching format "a", but to make it work'
           ' CLOUDSDK_API_ENDPOINT_OVERRIDES_NETWORKSECURITY property must be'
-          ' set. In order to set this property, please run the command gcloud'
+          ' set. In order to set this property, please run the command `gcloud'
           ' config set api_endpoint_overrides/networksecurity'
-          ' https://<namespace>/.'
+          ' https://<namespace>/`.'
       ),
   )
 
@@ -632,12 +632,12 @@ def AddMirroringSecurityProfileGroup(parser):
           ' Allowed formats are: a)'
           ' http(s)://<namespace>/<api>/organizations/<org_id>/locations/global/securityProfileGroups/<profile>'
           ' b) (//)<namespace>/organizations/<org_id>/locations/global/securityProfileGroups/<profile>'
-          ' c) <profile>. In case "c" gCloud CLI will create a reference'
+          ' c) <profile>. In case "c" `gcloud` CLI will create a reference'
           ' matching format "a", but to make it work'
           ' CLOUDSDK_API_ENDPOINT_OVERRIDES_NETWORKSECURITY property must be'
-          ' set. In order to set this property, please run the command gcloud'
+          ' set. In order to set this property, please run the command `gcloud'
           ' config set api_endpoint_overrides/networksecurity'
-          ' https://<namespace>/.'
+          ' https://<namespace>/`.'
       ),
   )
 

@@ -55,6 +55,7 @@ class AcceleratorConfig(_messages.Message):
       V5P: TPU v5.
       V6E: TPU v6e.
       TPU7X: TPU7x.
+      V6EA: TPU v6ea.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
@@ -64,6 +65,7 @@ class AcceleratorConfig(_messages.Message):
     V5P = 5
     V6E = 6
     TPU7X = 7
+    V6EA = 8
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

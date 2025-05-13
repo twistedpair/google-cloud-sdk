@@ -99,7 +99,7 @@ class ContextAwareAccessError:
   def Get():
     if (
         encoding.GetEncodedValue(
-            os.environ, 'CLOUDSDK_INTERNAL_USER_FAST_UPDATE'
+            os.environ, 'CLOUDSDK_INTERNAL_USER'
         )
         == 'true'
     ):

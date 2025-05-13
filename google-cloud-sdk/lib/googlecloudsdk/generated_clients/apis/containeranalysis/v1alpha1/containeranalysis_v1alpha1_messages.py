@@ -2814,6 +2814,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents a reference to an SBOM.
+      SECRET: This represents a secret.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -2832,6 +2833,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
     SBOM_REFERENCE = 16
+    SECRET = 17
 
   filter = _messages.StringField(1)
   kind = _messages.EnumField('KindValueValuesEnum', 2)
@@ -3389,6 +3391,7 @@ class Discovery(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents a reference to an SBOM.
+      SECRET: This represents a secret.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -3407,6 +3410,7 @@ class Discovery(_messages.Message):
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
     SBOM_REFERENCE = 16
+    SECRET = 17
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -4666,6 +4670,7 @@ class Note(_messages.Message):
     relatedUrl: URLs associated with this note
     sbom: A note describing a software bill of materials.
     sbomReference: A note describing a reference to an SBOM.
+    secret: A note describing a secret.
     shortDescription: A one sentence description of this `Note`.
     spdxFile: A note describing an SPDX File.
     spdxPackage: A note describing an SPDX Package.
@@ -4704,6 +4709,7 @@ class Note(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents a reference to an SBOM.
+      SECRET: This represents a secret.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -4722,6 +4728,7 @@ class Note(_messages.Message):
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
     SBOM_REFERENCE = 16
+    SECRET = 17
 
   attestationAuthority = _messages.MessageField('AttestationAuthority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -4739,14 +4746,15 @@ class Note(_messages.Message):
   relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
   sbom = _messages.MessageField('DocumentNote', 15)
   sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
-  shortDescription = _messages.StringField(17)
-  spdxFile = _messages.MessageField('FileNote', 18)
-  spdxPackage = _messages.MessageField('PackageInfoNote', 19)
-  spdxRelationship = _messages.MessageField('RelationshipNote', 20)
-  updateTime = _messages.StringField(21)
-  upgrade = _messages.MessageField('UpgradeNote', 22)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 23)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 24)
+  secret = _messages.MessageField('SecretNote', 17)
+  shortDescription = _messages.StringField(18)
+  spdxFile = _messages.MessageField('FileNote', 19)
+  spdxPackage = _messages.MessageField('PackageInfoNote', 20)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 21)
+  updateTime = _messages.StringField(22)
+  upgrade = _messages.MessageField('UpgradeNote', 23)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 24)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 25)
 
 
 class Occurrence(_messages.Message):
@@ -4788,6 +4796,7 @@ class Occurrence(_messages.Message):
       filter in list requests.
     sbom: Describes a specific software bill of materials document.
     sbomReference: This represents an SBOM reference occurrence
+    secret: This represents a secret occurrence
     spdxFile: Describes a specific SPDX File.
     spdxPackage: Describes a specific SPDX Package.
     spdxRelationship: Describes a specific relationship between SPDX elements.
@@ -4823,6 +4832,7 @@ class Occurrence(_messages.Message):
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
       SBOM_REFERENCE: This represents a reference to an SBOM.
+      SECRET: This represents a secret.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -4841,6 +4851,7 @@ class Occurrence(_messages.Message):
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
     SBOM_REFERENCE = 16
+    SECRET = 17
 
   attestation = _messages.MessageField('Attestation', 1)
   buildDetails = _messages.MessageField('BuildDetails', 2)
@@ -4860,12 +4871,13 @@ class Occurrence(_messages.Message):
   resourceUrl = _messages.StringField(16)
   sbom = _messages.MessageField('DocumentOccurrence', 17)
   sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 18)
-  spdxFile = _messages.MessageField('FileOccurrence', 19)
-  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 20)
-  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 21)
-  updateTime = _messages.StringField(22)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 23)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 24)
+  secret = _messages.MessageField('SecretOccurrence', 19)
+  spdxFile = _messages.MessageField('FileOccurrence', 20)
+  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 21)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 22)
+  updateTime = _messages.StringField(23)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 24)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 25)
 
 
 class Operation(_messages.Message):
@@ -6098,6 +6110,82 @@ class ScanConfig(_messages.Message):
   enabled = _messages.BooleanField(3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
+
+
+class SecretLocation(_messages.Message):
+  r"""The location of the secret.
+
+  Fields:
+    fileLocation: The secret is found from a file.
+  """
+
+  fileLocation = _messages.MessageField('FileLocation', 1)
+
+
+class SecretNote(_messages.Message):
+  r"""The note representing a secret."""
+
+
+class SecretOccurrence(_messages.Message):
+  r"""The occurrence provides details of a secret.
+
+  Enums:
+    KindValueValuesEnum: Required. Type of secret.
+
+  Fields:
+    kind: Required. Type of secret.
+    locations: Optional. Locations where the secret is detected.
+    statuses: Optional. Status of the secret.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Required. Type of secret.
+
+    Values:
+      SECRET_KIND_UNSPECIFIED: Unspecified
+      SECRET_KIND_UNKNOWN: The secret kind is unknown.
+      SECRET_KIND_GCP_SERVICE_ACCOUNT_KEY: A GCP service account key per:
+        https://cloud.google.com/iam/docs/creating-managing-service-account-
+        keys
+    """
+    SECRET_KIND_UNSPECIFIED = 0
+    SECRET_KIND_UNKNOWN = 1
+    SECRET_KIND_GCP_SERVICE_ACCOUNT_KEY = 2
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  locations = _messages.MessageField('SecretLocation', 2, repeated=True)
+  statuses = _messages.MessageField('SecretStatus', 3, repeated=True)
+
+
+class SecretStatus(_messages.Message):
+  r"""The status of the secret with a timestamp.
+
+  Enums:
+    StatusValueValuesEnum: Optional. The status of the secret.
+
+  Fields:
+    message: Optional. Optional message about the status code.
+    status: Optional. The status of the secret.
+    updateTime: Optional. The time the secret status was last updated.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Optional. The status of the secret.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified
+      UNKNOWN: The status of the secret is unknown.
+      VALID: The secret is valid.
+      INVALID: The secret is invalid.
+    """
+    STATUS_UNSPECIFIED = 0
+    UNKNOWN = 1
+    VALID = 2
+    INVALID = 3
+
+  message = _messages.StringField(1)
+  status = _messages.EnumField('StatusValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

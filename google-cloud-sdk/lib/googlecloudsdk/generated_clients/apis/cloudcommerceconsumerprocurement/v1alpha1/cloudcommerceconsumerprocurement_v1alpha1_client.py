@@ -390,33 +390,6 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the license pool if one exists for this Order.
-
-      Args:
-        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool/{licensePoolId}',
-        http_method='PATCH',
-        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.licensePool.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='googleCloudCommerceConsumerProcurementV1alpha1LicensePool',
-        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest',
-        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool',
-        supports_download=False,
-    )
-
     def Unassign(self, request, global_params=None):
       r"""Unassigns a license from a user.
 
@@ -778,6 +751,33 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         request_field='googleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def UpdateLicensePool(self, request, global_params=None):
+      r"""Updates the license pool if one exists for this Order.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersUpdateLicensePoolRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool) The response message.
+      """
+      config = self.GetMethodConfig('UpdateLicensePool')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateLicensePool.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool',
+        http_method='PATCH',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.updateLicensePool',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1LicensePool',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersUpdateLicensePoolRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool',
         supports_download=False,
     )
 

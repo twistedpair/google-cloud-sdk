@@ -874,7 +874,7 @@ def AddSetEnvVarsFlag(parser):
   )
 
 
-def MutexEnvVarsFlags():
+def MutexEnvVarsFlags(release_track=base.ReleaseTrack.GA):
   """Return argument group for setting, updating and deleting env vars."""
   group = MapFlagsNoFile(
       'env-vars',
@@ -882,25 +882,46 @@ def MutexEnvVarsFlags():
       key_type=env_vars_util.EnvVarKeyType,
       value_type=env_vars_util.EnvVarValueType,
   )
-  group.AddArgument(
-      base.Argument(
-          '--env-vars-file',
-          metavar='FILE_PATH',
-          type=map_util.ArgDictFile(
-              key_type=env_vars_util.EnvVarKeyType,
-              value_type=env_vars_util.EnvVarValueType,
-          ),
-          help="""Path to a local YAML file with definitions for all environment
-            variables. All existing environment variables will be removed before
-            the new environment variables are added. Example YAML content:
+  if release_track == base.ReleaseTrack.ALPHA:
+    group.AddArgument(
+        base.Argument(
+            '--env-vars-file',
+            metavar='FILE_PATH',
+            type=map_util.ArgDictWithYAMLOrEnv(
+                key_type=env_vars_util.EnvVarKeyType,
+                value_type=env_vars_util.EnvVarValueType,
+            ),
+            help="""Path to a local YAML file with definitions for all environment
+              variables. All existing environment variables will be removed before
+              the new environment variables are added. Example YAML content:
 
-              ```
-              KEY_1: "value1"
-              KEY_2: "value 2"
-              ```
-            """,
-      )
-  )
+                ```
+                KEY_1: "value1"
+                KEY_2: "value 2"
+                ```
+              """,
+        )
+    )
+  else:
+    group.AddArgument(
+        base.Argument(
+            '--env-vars-file',
+            metavar='FILE_PATH',
+            type=map_util.ArgDictFile(
+                key_type=env_vars_util.EnvVarKeyType,
+                value_type=env_vars_util.EnvVarValueType,
+            ),
+            help="""Path to a local YAML file with definitions for all environment
+              variables. All existing environment variables will be removed before
+              the new environment variables are added. Example YAML content:
+
+                ```
+                KEY_1: "value1"
+                KEY_2: "value 2"
+                ```
+              """,
+        )
+    )
   return group
 
 

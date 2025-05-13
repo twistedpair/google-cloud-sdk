@@ -1346,7 +1346,7 @@ class ArgDict(ArgList):
         value = convert_value(value)
       except ValueError:
         raise ArgumentTypeError('Invalid value [{0}]'.format(value))
-    if self.spec:
+    if self.spec is not None:
       value = self._ApplySpec(key, value)
     return key, value
 

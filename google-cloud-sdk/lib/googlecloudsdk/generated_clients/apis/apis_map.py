@@ -2800,6 +2800,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.modelarmor.v1beta',
+                    client_classpath='modelarmor_v1beta_client.ModelarmorV1beta',
+                    base_url='https://modelarmor.googleapis.com/',
+                    messages_modulepath='modelarmor_v1beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'monitoring': {
         'v1':

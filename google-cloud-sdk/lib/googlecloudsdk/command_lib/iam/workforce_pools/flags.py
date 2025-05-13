@@ -17,6 +17,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 
 
 def AddParentFlags(parser, verb):
@@ -43,3 +45,129 @@ def ParseLocation(args):
   if not args.IsSpecified('location'):
     return 'locations/global'
   return 'locations/{}'.format(args.location)
+
+
+def AddClearableExtraAttributesOAuth2Client():
+  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client Attributes for the update-oidc command."""
+  clear_extra_attributes_config_arg = base.Argument(
+      '--clear-extra-attributes-config',
+      dest='clear_extra_attributes_config',
+      action='store_true',
+      required=False,
+      help='Clear the extra attributes configuration.',
+  )
+
+  clearable_extra_attributes_group = base.ArgumentGroup(mutex=True)
+  clearable_extra_attributes_group.AddArgument(
+      clear_extra_attributes_config_arg
+  )
+  clearable_extra_attributes_group.AddArgument(
+      ExtraAttributesOAuth2ClientAttributesGroup(required=False)
+  )
+
+  return [clearable_extra_attributes_group]
+
+
+def AddExtraAttributesOAuth2Client():
+  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client Attributes for the create-oidc command."""
+  return [ExtraAttributesOAuth2ClientAttributesGroup()]
+
+
+def ExtraAttributesOAuth2ClientAttributesGroup(required=True):
+  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client Attributes."""
+  extra_attributes_client_id_arg = base.Argument(
+      '--extra-attributes-client-id',
+      dest='extra_attributes_client_id',
+      type=str,
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_CLIENT_ID',
+      help=(
+          'The OAuth 2.0 client ID for retrieving extra attributes from the'
+          ' identity provider. Required to get the access token using client'
+          ' credentials grant flow.'
+      ),
+  )
+  extra_attributes_client_secret_value_arg = base.Argument(
+      '--extra-attributes-client-secret-value',
+      dest='extra_attributes_client_secret_value',
+      type=str,
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_CLIENT_SECRET_VALUE',
+      help=(
+          'The OAuth 2.0 client secret for retrieving extra attributes from'
+          ' the identity provider. Required to get the access token using'
+          ' client credentials grant flow.'
+      ),
+  )
+  extra_attributes_issuer_uri_arg = base.Argument(
+      '--extra-attributes-issuer-uri',
+      dest='extra_attributes_issuer_uri',
+      type=str,
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_ISSUER_URI',
+      help=(
+          "OIDC identity provider's issuer URI. Must be a valid URI using"
+          ' the `https` scheme. Required to get the OIDC discovery'
+          ' document.'
+      ),
+  )
+  # Adding this flag as a ArgList to hide `AZURE_AD_GROUPS_DISPLAY_NAME` from
+  # the end user. Currently there is no other way to hide new enum choices.
+  # These flags will move back to enum types once feature is ready for launch
+  extra_attributes_type_arg = base.Argument(
+      '--extra-attributes-type',
+      dest='extra_attributes_type',
+      type=arg_parsers.ArgList(
+          choices=[
+              'azure-ad-groups-mail',
+              'azure-ad-groups-id',
+              'azure-ad-groups-display-name',
+          ],
+          visible_choices=['azure-ad-groups-mail', 'azure-ad-groups-id'],
+          max_length=1,
+          min_length=1,
+      ),
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_TYPE',
+      help=(
+          'Represents the identity provider and type of claims that should'
+          ' be fetched.'
+      ),
+  )
+  extra_attributes_filter_arg = base.Argument(
+      '--extra-attributes-filter',
+      dest='extra_attributes_filter',
+      type=str,
+      required=False,
+      metavar='EXTRA_ATTRIBUTES_FILTER',
+      help=(
+          'The filter used to request specific records from the IdP. By'
+          ' default, all of the groups that are associated with a user are'
+          ' fetched. For Microsoft Entra ID, you can add `$search` query'
+          ' parameters using [Keyword Query Language]'
+          ' (https://learn.microsoft.com/en-us/sharepoint/dev/general-development/keyword-query-language-kql-syntax-reference).'
+          ' To learn more about `$search` querying in Microsoft Entra ID, see'
+          ' [Use the `$search` query parameter]'
+          ' (https://learn.microsoft.com/en-us/graph/search-query-parameter).'
+          ' \n\nAdditionally, Workforce Identity Federation automatically adds'
+          ' the following [`$filter` query parameters]'
+          ' (https://learn.microsoft.com/en-us/graph/filter-query-parameter),'
+          ' based on the value of `attributes_type`. Values passed to `filter`'
+          ' are converted to `$search` query parameters. Additional `$filter`'
+          ' query parameters cannot be added using this field. \n\n*'
+          ' `AZURE_AD_GROUPS_MAIL`: `mailEnabled` and `securityEnabled` filters'
+          ' are applied. \n* `AZURE_AD_GROUPS_ID`: `securityEnabled` filter'
+          ' is applied.'
+      ),
+  )
+
+  create_extra_attributes_group = base.ArgumentGroup()
+  create_extra_attributes_group.AddArgument(extra_attributes_client_id_arg)
+  create_extra_attributes_group.AddArgument(
+      extra_attributes_client_secret_value_arg
+  )
+  create_extra_attributes_group.AddArgument(extra_attributes_issuer_uri_arg)
+  create_extra_attributes_group.AddArgument(extra_attributes_type_arg)
+  create_extra_attributes_group.AddArgument(extra_attributes_filter_arg)
+
+  return create_extra_attributes_group

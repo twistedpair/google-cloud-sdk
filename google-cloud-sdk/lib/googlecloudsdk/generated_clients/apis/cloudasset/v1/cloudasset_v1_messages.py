@@ -3487,8 +3487,8 @@ class GoogleIamV2DenyRule(_messages.Message):
       `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
       qualified domain name for the service. For example,
       `iam.googleapis.com/roles.list`.
-    deniedPrincipals: The identities that are prevented from using one or more
-      permissions on Google Cloud resources. This field can contain the
+    deniedPrincipals:  The identities that are prevented from using one or
+      more permissions on Google Cloud resources. This field can contain the
       following values: * `principal://goog/subject/{email_id}`: A specific
       Google Account. Includes Gmail, Cloud Identity, and Google Workspace
       user accounts. For example,

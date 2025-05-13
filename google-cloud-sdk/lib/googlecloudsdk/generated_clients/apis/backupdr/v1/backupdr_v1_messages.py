@@ -1131,12 +1131,14 @@ class BackupVault(_messages.Message):
       ACTIVE: The backup vault has been created and is fully usable.
       DELETING: The backup vault is being deleted.
       ERROR: The backup vault is experiencing an issue and might be unusable.
+      UPDATING: The backup vault is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     ERROR = 4
+    UPDATING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -2078,6 +2080,9 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
     backupVault: A BackupVault resource to be passed as the request body.
     force: Optional. If set to true, will not check plan duration against
       backup vault enforcement duration.
+    forceUpdateAccessRestriction: Optional. If set to true, we will force
+      update access restriction even if some non compliant data sources are
+      present. The default is 'false'.
     name: Output only. Identifier. Name of the backup vault to create. It must
       have the format`"projects/{project}/locations/{location}/backupVaults/{b
       ackupvault}"`. `{backupvault}` cannot be changed after creation. It must
@@ -2105,10 +2110,11 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
 
   backupVault = _messages.MessageField('BackupVault', 1)
   force = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  forceUpdateAccessRestriction = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  updateMask = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.Message):
@@ -2558,13 +2564,16 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
   Fields:
     databaseInstalledVersion: The installed database version of the Cloud SQL
       instance when the backup was taken.
-    description: An optional text description for the backup.
+    description: An optional text description for the backup. DEPRECATED: Use
+      the description field in the Backup resource instead.
     finalBackup: Whether the backup is a final backup.
+    sourceInstance: The source instance of the backup.
   """
 
   databaseInstalledVersion = _messages.StringField(1)
   description = _messages.StringField(2)
   finalBackup = _messages.BooleanField(3)
+  sourceInstance = _messages.StringField(4)
 
 
 class CloudSqlInstanceDataSourceProperties(_messages.Message):
@@ -2955,6 +2964,8 @@ class DataSource(_messages.Message):
       metadata. No labels currently defined:
 
   Fields:
+    backupBlockedByVaultAccessRestriction: Output only. This field is set to
+      true if the backup is blocked by vault access restriction.
     backupConfigInfo: Output only. Details of how the resource is configured
       for backup.
     backupCount: Number of backups in the data source.
@@ -3037,18 +3048,19 @@ class DataSource(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupConfigInfo = _messages.MessageField('BackupConfigInfo', 1)
-  backupCount = _messages.IntegerField(2)
-  configState = _messages.EnumField('ConfigStateValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  dataSourceBackupApplianceApplication = _messages.MessageField('DataSourceBackupApplianceApplication', 5)
-  dataSourceGcpResource = _messages.MessageField('DataSourceGcpResource', 6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  totalStoredBytes = _messages.IntegerField(11)
-  updateTime = _messages.StringField(12)
+  backupBlockedByVaultAccessRestriction = _messages.BooleanField(1)
+  backupConfigInfo = _messages.MessageField('BackupConfigInfo', 2)
+  backupCount = _messages.IntegerField(3)
+  configState = _messages.EnumField('ConfigStateValueValuesEnum', 4)
+  createTime = _messages.StringField(5)
+  dataSourceBackupApplianceApplication = _messages.MessageField('DataSourceBackupApplianceApplication', 6)
+  dataSourceGcpResource = _messages.MessageField('DataSourceGcpResource', 7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  totalStoredBytes = _messages.IntegerField(12)
+  updateTime = _messages.StringField(13)
 
 
 class DataSourceBackupApplianceApplication(_messages.Message):

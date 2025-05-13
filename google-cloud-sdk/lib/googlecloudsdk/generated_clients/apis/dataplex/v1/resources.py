@@ -165,6 +165,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENTRYGROUPS_ENTRYLINKS = (
+      'projects.locations.entryGroups.entryLinks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/entryGroups/'
+              '{entryGroupsId}/entryLinks/{entryLinksId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ENTRYTYPES = (
       'projects.locations.entryTypes',
       '{+name}',

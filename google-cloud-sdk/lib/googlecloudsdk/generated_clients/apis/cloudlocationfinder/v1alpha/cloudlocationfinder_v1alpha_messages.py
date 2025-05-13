@@ -102,10 +102,11 @@ class CloudlocationfinderProjectsLocationsCloudLocationsListRequest(_messages.Me
   Fields:
     filter: Optional. A filter expression that filters resources listed in the
       response. The expression is in the form of field=value. For example,
-      'type=CLOUD_LOCATION_TYPE_REGION'. Multiple filter queries are space-
-      separated. For example, 'type=CLOUD_LOCATION_TYPE_REGION
-      country_code=US' By default, each expression is an AND expression.
-      However, you can include AND and OR expressions explicitly.
+      'cloud_location_type=CLOUD_LOCATION_TYPE_REGION'. Multiple filter
+      queries are space-separated. For example,
+      'cloud_location_type=CLOUD_LOCATION_TYPE_REGION territory_code="US"' By
+      default, each expression is an AND expression. However, you can include
+      AND and OR expressions explicitly.
     pageSize: Optional. The maximum number of cloud locations to return per
       page. The service may return fewer cloud locations than this value. If
       unspecified, server will pick an appropriate default.
@@ -129,12 +130,6 @@ class CloudlocationfinderProjectsLocationsCloudLocationsSearchRequest(_messages.
   object.
 
   Fields:
-    filter: Optional. A filter expression that filters resources listed in the
-      response. The expression is in the form of field=value. For example,
-      'type=CLOUD_LOCATION_TYPE_REGION'. Multiple filter queries are space-
-      separated. For example, 'type=CLOUD_LOCATION_TYPE_REGION
-      country_code=US' By default, each expression is an AND expression.
-      However, you can include AND and OR expressions explicitly.
     pageSize: Optional. The maximum number of cloud locations to return. The
       service may return fewer cloud locations than this value. If
       unspecified, server will pick an appropriate default.
@@ -153,12 +148,11 @@ class CloudlocationfinderProjectsLocationsCloudLocationsSearchRequest(_messages.
       cloud location by latency.
   """
 
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  query = _messages.StringField(5)
-  sourceCloudLocation = _messages.StringField(6)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  query = _messages.StringField(4)
+  sourceCloudLocation = _messages.StringField(5)
 
 
 class CloudlocationfinderProjectsLocationsGetRequest(_messages.Message):

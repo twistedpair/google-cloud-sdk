@@ -564,7 +564,7 @@ def AddDeployParametersFlag(parser, hidden=False):
   )
 
 
-def AddOverrideDeployPolicies(parser, hidden=True):
+def AddOverrideDeployPolicies(parser, hidden=False):
   """Adds override-deploy-policies flag."""
   parser.add_argument(
       '--override-deploy-policies',

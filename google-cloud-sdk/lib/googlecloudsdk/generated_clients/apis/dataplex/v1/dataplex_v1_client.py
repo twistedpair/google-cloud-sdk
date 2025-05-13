@@ -50,6 +50,7 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_dataTaxonomies_attributes = self.ProjectsLocationsDataTaxonomiesAttributesService(self)
     self.projects_locations_dataTaxonomies = self.ProjectsLocationsDataTaxonomiesService(self)
     self.projects_locations_entryGroups_entries = self.ProjectsLocationsEntryGroupsEntriesService(self)
+    self.projects_locations_entryGroups_entryLinks = self.ProjectsLocationsEntryGroupsEntryLinksService(self)
     self.projects_locations_entryGroups = self.ProjectsLocationsEntryGroupsService(self)
     self.projects_locations_entryLinkTypes = self.ProjectsLocationsEntryLinkTypesService(self)
     self.projects_locations_entryTypes = self.ProjectsLocationsEntryTypesService(self)
@@ -1857,6 +1858,97 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleCloudDataplexV1Entry',
         request_type_name='DataplexProjectsLocationsEntryGroupsEntriesPatchRequest',
         response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEntryGroupsEntryLinksService(base_api.BaseApiService):
+    """Service class for the projects_locations_entryGroups_entryLinks resource."""
+
+    _NAME = 'projects_locations_entryGroups_entryLinks'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsEntryGroupsEntryLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Entry Link.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntryLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1EntryLink) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entryLinks',
+        http_method='POST',
+        method_id='dataplex.projects.locations.entryGroups.entryLinks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['entryLinkId'],
+        relative_path='v1/{+parent}/entryLinks',
+        request_field='googleCloudDataplexV1EntryLink',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntryLinksCreateRequest',
+        response_type_name='GoogleCloudDataplexV1EntryLink',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Entry Link.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntryLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1EntryLink) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entryLinks/{entryLinksId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.entryGroups.entryLinks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntryLinksDeleteRequest',
+        response_type_name='GoogleCloudDataplexV1EntryLink',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Entry Link.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntryLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1EntryLink) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entryLinks/{entryLinksId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.entryLinks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntryLinksGetRequest',
+        response_type_name='GoogleCloudDataplexV1EntryLink',
         supports_download=False,
     )
 

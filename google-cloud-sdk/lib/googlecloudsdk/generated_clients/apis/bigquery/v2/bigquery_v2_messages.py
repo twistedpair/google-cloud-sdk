@@ -2695,6 +2695,9 @@ class DatasetList(_messages.Message):
     Fields:
       datasetReference: The dataset reference. Use this property to access
         specific parts of the dataset's ID, such as project ID or dataset ID.
+      externalDatasetReference: Output only. Reference to a read-only external
+        dataset defined in data catalogs outside of BigQuery. Filled out when
+        the dataset type is EXTERNAL.
       friendlyName: An alternate name for the dataset. The friendly name is
         purely decorative in nature.
       id: The fully-qualified, unique, opaque ID of the dataset.
@@ -2731,11 +2734,12 @@ class DatasetList(_messages.Message):
       additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
     datasetReference = _messages.MessageField('DatasetReference', 1)
-    friendlyName = _messages.StringField(2)
-    id = _messages.StringField(3)
-    kind = _messages.StringField(4)
-    labels = _messages.MessageField('LabelsValue', 5)
-    location = _messages.StringField(6)
+    externalDatasetReference = _messages.MessageField('ExternalDatasetReference', 2)
+    friendlyName = _messages.StringField(3)
+    id = _messages.StringField(4)
+    kind = _messages.StringField(5)
+    labels = _messages.MessageField('LabelsValue', 6)
+    location = _messages.StringField(7)
 
   datasets = _messages.MessageField('DatasetsValueListEntry', 1, repeated=True)
   etag = _messages.StringField(2)
@@ -4562,6 +4566,8 @@ class JobConfigurationLoad(_messages.Message):
       destination table already exists. The following values are supported: *
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
       data, removes the constraints and uses the schema from the load job. *
+      WRITE_TRUNCATE_DATA: If the table already exists, BigQuery overwrites
+      the data, but keeps the constraints and schema of the existing table. *
       WRITE_APPEND: If the table already exists, BigQuery appends the data to
       the table. * WRITE_EMPTY: If the table already exists and contains data,
       a 'duplicate' error is returned in the job result. The default value is
@@ -4821,12 +4827,15 @@ class JobConfigurationQuery(_messages.Message):
       destination table already exists. The following values are supported: *
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
       data, removes the constraints, and uses the schema from the query
-      result. * WRITE_APPEND: If the table already exists, BigQuery appends
-      the data to the table. * WRITE_EMPTY: If the table already exists and
-      contains data, a 'duplicate' error is returned in the job result. The
-      default value is WRITE_EMPTY. Each action is atomic and only occurs if
-      BigQuery is able to complete the job successfully. Creation, truncation
-      and append actions occur as one atomic update upon job completion.
+      result. * WRITE_TRUNCATE_DATA: If the table already exists, BigQuery
+      overwrites the data, but keeps the constraints and schema of the
+      existing table. * WRITE_APPEND: If the table already exists, BigQuery
+      appends the data to the table. * WRITE_EMPTY: If the table already
+      exists and contains data, a 'duplicate' error is returned in the job
+      result. The default value is WRITE_EMPTY. Each action is atomic and only
+      occurs if BigQuery is able to complete the job successfully. Creation,
+      truncation and append actions occur as one atomic update upon job
+      completion.
     writeIncrementalResults: Optional. This is only supported for a SELECT
       query using a temporary table. If set, the query is allowed to write
       results incrementally to the temporary result table. This may incur a

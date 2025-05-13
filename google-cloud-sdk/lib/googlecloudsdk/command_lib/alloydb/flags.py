@@ -575,7 +575,7 @@ def AddForce(parser):
   )
 
 
-def AddCPUCount(parser, required=True):
+def AddCPUCount(parser, required):
   """Adds a --cpu-count flag to parser.
 
   Args:

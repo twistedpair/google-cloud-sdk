@@ -63,6 +63,8 @@ class NetworksecurityV1beta1(base_api.BaseApiClient):
     self.projects_locations_mirroringEndpointGroupAssociations = self.ProjectsLocationsMirroringEndpointGroupAssociationsService(self)
     self.projects_locations_mirroringEndpointGroups = self.ProjectsLocationsMirroringEndpointGroupsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_sacAttachments = self.ProjectsLocationsSacAttachmentsService(self)
+    self.projects_locations_sacRealms = self.ProjectsLocationsSacRealmsService(self)
     self.projects_locations_serverTlsPolicies = self.ProjectsLocationsServerTlsPoliciesService(self)
     self.projects_locations_tlsInspectionPolicies = self.ProjectsLocationsTlsInspectionPoliciesService(self)
     self.projects_locations_urlLists = self.ProjectsLocationsUrlListsService(self)
@@ -3762,6 +3764,242 @@ class NetworksecurityV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSacAttachmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sacAttachments resource."""
+
+    _NAME = 'projects_locations_sacAttachments'
+
+    def __init__(self, client):
+      super(NetworksecurityV1beta1.ProjectsLocationsSacAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SACAttachment in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacAttachments',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sacAttachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sacAttachmentId'],
+        relative_path='v1beta1/{+parent}/sacAttachments',
+        request_field='sACAttachment',
+        request_type_name='NetworksecurityProjectsLocationsSacAttachmentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SACAttachment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacAttachments/{sacAttachmentsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.sacAttachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SACAttachment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SACAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacAttachments/{sacAttachmentsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sacAttachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacAttachmentsGetRequest',
+        response_type_name='SACAttachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SACAttachments in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSACAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacAttachments',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sacAttachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/sacAttachments',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacAttachmentsListRequest',
+        response_type_name='ListSACAttachmentsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSacRealmsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sacRealms resource."""
+
+    _NAME = 'projects_locations_sacRealms'
+
+    def __init__(self, client):
+      super(NetworksecurityV1beta1.ProjectsLocationsSacRealmsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SACRealm in a given project.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacRealms',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sacRealms.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sacRealmId'],
+        relative_path='v1beta1/{+parent}/sacRealms',
+        request_field='sACRealm',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SACRealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacRealms/{sacRealmsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.sacRealms.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SACRealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SACRealm) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacRealms/{sacRealmsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sacRealms.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsGetRequest',
+        response_type_name='SACRealm',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SACRealms in a given project.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSACRealmsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/sacRealms',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sacRealms.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/sacRealms',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsListRequest',
+        response_type_name='ListSACRealmsResponse',
         supports_download=False,
     )
 

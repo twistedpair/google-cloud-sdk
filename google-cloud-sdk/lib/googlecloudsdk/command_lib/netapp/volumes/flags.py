@@ -584,6 +584,26 @@ def AddVolumeHybridReplicationParametersArg(parser, messages, hidden=False):
   )
 
 
+def AddVolumeRestoreFileListArg(parser, required=True):
+  """Adds the --file-list arg to the arg parser."""
+  parser.add_argument(
+      '--file-list',
+      type=arg_parsers.ArgList(min_length=1, element_type=str),
+      metavar='FILE_LIST',
+      required=required,
+      help="""List of files to be restored in the form of their absolute path as in source volume.""",
+  )
+
+
+def AddVolumeRestoreDestinationPathArg(parser, required=True):
+  """Adds the --restore-destination-path arg to the arg parser."""
+  parser.add_argument(
+      '--restore-destination-path',
+      type=str,
+      required=required,
+      help="""Name of the absolute directory path in the destination volume..""",
+  )
+
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 
 
@@ -667,3 +687,14 @@ def AddVolumeUpdateArgs(parser, release_track):
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   labels_util.AddUpdateLabelsFlags(parser)
+
+
+def AddVolumeRestoreFromBackupArg(parser, required=True):
+  """Adds the --backup arg to the arg parser."""
+  concept_parsers.ConceptParser.ForResource(
+      '--backup',
+      flags.GetBackupResourceSpec(positional=False),
+      required=required,
+      flag_name_overrides={'location': ''},
+      group_help='The Backup from which files are restored back to the Volume.',
+  ).AddToParser(parser)

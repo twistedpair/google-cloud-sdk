@@ -303,20 +303,20 @@ class Aspect(_messages.Message):
   Messages:
     SpecValue: Content of the configuration. The underlying schema should be
       defined by Aspect owners as protobuf message under
-      `apiserving/configaspects/proto`.
+      `google/api/configaspects/proto`.
 
   Fields:
     kind: The type of this aspect configuration.
     spec: Content of the configuration. The underlying schema should be
       defined by Aspect owners as protobuf message under
-      `apiserving/configaspects/proto`.
+      `google/api/configaspects/proto`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SpecValue(_messages.Message):
     r"""Content of the configuration. The underlying schema should be defined
     by Aspect owners as protobuf message under
-    `apiserving/configaspects/proto`.
+    `google/api/configaspects/proto`.
 
     Messages:
       AdditionalProperty: An additional property for a SpecValue object.

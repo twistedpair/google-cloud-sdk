@@ -567,6 +567,15 @@ class _BaseInstances(object):
             args.replication_lag_max_seconds_for_recreate
         )
 
+      if args.IsKnownAndSpecified('enable_db_aligned_atomic_writes'):
+        if not settings.dbAlignedAtomicWritesConfig:
+          settings.dbAlignedAtomicWritesConfig = (
+              sql_messages.DbAlignedAtomicWritesConfig()
+          )
+        settings.dbAlignedAtomicWritesConfig.dbAlignedAtomicWrites = (
+            args.enable_db_aligned_atomic_writes
+        )
+
     return settings
 
   @classmethod
@@ -703,6 +712,13 @@ class _BaseInstances(object):
       )
       if mcp_config is not None:
         settings.connectionPoolConfig = mcp_config
+
+      db_aligned_atomic_writes_config = reducers.DbAlignedAtomicWritesConfig(
+          sql_messages,
+          db_aligned_atomic_writes=args.enable_db_aligned_atomic_writes,
+      )
+      if db_aligned_atomic_writes_config is not None:
+        settings.dbAlignedAtomicWritesConfig = db_aligned_atomic_writes_config
 
     # ALPHA args.
     if _IsAlpha(release_track):

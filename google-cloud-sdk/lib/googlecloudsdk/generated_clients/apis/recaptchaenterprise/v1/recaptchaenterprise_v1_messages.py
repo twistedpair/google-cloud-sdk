@@ -658,6 +658,8 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Messag
       behavioral trust.
     cardTestingVerdict: Output only. Assessment of this transaction for risk
       of being part of a card testing attack.
+    riskReasons: Output only. Reasons why the transaction is probably
+      fraudulent and received a high transaction risk score.
     stolenInstrumentVerdict: Output only. Assessment of this transaction for
       risk of a stolen instrument.
     transactionRisk: Output only. Probability of this transaction being
@@ -667,8 +669,9 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Messag
 
   behavioralTrustVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentBehavioralTrustVerdict', 1)
   cardTestingVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdict', 2)
-  stolenInstrumentVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict', 3)
-  transactionRisk = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  riskReasons = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentRiskReason', 3, repeated=True)
+  stolenInstrumentVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict', 4)
+  transactionRisk = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentBehavioralTrustVerdict(_messages.Message):
@@ -693,6 +696,47 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdic
   """
 
   risk = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentRiskReason(_messages.Message):
+  r"""Risk reasons applicable to the Fraud Prevention assessment.
+
+  Enums:
+    ReasonValueValuesEnum: Output only. Risk reasons applicable to the Fraud
+      Prevention assessment.
+
+  Fields:
+    reason: Output only. Risk reasons applicable to the Fraud Prevention
+      assessment.
+  """
+
+  class ReasonValueValuesEnum(_messages.Enum):
+    r"""Output only. Risk reasons applicable to the Fraud Prevention
+    assessment.
+
+    Values:
+      REASON_UNSPECIFIED: Default unspecified type.
+      HIGH_TRANSACTION_VELOCITY: A suspiciously high number of recent
+        transactions have used identifiers present in this transaction.
+      EXCESSIVE_ENUMERATION_PATTERN: User is cycling through a suspiciously
+        large number of identifiers, suggesting enumeration or validation
+        attacks within a potential fraud network.
+      SHORT_IDENTITY_HISTORY: User has a short history or no history in the
+        reCAPTCHA network, suggesting the possibility of synthetic identity
+        generation.
+      GEOLOCATION_DISCREPANCY: Identifiers used in this transaction originate
+        from an unusual or conflicting set of geolocations.
+      ASSOCIATED_WITH_FRAUD_CLUSTER: This transaction is linked to a cluster
+        of known fraudulent activity.
+    """
+    REASON_UNSPECIFIED = 0
+    HIGH_TRANSACTION_VELOCITY = 1
+    EXCESSIVE_ENUMERATION_PATTERN = 2
+    SHORT_IDENTITY_HISTORY = 3
+    GEOLOCATION_DISCREPANCY = 4
+    ASSOCIATED_WITH_FRAUD_CLUSTER = 5
+
+  reason = _messages.EnumField('ReasonValueValuesEnum', 1)
 
 
 class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict(_messages.Message):

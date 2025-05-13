@@ -762,7 +762,10 @@ class StorageAsyncClient:
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
         r"""Gets the IAM policy for a specified bucket. The ``resource``
-        field in the request should be ``projects/_/buckets/{bucket}``.
+        field in the request should be ``projects/_/buckets/{bucket}``
+        for a bucket, or
+        ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
+        for a managed folder.
 
         .. code-block:: python
 
@@ -910,7 +913,10 @@ class StorageAsyncClient:
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
         r"""Updates an IAM policy for the specified bucket. The ``resource``
-        field in the request should be ``projects/_/buckets/{bucket}``.
+        field in the request should be ``projects/_/buckets/{bucket}``
+        for a bucket, or
+        ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
+        for a managed folder.
 
         .. code-block:: python
 

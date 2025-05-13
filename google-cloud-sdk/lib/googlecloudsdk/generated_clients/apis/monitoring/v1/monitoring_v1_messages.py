@@ -3052,7 +3052,7 @@ class VisibilityCondition(_messages.Message):
 
   Fields:
     templateVariableCondition: A condition whose evaluation is based on the
-      value of a template1 variable.
+      value of a template variable.
   """
 
   templateVariableCondition = _messages.MessageField('TemplateVariableCondition', 1)

@@ -17,6 +17,26 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+from googlecloudsdk.command_lib.compute import resource_manager_tags_utils
+import six
+
+
+def _CreateParams(messages, resource_manager_tags):
+  resource_manager_tags_map = (
+      resource_manager_tags_utils.GetResourceManagerTags(
+          resource_manager_tags
+      )
+  )
+  params = messages.NetworkParams
+  additional_properties = [
+      params.ResourceManagerTagsValue.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(six.iteritems(resource_manager_tags_map))
+  ]
+  return params(
+      resourceManagerTags=params.ResourceManagerTagsValue(
+          additionalProperties=additional_properties
+      )
+  )
 
 
 def GetSubnetMode(network):
@@ -105,5 +125,8 @@ def CreateNetworkResourceFromArgs(
 
   if network_profile_ref:
     network.networkProfile = network_profile_ref.SelfLink()
+
+  if getattr(network_args, 'resource_manager_tags', None) is not None:
+    network.params = _CreateParams(messages, network_args.resource_manager_tags)
 
   return network

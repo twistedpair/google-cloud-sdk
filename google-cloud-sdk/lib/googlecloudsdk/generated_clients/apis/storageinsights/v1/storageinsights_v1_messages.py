@@ -15,11 +15,18 @@ package = 'storageinsights'
 
 
 class BucketErrors(_messages.Message):
-  r"""Provides a summary of the bucket level error stats.
+  r"""Provides a summary of the bucket level error statistics.
 
   Fields:
-    internalErrorCount: Optional. Buckets that were not validated due to
-      internal errors and will be automatically retried.
+    internalErrorCount: Optional. Number of buckets that encountered internal
+      errors during the validation process. These buckets are automatically
+      retried in subsequent validation attempts.
+    nonManagementHubEntitledCount: Optional. Count of buckets that are not
+      subscribed to Storage Intelligence.
+    nonStorageIntelligenceEntitledBucketIds: Optional. Subset of bucket names
+      that are not subscribed to Storage Intelligence.
+    nonStorageIntelligenceEntitledCount: Optional. Count of buckets that are
+      not subscribed to Storage Intelligence.
     permissionDeniedBucketIds: Optional. Subset of bucket names that have
       permission denied.
     permissionDeniedCount: Optional. Count of buckets with permission denied
@@ -28,17 +35,20 @@ class BucketErrors(_messages.Message):
   """
 
   internalErrorCount = _messages.IntegerField(1)
-  permissionDeniedBucketIds = _messages.StringField(2, repeated=True)
-  permissionDeniedCount = _messages.IntegerField(3)
-  validatedCount = _messages.IntegerField(4)
+  nonManagementHubEntitledCount = _messages.IntegerField(2)
+  nonStorageIntelligenceEntitledBucketIds = _messages.StringField(3, repeated=True)
+  nonStorageIntelligenceEntitledCount = _messages.IntegerField(4)
+  permissionDeniedBucketIds = _messages.StringField(5, repeated=True)
+  permissionDeniedCount = _messages.IntegerField(6)
+  validatedCount = _messages.IntegerField(7)
 
 
 class CSVOptions(_messages.Message):
-  r"""Options to configure CSV formatted reports.
+  r"""Options to configure inventory reports in CSV format.
 
   Fields:
     delimiter: Delimiter characters in CSV.
-    headerRequired: If set, will include a header row in the CSV report.
+    headerRequired: If set, includes a header row in the CSV report.
     recordSeparator: Record separator characters in CSV.
   """
 
@@ -52,13 +62,12 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CloudStorageBucket(_messages.Message):
-  r"""Defines the bucket by its name or a regex pattern to match buckets. Next
-  ID: 3
+  r"""Defines the bucket by its name or a regex pattern to match buckets.
 
   Fields:
     bucketName: Cloud Storage bucket name.
     bucketPrefixRegex: A regex pattern for bucket names matching the regex.
-      Regex should follow the syntax specified in google/re2 on GitHub.
+      Regex should follow the syntax specified in `google/re2` on GitHub.
   """
 
   bucketName = _messages.StringField(1)
@@ -66,7 +75,7 @@ class CloudStorageBucket(_messages.Message):
 
 
 class CloudStorageBuckets(_messages.Message):
-  r"""Collection of Cloud Storage buckets. Next ID: 2
+  r"""Collection of Cloud Storage buckets.
 
   Fields:
     cloudStorageBuckets: A CloudStorageBucket attribute.
@@ -76,12 +85,12 @@ class CloudStorageBuckets(_messages.Message):
 
 
 class CloudStorageDestinationOptions(_messages.Message):
-  r"""Options to store reports in storage systems. Next ID: 3
+  r"""Options to store inventory reports in Cloud Storage.
 
   Fields:
-    bucket: Destination bucket.
-    destinationPath: Destination path is the path in the bucket where the
-      report should be generated.
+    bucket: Optional. The destination bucket for the inventory reports.
+    destinationPath: The destination path within the bucket where the
+      inventory reports are stored.
   """
 
   bucket = _messages.StringField(1)
@@ -89,17 +98,17 @@ class CloudStorageDestinationOptions(_messages.Message):
 
 
 class CloudStorageFilters(_messages.Message):
-  r"""Options to filter data on storage systems. Next ID: 2
+  r"""Filters buckets to generate inventory reports for Cloud Storage.
 
   Fields:
-    bucket: Bucket for which the report will be generated.
+    bucket: Optional. Bucket for which the inventory report is generated.
   """
 
   bucket = _messages.StringField(1)
 
 
 class CloudStorageLocations(_messages.Message):
-  r"""Collection of Cloud Storage locations. Next ID: 2
+  r"""Collection of Cloud Storage locations.
 
   Fields:
     locations: A string attribute.
@@ -109,48 +118,66 @@ class CloudStorageLocations(_messages.Message):
 
 
 class DatasetConfig(_messages.Message):
-  r"""Next ID: 23
+  r"""Message describing the dataset configuration properties. For more
+  information, see [Dataset configuration
+  properties](https://cloud.google.com/storage/docs/insights/datasets#dataset-
+  config).
 
   Enums:
     DatasetConfigStateValueValuesEnum: Output only. State of the
-      DatasetConfig.
+      `datasetConfig`.
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    cloudStorageObjectPath: Input only. Cloud Storage object path containing
-      project numbers. Object's content should have a project number per line.
-    createTime: Output only. [Output only] Create time stamp
-    datasetConfigState: Output only. State of the DatasetConfig.
-    description: Optional. User provided description for the dataset config.
-      Limited to 256 characters.
+    cloudStorageObjectPath: Input only. Cloud Storage object path containing a
+      list of project or folder numbers to include in the dataset; it cannot
+      contain a mix of project and folders. The object must be a text file
+      where each line has one of the following entries: - Project number,
+      formatted as `projects/{project_number}`, for example,
+      `projects/1234567890`. - Folder identifier, formatted as
+      `folders/{folder_number}`, for example, `folders/9876543210`. Path must
+      be in the format `gs://{bucket_name}/{object_name}`.
+    createTime: Output only. The UTC time at which the dataset configuration
+      was created. This is auto-populated.
+    datasetConfigState: Output only. State of the `datasetConfig`.
+    description: Optional. A user-provided description for the dataset
+      configuration. Maximum length: 256 characters.
     excludeCloudStorageBuckets: A CloudStorageBuckets attribute.
     excludeCloudStorageLocations: A CloudStorageLocations attribute.
-    identity: Identity in use by this datasetConfig.
+    identity: Identity used by this `datasetConfig`.
     includeCloudStorageBuckets: A CloudStorageBuckets attribute.
     includeCloudStorageLocations: A CloudStorageLocations attribute.
-    includeNewlyCreatedBuckets: When true, will include all newly created
-      buckets in the dataset that meets the inclusion and exclusion rules.
+    includeNewlyCreatedBuckets: If set to `true`, the request includes all the
+      newly created buckets in the dataset that meet the inclusion and
+      exclusion rules.
     labels: Labels as key value pairs
     link: Details of the linked dataset.
     name: Identifier. name of resource
-    organizationNumber: Optional. Organization number that the source projects
-      should belong to. Projects that do not belong to the provided
-      organization will not be considered when creating the dataset.
-    retentionPeriodDays: # of days of history that need to be retained.
-    skipVerificationAndIngest: Optional. If false, then all permission checks
-      should be successful before the configuration is ready for first
-      ingestion. This field can only be updated before the first ingestion
-      updating the field after first ingestion will cause an error.
-    sourceProjects: A SourceProjects attribute.
-    status: Output only. Status of the DatasetConfig.
+    organizationNumber: Optional. Organization resource ID that the source
+      projects should belong to. Projects that do not belong to the provided
+      organization are not considered when creating the dataset.
+    organizationScope: Defines the options for providing a source organization
+      for the dataset.
+    retentionPeriodDays: Number of days of history that must be retained.
+    skipVerificationAndIngest: Optional. If set to `false`, then all the
+      permission checks must be successful before the system can start
+      ingesting data. This field can only be updated before the system ingests
+      data for the first time. Any attempt to modify the field after data
+      ingestion starts results in an error.
+    sourceFolders: Defines the options for providing source folders for the
+      dataset.
+    sourceProjects: Defines the options for providing source projects for the
+      dataset.
+    status: Output only. Status of the `datasetConfig`.
     uid: Output only. System generated unique identifier for the resource.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. The UTC time at which the dataset configuration
+      was last updated. This is auto-populated.
   """
 
   class DatasetConfigStateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the DatasetConfig.
+    r"""Output only. State of the `datasetConfig`.
 
     Values:
       CONFIG_STATE_UNSPECIFIED: Unspecified state.
@@ -206,12 +233,14 @@ class DatasetConfig(_messages.Message):
   link = _messages.MessageField('Link', 12)
   name = _messages.StringField(13)
   organizationNumber = _messages.IntegerField(14)
-  retentionPeriodDays = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  skipVerificationAndIngest = _messages.BooleanField(16)
-  sourceProjects = _messages.MessageField('SourceProjects', 17)
-  status = _messages.MessageField('Status', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  organizationScope = _messages.BooleanField(15)
+  retentionPeriodDays = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  skipVerificationAndIngest = _messages.BooleanField(17)
+  sourceFolders = _messages.MessageField('SourceFolders', 18)
+  sourceProjects = _messages.MessageField('SourceProjects', 19)
+  status = _messages.MessageField('Status', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class Date(_messages.Message):
@@ -300,26 +329,27 @@ class Empty(_messages.Message):
 
 
 class FrequencyOptions(_messages.Message):
-  r"""ReportConfig Resource: Options to setup frequency of report generation.
+  r"""`FrequencyOptions` resource Frequency configuration for inventory report
+  generation.
 
   Enums:
-    FrequencyValueValuesEnum: Frequency of report generation.
+    FrequencyValueValuesEnum: Frequency of inventory report generation.
 
   Fields:
-    endDate: The date on which report generation should stop (Inclusive). UTC
-      time zone.
-    frequency: Frequency of report generation.
-    startDate: The date from which report generation should start. UTC time
-      zone.
+    endDate: The UTC date to stop generating inventory reports. For
+      example,`{"day": 15, "month": 8, "year": 2022}`.
+    frequency: Frequency of inventory report generation.
+    startDate: The UTC date to start generating inventory reports. For
+      example,`{"day": 15, "month": 8, "year": 2022}`.
   """
 
   class FrequencyValueValuesEnum(_messages.Enum):
-    r"""Frequency of report generation.
+    r"""Frequency of inventory report generation.
 
     Values:
       FREQUENCY_UNSPECIFIED: Unspecified.
-      DAILY: Report will be generated daily.
-      WEEKLY: Report will be generated weekly.
+      DAILY: Inventory report is generated daily.
+      WEEKLY: Inventory report is generated weekly.
     """
     FREQUENCY_UNSPECIFIED = 0
     DAILY = 1
@@ -331,18 +361,19 @@ class FrequencyOptions(_messages.Message):
 
 
 class Identity(_messages.Message):
-  r"""Next ID: 3
+  r"""Identity lets the user provide the type of identity to use, and outputs
+  the identity string that can be used for IAM policy changes.
 
   Enums:
-    TypeValueValuesEnum:
+    TypeValueValuesEnum: Type of identity to use for the datasetConfig.
 
   Fields:
-    name: A string attribute.
-    type: A TypeValueValuesEnum attribute.
+    name: Output only. Name of the identity.
+    type: Type of identity to use for the datasetConfig.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""TypeValueValuesEnum enum type.
+    r"""Type of identity to use for the datasetConfig.
 
     Values:
       IDENTITY_TYPE_UNSPECIFIED: Default is unspecified and should not be
@@ -359,7 +390,7 @@ class Identity(_messages.Message):
 
 
 class Link(_messages.Message):
-  r"""Link defines the details about the linked dataset. Next ID: 3
+  r"""Defines the details about the linked dataset.
 
   Fields:
     dataset: Output only. Dataset name for linked dataset.
@@ -371,14 +402,14 @@ class Link(_messages.Message):
 
 
 class LinkDatasetRequest(_messages.Message):
-  r"""Next ID: 3"""
+  r"""Request message for `LinkDataset`"""
 
 
 class ListDatasetConfigsResponse(_messages.Message):
-  r"""A ListDatasetConfigsResponse object.
+  r"""Response message for `ListDatasetConfigs`
 
   Fields:
-    datasetConfigs: The list of DatasetConfig
+    datasetConfigs: The list of `DatasetConfigs`
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -416,12 +447,12 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListReportConfigsResponse(_messages.Message):
-  r"""Message for response to listing ReportConfigs
+  r"""Response message for `ListReportConfigs`
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    reportConfigs: The list of ReportConfig
+    reportConfigs: The list of `ReportConfig`
     unreachable: Locations that could not be reached.
   """
 
@@ -431,12 +462,12 @@ class ListReportConfigsResponse(_messages.Message):
 
 
 class ListReportDetailsResponse(_messages.Message):
-  r"""Message for response to listing ReportDetails
+  r"""Response message for `ListReportDetails`.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    reportDetails: The list of ReportDetail
+    reportDetails: The list of `ReportDetail`
     unreachable: Locations that could not be reached.
   """
 
@@ -527,15 +558,15 @@ class Location(_messages.Message):
 
 class LocationMetadata(_messages.Message):
   r"""Metadata that helps discover which resources are available in a
-  location. Next Id: 3
+  location.
 
   Fields:
     datasetConfigAvailable: If true,
-      storageinsights.googleapis.com/DatasetConfig resource is available at
+      `storageinsights.googleapis.com/DatasetConfig` resource is available at
       the location.
     reportConfigAvailable: If true,
-      storageinsights.googleapis.com/ReportConfig resource is available at the
-      location.
+      `storageinsights.googleapis.com/ReportConfig` resource is available at
+      the location.
   """
 
   datasetConfigAvailable = _messages.BooleanField(1)
@@ -543,23 +574,24 @@ class LocationMetadata(_messages.Message):
 
 
 class Metrics(_messages.Message):
-  r"""Different metrics associated with the generated report.
+  r"""Metrics associated with the generated report.
 
   Fields:
-    processedRecordsCount: Count of Cloud Storage objects which are part of
-      the report.
+    processedRecordsCount: Count of Cloud Storage objects that are part of the
+      inventory report.
   """
 
   processedRecordsCount = _messages.IntegerField(1)
 
 
 class ObjectMetadataReportOptions(_messages.Message):
-  r"""Report specification for exporting object metadata. Next ID: 4
+  r"""Options for including metadata in an inventory report.
 
   Fields:
-    metadataFields: Metadata fields to be included in the report.
-    storageDestinationOptions: Cloud Storage as the storage system.
-    storageFilters: Cloud Storage as the storage system.
+    metadataFields: The metadata fields included in an inventory report.
+    storageDestinationOptions: Options to store reports in Cloud Storage.
+    storageFilters: Filters buckets to generate inventory reports for Cloud
+      Storage.
   """
 
   metadataFields = _messages.StringField(1, repeated=True)
@@ -680,11 +712,11 @@ class OperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
+    createTime: Output only. Operation create time.
+    endTime: Output only. Operation end time.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
+      cancelled successfully have an Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
@@ -703,15 +735,28 @@ class OperationMetadata(_messages.Message):
 
 
 class ParquetOptions(_messages.Message):
-  r"""Options to configure Parquet formatted reports."""
+  r"""Options to configure inventory reports in Parquet format."""
 
 
 class ProjectErrors(_messages.Message):
-  r"""Provides a summary of the project level error stats.
+  r"""Provides a summary of the project level error statistics.
 
   Fields:
-    internalErrorCount: Optional. Projects that were not validated for
-      internal errors and will be automatically retried.
+    destinationProjectCheckHasInternalError: Optional. Indicates whether the
+      destination project check failed due to an internal error. If `true`,
+      the system automatically retries the check.
+    destinationProjectOrgError: Optional. Indicates if the destination project
+      resides within the same organization as the source project.
+    internalErrorCount: Optional. Number of projects that encountered internal
+      errors during validation and are automatically retried.
+    nonManagementHubEntitledErrorCount: Optional. Count of projects that are
+      not subscribed to Storage Intelligence.
+    nonManagementHubEntitledProjectNumbers: Optional. Subset of project
+      numbers that are not subscribed to Storage Intelligence.
+    nonStorageIntelligenceEntitledErrorCount: Optional. Count of projects that
+      are not subscribed to Storage Intelligence.
+    nonStorageIntelligenceEntitledProjectNumbers: Optional. Subset of project
+      numbers that are not subscribed to Storage Intelligence.
     outsideOrgErrorCount: Optional. Count of projects which are not in the
       same organization.
     outsideOrgProjectNumbers: Optional. Subset of project numbers which are
@@ -719,34 +764,44 @@ class ProjectErrors(_messages.Message):
     validatedCount: Optional. Count of successfully validated projects.
   """
 
-  internalErrorCount = _messages.IntegerField(1)
-  outsideOrgErrorCount = _messages.IntegerField(2)
-  outsideOrgProjectNumbers = _messages.IntegerField(3, repeated=True)
-  validatedCount = _messages.IntegerField(4)
+  destinationProjectCheckHasInternalError = _messages.BooleanField(1)
+  destinationProjectOrgError = _messages.BooleanField(2)
+  internalErrorCount = _messages.IntegerField(3)
+  nonManagementHubEntitledErrorCount = _messages.IntegerField(4)
+  nonManagementHubEntitledProjectNumbers = _messages.IntegerField(5, repeated=True)
+  nonStorageIntelligenceEntitledErrorCount = _messages.IntegerField(6)
+  nonStorageIntelligenceEntitledProjectNumbers = _messages.IntegerField(7, repeated=True)
+  outsideOrgErrorCount = _messages.IntegerField(8)
+  outsideOrgProjectNumbers = _messages.IntegerField(9, repeated=True)
+  validatedCount = _messages.IntegerField(10)
 
 
 class ReportConfig(_messages.Message):
-  r"""Message describing ReportConfig object. ReportConfig is the
-  configuration to generate reports. See
-  https://cloud.google.com/storage/docs/insights/using-inventory-
-  reports#create-config-rest for more details on how to set various fields.
-  Next ID: 12
+  r"""Message describing the `ReportConfig` object. `ReportConfig` is the
+  configuration used to generate inventory reports. For information about how
+  to set various fields, see [Create an inventory report
+  configuration](https://cloud.google.com/storage/docs/insights/using-
+  inventory-reports#create-report-config).
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. The UTC time at which the inventory report
+      configuration was created. This is auto-populated.
     csvOptions: Options for CSV formatted reports.
-    displayName: User provided display name which can be empty and limited to
-      256 characters that is editable.
-    frequencyOptions: The frequency of report generation.
+    displayName: User provided display name that can be empty and limited to
+      256 characters that is editable..
+    frequencyOptions: The frequency of the inventory report generation.
     labels: Labels as key value pairs
-    name: name of resource. It will be of form
-      projects//locations//reportConfigs/.
-    objectMetadataReportOptions: Report for exporting object metadata.
+    name: Identifier. Name of resource. Format:
+      `projects/{project_id}/locations/{location}/reportConfigs/{report-
+      config-id}`.
+    objectMetadataReportOptions: Options for including object metadata in an
+      inventory report.
     parquetOptions: Options for Parquet formatted reports.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. The UTC time at which the inventory report
+      configuration was updated. This is auto-populated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -785,31 +840,33 @@ class ReportConfig(_messages.Message):
 
 
 class ReportDetail(_messages.Message):
-  r"""Message describing ReportDetail object. ReportDetail represents metadata
-  of generated reports for a ReportConfig. Next ID: 10
+  r"""Message describing the `ReportDetail` object. `ReportDetail` represents
+  the metadata of the generated inventory report for a report configuration.
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
     labels: Labels as key value pairs
-    name: Name of resource. It will be of form
-      projects//locations//reportConfigs//reportDetails/.
-    reportMetrics: Metrics of the report.
+    name: Name of resource. Format:
+      `projects/{project_number}/locations/{location}/reportConfigs/{report-
+      config-id}/reportDetails/{report-detail-id}`.
+    reportMetrics: Metrics of the inventory report.
     reportPathPrefix: Prefix of the object name of each report's shard. This
-      will have full prefix except the "extension" and "shard_id". For
-      example, if the `destination_path` is `{{report-config-
-      id}}/dt={{datetime}}`, the shard object name would be `gs://my-insights/
-      1A34-F2E456-12B456-1C3D/dt=2022-05-20T06:35/1A34-F2E456-12B456-
-      1C3D_2022-05-20T06:35_5.csv` and the value of `report_path_prefix` field
-      would be `gs://my-insights/1A34-F2E456-12B456-1C3D/dt=2022-05-
-      20T06:35/1A34-F2E456-12B456-1C3D_2022-05-20T06:35_`.
-    shardsCount: Total shards generated for the report.
-    snapshotTime: The snapshot time. All the report data is referenced at this
-      point of time.
-    status: Status of the ReportDetail.
-    targetDatetime: The date for which report is generated. The time part of
-      target_datetime will be zero till we support multiple reports per day.
+      has the full prefix except the `extension` and `shard_id`. For example,
+      if the `destination_path` is `{report-config-id}/dt={datetime}`, then
+      the shard object name is `gs://my-insights/1A34-F2E456-12B456-
+      1C3D/dt=2022-05-20T06:35/1A34-F2E456-12B456-1C3D_2022-05-20T06:35_5.csv`
+      and the value of `reportPathPrefix` field is `gs://my-insights/1A34-
+      F2E456-12B456-1C3D/dt=2022-05-20T06:35/1A34-F2E456-12B456-1C3D_2022-05-
+      20T06:35_`.
+    shardsCount: Total shards generated for the inventory report.
+    snapshotTime: The snapshot time. All the inventory report data is
+      referenced at this point of time.
+    status: Status of the inventory report.
+    targetDatetime: The date and time of the inventory report generation. This
+      field is auto-populated. The time part of `target_datetime` is always
+      `0`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -868,8 +925,19 @@ class ReportStatsView(_messages.Message):
   reportDetailId = _messages.StringField(5)
 
 
+class SourceFolders(_messages.Message):
+  r"""Specifies a set of folders to include in the dataset
+
+  Fields:
+    folderNumbers: Optional. The list of folder numbers to include in the
+      dataset.
+  """
+
+  folderNumbers = _messages.IntegerField(1, repeated=True)
+
+
 class SourceProjects(_messages.Message):
-  r"""Collection of project numbers Next ID: 2
+  r"""Collection of project numbers
 
   Fields:
     projectNumbers: A string attribute.
@@ -997,21 +1065,19 @@ class StorageinsightsProjectsLocationsDatasetConfigsCreateRequest(_messages.Mess
 
   Fields:
     datasetConfig: A DatasetConfig resource to be passed as the request body.
-    datasetConfigId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and dataset_config_id from the
-      method_signature of Create RPC
+    datasetConfigId: Required. ID of the requesting object. If auto-generating
+      ID is enabled on the server-side, remove this field and
+      `dataset_config_id` from the method_signature of Create RPC Note: The
+      value should not contain any hyphens.
     parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A unique identifier for your request. Specify the
+      request ID if you need to retry the request. If you retry the request
+      with the same ID within 60 minutes, the server ignores the request if it
+      has already completed the original request. For example, if your initial
+      request times out and you retry the request using the same request ID,
+      the server recognizes the original request and does not process the new
+      request. The request ID must be a valid UUID and cannot be a zero UUID
+      (00000000-0000-0000-0000-000000000000).
   """
 
   datasetConfig = _messages.MessageField('DatasetConfig', 1)
@@ -1025,17 +1091,14 @@ class StorageinsightsProjectsLocationsDatasetConfigsDeleteRequest(_messages.Mess
 
   Fields:
     name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A unique identifier for your request. Specify the
+      request ID if you need to retry the request. If you retry the request
+      with the same ID within 60 minutes, the server ignores the request if it
+      has already completed the original request. For example, if your initial
+      request times out and you retry the request using the same request ID,
+      the server recognizes the original request and does not process the new
+      request. The request ID must be a valid UUID and cannot be a zero UUID
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -1072,8 +1135,8 @@ class StorageinsightsProjectsLocationsDatasetConfigsListRequest(_messages.Messag
   Fields:
     filter: Filtering results
     orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    pageSize: Requested page size. Server might return fewer items than
+      requested. If unspecified, server picks an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListDatasetConfigsRequest
   """
@@ -1091,22 +1154,19 @@ class StorageinsightsProjectsLocationsDatasetConfigsPatchRequest(_messages.Messa
   Fields:
     datasetConfig: A DatasetConfig resource to be passed as the request body.
     name: Identifier. name of resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A unique identifier for your request. Specify the
+      request ID if you need to retry the request. If you retry the request
+      with the same ID within 60 minutes, the server ignores the request if it
+      has already completed the original request. For example, if your initial
+      request times out and you retry the request using the same request ID,
+      the server recognizes the original request and does not process the new
+      request. The request ID must be a valid UUID and cannot be a zero UUID
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the DatasetConfig resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      overwritten in the `DatasetConfig` resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field is overwritten if it is in the mask. If the user
+      does not provide a mask then it returns an "Invalid Argument" error.
   """
 
   datasetConfig = _messages.MessageField('DatasetConfig', 1)
@@ -1143,6 +1203,8 @@ class StorageinsightsProjectsLocationsListRequest(_messages.Message):
   r"""A StorageinsightsProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -1153,10 +1215,11 @@ class StorageinsightsProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class StorageinsightsProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1214,17 +1277,14 @@ class StorageinsightsProjectsLocationsReportConfigsCreateRequest(_messages.Messa
   Fields:
     parent: Required. Value for parent.
     reportConfig: A ReportConfig resource to be passed as the request body.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A unique identifier for your request. Specify the
+      request ID if you need to retry the request. If you retry the request
+      with the same ID within 60 minutes, the server ignores the request if it
+      has already completed the original request. For example, if your initial
+      request times out and you retry the request using the same request ID,
+      the server recognizes the original request and does not process the new
+      request. The request ID must be a valid UUID and cannot be a zero UUID
+      (00000000-0000-0000-0000-000000000000).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1236,20 +1296,17 @@ class StorageinsightsProjectsLocationsReportConfigsDeleteRequest(_messages.Messa
   r"""A StorageinsightsProjectsLocationsReportConfigsDeleteRequest object.
 
   Fields:
-    force: Optional. If set, all ReportDetails for this ReportConfig will be
-      deleted.
+    force: Optional. If set, all the inventory report details associated with
+      this report configuration are deleted.
     name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. A unique identifier for your request. Specify the
+      request ID if you need to retry the request. If you retry the request
+      with the same ID within 60 minutes, the server ignores the request if it
+      has already completed the original request. For example, if your initial
+      request times out and you retry the request using the same request ID,
+      the server recognizes the original request and does not process the new
+      request. The request ID must be a valid UUID and cannot be a zero UUID
+      (00000000-0000-0000-0000-000000000000).
   """
 
   force = _messages.BooleanField(1)
@@ -1274,9 +1331,9 @@ class StorageinsightsProjectsLocationsReportConfigsListRequest(_messages.Message
     filter: Filtering results
     orderBy: Hint for how to order the results
     pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+      requested. If unspecified, the server picks the default value.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListReportConfigsRequest
+    parent: Required. Parent value for `ListReportConfigsRequest`
   """
 
   filter = _messages.StringField(1)
@@ -1290,25 +1347,22 @@ class StorageinsightsProjectsLocationsReportConfigsPatchRequest(_messages.Messag
   r"""A StorageinsightsProjectsLocationsReportConfigsPatchRequest object.
 
   Fields:
-    name: name of resource. It will be of form
-      projects//locations//reportConfigs/.
+    name: Identifier. Name of resource. Format:
+      `projects/{project_id}/locations/{location}/reportConfigs/{report-
+      config-id}`.
     reportConfig: A ReportConfig resource to be passed as the request body.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the ReportConfig resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    requestId: Optional. A unique identifier for your request. Specify the
+      request ID if you need to retry the request. If you retry the request
+      with the same ID within 60 minutes, the server ignores the request if it
+      has already completed the original request. For example, if your initial
+      request times out and you retry the request using the same request ID,
+      the server recognizes the original request and does not process the new
+      request. The request ID must be a valid UUID and cannot be a zero UUID
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. A mask specifying a list of fields to be updated in
+      the `ReportConfig` resource. The fields specified in the `update_mask`
+      are relative to the resource, not the full request. A field is
+      overwritten if it is in the mask. The `update_mask` is required.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1335,10 +1389,10 @@ class StorageinsightsProjectsLocationsReportConfigsReportDetailsListRequest(_mes
   Fields:
     filter: Filtering results
     orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, the server picks the default value.
     pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListReportDetailsRequest
+    parent: Required. Parent value for `ListReportDetailsRequest`
   """
 
   filter = _messages.StringField(1)
@@ -1353,8 +1407,9 @@ class TimeZone(_messages.Message):
   Database](https://www.iana.org/time-zones).
 
   Fields:
-    id: IANA Time Zone Database time zone, e.g. "America/New_York".
-    version: Optional. IANA Time Zone Database version number, e.g. "2019a".
+    id: IANA Time Zone Database time zone. For example "America/New_York".
+    version: Optional. IANA Time Zone Database version number. For example
+      "2019a".
   """
 
   id = _messages.StringField(1)
@@ -1362,12 +1417,12 @@ class TimeZone(_messages.Message):
 
 
 class UnlinkDatasetRequest(_messages.Message):
-  r"""A UnlinkDatasetRequest object."""
+  r"""Request message for `UnlinkDataset`"""
 
 
 class ValidationErrorsBeforeIngestion(_messages.Message):
-  r"""Summary of validation errors that occurred during the Verification
-  phase. Next ID: 3
+  r"""Summary of validation errors that occurred during the verification
+  phase.
 
   Fields:
     bucketErrors: Optional. Provides a summary of the bucket level error

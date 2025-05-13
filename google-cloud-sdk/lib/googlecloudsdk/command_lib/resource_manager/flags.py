@@ -31,7 +31,16 @@ def FolderIdArg(use_description):
   return base.Argument(
       'id',
       metavar='FOLDER_ID',
-      help='ID for the folder {0}'.format(use_description))
+      help='ID for the folder {0}'.format(use_description),
+  )
+
+
+def CapabilityIdArg(use_description):
+  return base.Argument(
+      'id',
+      metavar='CAPABILITY_ID',
+      help='ID for the capability {0}'.format(use_description),
+  )
 
 
 @base.Hidden
@@ -40,21 +49,24 @@ def FolderIdFlag(use_description):
       '--folder',
       metavar='FOLDER_ID',
       default=None,
-      help='ID for the folder {0}'.format(use_description))
+      help='ID for the folder {0}'.format(use_description),
+  )
 
 
 def OrganizationIdFlag(use_description):
   return base.Argument(
       '--organization',
       metavar='ORGANIZATION_ID',
-      help='ID for the organization {0}'.format(use_description))
+      help='ID for the organization {0}'.format(use_description),
+  )
 
 
 def OperationIdArg(use_description):
   return base.Argument(
       'id',
       metavar='OPERATION_ID',
-      help='ID for the operation {0}'.format(use_description))
+      help='ID for the operation {0}'.format(use_description),
+  )
 
 
 def OperationAsyncFlag():
@@ -65,7 +77,8 @@ def LienIdArg(use_description):
   return base.Argument(
       'id',
       metavar='LIEN_ID',
-      help='ID for the lien {0}'.format(use_description))
+      help='ID for the lien {0}'.format(use_description),
+  )
 
 
 def AddParentFlagsToParser(parser):
@@ -95,19 +108,21 @@ def CheckParentFlags(args, parent_required=True):
   """
   if getattr(args, 'folder', None) and args.organization:
     raise calliope_exceptions.ConflictingArgumentsException(
-        '--folder', '--organization')
+        '--folder', '--organization'
+    )
   if parent_required:
     if 'folder' in args and not args.folder and not args.organization:
       raise exceptions.ArgumentError(
-          'Neither --folder nor --organization provided, exactly one required')
+          'Neither --folder nor --organization provided, exactly one required'
+      )
     elif 'folder' not in args and not args.organization:
       raise exceptions.ArgumentError('--organization is required')
 
 
 def FolderAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='folder',
-      help_text='The folder id')
+      name='folder', help_text='The folder id'
+  )
 
 
 def GetFolderResourceSpec():
@@ -115,7 +130,8 @@ def GetFolderResourceSpec():
       'cloudresourcemanager.folders',
       resource_name='folder',
       api_version='v2',
-      foldersId=FolderAttributeConfig())
+      foldersId=FolderAttributeConfig(),
+  )
 
 
 def GetFolderResourceArg(verb):
@@ -123,7 +139,8 @@ def GetFolderResourceArg(verb):
       'folder_id',
       GetFolderResourceSpec(),
       'ID for the folder you want to {}'.format(verb),
-      required=True)
+      required=True,
+  )
 
 
 def TagsFlag():
@@ -150,6 +167,9 @@ def GetTagsFromFlags(args, tags_message, tags_arg_name='tags'):
   if not tags:
     return None
   # Sorted for test stability
-  return tags_message(additionalProperties=[
-      tags_message.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(six.iteritems(tags))])
+  return tags_message(
+      additionalProperties=[
+          tags_message.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(six.iteritems(tags))
+      ]
+  )

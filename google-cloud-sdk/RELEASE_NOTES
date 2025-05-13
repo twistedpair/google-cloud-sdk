@@ -5,6 +5,118 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 522.0.0 (2025-05-13)
+
+### Anthos
+
+* `anthos-cli` component updated to address security tool flags:
+
+    * CVE-2025-22872 / GO-2025-3595
+
+    * CVE-2025-22870 / GO-2025-3503
+
+    * CVE-2025-22870
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.36 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.36>.
+* Upgraded Eclipse Jetty web server to version 12.0.20.
+* Fixed open source issue https://issuetracker.google.com/issues/329705717 for python appengine SDK.
+
+### Certificate Authority Service
+
+* Removed the requirement to specify an organization when creating a Certificate Authority. Users can now create CAs without providing an organization.
+
+### Cloud Build
+
+* Enable REP endpoints for `gcloud builds...` if a region is passed in.
+
+### Cloud Dataplex
+
+* Promoted `gcloud dataplex glossaries` commands to GA.
+* Promoted `gcloud dataplex encryption-config` commands to GA.
+
+### Cloud Dataproc
+
+* Added `--user-workload-authentication-type` flag to `gcloud dataproc batches submit` commands in GA. This determines whether the batch uses service account or end user credentials.
+* Added `--user-workload-authentication-type` flag to `gcloud beta dataproc sessions create` commands in Preview. This determines whether the session uses service account or end user credentials.
+
+### Cloud Deploy
+
+*   Added `--override-deploy-policies` flag to the following commands which
+    can be used to override deploy policies:
+    * `gcloud deploy job-runs terminate`
+    * `gcloud deploy releases create|promote`
+    * `gcloud deploy rollouts advance|approve|cancel|ignore-job|reject|retry-job`
+    * `gcloud deploy targets rollback|redeploy`
+
+### Cloud Managed Kafka
+
+* Completed minor bug fixes for ACL commands.
+* Promoted ACL commands to GA.
+* Add Alpha Schema Registries commands for Managed Kafka Schema Registry.
+
+### Cloud Spanner
+
+* Promoted `--instance-partition` flag of `gcloud spanner operations cancel` to GA.
+* Promoted `--instance-partition` flag of `gcloud spanner operations list` to GA.
+* Promoted `gcloud spanner instance-partitions update` to GA.
+* Promoted `gcloud spanner instance-partitions get` to GA.
+* Promoted `gcloud spanner instance-partitions list` to GA.
+
+### Cloud Workstations
+
+* Add support for workstation cluster-level tags fields.
+
+### Compute Engine
+
+* Promoted flags related to external-managed migration to v1:
+    - `--external-managed-backend-bucket-migration-state` of `gcloud compute forwarding-rules update`.
+    - `--external-managed-backend-bucket-migration-testing-percentage` of `gcloud compute forwarding-rules update`.
+    - `--load-balancing-scheme` of `gcloud compute forwarding-rules update`.
+    - `--external-managed-migration-state` of `gcloud compute backend-services update`.
+    - `--external-managed-migration-testing-percentage` of `gcloud compute backend-services update`.
+    - `--load-balancing-scheme` of `gcloud compute backend-services update`.
+* Added `--resource-manager-tags` flag for alpha and beta to
+  `gcloud compute networks create` to allow users to add resource tags to the
+  network resource during creation.
+* Added `--resource-manager-tags` flag for alpha and beta to
+  `gcloud compute firewall-rules create` to allow users to add resource tags
+  to the firewall resource during creation.
+* Added `--resource-manager-tags` flag for alpha and beta to
+  `gcloud compute networks subnets create` to allow users to add Resource
+  Manager tags to the subnetwork resource during creation.
+* Added `--resource-manager-tags` flag for alpha and beta to
+  `gcloud compute routes create` to allow users to add resource tags
+  to the route resource during creation.
+* Added `CLOUD_ARMOR_INTERNAL_SERVICE` type of `compute security-policy`.
+* Support `--provisioning-model=flex-start` in beta for
+  `gcloud compute instance-templates create` command.
+* Added `--enable_emergent_maintenance` flag to `gcloud beta compute reservations update` and `gcloud beta compute future-reservations update`.
+
+### Identity and Access Management
+
+* Make Google Cloud CLI commands to manage X509 provider public and
+attribute mappings setting for x509 provider optional.
+
+### Network Security
+
+*   Promoted the `network-security intercept-deployment-groups` commands which manage intercept deployment groups to GA.
+*   Promoted the `network-security intercept-endpoint-groups` commands which manage intercept endpoint groups to GA.
+*   Promoted the `network-security intercept-endpoint-group-associations` commands which manage intercept endpoint group associations to GA.
+*   Promoted the `network-security intercept-deployments` commands which manage intercept deployments to GA.
+*   Promoted the `network-security security-profiles custom-intercept` commands which manage custom intercept profiles to GA.
+*   Promoted the `network-security security-profile-groups create --custom-intercept-profile` flag to GA.
+
+### Security Command Center
+
+* Updated `location` flag with requirements for using regional endpoints.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 521.0.0 (2025-05-06)
 
 ### Breaking Changes

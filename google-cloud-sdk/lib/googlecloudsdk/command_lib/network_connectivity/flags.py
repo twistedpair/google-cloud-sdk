@@ -468,3 +468,12 @@ def AddRegionResourceArg(
   )
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
+
+def AddExportPscFlag(parser):
+  """Add the --export-psc flag to the given parser."""
+  parser.add_argument(
+      '--export-psc',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=False,
+      help="""Whether Private Service Connect transitivity is enabled for the hub.""",
+  )

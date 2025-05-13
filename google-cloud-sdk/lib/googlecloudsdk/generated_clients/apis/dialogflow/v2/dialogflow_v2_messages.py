@@ -13039,6 +13039,11 @@ class GoogleCloudDialogflowV2GenerateStatelessSuggestionRequest(_messages.Messag
       includes all information about the generator.
     generatorName: The resource name of the existing created generator.
       Format: `projects//locations//generators/`
+    securitySettings: Optional. Name of the CX SecuritySettings which is used
+      to redact generated response. If this field is empty, try to fetch v2
+      security_settings, which is a project level setting. If this field is
+      empty and no v2 security_settings set up in this project, no redaction
+      will be done. Format: `projects//locations//securitySettings/`.
     triggerEvents: Optional. A list of trigger events. Generator will be
       triggered only if it's trigger event is included here.
   """
@@ -13096,7 +13101,8 @@ class GoogleCloudDialogflowV2GenerateStatelessSuggestionRequest(_messages.Messag
   conversationContext = _messages.MessageField('GoogleCloudDialogflowV2ConversationContext', 2)
   generator = _messages.MessageField('GoogleCloudDialogflowV2Generator', 3)
   generatorName = _messages.StringField(4)
-  triggerEvents = _messages.EnumField('TriggerEventsValueListEntryValuesEnum', 5, repeated=True)
+  securitySettings = _messages.StringField(5)
+  triggerEvents = _messages.EnumField('TriggerEventsValueListEntryValuesEnum', 6, repeated=True)
 
 
 class GoogleCloudDialogflowV2GenerateStatelessSuggestionResponse(_messages.Message):

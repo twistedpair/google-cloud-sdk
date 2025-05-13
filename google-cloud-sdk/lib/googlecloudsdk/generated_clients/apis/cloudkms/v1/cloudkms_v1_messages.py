@@ -2967,6 +2967,8 @@ class ListCryptoKeyVersionsResponse(_messages.Message):
       in ListCryptoKeyVersionsRequest.page_token to retrieve the next page of
       results.
     totalSize: The total number of CryptoKeyVersions that matched the query.
+      This field is not populated if ListCryptoKeyVersionsRequest.filter is
+      applied.
   """
 
   cryptoKeyVersions = _messages.MessageField('CryptoKeyVersion', 1, repeated=True)
@@ -2982,7 +2984,8 @@ class ListCryptoKeysResponse(_messages.Message):
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListCryptoKeysRequest.page_token to retrieve the next page of
       results.
-    totalSize: The total number of CryptoKeys that matched the query.
+    totalSize: The total number of CryptoKeys that matched the query. This
+      field is not populated if ListCryptoKeysRequest.filter is applied.
   """
 
   cryptoKeys = _messages.MessageField('CryptoKey', 1, repeated=True)
@@ -2998,7 +3001,8 @@ class ListEkmConnectionsResponse(_messages.Message):
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListEkmConnectionsRequest.page_token to retrieve the next page of
       results.
-    totalSize: The total number of EkmConnections that matched the query.
+    totalSize: The total number of EkmConnections that matched the query. This
+      field is not populated if ListEkmConnectionsRequest.filter is applied.
   """
 
   ekmConnections = _messages.MessageField('EkmConnection', 1, repeated=True)
@@ -3014,7 +3018,8 @@ class ListImportJobsResponse(_messages.Message):
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListImportJobsRequest.page_token to retrieve the next page of
       results.
-    totalSize: The total number of ImportJobs that matched the query.
+    totalSize: The total number of ImportJobs that matched the query. This
+      field is not populated if ListImportJobsRequest.filter is applied.
   """
 
   importJobs = _messages.MessageField('ImportJob', 1, repeated=True)
@@ -3043,7 +3048,8 @@ class ListKeyRingsResponse(_messages.Message):
     keyRings: The list of KeyRings.
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListKeyRingsRequest.page_token to retrieve the next page of results.
-    totalSize: The total number of KeyRings that matched the query.
+    totalSize: The total number of KeyRings that matched the query. This field
+      is not populated if ListKeyRingsRequest.filter is applied.
   """
 
   keyRings = _messages.MessageField('KeyRing', 1, repeated=True)

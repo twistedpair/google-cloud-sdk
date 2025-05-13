@@ -23,6 +23,7 @@ from cloudsdk.google.protobuf import duration_pb2  # type: ignore
 from google.type import date_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import openapi
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import tool
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import vertex_rag_data
 
 
 __protobuf__ = proto.module(
@@ -72,7 +73,8 @@ class HarmCategory(proto.Enum):
             The harm category is sexually explicit
             content.
         HARM_CATEGORY_CIVIC_INTEGRITY (5):
-            The harm category is civic integrity.
+            Deprecated: Election filter is not longer
+            supported. The harm category is civic integrity.
     """
     HARM_CATEGORY_UNSPECIFIED = 0
     HARM_CATEGORY_HATE_SPEECH = 1
@@ -393,12 +395,19 @@ class SpeechConfig(proto.Message):
     Attributes:
         voice_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.VoiceConfig):
             The configuration for the speaker to use.
+        language_code (str):
+            Optional. Language code (ISO 639. e.g. en-US)
+            for the speech synthesization.
     """
 
     voice_config: 'VoiceConfig' = proto.Field(
         proto.MESSAGE,
         number=1,
         message='VoiceConfig',
+    )
+    language_code: str = proto.Field(
+        proto.STRING,
+        number=2,
     )
 
 
@@ -495,6 +504,12 @@ class GenerationConfig(proto.Message):
             Optional. The speech generation config.
 
             This field is a member of `oneof`_ ``_speech_config``.
+        thinking_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig.ThinkingConfig):
+            Optional. Config for thinking features.
+            An error will be returned if this field is set
+            for models that don't support thinking.
+        model_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig.ModelConfig):
+            Optional. Config for model selection.
     """
     class Modality(proto.Enum):
         r"""The modalities of the response.
@@ -604,8 +619,9 @@ class GenerationConfig(proto.Message):
 
             Attributes:
                 model_name (str):
-                    The model name to use. Only the public LLM
-                    models are accepted. e.g. 'gemini-1.5-pro-001'.
+                    The model name to use. Only the public LLM models are
+                    accepted. See `Supported
+                    models <https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference#supported-models>`__.
 
                     This field is a member of `oneof`_ ``_model_name``.
             """
@@ -627,6 +643,67 @@ class GenerationConfig(proto.Message):
             number=2,
             oneof='routing_config',
             message='GenerationConfig.RoutingConfig.ManualRoutingMode',
+        )
+
+    class ThinkingConfig(proto.Message):
+        r"""Config for thinking features.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            include_thoughts (bool):
+                Optional. Indicates whether to include
+                thoughts in the response. If true, thoughts are
+                returned only when available.
+
+                This field is a member of `oneof`_ ``_include_thoughts``.
+            thinking_budget (int):
+                Optional. Indicates the thinking budget in tokens. This is
+                only applied when enable_thinking is true.
+
+                This field is a member of `oneof`_ ``_thinking_budget``.
+        """
+
+        include_thoughts: bool = proto.Field(
+            proto.BOOL,
+            number=1,
+            optional=True,
+        )
+        thinking_budget: int = proto.Field(
+            proto.INT32,
+            number=3,
+            optional=True,
+        )
+
+    class ModelConfig(proto.Message):
+        r"""Config for model selection.
+
+        Attributes:
+            feature_selection_preference (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig.ModelConfig.FeatureSelectionPreference):
+                Required. Feature selection preference.
+        """
+        class FeatureSelectionPreference(proto.Enum):
+            r"""Options for feature selection preference.
+
+            Values:
+                FEATURE_SELECTION_PREFERENCE_UNSPECIFIED (0):
+                    Unspecified feature selection preference.
+                PRIORITIZE_QUALITY (1):
+                    Prefer higher quality over lower cost.
+                BALANCED (2):
+                    Balanced feature selection preference.
+                PRIORITIZE_COST (3):
+                    Prefer lower cost over higher quality.
+            """
+            FEATURE_SELECTION_PREFERENCE_UNSPECIFIED = 0
+            PRIORITIZE_QUALITY = 1
+            BALANCED = 2
+            PRIORITIZE_COST = 3
+
+        feature_selection_preference: 'GenerationConfig.ModelConfig.FeatureSelectionPreference' = proto.Field(
+            proto.ENUM,
+            number=1,
+            enum='GenerationConfig.ModelConfig.FeatureSelectionPreference',
         )
 
     temperature: float = proto.Field(
@@ -720,6 +797,16 @@ class GenerationConfig(proto.Message):
         number=23,
         optional=True,
         message='SpeechConfig',
+    )
+    thinking_config: ThinkingConfig = proto.Field(
+        proto.MESSAGE,
+        number=25,
+        message=ThinkingConfig,
+    )
+    model_config: ModelConfig = proto.Field(
+        proto.MESSAGE,
+        number=27,
+        message=ModelConfig,
     )
 
 
@@ -1228,6 +1315,10 @@ class GroundingChunk(proto.Message):
                 Title of the chunk.
 
                 This field is a member of `oneof`_ ``_title``.
+            domain (str):
+                Domain of the (original) URI.
+
+                This field is a member of `oneof`_ ``_domain``.
         """
 
         uri: str = proto.Field(
@@ -1240,6 +1331,11 @@ class GroundingChunk(proto.Message):
             number=2,
             optional=True,
         )
+        domain: str = proto.Field(
+            proto.STRING,
+            number=3,
+            optional=True,
+        )
 
     class RetrievedContext(proto.Message):
         r"""Chunk from context retrieved by the retrieval tools.
@@ -1247,6 +1343,12 @@ class GroundingChunk(proto.Message):
         .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
         Attributes:
+            rag_chunk (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagChunk):
+                Additional context for the RAG retrieval
+                result. This is only populated when using the
+                RAG retrieval tool.
+
+                This field is a member of `oneof`_ ``context_details``.
             uri (str):
                 URI reference of the attribution.
 
@@ -1261,6 +1363,12 @@ class GroundingChunk(proto.Message):
                 This field is a member of `oneof`_ ``_text``.
         """
 
+        rag_chunk: vertex_rag_data.RagChunk = proto.Field(
+            proto.MESSAGE,
+            number=4,
+            oneof='context_details',
+            message=vertex_rag_data.RagChunk,
+        )
         uri: str = proto.Field(
             proto.STRING,
             number=1,

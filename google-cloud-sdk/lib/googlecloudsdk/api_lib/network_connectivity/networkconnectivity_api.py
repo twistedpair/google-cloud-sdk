@@ -313,6 +313,28 @@ class HubsClient(object):
         method='QueryStatus',
     )
 
+  def Get(self, hub_ref):
+    """Call API to get an existing hub."""
+    get_req = (
+        self.messages.NetworkconnectivityProjectsLocationsGlobalHubsGetRequest(
+            name=hub_ref.RelativeName()
+        )
+    )
+    return self.hub_service.Get(get_req)
+
+  def UpdateHubBeta(self, hub_ref, hub, update_mask, request_id=None):
+    """Call API to update a hub in the BETA release track."""
+    name = hub_ref.RelativeName()
+    update_mask_string = ','.join(update_mask)
+
+    update_req = self.messages.NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(
+        name=name,
+        requestId=request_id,
+        googleCloudNetworkconnectivityV1betaHub=hub,
+        updateMask=update_mask_string,
+    )
+    return self.hub_service.Patch(update_req)
+
 
 class GroupsClient(object):
   """Client for group service in network connectivity API."""

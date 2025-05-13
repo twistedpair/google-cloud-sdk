@@ -131,6 +131,21 @@ from .types.types import DoubleArray
 from .types.types import Int64Array
 from .types.types import StringArray
 from .types.types import Tensor
+from .types.vertex_rag_data import CorpusStatus
+from .types.vertex_rag_data import FileStatus
+from .types.vertex_rag_data import ImportRagFilesConfig
+from .types.vertex_rag_data import RagChunk
+from .types.vertex_rag_data import RagCorpus
+from .types.vertex_rag_data import RagEmbeddingModelConfig
+from .types.vertex_rag_data import RagEngineConfig
+from .types.vertex_rag_data import RagFile
+from .types.vertex_rag_data import RagFileChunkingConfig
+from .types.vertex_rag_data import RagFileParsingConfig
+from .types.vertex_rag_data import RagFileTransformationConfig
+from .types.vertex_rag_data import RagManagedDbConfig
+from .types.vertex_rag_data import RagVectorDbConfig
+from .types.vertex_rag_data import UploadRagFileConfig
+from .types.vertex_rag_data import VertexAiSearchConfig
 
 __all__ = (
     'PredictionServiceAsyncClient',
@@ -149,6 +164,7 @@ __all__ = (
 'CodeExecutionResult',
 'ContainerRegistryDestination',
 'Content',
+'CorpusStatus',
 'CountTokensRequest',
 'CountTokensResponse',
 'CsvDestination',
@@ -176,6 +192,7 @@ __all__ = (
 'FeatureNoiseSigma',
 'FetchPredictOperationRequest',
 'FileData',
+'FileStatus',
 'FunctionCall',
 'FunctionCallingConfig',
 'FunctionDeclaration',
@@ -192,6 +209,7 @@ __all__ = (
 'GroundingMetadata',
 'GroundingSupport',
 'HarmCategory',
+'ImportRagFilesConfig',
 'Int64Array',
 'IntegratedGradientsAttribution',
 'JiraSource',
@@ -209,7 +227,17 @@ __all__ = (
 'PredictResponse',
 'PredictionServiceClient',
 'Presets',
+'RagChunk',
+'RagCorpus',
+'RagEmbeddingModelConfig',
+'RagEngineConfig',
+'RagFile',
+'RagFileChunkingConfig',
+'RagFileParsingConfig',
+'RagFileTransformationConfig',
+'RagManagedDbConfig',
 'RagRetrievalConfig',
+'RagVectorDbConfig',
 'RawPredictRequest',
 'Retrieval',
 'RetrievalConfig',
@@ -240,7 +268,9 @@ __all__ = (
 'ToolConfig',
 'ToolUseExample',
 'Type',
+'UploadRagFileConfig',
 'VertexAISearch',
+'VertexAiSearchConfig',
 'VertexRagStore',
 'VideoMetadata',
 'VoiceConfig',

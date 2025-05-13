@@ -46,6 +46,15 @@ zone:
 
 # resource name parameters
 
+preview_feature:
+  name: preview feature
+  collection: compute.previewFeatures
+  attributes:
+  - *compute_project
+  - parameter_name: previewFeature
+    attribute_name: preview_feature
+    help: The name of the Google Compute Engine preview feature.
+
 commitment:
   name: commitment
   collection: compute.regionCommitments

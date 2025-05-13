@@ -425,15 +425,21 @@ def AddCriteriaFilterFlag(parser, resource):
       metavar='CRITERIA_FILTER',
       type=str,
       help=(
-          'The filter that the {} applies to, which is a string to match on'
-          ' Alert fields when silencing the alerts. It follows the standard'
-          ' https://google.aip.dev/160 syntax. Filters can be defined for'
-          ' snoozes that apply to one alerting policy. Filters must be a string'
-          ' formatted as one or more resource labels with specific label'
-          ' values. If multiple resource labels are used, then they must be'
-          ' connected with an AND operator. For'
-          ' example: resource.labels.instance_id="1234567890" AND'
-          ' resource.labels.zone="us-central1-a"'.format(resource)
+          'Optional. When you define a {}, you can also define a filter for'
+          ' that snooze. The filter is a string containing one or more'
+          ' key-value pairs. The string uses the standard'
+          ' https://google.aip.dev/160 filter syntax. If you define a filter'
+          ' for a snooze, then the snooze can only apply to one alert policy.'
+          " When the snooze is active, incidents won't be created when the"
+          ' incident would have key-value pairs (labels) that match those'
+          ' specified by the filter in the snooze. Snooze filters support'
+          ' resource, metric, and metadata labels. If multiple labels are used,'
+          ' then they must be connected with an AND operator. For example:'
+          ' resource.labels.instance_id="1234567890" AND'
+          ' resource.labels.zone="us-central1-a" AND'
+          ' metric.labels.instance_name="test_group" AND'
+          ' metadata.user_labels.foo="bar" AND'
+          ' metadata.system_labels.region="us-central1"'.format(resource)
       ),
   )
 

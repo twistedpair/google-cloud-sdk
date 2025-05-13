@@ -18,7 +18,7 @@ subnets:
   arg_name: subnets
   type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
   help_text: |
-    VPC subnets from which the cluster is accessible. Both broker and bootstrap server
+    A comma-separated list of VPC subnets from which the cluster is accessible. Both broker and bootstrap server
     IP addresses and DNS entries are automatically created in each subnet. Only one subnet per
     network is allowed, and the subnet must be located in the same region as the cluster.
     The project may differ. A minimum of 1 subnet is required. A maximum of 10 subnets can be
@@ -58,6 +58,18 @@ auto-rebalance:
     enum_value: AUTO_REBALANCE_ON_SCALE_UP
   - arg_value: false
     enum_value: NO_REBALANCE
+
+ca-pools:
+  arg_name: ca-pools
+  # arg_field: cluster.tlsConfig.trustConfig.casConfigs.caPool
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  help_text: |
+    A comma-separated list of CA pools from the Google Cloud Certificate Authority Service.
+    The root certificates of these CA pools will be installed in the truststore of each broker
+    in the cluster for use with mTLS. A maximum of 10 CA pools can be specified.
+    CA pools can be in a different project and region than the cluster.
+    Each CA pool must be in the format
+    projects/``PROJECT_ID''/locations/``LOCATION''/caPools/``CA_POOL''.
 
 # Trying to define this as a resouce causes test failures in yaml_command_schema_test so we define
 # it as a flag instead.

@@ -5397,8 +5397,9 @@ class WorkerPool(_messages.Message):
       value of `{worker_pool}` is provided by `worker_pool_id` in
       `CreateWorkerPool` request and the value of `{location}` is determined
       by the endpoint accessed.
-    privatePoolConfig: Private Pool configuration.
-    privatePoolV1Config: Legacy Private Pool configuration.
+    privatePoolConfig: Private Pool configuration for Cloud Build 2nd gen.
+      DEPRECATED due to the cancellation of Cloud Build 2nd gen.
+    privatePoolV1Config: Private Pool configuration.
     state: Output only. `WorkerPool` state.
     uid: Output only. A unique identifier for the `WorkerPool`.
     updateTime: Output only. Time at which the request to update the

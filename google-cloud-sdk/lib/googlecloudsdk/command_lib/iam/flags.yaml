@@ -810,7 +810,7 @@ workforce_pool_provider:
     api_field: workforcePoolProvider.extraAttributesOauth2Client.issuerUri
     arg_name: extra-attributes-issuer-uri
     help_text: |-
-      OIDC identity provider's issuer URI. Must be a valid URI using the 'https' scheme.
+      OIDC identity provider's issuer URI. Must be a valid URI using the `https` scheme.
       Required to get the OIDC discovery document.
 
   extra_attributes_client_id: &extra_attributes_client_id
@@ -818,14 +818,14 @@ workforce_pool_provider:
     arg_name: extra-attributes-client-id
     help_text: |-
       The OAuth 2.0 client ID for retrieving extra attributes from the identity provider. Required
-      to get the Access Token using client credentials grant flow.
+      to get the access token using client credentials grant flow.
 
   extra_attributes_client_secret_value: &extra_attributes_client_secret_value
     api_field: workforcePoolProvider.extraAttributesOauth2Client.clientSecret.value.plainText
     arg_name: extra-attributes-client-secret-value
     help_text: |-
       The OAuth 2.0 client secret for retrieving extra attributes from the identity provider.
-      Required to get the Access Token using client credentials grant flow.
+      Required to get the access token using client credentials grant flow.
 
   extra_attributes_type: &extra_attributes_type
     api_field: workforcePoolProvider.extraAttributesOauth2Client.attributesType
@@ -837,13 +837,25 @@ workforce_pool_provider:
     api_field: workforcePoolProvider.extraAttributesOauth2Client.queryParameters.filter
     arg_name: extra-attributes-filter
     help_text: |-
-      The filter used to request specific records from IdP. When used with the attributes type
-      azure-ad-groups-mail or azure-ad-groups-id, the filter requests specific groups associated
-      with a user from the IdP. By default all of the groups associated with the user are fetched.
-      When used with the attributes type azure-ad-groups-mail, the groups that are used should be
-      security and mail enabled. When used with the attributes type azure-ad-groups-id, the groups
-      that are used should be security enabled. See
-      https://learn.microsoft.com/en-us/graph/search-query-parameter for more details.
+      The filter used to request specific records from the IdP.
+      By default, all of the groups that are associated with a user are
+      fetched. For Microsoft Entra ID, you can add `$search` query parameters
+      using [Keyword Query Language]
+      (https://learn.microsoft.com/en-us/sharepoint/dev/general-development/keyword-query-language-kql-syntax-reference).
+      To learn more about `$search` querying in Microsoft Entra ID, see [Use
+      the `$search` query parameter]
+      (https://learn.microsoft.com/en-us/graph/search-query-parameter).
+
+      Additionally, Workforce Identity Federation automatically adds the
+      following [`$filter` query parameters]
+      (https://learn.microsoft.com/en-us/graph/filter-query-parameter), based
+      on the value of `attributes_type`. Values passed to `filter` are
+      converted to `$search` query parameters. Additional `$filter` query
+      parameters cannot be added using this field.
+
+      * `AZURE_AD_GROUPS_MAIL`: `mailEnabled` and `securityEnabled` filters
+      are applied.
+      * `AZURE_AD_GROUPS_ID`: `securityEnabled` filter is applied.
 
   clear_extra_attributes_config: &clear_extra_attributes_config
     arg_name: clear-extra-attributes-config
@@ -852,35 +864,6 @@ workforce_pool_provider:
     processor: googlecloudsdk.command_lib.iam.hooks:ClearFlag
     help_text: |-
       Clear the extra attributes configuration
-
-  create_extra_attributes_group:
-    group:
-      params:
-      - <<: *extra_attributes_issuer_uri
-        required: true
-      - <<: *extra_attributes_client_id
-        required: true
-      - <<: *extra_attributes_client_secret_value
-        required: true
-      - <<: *extra_attributes_type
-        required: true
-      - <<: *extra_attributes_filter
-
-  update_extra_attributes_group: &update_extra_attributes_group
-    group:
-      params:
-      - *extra_attributes_issuer_uri
-      - *extra_attributes_client_id
-      - *extra_attributes_client_secret_value
-      - *extra_attributes_type
-      - *extra_attributes_filter
-
-  clearable_extra_attributes_group:
-    group:
-      mutex: true
-      params:
-      - *clear_extra_attributes_config
-      - *update_extra_attributes_group
 
 workforce_pool_provider_key:
   use:

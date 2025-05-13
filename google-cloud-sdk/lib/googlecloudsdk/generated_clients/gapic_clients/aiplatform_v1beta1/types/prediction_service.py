@@ -1130,7 +1130,26 @@ class GenerateContentResponse(proto.Message):
             tool_use_prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ModalityTokenCount]):
                 Output only. List of modalities that were
                 processed for tool-use request inputs.
+            traffic_type (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse.UsageMetadata.TrafficType):
+                Output only. Traffic type. This shows whether
+                a request consumes Pay-As-You-Go or Provisioned
+                Throughput quota.
         """
+        class TrafficType(proto.Enum):
+            r"""Request traffic type. Indicates whether the request consumes
+            Pay-As-You-Go or Provisioned Throughput quota.
+
+            Values:
+                TRAFFIC_TYPE_UNSPECIFIED (0):
+                    Unspecified request traffic type.
+                ON_DEMAND (1):
+                    Type for Pay-As-You-Go traffic.
+                PROVISIONED_THROUGHPUT (2):
+                    Type for Provisioned Throughput traffic.
+            """
+            TRAFFIC_TYPE_UNSPECIFIED = 0
+            ON_DEMAND = 1
+            PROVISIONED_THROUGHPUT = 2
 
         prompt_token_count: int = proto.Field(
             proto.INT32,
@@ -1175,6 +1194,11 @@ class GenerateContentResponse(proto.Message):
             proto.MESSAGE,
             number=12,
             message=content.ModalityTokenCount,
+        )
+        traffic_type: 'GenerateContentResponse.UsageMetadata.TrafficType' = proto.Field(
+            proto.ENUM,
+            number=8,
+            enum='GenerateContentResponse.UsageMetadata.TrafficType',
         )
 
     candidates: MutableSequence[content.Candidate] = proto.RepeatedField(

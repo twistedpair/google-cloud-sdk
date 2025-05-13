@@ -1311,7 +1311,8 @@ class Observation(_messages.Message):
     observerErrors: Output only. An error within the Investigation system that
       blocked an observer from making a particular observation. The error
       string here will be shown to users. Repeated because an observer might
-      lack multiple permissions.
+      lack multiple permissions. Deprecated: Use
+      ObserverStatus.observer_errors instead.
     observerType: Required. The origin of the data, e.g. user, system code,
       LLM etc.
     recommendation: Optional. Natural language [markdown] text which describes
@@ -1400,6 +1401,9 @@ class Observation(_messages.Message):
         analyzed by LLM.
       OBSERVATION_TYPE_OUTAGE: Signals output that includes an outage from
         PSH.
+      OBSERVATION_TYPE_KNOWLEDGE: Text that provides knowledge about a
+        particular user's problem. For example, error catalog
+        instructions/external links, RAG etc.
     """
     OBSERVATION_TYPE_UNSPECIFIED = 0
     OBSERVATION_TYPE_CLOUD_LOG = 1
@@ -1417,6 +1421,7 @@ class Observation(_messages.Message):
     OBSERVATION_TYPE_LOG_THEME = 13
     OBSERVATION_TYPE_CONFIG_ANALYSIS = 14
     OBSERVATION_TYPE_OUTAGE = 15
+    OBSERVATION_TYPE_KNOWLEDGE = 16
 
   class ObserverTypeValueValuesEnum(_messages.Enum):
     r"""Required. The origin of the data, e.g. user, system code, LLM etc.
@@ -1675,7 +1680,7 @@ class ObserverStatus(_messages.Message):
   r"""An ObserverStatus represents the status of an observer at a particular
   point during execution of an investigation. NOTE: By default, nothing in
   this message is redacted. Components should NOT put PII / CCC here except
-  where redacted. Next Id: 12
+  where redacted. Next Id: 13
 
   Enums:
     ObserverExecutionStateValueValuesEnum: Optional. The current execution
@@ -1709,6 +1714,16 @@ class ObserverStatus(_messages.Message):
       the observer is responsible for setting it. When the observer is
       finished, the difference between this and update_time is the observer
       run time.
+    text: Optional. Natural-language [markdown] text associated with the
+      status. This is the core content, not a metadata description - should be
+      reviewed and used like the text field in the Observation, but will be
+      displayed in the UI as an error or information message distinct from
+      observations. This should NOT be used in the LLM. The 'data' and 'logs'
+      field can provide structured information that may also be rendered in
+      the UI or used by the user. The 'observer_display_name' can be used as
+      title, if a title is generated. The text should only be used if
+      observer_execution_state is OBSERVER_INVESTIGATION_BLOCKED or
+      OBSERVER_INVESTIGATION_ERRORS.
     updateComment: Optional. A status update from the observer. May be logged
       for debugging purposes. These may be shown to users. A good update would
       be "parameters matched, queued for execution" or "checked log file 2/5".
@@ -1728,8 +1743,15 @@ class ObserverStatus(_messages.Message):
       OBSERVER_EXECUTION_COMPLETE: The observer has finished without an
         internal error.
       OBSERVER_EXECUTION_FAILED: The observer tried to run but failed due to
-        an error.
+        an error. This is specific to a component and may be rendered in the
+        UI if the observation is shown, as very low priority.
       OBSERVER_EXECUTION_BLOCKED: The observer is blocked pending an input.
+      OBSERVER_EXECUTION_INVESTIGATION_BLOCKED: The observer reports an error
+        that blocks or severely impacts the investigation, for example CAIS or
+        logging disabled. Should be rendered in the UI prominently.
+      OBSERVER_EXECUTION_INVESTIGATION_DEGRADED: The observer reports an error
+        that degrades the investigation, may require user to escalate or re-
+        run the investigation after mitigating the cause.
     """
     OBSERVER_EXECUTION_UNSPECIFIED = 0
     OBSERVER_EXECUTION_NOT_STARTED = 1
@@ -1737,6 +1759,8 @@ class ObserverStatus(_messages.Message):
     OBSERVER_EXECUTION_COMPLETE = 3
     OBSERVER_EXECUTION_FAILED = 4
     OBSERVER_EXECUTION_BLOCKED = 5
+    OBSERVER_EXECUTION_INVESTIGATION_BLOCKED = 6
+    OBSERVER_EXECUTION_INVESTIGATION_DEGRADED = 7
 
   absentObservations = _messages.MessageField('AbsentObservation', 1, repeated=True)
   logs = _messages.MessageField('ObserverLogEntry', 2, repeated=True)
@@ -1747,8 +1771,9 @@ class ObserverStatus(_messages.Message):
   observerExecutionState = _messages.EnumField('ObserverExecutionStateValueValuesEnum', 7)
   observerVersion = _messages.StringField(8)
   startTime = _messages.StringField(9)
-  updateComment = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  text = _messages.StringField(10, repeated=True)
+  updateComment = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class Operation(_messages.Message):

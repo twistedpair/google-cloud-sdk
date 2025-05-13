@@ -57,7 +57,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create method for the projects_locations_datasetConfigs service.
+      r"""Creates a dataset configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsCreateRequest) input message
@@ -84,7 +84,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete method for the projects_locations_datasetConfigs service.
+      r"""Deletes a dataset configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsDeleteRequest) input message
@@ -111,7 +111,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get method for the projects_locations_datasetConfigs service.
+      r"""Gets the dataset configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsGetRequest) input message
@@ -138,7 +138,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def LinkDataset(self, request, global_params=None):
-      r"""LinkDataset method for the projects_locations_datasetConfigs service.
+      r"""Links a dataset to BigQuery in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsLinkDatasetRequest) input message
@@ -165,7 +165,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List method for the projects_locations_datasetConfigs service.
+      r"""Lists the dataset configurations in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsListRequest) input message
@@ -192,7 +192,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patch method for the projects_locations_datasetConfigs service.
+      r"""Updates a dataset configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsPatchRequest) input message
@@ -219,7 +219,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def UnlinkDataset(self, request, global_params=None):
-      r"""UnlinkDataset method for the projects_locations_datasetConfigs service.
+      r"""Unlinks a dataset from BigQuery in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsDatasetConfigsUnlinkDatasetRequest) input message
@@ -256,7 +256,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (StorageinsightsProjectsLocationsOperationsCancelRequest) input message
@@ -374,7 +374,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single ReportDetail.
+      r"""Gets an existing inventory report in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsReportDetailsGetRequest) input message
@@ -401,7 +401,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists ReportDetails in a given project and location.
+      r"""Lists the inventory reports in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsReportDetailsListRequest) input message
@@ -438,7 +438,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ReportConfig in a given project and location.
+      r"""Creates a new inventory report configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsCreateRequest) input message
@@ -465,7 +465,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single ReportConfig.
+      r"""Deletes an existing inventory report configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsDeleteRequest) input message
@@ -492,7 +492,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single ReportConfig.
+      r"""Gets the inventory report configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsGetRequest) input message
@@ -519,7 +519,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists ReportConfigs in a given project and location.
+      r"""Lists the inventory report configurations in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsListRequest) input message
@@ -546,7 +546,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single ReportConfig.
+      r"""Updates an existing inventory report configuration in a given project for a given location.
 
       Args:
         request: (StorageinsightsProjectsLocationsReportConfigsPatchRequest) input message
@@ -628,7 +628,7 @@ class StorageinsightsV1(base_api.BaseApiClient):
         method_id='storageinsights.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='StorageinsightsProjectsLocationsListRequest',

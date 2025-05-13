@@ -30,6 +30,7 @@ from googlecloudsdk.core import resources
 _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1',
 }
 _API_NAME = 'networksecurity'
 

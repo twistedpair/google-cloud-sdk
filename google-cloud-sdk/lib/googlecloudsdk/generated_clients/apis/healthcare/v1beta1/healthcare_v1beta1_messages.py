@@ -5900,10 +5900,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(
   Fields:
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to delete, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5919,10 +5919,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to update, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)).
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -5939,11 +5939,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to update, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-      Must match the resource type in the provided content.
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)). Must match the
+      resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -5971,11 +5971,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.M
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to create, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-      Must match the resource type in the provided content.
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)). Must match the
+      resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -6237,11 +6237,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_
       StructureDefinition with this canonical URL must exist in the FHIR
       store.
     type: Required. The FHIR resource type of the resource being validated.
-      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
-      /implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      or [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-      Must match the resource type in the provided content.
+      For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html), or
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)). Must match the
+      resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -6270,10 +6270,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messag
   Fields:
     parent: Required. Name of the FHIR store to retrieve resources from.
     resourceType: Optional. The FHIR resource type to search, such as Patient
-      or Observation. For a complete list, see the FHIR Resource Index ([DSTU2
-      ](https://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      or Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)).
     searchResourcesRequest: A SearchResourcesRequest resource to be passed as
       the request body.
   """
@@ -9232,10 +9232,10 @@ class SearchResourcesRequest(_messages.Message):
 
   Fields:
     resourceType: Optional. The FHIR resource type to search, such as Patient
-      or Observation. For a complete list, see the FHIR Resource Index ([DSTU2
-      ](https://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      or Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)).
   """
 
   resourceType = _messages.StringField(1)

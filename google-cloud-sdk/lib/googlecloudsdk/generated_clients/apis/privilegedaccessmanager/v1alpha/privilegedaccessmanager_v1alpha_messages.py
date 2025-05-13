@@ -354,6 +354,8 @@ class Grant(_messages.Message):
     requestedDuration: Required. The amount of time access is needed for. This
       value should be less than the `max_request_duration` value of the
       entitlement.
+    requestedPrivilegedAccess: Optional. The accesses requested to be granted
+      by this grant.
     requester: Output only. Username of the user who created this grant.
     state: Output only. Current state of this grant.
     timeline: Output only. Timeline of this grant.
@@ -409,10 +411,11 @@ class Grant(_messages.Message):
   name = _messages.StringField(6)
   privilegedAccess = _messages.MessageField('PrivilegedAccess', 7)
   requestedDuration = _messages.StringField(8)
-  requester = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  timeline = _messages.MessageField('Timeline', 11)
-  updateTime = _messages.StringField(12)
+  requestedPrivilegedAccess = _messages.MessageField('RequestedPrivilegedAccess', 9, repeated=True)
+  requester = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  timeline = _messages.MessageField('Timeline', 12)
+  updateTime = _messages.StringField(13)
 
 
 class IAMAccessDenied(_messages.Message):
@@ -2002,6 +2005,71 @@ class Requested(_messages.Message):
   expireTime = _messages.StringField(1)
 
 
+class RequestedPrivilegedAccess(_messages.Message):
+  r"""Privileged access that is requested by a user via a grant.
+
+  Fields:
+    gcpIamAccess: Access to a Google Cloud resource through IAM.
+  """
+
+  gcpIamAccess = _messages.MessageField('RequestedPrivilegedAccessGcpIamAccess', 1)
+
+
+class RequestedPrivilegedAccessGcpIamAccess(_messages.Message):
+  r"""`GcpIamAccess` represents IAM based access control on a Google Cloud
+  resource. Refer to https://cloud.google.com/iam/docs to understand more
+  about IAM.
+
+  Fields:
+    resource: Required. Name of the resource.
+    resourceType: Required. The type of this resource.
+    roleBindings: Optional. Role bindings that are requested as part of the
+      grant.
+  """
+
+  resource = _messages.StringField(1)
+  resourceType = _messages.StringField(2)
+  roleBindings = _messages.MessageField('RequestedPrivilegedAccessGcpIamAccessRoleBinding', 3, repeated=True)
+
+
+class RequestedPrivilegedAccessGcpIamAccessAccessRestrictions(_messages.Message):
+  r"""AccessRestrictions represents a set of resources to further restrict the
+  access to. This is used to get finer grained access as part of a grant. All
+  restrictions are OR-ed with each other.
+
+  Fields:
+    resourceNamePrefixes: Optional. The resource name prefixes to restrict the
+      access to. Follow https://cloud.google.com/iam/docs/conditions-resource-
+      attributes#resource-name format.
+    resourceNames: Optional. The resource names to restrict the access to.
+      Follow https://cloud.google.com/iam/docs/conditions-resource-
+      attributes#resource-name format.
+  """
+
+  resourceNamePrefixes = _messages.StringField(1, repeated=True)
+  resourceNames = _messages.StringField(2, repeated=True)
+
+
+class RequestedPrivilegedAccessGcpIamAccessRoleBinding(_messages.Message):
+  r"""IAM role bindings that are requested as part of the grant.
+
+  Fields:
+    accessRestrictions: Optional. The access restrictions to be applied to the
+      role binding. This further restricts the access of this role binding to
+      specific resources.
+    entitlementConditionExpression: Output only. The IAM condition expression
+      associated with the role at the time of grant request.
+    entitlementRoleBindingId: Required. The role binding id of the role to be
+      granted from the entitlement.
+    role: Output only. The IAM role requested as part of the grant.
+  """
+
+  accessRestrictions = _messages.MessageField('RequestedPrivilegedAccessGcpIamAccessAccessRestrictions', 1)
+  entitlementConditionExpression = _messages.StringField(2)
+  entitlementRoleBindingId = _messages.StringField(3)
+  role = _messages.StringField(4)
+
+
 class RequesterJustificationConfig(_messages.Message):
   r"""Defines how a requester must provide a justification when requesting
   access.
@@ -2051,12 +2119,16 @@ class RoleBinding(_messages.Message):
       condition evaluates to true for their request. This field uses the same
       CEL format as IAM and supports all attributes that IAM supports, except
       tags. https://cloud.google.com/iam/docs/conditions-overview#attributes.
+    id: Output only. The ID corresponding to this role binding in the policy
+      binding. This will be unique within an entitlement across time. Gets re-
+      generated each time the entitlement is updated.
     role: Required. IAM role to be granted.
       https://cloud.google.com/iam/docs/roles-overview.
   """
 
   conditionExpression = _messages.StringField(1)
-  role = _messages.StringField(2)
+  id = _messages.StringField(2)
+  role = _messages.StringField(3)
 
 
 class Scheduled(_messages.Message):

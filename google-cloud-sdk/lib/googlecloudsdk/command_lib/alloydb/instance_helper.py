@@ -104,6 +104,18 @@ def ConstructCreateRequestFromArgsAlpha(
   )
 
 
+def ConstructCreateMachineConfigFromArgs(alloydb_messages, args):
+  """Validates command line input arguments and creates a MachineConfig object."""
+  if args.cpu_count or args.machine_type:
+    return alloydb_messages.MachineConfig(
+        cpuCount=args.cpu_count, machineType=args.machine_type
+    )
+  else:
+    raise DetailedArgumentError(
+        'Either --cpu-count or --machine-type must be specified.'
+    )
+
+
 def _ConstructInstanceFromArgs(client, alloydb_messages, args):
   """Validates command line input arguments and passes parent's resources to create an AlloyDB instance.
 
@@ -121,8 +133,8 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
   instance_resource.availabilityType = ParseAvailabilityType(
       alloydb_messages, args.availability_type
   )
-  instance_resource.machineConfig = alloydb_messages.MachineConfig(
-      cpuCount=args.cpu_count, machineType=args.machine_type
+  instance_resource.machineConfig = ConstructCreateMachineConfigFromArgs(
+      alloydb_messages, args
   )
   instance_ref = client.resource_parser.Create(
       'alloydb.projects.locations.clusters.instances',

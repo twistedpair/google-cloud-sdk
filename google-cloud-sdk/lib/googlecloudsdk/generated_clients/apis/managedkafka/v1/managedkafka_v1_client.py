@@ -46,6 +46,28 @@ class ManagedkafkaV1(base_api.BaseApiClient):
     self.projects_locations_connectClusters_connectors = self.ProjectsLocationsConnectClustersConnectorsService(self)
     self.projects_locations_connectClusters = self.ProjectsLocationsConnectClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_schemaRegistries_compatibility = self.ProjectsLocationsSchemaRegistriesCompatibilityService(self)
+    self.projects_locations_schemaRegistries_config = self.ProjectsLocationsSchemaRegistriesConfigService(self)
+    self.projects_locations_schemaRegistries_contexts_compatibility = self.ProjectsLocationsSchemaRegistriesContextsCompatibilityService(self)
+    self.projects_locations_schemaRegistries_contexts_config = self.ProjectsLocationsSchemaRegistriesContextsConfigService(self)
+    self.projects_locations_schemaRegistries_contexts_mode = self.ProjectsLocationsSchemaRegistriesContextsModeService(self)
+    self.projects_locations_schemaRegistries_contexts_schemas_subjects = self.ProjectsLocationsSchemaRegistriesContextsSchemasSubjectsService(self)
+    self.projects_locations_schemaRegistries_contexts_schemas_types = self.ProjectsLocationsSchemaRegistriesContextsSchemasTypesService(self)
+    self.projects_locations_schemaRegistries_contexts_schemas_versions = self.ProjectsLocationsSchemaRegistriesContextsSchemasVersionsService(self)
+    self.projects_locations_schemaRegistries_contexts_schemas = self.ProjectsLocationsSchemaRegistriesContextsSchemasService(self)
+    self.projects_locations_schemaRegistries_contexts_subjects_versions_referencedby = self.ProjectsLocationsSchemaRegistriesContextsSubjectsVersionsReferencedbyService(self)
+    self.projects_locations_schemaRegistries_contexts_subjects_versions = self.ProjectsLocationsSchemaRegistriesContextsSubjectsVersionsService(self)
+    self.projects_locations_schemaRegistries_contexts_subjects = self.ProjectsLocationsSchemaRegistriesContextsSubjectsService(self)
+    self.projects_locations_schemaRegistries_contexts = self.ProjectsLocationsSchemaRegistriesContextsService(self)
+    self.projects_locations_schemaRegistries_mode = self.ProjectsLocationsSchemaRegistriesModeService(self)
+    self.projects_locations_schemaRegistries_schemas_subjects = self.ProjectsLocationsSchemaRegistriesSchemasSubjectsService(self)
+    self.projects_locations_schemaRegistries_schemas_types = self.ProjectsLocationsSchemaRegistriesSchemasTypesService(self)
+    self.projects_locations_schemaRegistries_schemas_versions = self.ProjectsLocationsSchemaRegistriesSchemasVersionsService(self)
+    self.projects_locations_schemaRegistries_schemas = self.ProjectsLocationsSchemaRegistriesSchemasService(self)
+    self.projects_locations_schemaRegistries_subjects_versions_referencedby = self.ProjectsLocationsSchemaRegistriesSubjectsVersionsReferencedbyService(self)
+    self.projects_locations_schemaRegistries_subjects_versions = self.ProjectsLocationsSchemaRegistriesSubjectsVersionsService(self)
+    self.projects_locations_schemaRegistries_subjects = self.ProjectsLocationsSchemaRegistriesSubjectsService(self)
+    self.projects_locations_schemaRegistries = self.ProjectsLocationsSchemaRegistriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -594,7 +616,7 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         method_id='managedkafka.projects.locations.clusters.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ManagedkafkaProjectsLocationsClustersGetRequest',
@@ -1169,6 +1191,1468 @@ class ManagedkafkaV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ManagedkafkaProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesCompatibilityService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_compatibility resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_compatibility'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesCompatibilityService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CheckCompatibility(self, request, global_params=None):
+      r"""Check compatibility of a schema with all versions or a specific version of a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesCompatibilityCheckCompatibilityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckCompatibilityResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckCompatibility')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckCompatibility.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/compatibility/{compatibilityId}',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.compatibility.checkCompatibility',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='checkCompatibilityRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesCompatibilityCheckCompatibilityRequest',
+        response_type_name='CheckCompatibilityResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesConfigService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_config resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_config'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete schema config for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesConfigDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaConfig) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/config/{configId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.config.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesConfigDeleteRequest',
+        response_type_name='SchemaConfig',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get schema config at global level or for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesConfigGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/config/{configId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.config.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['defaultToGlobal'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesConfigGetRequest',
+        response_type_name='SchemaConfig',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update config at global level or for a subject. Creates a SchemaSubject-level SchemaConfig if it does not exist.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesConfigUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaConfig) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/config/{configId}',
+        http_method='PUT',
+        method_id='managedkafka.projects.locations.schemaRegistries.config.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='updateSchemaConfigRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesConfigUpdateRequest',
+        response_type_name='SchemaConfig',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsCompatibilityService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_compatibility resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_compatibility'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsCompatibilityService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CheckCompatibility(self, request, global_params=None):
+      r"""Check compatibility of a schema with all versions or a specific version of a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsCompatibilityCheckCompatibilityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckCompatibilityResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckCompatibility')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckCompatibility.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/compatibility/{compatibilityId}',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.compatibility.checkCompatibility',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='checkCompatibilityRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsCompatibilityCheckCompatibilityRequest',
+        response_type_name='CheckCompatibilityResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsConfigService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_config resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_config'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete schema config for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaConfig) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/config/{configId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.config.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigDeleteRequest',
+        response_type_name='SchemaConfig',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get schema config at global level or for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/config/{configId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.config.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['defaultToGlobal'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigGetRequest',
+        response_type_name='SchemaConfig',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update config at global level or for a subject. Creates a SchemaSubject-level SchemaConfig if it does not exist.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaConfig) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/config/{configId}',
+        http_method='PUT',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.config.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='updateSchemaConfigRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigUpdateRequest',
+        response_type_name='SchemaConfig',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsModeService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_mode resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_mode'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsModeService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get mode at global level or for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaMode) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/mode/{modeId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.mode.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeGetRequest',
+        response_type_name='SchemaMode',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update mode at global level or for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaMode) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/mode/{modeId}',
+        http_method='PUT',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.mode.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='updateSchemaModeRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeUpdateRequest',
+        response_type_name='SchemaMode',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSchemasSubjectsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_schemas_subjects resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_schemas_subjects'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSchemasSubjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List subjects which reference a particular schema id. The response will be an array of subject names.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasSubjectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/schemas/{schemasId}/subjects',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.schemas.subjects.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted', 'subject'],
+        relative_path='v1/{+parent}/subjects',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasSubjectsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSchemasTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_schemas_types resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_schemas_types'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSchemasTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List the supported schema types. The response will be an array of schema types.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/schemas/types',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.schemas.types.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemas/types',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasTypesListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSchemasVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_schemas_versions resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_schemas_versions'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSchemasVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List the schema versions for the given schema id. The response will be an array of subject-version pairs as: [{"subject":"subject1", "version":1}, {"subject":"subject2", "version":2}].
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/schemas/{schemasId}/versions',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.schemas.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted', 'subject'],
+        relative_path='v1/{+parent}/versions',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasVersionsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSchemasService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_schemas resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_schemas'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSchemasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the schema for the given schema id.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Schema) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/schemas/{schemasId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.schemas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['subject'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetRequest',
+        response_type_name='Schema',
+        supports_download=False,
+    )
+
+    def GetSchema(self, request, global_params=None):
+      r"""Get the schema string for the given schema id. The response will be the schema string.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetSchemaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('GetSchema')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSchema.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/schemas/{schemasId}/schema',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.schemas.getSchema',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['subject'],
+        relative_path='v1/{+name}/schema',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSchemasGetSchemaRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSubjectsVersionsReferencedbyService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_subjects_versions_referencedby resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_subjects_versions_referencedby'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSubjectsVersionsReferencedbyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Get a list of IDs of schemas that reference the schema with the given subject and version.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsReferencedbyListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}/versions/{versionsId}/referencedby',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.versions.referencedby.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/referencedby',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsReferencedbyListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSubjectsVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_subjects_versions resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_subjects_versions'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSubjectsVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Register a new version under a given subject with the given schema.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CreateVersionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}/versions',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.versions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/versions',
+        request_field='createVersionRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsCreateRequest',
+        response_type_name='CreateVersionResponse',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a version of a subject. The response will be the deleted version id.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['permanent'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsDeleteRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a versioned schema (schema with subject/version) of a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}/versions/{versionsId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.versions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['deleted'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsGetRequest',
+        response_type_name='SchemaVersion',
+        supports_download=False,
+    )
+
+    def GetSchema(self, request, global_params=None):
+      r"""Get the schema string only for a version of a subject. The response will be the schema string.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsGetSchemaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('GetSchema')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSchema.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}/versions/{versionsId}/schema',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.versions.getSchema',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['deleted'],
+        relative_path='v1/{+name}/schema',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsGetSchemaRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Get all versions of a subject. The response will be an array of versions of the subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}/versions',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted'],
+        relative_path='v1/{+parent}/versions',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsVersionsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsSubjectsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts_subjects resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts_subjects'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsSubjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a subject. The response will be an array of versions of the deleted subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['permanent'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsDeleteRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List subjects in the schema registry. The response will be an array of subject names.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted', 'subjectPrefix'],
+        relative_path='v1/{+parent}/subjects',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def LookupVersion(self, request, global_params=None):
+      r"""Lookup a schema under the specified subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsLookupVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('LookupVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/subjects/{subjectsId}',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.subjects.lookupVersion',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}',
+        request_field='lookupVersionRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsSubjectsLookupVersionRequest',
+        response_type_name='SchemaVersion',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesContextsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_contexts resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_contexts'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesContextsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the context.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Context) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsGetRequest',
+        response_type_name='Context',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List contexts for a schema registry.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/contexts',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesModeService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_mode resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_mode'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesModeService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get mode at global level or for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesModeGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaMode) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/mode/{modeId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.mode.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesModeGetRequest',
+        response_type_name='SchemaMode',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update mode at global level or for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesModeUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaMode) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/mode/{modeId}',
+        http_method='PUT',
+        method_id='managedkafka.projects.locations.schemaRegistries.mode.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='updateSchemaModeRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesModeUpdateRequest',
+        response_type_name='SchemaMode',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSchemasSubjectsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_schemas_subjects resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_schemas_subjects'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSchemasSubjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List subjects which reference a particular schema id. The response will be an array of subject names.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSchemasSubjectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/schemas/{schemasId}/subjects',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.schemas.subjects.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted', 'subject'],
+        relative_path='v1/{+parent}/subjects',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSchemasSubjectsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSchemasTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_schemas_types resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_schemas_types'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSchemasTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List the supported schema types. The response will be an array of schema types.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSchemasTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/schemas/types',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.schemas.types.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemas/types',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSchemasTypesListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSchemasVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_schemas_versions resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_schemas_versions'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSchemasVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List the schema versions for the given schema id. The response will be an array of subject-version pairs as: [{"subject":"subject1", "version":1}, {"subject":"subject2", "version":2}].
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSchemasVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/schemas/{schemasId}/versions',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.schemas.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted', 'subject'],
+        relative_path='v1/{+parent}/versions',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSchemasVersionsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSchemasService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_schemas resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_schemas'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSchemasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the schema for the given schema id.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Schema) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/schemas/{schemasId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.schemas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['subject'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetRequest',
+        response_type_name='Schema',
+        supports_download=False,
+    )
+
+    def GetSchema(self, request, global_params=None):
+      r"""Get the schema string for the given schema id. The response will be the schema string.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetSchemaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('GetSchema')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSchema.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/schemas/{schemasId}/schema',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.schemas.getSchema',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['subject'],
+        relative_path='v1/{+name}/schema',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSchemasGetSchemaRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSubjectsVersionsReferencedbyService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_subjects_versions_referencedby resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_subjects_versions_referencedby'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSubjectsVersionsReferencedbyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Get a list of IDs of schemas that reference the schema with the given subject and version.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsReferencedbyListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}/versions/{versionsId}/referencedby',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.versions.referencedby.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/referencedby',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsReferencedbyListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSubjectsVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_subjects_versions resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_subjects_versions'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSubjectsVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Register a new version under a given subject with the given schema.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CreateVersionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}/versions',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.versions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/versions',
+        request_field='createVersionRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsCreateRequest',
+        response_type_name='CreateVersionResponse',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a version of a subject. The response will be the deleted version id.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['permanent'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsDeleteRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a versioned schema (schema with subject/version) of a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}/versions/{versionsId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.versions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['deleted'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetRequest',
+        response_type_name='SchemaVersion',
+        supports_download=False,
+    )
+
+    def GetSchema(self, request, global_params=None):
+      r"""Get the schema string only for a version of a subject. The response will be the schema string.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetSchemaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('GetSchema')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSchema.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}/versions/{versionsId}/schema',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.versions.getSchema',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['deleted'],
+        relative_path='v1/{+name}/schema',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsGetSchemaRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Get all versions of a subject. The response will be an array of versions of the subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}/versions',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted'],
+        relative_path='v1/{+parent}/versions',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsVersionsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesSubjectsService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries_subjects resource."""
+
+    _NAME = 'projects_locations_schemaRegistries_subjects'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesSubjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a subject. The response will be an array of versions of the deleted subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['permanent'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsDeleteRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List subjects in the schema registry. The response will be an array of subject names.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deleted', 'subjectPrefix'],
+        relative_path='v1/{+parent}/subjects',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def LookupVersion(self, request, global_params=None):
+      r"""Lookup a schema under the specified subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsLookupVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaVersion) The response message.
+      """
+      config = self.GetMethodConfig('LookupVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/subjects/{subjectsId}',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.subjects.lookupVersion',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}',
+        request_field='lookupVersionRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesSubjectsLookupVersionRequest',
+        response_type_name='SchemaVersion',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSchemaRegistriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_schemaRegistries resource."""
+
+    _NAME = 'projects_locations_schemaRegistries'
+
+    def __init__(self, client):
+      super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a schema registry instance.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaRegistry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries',
+        http_method='POST',
+        method_id='managedkafka.projects.locations.schemaRegistries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemaRegistries',
+        request_field='createSchemaRegistryRequest',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesCreateRequest',
+        response_type_name='SchemaRegistry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a schema registry instance.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the schema registry instance.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaRegistry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesGetRequest',
+        response_type_name='SchemaRegistry',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List schema registries.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSchemaRegistriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries',
+        http_method='GET',
+        method_id='managedkafka.projects.locations.schemaRegistries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemaRegistries',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesListRequest',
+        response_type_name='ListSchemaRegistriesResponse',
         supports_download=False,
     )
 

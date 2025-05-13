@@ -110,7 +110,7 @@ A list of regions can be fetched by running:
 
 
 class ScopeFlagsUsage(enum.Enum):
-  """Enum representing gCloud flag generation options for ResourceArgument."""
+  """Enum representing gcloud flag generation options for ResourceArgument."""
   GENERATE_DEDICATED_SCOPE_FLAGS = 1
   USE_EXISTING_SCOPE_FLAGS = 2
   DONT_USE_SCOPE_FLAGS = 3

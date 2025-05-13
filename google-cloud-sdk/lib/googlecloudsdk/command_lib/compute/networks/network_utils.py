@@ -161,6 +161,18 @@ def AddBgpBestPathSelectionArgGroup(parser):
   )
 
 
+def AddTagsArg(parser):
+  """Adds the --resource-manager-tags flag."""
+  parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+          A comma-separated list of Resource Manager tags to apply to the network.
+      """,
+  )
+
+
 def AddEnableUlaInternalIpv6Arg(parser):
   """Adds the --enable-ula-internal-ipv6 flag."""
   parser.add_argument(

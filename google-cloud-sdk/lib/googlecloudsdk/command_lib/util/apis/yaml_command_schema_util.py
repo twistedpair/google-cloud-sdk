@@ -720,7 +720,7 @@ class ArgObject(arg_utils.ArgObjectType):
 
     api_field = group_data.get('api_field')
 
-    if params := group_data.get(PARAMS) or group_data.get(SPEC):
+    if (params := group_data.get(PARAMS) or group_data.get(SPEC)) is not None:
       spec = cls._SpecFromData(params, api_field, parent_field)
     else:
       spec = None

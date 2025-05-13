@@ -493,6 +493,104 @@ class BackupVault(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
+class CacheConfig(_messages.Message):
+  r"""Configuration of the cache volume.
+
+  Fields:
+    atimeScrubEnabled: Optional. Flag indicating whether the atime based scrub
+      is enabled for the FlexCache volume.
+    atimeScrubMinutes: Optional. Duration in minutes after which inactive
+      files can be scrubbed from FlexCache volume.
+    cachePrePopulate: Optional. Pre-populate cache volume with data from the
+      origin volume.
+    cifsChangeNotifyEnabled: Optional. Flag indicating whether a CIFS change
+      notification is enabled for the FlexCache volume.
+    writeBackEnabled: Optional. Flag indicating whether writeback is enabled
+      for the FlexCache volume.
+  """
+
+  atimeScrubEnabled = _messages.BooleanField(1)
+  atimeScrubMinutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  cachePrePopulate = _messages.MessageField('CachePrePopulate', 3)
+  cifsChangeNotifyEnabled = _messages.BooleanField(4)
+  writeBackEnabled = _messages.BooleanField(5)
+
+
+class CacheParameters(_messages.Message):
+  r"""Cache Parameters for the volume.
+
+  Enums:
+    CacheStateValueValuesEnum: Output only. State of the cache volume
+      indicating the peering status.
+
+  Fields:
+    cacheConfig: Optional. Configuration of the cache volume.
+    cacheState: Output only. State of the cache volume indicating the peering
+      status.
+    command: Output only. Copy-paste-able commands to be used on user's ONTAP
+      to accept peering requests.
+    commandExpiryTime: Output only. Expiration time for the peering command to
+      be executed on user's ONTAP.
+    enableGlobalFileLock: Optional. Field indicating whether cache volume as
+      global file lock enabled.
+    passphrase: Output only. Temporary passphrase generated to accept cluster
+      peering command.
+    peerClusterName: Required. Name of the origin volume's ONTAP cluster.
+    peerIpAddresses: Required. List of IC LIF addresses of the origin volume's
+      ONTAP cluster.
+    peerSvmName: Required. Name of the origin volume's SVM.
+    peerVolumeName: Required. Name of the origin volume for the cache volume.
+  """
+
+  class CacheStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the cache volume indicating the peering status.
+
+    Values:
+      CACHE_STATE_UNSPECIFIED: Default unspecified state.
+      PENDING_CLUSTER_PEERING: State indicating waiting for cluster peering to
+        be established.
+      PENDING_SVM_PEERING: State indicating waiting for SVM peering to be
+        established.
+      PEERED: State indiciating successful establishment of peering with
+        origin volumes's ONTAP cluster.
+      ERROR: Terminal state wherein peering with origin volume's ONTAP cluster
+        has failed.
+    """
+    CACHE_STATE_UNSPECIFIED = 0
+    PENDING_CLUSTER_PEERING = 1
+    PENDING_SVM_PEERING = 2
+    PEERED = 3
+    ERROR = 4
+
+  cacheConfig = _messages.MessageField('CacheConfig', 1)
+  cacheState = _messages.EnumField('CacheStateValueValuesEnum', 2)
+  command = _messages.StringField(3)
+  commandExpiryTime = _messages.StringField(4)
+  enableGlobalFileLock = _messages.BooleanField(5)
+  passphrase = _messages.StringField(6)
+  peerClusterName = _messages.StringField(7)
+  peerIpAddresses = _messages.StringField(8, repeated=True)
+  peerSvmName = _messages.StringField(9)
+  peerVolumeName = _messages.StringField(10)
+
+
+class CachePrePopulate(_messages.Message):
+  r"""Pre-populate cache volume with data from the origin volume.
+
+  Fields:
+    excludePathList: Optional. List of directory-paths to be excluded for pre-
+      population for the FlexCache volume.
+    pathList: Optional. List of directory-paths to be pre-populated for the
+      FlexCache volume.
+    recursion: Optional. Flag indicating whether the directories listed with
+      the pathList need to be recursively pre-populated.
+  """
+
+  excludePathList = _messages.StringField(1, repeated=True)
+  pathList = _messages.StringField(2, repeated=True)
+  recursion = _messages.BooleanField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -3045,6 +3143,7 @@ class StoragePool(_messages.Message):
       provided, it will be calculated based on the total_throughput_mibps
     totalThroughputMibps: Optional. Custom Performance Total Throughput of the
       pool (in MiB/s)
+    unifiedPool: Optional. Flag indicating if the pool has unified storage.
     volumeCapacityGib: Output only. Allocated size of all volumes in GIB in
       the storage pool
     volumeCount: Output only. Volume count of the storage pool
@@ -3164,9 +3263,10 @@ class StoragePool(_messages.Message):
   stateDetails = _messages.StringField(24)
   totalIops = _messages.IntegerField(25)
   totalThroughputMibps = _messages.IntegerField(26)
-  volumeCapacityGib = _messages.IntegerField(27)
-  volumeCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(29)
+  unifiedPool = _messages.BooleanField(27)
+  volumeCapacityGib = _messages.IntegerField(28)
+  volumeCount = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(30)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):
@@ -3325,6 +3425,7 @@ class Volume(_messages.Message):
     activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
       volume.
     backupConfig: BackupConfig of the volume.
+    cacheParameters: Optional. Cache parameters for the volume.
     capacityGib: Required. Capacity in GIB of the volume
     coldTierSizeGib: Output only. Size of the volume cold tier data in GiB.
     createTime: Output only. Create time of the volume
@@ -3531,43 +3632,44 @@ class Volume(_messages.Message):
 
   activeDirectory = _messages.StringField(1)
   backupConfig = _messages.MessageField('BackupConfig', 2)
-  capacityGib = _messages.IntegerField(3)
-  coldTierSizeGib = _messages.IntegerField(4)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
-  exportPolicy = _messages.MessageField('ExportPolicy', 8)
-  hasReplication = _messages.BooleanField(9)
-  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 10)
-  kerberosEnabled = _messages.BooleanField(11)
-  kmsConfig = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  largeCapacity = _messages.BooleanField(14)
-  ldapEnabled = _messages.BooleanField(15)
-  mountOptions = _messages.MessageField('MountOption', 16, repeated=True)
-  multipleEndpoints = _messages.BooleanField(17)
-  name = _messages.StringField(18)
-  network = _messages.StringField(19)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 20, repeated=True)
-  psaRange = _messages.StringField(21)
-  replicaZone = _messages.StringField(22)
-  restoreParameters = _messages.MessageField('RestoreParameters', 23)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 24, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 25)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 26)
-  shareName = _messages.StringField(27)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 28, repeated=True)
-  snapReserve = _messages.FloatField(29)
-  snapshotDirectory = _messages.BooleanField(30)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 31)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  stateDetails = _messages.StringField(33)
-  storagePool = _messages.StringField(34)
-  throughputMibps = _messages.FloatField(35)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 36)
-  unixPermissions = _messages.StringField(37)
-  usedGib = _messages.IntegerField(38)
-  zone = _messages.StringField(39)
+  cacheParameters = _messages.MessageField('CacheParameters', 3)
+  capacityGib = _messages.IntegerField(4)
+  coldTierSizeGib = _messages.IntegerField(5)
+  createTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 8)
+  exportPolicy = _messages.MessageField('ExportPolicy', 9)
+  hasReplication = _messages.BooleanField(10)
+  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 11)
+  kerberosEnabled = _messages.BooleanField(12)
+  kmsConfig = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  largeCapacity = _messages.BooleanField(15)
+  ldapEnabled = _messages.BooleanField(16)
+  mountOptions = _messages.MessageField('MountOption', 17, repeated=True)
+  multipleEndpoints = _messages.BooleanField(18)
+  name = _messages.StringField(19)
+  network = _messages.StringField(20)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 21, repeated=True)
+  psaRange = _messages.StringField(22)
+  replicaZone = _messages.StringField(23)
+  restoreParameters = _messages.MessageField('RestoreParameters', 24)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 25, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 26)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 27)
+  shareName = _messages.StringField(28)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 29, repeated=True)
+  snapReserve = _messages.FloatField(30)
+  snapshotDirectory = _messages.BooleanField(31)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  stateDetails = _messages.StringField(34)
+  storagePool = _messages.StringField(35)
+  throughputMibps = _messages.FloatField(36)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 37)
+  unixPermissions = _messages.StringField(38)
+  usedGib = _messages.IntegerField(39)
+  zone = _messages.StringField(40)
 
 
 class WeeklySchedule(_messages.Message):

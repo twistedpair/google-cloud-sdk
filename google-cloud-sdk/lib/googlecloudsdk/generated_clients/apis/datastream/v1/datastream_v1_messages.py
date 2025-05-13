@@ -1466,11 +1466,16 @@ class MongodbProfile(_messages.Message):
   r"""MongoDB profile.
 
   Fields:
-    hostAddresses: Required. List of host addresses for a MongoDB cluster.
+    hostAddresses: Required. List of host addresses for a MongoDB cluster. For
+      SRV connection format, this list must contain exactly one DNS host
+      without a port. For Standard connection format, this list must contain
+      all the required hosts in the cluster with their respective ports.
     password: Optional. Password for the MongoDB connection. Mutually
       exclusive with the `secret_manager_stored_password` field.
     replicaSet: Optional. Name of the replica set. Only needed for self hosted
-      replica set type MongoDB cluster.
+      replica set type MongoDB cluster. For SRV connection format, this field
+      must be empty. For Standard connection format, this field must be
+      specified.
     secretManagerStoredPassword: Optional. A reference to a Secret Manager
       resource name storing the SQLServer connection password. Mutually
       exclusive with the `password` field.

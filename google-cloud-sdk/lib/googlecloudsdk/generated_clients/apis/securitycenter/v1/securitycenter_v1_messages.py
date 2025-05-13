@@ -1137,7 +1137,7 @@ class CustomModuleValidationError(_messages.Message):
       Required.
     end: The end position of the error in the uploaded text version of the
       module. This field may be omitted if no specific position applies, or if
-      one could not be computed..
+      one could not be computed.
     fieldPath: The path, in RFC 8901 JSON Pointer format, to the field that
       failed validation. This may be left empty if no specific field is
       affected.
@@ -1157,7 +1157,7 @@ class CustomModuleValidationErrors(_messages.Message):
   configuration of an Event Threat Detection Custom Module.
 
   Fields:
-    errors: A CustomModuleValidationError attribute.
+    errors: The list of errors.
   """
 
   errors = _messages.MessageField('CustomModuleValidationError', 1, repeated=True)
@@ -9312,8 +9312,8 @@ class Position(_messages.Message):
   r"""A position in the uploaded text version of a module.
 
   Fields:
-    columnNumber: A integer attribute.
-    lineNumber: A integer attribute.
+    columnNumber: The column number.
+    lineNumber: The line number.
   """
 
   columnNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
