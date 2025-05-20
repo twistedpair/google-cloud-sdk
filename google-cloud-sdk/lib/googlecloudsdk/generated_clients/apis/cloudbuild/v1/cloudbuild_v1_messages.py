@@ -3497,8 +3497,7 @@ class GitSourceRepository(_messages.Message):
   r"""A repository for a git source.
 
   Fields:
-    developerConnect: The Developer Connect Git repository link or the url
-      that matches a repository link in the current project, formatted as
+    developerConnect: The Developer Connect Git repository link formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLink/*`
     url: Location of the Git repository.
   """

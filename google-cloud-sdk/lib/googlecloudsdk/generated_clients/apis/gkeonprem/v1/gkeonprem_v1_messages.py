@@ -6100,6 +6100,7 @@ class VmwareAdminCluster(_messages.Message):
     preparedSecrets: Output only. The VMware admin cluster prepared secrets
       configuration. It should always be enabled by the Central API, instead
       of letting users set it.
+    privateRegistryConfig: Configuration for registry.
     reconciling: Output only. If set, there are currently changes in flight to
       the VMware admin cluster.
     state: Output only. The current state of VMware admin cluster.
@@ -6190,13 +6191,14 @@ class VmwareAdminCluster(_messages.Message):
   onPremVersion = _messages.StringField(19)
   platformConfig = _messages.MessageField('VmwarePlatformConfig', 20)
   preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  status = _messages.MessageField('ResourceStatus', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  validationCheck = _messages.MessageField('ValidationCheck', 27)
-  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 28)
+  privateRegistryConfig = _messages.MessageField('VmwareAdminPrivateRegistryConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  status = _messages.MessageField('ResourceStatus', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  validationCheck = _messages.MessageField('ValidationCheck', 28)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 29)
 
 
 class VmwareAdminControlPlaneNodeConfig(_messages.Message):
@@ -6337,6 +6339,23 @@ class VmwareAdminPreparedSecretsConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class VmwareAdminPrivateRegistryConfig(_messages.Message):
+  r"""VmwareAdminPrivateRegistryConfig represents configuration for admin
+  cluster registry.
+
+  Fields:
+    address: The registry address.
+    caCert: When the container runtime pulls an image from private registry,
+      the registry must prove its identity by presenting a certificate. The
+      registry's certificate is signed by a certificate authority (CA). The
+      container runtime uses the CA's certificate to validate the registry's
+      certificate.
+  """
+
+  address = _messages.StringField(1)
+  caCert = _messages.StringField(2)
 
 
 class VmwareAdminSeesawConfig(_messages.Message):

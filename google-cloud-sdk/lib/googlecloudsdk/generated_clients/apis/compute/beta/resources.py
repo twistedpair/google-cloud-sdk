@@ -411,6 +411,16 @@ class Collections(enum.Enum):
       ['project', 'region', 'packetMirroring'],
       True
   )
+  PREVIEWFEATURES = (
+      'previewFeatures',
+      'projects/{project}/global/previewFeatures/{previewFeature}',
+      {
+          '':
+              'projects/{project}/global/previewFeatures/{previewFeature}',
+      },
+      ['project', 'previewFeature'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',

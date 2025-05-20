@@ -1078,7 +1078,7 @@ def AddProtocol(parser, default='HTTP'):
     default: The default protocol if this flag is unspecified.
   """
   ilb_protocols = 'TCP, UDP, UNSPECIFIED'
-  td_protocols = 'HTTP, HTTPS, HTTP2, GRPC, H2C (beta only)'
+  td_protocols = 'HTTP, HTTPS, HTTP2, GRPC, H2C'
   netlb_protocols = 'TCP, UDP, UNSPECIFIED'
   parser.add_argument(
       '--protocol',
@@ -1094,8 +1094,7 @@ def AddProtocol(parser, default='HTTP'):
       Director), the protocol must be one of: {1}.
 
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal Application
-      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, H2C
-      (beta only).
+      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, H2C.
 
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal proxy
       Network Load Balancer), the protocol must be only TCP.
@@ -1111,7 +1110,7 @@ def AddProtocol(parser, default='HTTP'):
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Global external Application Load Balancer and regional external
       Application Load Balancer), the protocol must be
-      one of: HTTP, HTTPS, HTTP2, H2C (beta only).
+      one of: HTTP, HTTPS, HTTP2, H2C.
 
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Global external proxy Network Load Balancer), the protocol

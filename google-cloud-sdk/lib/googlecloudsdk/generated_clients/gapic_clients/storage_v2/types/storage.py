@@ -2970,6 +2970,8 @@ class ServiceConstants(proto.Message):
 class Bucket(proto.Message):
     r"""A bucket.
 
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         name (str):
             Identifier. The name of the bucket. Format:
@@ -3126,6 +3128,11 @@ class Bucket(proto.Message):
             Optional. The bucket's object retention
             configuration. Must be enabled before objects in
             the bucket may have retention configured.
+        ip_filter (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.IpFilter):
+            Optional. The bucket's IP filter
+            configuration.
+
+            This field is a member of `oneof`_ ``_ip_filter``.
     """
 
     class Billing(proto.Message):
@@ -3661,6 +3668,114 @@ class Bucket(proto.Message):
             message=timestamp_pb2.Timestamp,
         )
 
+    class IpFilter(proto.Message):
+        r"""The `bucket IP
+        filtering <https://cloud.google.com/storage/docs/ip-filtering-overview>`__
+        configuration. Specifies the network sources that can access the
+        bucket, as well as its underlying objects.
+
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            mode (str):
+                The state of the IP filter configuration. Valid values are
+                ``Enabled`` and ``Disabled``. When set to ``Enabled``, IP
+                filtering rules are applied to a bucket and all incoming
+                requests to the bucket are evaluated against these rules.
+                When set to ``Disabled``, IP filtering rules are not applied
+                to a bucket.".
+
+                This field is a member of `oneof`_ ``_mode``.
+            public_network_source (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.IpFilter.PublicNetworkSource):
+                Public IPs allowed to operate or access the
+                bucket.
+
+                This field is a member of `oneof`_ ``_public_network_source``.
+            vpc_network_sources (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.IpFilter.VpcNetworkSource]):
+                Optional. / The list of network sources that
+                are allowed to access operations on the bucket
+                or the underlying objects.
+            allow_cross_org_vpcs (bool):
+                Optional. Whether or not to allow VPCs from
+                orgs different than the bucket's parent org to
+                access the bucket. When set to true, validations
+                on the existence of the VPCs won't be performed.
+                If set to false, each VPC network source will be
+                checked to belong to the same org as the bucket
+                as well as validated for existence.
+        """
+
+        class PublicNetworkSource(proto.Message):
+            r"""The public network IP address ranges that can access the
+            bucket and its data.
+
+            Attributes:
+                allowed_ip_cidr_ranges (MutableSequence[str]):
+                    Optional. The list of IPv4 and IPv6 cidr
+                    blocks that are allowed to operate or access the
+                    bucket and its underlying objects.
+            """
+
+            allowed_ip_cidr_ranges: MutableSequence[str] = proto.RepeatedField(
+                proto.STRING,
+                number=1,
+            )
+
+        class VpcNetworkSource(proto.Message):
+            r"""The list of VPC networks that can access the bucket.
+
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+            Attributes:
+                network (str):
+                    Name of the network.
+
+                    Format: ``projects/PROJECT_ID/global/networks/NETWORK_NAME``
+
+                    This field is a member of `oneof`_ ``_network``.
+                allowed_ip_cidr_ranges (MutableSequence[str]):
+                    Optional. The list of public or private IPv4 and IPv6 CIDR
+                    ranges that can access the bucket. In the CIDR IP address
+                    block, the specified IP address must be properly truncated,
+                    meaning all the host bits must be zero or else the input is
+                    considered malformed. For example, ``192.0.2.0/24`` is
+                    accepted but ``192.0.2.1/24`` is not. Similarly, for IPv6,
+                    ``2001:db8::/32`` is accepted whereas ``2001:db8::1/32`` is
+                    not.
+            """
+
+            network: str = proto.Field(
+                proto.STRING,
+                number=1,
+                optional=True,
+            )
+            allowed_ip_cidr_ranges: MutableSequence[str] = proto.RepeatedField(
+                proto.STRING,
+                number=2,
+            )
+
+        mode: str = proto.Field(
+            proto.STRING,
+            number=1,
+            optional=True,
+        )
+        public_network_source: 'Bucket.IpFilter.PublicNetworkSource' = proto.Field(
+            proto.MESSAGE,
+            number=2,
+            optional=True,
+            message='Bucket.IpFilter.PublicNetworkSource',
+        )
+        vpc_network_sources: MutableSequence['Bucket.IpFilter.VpcNetworkSource'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=3,
+            message='Bucket.IpFilter.VpcNetworkSource',
+        )
+        allow_cross_org_vpcs: bool = proto.Field(
+            proto.BOOL,
+            number=4,
+        )
+
     class HierarchicalNamespace(proto.Message):
         r"""Configuration for a bucket's hierarchical namespace feature.
 
@@ -3818,6 +3933,12 @@ class Bucket(proto.Message):
         proto.MESSAGE,
         number=33,
         message=ObjectRetention,
+    )
+    ip_filter: IpFilter = proto.Field(
+        proto.MESSAGE,
+        number=38,
+        optional=True,
+        message=IpFilter,
     )
 
 

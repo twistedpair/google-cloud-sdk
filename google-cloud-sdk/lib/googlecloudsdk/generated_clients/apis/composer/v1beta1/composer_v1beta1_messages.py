@@ -443,9 +443,9 @@ class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Mes
   r"""A ComposerProjectsLocationsEnvironmentsRestartWebServerRequest object.
 
   Fields:
-    name: The resource name of the environment to restart the web server for,
-      in the form: "projects/{projectId}/locations/{locationId}/environments/{
-      environmentId}"
+    name: Required. The resource name of the environment to restart the web
+      server for, in the form: "projects/{projectId}/locations/{locationId}/en
+      vironments/{environmentId}"
     restartWebServerRequest: A RestartWebServerRequest resource to be passed
       as the request body.
   """

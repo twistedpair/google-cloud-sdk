@@ -104,6 +104,7 @@ class ClusterInfo(_messages.Message):
       CANCELLED: Cancelled state.
       ERROR: Error state.
       UNCHANGED: Unchanged state.
+      SKIPPED: Skipped state.
     """
     STATE_UNSPECIFIED = 0
     WAITING = 1
@@ -114,6 +115,7 @@ class ClusterInfo(_messages.Message):
     CANCELLED = 6
     ERROR = 7
     UNCHANGED = 8
+    SKIPPED = 9
 
   current = _messages.MessageField('ResourceBundleDeploymentInfo', 1)
   desired = _messages.MessageField('ResourceBundleDeploymentInfo', 2)

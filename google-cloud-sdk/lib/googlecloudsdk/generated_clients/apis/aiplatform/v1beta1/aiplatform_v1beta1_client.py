@@ -181,6 +181,9 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.publishers_models = self.PublishersModelsService(self)
     self.publishers = self.PublishersService(self)
+    self.reasoningEngines_sessions_events = self.ReasoningEnginesSessionsEventsService(self)
+    self.reasoningEngines_sessions = self.ReasoningEnginesSessionsService(self)
+    self.reasoningEngines = self.ReasoningEnginesService(self)
 
   class BatchPredictionJobsService(base_api.BaseApiService):
     """Service class for the batchPredictionJobs resource."""
@@ -687,6 +690,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchPredictOperation(self, request, global_params=None):
+      r"""Fetch an asynchronous online prediction operation.
+
+      Args:
+        request: (AiplatformEndpointsFetchPredictOperationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('FetchPredictOperation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchPredictOperation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:fetchPredictOperation',
+        http_method='POST',
+        method_id='aiplatform.endpoints.fetchPredictOperation',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:fetchPredictOperation',
+        request_field='googleCloudAiplatformV1beta1FetchPredictOperationRequest',
+        request_type_name='AiplatformEndpointsFetchPredictOperationRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def GenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs.
 
@@ -738,6 +768,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1PredictRequest',
         request_type_name='AiplatformEndpointsPredictRequest',
         response_type_name='GoogleCloudAiplatformV1beta1PredictResponse',
+        supports_download=False,
+    )
+
+    def PredictLongRunning(self, request, global_params=None):
+      r"""PredictLongRunning method for the endpoints service.
+
+      Args:
+        request: (AiplatformEndpointsPredictLongRunningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('PredictLongRunning')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PredictLongRunning.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:predictLongRunning',
+        http_method='POST',
+        method_id='aiplatform.endpoints.predictLongRunning',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predictLongRunning',
+        request_field='googleCloudAiplatformV1beta1PredictLongRunningRequest',
+        request_type_name='AiplatformEndpointsPredictLongRunningRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -9811,6 +9868,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsIndexesGetRequest',
         response_type_name='GoogleCloudAiplatformV1beta1Index',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Imports an Index from an external source (e.g., BigQuery).
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}:import',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexes.import',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:import',
+        request_field='googleCloudAiplatformV1beta1ImportIndexRequest',
+        request_type_name='AiplatformProjectsLocationsIndexesImportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -21256,6 +21340,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchPredictOperation(self, request, global_params=None):
+      r"""Fetch an asynchronous online prediction operation.
+
+      Args:
+        request: (AiplatformPublishersModelsFetchPredictOperationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('FetchPredictOperation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchPredictOperation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:fetchPredictOperation',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.fetchPredictOperation',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:fetchPredictOperation',
+        request_field='googleCloudAiplatformV1beta1FetchPredictOperationRequest',
+        request_type_name='AiplatformPublishersModelsFetchPredictOperationRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def GenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs.
 
@@ -21364,6 +21475,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PredictLongRunning(self, request, global_params=None):
+      r"""PredictLongRunning method for the publishers_models service.
+
+      Args:
+        request: (AiplatformPublishersModelsPredictLongRunningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('PredictLongRunning')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PredictLongRunning.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:predictLongRunning',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.predictLongRunning',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predictLongRunning',
+        request_field='googleCloudAiplatformV1beta1PredictLongRunningRequest',
+        request_type_name='AiplatformPublishersModelsPredictLongRunningRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def StreamGenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs with streaming support.
 
@@ -21400,3 +21538,409 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.PublishersService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ReasoningEnginesSessionsEventsService(base_api.BaseApiService):
+    """Service class for the reasoningEngines_sessions_events resource."""
+
+    _NAME = 'reasoningEngines_sessions_events'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ReasoningEnginesSessionsEventsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists Events in a given session.
+
+      Args:
+        request: (AiplatformReasoningEnginesSessionsEventsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}/events',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.sessions.events.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/events',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSessionsEventsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListEventsResponse',
+        supports_download=False,
+    )
+
+  class ReasoningEnginesSessionsService(base_api.BaseApiService):
+    """Service class for the reasoningEngines_sessions resource."""
+
+    _NAME = 'reasoningEngines_sessions'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ReasoningEnginesSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AppendEvent(self, request, global_params=None):
+      r"""Appends an event to a given session.
+
+      Args:
+        request: (GoogleCloudAiplatformV1beta1SessionEvent) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1AppendEventResponse) The response message.
+      """
+      config = self.GetMethodConfig('AppendEvent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AppendEvent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}:appendEvent',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.sessions.appendEvent',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:appendEvent',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1SessionEvent',
+        response_type_name='GoogleCloudAiplatformV1beta1AppendEventResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Session.
+
+      Args:
+        request: (AiplatformReasoningEnginesSessionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.sessions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/sessions',
+        request_field='googleCloudAiplatformV1beta1Session',
+        request_type_name='AiplatformReasoningEnginesSessionsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes details of the specific Session.
+
+      Args:
+        request: (AiplatformReasoningEnginesSessionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}',
+        http_method='DELETE',
+        method_id='aiplatform.reasoningEngines.sessions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSessionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of the specific Session.
+
+      Args:
+        request: (AiplatformReasoningEnginesSessionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Session) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.sessions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSessionsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Session',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Sessions in a given reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesSessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.sessions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/sessions',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesSessionsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListSessionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specific Session.
+
+      Args:
+        request: (AiplatformReasoningEnginesSessionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Session) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}',
+        http_method='PATCH',
+        method_id='aiplatform.reasoningEngines.sessions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1Session',
+        request_type_name='AiplatformReasoningEnginesSessionsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Session',
+        supports_download=False,
+    )
+
+  class ReasoningEnginesService(base_api.BaseApiService):
+    """Service class for the reasoningEngines resource."""
+
+    _NAME = 'reasoningEngines'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ReasoningEnginesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=['parent'],
+        relative_path='v1beta1/reasoningEngines',
+        request_field='googleCloudAiplatformV1beta1ReasoningEngine',
+        request_type_name='AiplatformReasoningEnginesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}',
+        http_method='DELETE',
+        method_id='aiplatform.reasoningEngines.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ReasoningEngine) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}',
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ReasoningEngine',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists reasoning engines in a location.
+
+      Args:
+        request: (AiplatformReasoningEnginesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListReasoningEnginesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='aiplatform.reasoningEngines.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1beta1/reasoningEngines',
+        request_field='',
+        request_type_name='AiplatformReasoningEnginesListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListReasoningEnginesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}',
+        http_method='PATCH',
+        method_id='aiplatform.reasoningEngines.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1ReasoningEngine',
+        request_type_name='AiplatformReasoningEnginesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Query(self, request, global_params=None):
+      r"""Queries using a reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1QueryReasoningEngineResponse) The response message.
+      """
+      config = self.GetMethodConfig('Query')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Query.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}:query',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.query',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:query',
+        request_field='googleCloudAiplatformV1beta1QueryReasoningEngineRequest',
+        request_type_name='AiplatformReasoningEnginesQueryRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1QueryReasoningEngineResponse',
+        supports_download=False,
+    )
+
+    def StreamQuery(self, request, global_params=None):
+      r"""Streams queries using a reasoning engine.
+
+      Args:
+        request: (AiplatformReasoningEnginesStreamQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('StreamQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/reasoningEngines/{reasoningEnginesId}:streamQuery',
+        http_method='POST',
+        method_id='aiplatform.reasoningEngines.streamQuery',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:streamQuery',
+        request_field='googleCloudAiplatformV1beta1StreamQueryReasoningEngineRequest',
+        request_type_name='AiplatformReasoningEnginesStreamQueryRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )

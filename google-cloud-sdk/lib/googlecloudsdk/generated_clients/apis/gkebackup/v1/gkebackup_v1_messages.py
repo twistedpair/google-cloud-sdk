@@ -266,9 +266,8 @@ class BackupChannel(_messages.Message):
     description: Optional. User specified descriptive string for this
       BackupChannel.
     destinationProject: Required. Immutable. The project where Backups are
-      allowed to be stored. The format is `projects/{project}`. Currently,
-      {project} can only be the project number. Support for project IDs will
-      be added in the future.
+      allowed to be stored. The format is `projects/{projectId}` or
+      `projects/{projectNumber}`.
     destinationProjectId: Output only. The project_id where Backups are
       allowed to be stored. Example Project ID: "my-project-id". This will be
       an OUTPUT_ONLY field to return the project_id of the destination
@@ -359,6 +358,36 @@ class BackupConfig(_messages.Message):
   permissiveMode = _messages.BooleanField(5)
   selectedApplications = _messages.MessageField('NamespacedNames', 6)
   selectedNamespaces = _messages.MessageField('Namespaces', 7)
+
+
+class BackupConfigDetails(_messages.Message):
+  r"""BackupConfigDetails defines the configuration of Backups created via
+  this BackupPlan.
+
+  Fields:
+    allNamespaces: Output only. If True, include all namespaced resources
+    encryptionKey: Output only. This defines a customer managed encryption key
+      that will be used to encrypt the "config" portion (the Kubernetes
+      resources) of Backups created via this plan. Default (empty): Config
+      backup artifacts will not be encrypted.
+    includeSecrets: Output only. This flag specifies whether Kubernetes Secret
+      resources should be included when they fall into the scope of Backups.
+      Default: False
+    includeVolumeData: Output only. This flag specifies whether volume data
+      should be backed up when PVCs are included in the scope of a Backup.
+      Default: False
+    selectedApplications: Output only. If set, include just the resources
+      referenced by the listed ProtectedApplications.
+    selectedNamespaces: Output only. If set, include just the resources in the
+      listed namespaces.
+  """
+
+  allNamespaces = _messages.BooleanField(1)
+  encryptionKey = _messages.MessageField('EncryptionKey', 2)
+  includeSecrets = _messages.BooleanField(3)
+  includeVolumeData = _messages.BooleanField(4)
+  selectedApplications = _messages.MessageField('NamespacedNames', 5)
+  selectedNamespaces = _messages.MessageField('Namespaces', 6)
 
 
 class BackupPlan(_messages.Message):
@@ -626,6 +655,8 @@ class BackupPlanDetails(_messages.Message):
     StateValueValuesEnum: Output only. State of the BackupPlan.
 
   Fields:
+    backupConfigDetails: Output only. Contains details about the BackupConfig
+      of Backups created via this BackupPlan.
     lastSuccessfulBackup: Output only. The fully qualified name of the last
       successful Backup created under this BackupPlan.
       `projects/*/locations/*/backupPlans/*/backups/*`
@@ -637,6 +668,8 @@ class BackupPlanDetails(_messages.Message):
       sourced from BackupPlan.
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
+    retentionPolicyDetails: Output only. Contains details about the
+      RetentionPolicy of Backups created via this BackupPlan.
     rpoRiskLevel: Output only. A number that represents the current risk level
       of this BackupPlan from RPO perspective with 1 being no risk and 5 being
       highest risk.
@@ -664,12 +697,14 @@ class BackupPlanDetails(_messages.Message):
     DEACTIVATED = 5
     DELETING = 6
 
-  lastSuccessfulBackup = _messages.StringField(1)
-  lastSuccessfulBackupTime = _messages.StringField(2)
-  nextScheduledBackupTime = _messages.StringField(3)
-  protectedPodCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  rpoRiskLevel = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  backupConfigDetails = _messages.MessageField('BackupConfigDetails', 1)
+  lastSuccessfulBackup = _messages.StringField(2)
+  lastSuccessfulBackupTime = _messages.StringField(3)
+  nextScheduledBackupTime = _messages.StringField(4)
+  protectedPodCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  retentionPolicyDetails = _messages.MessageField('RetentionPolicyDetails', 6)
+  rpoRiskLevel = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class Binding(_messages.Message):
@@ -3213,9 +3248,8 @@ class RestoreChannel(_messages.Message):
     description: Optional. User specified descriptive string for this
       RestoreChannel.
     destinationProject: Required. Immutable. The project into which the
-      backups will be restored. The format is `projects/{project}`. Currently,
-      {project} can only be the project number. Support for project IDs will
-      be added in the future.
+      backups will be restored. The format is `projects/{projectId}` or
+      `projects/{projectNumber}`.
     destinationProjectId: Output only. The project_id where backups will be
       restored. Example Project ID: "my-project-id". This will be an
       OUTPUT_ONLY field to return the project_id of the destination project.
@@ -3721,6 +3755,31 @@ class RetentionPolicy(_messages.Message):
   backupDeleteLockDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backupRetainDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   locked = _messages.BooleanField(3)
+
+
+class RetentionPolicyDetails(_messages.Message):
+  r"""RetentionPolicyDetails defines a Backup retention policy for a
+  BackupPlan.
+
+  Fields:
+    backupDeleteLockDays: Optional. Minimum age for Backups created via this
+      BackupPlan (in days). This field MUST be an integer value between 0-90
+      (inclusive). A Backup created under this BackupPlan will NOT be
+      deletable until it reaches Backup's (create_time +
+      backup_delete_lock_days). Updating this field of a BackupPlan does NOT
+      affect existing Backups under it. Backups created AFTER a successful
+      update will inherit the new value. Default: 0 (no delete blocking)
+    backupRetainDays: Optional. The default maximum age of a Backup created
+      via this BackupPlan. This field MUST be an integer value >= 0 and <=
+      365. If specified, a Backup created under this BackupPlan will be
+      automatically deleted after its age reaches (create_time +
+      backup_retain_days). If not specified, Backups created under this
+      BackupPlan will NOT be subject to automatic deletion. Default: 0 (no
+      automatic deletion)
+  """
+
+  backupDeleteLockDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  backupRetainDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class RpoConfig(_messages.Message):

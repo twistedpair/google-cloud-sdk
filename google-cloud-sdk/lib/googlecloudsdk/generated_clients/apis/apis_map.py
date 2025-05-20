@@ -1398,6 +1398,16 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.configdelivery.v1beta',
+                    client_classpath='configdelivery_v1beta_client.ConfigdeliveryV1beta',
+                    base_url='https://configdelivery.googleapis.com/',
+                    messages_modulepath='configdelivery_v1beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'connectgateway': {
         'v1':

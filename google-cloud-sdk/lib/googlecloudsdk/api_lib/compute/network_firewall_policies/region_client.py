@@ -51,8 +51,38 @@ class RegionNetworkFirewallPolicy(object):
     )
 
   def _MakeAddAssociationRequestTuple(
-      self, association, firewall_policy, replace_existing_association
+      self,
+      association,
+      firewall_policy,
+      replace_existing_association,
+      associated_policy_to_be_replaced,
+      support_associated_policy_to_be_replaced,
   ):
+    r"""Returns the specified accelerator type.
+
+    Args:
+      association: Input message
+      firewall_policy: Firewall Policy to attach
+      replace_existing_association: Should the call replace existing association
+      associated_policy_to_be_replaced: Which policy should be replaced
+      support_associated_policy_to_be_replaced: Is
+        associated_policy_to_be_replaced supported in API
+    """
+    if support_associated_policy_to_be_replaced:
+      return (
+          self._client.regionNetworkFirewallPolicies,
+          'AddAssociation',
+          self._messages.ComputeRegionNetworkFirewallPoliciesAddAssociationRequest(
+              firewallPolicyAssociation=association,
+              firewallPolicy=firewall_policy,
+              replaceExistingAssociation=replace_existing_association
+              if associated_policy_to_be_replaced is None
+              else None,
+              associatedPolicyToBeReplaced=associated_policy_to_be_replaced,
+              project=self.ref.project,
+              region=self.ref.region,
+          ),
+      )
     return (
         self._client.regionNetworkFirewallPolicies,
         'AddAssociation',
@@ -192,12 +222,18 @@ class RegionNetworkFirewallPolicy(object):
       association=None,
       firewall_policy=None,
       replace_existing_association=False,
+      associated_policy_to_be_replaced=None,
+      support_associated_policy_to_be_replaced=False,
       only_generate_request=False,
   ):
     """Sends request to add an association."""
     requests = [
         self._MakeAddAssociationRequestTuple(
-            association, firewall_policy, replace_existing_association
+            association,
+            firewall_policy,
+            replace_existing_association,
+            associated_policy_to_be_replaced,
+            support_associated_policy_to_be_replaced,
         )
     ]
     if not only_generate_request:

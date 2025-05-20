@@ -28,6 +28,9 @@ class CloudLocation(_messages.Message):
       the cloud location. This represents the average percentage of time
       customers' application will be running on carbon-free energy. See
       https://cloud.google.com/sustainability/region-carbon for more details.
+      There is a difference between default value 0 and unset value. 0 means
+      the carbon free energy percentage is 0%, while unset value means the
+      carbon footprint data is not available.
     cloudLocationType: Optional. The type of the cloud location.
     cloudProvider: Optional. The provider of the cloud location. Values can be
       GCP, 3P providers like AWS and Azure, or private deployments.
@@ -68,14 +71,12 @@ class CloudLocation(_messages.Message):
       CLOUD_PROVIDER_AWS: Cloud provider type for AWS.
       CLOUD_PROVIDER_AZURE: Cloud provider type for Azure.
       CLOUD_PROVIDER_OCI: Cloud provider type for OCI.
-      CLOUD_PROVIDER_PRIVATE: Cloud provider type for private deployments.
     """
     CLOUD_PROVIDER_UNSPECIFIED = 0
     CLOUD_PROVIDER_GCP = 1
     CLOUD_PROVIDER_AWS = 2
     CLOUD_PROVIDER_AZURE = 3
     CLOUD_PROVIDER_OCI = 4
-    CLOUD_PROVIDER_PRIVATE = 5
 
   carbonFreeEnergyPercentage = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   cloudLocationType = _messages.EnumField('CloudLocationTypeValueValuesEnum', 2)

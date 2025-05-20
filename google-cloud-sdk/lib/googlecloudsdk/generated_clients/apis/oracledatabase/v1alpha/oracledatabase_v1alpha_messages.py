@@ -1243,6 +1243,8 @@ class CloudVmCluster(_messages.Message):
     gcpOracleZone: Output only. Google Cloud Platform location where Oracle
       Exadata is hosted. It is same as Google Cloud Platform Oracle zone of
       Exadata infrastructure.
+    identityConnector: Optional. The identity connector details which will
+      allow OCI to securely access the resources in the customer project.
     labels: Optional. Labels or tags associated with the VM Cluster.
     name: Identifier. The name of the VM Cluster resource with the format:
       projects/{project}/locations/{region}/cloudVmClusters/{cloud_vm_cluster}
@@ -1290,12 +1292,13 @@ class CloudVmCluster(_messages.Message):
   displayName = _messages.StringField(5)
   exadataInfrastructure = _messages.StringField(6)
   gcpOracleZone = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  odbNetwork = _messages.StringField(11)
-  odbSubnet = _messages.StringField(12)
-  properties = _messages.MessageField('CloudVmClusterProperties', 13)
+  identityConnector = _messages.MessageField('IdentityConnector', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  odbNetwork = _messages.StringField(12)
+  odbSubnet = _messages.StringField(13)
+  properties = _messages.MessageField('CloudVmClusterProperties', 14)
 
 
 class CloudVmClusterProperties(_messages.Message):
@@ -1977,6 +1980,94 @@ class ExadbVmClusterStorageDetails(_messages.Message):
   totalSizeGbs = _messages.IntegerField(1)
 
 
+class ExascaleDbStorageDetails(_messages.Message):
+  r"""The storage details of the ExascaleDbStorageVault.
+
+  Fields:
+    availableSizeGbs: Optional. The available storage capacity for the
+      ExascaleDbStorageVault, in gigabytes (GB).
+    totalSizeGbs: Optional. The total storage allocation for the
+      ExascaleDbStorageVault, in gigabytes (GB).
+  """
+
+  availableSizeGbs = _messages.IntegerField(1)
+  totalSizeGbs = _messages.IntegerField(2)
+
+
+class ExascaleDbStorageVault(_messages.Message):
+  r"""ExascaleDbStorageVault represents a storage vault exadb vm cluster
+  resource. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/ExascaleDbStorageVault/
+
+  Fields:
+    createTime: Output only. The date and time when the ExascaleDbStorageVault
+      was created.
+    displayName: Required. The display name for the ExascaleDbStorageVault.
+      The name does not have to be unique within your project. The name must
+      be 1-255 characters long and can only contain alphanumeric characters.
+    gcpOracleZone: Required. The zone where Oracle ExascaleDbStorageVault is
+      hosted. It is an isolated area within a location, designed for single
+      point of failure. Example: us-east4-b-r1, us-central1-a.
+    name: Identifier. The resource name of the ExascaleDbStorageVault. Format:
+      projects/{project}/locations/{location}/exascaleDbStorageVaults/{exascal
+      e_db_storage_vault}
+    properties: Required. The properties of the ExascaleDbStorageVault.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gcpOracleZone = _messages.StringField(3)
+  name = _messages.StringField(4)
+  properties = _messages.MessageField('ExascaleDbStorageVaultProperties', 5)
+
+
+class ExascaleDbStorageVaultProperties(_messages.Message):
+  r"""The properties of the ExascaleDbStorageVault.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the
+      ExascaleDbStorageVault.
+
+  Fields:
+    description: Optional. The description of the ExascaleDbStorageVault.
+    exascaleDbStorageDetails: Optional. VM cluster storage missing in API
+      spec.
+    ocid: Output only. The OCID for the ExascaleDbStorageVault.
+    state: Output only. The state of the ExascaleDbStorageVault.
+    timeZone: Optional. The time zone of the ExascaleDbStorageVault.
+    vmClusterIds: Output only. The list of VM cluster OCIDs associated with
+      the ExascaleDbStorageVault.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the ExascaleDbStorageVault.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the ExascaleDbStorageVault is
+        unspecified.
+      PROVISIONING: The ExascaleDbStorageVault is being provisioned.
+      AVAILABLE: The ExascaleDbStorageVault is available.
+      UPDATING: The ExascaleDbStorageVault is being updated.
+      TERMINATING: The ExascaleDbStorageVault is being deleted.
+      TERMINATED: The ExascaleDbStorageVault has been deleted.
+      FAILED: The ExascaleDbStorageVault has failed.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    UPDATING = 3
+    TERMINATING = 4
+    TERMINATED = 5
+    FAILED = 6
+
+  description = _messages.StringField(1)
+  exascaleDbStorageDetails = _messages.MessageField('ExascaleDbStorageDetails', 2)
+  ocid = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  timeZone = _messages.MessageField('TimeZone', 5)
+  vmClusterIds = _messages.StringField(6, repeated=True)
+
+
 class GenerateAutonomousDatabaseWalletRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.GenerateWallet`.
 
@@ -2035,6 +2126,20 @@ class GiVersion(_messages.Message):
 
   name = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class IdentityConnector(_messages.Message):
+  r"""The identity connector details which will allow OCI to securely access
+  the resources in the customer project.
+
+  Fields:
+    serviceAgentEmail: Required. A google managed service account on which
+      customers can grant roles to access resources in the customer project.
+      Example: `p176944527254-55-75119d87fd8f@gcp-sa-
+      oci.iam.gserviceaccount.com`
+  """
+
+  serviceAgentEmail = _messages.StringField(1)
 
 
 class ListAutonomousDatabaseBackupsResponse(_messages.Message):
@@ -2176,6 +2281,21 @@ class ListExadbVmClustersResponse(_messages.Message):
   """
 
   exadbVmClusters = _messages.MessageField('ExadbVmCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListExascaleDbStorageVaultsResponse(_messages.Message):
+  r"""The response for `ExascaleDbStorageVault.List`.
+
+  Fields:
+    exascaleDbStorageVaults: The ExascaleDbStorageVaults.
+    nextPageToken: A token identifying a page of results the server should
+      return. If present, the next page token can be provided to a subsequent
+      ListExascaleDbStorageVaults call to list the next page. If empty, there
+      are no more pages.
+  """
+
+  exascaleDbStorageVaults = _messages.MessageField('ExascaleDbStorageVault', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3288,7 +3408,7 @@ class OracledatabaseProjectsLocationsCloudVmClustersDbNodesListRequest(_messages
       return.
     parent: Required. The parent value for database node in the following
       format: projects/{project}/locations/{location}/cloudVmClusters/{cloudVm
-      Cluster}.
+      Cluster}. .
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3468,6 +3588,39 @@ class OracledatabaseProjectsLocationsExadbVmClustersCreateRequest(_messages.Mess
   requestId = _messages.StringField(4)
 
 
+class OracledatabaseProjectsLocationsExadbVmClustersDbNodesGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersDbNodesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the database node in the following format: pro
+      jects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}/
+      dbNodes/{db_node}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 db nodes will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the node should
+      return.
+    parent: Required. The parent value for database node in the following
+      format: projects/{project}/locations/{location}/cloudVmClusters/{cloudVm
+      Cluster}. .
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsExadbVmClustersDeleteRequest object.
 
@@ -3513,6 +3666,65 @@ class OracledatabaseProjectsLocationsExadbVmClustersListRequest(_messages.Messag
       should return.
     parent: Required. The parent value for ExadbVmClusters in the following
       format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ExascaleDbStorageVault in the following
+      format: projects/{project}/locations/{location}/exascaleDbStorageVaults/
+      {exascale_db_storage_vault}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ExascaleDbStorageVault in the following
+      format: projects/{project}/locations/{location}/exascaleDbStorageVaults/
+      {exascale_db_storage_vault}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsExascaleDbStorageVaultsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsExascaleDbStorageVaultsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filter the list as specified in https://google.aip.dev/160.
+    orderBy: Optional. An expression for ordering the results of the request.
+      Order results as specified in https://google.aip.dev/132.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 ExascaleDbStorageVaults will be returned. The maximum value
+      is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent value for ExascaleDbStorageVault in the
+      following format: projects/{project}/locations/{location}.
   """
 
   filter = _messages.StringField(1)

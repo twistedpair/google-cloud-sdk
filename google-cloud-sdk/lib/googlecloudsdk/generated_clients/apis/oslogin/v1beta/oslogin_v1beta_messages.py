@@ -138,8 +138,8 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
 
   Fields:
     name: Required. The unique ID for the user in format `users/{user}`.
-    projectId: The project ID of the Google Cloud Platform project.
-    systemId: A system ID for filtering the results of the request.
+    projectId: Required. The project ID of the Google Cloud Platform project.
+    systemId: Optional. A system ID for filtering the results of the request.
     view: The view configures whether to retrieve security keys information.
   """
 
@@ -215,7 +215,7 @@ class OsloginUsersProjectsLocationsSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsLocationsSignSshPublicKeyRequest object.
 
   Fields:
-    parent: The parent project and region for the signing request.
+    parent: Required. The parent project and region for the signing request.
     signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
       as the request body.
   """
@@ -242,7 +242,7 @@ class OsloginUsersProjectsZonesSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsZonesSignSshPublicKeyRequest object.
 
   Fields:
-    parent: The parent project and region for the signing request.
+    parent: Required. The parent project and region for the signing request.
     signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
       as the request body.
   """
@@ -387,7 +387,7 @@ class SignSshPublicKeyRequest(_messages.Message):
   r"""A SignSshPublicKeyRequest object.
 
   Fields:
-    sshPublicKey: The SSH public key to sign.
+    sshPublicKey: Required. The SSH public key to sign.
   """
 
   sshPublicKey = _messages.StringField(1)

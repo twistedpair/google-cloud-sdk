@@ -269,7 +269,6 @@ def AddStoragePoolHotTierSizeArg(parser):
       ),
       help="""The hot tier size of the Storage Pool in GiB/s units.
               If no throughput unit is specified, GiB/s is assumed.""",
-      hidden=True,
   )
 
 
@@ -281,7 +280,6 @@ def AddStoragePoolEnableHotTierAutoResizeArg(parser):
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
       help="""Boolean flag indicating whether Storage Pool is allowed to use hot tier auto resize""",
-      hidden=True,
   )
 
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
@@ -307,11 +305,11 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolZoneArg(parser)
   AddStoragePoolReplicaZoneArg(parser)
   AddStoragePoolAllowAutoTieringArg(parser)
+  AddStoragePoolCustomPerformanceEnabledArg(parser)
+  AddStoragePoolTotalThroughputArg(parser)
+  AddStoragePoolTotalIopsArg(parser)
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
-    AddStoragePoolCustomPerformanceEnabledArg(parser)
-    AddStoragePoolTotalThroughputArg(parser)
-    AddStoragePoolTotalIopsArg(parser)
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
 
@@ -337,10 +335,10 @@ def AddStoragePoolUpdateArgs(parser, release_track):
   AddStoragePoolZoneArg(parser)
   AddStoragePoolReplicaZoneArg(parser)
   AddStoragePoolAllowAutoTieringArg(parser)
+  AddStoragePoolTotalThroughputArg(parser)
+  AddStoragePoolTotalIopsArg(parser)
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
-    AddStoragePoolTotalThroughputArg(parser)
-    AddStoragePoolTotalIopsArg(parser)
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
 

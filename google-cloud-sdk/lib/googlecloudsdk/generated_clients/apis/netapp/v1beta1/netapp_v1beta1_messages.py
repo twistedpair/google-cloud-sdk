@@ -493,6 +493,37 @@ class BackupVault(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
+class BlockProperties(_messages.Message):
+  r"""Block properties of the volume.
+
+  Enums:
+    OsTypeValueValuesEnum: Required. The OS type of the volume.
+
+  Fields:
+    hostGroups: Optional. A list of host groups that can be used to mount the
+      block volume. Format:
+      `projects/{project_id}/locations/{location}/hostGroups/{host_group_id}`
+    osType: Required. The OS type of the volume.
+  """
+
+  class OsTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The OS type of the volume.
+
+    Values:
+      OS_TYPE_UNSPECIFIED: Unspecified OS Type
+      LINUX: OS Type is Linux
+      WINDOWS: OS Type is Windows
+      ESXI: OS Type is VMware ESXi
+    """
+    OS_TYPE_UNSPECIFIED = 0
+    LINUX = 1
+    WINDOWS = 2
+    ESXI = 3
+
+  hostGroups = _messages.StringField(1, repeated=True)
+  osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
+
+
 class CacheConfig(_messages.Message):
   r"""Configuration of the cache volume.
 
@@ -679,6 +710,113 @@ class GoogleProtobufEmpty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class HostGroup(_messages.Message):
+  r"""Host group is a collection of hosts that can be used for accessing a
+  Block Volume.
+
+  Enums:
+    OsTypeValueValuesEnum: Required. The OS type of the host group. It
+      indicates the type of operating system used by all of the hosts in the
+      HostGroup. All hosts in a HostGroup must be of the same OS type. This
+      can be set only when creating a HostGroup.
+    StateValueValuesEnum: Output only. State of the host group.
+    TypeValueValuesEnum: Required. Type of the host group.
+
+  Messages:
+    LabelsValue: Optional. Labels of the host group.
+
+  Fields:
+    createTime: Output only. Create time of the host group.
+    description: Optional. Description of the host group.
+    hosts: Required. The list of hosts associated with the host group.
+    labels: Optional. Labels of the host group.
+    name: Identifier. The resource name of the host group. Format: `projects/{
+      project_number}/locations/{location_id}/hostGroups/{host_group_id}`.
+    osType: Required. The OS type of the host group. It indicates the type of
+      operating system used by all of the hosts in the HostGroup. All hosts in
+      a HostGroup must be of the same OS type. This can be set only when
+      creating a HostGroup.
+    state: Output only. State of the host group.
+    type: Required. Type of the host group.
+  """
+
+  class OsTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The OS type of the host group. It indicates the type of
+    operating system used by all of the hosts in the HostGroup. All hosts in a
+    HostGroup must be of the same OS type. This can be set only when creating
+    a HostGroup.
+
+    Values:
+      OS_TYPE_UNSPECIFIED: Unspecified OS Type
+      LINUX: OS Type is Linux
+      WINDOWS: OS Type is Windows
+      ESXI: OS Type is VMware ESXi
+    """
+    OS_TYPE_UNSPECIFIED = 0
+    LINUX = 1
+    WINDOWS = 2
+    ESXI = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the host group.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state for host group
+      CREATING: Host group is creating
+      READY: Host group is ready
+      UPDATING: Host group is updating
+      DELETING: Host group is deleting
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    UPDATING = 3
+    DELETING = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of the host group.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type for host group.
+      ISCSI_INITIATOR: iSCSI initiator host group.
+    """
+    TYPE_UNSPECIFIED = 0
+    ISCSI_INITIATOR = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels of the host group.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  hosts = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  osType = _messages.EnumField('OsTypeValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
 class HourlySchedule(_messages.Message):
@@ -986,6 +1124,21 @@ class ListBackupsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListHostGroupsResponse(_messages.Message):
+  r"""ListHostGroupsResponse is the response to a ListHostGroupsRequest.
+
+  Fields:
+    hostGroups: The list of host groups.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  hostGroups = _messages.MessageField('HostGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListKmsConfigsResponse(_messages.Message):
   r"""ListKmsConfigsResponse is the response to a ListKmsConfigsRequest.
 
@@ -1270,11 +1423,13 @@ class MountOption(_messages.Message):
       NFSV3: NFS V3 protocol
       NFSV4: NFS V4 protocol
       SMB: SMB protocol
+      ISCSI: ISCSI protocol
     """
     PROTOCOLS_UNSPECIFIED = 0
     NFSV3 = 1
     NFSV4 = 2
     SMB = 3
+    ISCSI = 4
 
   export = _messages.StringField(1)
   exportFull = _messages.StringField(2)
@@ -1619,6 +1774,81 @@ class NetappProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsHostGroupsCreateRequest(_messages.Message):
+  r"""A NetappProjectsLocationsHostGroupsCreateRequest object.
+
+  Fields:
+    hostGroup: A HostGroup resource to be passed as the request body.
+    hostGroupId: Required. ID of the host group to create. Must be unique
+      within the parent resource. Must contain only letters, numbers, and
+      hyphen, with the first character a letter or underscore, the last a
+      letter or underscore or a number, and a 63 character maximum.
+    parent: Required. Parent value for CreateHostGroupRequest
+  """
+
+  hostGroup = _messages.MessageField('HostGroup', 1)
+  hostGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetappProjectsLocationsHostGroupsDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsHostGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the host group. Format: `projects/{pr
+      oject_number}/locations/{location_id}/hostGroups/{host_group_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsHostGroupsGetRequest(_messages.Message):
+  r"""A NetappProjectsLocationsHostGroupsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the host group. Format: `projects/{pr
+      oject_number}/locations/{location_id}/hostGroups/{host_group_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsHostGroupsListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsHostGroupsListRequest object.
+
+  Fields:
+    filter: Optional. Filter to apply to the request.
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, the server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListHostGroupsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsHostGroupsPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsHostGroupsPatchRequest object.
+
+  Fields:
+    hostGroup: A HostGroup resource to be passed as the request body.
+    name: Identifier. The resource name of the host group. Format: `projects/{
+      project_number}/locations/{location_id}/hostGroups/{host_group_id}`.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  hostGroup = _messages.MessageField('HostGroup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetappProjectsLocationsKmsConfigsCreateRequest(_messages.Message):
@@ -3425,6 +3655,7 @@ class Volume(_messages.Message):
     activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
       volume.
     backupConfig: BackupConfig of the volume.
+    blockProperties: Optional. Block properties for the volume.
     cacheParameters: Optional. Cache parameters for the volume.
     capacityGib: Required. Capacity in GIB of the volume
     coldTierSizeGib: Output only. Size of the volume cold tier data in GiB.
@@ -3506,11 +3737,13 @@ class Volume(_messages.Message):
       NFSV3: NFS V3 protocol
       NFSV4: NFS V4 protocol
       SMB: SMB protocol
+      ISCSI: ISCSI protocol
     """
     PROTOCOLS_UNSPECIFIED = 0
     NFSV3 = 1
     NFSV4 = 2
     SMB = 3
+    ISCSI = 4
 
   class RestrictedActionsValueListEntryValuesEnum(_messages.Enum):
     r"""RestrictedActionsValueListEntryValuesEnum enum type.
@@ -3632,44 +3865,45 @@ class Volume(_messages.Message):
 
   activeDirectory = _messages.StringField(1)
   backupConfig = _messages.MessageField('BackupConfig', 2)
-  cacheParameters = _messages.MessageField('CacheParameters', 3)
-  capacityGib = _messages.IntegerField(4)
-  coldTierSizeGib = _messages.IntegerField(5)
-  createTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 8)
-  exportPolicy = _messages.MessageField('ExportPolicy', 9)
-  hasReplication = _messages.BooleanField(10)
-  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 11)
-  kerberosEnabled = _messages.BooleanField(12)
-  kmsConfig = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  largeCapacity = _messages.BooleanField(15)
-  ldapEnabled = _messages.BooleanField(16)
-  mountOptions = _messages.MessageField('MountOption', 17, repeated=True)
-  multipleEndpoints = _messages.BooleanField(18)
-  name = _messages.StringField(19)
-  network = _messages.StringField(20)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 21, repeated=True)
-  psaRange = _messages.StringField(22)
-  replicaZone = _messages.StringField(23)
-  restoreParameters = _messages.MessageField('RestoreParameters', 24)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 25, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 26)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 27)
-  shareName = _messages.StringField(28)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 29, repeated=True)
-  snapReserve = _messages.FloatField(30)
-  snapshotDirectory = _messages.BooleanField(31)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 32)
-  state = _messages.EnumField('StateValueValuesEnum', 33)
-  stateDetails = _messages.StringField(34)
-  storagePool = _messages.StringField(35)
-  throughputMibps = _messages.FloatField(36)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 37)
-  unixPermissions = _messages.StringField(38)
-  usedGib = _messages.IntegerField(39)
-  zone = _messages.StringField(40)
+  blockProperties = _messages.MessageField('BlockProperties', 3)
+  cacheParameters = _messages.MessageField('CacheParameters', 4)
+  capacityGib = _messages.IntegerField(5)
+  coldTierSizeGib = _messages.IntegerField(6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 9)
+  exportPolicy = _messages.MessageField('ExportPolicy', 10)
+  hasReplication = _messages.BooleanField(11)
+  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 12)
+  kerberosEnabled = _messages.BooleanField(13)
+  kmsConfig = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  largeCapacity = _messages.BooleanField(16)
+  ldapEnabled = _messages.BooleanField(17)
+  mountOptions = _messages.MessageField('MountOption', 18, repeated=True)
+  multipleEndpoints = _messages.BooleanField(19)
+  name = _messages.StringField(20)
+  network = _messages.StringField(21)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 22, repeated=True)
+  psaRange = _messages.StringField(23)
+  replicaZone = _messages.StringField(24)
+  restoreParameters = _messages.MessageField('RestoreParameters', 25)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 26, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 27)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 28)
+  shareName = _messages.StringField(29)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 30, repeated=True)
+  snapReserve = _messages.FloatField(31)
+  snapshotDirectory = _messages.BooleanField(32)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 33)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  stateDetails = _messages.StringField(35)
+  storagePool = _messages.StringField(36)
+  throughputMibps = _messages.FloatField(37)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 38)
+  unixPermissions = _messages.StringField(39)
+  usedGib = _messages.IntegerField(40)
+  zone = _messages.StringField(41)
 
 
 class WeeklySchedule(_messages.Message):

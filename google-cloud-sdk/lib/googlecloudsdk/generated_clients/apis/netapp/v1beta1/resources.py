@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_HOSTGROUPS = (
+      'projects.locations.hostGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/hostGroups/'
+              '{hostGroupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KMSCONFIGS = (
       'projects.locations.kmsConfigs',
       '{+name}',

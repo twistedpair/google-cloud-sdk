@@ -373,10 +373,14 @@ class GoogleAppsScriptTypeHttpOptions(_messages.Message):
   Enums:
     AuthorizationHeaderValueValuesEnum: Configuration for the token sent in
       the `HTTP` Authorization header.
+    GranularOauthPermissionSupportValueValuesEnum: Whether the add-on has
+      enabled Granular OAuth Consent.
 
   Fields:
     authorizationHeader: Configuration for the token sent in the `HTTP`
       Authorization header.
+    granularOauthPermissionSupport: Whether the add-on has enabled Granular
+      OAuth Consent.
   """
 
   class AuthorizationHeaderValueValuesEnum(_messages.Enum):
@@ -395,7 +399,21 @@ class GoogleAppsScriptTypeHttpOptions(_messages.Message):
     USER_ID_TOKEN = 2
     NONE = 3
 
+  class GranularOauthPermissionSupportValueValuesEnum(_messages.Enum):
+    r"""Whether the add-on has enabled Granular OAuth Consent.
+
+    Values:
+      GRANULAR_OAUTH_PERMISSION_SUPPORT_UNSPECIFIED: Default value, should not
+        be used.
+      OPT_IN: The add-on is opted in to Granular OAuth Consent.
+      OPT_OUT: The add-on is opted out of Granular OAuth Consent.
+    """
+    GRANULAR_OAUTH_PERMISSION_SUPPORT_UNSPECIFIED = 0
+    OPT_IN = 1
+    OPT_OUT = 2
+
   authorizationHeader = _messages.EnumField('AuthorizationHeaderValueValuesEnum', 1)
+  granularOauthPermissionSupport = _messages.EnumField('GranularOauthPermissionSupportValueValuesEnum', 2)
 
 
 class GoogleAppsScriptTypeLayoutProperties(_messages.Message):

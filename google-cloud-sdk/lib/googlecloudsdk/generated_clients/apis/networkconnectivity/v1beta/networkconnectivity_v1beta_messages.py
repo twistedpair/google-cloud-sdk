@@ -286,27 +286,24 @@ class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
 
   Enums:
     ProtocolVersionValueValuesEnum: Required. Internet protocol versions this
-      policy-based route applies to. For this version, only IPV4 is supported.
-      IPV6 is supported in preview.
+      policy-based route applies to. IPV4 and IPV6 is supported.
 
   Fields:
     destRange: Optional. The destination IP range of outgoing packets that
       this policy-based route applies to. Default is "0.0.0.0/0" if protocol
-      version is IPv4.
+      version is IPv4 and "::/0" if protocol version is IPv6.
     ipProtocol: Optional. The IP protocol that this policy-based route applies
       to. Valid values are 'TCP', 'UDP', and 'ALL'. Default is 'ALL'.
     protocolVersion: Required. Internet protocol versions this policy-based
-      route applies to. For this version, only IPV4 is supported. IPV6 is
-      supported in preview.
+      route applies to. IPV4 and IPV6 is supported.
     srcRange: Optional. The source IP range of outgoing packets that this
       policy-based route applies to. Default is "0.0.0.0/0" if protocol
-      version is IPv4.
+      version is IPv4 and "::/0" if protocol version is IPv6.
   """
 
   class ProtocolVersionValueValuesEnum(_messages.Enum):
     r"""Required. Internet protocol versions this policy-based route applies
-    to. For this version, only IPV4 is supported. IPV6 is supported in
-    preview.
+    to. IPV4 and IPV6 is supported.
 
     Values:
       PROTOCOL_VERSION_UNSPECIFIED: Default value.

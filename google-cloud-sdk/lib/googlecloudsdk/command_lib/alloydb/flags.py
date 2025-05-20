@@ -617,9 +617,9 @@ def AddActivationPolicy(parser, alloydb_messages, required=False):
       ],
       type=alloydb_messages.Instance.ActivationPolicyValueValuesEnum,
       help=(
-          'Activation Policy for the instance.'
-          'Required to START or STOP an instance.'
-          'ALWAYS - The instance is up and running.'
+          'Activation Policy for the instance. '
+          'Required to START or STOP an instance. '
+          'ALWAYS - The instance is up and running. '
           'NEVER - The instance is stopped.'
       ),
   )

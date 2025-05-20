@@ -14,7 +14,7 @@
 # limitations under the License.
 """Database Migration Service conversion workspaces CRUD API."""
 
-from typing import Optional, Tuple
+from typing import Optional, Set, Tuple
 
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.api_lib.database_migration.conversion_workspaces import base_conversion_workspaces_client
@@ -90,12 +90,18 @@ class ConversionWorkspacesCRUDClient(
         )
     )
 
-  def Update(self, name: str, display_name: Optional[str]):
+  def Update(
+      self,
+      name: str,
+      display_name: Optional[str],
+      global_filter: Optional[str],
+  ):
     """Updates a conversion workspace.
 
     Args:
       name: str, the reference of the conversion workspace to update.
-      display_name: Optional[str], the display name to update.
+      display_name: the display name to update.
+      global_filter: the global filter for the conversion workspace.
 
     Returns:
       Operation: the operation for updating the conversion workspace.
@@ -103,6 +109,7 @@ class ConversionWorkspacesCRUDClient(
     conversion_workspace, update_fields = self._GetUpdatedConversionWorkspace(
         conversion_workspace=self.Read(name),
         display_name=display_name,
+        global_filter=global_filter,
     )
     return self.cw_service.Patch(
         self.messages.DatamigrationProjectsLocationsConversionWorkspacesPatchRequest(
@@ -133,22 +140,34 @@ class ConversionWorkspacesCRUDClient(
       self,
       conversion_workspace: str,
       display_name: Optional[str],
-  ) -> Tuple[str, Tuple[str, ...]]:
+      global_filter: Optional[str],
+  ) -> Tuple[str, Set[str]]:
     """Returns updated conversion workspace and list of updated fields.
 
     Args:
-      conversion_workspace: str, the conversion workspace to update.
-      display_name: str, the display name to update.
+      conversion_workspace: the conversion workspace to update.
+      display_name: the display name to update.
+      global_filter: the global filter for the conversion workspace.
 
     Returns:
       conversion_workspace: str, the updated conversion workspace object.
       update_fields: tuple[str, ...], the list of updated fields.
     """
-    update_fields = {}
-    if display_name:
-      update_fields['displayName'] = display_name
+    update_fields = set()
 
-    for field_name, field_value in update_fields.items():
-      setattr(conversion_workspace, field_name, field_value)
+    if display_name:
+      conversion_workspace.displayName = display_name
+      update_fields.add('displayName')
+
+    if global_filter is not None:
+      conversion_workspace.globalSettings = self.messages.ConversionWorkspace.GlobalSettingsValue(
+          additionalProperties=[
+              self.messages.ConversionWorkspace.GlobalSettingsValue.AdditionalProperty(
+                  key='filter',
+                  value=global_filter,
+              ),
+          ]
+      )
+      update_fields.add('globalSettings.filter')
 
     return conversion_workspace, update_fields

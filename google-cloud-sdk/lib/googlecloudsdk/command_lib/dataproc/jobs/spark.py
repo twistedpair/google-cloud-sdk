@@ -79,6 +79,13 @@ class SparkBase(job_base.JobBase):
         metavar='PACKAGE=LEVEL',
         help=('List of package to log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
+    parser.add_argument(
+        '--spark-engine',
+        hidden=True,
+        metavar='VALUE',
+        choices=job_base.JobBase.SPARK_ENGINE_CHOICES,
+        help='The Spark engine to use for the job.',
+    )
 
   @staticmethod
   def GetFilesByType(args):
@@ -92,7 +99,6 @@ class SparkBase(job_base.JobBase):
   @staticmethod
   def ConfigureJob(messages, job, files_by_type, logging_config, args):
     """Populates the sparkJob member of the given job."""
-
     spark_job = messages.SparkJob(
         args=args.job_args or [],
         archiveUris=files_by_type['archives'],
@@ -100,13 +106,19 @@ class SparkBase(job_base.JobBase):
         jarFileUris=files_by_type['jars'],
         mainClass=args.main_class,
         mainJarFileUri=files_by_type['main_jar'],
-        loggingConfig=logging_config)
+        loggingConfig=logging_config,
+        sparkEngine=job_util.GetSparkEngine(
+            messages.SparkJob, args.spark_engine
+        ),
+    )
 
     job_properties = job_util.BuildJobProperties(
-        args.properties, args.properties_file)
+        args.properties, args.properties_file
+    )
     if job_properties:
-    # Sort properties to ensure tests comparing messages not fail on ordering.
+      # Sort properties to ensure tests comparing messages not fail on ordering.
       spark_job.properties = encoding.DictToAdditionalPropertyMessage(
-          job_properties, messages.SparkJob.PropertiesValue, sort_items=True)
+          job_properties, messages.SparkJob.PropertiesValue, sort_items=True
+      )
 
     job.sparkJob = spark_job

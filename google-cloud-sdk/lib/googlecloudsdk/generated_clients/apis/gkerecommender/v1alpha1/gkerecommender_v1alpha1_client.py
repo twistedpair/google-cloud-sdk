@@ -57,7 +57,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List compatible accelerators.
+      r"""List method for the accelerators service.
 
       Args:
         request: (GkerecommenderAcceleratorsListRequest) input message
@@ -93,7 +93,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List available model server versions for a specific model server.
+      r"""List method for the modelServers_versions service.
 
       Args:
         request: (GkerecommenderModelServersVersionsListRequest) input message
@@ -129,7 +129,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List available model servers.
+      r"""List method for the modelServers service.
 
       Args:
         request: (GkerecommenderModelServersListRequest) input message
@@ -165,7 +165,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List available models.
+      r"""List method for the models service.
 
       Args:
         request: (GkerecommenderModelsListRequest) input message
@@ -201,7 +201,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List available model and server combinations.
+      r"""List method for the modelsAndServers service.
 
       Args:
         request: (GkerecommenderModelsAndServersListRequest) input message
@@ -237,7 +237,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def OptimizedManifest(self, request, global_params=None):
-      r"""Generate deployment manifests.
+      r"""OptimizedManifest method for the v1alpha1 service.
 
       Args:
         request: (GkerecommenderOptimizedManifestRequest) input message

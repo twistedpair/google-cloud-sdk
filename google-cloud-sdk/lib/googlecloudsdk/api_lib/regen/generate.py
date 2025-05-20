@@ -256,6 +256,11 @@ def GenerateApitoolsResourceModule(
   if discovery_doc.api_name != api_name:
     raise WrongDiscoveryDocError('api name {0}, expected {1}'.format(
         discovery_doc.api_name, api_name))
+  if discovery_doc.is_interface_versioned and not api_version.startswith('v_'):
+    raise WrongDiscoveryDocError(
+        '{0}/{1} API appears to be using interface-based versioning; version'
+        ' identifier {0} configured in gcloud_api_client_source target name and'
+        ' regen config should begin with "v_".'.format(api_name, api_version))
   resource_collections = discovery_doc.GetResourceCollections(
       custom_resources, api_version)
   if custom_resources:

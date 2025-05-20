@@ -106,7 +106,7 @@ def PipelineAttributeConfig():
 
 
 def KafkaSourceAttributeConfig():
-  """Builds an AttributeConfig for the kafka source resource."""
+  """Builds an AttributeConfig for the Kafka source resource."""
   return concepts.ResourceParameterAttributeConfig(name='kafka-source')
 
 
@@ -472,7 +472,7 @@ def AddPipelineResourceArg(parser, group_help_text, required=False):
 
 
 def AddKafkaSourceResourceArg(parser, group_help_text, required=False):
-  """Adds a resource argument for an Eventarc kafka source."""
+  """Adds a resource argument for an Eventarc Kafka source."""
   concept_parsers.ConceptParser.ForResource(
       'kafka_source',
       KafkaSourceResourceSpec(),
@@ -1263,20 +1263,20 @@ For example:
 
 *workflow*::: The destination Workflow ID. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=workflow=my-workflow,network_attachment=example-network-attachment
+    $ gcloud eventarc pipelines create example-pipeline --destinations=workflow=my-workflow
 
 *message_bus*::: The destination Message Bus ID. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=message_bus=my-message-bus,network_attachment=example-network-attachment
+    $ gcloud eventarc pipelines create example-pipeline --destinations=message_bus=my-message-bus
 
 *pubsub_topic*::: The destination Pub/Sub topic ID. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=pubsub_topic=my-topic,network_attachment=example-network-attachment
+    $ gcloud eventarc pipelines create example-pipeline --destinations=pubsub_topic=my-topic
 
 *project*::: The project ID of the destination resource. If `project` is not set,
 then the project ID of the pipeline is used. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=project=example-project,workflow=my-workflow,network_attachment=example-network-attachment
+    $ gcloud eventarc pipelines create example-pipeline --destinations=project=example-project,workflow=my-workflow
 
 Note: When `http_endpoint_uri` is set, `project` can't be set.
 
@@ -1292,7 +1292,7 @@ the consumer VPC. For example:
 
     $ gcloud eventarc pipelines create example-pipeline --destinations=network_attachment=my-network-attachment,http_endpoint_uri='https://example.com'
 
-Note: A network attachment must be specified for a pipeline.
+Note: A network attachment must be specified for a pipeline when `http_endpoint_uri` is set.
 
 *google_oidc_authentication_service_account*::: The service account email used
 to generate the OIDC token. The token can be used to invoke Cloud Run and Cloud
@@ -1546,7 +1546,7 @@ def AddKafkaSourceConsumerGroupIDArg(parser, required=False):
 def AddCreateKafkaSourceResourceArgs(parser):
   """Adds a resource argument for the Kafka Source's Message Bus."""
   help_text = """
-  The Message Bus to which the Kafka Source will send events.
+  The message bus to which the Kafka source will send events.
   Examples:
 
   $ gcloud eventarc kafka-sources create example-kafka-source --message-bus=my-message-bus
@@ -1571,7 +1571,7 @@ def AddCreateKafkaSourceResourceArgs(parser):
           ),
       ],
       # This configures the fallthrough from the message bus' location to the
-      # primary flag for the kafka sources's location.
+      # primary flag for the Kafka sources's location.
       command_level_fallthroughs={
           '--message-bus.location': ['kafka_source.location'],
       },
@@ -1709,7 +1709,7 @@ def AddKafkaSourceNetworkAttachmentArg(parser, required=False):
       '--network-attachment',
       required=required,
       help=(
-          'The network attachment associated with the trigger that allows'
+          'The network attachment associated with the Kafka source that allows'
           ' access to the ingress VPC.'
       ),
   )

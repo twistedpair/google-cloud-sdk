@@ -26,6 +26,18 @@ class Authorization(_messages.Message):
   adminUsers = _messages.MessageField('ClusterUser', 1)
 
 
+class Binding(_messages.Message):
+  r"""Binding represents a role binding in the IAM policy.
+
+  Fields:
+    members: Optional. The members to bind the role to.
+    role: Required. The role in the IAM policy to bind the members to.
+  """
+
+  members = _messages.MessageField('Principal', 1, repeated=True)
+  role = _messages.StringField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -543,7 +555,7 @@ class EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest(_message
 
   Fields:
     cluster: The fully qualified name of the target BMUC for which the
-      identity provider is to be configured.
+      identity provider is to be deleted.
     name: Required. The resource name of the identity provider to delete. The
       name to be formatted as: organizations/{organization}/locations/{locatio
       n}/identityProviders/{identity_provider}
@@ -551,7 +563,7 @@ class EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest(_message
       36 ASCII characters. A random UUID is recommended. This request is only
       idempotent if `request_id` is provided.
     zoneId: The zone id of the target zone of the infra cluster for which the
-      identity provider is to be configured.
+      identity provider is to be deleted.
   """
 
   cluster = _messages.StringField(1)
@@ -583,13 +595,13 @@ class EdgecontainerOrganizationsLocationsIdentityProvidersListRequest(_messages.
 
   Fields:
     cluster: The fully qualified name of the target BMUC for which the
-      identity provider is to be configured.
+      identity providers are to be listed.
     pageSize: Optional. The maximum number of resources to list.
     pageToken: Optional. A page token received from previous list request.
     parent: Required. The parent organization and region for the identity
       providers.
     zoneId: The zone id of the target zone of the infra cluster for which the
-      identity provider is to be configured.
+      identity providers are to be listed.
   """
 
   cluster = _messages.StringField(1)
@@ -1283,6 +1295,34 @@ class EdgecontainerProjectsLocationsZonalServicesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class EdgecontainerProjectsLocationsZonesGetIamPolicyRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsZonesGetIamPolicyRequest object.
+
+  Fields:
+    name: Required. The canonical name of the zone from which the IamPolicy is
+      to be fetched. E.g. projects/*/locations/*/zones/*
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EdgecontainerProjectsLocationsZonesSetIamPolicyRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsZonesSetIamPolicyRequest object.
+
+  Fields:
+    iamPolicy: A IamPolicy resource to be passed as the request body.
+    name: Required. The canonical resource name of the zone.
+      projects/{project}/locations/{location}/zones/{zone}
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+  """
+
+  iamPolicy = _messages.MessageField('IamPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1390,6 +1430,16 @@ class GoogleGroupAuthenticationConfig(_messages.Message):
   """
 
   enable = _messages.BooleanField(1)
+
+
+class IamPolicy(_messages.Message):
+  r"""IamPolicy represents a IAM policy.
+
+  Fields:
+    bindings: Optional. The policy is a list of bindings.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
 
 
 class IdentityProvider(_messages.Message):
@@ -2333,6 +2383,19 @@ class OperationMetadata(_messages.Message):
   target = _messages.StringField(7)
   verb = _messages.StringField(8)
   warnings = _messages.StringField(9, repeated=True)
+
+
+class Principal(_messages.Message):
+  r"""Principal represents a principal in the IAM policy.
+
+  Fields:
+    serviceAccount: Service account represents a service account in the IAM
+      policy.
+    user: User represents a user in the IAM policy.
+  """
+
+  serviceAccount = _messages.StringField(1)
+  user = _messages.StringField(2)
 
 
 class Quota(_messages.Message):

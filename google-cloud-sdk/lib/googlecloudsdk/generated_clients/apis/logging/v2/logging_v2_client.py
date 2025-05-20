@@ -1178,7 +1178,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
+      r"""Deletes all the log entries in a log for the global _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingBillingAccountsLogsDeleteRequest) input message
@@ -3165,7 +3165,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
+      r"""Deletes all the log entries in a log for the global _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingFoldersLogsDeleteRequest) input message
@@ -4271,7 +4271,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
+      r"""Deletes all the log entries in a log for the global _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingLogsDeleteRequest) input message
@@ -5659,7 +5659,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
+      r"""Deletes all the log entries in a log for the global _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingOrganizationsLogsDeleteRequest) input message
@@ -7301,7 +7301,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
+      r"""Deletes all the log entries in a log for the global _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message

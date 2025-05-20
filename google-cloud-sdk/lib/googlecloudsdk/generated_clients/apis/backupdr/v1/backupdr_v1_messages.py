@@ -413,6 +413,7 @@ class Backup(_messages.Message):
     createTime: Output only. The time when the instance was created.
     description: Output only. The description of the Backup instance (2048
       characters or less).
+    diskBackupProperties: Output only. Disk specific backup properties.
     enforcedRetentionEndTime: Optional. The backup can not be deleted before
       this time.
     etag: Optional. Server specified ETag to prevent updates from overwriting
@@ -497,18 +498,19 @@ class Backup(_messages.Message):
   consistencyTime = _messages.StringField(6)
   createTime = _messages.StringField(7)
   description = _messages.StringField(8)
-  enforcedRetentionEndTime = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  expireTime = _messages.StringField(11)
-  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  resourceSizeBytes = _messages.IntegerField(15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  serviceLocks = _messages.MessageField('BackupLock', 18, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  updateTime = _messages.StringField(20)
+  diskBackupProperties = _messages.MessageField('DiskBackupProperties', 9)
+  enforcedRetentionEndTime = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  expireTime = _messages.StringField(12)
+  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  resourceSizeBytes = _messages.IntegerField(16)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  serviceLocks = _messages.MessageField('BackupLock', 19, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  updateTime = _messages.StringField(21)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -850,6 +852,8 @@ class BackupPlan(_messages.Message):
       Format: `projects/{project}/locations/{location}/backupPlans/{backup_pla
       n}/revisions/{revision_id}`
     state: Output only. The `State` for the `BackupPlan`.
+    supportedResourceTypes: Output only. All resource types to which
+      backupPlan can be applied.
     updateTime: Output only. When the `BackupPlan` was last updated.
   """
 
@@ -909,7 +913,8 @@ class BackupPlan(_messages.Message):
   revisionId = _messages.StringField(11)
   revisionName = _messages.StringField(12)
   state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
+  supportedResourceTypes = _messages.StringField(14, repeated=True)
+  updateTime = _messages.StringField(15)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -3135,6 +3140,8 @@ class DataSourceGcpResource(_messages.Message):
     computeInstanceDatasourceProperties: ComputeInstanceDataSourceProperties
       has a subset of Compute Instance properties that are useful at the
       Datasource level.
+    diskDatasourceProperties: DiskDataSourceProperties has a subset of Disk
+      properties that are useful at the Datasource level.
     gcpResourcename: Output only. Full resource pathname URL of the source
       Google Cloud resource.
     location: Location of the resource: //"global"/"unspecified".
@@ -3144,9 +3151,10 @@ class DataSourceGcpResource(_messages.Message):
 
   cloudSqlInstanceDatasourceProperties = _messages.MessageField('CloudSqlInstanceDataSourceProperties', 1)
   computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 2)
-  gcpResourcename = _messages.StringField(3)
-  location = _messages.StringField(4)
-  type = _messages.StringField(5)
+  diskDatasourceProperties = _messages.MessageField('DiskDataSourceProperties', 3)
+  gcpResourcename = _messages.StringField(4)
+  location = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class DataSourceGcpResourceInfo(_messages.Message):
@@ -3216,6 +3224,73 @@ class DataSourceReference(_messages.Message):
   dataSourceBackupCount = _messages.IntegerField(5)
   dataSourceGcpResourceInfo = _messages.MessageField('DataSourceGcpResourceInfo', 6)
   name = _messages.StringField(7)
+
+
+class DiskBackupProperties(_messages.Message):
+  r"""DiskBackupProperties represents the properties of a Disk backup.
+
+  Enums:
+    ArchitectureValueValuesEnum: The architecture of the source disk. Valid
+      values are ARM64 or X86_64.
+
+  Fields:
+    architecture: The architecture of the source disk. Valid values are ARM64
+      or X86_64.
+    description: A description of the source disk.
+    guestOsFeature: A list of guest OS features that are applicable to this
+      backup.
+    licenses: A list of publicly available licenses that are applicable to
+      this backup. This is applicable if the original image had licenses
+      attached, e.g. Windows image.
+    region: Region and zone are mutually exclusive fields. The URL of the
+      region of the source disk.
+    replicaZones: The URL of the Zones where the source disk should be
+      replicated.
+    sizeGb: Size(in GB) of the source disk.
+    sourceDisk: The source disk used to create this backup.
+    type: The URL of the type of the disk.
+    zone: The URL of the Zone where the source disk.
+  """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the source disk. Valid values are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value. This value is unused.
+      X86_64: Disks with architecture X86_64
+      ARM64: Disks with architecture ARM64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    X86_64 = 1
+    ARM64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  guestOsFeature = _messages.MessageField('GuestOsFeature', 3, repeated=True)
+  licenses = _messages.StringField(4, repeated=True)
+  region = _messages.StringField(5)
+  replicaZones = _messages.StringField(6, repeated=True)
+  sizeGb = _messages.IntegerField(7)
+  sourceDisk = _messages.StringField(8)
+  type = _messages.StringField(9)
+  zone = _messages.StringField(10)
+
+
+class DiskDataSourceProperties(_messages.Message):
+  r"""DiskDataSourceProperties represents the properties of a Disk resource
+  that are stored in the DataSource. .
+
+  Fields:
+    description: The description of the disk.
+    name: Name of the disk backed up by the datasource.
+    sizeGb: The size of the disk in GB.
+    type: The type of the disk.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  sizeGb = _messages.IntegerField(3)
+  type = _messages.StringField(4)
 
 
 class DiskRestoreProperties(_messages.Message):

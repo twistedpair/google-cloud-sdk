@@ -833,6 +833,7 @@ class CreateClusterOptions(object):
       anonymous_authentication_config=None,
       enable_auto_ipam=None,
       enable_k8s_tokens_via_dns=None,
+      enable_legacy_lustre_port=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1118,6 +1119,7 @@ class CreateClusterOptions(object):
     self.patch_update = patch_update
     self.enable_auto_ipam = enable_auto_ipam
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
+    self.enable_legacy_lustre_port = enable_legacy_lustre_port
 
 
 class UpdateClusterOptions(object):
@@ -1292,6 +1294,7 @@ class UpdateClusterOptions(object):
       enable_auto_ipam=None,
       disable_auto_ipam=None,
       enable_k8s_tokens_via_dns=None,
+      enable_legacy_lustre_port=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1508,6 +1511,7 @@ class UpdateClusterOptions(object):
     self.enable_auto_ipam = enable_auto_ipam
     self.disable_auto_ipam = disable_auto_ipam
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
+    self.enable_legacy_lustre_port = enable_legacy_lustre_port
 
 
 class SetMasterAuthOptions(object):
@@ -2287,6 +2291,11 @@ class APIAdapter(object):
                 enabled=options.enable_ray_cluster_monitoring
             )
         )
+      if options.enable_legacy_lustre_port is not None:
+        addons.lustreCsiDriverConfig.enableLegacyLustrePort = (
+            options.enable_legacy_lustre_port
+        )
+
       cluster.addonsConfig = addons
 
     if options.enable_kubernetes_alpha:
@@ -4332,6 +4341,7 @@ class APIAdapter(object):
     elif (
         options.enable_ray_cluster_logging is not None
         or options.enable_ray_cluster_monitoring is not None
+        or options.enable_legacy_lustre_port is not None
     ):
       addons = self._AddonsConfig(options, self.messages)
 
@@ -4347,6 +4357,11 @@ class APIAdapter(object):
             self.messages.RayClusterMonitoringConfig(
                 enabled=options.enable_ray_cluster_monitoring
             )
+        )
+
+      if options.enable_legacy_lustre_port is not None:
+        addons.lustreCsiDriverConfig.enableLegacyLustrePort = (
+            options.enable_legacy_lustre_port
         )
 
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
@@ -7184,6 +7199,36 @@ class APIAdapter(object):
               mode=available_modes[anonymous_authentication_config]
           )
       )
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyLegacyLustrePortEnabled(
+      self, cluster_ref, enable_legacy_lustre_port
+  ):
+    """Enables legacy lustre port when using the Lustre Csi Driver add on.
+
+    Args:
+      cluster_ref: The cluster to update.
+      enable_legacy_lustre_port: Whether to enable legacy lustre port.
+
+    Returns:
+      Modifies LustreCsiDriverConfig and returns the operation for update.
+    """
+    lustre_csi_driver_config = self.messages.LustreCsiDriverConfig(
+        enabled=True,
+        enableLegacyLustrePort=enable_legacy_lustre_port,
+    )
+    addons_config = self.messages.AddonsConfig(
+        lustreCsiDriverConfig=lustre_csi_driver_config
+    )
+    update = self.messages.ClusterUpdate(desiredAddonsConfig=addons_config)
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(

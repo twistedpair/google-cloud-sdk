@@ -7110,17 +7110,19 @@ def AddAnonymousAuthenticationConfigFlag(parser):
   """
   parser.add_argument(
       '--anonymous-authentication-config',
-      help="""Enable or restrict anonymous access to the cluster.""",
+      help="""Enable or restrict anonymous access to the cluster. When enabled,
+      anonymous users will be authenticated as system:anonymous with the group
+      system:unauthenticated. Limiting access restricts anonymous access to only
+      the health check endpoints /readyz, /livez, and /healthz.
+      """,
       choices={
           'LIMITED': """\
-                'LIMITED' restricts anonymous access to the cluster.
-                Only calls to the health check endpoints are allowed
-                anonymously, all other calls will be rejected.""",
+                'LIMITED' restricts anonymous access to the cluster. Only calls to
+                the health check endpoints are allowed anonymously, all other calls
+                will be rejected.""",
           'ENABLED': """\
                 'ENABLED' enables anonymous calls.""",
       },
-      # TODO(b/373886051): Unhide this flag once the feature has been announced.
-      hidden=True,
       default=None,
   )
 
@@ -7406,6 +7408,25 @@ def AddEnableK8sTokensViaDnsFlag(parser):
       '--enable-k8s-tokens-via-dns',
       default=None,
       hidden=True,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddEnableLegacyLustrePortFlag(parser, hidden=True):
+  """Adds the --enable-legacy-lustre-port flag to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = """\
+  If set to true, the Lustre CSI driver will install Lustre kernel modules using port 6988.
+  """
+  parser.add_argument(
+      '--enable-legacy-lustre-port',
+      default=None,
+      hidden=hidden,
       action='store_true',
       help=help_text,
   )

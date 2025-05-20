@@ -3216,11 +3216,21 @@ class TlsConfig(_messages.Message):
   r"""The TLS configuration for the Kafka cluster.
 
   Fields:
+    sslPrincipalMappingRules: Optional. A list of rules for mapping from SSL
+      principal names to short names. These are applied in order by Kafka.
+      Refer to the Apache Kafka documentation for
+      `ssl.principal.mapping.rules` for the precise formatting details and
+      syntax. Example:
+      "RULE:^CN=(.*?),OU=ServiceUsers.*$/$1@example.com/,DEFAULT" This is a
+      static Kafka broker configuration. Setting or modifying this field will
+      trigger a rolling restart of the Kafka brokers to apply the change. An
+      empty string means no rules are applied (Kafka default).
     trustConfig: Optional. The configuration of the broker truststore. If
       specified, clients can use mTLS for authentication.
   """
 
-  trustConfig = _messages.MessageField('TrustConfig', 1)
+  sslPrincipalMappingRules = _messages.StringField(1)
+  trustConfig = _messages.MessageField('TrustConfig', 2)
 
 
 class Topic(_messages.Message):

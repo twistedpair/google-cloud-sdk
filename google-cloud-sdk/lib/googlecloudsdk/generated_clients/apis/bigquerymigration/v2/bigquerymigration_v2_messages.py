@@ -1795,6 +1795,56 @@ class GoogleCloudBigqueryMigrationV2StartMigrationWorkflowRequest(_messages.Mess
   r"""A request to start a previously created migration workflow."""
 
 
+class GoogleCloudBigqueryMigrationV2SuggestionConfig(_messages.Message):
+  r"""The configuration for the suggestion if requested as a target type.
+
+  Fields:
+    skipSuggestionSteps: The list of suggestion steps to skip.
+  """
+
+  skipSuggestionSteps = _messages.MessageField('GoogleCloudBigqueryMigrationV2SuggestionStep', 1, repeated=True)
+
+
+class GoogleCloudBigqueryMigrationV2SuggestionStep(_messages.Message):
+  r"""Suggestion step to skip.
+
+  Enums:
+    RewriteTargetValueValuesEnum: The rewrite target.
+    SuggestionTypeValueValuesEnum: The type of suggestion.
+
+  Fields:
+    rewriteTarget: The rewrite target.
+    suggestionType: The type of suggestion.
+  """
+
+  class RewriteTargetValueValuesEnum(_messages.Enum):
+    r"""The rewrite target.
+
+    Values:
+      REWRITE_TARGET_UNSPECIFIED: Rewrite target unspecified.
+      SOURCE_SQL: Source SQL.
+      TARGET_SQL: Target SQL.
+    """
+    REWRITE_TARGET_UNSPECIFIED = 0
+    SOURCE_SQL = 1
+    TARGET_SQL = 2
+
+  class SuggestionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of suggestion.
+
+    Values:
+      SUGGESTION_TYPE_UNSPECIFIED: Suggestion type unspecified.
+      QUERY_CUSTOMIZATION: Query customization.
+      TRANSLATION_EXPLANATION: Translation explanation.
+    """
+    SUGGESTION_TYPE_UNSPECIFIED = 0
+    QUERY_CUSTOMIZATION = 1
+    TRANSLATION_EXPLANATION = 2
+
+  rewriteTarget = _messages.EnumField('RewriteTargetValueValuesEnum', 1)
+  suggestionType = _messages.EnumField('SuggestionTypeValueValuesEnum', 2)
+
+
 class GoogleCloudBigqueryMigrationV2TargetSpec(_messages.Message):
   r"""Represents one path to the location that holds target data.
 
@@ -2041,6 +2091,8 @@ class GoogleCloudBigqueryMigrationV2TranslationDetails(_messages.Message):
     sourceEnvironment: The default source environment values for the
       translation.
     sourceTargetMapping: The mapping from source to target SQL.
+    suggestionConfig: The configuration for the suggestion if requested as a
+      target type.
     targetBaseUri: The base URI for all writes to persistent storage.
     targetReturnLiterals: The list of literal targets that will be directly
       returned to the response. Each entry consists of the constructed path,
@@ -2054,9 +2106,10 @@ class GoogleCloudBigqueryMigrationV2TranslationDetails(_messages.Message):
 
   sourceEnvironment = _messages.MessageField('GoogleCloudBigqueryMigrationV2SourceEnvironment', 1)
   sourceTargetMapping = _messages.MessageField('GoogleCloudBigqueryMigrationV2SourceTargetMapping', 2, repeated=True)
-  targetBaseUri = _messages.StringField(3)
-  targetReturnLiterals = _messages.StringField(4, repeated=True)
-  targetTypes = _messages.StringField(5, repeated=True)
+  suggestionConfig = _messages.MessageField('GoogleCloudBigqueryMigrationV2SuggestionConfig', 3)
+  targetBaseUri = _messages.StringField(4)
+  targetReturnLiterals = _messages.StringField(5, repeated=True)
+  targetTypes = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudBigqueryMigrationV2TranslationReportRecord(_messages.Message):

@@ -121,13 +121,6 @@ def AddBackupRetentionPolicyArg(parser):
   backup_retention_policy_help = textwrap.dedent("""\
     Backup Retention Policy of the Backup Vault.
 
-    Backup Retention Policy will have the following format
-      --backup-retention-policy=backup-minimum-enforced-retention-days=BACKUP_MINIMUM_ENFORCED_RETENTION_DAYS,
-      daily-backup-immutable=DAILY_BACKUP_IMMUTABLE,
-      weekly-backup-immutable=WEEKLY_BACKUP_IMMUTABLE,
-      monthly-backup-immutable=MONTHLY_BACKUP_IMMUTABLE,
-      manual-backup-immutable=MANUAL_BACKUP_IMMUTABLE,
-
     Backup Retention Policy allows you to configure the retention policy for
     backups created within this vault. It consists of several fields that govern
     how long backups are kept and what type of backups are immutable.
@@ -137,5 +130,4 @@ def AddBackupRetentionPolicyArg(parser):
       type=arg_parsers.ArgDict(spec=backup_retention_policy_arg_spec),
       required=False,
       help=backup_retention_policy_help,
-      hidden=True,
       )

@@ -350,9 +350,22 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
           'where gcloud can launch a web browser.')
     user_creds = NoBrowserHelperRunner(scopes, client_config).Run(
         partial_auth_url=remote_bootstrap, **query_params)
-  elif no_launch_browser or not can_launch_browser:
+  elif no_launch_browser:
     user_creds = RemoteLoginWithAuthProxyFlowRunner(
-        scopes, client_config, auth_proxy_redirect_uri).Run(**query_params)
+        scopes, client_config, auth_proxy_redirect_uri
+    ).Run(**query_params)
+  elif not can_launch_browser:
+    # RemoteLoginWithAuthProxyFlowrunner uses redirect_uri for https://sdk.cloud.google.com
+    # which is intended for google-owned client only.
+    # Non-google-owned clients can only use NoBrowserFlowRunner.
+    if client_id_file and not _IsGoogleOwnedClientID(client_config):
+      user_creds = NoBrowserFlowRunner(scopes, client_config).Run(
+          **query_params
+      )
+    else:
+      user_creds = RemoteLoginWithAuthProxyFlowRunner(
+          scopes, client_config, auth_proxy_redirect_uri
+      ).Run(**query_params)
   else:
     user_creds = BrowserFlowWithNoBrowserFallbackRunner(
         scopes, client_config).Run(**query_params)

@@ -1026,6 +1026,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                 'uri': '/v1beta1/{endpoint=projects/*/locations/*/publishers/*/models/*}:fetchPredictOperation',
                 'body': '*',
             },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=endpoints/*}:fetchPredictOperation',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=publishers/*/models/*}:fetchPredictOperation',
+                'body': '*',
+            },
             ]
             request, metadata = self._interceptor.pre_fetch_predict_operation(request, metadata)
             pb_request = prediction_service.FetchPredictOperationRequest.pb(request)
@@ -1317,6 +1327,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 {
                 'method': 'post',
                 'uri': '/v1beta1/{endpoint=projects/*/locations/*/publishers/*/models/*}:predictLongRunning',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=endpoints/*}:predictLongRunning',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1beta1/{endpoint=publishers/*/models/*}:predictLongRunning',
                 'body': '*',
             },
             ]

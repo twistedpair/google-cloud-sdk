@@ -74,9 +74,8 @@ class AllowedKeyType(_messages.Message):
 
 
 class AttributeTypeAndValue(_messages.Message):
-  r"""AttributeTypeAndValue specifies an attribute type and value.
-
-  It can use either a OID or enum value to specify the attribute type.
+  r"""AttributeTypeAndValue specifies an attribute type and value. It can use
+  either a OID or enum value to specify the attribute type.
 
   Enums:
     TypeValueValuesEnum: The attribute type of the attribute and value pair.
@@ -101,7 +100,6 @@ class AttributeTypeAndValue(_messages.Message):
       STREET_ADDRESS: The street address of the subject.
       POSTAL_CODE: The postal code of the subject.
     """
-
     ATTRIBUTE_TYPE_UNSPECIFIED = 0
     COMMON_NAME = 1
     COUNTRY_CODE = 2
@@ -416,10 +414,8 @@ class Certificate(_messages.Message):
   """
 
   class SubjectModeValueValuesEnum(_messages.Enum):
-    r"""Immutable.
-
-    Specifies how the Certificate's identity fields are to be decided. If this
-    is omitted, the `DEFAULT` subject mode will be used.
+    r"""Immutable. Specifies how the Certificate's identity fields are to be
+    decided. If this is omitted, the `DEFAULT` subject mode will be used.
 
     Values:
       SUBJECT_REQUEST_MODE_UNSPECIFIED: Not specified.
@@ -1052,6 +1048,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EnableCertificateAuthorityRequest(_messages.Message):
@@ -2675,6 +2672,8 @@ class PrivatecaProjectsLocationsListRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -2685,10 +2684,11 @@ class PrivatecaProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class PrivatecaProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -2863,7 +2863,6 @@ class ReconciliationOperationMetadata(_messages.Message):
 
 class RelativeDistinguishedName(_messages.Message):
   r"""RelativeDistinguishedName specifies a relative distinguished name which
-
   will be used to build a distinguished name.
 
   Fields:
@@ -3179,7 +3178,6 @@ class Status(_messages.Message):
 
 class Subject(_messages.Message):
   r"""Subject describes parts of a distinguished name that, in turn, describes
-
   the subject of the certificate.
 
   Fields:
@@ -3201,9 +3199,7 @@ class Subject(_messages.Message):
   organizationalUnit = _messages.StringField(5)
   postalCode = _messages.StringField(6)
   province = _messages.StringField(7)
-  rdnSequence = _messages.MessageField(
-      'RelativeDistinguishedName', 8, repeated=True
-  )
+  rdnSequence = _messages.MessageField('RelativeDistinguishedName', 8, repeated=True)
   streetAddress = _messages.StringField(9)
 
 
@@ -3352,11 +3348,11 @@ class UserDefinedAccessUrls(_messages.Message):
     aiaIssuingCertificateUrls: Optional. A list of URLs where the issuer CA
       certificate may be downloaded, which appears in the "Authority
       Information Access" extension in the certificate. If specified, the
-      default GCS URLs will be omitted.
+      default Cloud Storage URLs will be omitted.
     crlAccessUrls: Optional. A list of URLs where to obtain CRL information,
       i.e. the DistributionPoint.fullName described by
       https://tools.ietf.org/html/rfc5280#section-4.2.1.13. If specified, the
-      default GCS URLs will be omitted.
+      default Cloud Storage URLs will be omitted.
   """
 
   aiaIssuingCertificateUrls = _messages.StringField(1, repeated=True)

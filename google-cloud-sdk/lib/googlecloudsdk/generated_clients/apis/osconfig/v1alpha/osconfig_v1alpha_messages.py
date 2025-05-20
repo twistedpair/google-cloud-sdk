@@ -883,6 +883,20 @@ class ListVulnerabilityReportsResponse(_messages.Message):
   vulnerabilityReports = _messages.MessageField('VulnerabilityReport', 2, repeated=True)
 
 
+class MessageSet(_messages.Message):
+  r"""This is proto2's version of MessageSet. DEPRECATED: DO NOT USE FOR NEW
+  FIELDS. If you are using editions or proto2, please make your own extendable
+  messages for your use case. If you are using proto3, please use `Any`
+  instead. MessageSet was the implementation of extensions for proto1. When
+  proto2 was introduced, extensions were implemented as a first-class feature.
+  This schema for MessageSet was meant to be a "bridge" solution to migrate
+  MessageSet-bearing messages from proto1 to proto2. This schema has been
+  open-sourced only to facilitate the migration of Google products with
+  MessageSet-bearing messages to open-source environments.
+  """
+
+
+
 class OSPolicy(_messages.Message):
   r"""An OS policy defines the desired state configuration for a VM.
 
@@ -2519,6 +2533,33 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StatusProto(_messages.Message):
+  r"""Wire-format for a Status object
+
+  Fields:
+    canonicalCode: copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 canonical_code = 6;
+    code: Numeric code drawn from the space specified below. Often, this is
+      the canonical error space, and code is drawn from
+      google3/util/task/codes.proto copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 code = 1;
+    message: Detail message copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional string message = 3;
+    messageSet: message_set associates an arbitrary proto message with the
+      status. copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
+      optional proto2.bridge.MessageSet message_set = 5;
+    space: copybara:strip_begin(b/383363683) Space to which this status
+      belongs copybara:strip_end_and_replace optional string space = 2; //
+      Space to which this status belongs
+  """
+
+  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  message = _messages.StringField(3)
+  messageSet = _messages.MessageField('MessageSet', 4)
+  space = _messages.StringField(5)
 
 
 class VulnerabilityReport(_messages.Message):

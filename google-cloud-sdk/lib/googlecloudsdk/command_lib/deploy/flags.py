@@ -264,44 +264,6 @@ def AddCloudRunFileFlag():
   )
 
 
-def AddServicesFlag():
-  return base.Argument(
-      '--services',
-      metavar='NAME=TAG',
-      type=arg_parsers.ArgDict(),
-      hidden=True,
-      help="""
-        The flag to be used with the --from-run-container flag to specify the
-        name of the service present in a given target.
-        This will be a repeated flag.
-
-        *target_id*::: The target_id.
-        *service*::: The name of the service in the specified target_id.
-
-        For example:
-
-          $gcloud deploy releases create foo \\
-              --from-run-container=path/to/image1:v1@sha256:45db24
-              --services=dev_target:dev_service
-              --services=prod_target:prod_service
-      """,
-  )
-
-
-def AddFromRunContainerFlag():
-  return base.Argument(
-      '--from-run-container',
-      hidden=True,
-      help="""
-          The container name, which Cloud Deploy will use to
-          generate a CloudRun manifest.yaml and a skaffold.yaml file.
-          The generated Skaffold file and manifest file will be
-          available in the Google Cloud Storage source staging directory
-          after the release is complete.
-      """,
-  )
-
-
 def AddSkaffoldSources(parser):
   """Add Skaffold sources."""
   skaffold_source_config_group = parser.add_mutually_exclusive_group()
@@ -313,11 +275,6 @@ def AddSkaffoldSources(parser):
   # Add the from-k8s-manifest and --from-run-manifest flag to the mutex group.
   AddKubernetesFileFlag().AddToParser(skaffold_source_config_group)
   AddCloudRunFileFlag().AddToParser(skaffold_source_config_group)
-  # Add from-k8s-container and the from-run-container flag to the mutex group.
-  run_container_group = skaffold_source_config_group.add_group(mutex=False,
-                                                               hidden=True)
-  AddFromRunContainerFlag().AddToParser(run_container_group)
-  AddServicesFlag().AddToParser(run_container_group)
 
 
 def AddDescriptionFlag(parser):

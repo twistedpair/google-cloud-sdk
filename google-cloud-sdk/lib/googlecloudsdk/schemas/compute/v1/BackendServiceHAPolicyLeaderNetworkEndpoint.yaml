@@ -1,0 +1,35 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute v1 BackendServiceHAPolicyLeaderNetworkEndpoint export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  instance:
+    description: |-
+      The name of the VM instance of the leader network endpoint. The instance
+      must already be attached to the NEG specified in the
+      haPolicy.leader.backendGroup. The name must be 1-63 characters long, and
+      comply with RFC1035. Authorization requires the following IAM permission
+      on the specified resource instance: compute.instances.use
+    type: string

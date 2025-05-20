@@ -152,13 +152,13 @@ workload_identity_pool:
     help_text: |-
       YAML file with configuration for certificate issuance.
       Example file format:
-      ```
+      ```yaml
       inlineCertificateIssuanceConfig:
         caPools:
           us-east1: projects/1234/locations/us-east1/caPools/capoolname
           us-west1: projects/1234/locations/us-west1/caPools/capoolname
-        keyAlgorithm: RSA_4096
-        lifetime: 7200s
+        keyAlgorithm: ECDSA_P256
+        lifetime: 86400s
         rotationWindowPercentage: 50
       ```
   key_algorithm:
@@ -186,7 +186,7 @@ workload_identity_pool:
     help_text: |-
       YAML file with configuration for providing additional trust bundles.
       Example file format:
-      ```
+      ```yaml
       inlineTrustConfig:
         additionalTrustBundles:
           example.com:
@@ -297,7 +297,7 @@ workload_identity_pool_provider:
       - If no attribute mapping is defined, the following default mapping
         applies:
 
-        ```
+        ```json
         {
           "google.subject":"assertion.arn",
           "attribute.aws_role":
@@ -320,7 +320,7 @@ workload_identity_pool_provider:
         `sub` claim of the incoming credential to the `subject` attribute on
         a Google token.
 
-        ```
+        ```json
         {"google.subject": "assertion.sub"}
         ```
   attribute_condition:
@@ -387,7 +387,7 @@ workload_identity_pool_provider:
     help_text: |-
       Optional file containing jwk public keys. The file format must follow
       [jwk specifications](https://www.rfc-editor.org/rfc/rfc7517#section-4). Example file format:
-      ```
+      ```json
       {
         "keys": [
            {
@@ -442,7 +442,7 @@ workload_identity_pool_provider:
     help_text: |-
       YAML file with configuration metadata for the X.509 identity provider.
       Example file format:
-      ```
+      ```yaml
       trustStore:
         trustAnchors:
         - pemCertificate: "-----BEGIN CERTIFICATE-----
@@ -657,7 +657,7 @@ workforce_pool_provider:
       Example: Map the `sub` claim of the incoming credential to the
                `subject` Google Cloud IAM attribute.
 
-               ```
+               ```json
                {"google.subject": "assertion.sub"}
                ```
   attribute_condition:
@@ -780,7 +780,7 @@ workforce_pool_provider:
     help_text: |-
       Optional file containing JSON Web Key (JWK) public keys. The file format must follow
       [JWK specifications](https://www.rfc-editor.org/rfc/rfc7517#section-4). Example file format:
-      ```
+      ```json
       {
         "keys": [
            {

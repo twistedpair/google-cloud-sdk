@@ -1361,41 +1361,6 @@ class Range(_messages.Message):
   step = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class ReportFaultyVmRequest(_messages.Message):
-  r"""Request for ReportFaultyVm.
-
-  Enums:
-    FaultBehaviorValueValuesEnum: Required. The general type of behavior that
-      prompted the customer to report.
-
-  Fields:
-    description: Optional. A string used to describe the fault.
-    faultBehavior: Required. The general type of behavior that prompted the
-      customer to report.
-    workerId: Required. A string used to uniquely distinguish a worker within
-      a TPU node.
-  """
-
-  class FaultBehaviorValueValuesEnum(_messages.Enum):
-    r"""Required. The general type of behavior that prompted the customer to
-    report.
-
-    Values:
-      FAULT_BEHAVIOR_UNSPECIFIED: The behavior is not specified.
-      PERFORMANCE: Poor performance.
-      SILENT_DATA_CORRUPTION: Suspected silent data corruption.
-      CHIP_ERROR: The behavior is unrecoverable chip error.
-    """
-    FAULT_BEHAVIOR_UNSPECIFIED = 0
-    PERFORMANCE = 1
-    SILENT_DATA_CORRUPTION = 2
-    CHIP_ERROR = 3
-
-  description = _messages.StringField(1)
-  faultBehavior = _messages.EnumField('FaultBehaviorValueValuesEnum', 2)
-  workerId = _messages.StringField(3)
-
-
 class Reservation(_messages.Message):
   r"""A reservation describes the amount of a resource 'allotted' for a
   defined period of time.
@@ -2025,19 +1990,6 @@ class TpuProjectsLocationsNodesPerformMaintenanceRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   performMaintenanceRequest = _messages.MessageField('PerformMaintenanceRequest', 2)
-
-
-class TpuProjectsLocationsNodesReportFaultyVmRequest(_messages.Message):
-  r"""A TpuProjectsLocationsNodesReportFaultyVmRequest object.
-
-  Fields:
-    name: Required. The name of the TPU node to report as faulty.
-    reportFaultyVmRequest: A ReportFaultyVmRequest resource to be passed as
-      the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  reportFaultyVmRequest = _messages.MessageField('ReportFaultyVmRequest', 2)
 
 
 class TpuProjectsLocationsNodesSimulateMaintenanceEventRequest(_messages.Message):

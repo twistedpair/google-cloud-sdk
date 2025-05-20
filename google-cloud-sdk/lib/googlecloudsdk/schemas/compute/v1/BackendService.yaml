@@ -76,7 +76,7 @@ properties:
       specifies parameters that control consistent hashing. This field is
       only applicable when localityLbPolicy is set to MAGLEV or RING_HASH.
       This field is applicable to either: - A regional backend service with
-      the service_protocol set to HTTP, HTTPS, or HTTP2, and
+      the service_protocol set to HTTP, HTTPS, HTTP2 or H2C, and
       load_balancing_scheme set to INTERNAL_MANAGED. - A global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     $ref: ConsistentHashLoadBalancerSettings.yaml
@@ -111,6 +111,13 @@ properties:
       An optional description of this resource. Provide this
       property when you create the resource.
     type: string
+  dynamicForwarding:
+    description: |-
+      Dynamic forwarding configuration. This field is used to
+      configure the backend service with dynamic forwarding
+      feature which together with Service Extension allows
+      customized and complex routing logic.
+    $ref: BackendServiceDynamicForwarding.yaml
   edgeSecurityPolicy:
     description: |-
       [Output Only] The resource URL for the edge security
@@ -374,6 +381,13 @@ properties:
       only be specified when the load balancing scheme
       is set to INTERNAL.
     type: string
+  networkPassThroughLbTrafficPolicy:
+    description: |-
+      Configures traffic steering properties of internal
+      passthrough Network Load Balancers.
+      networkPassThroughLbTrafficPolicy cannot be
+      specified with haPolicy.
+    $ref: BackendServiceNetworkPassThroughLbTrafficPolicy.yaml
   outlierDetection:
     description: |-
       Settings controlling the ejection of unhealthy
@@ -406,7 +420,7 @@ properties:
       service with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED or EXTERNAL_MANAGED. - A
       regional backend service with the serviceProtocol
-      set to HTTP, HTTPS, or HTTP2, and
+      set to HTTP, HTTPS, HTTP2 or H2C, and
       loadBalancingScheme set to INTERNAL_MANAGED or
       EXTERNAL_MANAGED. Not supported for Serverless
       NEGs. Not supported when the backend service is
@@ -439,7 +453,7 @@ properties:
     description: |-
       The protocol this BackendService uses to
       communicate with backends. Possible values are
-      HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC.
+      HTTP, HTTPS, HTTP2, H2C, TCP, SSL, UDP or GRPC.
       depending on the chosen load balancer or Traffic
       Director configuration. Refer to the documentation
       for the load balancers or for Traffic Director for
@@ -448,6 +462,7 @@ properties:
       bound to target gRPC proxy.
     type: string
     enum:
+    - ALL
     - GRPC
     - H2C
     - HTTP
@@ -551,6 +566,12 @@ properties:
       validateForProxyless field set to true.
       Instead, use maxStreamDuration.
     type: integer
+  tlsSettings:
+    description: |-
+      Configuration for Backend Authenticated TLS
+      and mTLS. May only be specified when the
+      backend protocol is SSL, HTTPS or HTTP2.
+    $ref: BackendServiceTlsSettings.yaml
   usedBy:
     description: |-
       [Output Only] List of resources referencing
@@ -558,3 +579,22 @@ properties:
     type: array
     items:
       $ref: BackendServiceUsedBy.yaml
+  vpcNetworkScope:
+    description: |-
+      The network scope of the backends that can
+      be added to the backend service. This
+      field can be either GLOBAL_VPC_NETWORK or
+      REGIONAL_VPC_NETWORK. A backend service
+      with the VPC scope set to
+      GLOBAL_VPC_NETWORK is only allowed to have
+      backends in global VPC networks. When the
+      VPC scope is set to REGIONAL_VPC_NETWORK
+      the backend service is only allowed to
+      have backends in regional networks in the
+      same scope as the backend service. Note:
+      if not specified then GLOBAL_VPC_NETWORK
+      will be used.
+    type: string
+    enum:
+    - GLOBAL_VPC_NETWORK
+    - REGIONAL_VPC_NETWORK

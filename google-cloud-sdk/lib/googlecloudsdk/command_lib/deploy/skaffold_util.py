@@ -87,38 +87,3 @@ def CreateSkaffoldFileForManifest(pipeline_obj, manifest, template):
   _AddProfiles(skaffold, pipeline_obj)
 
   return skaffold
-
-
-def CreateSkaffoldFileForRunContainer(
-    target_to_target_properties, pipeline_obj
-):
-  """Creates skaffold file for target_ids in _TargetProperties object.
-
-  Args:
-    target_to_target_properties: A dict of target_id to _TargetProperties.
-    pipeline_obj: Delivery Pipeline object.
-
-  Returns:
-    skaffold yaml.
-  """
-  skaffold = collections.OrderedDict()
-  skaffold['apiVersion'] = 'skaffold/v3alpha1'
-  skaffold['kind'] = 'Config'
-  profiles = _GetUniqueProfiles(pipeline_obj)
-  if profiles:
-    skaffold['profiles'] = []
-
-  for target_id, target_property in target_to_target_properties.items():
-    skaffold['profiles'].append(
-        collections.OrderedDict([
-            ('name', target_property.profile),
-            ('manifests', {'rawYaml': ['{}_manifest.yaml'.format(target_id)]}),
-        ])
-    )
-    profiles.remove(target_property.profile)
-
-  for profile in profiles:
-    skaffold['profiles'].append(collections.OrderedDict([('name', profile)]))
-
-  skaffold['deploy'] = {'cloudrun': {}}
-  return skaffold

@@ -54,6 +54,10 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
       messages, reservation_ref, getattr(args, 'resource_policies', None),
       resources)
 
+  scheduling_type = None
+  if args.IsKnownAndSpecified('scheduling_type'):
+    scheduling_type = getattr(args, 'scheduling_type', None)
+
   return MakeReservationMessage(
       messages,
       reservation_ref.Name(),
@@ -65,6 +69,8 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
       getattr(args, 'delete_at_time', None),
       getattr(args, 'delete_after_duration', None),
       getattr(args, 'reservation_sharing_policy', None),
+      getattr(args, 'enable_emergent_maintenance', None),
+      scheduling_type,
   )
 
 
@@ -275,6 +281,7 @@ def MakeReservationMessage(
     delete_after_duration=None,
     reservation_sharing_policy=None,
     enable_emergent_maintenance=None,
+    scheduling_type=None,
 ):
   """Constructs a single reservations message object."""
   reservation_message = messages.Reservation(
@@ -304,6 +311,11 @@ def MakeReservationMessage(
 
   if enable_emergent_maintenance is not None:
     reservation_message.enableEmergentMaintenance = enable_emergent_maintenance
+
+  if scheduling_type is not None:
+    reservation_message.schedulingType = (
+        MakeSchedulingType(messages, scheduling_type)
+    )
 
   return reservation_message
 
@@ -390,6 +402,16 @@ def MakeReservationBlocksMaintenanceScope(messages, maintenance_scope):
     )
   else:
     return None
+
+
+def MakeSchedulingType(messages, scheduling_type):
+  """Constructs the scheduling type enum value."""
+  if scheduling_type:
+    if scheduling_type == 'GROUPED':
+      return messages.Reservation.SchedulingTypeValueValuesEnum.GROUPED
+    if scheduling_type == 'INDEPENDENT':
+      return messages.Reservation.SchedulingTypeValueValuesEnum.INDEPENDENT
+  return None
 
 
 def MakeUrl(resources, value, reservation_ref):

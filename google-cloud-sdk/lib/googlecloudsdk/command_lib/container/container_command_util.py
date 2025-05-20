@@ -223,16 +223,15 @@ def ClusterUpgradeMessage(name,
     )
 
   return (
-      '{} This operation is long-running and will block other operations '
-      'on the cluster (including delete) until it has run to completion.'
-      .format(upgrade_message)
+      '{} This operation is longs-running and will block other operations on'
+      ' the cluster (except other node pool upgrades) until it has run to'
+      ' completion.'.format(upgrade_message)
   )
 
 
-def GetZoneOrRegion(args,
-                    ignore_property=False,
-                    required=True,
-                    is_autopilot=False):
+def GetZoneOrRegion(
+    args, ignore_property=False, required=True, is_autopilot=False
+):
   """Get a location (zone or region) from argument or property.
 
   Args:

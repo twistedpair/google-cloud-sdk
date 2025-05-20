@@ -23,6 +23,8 @@ import abc
 import collections
 import inspect
 import io
+import os
+import sys
 
 from google.auth.transport import requests as google_auth_requests
 from google.auth.transport.requests import _MutualTlsOffloadAdapter
@@ -30,6 +32,7 @@ from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
 
@@ -205,8 +208,67 @@ def GetProxyInfo():
                                proxy_port)
 
 
+_GOOGLER_BUNDLED_PYTHON_WARNING = (
+    'Please use the installed gcloud CLI (`apt install google-cloud-sdk`)\n'
+    ' This version of gcloud you are currently using will encounter issues'
+    ' due to\n changes in internal security policy enforcement in the near'
+    ' future.\n\n If this is not possible due to dev requirements, please'
+    ' apply for\n policy exemption at go/gcloud-cba-exemption or reach out'
+    ' to\n go/gcloud-cba-investigation for investigation.\n'
+)
+
+
 def CreateMutualTlsOffloadAdapter(certificate_config_file_path):
   return _MutualTlsOffloadAdapter(certificate_config_file_path)
+
+
+def GetCurrentAccountEmailDomain():
+  """Returns the current logged-in user's email domain, or None if not available."""
+  user_email = properties.VALUES.core.account.Get()
+  if user_email:
+    parts = user_email.split('@')
+    if len(parts) == 2:
+      return parts[1]
+  return None
+
+
+def IsInternalUserCheck():
+  """Checks if the current user is an internal Google user.
+
+  Checks the 'CLOUDSDK_INTERNAL_USER' environment variable first to decide
+  whther the current user is an internal Google user.
+  If the variable is not set, falls back to checking if the user's email
+  domain is 'google.com'.
+
+  Returns:
+    bool: True if the user is an internal user, False otherwise.
+  """
+  if 'CLOUDSDK_INTERNAL_USER' in os.environ:
+    return encoding.GetEncodedValue(
+        os.environ, 'CLOUDSDK_INTERNAL_USER') == 'true'
+  user_domain = GetCurrentAccountEmailDomain()
+  return user_domain == 'google.com'
+
+
+def _LinuxNonbundledPythonAndGooglerCheck():
+  """Warn users if running non-bundled Python on Linux and is a Googler.
+
+  Checks if the current OS is Linux, running Python that is not bundled and if
+  the user is a Googler. If all conditions are true, a warning message will be
+  emitted, along with returning true to bypass the mTLS code path.
+
+  Returns:
+    True if the conditions are met, False otherwise.
+  """
+  is_linux = (
+      platforms.OperatingSystem.Current() == platforms.OperatingSystem.LINUX)
+  is_bundled_python = sys.executable and 'bundled' in sys.executable
+  is_internal_user = IsInternalUserCheck()
+  if is_linux and not is_bundled_python and is_internal_user:
+    log.warning(_GOOGLER_BUNDLED_PYTHON_WARNING)
+    return True
+  else:
+    return False
 
 
 def Session(
@@ -277,6 +339,7 @@ def Session(
   else:
     ca_config = context_aware.Config()
     if ca_config:
+      _LinuxNonbundledPythonAndGooglerCheck()
       if ca_config.config_type == context_aware.ConfigType.ENTERPRISE_CERTIFICATE:
         adapter = CreateMutualTlsOffloadAdapter(
             ca_config.certificate_config_file_path)

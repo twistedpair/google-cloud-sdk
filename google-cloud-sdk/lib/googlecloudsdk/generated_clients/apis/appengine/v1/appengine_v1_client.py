@@ -52,6 +52,7 @@ class AppengineV1(base_api.BaseApiClient):
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
     self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
+    self.projects_locations_applications_domainMappings = self.ProjectsLocationsApplicationsDomainMappingsService(self)
     self.projects_locations_applications_services_migration = self.ProjectsLocationsApplicationsServicesMigrationService(self)
     self.projects_locations_applications_services_versions = self.ProjectsLocationsApplicationsServicesVersionsService(self)
     self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
@@ -1349,6 +1350,43 @@ class AppengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsApplicationsDomainMappingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_domainMappings resource."""
+
+    _NAME = 'projects_locations_applications_domainMappings'
+
+    def __init__(self, client):
+      super(AppengineV1.ProjectsLocationsApplicationsDomainMappingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified domain mapping.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsDomainMappingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/domainMappings/{domainMappingsId}',
+        http_method='GET',
+        method_id='appengine.projects.locations.applications.domainMappings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsDomainMappingsGetRequest',
+        response_type_name='DomainMapping',
+        supports_download=False,
+    )
+
   class ProjectsLocationsApplicationsServicesMigrationService(base_api.BaseApiService):
     """Service class for the projects_locations_applications_services_migration resource."""
 
@@ -1537,6 +1575,33 @@ class AppengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='AppengineProjectsLocationsApplicationsServicesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the configuration of the specified service.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}',
+        http_method='PATCH',
+        method_id='appengine.projects.locations.applications.services.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['migrateTraffic', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='service',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

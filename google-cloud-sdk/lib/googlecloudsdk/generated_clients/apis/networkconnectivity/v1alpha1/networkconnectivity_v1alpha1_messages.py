@@ -19,12 +19,12 @@ class AllocationOptions(_messages.Message):
   not explicitly set.
 
   Enums:
-    AllocationStrategyValueValuesEnum: Optional. Allocation strategy Not
+    AllocationStrategyValueValuesEnum: Optional. Allocation strategy. Not
       setting this field when the allocation is requested means an
       implementation defined strategy is used.
 
   Fields:
-    allocationStrategy: Optional. Allocation strategy Not setting this field
+    allocationStrategy: Optional. Allocation strategy. Not setting this field
       when the allocation is requested means an implementation defined
       strategy is used.
     firstAvailableRangesLookupSize: Optional. This field must be set only when
@@ -34,7 +34,7 @@ class AllocationOptions(_messages.Message):
   """
 
   class AllocationStrategyValueValuesEnum(_messages.Enum):
-    r"""Optional. Allocation strategy Not setting this field when the
+    r"""Optional. Allocation strategy. Not setting this field when the
     allocation is requested means an implementation defined strategy is used.
 
     Values:

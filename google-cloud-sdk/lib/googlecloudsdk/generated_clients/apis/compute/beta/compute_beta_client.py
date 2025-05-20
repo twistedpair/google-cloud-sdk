@@ -93,6 +93,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.nodeTypes = self.NodeTypesService(self)
     self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
     self.packetMirrorings = self.PacketMirroringsService(self)
+    self.previewFeatures = self.PreviewFeaturesService(self)
     self.projects = self.ProjectsService(self)
     self.publicAdvertisedPrefixes = self.PublicAdvertisedPrefixesService(self)
     self.publicDelegatedPrefixes = self.PublicDelegatedPrefixesService(self)
@@ -1889,6 +1890,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/disks/bulkInsert',
         request_field='bulkInsertDiskResource',
         request_type_name='ComputeDisksBulkInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def BulkSetLabels(self, request, global_params=None):
+      r"""Sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeDisksBulkSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkSetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkSetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.bulkSetLabels',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'resource'],
+        relative_path='projects/{project}/zones/{zone}/disks/bulkSetLabels',
+        request_field='bulkZoneSetLabelsRequest',
+        request_type_name='ComputeDisksBulkSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -13302,6 +13329,94 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputePacketMirroringsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class PreviewFeaturesService(base_api.BaseApiService):
+    """Service class for the previewFeatures resource."""
+
+    _NAME = 'previewFeatures'
+
+    def __init__(self, client):
+      super(ComputeBeta.PreviewFeaturesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of the given PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PreviewFeature) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.previewFeatures.get',
+        ordered_params=['project', 'previewFeature'],
+        path_params=['previewFeature', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/previewFeatures/{previewFeature}',
+        request_field='',
+        request_type_name='ComputePreviewFeaturesGetRequest',
+        response_type_name='PreviewFeature',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the details of the given PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PreviewFeatureList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.previewFeatures.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/previewFeatures',
+        request_field='',
+        request_type_name='ComputePreviewFeaturesListRequest',
+        response_type_name='PreviewFeatureList',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
+
+      Args:
+        request: (ComputePreviewFeaturesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.previewFeatures.update',
+        ordered_params=['project', 'previewFeature'],
+        path_params=['previewFeature', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/previewFeatures/{previewFeature}',
+        request_field='previewFeatureResource',
+        request_type_name='ComputePreviewFeaturesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

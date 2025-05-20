@@ -9249,9 +9249,11 @@ class VersionUpgrade(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Default value.
       TYPE_CONTROL_PLANE: Control plane upgrade.
+      TYPE_NODE_POOL: Node pool upgrade.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_CONTROL_PLANE = 1
+    TYPE_NODE_POOL = 2
 
   desiredVersion = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

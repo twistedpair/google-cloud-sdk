@@ -63,6 +63,16 @@ def AddArgNetworkFirewallPolicyCreation(parser):
   )
 
 
+def AddPolicyType(parser):
+  """Adds policy type argument."""
+  parser.add_argument(
+      '--policy-type',
+      required=False,
+      choices=['VPC_POLICY', 'RDMA_ROCE_POLICY'],
+      help='Network firewall policy type.',
+  )
+
+
 def AddArgsUpdateNetworkFirewallPolicy(parser):
   """Adds the arguments  for firewall policy update."""
   parser.add_argument(
@@ -87,7 +97,11 @@ def NetworkFirewallPolicyAssociationArgument(
   )
 
 
-def AddArgsCreateAssociation(parser, support_priority=False):
+def AddArgsCreateAssociation(
+    parser,
+    support_priority=False,
+    support_associated_policy_to_be_replaced=False,
+):
   """Adds the arguments of association creation."""
   parser.add_argument('--name', help='Name of the association.')
 
@@ -105,7 +119,17 @@ def AddArgsCreateAssociation(parser, support_priority=False):
         help='Priority of the association.',
     )
 
-  parser.add_argument(
+  group = parser
+  if support_associated_policy_to_be_replaced:
+    group = parser.add_group(mutex=True, required=False)
+    group.add_argument(
+        '--associated-policy-to-be-replaced',
+        required=False,
+        hidden=True,
+        help='Name of an already associated firewall policy to replace.',
+    )
+
+  group.add_argument(
       '--replace-association-on-target',
       action='store_true',
       default=False,

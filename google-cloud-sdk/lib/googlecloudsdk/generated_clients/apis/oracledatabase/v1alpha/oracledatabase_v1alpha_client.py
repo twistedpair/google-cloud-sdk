@@ -49,7 +49,9 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     self.projects_locations_cloudVmClusters = self.ProjectsLocationsCloudVmClustersService(self)
     self.projects_locations_dbSystemShapes = self.ProjectsLocationsDbSystemShapesService(self)
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
+    self.projects_locations_exadbVmClusters_dbNodes = self.ProjectsLocationsExadbVmClustersDbNodesService(self)
     self.projects_locations_exadbVmClusters = self.ProjectsLocationsExadbVmClustersService(self)
+    self.projects_locations_exascaleDbStorageVaults = self.ProjectsLocationsExascaleDbStorageVaultsService(self)
     self.projects_locations_giVersions_minorVersions = self.ProjectsLocationsGiVersionsMinorVersionsService(self)
     self.projects_locations_giVersions = self.ProjectsLocationsGiVersionsService(self)
     self.projects_locations_odbNetworks_odbSubnets = self.ProjectsLocationsOdbNetworksOdbSubnetsService(self)
@@ -1050,6 +1052,70 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsExadbVmClustersDbNodesService(base_api.BaseApiService):
+    """Service class for the projects_locations_exadbVmClusters_dbNodes resource."""
+
+    _NAME = 'projects_locations_exadbVmClusters_dbNodes'
+
+    def __init__(self, client):
+      super(OracledatabaseV1alpha.ProjectsLocationsExadbVmClustersDbNodesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about the specified database node.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersDbNodesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DbNode) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exadbVmClusters/{exadbVmClustersId}/dbNodes/{dbNodesId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.dbNodes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersDbNodesGetRequest',
+        response_type_name='DbNode',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the database nodes of a VM Cluster.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDbNodesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exadbVmClusters/{exadbVmClustersId}/dbNodes',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exadbVmClusters.dbNodes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/dbNodes',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExadbVmClustersDbNodesListRequest',
+        response_type_name='ListDbNodesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsExadbVmClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_exadbVmClusters resource."""
 
@@ -1165,6 +1231,97 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsExadbVmClustersListRequest',
         response_type_name='ListExadbVmClustersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsExascaleDbStorageVaultsService(base_api.BaseApiService):
+    """Service class for the projects_locations_exascaleDbStorageVaults resource."""
+
+    _NAME = 'projects_locations_exascaleDbStorageVaults'
+
+    def __init__(self, client):
+      super(OracledatabaseV1alpha.ProjectsLocationsExascaleDbStorageVaultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ExascaleDB Storage Vault.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExascaleDbStorageVaultsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exascaleDbStorageVaults/{exascaleDbStorageVaultsId}',
+        http_method='DELETE',
+        method_id='oracledatabase.projects.locations.exascaleDbStorageVaults.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExascaleDbStorageVaultsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ExascaleDB Storage Vault.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExascaleDbStorageVaultsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExascaleDbStorageVault) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exascaleDbStorageVaults/{exascaleDbStorageVaultsId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exascaleDbStorageVaults.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExascaleDbStorageVaultsGetRequest',
+        response_type_name='ExascaleDbStorageVault',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the ExascaleDB Storage Vaults for the given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsExascaleDbStorageVaultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExascaleDbStorageVaultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/exascaleDbStorageVaults',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.exascaleDbStorageVaults.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/exascaleDbStorageVaults',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsExascaleDbStorageVaultsListRequest',
+        response_type_name='ListExascaleDbStorageVaultsResponse',
         supports_download=False,
     )
 

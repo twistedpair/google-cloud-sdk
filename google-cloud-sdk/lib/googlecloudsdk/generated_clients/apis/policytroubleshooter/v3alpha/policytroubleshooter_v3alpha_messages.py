@@ -5033,9 +5033,15 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
       NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
         permission to auth session info
       NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
-      NODE_ERROR_INVALID_NETWORK: The network project in the list for
-        `in_vpc_network` is not valid. TODO(b/382592764) Add support for
-        NODE_ERROR_UNKNOWN_REGION
+      NODE_ERROR_INVALID_NETWORK: The network in the list for `in_vpc_network`
+        is not valid.
+      NODE_ERROR_UNRECOGNIZED_NETWORK: The network in the request for
+        `in_vpc_network` is missing.
+      NODE_ERROR_UNMATCHED_NETWORK_PROJECT: The network project in the request
+        for `in_vpc_network` does not match with the project in policy.
+      NODE_ERROR_UNRECOGNIZED_NETWORK_PROJECT: The network project in the
+        request for `in_vpc_network` is missing. TODO(b/382592764) Add support
+        for NODE_ERROR_UNKNOWN_REGION
     """
     NODE_ERROR_UNSPECIFIED = 0
     NODE_ERROR_INTERNAL_ERROR = 1
@@ -5050,6 +5056,9 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
     NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED = 10
     NODE_ERROR_NO_BCE_LICENSE = 11
     NODE_ERROR_INVALID_NETWORK = 12
+    NODE_ERROR_UNRECOGNIZED_NETWORK = 13
+    NODE_ERROR_UNMATCHED_NETWORK_PROJECT = 14
+    NODE_ERROR_UNRECOGNIZED_NETWORK_PROJECT = 15
 
   class NodeStateValueValuesEnum(_messages.Enum):
     r"""Evaluation state of this node
@@ -5091,9 +5100,15 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
       NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
         permission to auth session info
       NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
-      NODE_ERROR_INVALID_NETWORK: The network project in the list for
-        `in_vpc_network` is not valid. TODO(b/382592764) Add support for
-        NODE_ERROR_UNKNOWN_REGION
+      NODE_ERROR_INVALID_NETWORK: The network in the list for `in_vpc_network`
+        is not valid.
+      NODE_ERROR_UNRECOGNIZED_NETWORK: The network in the request for
+        `in_vpc_network` is missing.
+      NODE_ERROR_UNMATCHED_NETWORK_PROJECT: The network project in the request
+        for `in_vpc_network` does not match with the project in policy.
+      NODE_ERROR_UNRECOGNIZED_NETWORK_PROJECT: The network project in the
+        request for `in_vpc_network` is missing. TODO(b/382592764) Add support
+        for NODE_ERROR_UNKNOWN_REGION
     """
     NODE_ERROR_UNSPECIFIED = 0
     NODE_ERROR_INTERNAL_ERROR = 1
@@ -5108,6 +5123,9 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
     NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED = 10
     NODE_ERROR_NO_BCE_LICENSE = 11
     NODE_ERROR_INVALID_NETWORK = 12
+    NODE_ERROR_UNRECOGNIZED_NETWORK = 13
+    NODE_ERROR_UNMATCHED_NETWORK_PROJECT = 14
+    NODE_ERROR_UNRECOGNIZED_NETWORK_PROJECT = 15
 
   criticalNodeErrors = _messages.EnumField('CriticalNodeErrorsValueListEntryValuesEnum', 1, repeated=True)
   nodeState = _messages.EnumField('NodeStateValueValuesEnum', 2)

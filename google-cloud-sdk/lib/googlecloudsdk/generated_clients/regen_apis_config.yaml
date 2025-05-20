@@ -497,6 +497,8 @@ apis:
           path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
+        previewFeatures:
+          path: projects/{project}/global/previewFeatures/{previewFeature}
         regionSecurityPolicyRules:
           path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
@@ -515,6 +517,11 @@ apis:
     v1alpha:
       discovery_doc: configdelivery_v1alpha.json
       default: true
+      resources:
+        projects.locations.connections.repositories:
+          path: projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}
+    v1beta:
+      discovery_doc: configdelivery_v1beta.json
       resources:
         projects.locations.connections.repositories:
           path: projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}

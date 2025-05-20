@@ -3409,6 +3409,33 @@ class IamV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddAttestationRule(self, request, global_params=None):
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. The total attestation rules after addition must not exceed 50.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsAddAttestationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAttestationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAttestationRule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:addAttestationRule',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.addAttestationRule',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:addAttestationRule',
+        request_field='addAttestationRuleRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsAddAttestationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new WorkloadIdentityPool. You cannot reuse the name of a deleted pool until 30 days after deletion.
 
@@ -3544,6 +3571,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListAttestationRules(self, request, global_params=None):
+      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsListAttestationRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAttestationRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAttestationRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAttestationRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:listAttestationRules',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.listAttestationRules',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+resource}:listAttestationRules',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsListAttestationRulesRequest',
+        response_type_name='ListAttestationRulesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing WorkloadIdentityPool.
 
@@ -3567,6 +3621,60 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='workloadIdentityPool',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAttestationRule(self, request, global_params=None):
+      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsRemoveAttestationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAttestationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAttestationRule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:removeAttestationRule',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.removeAttestationRule',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:removeAttestationRule',
+        request_field='removeAttestationRuleRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsRemoveAttestationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetAttestationRules(self, request, global_params=None):
+      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 50 AttestationRules can be set.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsSetAttestationRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAttestationRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAttestationRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:setAttestationRules',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.setAttestationRules',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setAttestationRules',
+        request_field='setAttestationRulesRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsSetAttestationRulesRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -16,6 +16,11 @@
 from .api_auth import (
     ApiAuth,
 )
+from .auth import (
+    AuthConfig,
+    AuthType,
+    HttpElementLocation,
+)
 from .content import (
     Blob,
     Candidate,
@@ -41,6 +46,9 @@ from .content import (
     VoiceConfig,
     HarmCategory,
     Modality,
+)
+from .encryption_spec import (
+    EncryptionSpec,
 )
 from .explanation import (
     Attribution,
@@ -120,6 +128,7 @@ from .tool import (
     DynamicRetrievalConfig,
     EnterpriseWebSearch,
     ExecutableCode,
+    ExternalApi,
     FunctionCall,
     FunctionCallingConfig,
     FunctionDeclaration,
@@ -161,6 +170,9 @@ from .vertex_rag_data import (
 
 __all__ = (
     'ApiAuth',
+    'AuthConfig',
+    'AuthType',
+    'HttpElementLocation',
     'Blob',
     'Candidate',
     'Citation',
@@ -185,6 +197,7 @@ __all__ = (
     'VoiceConfig',
     'HarmCategory',
     'Modality',
+    'EncryptionSpec',
     'Attribution',
     'BlurBaselineConfig',
     'Examples',
@@ -252,6 +265,7 @@ __all__ = (
     'DynamicRetrievalConfig',
     'EnterpriseWebSearch',
     'ExecutableCode',
+    'ExternalApi',
     'FunctionCall',
     'FunctionCallingConfig',
     'FunctionDeclaration',

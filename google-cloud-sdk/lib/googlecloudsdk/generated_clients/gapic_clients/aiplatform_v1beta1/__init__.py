@@ -22,6 +22,9 @@ from .services.prediction_service import PredictionServiceClient
 from .services.prediction_service import PredictionServiceAsyncClient
 
 from .types.api_auth import ApiAuth
+from .types.auth import AuthConfig
+from .types.auth import AuthType
+from .types.auth import HttpElementLocation
 from .types.content import Blob
 from .types.content import Candidate
 from .types.content import Citation
@@ -46,6 +49,7 @@ from .types.content import VideoMetadata
 from .types.content import VoiceConfig
 from .types.content import HarmCategory
 from .types.content import Modality
+from .types.encryption_spec import EncryptionSpec
 from .types.explanation import Attribution
 from .types.explanation import BlurBaselineConfig
 from .types.explanation import Examples
@@ -113,6 +117,7 @@ from .types.tool import CodeExecutionResult
 from .types.tool import DynamicRetrievalConfig
 from .types.tool import EnterpriseWebSearch
 from .types.tool import ExecutableCode
+from .types.tool import ExternalApi
 from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
@@ -151,6 +156,8 @@ __all__ = (
     'PredictionServiceAsyncClient',
 'ApiAuth',
 'Attribution',
+'AuthConfig',
+'AuthType',
 'AvroSource',
 'BigQueryDestination',
 'BigQuerySource',
@@ -176,6 +183,7 @@ __all__ = (
 'DirectUploadSource',
 'DoubleArray',
 'DynamicRetrievalConfig',
+'EncryptionSpec',
 'EnterpriseWebSearch',
 'Examples',
 'ExamplesOverride',
@@ -189,6 +197,7 @@ __all__ = (
 'ExplanationParameters',
 'ExplanationSpec',
 'ExplanationSpecOverride',
+'ExternalApi',
 'FeatureNoiseSigma',
 'FetchPredictOperationRequest',
 'FileData',
@@ -209,6 +218,7 @@ __all__ = (
 'GroundingMetadata',
 'GroundingSupport',
 'HarmCategory',
+'HttpElementLocation',
 'ImportRagFilesConfig',
 'Int64Array',
 'IntegratedGradientsAttribution',

@@ -161,6 +161,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXADBVMCLUSTERS_DBNODES = (
+      'projects.locations.exadbVmClusters.dbNodes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/exadbVmClusters/'
+              '{exadbVmClustersId}/dbNodes/{dbNodesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXASCALEDBSTORAGEVAULTS = (
+      'projects.locations.exascaleDbStorageVaults',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'exascaleDbStorageVaults/{exascaleDbStorageVaultsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GIVERSIONS = (
       'projects.locations.giVersions',
       '{+name}',

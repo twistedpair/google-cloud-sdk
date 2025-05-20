@@ -275,6 +275,10 @@ class AutokeyConfig(_messages.Message):
     StateValueValuesEnum: Output only. The state for the AutokeyConfig.
 
   Fields:
+    etag: Optional. A checksum computed by the server based on the value of
+      other fields. This may be sent on update requests to ensure that the
+      client has an up-to-date value before proceeding. The request will be
+      rejected with an ABORTED error on a mismatched etag.
     keyProject: Optional. Name of the key project, e.g.
       `projects/{PROJECT_ID}` or `projects/{PROJECT_NUMBER}`, where Cloud KMS
       Autokey will provision a new CryptoKey when a KeyHandle is created. On
@@ -306,9 +310,10 @@ class AutokeyConfig(_messages.Message):
     KEY_PROJECT_DELETED = 2
     UNINITIALIZED = 3
 
-  keyProject = _messages.StringField(1)
-  name = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  etag = _messages.StringField(1)
+  keyProject = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class Binding(_messages.Message):
@@ -483,6 +488,17 @@ class CloudkmsFoldersGetAutokeyConfigRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudkmsFoldersGetKajPolicyConfigRequest(_messages.Message):
+  r"""A CloudkmsFoldersGetKajPolicyConfigRequest object.
+
+  Fields:
+    name: Required. The name of the KeyAccessJustificationsPolicyConfig to
+      get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudkmsFoldersUpdateAutokeyConfigRequest(_messages.Message):
   r"""A CloudkmsFoldersUpdateAutokeyConfigRequest object.
 
@@ -497,6 +513,62 @@ class CloudkmsFoldersUpdateAutokeyConfigRequest(_messages.Message):
   autokeyConfig = _messages.MessageField('AutokeyConfig', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudkmsFoldersUpdateKajPolicyConfigRequest(_messages.Message):
+  r"""A CloudkmsFoldersUpdateKajPolicyConfigRequest object.
+
+  Fields:
+    keyAccessJustificationsPolicyConfig: A KeyAccessJustificationsPolicyConfig
+      resource to be passed as the request body.
+    name: Identifier. The resource name for this
+      KeyAccessJustificationsPolicyConfig in the format of
+      "{organizations|folders|projects}/*/kajPolicyConfig".
+    updateMask: Optional. The list of fields to update.
+  """
+
+  keyAccessJustificationsPolicyConfig = _messages.MessageField('KeyAccessJustificationsPolicyConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CloudkmsOrganizationsGetKajPolicyConfigRequest(_messages.Message):
+  r"""A CloudkmsOrganizationsGetKajPolicyConfigRequest object.
+
+  Fields:
+    name: Required. The name of the KeyAccessJustificationsPolicyConfig to
+      get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsOrganizationsUpdateKajPolicyConfigRequest(_messages.Message):
+  r"""A CloudkmsOrganizationsUpdateKajPolicyConfigRequest object.
+
+  Fields:
+    keyAccessJustificationsPolicyConfig: A KeyAccessJustificationsPolicyConfig
+      resource to be passed as the request body.
+    name: Identifier. The resource name for this
+      KeyAccessJustificationsPolicyConfig in the format of
+      "{organizations|folders|projects}/*/kajPolicyConfig".
+    updateMask: Optional. The list of fields to update.
+  """
+
+  keyAccessJustificationsPolicyConfig = _messages.MessageField('KeyAccessJustificationsPolicyConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CloudkmsProjectsGetKajPolicyConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsGetKajPolicyConfigRequest object.
+
+  Fields:
+    name: Required. The name of the KeyAccessJustificationsPolicyConfig to
+      get.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class CloudkmsProjectsLocationsEkmConfigGetIamPolicyRequest(_messages.Message):
@@ -1540,6 +1612,49 @@ class CloudkmsProjectsShowEffectiveAutokeyConfigRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsShowEffectiveKeyAccessJustificationsEnrollmentConfigRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsShowEffectiveKeyAccessJustificationsEnrollmentConfigRequest
+  object.
+
+  Fields:
+    project: Required. The number or id of the project to get the effective
+      KeyAccessJustificationsEnrollmentConfig for.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsShowEffectiveKeyAccessJustificationsPolicyConfigRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsShowEffectiveKeyAccessJustificationsPolicyConfigRequest
+  object.
+
+  Fields:
+    project: Required. The number or id of the project to get the effective
+      KeyAccessJustificationsPolicyConfig. In the format of "projects/{|}"
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsUpdateKajPolicyConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsUpdateKajPolicyConfigRequest object.
+
+  Fields:
+    keyAccessJustificationsPolicyConfig: A KeyAccessJustificationsPolicyConfig
+      resource to be passed as the request body.
+    name: Identifier. The resource name for this
+      KeyAccessJustificationsPolicyConfig in the format of
+      "{organizations|folders|projects}/*/kajPolicyConfig".
+    updateMask: Optional. The list of fields to update.
+  """
+
+  keyAccessJustificationsPolicyConfig = _messages.MessageField('KeyAccessJustificationsPolicyConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CryptoKey(_messages.Message):
@@ -2809,6 +2924,20 @@ class ImportJob(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
+class KeyAccessJustificationsEnrollmentConfig(_messages.Message):
+  r"""The configuration of a protection level for a project's Key Access
+  Justifications enrollment.
+
+  Fields:
+    auditLogging: Whether the project has KAJ logging enabled.
+    policyEnforcement: Whether the project is enrolled in KAJ policy
+      enforcement.
+  """
+
+  auditLogging = _messages.BooleanField(1)
+  policyEnforcement = _messages.BooleanField(2)
+
+
 class KeyAccessJustificationsPolicy(_messages.Message):
   r"""A KeyAccessJustificationsPolicy specifies zero or more allowed
   AccessReason values for encrypt, decrypt, and sign operations on a
@@ -2881,6 +3010,24 @@ class KeyAccessJustificationsPolicy(_messages.Message):
     CUSTOMER_AUTHORIZED_WORKFLOW_SERVICING = 11
 
   allowedAccessReasons = _messages.EnumField('AllowedAccessReasonsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class KeyAccessJustificationsPolicyConfig(_messages.Message):
+  r"""A singleton configuration for Key Access Justifications policies.
+
+  Fields:
+    defaultKeyAccessJustificationPolicy: Optional. The default key access
+      justification policy used when a CryptoKey is created in this folder.
+      This is only used when a Key Access Justifications policy is not
+      provided in the CreateCryptoKeyRequest. This overrides any default
+      policies in its ancestry.
+    name: Identifier. The resource name for this
+      KeyAccessJustificationsPolicyConfig in the format of
+      "{organizations|folders|projects}/*/kajPolicyConfig".
+  """
+
+  defaultKeyAccessJustificationPolicy = _messages.MessageField('KeyAccessJustificationsPolicy', 1)
+  name = _messages.StringField(2)
 
 
 class KeyHandle(_messages.Message):
@@ -4087,6 +4234,35 @@ class ShowEffectiveAutokeyConfigResponse(_messages.Message):
   """
 
   keyProject = _messages.StringField(1)
+
+
+class ShowEffectiveKeyAccessJustificationsEnrollmentConfigResponse(_messages.Message):
+  r"""Response message for KeyAccessJustificationsConfig.ShowEffectiveKeyAcces
+  sJustificationsEnrollmentConfig
+
+  Fields:
+    externalConfig: The effective KeyAccessJustificationsEnrollmentConfig for
+      external keys.
+    hardwareConfig: The effective KeyAccessJustificationsEnrollmentConfig for
+      hardware keys.
+    softwareConfig: The effective KeyAccessJustificationsEnrollmentConfig for
+      software keys.
+  """
+
+  externalConfig = _messages.MessageField('KeyAccessJustificationsEnrollmentConfig', 1)
+  hardwareConfig = _messages.MessageField('KeyAccessJustificationsEnrollmentConfig', 2)
+  softwareConfig = _messages.MessageField('KeyAccessJustificationsEnrollmentConfig', 3)
+
+
+class ShowEffectiveKeyAccessJustificationsPolicyConfigResponse(_messages.Message):
+  r"""Response message for KeyAccessJustificationsConfig.ShowEffectiveKeyAcces
+  sJustificationsPolicyConfig.
+
+  Fields:
+    effectiveKajPolicy: The effective KeyAccessJustificationsPolicyConfig.
+  """
+
+  effectiveKajPolicy = _messages.MessageField('KeyAccessJustificationsPolicyConfig', 1)
 
 
 class StandardQueryParameters(_messages.Message):

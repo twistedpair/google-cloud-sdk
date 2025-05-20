@@ -419,6 +419,21 @@ class ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest(_messages.M
   pollAirflowCommandRequest = _messages.MessageField('PollAirflowCommandRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsRestartWebServerRequest object.
+
+  Fields:
+    name: Required. The resource name of the environment to restart the web
+      server for, in the form: "projects/{projectId}/locations/{locationId}/en
+      vironments/{environmentId}"
+    restartWebServerRequest: A RestartWebServerRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest object.
 
@@ -1822,6 +1837,10 @@ class RecoveryConfig(_messages.Message):
   """
 
   scheduledSnapshotsConfig = _messages.MessageField('ScheduledSnapshotsConfig', 1)
+
+
+class RestartWebServerRequest(_messages.Message):
+  r"""Restart Airflow web server."""
 
 
 class SaveSnapshotRequest(_messages.Message):

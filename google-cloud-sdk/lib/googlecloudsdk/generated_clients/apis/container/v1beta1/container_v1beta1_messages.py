@@ -1412,8 +1412,6 @@ class ClusterUpdate(_messages.Message):
       the cluster.
     DesiredInTransitEncryptionConfigValueValuesEnum: Specify the details of
       in-transit encryption. Now named inter-node transparent encryption.
-    DesiredNetworkTierValueValuesEnum: The desired network tier configuration
-      for the cluster.
     DesiredPrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
       connectivity to Google Services.
     DesiredStackTypeValueValuesEnum: The desired stack type of the cluster. If
@@ -1544,7 +1542,7 @@ class ClusterUpdate(_messages.Message):
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     desiredNetworkPerformanceConfig: The desired network performance config.
-    desiredNetworkTier: The desired network tier configuration for the
+    desiredNetworkTierConfig: The desired network tier configuration for the
       cluster.
     desiredNodeKubeletConfig: The desired node kubelet config for the cluster.
     desiredNodeNetworkPolicy: NodeNetworkPolicy specifies the config for the
@@ -1682,21 +1680,6 @@ class ClusterUpdate(_messages.Message):
     IN_TRANSIT_ENCRYPTION_DISABLED = 1
     IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT = 2
 
-  class DesiredNetworkTierValueValuesEnum(_messages.Enum):
-    r"""The desired network tier configuration for the cluster.
-
-    Values:
-      NETWORK_TIER_DEFAULT: By default, use project-level configuration. This
-        field ensures backward compatibility for the network tier of cluster
-        resources, such as node pools and load balancers, for their external
-        IP addresses.
-      NETWORK_TIER_PREMIUM: Premium network tier.
-      NETWORK_TIER_STANDARD: Standard network tier.
-    """
-    NETWORK_TIER_DEFAULT = 0
-    NETWORK_TIER_PREMIUM = 1
-    NETWORK_TIER_STANDARD = 2
-
   class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services.
 
@@ -1783,7 +1766,7 @@ class ClusterUpdate(_messages.Message):
   desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 53)
   desiredMonitoringService = _messages.StringField(54)
   desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 55)
-  desiredNetworkTier = _messages.EnumField('DesiredNetworkTierValueValuesEnum', 56)
+  desiredNetworkTierConfig = _messages.MessageField('NetworkTierConfig', 56)
   desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 57)
   desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 58)
   desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 59)
@@ -3783,9 +3766,6 @@ class IPAllocationPolicy(_messages.Message):
   Enums:
     Ipv6AccessTypeValueValuesEnum: The ipv6 access type (internal or external)
       when create_subnetwork is true
-    NetworkTierValueValuesEnum: Cluster-level network tier configuration is
-      used to determine the default network tier for external IP addresses on
-      cluster resources, such as node pools and load balancers.
     StackTypeValueValuesEnum: IP stack type
 
   Fields:
@@ -3833,9 +3813,9 @@ class IPAllocationPolicy(_messages.Message):
       of IPs in the secondary range], Usage=numNodes*numZones*podIPsPerNode.
     ipv6AccessType: The ipv6 access type (internal or external) when
       create_subnetwork is true
-    networkTier: Cluster-level network tier configuration is used to determine
-      the default network tier for external IP addresses on cluster resources,
-      such as node pools and load balancers.
+    networkTierConfig: Cluster-level network tier configuration is used to
+      determine the default network tier for external IP addresses on cluster
+      resources, such as node pools and load balancers.
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
     nodeIpv4CidrBlock: The IP address range of the instance IPs in this
       cluster. This is applicable only if `create_subnetwork` is true. Set to
@@ -3934,23 +3914,6 @@ class IPAllocationPolicy(_messages.Message):
     INTERNAL = 1
     EXTERNAL = 2
 
-  class NetworkTierValueValuesEnum(_messages.Enum):
-    r"""Cluster-level network tier configuration is used to determine the
-    default network tier for external IP addresses on cluster resources, such
-    as node pools and load balancers.
-
-    Values:
-      NETWORK_TIER_DEFAULT: By default, use project-level configuration. This
-        field ensures backward compatibility for the network tier of cluster
-        resources, such as node pools and load balancers, for their external
-        IP addresses.
-      NETWORK_TIER_PREMIUM: Premium network tier.
-      NETWORK_TIER_STANDARD: Standard network tier.
-    """
-    NETWORK_TIER_DEFAULT = 0
-    NETWORK_TIER_PREMIUM = 1
-    NETWORK_TIER_STANDARD = 2
-
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""IP stack type
 
@@ -3973,7 +3936,7 @@ class IPAllocationPolicy(_messages.Message):
   createSubnetwork = _messages.BooleanField(8)
   defaultPodIpv4RangeUtilization = _messages.FloatField(9)
   ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 10)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 11)
+  networkTierConfig = _messages.MessageField('NetworkTierConfig', 11)
   nodeIpv4Cidr = _messages.StringField(12)
   nodeIpv4CidrBlock = _messages.StringField(13)
   podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 14)
@@ -5167,6 +5130,40 @@ class NetworkTags(_messages.Message):
   tags = _messages.StringField(1, repeated=True)
 
 
+class NetworkTierConfig(_messages.Message):
+  r"""NetworkTierConfig contains network tier information.
+
+  Enums:
+    NetworkTierValueValuesEnum: Network tier configuration.
+
+  Fields:
+    networkTier: Network tier configuration.
+  """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""Network tier configuration.
+
+    Values:
+      NETWORK_TIER_UNSPECIFIED: By default, use project-level configuration.
+        When unspecified, the behavior defaults to NETWORK_TIER_DEFAULT. For
+        cluster updates, this implies no action (no-op).
+      NETWORK_TIER_DEFAULT: Default network tier. Use project-level
+        configuration. User can specify this value, meaning they want to keep
+        the same behaviour as before cluster level network tier configuration
+        is introduced. This field ensures backward compatibility for the
+        network tier of cluster resources, such as node pools and load
+        balancers, for their external IP addresses.
+      NETWORK_TIER_PREMIUM: Premium network tier.
+      NETWORK_TIER_STANDARD: Standard network tier.
+    """
+    NETWORK_TIER_UNSPECIFIED = 0
+    NETWORK_TIER_DEFAULT = 1
+    NETWORK_TIER_PREMIUM = 2
+    NETWORK_TIER_STANDARD = 3
+
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
+
+
 class NodeAffinity(_messages.Message):
   r"""Specifies the NodeAffinity key, values, and affinity operator according
   to [shared sole tenant node group
@@ -5794,12 +5791,6 @@ class NodeManagement(_messages.Message):
 class NodeNetworkConfig(_messages.Message):
   r"""Parameters for node pool-level network config.
 
-  Enums:
-    NetworkTierValueValuesEnum: Output only. The network tier configuration
-      for the node pool inherits from the cluster-level configuration and
-      remains immutable throughout the node pool's lifecycle, including during
-      upgrades.
-
   Fields:
     additionalNodeNetworkConfigs: We specify the additional node networks for
       this node pool using this list. Each node network corresponds to an
@@ -5820,9 +5811,10 @@ class NodeNetworkConfig(_messages.Message):
       enable_private_nodes is not specified, then the value is derived from
       Cluster.NetworkConfig.default_enable_private_nodes
     networkPerformanceConfig: Network bandwidth tier configuration.
-    networkTier: Output only. The network tier configuration for the node pool
-      inherits from the cluster-level configuration and remains immutable
-      throughout the node pool's lifecycle, including during upgrades.
+    networkTierConfig: Output only. The network tier configuration for the
+      node pool inherits from the cluster-level configuration and remains
+      immutable throughout the node pool's lifecycle, including during
+      upgrades.
     podCidrOverprovisionConfig: [PRIVATE FIELD] Pod CIDR size overprovisioning
       config for the nodepool. Pod CIDR size per node depends on
       max_pods_per_node. By default, the value of max_pods_per_node is rounded
@@ -5861,30 +5853,13 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `240.0.0.0/8`) to pick a specific range to use.
   """
 
-  class NetworkTierValueValuesEnum(_messages.Enum):
-    r"""Output only. The network tier configuration for the node pool inherits
-    from the cluster-level configuration and remains immutable throughout the
-    node pool's lifecycle, including during upgrades.
-
-    Values:
-      NETWORK_TIER_DEFAULT: By default, use project-level configuration. This
-        field ensures backward compatibility for the network tier of cluster
-        resources, such as node pools and load balancers, for their external
-        IP addresses.
-      NETWORK_TIER_PREMIUM: Premium network tier.
-      NETWORK_TIER_STANDARD: Standard network tier.
-    """
-    NETWORK_TIER_DEFAULT = 0
-    NETWORK_TIER_PREMIUM = 1
-    NETWORK_TIER_STANDARD = 2
-
   additionalNodeNetworkConfigs = _messages.MessageField('AdditionalNodeNetworkConfig', 1, repeated=True)
   additionalPodNetworkConfigs = _messages.MessageField('AdditionalPodNetworkConfig', 2, repeated=True)
   createPodRange = _messages.BooleanField(3)
   enableEndpointsliceProxying = _messages.BooleanField(4)
   enablePrivateNodes = _messages.BooleanField(5)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 6)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 7)
+  networkTierConfig = _messages.MessageField('NetworkTierConfig', 7)
   podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 8)
   podIpv4CidrBlock = _messages.StringField(9)
   podIpv4RangeUtilization = _messages.FloatField(10)

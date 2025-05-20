@@ -2792,7 +2792,7 @@ class OracledatabaseProjectsLocationsCloudVmClustersDbNodesListRequest(_messages
       return.
     parent: Required. The parent value for database node in the following
       format: projects/{project}/locations/{location}/cloudVmClusters/{cloudVm
-      Cluster}.
+      Cluster}. .
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

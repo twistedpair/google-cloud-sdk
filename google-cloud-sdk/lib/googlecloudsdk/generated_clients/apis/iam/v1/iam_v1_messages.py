@@ -740,13 +740,22 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2ClientQueryParam
   IdP.
 
   Fields:
-    filter: Optional. The filter used to request specific records from IdP. In
-      case of attributes type as AZURE_AD_GROUPS_MAIL, it represents the
-      filter used to request specific groups for users from IdP. By default,
-      all of the groups associated with the user are fetched. The groups
-      should be mail enabled and security enabled. See
-      https://learn.microsoft.com/en-us/graph/search-query-parameter for more
-      details.
+    filter: Optional. The filter used to request specific records from the
+      IdP. By default, all of the groups that are associated with a user are
+      fetched. For Microsoft Entra ID, you can add `$search` query parameters
+      using [Keyword Query Language] (https://learn.microsoft.com/en-
+      us/sharepoint/dev/general-development/keyword-query-language-kql-syntax-
+      reference). To learn more about `$search` querying in Microsoft Entra
+      ID, see [Use the `$search` query parameter]
+      (https://learn.microsoft.com/en-us/graph/search-query-parameter).
+      Additionally, Workforce Identity Federation automatically adds the
+      following [`$filter` query parameters] (https://learn.microsoft.com/en-
+      us/graph/filter-query-parameter), based on the value of
+      `attributes_type`. Values passed to `filter` are converted to `$search`
+      query parameters. Additional `$filter` query parameters cannot be added
+      using this field. * `AZURE_AD_GROUPS_MAIL`: `mailEnabled` and
+      `securityEnabled` filters are applied. * `AZURE_AD_GROUPS_ID`:
+      `securityEnabled` filter is applied.
   """
 
   filter = _messages.StringField(1)
@@ -1893,6 +1902,21 @@ class IamProjectsLocationsOauthClientsUndeleteRequest(_messages.Message):
   undeleteOauthClientRequest = _messages.MessageField('UndeleteOauthClientRequest', 2)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsAddAttestationRuleRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsAddAttestationRuleRequest
+  object.
+
+  Fields:
+    addAttestationRuleRequest: A AddAttestationRuleRequest resource to be
+      passed as the request body.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to add an attestation rule to.
+  """
+
+  addAttestationRuleRequest = _messages.MessageField('AddAttestationRuleRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsCreateRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsCreateRequest object.
 
@@ -1946,6 +1970,32 @@ class IamProjectsLocationsWorkloadIdentityPoolsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsListAttestationRulesRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsListAttestationRulesRequest
+  object.
+
+  Fields:
+    filter: Optional. A query filter. Supports the following function: *
+      `container_ids()`: Returns only the AttestationRules under the specific
+      container ids. The function expects a comma-delimited list with only
+      project numbers and must use the format `projects/`. For example:
+      `container_ids(projects/, projects/,...)`.
+    pageSize: Optional. The maximum number of AttestationRules to return. If
+      unspecified, at most 50 AttestationRules are returned. The maximum value
+      is 100; values above 100 are truncated to 100.
+    pageToken: Optional. A page token, received from a previous
+      `ListWorkloadIdentityPoolProviderKeys` call. Provide this to retrieve
+      the subsequent page.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to list attestation rules of.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  resource = _messages.StringField(4, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
@@ -2825,6 +2875,36 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersUndeleteRequest(_message
 
   name = _messages.StringField(1, required=True)
   undeleteWorkloadIdentityPoolProviderRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolProviderRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsRemoveAttestationRuleRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsRemoveAttestationRuleRequest
+  object.
+
+  Fields:
+    removeAttestationRuleRequest: A RemoveAttestationRuleRequest resource to
+      be passed as the request body.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to remove an attestation rule from.
+  """
+
+  removeAttestationRuleRequest = _messages.MessageField('RemoveAttestationRuleRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsSetAttestationRulesRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsSetAttestationRulesRequest
+  object.
+
+  Fields:
+    resource: Required. The resource name of the managed identity or namespace
+      resource to add an attestation rule to.
+    setAttestationRulesRequest: A SetAttestationRulesRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setAttestationRulesRequest = _messages.MessageField('SetAttestationRulesRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsSetIamPolicyRequest(_messages.Message):
@@ -3824,11 +3904,11 @@ class InlineCertificateIssuanceConfig(_messages.Message):
       This key pair will be used to create the certificate. If not specified,
       this will default to ECDSA_P256.
     lifetime: Optional. Lifetime of the workload certificates issued by the CA
-      pool. Must be between 10 hours and 30 days. If not specified, this will
+      pool. Must be between 24 hours and 30 days. If not specified, this will
       be defaulted to 24 hours.
     rotationWindowPercentage: Optional. Rotation window percentage indicating
       when certificate rotation should be initiated based on remaining
-      lifetime. Must be between 10 and 80. If not specified, this will be
+      lifetime. Must be between 50 and 80. If not specified, this will be
       defaulted to 50.
   """
 
@@ -5588,7 +5668,8 @@ class TrustAnchor(_messages.Message):
 
 class TrustStore(_messages.Message):
   r"""Trust store that contains trust anchors and optional intermediate CAs
-  used in PKI to build trust chain and verify a client's identity.
+  used in PKI to build a trust chain(trust hierarchy) and verify a client's
+  identity.
 
   Fields:
     intermediateCas: Optional. Set of intermediate CA certificates used for
@@ -6243,12 +6324,11 @@ class WorkloadIdentityPool(_messages.Message):
         workload identities in a FEDERATION_ONLY mode pool, and you may not
         create any resources within the pool besides providers.
       TRUST_DOMAIN: TRUST_DOMAIN mode pools can be used to assign identities
-        to either external workloads or those hosted on Google Cloud. All
-        identities within a TRUST_DOMAIN mode pool must consist of a single
-        namespace and individual workload identifier. The subject identifier
-        for all identities must conform to the following format: `ns//sa/`
-        WorkloadIdentityPoolProviders cannot be created within TRUST_DOMAIN
-        mode pools.
+        to Google Cloud workloads. All identities within a TRUST_DOMAIN mode
+        pool must consist of a single namespace and individual workload
+        identifier. The subject identifier for all identities must conform to
+        the following format: `ns//sa/` WorkloadIdentityPoolProviders cannot
+        be created within TRUST_DOMAIN mode pools.
     """
     MODE_UNSPECIFIED = 0
     FEDERATION_ONLY = 1

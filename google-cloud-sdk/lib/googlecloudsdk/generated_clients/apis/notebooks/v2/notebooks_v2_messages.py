@@ -697,9 +697,9 @@ class Instance(_messages.Message):
       "jupyterlab_status": "-1", "updated": "2020-10-18 09:40:03.573409" }
     healthState: Output only. Instance health_state.
     id: Output only. Unique ID of the resource.
-    instanceOwners: Optional. Input only. The owner of this instance after
-      creation. Format: `alias@example.com` Currently supports one owner only.
-      If not specified, all of the service account users of your VM instance's
+    instanceOwners: Optional. The owner of this instance after creation.
+      Format: `alias@example.com` Currently supports one owner only. If not
+      specified, all of the service account users of your VM instance's
       service account can use the instance.
     labels: Optional. Labels to apply to this instance. These can be later
       modified by the UpdateInstance method.
@@ -1142,7 +1142,25 @@ class NotebooksProjectsLocationsInstancesPatchRequest(_messages.Message):
     name: Output only. The name of this notebook instance. Format:
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     requestId: Optional. Idempotent request UUID.
-    updateMask: Required. Mask used to update an instance
+    updateMask: Required. Mask used to update an instance. Updatable fields: *
+      `labels` * `gce_setup.min_cpu_platform` * `gce_setup.metadata` *
+      `gce_setup.machine_type` * `gce_setup.accelerator_configs` *
+      `gce_setup.accelerator_configs.type` *
+      `gce_setup.accelerator_configs.core_count` *
+      `gce_setup.gpu_driver_config` *
+      `gce_setup.gpu_driver_config.enable_gpu_driver` *
+      `gce_setup.gpu_driver_config.custom_gpu_driver_path` *
+      `gce_setup.shielded_instance_config` *
+      `gce_setup.shielded_instance_config.enable_secure_boot` *
+      `gce_setup.shielded_instance_config.enable_vtpm` *
+      `gce_setup.shielded_instance_config.enable_integrity_monitoring` *
+      `gce_setup.reservation_affinity` *
+      `gce_setup.reservation_affinity.consume_reservation_type` *
+      `gce_setup.reservation_affinity.key` *
+      `gce_setup.reservation_affinity.values` * `gce_setup.tags` *
+      `gce_setup.container_image` * `gce_setup.container_image.repository` *
+      `gce_setup.container_image.tag` * `gce_setup.disable_public_ip` *
+      `disable_proxy_access`
   """
 
   instance = _messages.MessageField('Instance', 1)

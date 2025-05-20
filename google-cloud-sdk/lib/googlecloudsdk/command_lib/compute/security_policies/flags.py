@@ -14,10 +14,6 @@
 # limitations under the License.
 """Flags and helpers for the compute security policies commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -294,6 +290,33 @@ def AddDdosProtectionConfigOld(parser, required=False):
       help=(
           'The DDoS protection level for network load balancing and instances '
           'with external IPs'
+      ),
+  )
+
+
+def AddNetworkDdosAdaptiveProtection(parser, required=False):
+  """Adds the Cloud Armor Network DDoS adaptive protection arguments."""
+  parser.add_argument(
+      '--network-ddos-adaptive-protection',
+      choices=['DISABLED', 'ENABLED', 'PREVIEW'],
+      type=lambda x: x.upper(),
+      required=required,
+      help=(
+          'The DDoS adaptive protection level for network load balancing and'
+          ' instances with external IPs'
+      ),
+  )
+
+
+def AddNetworkDdosImpactedBaselineThreshold(parser, required=False):
+  """Adds the Cloud Armor Network DDoS impacted baseline threshold argument."""
+  parser.add_argument(
+      '--network-ddos-impacted-baseline-threshold',
+      type=float,
+      required=required,
+      help=(
+          'Threshold below which rules with collateral damage below this'
+          ' value will be deployed'
       ),
   )
 

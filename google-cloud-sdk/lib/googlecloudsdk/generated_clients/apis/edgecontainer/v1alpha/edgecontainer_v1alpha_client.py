@@ -52,6 +52,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     self.projects_locations_serviceAccounts = self.ProjectsLocationsServiceAccountsService(self)
     self.projects_locations_vpnConnections = self.ProjectsLocationsVpnConnectionsService(self)
     self.projects_locations_zonalServices = self.ProjectsLocationsZonalServicesService(self)
+    self.projects_locations_zones = self.ProjectsLocationsZonesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1451,6 +1452,70 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='EdgecontainerProjectsLocationsZonalServicesListRequest',
         response_type_name='ListZonalServicesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsZonesService(base_api.BaseApiService):
+    """Service class for the projects_locations_zones resource."""
+
+    _NAME = 'projects_locations_zones'
+
+    def __init__(self, client):
+      super(EdgecontainerV1alpha.ProjectsLocationsZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""GetIamPolicy gets the IAM policies for a project in the infra cluster.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsZonesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IamPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}:getIamPolicy',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.zones.getIamPolicy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:getIamPolicy',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsZonesGetIamPolicyRequest',
+        response_type_name='IamPolicy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""SetIamPolicy sets the IAM policy for a project in the infra cluster. It overrides the existing policy with the provided one.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsZonesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IamPolicy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}:setIamPolicy',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.zones.setIamPolicy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}:setIamPolicy',
+        request_field='iamPolicy',
+        request_type_name='EdgecontainerProjectsLocationsZonesSetIamPolicyRequest',
+        response_type_name='IamPolicy',
         supports_download=False,
     )
 

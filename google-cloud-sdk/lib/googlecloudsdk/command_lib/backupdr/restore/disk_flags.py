@@ -72,11 +72,11 @@ def AddReplicaZonesArg(parser, required=True):
       metavar='ZONE',
       required=required,
       help=(
-          'A comma-separated list of exactly 2 zones that a regional disk will'
-          ' be replicated to. Required when restoring to a regional disk. The'
-          ' zones must be in the same region as specified in the'
-          ' --target-region flag. See available zones with gcloud compute zones'
-          ' list.'
+          'A comma-separated list of exactly 2 URLs of the zones where the disk'
+          ' should be replicated to. Required when restoring'
+          ' to a regional disk. The zones must be in the same region as'
+          ' specified in the --target-region flag. See available zones with'
+          ' gcloud compute zones list.'
       ),
   )
 
@@ -154,7 +154,7 @@ def AddTypeArg(parser, required=True):
     required: Whether the argument is required or not.
   """
   help_text = """\
-Specifies the type of disk to create. To get a list of available disk types, run gcloud compute disk-types list. The default disk type is pd-standard.
+URL of the disk type describing which disk type to use to restore the disk. For example: projects/project/zones/zone/diskTypes/pd-ssd. To get a list of available disk types, run gcloud compute disk-types list. The default disk type is pd-standard.
 """
   parser.add_argument(
       '--type',
@@ -256,12 +256,9 @@ def AddConfidentialComputeArg(parser, required=False):
 
 
 def AddSizeArg(parser, required=False):
-  """Minimum Node CPUs to be used for the disk."""
+  """Size of the disk."""
   helptext = """\
-      Size of the disks. The value must be a whole number followed
-      by a size unit of GB for gigabyte, or TB for terabyte.
-      If no size unit is specified, GB is assumed.
-      For example, 10GB will produce 10 gigabyte disks.
+      Size of the disk in GB.
       Disk size must be a multiple of 1 GB. If disk size is not specified,
       the default size of 500GB for pd-standard disks, 100GB for
       pd-balanced disks, 100GB for pd-ssd disks, and 1000GB for pd-extreme disks
@@ -271,7 +268,7 @@ def AddSizeArg(parser, required=False):
       """
   parser.add_argument(
       '--size',
-      type=arg_parsers.BinarySize(lower_bound='1GB'),
+      type=arg_parsers.BoundedInt(),
       required=required,
       help=helptext,
   )

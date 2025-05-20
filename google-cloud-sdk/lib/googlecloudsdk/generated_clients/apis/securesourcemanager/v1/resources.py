@@ -85,6 +85,63 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REPOSITORIES_HOOKS = (
+      'projects.locations.repositories.hooks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/hooks/{hooksId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPOSITORIES_ISSUES = (
+      'projects.locations.repositories.issues',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/issues/{issuesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPOSITORIES_ISSUES_ISSUECOMMENTS = (
+      'projects.locations.repositories.issues.issueComments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/issues/{issuesId}/issueComments/'
+              '{issueCommentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPOSITORIES_PULLREQUESTS = (
+      'projects.locations.repositories.pullRequests',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/pullRequests/{pullRequestsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPOSITORIES_PULLREQUESTS_PULLREQUESTCOMMENTS = (
+      'projects.locations.repositories.pullRequests.pullRequestComments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/pullRequests/{pullRequestsId}/'
+              'pullRequestComments/{pullRequestCommentsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

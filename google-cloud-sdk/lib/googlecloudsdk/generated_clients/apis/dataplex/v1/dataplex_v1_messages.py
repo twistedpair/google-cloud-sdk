@@ -3917,7 +3917,7 @@ class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
 
   Fields:
     name: Required. The project to which the request should be attributed in
-      the following form: projects/{project}/locations/{location}.
+      the following form: projects/{project}/locations/global.
     orderBy: Optional. Specifies the ordering of results. Supported values
       are: relevance (default) last_modified_timestamp last_modified_timestamp
       asc

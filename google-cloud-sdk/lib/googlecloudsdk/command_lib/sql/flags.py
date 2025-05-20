@@ -367,7 +367,7 @@ def AddEnableFinalBackup(parser):
       '--enable-final-backup',
       required=False,
       action='store_true',
-      default=False,
+      default=None,
       help=(
           'Enables the final backup to be taken at the time of instance'
           ' deletion.'
@@ -626,10 +626,13 @@ def AddCPU(parser, hidden=False):
       type=int,
       required=False,
       help=(
-          'Whole number value indicating how many cores are desired in '
-          'the machine. Both --cpu and --memory must be specified if a '
-          'custom machine type is desired, and the --tier flag must be '
-          'omitted.'
+          'Whole number value indicating how many cores are desired in the'
+          ' machine. Both --cpu and --memory must be specified if a custom'
+          ' machine type is desired, and the --tier flag must be omitted.'
+          '--cpu and --memory flags are not compatible with the Enterprise Plus'
+          ' edition. These flags should not be used when creating an Enterprise'
+          ' Plus edition, as the machine configuration is determined by the'
+          ' --tier flag instead.'
       ),
       hidden=hidden,
   )
@@ -1057,11 +1060,14 @@ def AddMemory(parser, hidden=False):
       type=arg_parsers.BinarySize(),
       required=False,
       help=(
-          'Whole number value indicating how much memory is desired in '
-          'the machine. A size unit should be provided (eg. 3072MiB or '
-          '9GiB) - if no units are specified, GiB is assumed. Both --cpu '
-          'and --memory must be specified if a custom machine type is '
-          'desired, and the --tier flag must be omitted.'
+          'Whole number value indicating how much memory is desired in the'
+          ' machine. A size unit should be provided (eg. 3072MiB or 9GiB) - if'
+          ' no units are specified, GiB is assumed. Both --cpu and --memory'
+          ' must be specified if a custom machine type is desired, and the'
+          ' --tier flag must be omitted. --cpu and --memory flags are not'
+          ' compatible with the Enterprise Plus edition. These flags should not'
+          ' be used when creating an Enterprise Plus edition, as the machine'
+          ' configuration is determined by the --tier flag instead.'
       ),
       hidden=hidden,
   )
@@ -2119,7 +2125,6 @@ def AddPasswordPolicyAllowedFailedAttempts(parser):
       default=None,
       help=(
           'Number of failed login attempts allowed before a user is locked out.'
-          ' This flag is available only for MySQL.'
       ),
   )
 
@@ -2138,7 +2143,7 @@ def AddPasswordPolicyPasswordExpirationDuration(parser):
       help="""\
         Expiration duration after a password is updated, for example,
         2d for 2 days. See `gcloud topic datetimes` for information on
-        duration formats. This flag is available only for MySQL.
+        duration formats.
       """,
   )
 
@@ -2157,8 +2162,7 @@ def AddPasswordPolicyEnableFailedAttemptsCheck(
       '--password-policy-enable-failed-attempts-check',
       required=False,
       help=(
-          'Enables the failed login attempts check if set to true. This flag is'
-          ' available only for MySQL.'
+          'Enables the failed login attempts check if set to true.'
       ),
       **kwargs
   )
@@ -2179,7 +2183,6 @@ def AddPasswordPolicyEnablePasswordVerification(
       required=False,
       help=(
           'The current password must be specified when altering the password.'
-          ' This flag is available only for MySQL.'
       ),
       **kwargs
   )

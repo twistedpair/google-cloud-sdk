@@ -58,7 +58,7 @@ class TransactionOptions(proto.Message):
        guaranteed consistency across several reads, but do not allow
        writes. Snapshot read-only transactions can be configured to read
        at timestamps in the past, or configured to perform a strong read
-       (where Spanner will select a timestamp such that the read is
+       (where Spanner selects a timestamp such that the read is
        guaranteed to see the effects of all transactions that have
        committed before the start of the read). Snapshot read-only
        transactions do not need to be committed. Queries on change
@@ -150,7 +150,7 @@ class TransactionOptions(proto.Message):
     SQL queries and has not started a read or SQL query within the last
     10 seconds. Idle transactions can be aborted by Cloud Spanner so
     that they don't hold on to locks indefinitely. If an idle
-    transaction is aborted, the commit will fail with error ``ABORTED``.
+    transaction is aborted, the commit fails with error ``ABORTED``.
 
     If this behavior is undesirable, periodically executing a simple SQL
     query in the transaction (for example, ``SELECT 1``) prevents the
@@ -219,9 +219,9 @@ class TransactionOptions(proto.Message):
     the global transaction history: they observe modifications done by
     all transactions with a commit timestamp less than or equal to the
     read timestamp, and observe none of the modifications done by
-    transactions with a larger commit timestamp. They will block until
-    all conflicting transactions that may be assigned commit timestamps
-    <= the read timestamp have finished.
+    transactions with a larger commit timestamp. They block until all
+    conflicting transactions that can be assigned commit timestamps <=
+    the read timestamp have finished.
 
     The timestamp can either be expressed as an absolute Cloud Spanner
     commit timestamp or a staleness relative to the current time.
@@ -260,8 +260,8 @@ class TransactionOptions(proto.Message):
     more likely to execute at the closest replica.
 
     Because the timestamp negotiation requires up-front knowledge of
-    which rows will be read, it can only be used with single-use
-    read-only transactions.
+    which rows are read, it can only be used with single-use read-only
+    transactions.
 
     See
     [TransactionOptions.ReadOnly.max_staleness][google.spanner.v1.TransactionOptions.ReadOnly.max_staleness]
@@ -273,7 +273,7 @@ class TransactionOptions(proto.Message):
     Cloud Spanner continuously garbage collects deleted and overwritten
     data in the background to reclaim storage space. This process is
     known as "version GC". By default, version GC reclaims versions
-    after they are one hour old. Because of this, Cloud Spanner cannot
+    after they are one hour old. Because of this, Cloud Spanner can't
     perform reads at read timestamps more than one hour in the past.
     This restriction also applies to in-progress reads and/or SQL
     queries whose timestamp become too old while executing. Reads and
@@ -306,7 +306,7 @@ class TransactionOptions(proto.Message):
     TransactionOptions are invalid for change stream queries.
 
     In addition, if TransactionOptions.read_only.return_read_timestamp
-    is set to true, a special value of 2^63 - 2 will be returned in the
+    is set to true, a special value of 2^63 - 2 is returned in the
     [Transaction][google.spanner.v1.Transaction] message that describes
     the transaction, instead of a valid read timestamp. This special
     value should be discarded and not used for any subsequent queries.
@@ -363,7 +363,7 @@ class TransactionOptions(proto.Message):
 
     -  If any error is encountered during the execution of the
        partitioned DML operation (for instance, a UNIQUE INDEX
-       violation, division by zero, or a value that cannot be stored due
+       violation, division by zero, or a value that can't be stored due
        to schema constraints), then the operation is stopped at that
        point and an error is returned. It is possible that at this
        point, some partitions have been committed (or even committed
@@ -399,7 +399,7 @@ class TransactionOptions(proto.Message):
 
             This field is a member of `oneof`_ ``mode``.
         read_only (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.TransactionOptions.ReadOnly):
-            Transaction will not write.
+            Transaction does not write.
 
             Authorization to begin a read-only transaction requires
             ``spanner.databases.beginReadOnlyTransaction`` permission on
@@ -407,24 +407,26 @@ class TransactionOptions(proto.Message):
 
             This field is a member of `oneof`_ ``mode``.
         exclude_txn_from_change_streams (bool):
-            When ``exclude_txn_from_change_streams`` is set to ``true``:
+            When ``exclude_txn_from_change_streams`` is set to ``true``,
+            it prevents read or write transactions from being tracked in
+            change streams.
 
-            -  Modifications from this transaction will not be recorded
-               in change streams with DDL option
-               ``allow_txn_exclusion=true`` that are tracking columns
-               modified by these transactions.
-            -  Modifications from this transaction will be recorded in
-               change streams with DDL option
-               ``allow_txn_exclusion=false or not set`` that are
-               tracking columns modified by these transactions.
+            -  If the DDL option ``allow_txn_exclusion`` is set to
+               ``true``, then the updates made within this transaction
+               aren't recorded in the change stream.
+
+            -  If you don't set the DDL option ``allow_txn_exclusion``
+               or if it's set to ``false``, then the updates made within
+               this transaction are recorded in the change stream.
 
             When ``exclude_txn_from_change_streams`` is set to ``false``
-            or not set, Modifications from this transaction will be
-            recorded in all change streams that are tracking columns
-            modified by these transactions.
-            ``exclude_txn_from_change_streams`` may only be specified
-            for read-write or partitioned-dml transactions, otherwise
-            the API will return an ``INVALID_ARGUMENT`` error.
+            or not set, modifications from this transaction are recorded
+            in all change streams that are tracking columns modified by
+            these transactions.
+
+            The ``exclude_txn_from_change_streams`` option can only be
+            specified for read-write or partitioned DML transactions,
+            otherwise the API returns an ``INVALID_ARGUMENT`` error.
         isolation_level (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.TransactionOptions.IsolationLevel):
             Isolation level for the transaction.
     """
@@ -452,8 +454,8 @@ class TransactionOptions(proto.Message):
                 https://cloud.google.com/spanner/docs/true-time-external-consistency#serializability.
             REPEATABLE_READ (2):
                 All reads performed during the transaction observe a
-                consistent snapshot of the database, and the transaction
-                will only successfully commit in the absence of conflicts
+                consistent snapshot of the database, and the transaction is
+                only successfully committed in the absence of conflicts
                 between its updates and any concurrent updates that have
                 occurred since that snapshot. Consequently, in contrast to
                 ``SERIALIZABLE`` transactions, only write-write conflicts
@@ -593,7 +595,7 @@ class TransactionOptions(proto.Message):
                 Executes all reads at the given timestamp. Unlike other
                 modes, reads at a specific timestamp are repeatable; the
                 same read at the same timestamp always returns the same
-                data. If the timestamp is in the future, the read will block
+                data. If the timestamp is in the future, the read is blocked
                 until the specified timestamp, modulo the read's deadline.
 
                 Useful for large scale consistent reads such as mapreduces,
@@ -710,7 +712,7 @@ class Transaction(proto.Message):
             A timestamp in RFC3339 UTC "Zulu" format, accurate to
             nanoseconds. Example: ``"2014-10-02T15:01:23.045123456Z"``.
         precommit_token (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.MultiplexedSessionPrecommitToken):
-            A precommit token will be included in the response of a
+            A precommit token is included in the response of a
             BeginTransaction request if the read-write transaction is on
             a multiplexed session and a mutation_key was specified in
             the

@@ -42,6 +42,11 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_branchRules = self.ProjectsLocationsRepositoriesBranchRulesService(self)
+    self.projects_locations_repositories_hooks = self.ProjectsLocationsRepositoriesHooksService(self)
+    self.projects_locations_repositories_issues_issueComments = self.ProjectsLocationsRepositoriesIssuesIssueCommentsService(self)
+    self.projects_locations_repositories_issues = self.ProjectsLocationsRepositoriesIssuesService(self)
+    self.projects_locations_repositories_pullRequests_pullRequestComments = self.ProjectsLocationsRepositoriesPullRequestsPullRequestCommentsService(self)
+    self.projects_locations_repositories_pullRequests = self.ProjectsLocationsRepositoriesPullRequestsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -535,6 +540,947 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsRepositoriesHooksService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_hooks resource."""
+
+    _NAME = 'projects_locations_repositories_hooks'
+
+    def __init__(self, client):
+      super(SecuresourcemanagerV1.ProjectsLocationsRepositoriesHooksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new hook in a given repository. **Host: Data Plane**.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/hooks',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.hooks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['hookId'],
+        relative_path='v1/{+parent}/hooks',
+        request_field='hook',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesHooksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Hook. **Host: Data Plane**.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/hooks/{hooksId}',
+        http_method='DELETE',
+        method_id='securesourcemanager.projects.locations.repositories.hooks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesHooksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets metadata of a hook. **Host: Data Plane**.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Hook) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/hooks/{hooksId}',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.hooks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesHooksGetRequest',
+        response_type_name='Hook',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists hooks in a given repository. **Host: Data Plane**.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListHooksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/hooks',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.hooks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/hooks',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesHooksListRequest',
+        response_type_name='ListHooksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the metadata of a hook. **Host: Data Plane**.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/hooks/{hooksId}',
+        http_method='PATCH',
+        method_id='securesourcemanager.projects.locations.repositories.hooks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='hook',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesHooksPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesIssuesIssueCommentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_issues_issueComments resource."""
+
+    _NAME = 'projects_locations_repositories_issues_issueComments'
+
+    def __init__(self, client):
+      super(SecuresourcemanagerV1.ProjectsLocationsRepositoriesIssuesIssueCommentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an issue comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}/issueComments',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.issues.issueComments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/issueComments',
+        request_field='issueComment',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an issue comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}/issueComments/{issueCommentsId}',
+        http_method='DELETE',
+        method_id='securesourcemanager.projects.locations.repositories.issues.issueComments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an issue comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IssueComment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}/issueComments/{issueCommentsId}',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.issues.issueComments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsGetRequest',
+        response_type_name='IssueComment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists comments in an issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIssueCommentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}/issueComments',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.issues.issueComments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/issueComments',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsListRequest',
+        response_type_name='ListIssueCommentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an issue comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}/issueComments/{issueCommentsId}',
+        http_method='PATCH',
+        method_id='securesourcemanager.projects.locations.repositories.issues.issueComments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='issueComment',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesIssuesService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_issues resource."""
+
+    _NAME = 'projects_locations_repositories_issues'
+
+    def __init__(self, client):
+      super(SecuresourcemanagerV1.ProjectsLocationsRepositoriesIssuesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Close(self, request, global_params=None):
+      r"""Closes an issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesCloseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Close')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Close.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}:close',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.issues.close',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:close',
+        request_field='closeIssueRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesCloseRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates an issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.issues.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/issues',
+        request_field='issue',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}',
+        http_method='DELETE',
+        method_id='securesourcemanager.projects.locations.repositories.issues.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Issue) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.issues.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesGetRequest',
+        response_type_name='Issue',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists issues in a repository.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIssuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.issues.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/issues',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesListRequest',
+        response_type_name='ListIssuesResponse',
+        supports_download=False,
+    )
+
+    def Open(self, request, global_params=None):
+      r"""Opens an issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesOpenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Open')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Open.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}:open',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.issues.open',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:open',
+        request_field='openIssueRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesOpenRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a issue.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesIssuesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/issues/{issuesId}',
+        http_method='PATCH',
+        method_id='securesourcemanager.projects.locations.repositories.issues.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='issue',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesIssuesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesPullRequestsPullRequestCommentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_pullRequests_pullRequestComments resource."""
+
+    _NAME = 'projects_locations_repositories_pullRequests_pullRequestComments'
+
+    def __init__(self, client):
+      super(SecuresourcemanagerV1.ProjectsLocationsRepositoriesPullRequestsPullRequestCommentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Batch creates pull request comments.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments:batchCreate',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pullRequestComments:batchCreate',
+        request_field='batchCreatePullRequestCommentsRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsBatchCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a pull request comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pullRequestComments',
+        request_field='pullRequestComment',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a pull request comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments/{pullRequestCommentsId}',
+        http_method='DELETE',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a pull request comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PullRequestComment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments/{pullRequestCommentsId}',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsGetRequest',
+        response_type_name='PullRequestComment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists pull request comments.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPullRequestCommentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/pullRequestComments',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsListRequest',
+        response_type_name='ListPullRequestCommentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a pull request comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments/{pullRequestCommentsId}',
+        http_method='PATCH',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='pullRequestComment',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Resolve(self, request, global_params=None):
+      r"""Resolves pull request comments.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsResolveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resolve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resolve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments:resolve',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.resolve',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pullRequestComments:resolve',
+        request_field='resolvePullRequestCommentsRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsResolveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Unresolve(self, request, global_params=None):
+      r"""Unresolves pull request comment.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsUnresolveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Unresolve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unresolve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}/pullRequestComments:unresolve',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.pullRequestComments.unresolve',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pullRequestComments:unresolve',
+        request_field='unresolvePullRequestCommentsRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsUnresolveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesPullRequestsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_pullRequests resource."""
+
+    _NAME = 'projects_locations_repositories_pullRequests'
+
+    def __init__(self, client):
+      super(SecuresourcemanagerV1.ProjectsLocationsRepositoriesPullRequestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Close(self, request, global_params=None):
+      r"""Closes a pull request without merging.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCloseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Close')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Close.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}:close',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.close',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:close',
+        request_field='closePullRequestRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCloseRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a pull request.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pullRequests',
+        request_field='pullRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a pull request.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PullRequest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsGetRequest',
+        response_type_name='PullRequest',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists pull requests in a repository.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPullRequestsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/pullRequests',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListRequest',
+        response_type_name='ListPullRequestsResponse',
+        supports_download=False,
+    )
+
+    def ListFileDiffs(self, request, global_params=None):
+      r"""Lists a pull request's file diffs.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListFileDiffsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPullRequestFileDiffsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFileDiffs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListFileDiffs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}:listFileDiffs',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.listFileDiffs',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}:listFileDiffs',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListFileDiffsRequest',
+        response_type_name='ListPullRequestFileDiffsResponse',
+        supports_download=False,
+    )
+
+    def Merge(self, request, global_params=None):
+      r"""Merges a pull request.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsMergeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Merge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Merge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}:merge',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.merge',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:merge',
+        request_field='mergePullRequestRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsMergeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Open(self, request, global_params=None):
+      r"""Opens a pull request.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsOpenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Open')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Open.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}:open',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.open',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:open',
+        request_field='openPullRequestRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsOpenRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a pull request.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/pullRequests/{pullRequestsId}',
+        http_method='PATCH',
+        method_id='securesourcemanager.projects.locations.repositories.pullRequests.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='pullRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRepositoriesService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories resource."""
 
@@ -650,6 +1596,60 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesDeleteRepositoryInternalRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def FetchBlob(self, request, global_params=None):
+      r"""Fetches a blob from a repository.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesFetchBlobRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchBlobResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchBlob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchBlob.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:fetchBlob',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.fetchBlob',
+        ordered_params=['repository'],
+        path_params=['repository'],
+        query_params=['sha'],
+        relative_path='v1/{+repository}:fetchBlob',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesFetchBlobRequest',
+        response_type_name='FetchBlobResponse',
+        supports_download=False,
+    )
+
+    def FetchTree(self, request, global_params=None):
+      r"""Fetches a tree from a repository.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesFetchTreeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchTreeResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchTree')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchTree.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:fetchTree',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.fetchTree',
+        ordered_params=['repository'],
+        path_params=['repository'],
+        query_params=['pageSize', 'pageToken', 'recursive', 'ref'],
+        relative_path='v1/{+repository}:fetchTree',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesFetchTreeRequest',
+        response_type_name='FetchTreeResponse',
         supports_download=False,
     )
 

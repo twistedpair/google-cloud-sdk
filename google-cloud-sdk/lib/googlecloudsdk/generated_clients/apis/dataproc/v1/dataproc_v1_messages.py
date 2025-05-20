@@ -1302,12 +1302,14 @@ class ClusterConfig(_messages.Message):
   r"""The cluster config.
 
   Enums:
+    ClusterTierValueValuesEnum: Optional. The tier of the cluster.
     ClusterTypeValueValuesEnum: Optional. The type of the cluster.
 
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
     auxiliaryNodeGroups: Optional. The node group settings.
+    clusterTier: Optional. The tier of the cluster.
     clusterType: Optional. The type of the cluster.
     configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
@@ -1370,6 +1372,19 @@ class ClusterConfig(_messages.Message):
       cluster's worker instances.
   """
 
+  class ClusterTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The tier of the cluster.
+
+    Values:
+      CLUSTER_TIER_UNSPECIFIED: Not set. Works the same as
+        CLUSTER_TIER_STANDARD.
+      CLUSTER_TIER_STANDARD: Standard dataproc cluster.
+      CLUSTER_TIER_PREMIUM: Premium dataproc cluster.
+    """
+    CLUSTER_TIER_UNSPECIFIED = 0
+    CLUSTER_TIER_STANDARD = 1
+    CLUSTER_TIER_PREMIUM = 2
+
   class ClusterTypeValueValuesEnum(_messages.Enum):
     r"""Optional. The type of the cluster.
 
@@ -1389,24 +1404,25 @@ class ClusterConfig(_messages.Message):
 
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   auxiliaryNodeGroups = _messages.MessageField('AuxiliaryNodeGroup', 2, repeated=True)
-  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
-  configBucket = _messages.StringField(4)
-  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 5)
-  diagnosticBucket = _messages.StringField(6)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
-  endpointConfig = _messages.MessageField('EndpointConfig', 8)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 9)
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 10)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 11, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 12)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 13)
-  metastoreConfig = _messages.MessageField('MetastoreConfig', 14)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 15)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 16)
-  securityConfig = _messages.MessageField('SecurityConfig', 17)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 18)
-  tempBucket = _messages.StringField(19)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 20)
+  clusterTier = _messages.EnumField('ClusterTierValueValuesEnum', 3)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 4)
+  configBucket = _messages.StringField(5)
+  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 6)
+  diagnosticBucket = _messages.StringField(7)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
+  endpointConfig = _messages.MessageField('EndpointConfig', 9)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 10)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 11)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 12, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 13)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 14)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 15)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 16)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 17)
+  securityConfig = _messages.MessageField('SecurityConfig', 18)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 19)
+  tempBucket = _messages.StringField(20)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 21)
 
 
 class ClusterMetrics(_messages.Message):
@@ -8506,6 +8522,10 @@ class PySparkJob(_messages.Message):
   (https://spark.apache.org/docs/latest/api/python/index.html#pyspark-
   overview) applications on YARN.
 
+  Enums:
+    SparkEngineValueValuesEnum: Optional. The engine on which the spark job
+      runs.
+
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure PySpark. Properties that conflict with values set by the
@@ -8532,7 +8552,20 @@ class PySparkJob(_messages.Message):
       /etc/spark/conf/spark-defaults.conf and classes in user code.
     pythonFileUris: Optional. HCFS file URIs of Python files to pass to the
       PySpark framework. Supported file types: .py, .egg, and .zip.
+    sparkEngine: Optional. The engine on which the spark job runs.
   """
+
+  class SparkEngineValueValuesEnum(_messages.Enum):
+    r"""Optional. The engine on which the spark job runs.
+
+    Values:
+      SPARK_ENGINE_UNSPECIFIED: Not set.
+      SPARK_ENGINE_DEFAULT: Default engine for Spark Job
+      SPARK_ENGINE_NATIVE: Native Query Engine for Spark Job
+    """
+    SPARK_ENGINE_UNSPECIFIED = 0
+    SPARK_ENGINE_DEFAULT = 1
+    SPARK_ENGINE_NATIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -8569,6 +8602,7 @@ class PySparkJob(_messages.Message):
   mainPythonFileUri = _messages.StringField(6)
   properties = _messages.MessageField('PropertiesValue', 7)
   pythonFileUris = _messages.StringField(8, repeated=True)
+  sparkEngine = _messages.EnumField('SparkEngineValueValuesEnum', 9)
 
 
 class Quantiles(_messages.Message):
@@ -10193,6 +10227,10 @@ class SparkJob(_messages.Message):
   r"""A Dataproc job for running Apache Spark (https://spark.apache.org/)
   applications on YARN.
 
+  Enums:
+    SparkEngineValueValuesEnum: Optional. The engine on which the spark job
+      runs.
+
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Spark. Properties that conflict with values set by the
@@ -10219,7 +10257,20 @@ class SparkJob(_messages.Message):
       configure Spark. Properties that conflict with values set by the
       Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
+    sparkEngine: Optional. The engine on which the spark job runs.
   """
+
+  class SparkEngineValueValuesEnum(_messages.Enum):
+    r"""Optional. The engine on which the spark job runs.
+
+    Values:
+      SPARK_ENGINE_UNSPECIFIED: Not set.
+      SPARK_ENGINE_DEFAULT: Default engine for Spark Job
+      SPARK_ENGINE_NATIVE: Native Query Engine for Spark Job
+    """
+    SPARK_ENGINE_UNSPECIFIED = 0
+    SPARK_ENGINE_DEFAULT = 1
+    SPARK_ENGINE_NATIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -10256,6 +10307,7 @@ class SparkJob(_messages.Message):
   mainClass = _messages.StringField(6)
   mainJarFileUri = _messages.StringField(7)
   properties = _messages.MessageField('PropertiesValue', 8)
+  sparkEngine = _messages.EnumField('SparkEngineValueValuesEnum', 9)
 
 
 class SparkPlanGraph(_messages.Message):
@@ -10357,6 +10409,10 @@ class SparkRJob(_messages.Message):
   r"""A Dataproc job for running Apache SparkR
   (https://spark.apache.org/docs/latest/sparkr.html) applications on YARN.
 
+  Enums:
+    SparkEngineValueValuesEnum: Optional. The engine on which the spark job
+      runs.
+
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure SparkR. Properties that conflict with values set by the
@@ -10379,7 +10435,20 @@ class SparkRJob(_messages.Message):
       configure SparkR. Properties that conflict with values set by the
       Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
+    sparkEngine: Optional. The engine on which the spark job runs.
   """
+
+  class SparkEngineValueValuesEnum(_messages.Enum):
+    r"""Optional. The engine on which the spark job runs.
+
+    Values:
+      SPARK_ENGINE_UNSPECIFIED: Not set.
+      SPARK_ENGINE_DEFAULT: Default engine for Spark Job
+      SPARK_ENGINE_NATIVE: Native Query Engine for Spark Job
+    """
+    SPARK_ENGINE_UNSPECIFIED = 0
+    SPARK_ENGINE_DEFAULT = 1
+    SPARK_ENGINE_NATIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -10414,6 +10483,7 @@ class SparkRJob(_messages.Message):
   loggingConfig = _messages.MessageField('LoggingConfig', 4)
   mainRFileUri = _messages.StringField(5)
   properties = _messages.MessageField('PropertiesValue', 6)
+  sparkEngine = _messages.EnumField('SparkEngineValueValuesEnum', 7)
 
 
 class SparkRuntimeInfo(_messages.Message):
@@ -10482,6 +10552,10 @@ class SparkSqlJob(_messages.Message):
   r"""A Dataproc job for running Apache Spark SQL
   (https://spark.apache.org/sql/) queries.
 
+  Enums:
+    SparkEngineValueValuesEnum: Optional. The engine on which the spark job
+      runs.
+
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
@@ -10500,7 +10574,20 @@ class SparkSqlJob(_messages.Message):
     queryList: A list of queries.
     scriptVariables: Optional. Mapping of query variable names to values
       (equivalent to the Spark SQL command: SET name="value";).
+    sparkEngine: Optional. The engine on which the spark job runs.
   """
+
+  class SparkEngineValueValuesEnum(_messages.Enum):
+    r"""Optional. The engine on which the spark job runs.
+
+    Values:
+      SPARK_ENGINE_UNSPECIFIED: Not set.
+      SPARK_ENGINE_DEFAULT: Default engine for Spark Job
+      SPARK_ENGINE_NATIVE: Native Query Engine for Spark Job
+    """
+    SPARK_ENGINE_UNSPECIFIED = 0
+    SPARK_ENGINE_DEFAULT = 1
+    SPARK_ENGINE_NATIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -10560,6 +10647,7 @@ class SparkSqlJob(_messages.Message):
   queryFileUri = _messages.StringField(4)
   queryList = _messages.MessageField('QueryList', 5)
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
+  sparkEngine = _messages.EnumField('SparkEngineValueValuesEnum', 7)
 
 
 class SparkStandaloneAutoscalingConfig(_messages.Message):

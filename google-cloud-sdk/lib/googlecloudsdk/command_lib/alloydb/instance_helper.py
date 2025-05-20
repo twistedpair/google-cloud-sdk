@@ -385,11 +385,15 @@ def ConstructInstanceAndUpdatePathsFromArgs(
   insights_config_record_client_address_path = (
       'queryInsightsConfig.recordClientAddress'
   )
+  activation_policy_path = 'activationPolicy'
 
   instance_resource = alloydb_messages.Instance()
   paths = []
 
   instance_resource.name = instance_ref.RelativeName()
+  if args.activation_policy:
+    instance_resource.activationPolicy = args.activation_policy
+    paths.append(activation_policy_path)
 
   availability_type = ParseAvailabilityType(
       alloydb_messages, args.availability_type
@@ -1037,11 +1041,6 @@ def ConstructPatchRequestFromArgsAlpha(alloydb_messages, instance_ref, args):
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsAlpha(
       alloydb_messages, instance_ref, args
   )
-
-  activation_policy_path = 'activationPolicy'
-  if args.activation_policy:
-    instance_resource.activationPolicy = args.activation_policy
-    paths.append(activation_policy_path)
 
   mask = ','.join(paths) if paths else None
 

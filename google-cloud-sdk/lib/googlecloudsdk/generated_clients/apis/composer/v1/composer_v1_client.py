@@ -682,6 +682,33 @@ class ComposerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RestartWebServer(self, request, global_params=None):
+      r"""Restart Airflow web server.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsRestartWebServerRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RestartWebServer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RestartWebServer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:restartWebServer',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.restartWebServer',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:restartWebServer',
+        request_field='restartWebServerRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsRestartWebServerRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SaveSnapshot(self, request, global_params=None):
       r"""Creates a snapshots of a Cloud Composer environment. As a result of this operation, snapshot of environment's state is stored in a location specified in the SaveSnapshotRequest.
 

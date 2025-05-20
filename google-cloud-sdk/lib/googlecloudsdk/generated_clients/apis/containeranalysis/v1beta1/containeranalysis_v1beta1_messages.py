@@ -3522,6 +3522,7 @@ class Discovered(_messages.Message):
       LocalizedMessage under details to show to the user. The LocalizedMessage
       is output only and populated by the API.
     continuousAnalysis: Whether the resource is continuously analyzed.
+    files: Files that make up the resource described by the occurrence.
     lastAnalysisTime: The last time continuous analysis was done for this
       resource. Deprecated, do not use.
     lastScanTime: The last time this resource was scanned.
@@ -3566,9 +3567,10 @@ class Discovered(_messages.Message):
   analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 3)
   analysisStatusError = _messages.MessageField('Status', 4)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 5)
-  lastAnalysisTime = _messages.StringField(6)
-  lastScanTime = _messages.StringField(7)
-  sbomStatus = _messages.MessageField('SBOMStatus', 8)
+  files = _messages.MessageField('File', 6, repeated=True)
+  lastAnalysisTime = _messages.StringField(7)
+  lastScanTime = _messages.StringField(8)
+  sbomStatus = _messages.MessageField('SBOMStatus', 9)
 
 
 class Discovery(_messages.Message):
@@ -3901,6 +3903,45 @@ class ExternalRef(_messages.Message):
   comment = _messages.StringField(2)
   locator = _messages.StringField(3)
   type = _messages.StringField(4)
+
+
+class File(_messages.Message):
+  r"""A File object.
+
+  Messages:
+    DigestValue: A DigestValue object.
+
+  Fields:
+    digest: A DigestValue attribute.
+    name: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  name = _messages.StringField(2)
 
 
 class FileHashes(_messages.Message):

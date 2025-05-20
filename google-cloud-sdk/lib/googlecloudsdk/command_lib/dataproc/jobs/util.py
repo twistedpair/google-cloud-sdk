@@ -86,3 +86,28 @@ def BuildJobProperties(arg_properties, properties_file):
     job_properties.update(arg_properties)
 
   return job_properties
+
+
+def GetSparkEngine(spark_job, spark_engine):
+  """Get SparkEngine enum value.
+
+  Converts spark_engine argument value to
+  SparkEngine API enum value.
+
+  Args:
+    spark_job: A job type that supports spark engine (ex. PySparkJob,
+      SparkRJob).
+    spark_engine: spark engine value
+
+  Returns:
+    SparkEngine enum string value
+  """
+  if spark_engine == 'native':
+    return spark_job.SparkEngineValueValuesEnum('SPARK_ENGINE_NATIVE')
+  if spark_engine == 'default':
+    return spark_job.SparkEngineValueValuesEnum('SPARK_ENGINE_DEFAULT')
+  if spark_engine is None:
+    return None
+  raise exceptions.ArgumentError(
+      'Unsupported --spark-engine flag value: ' + spark_engine
+  )

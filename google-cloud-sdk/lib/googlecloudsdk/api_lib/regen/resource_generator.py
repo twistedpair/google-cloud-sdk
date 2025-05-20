@@ -78,6 +78,27 @@ class DiscoveryDoc(object):
   def docs_url(self):
     return self._discovery_doc_dict['documentationLink']
 
+  @property
+  def is_interface_versioned(self):
+    """Whether the discovery doc is using interface-based versioning.
+
+    Interface-based versioned APIs are distinguished by the use of the
+    $apiVersion / X-Goog-Api-Version system parameter
+    (https://cloud.google.com/apis/docs/system-parameters#google_private_system_parameters),
+    which appears under the "apiVersion" key for the method configs in the
+    discovery doc.
+    """
+    return any(
+        'apiVersion' in m
+        for m in self._ExtractMethods(self._discovery_doc_dict)
+    )
+
+  def _ExtractMethods(self, infos):
+    """Extracts method definitions from discovery doc."""
+    yield from infos.get('methods', {}).values()
+    for collection_param in infos.get('resources', {}):
+      yield from self._ExtractMethods(infos['resources'][collection_param])
+
   def GetResourceCollections(self, custom_resources, api_version):
     """Returns all resources collections found in this discovery doc.
 

@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
 import itertools
+from typing import Any
 
+import frozendict
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
@@ -28,6 +31,92 @@ from googlecloudsdk.command_lib.backupdr import util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
+
+
+MONTH_OPTIONS = frozendict.frozendict({
+    'JAN': 'JANUARY',
+    'FEB': 'FEBRUARY',
+    'MAR': 'MARCH',
+    'APR': 'APRIL',
+    'MAY': 'MAY',
+    'JUN': 'JUNE',
+    'JUL': 'JULY',
+    'AUG': 'AUGUST',
+    'SEP': 'SEPTEMBER',
+    'OCT': 'OCTOBER',
+    'NOV': 'NOVEMBER',
+    'DEC': 'DECEMBER',
+})
+DAY_OPTIONS = frozendict.frozendict({
+    'MON': 'MONDAY',
+    'TUE': 'TUESDAY',
+    'WED': 'WEDNESDAY',
+    'THU': 'THURSDAY',
+    'FRI': 'FRIDAY',
+    'SAT': 'SATURDAY',
+    'SUN': 'SUNDAY',
+})
+RECURRENCE_OPTIONS = ('HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')
+WEEK_OPTIONS = ('FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST')
+BACKUP_RULE_COMMON_HELP_TEXT = """
+Parameters for the backup rule include:
+
+*rule-id*::: Name of the backup rule. The name must be unique and
+start with a lowercase letter followed by up to 62 lowercase letters,
+numbers, or hyphens.
+
+*retention-days*::: Duration for which backup data should be
+retained. It must be defined in "days". The value should be greater
+than or equal to the enforced retention period set for the backup vault.
+
+*recurrence*::: Frequency for the backup schedule. It must be either:
+HOURLY, DAILY, WEEKLY, MONTHLY or YEARLY.
+
+*backup-window-start*::: Start time of the interval during which
+backup jobs should be executed. It can be defined as backup-window-start=2,
+that means backup window starts at 2 a.m. The start time and end time must
+have an interval of 6 hours.
+
+*backup-window-end*::: End time of the interval during which backup
+jobs should be executed. It can be defined as backup-window-end=14,
+that means backup window ends at 2 p.m. The start time and end time
+must have an interval of 6 hours.
+
+Jobs are queued at the beginning of the window and will be marked as
+`SKIPPED` if they do not start by the end time. Jobs that are
+in progress will not be canceled at the end time.
+
+*time-zone*::: The time zone to be used for the backup schedule.
+The value must exist in the
+[IANA tz database](https://www.iana.org/time-zones).
+The default value is UTC. E.g., Europe/Paris
+
+::: Following flags are mutually exclusive:
+
+*hourly-frequency*::: Frequency for hourly backups. An hourly
+frequency of 2 means backup jobs will run every 2 hours from start
+time till the end time defined. The hourly frequency must be between
+4 and 23. The value is needed only if recurrence type is HOURLY.
+
+*days-of-week*::: Days of the week when the backup job should be
+executed. The value is needed if recurrence type is WEEKLY.
+E.g., MONDAY,TUESDAY
+
+*days-of-month*::: Days of the month when the backup job should
+be executed. The value is needed only if recurrence type is YEARLY.
+E.g.,"1,5,14"
+
+*months*::: Month for the backup schedule. The value is needed only if
+recurrence type is YEARLY. E.g., JANUARY, MARCH
+
+*week-day-of-month*::: Recurring day of the week in the month or
+year when the backup job should be executed. E.g. FIRST-SUNDAY, THIRD-MONDAY.
+The value can only be provided if the recurrence type is MONTHLY or YEARLY.
+Allowed values for the number of week - FIRST, SECOND, THIRD, FOURTH, LAST.
+Allowed values for days of the week - MONDAY to SUNDAY.
+
+::: E.g., "rule-id=sample-daily-rule,recurrence=WEEKLY,backup-window-start=2,backup-window-end=14,retention-days=20,days-of-week='SUNDAY MONDAY'"
+"""
 
 
 def BackupVaultAttributeConfig():
@@ -641,42 +730,16 @@ def AddBackupRule(parser, required=True):
       ' hyphens',
   )
 
-  month_options = {
-      'JAN': 'JANUARY',
-      'FEB': 'FEBRUARY',
-      'MAR': 'MARCH',
-      'APR': 'APRIL',
-      'MAY': 'MAY',
-      'JUN': 'JUNE',
-      'JUL': 'JULY',
-      'AUG': 'AUGUST',
-      'SEP': 'SEPTEMBER',
-      'OCT': 'OCTOBER',
-      'NOV': 'NOVEMBER',
-      'DEC': 'DECEMBER',
-  }
-  day_options = {
-      'MON': 'MONDAY',
-      'TUE': 'TUESDAY',
-      'WED': 'WEDNESDAY',
-      'THU': 'THURSDAY',
-      'FRI': 'FRIDAY',
-      'SAT': 'SATURDAY',
-      'SUN': 'SUNDAY',
-  }
-
-  recurrence_options = ['HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']
-  week_options = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST']
   week_day_of_month_options = [
       f'{week}-{day}'
-      for week, day in itertools.product(week_options, day_options.values())
+      for week, day in itertools.product(WEEK_OPTIONS, DAY_OPTIONS.values())
   ]
 
-  def ArgListParser(obj_parser, delim=' '):
+  def ArgListParser(obj_parser: Any, delim: str = ' ') -> arg_parsers.ArgList:
     return arg_parsers.ArgList(obj_parser, custom_delim_char=delim)
 
   recurrence_validator = util.GetOneOfValidator(
-      'recurrence', recurrence_options
+      'recurrence', RECURRENCE_OPTIONS
   )
 
   parser.add_argument(
@@ -692,11 +755,11 @@ def AddBackupRule(parser, required=True):
               'time-zone': str,
               'hourly-frequency': int,
               'days-of-week': ArgListParser(
-                  util.OptionsMapValidator(day_options).Parse
+                  util.OptionsMapValidator(DAY_OPTIONS).Parse
               ),
               'days-of-month': ArgListParser(arg_parsers.BoundedInt(1, 31)),
               'months': ArgListParser(
-                  util.OptionsMapValidator(month_options).Parse
+                  util.OptionsMapValidator(MONTH_OPTIONS).Parse
               ),
               'week-day-of-month': util.GetOneOfValidator(
                   'week-day-of-month', week_day_of_month_options
@@ -712,65 +775,175 @@ def AddBackupRule(parser, required=True):
       ),
       action='append',
       metavar='PROPERTY=VALUE',
-      help=("""
-          Backup rule that defines parameters for when and how a backup is created. This flag can be repeated to create more backup rules.
+      help=(
+          f"""Backup rule that defines parameters for when and how a backup
+          is created. This flag can be repeated to create more backup rules.
 
-          Parameters for the backup rule include:
+          {BACKUP_RULE_COMMON_HELP_TEXT}
+          """
+      ),
+  )
 
-          *rule-id*::: Name of the backup rule. The name must be unique and
-          start with a lowercase letter followed by up to 62 lowercase letters,
-          numbers, or hyphens.
 
-          *retention-days*::: Duration for which backup data should be
-          retained. It must be defined in "days". The value should be greater
-          than or equal to the enforced retention period set for the backup vault.
+def AddUpdateBackupRule(parser: argparse.ArgumentParser):
+  """Adds a positional backup-rule argument to parser.
 
-          *recurrence*::: Frequency for the backup schedule. It must be either:
-          HOURLY, DAILY, WEEKLY, MONTHLY or YEARLY.
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
 
-          *backup-window-start*::: Start time of the interval during which
-          backup jobs should be executed. It can be defined as backup-window-start=2,
-          that means backup window starts at 2 a.m. The start time and end time must
-          have an interval of 6 hours.
+  rule_id_validator = arg_parsers.RegexpValidator(
+      r'[a-z][a-z0-9-]{0,62}',
+      'Invalid rule-id. This human-readable name must be unique and start with'
+      ' a lowercase letter followed by up to 62 lowercase letters, numbers, or'
+      ' hyphens',
+  )
 
-          *backup-window-end*::: End time of the interval during which backup
-          jobs should be executed. It can be defined as backup-window-end=14,
-          that means backup window ends at 2 p.m. The start time and end time
-          must have an interval of 6 hours.
+  week_day_of_month_options = [
+      f'{week}-{day}'
+      for week, day in itertools.product(WEEK_OPTIONS, DAY_OPTIONS.values())
+  ]
 
-          Jobs are queued at the beginning of the window and will be marked as
-          `SKIPPED` if they do not start by the end time. Jobs that are
-          in progress will not be canceled at the end time.
+  def ArgListParser(obj_parser: Any, delim: str = ' ') -> arg_parsers.ArgList:
+    return arg_parsers.ArgList(obj_parser, custom_delim_char=delim)
 
-          *time-zone*::: The time zone to be used for the backup schedule.
-          The value must exist in the
-          [IANA tz database](https://www.iana.org/time-zones).
-          The default value is UTC. E.g., Europe/Paris
+  recurrence_validator = util.GetOneOfValidator(
+      'recurrence', RECURRENCE_OPTIONS
+  )
 
-          ::: Following flags are mutually exclusive:
+  parser.add_argument(
+      '--backup-rule',
+      type=arg_parsers.ArgDict(
+          spec={
+              'rule-id': rule_id_validator,
+              'retention-days': int,
+              'recurrence': recurrence_validator,
+              'backup-window-start': arg_parsers.BoundedInt(0, 23),
+              'backup-window-end': arg_parsers.BoundedInt(1, 24),
+              'time-zone': str,
+              'hourly-frequency': int,
+              'days-of-week': ArgListParser(
+                  util.OptionsMapValidator(DAY_OPTIONS).Parse
+              ),
+              'days-of-month': ArgListParser(arg_parsers.BoundedInt(1, 31)),
+              'months': ArgListParser(
+                  util.OptionsMapValidator(MONTH_OPTIONS).Parse
+              ),
+              'week-day-of-month': util.GetOneOfValidator(
+                  'week-day-of-month', week_day_of_month_options
+              ),
+          },
+          required_keys=['rule-id'],
+      ),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=(
+          f"""Full definition of an existing backup rule with updated values.
+          The existing backup rule is replaced by this new set of values.
+          This flag can be repeated to update multiple backup rules.
+          It is not allowed to pass the same rule-id in this flag more than once
+          in the same command.
 
-          *hourly-frequency*::: Frequency for hourly backups. An hourly
-          frequency of 2 means backup jobs will run every 2 hours from start
-          time till the end time defined. The hourly frequency must be between
-          4 and 23. The value is needed only if recurrence type is HOURLY.
+          {BACKUP_RULE_COMMON_HELP_TEXT}
+          """
+      ),
+  )
 
-          *days-of-week*::: Days of the week when the backup job should be
-          executed. The value is needed if recurrence type is WEEKLY.
-          E.g., MONDAY,TUESDAY
 
-          *days-of-month*::: Days of the month when the backup job should
-          be executed. The value is needed only if recurrence type is YEARLY.
-          E.g.,"1,5,14"
+def AddAddBackupRule(parser):
+  """Adds flags required to add a backup rule.
 
-          *months*::: Month for the backup schedule. The value is needed only if
-          recurrence type is YEARLY. E.g., JANUARY, MARCH
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
 
-          *week-day-of-month*::: Recurring day of the week in the month or
-          year when the backup job should be executed. E.g. FIRST-SUNDAY, THIRD-MONDAY.
-          The value can only be provided if the recurrence type is MONTHLY or YEARLY.
-          Allowed values for the number of week - FIRST, SECOND, THIRD, FOURTH, LAST.
-          Allowed values for days of the week - MONDAY to SUNDAY.
+  rule_id_validator = arg_parsers.RegexpValidator(
+      r'[a-z][a-z0-9-]{0,62}',
+      'Invalid rule-id. This human-readable name must be unique and start with'
+      ' a lowercase letter followed by up to 62 lowercase letters, numbers, or'
+      ' hyphens',
+  )
 
-          ::: E.g., "rule-id=sample-daily-rule,recurrence=WEEKLY,backup-window-start=2,backup-window-end=14,retention-days=20,days-of-week='SUNDAY MONDAY'"
-          """),
+  week_day_of_month_options = [
+      f'{week}-{day}'
+      for week, day in itertools.product(WEEK_OPTIONS, DAY_OPTIONS.values())
+  ]
+
+  def ArgListParser(obj_parser: Any, delim: str = ' ') -> arg_parsers.ArgList:
+    return arg_parsers.ArgList(obj_parser, custom_delim_char=delim)
+
+  recurrence_validator = util.GetOneOfValidator(
+      'recurrence', RECURRENCE_OPTIONS
+  )
+
+  parser.add_argument(
+      '--add-backup-rule',
+      required=False,
+      type=arg_parsers.ArgDict(
+          spec={
+              'rule-id': rule_id_validator,
+              'retention-days': int,
+              'recurrence': recurrence_validator,
+              'backup-window-start': arg_parsers.BoundedInt(0, 23),
+              'backup-window-end': arg_parsers.BoundedInt(1, 24),
+              'time-zone': str,
+              'hourly-frequency': int,
+              'days-of-week': ArgListParser(
+                  util.OptionsMapValidator(DAY_OPTIONS).Parse
+              ),
+              'days-of-month': ArgListParser(arg_parsers.BoundedInt(1, 31)),
+              'months': ArgListParser(
+                  util.OptionsMapValidator(MONTH_OPTIONS).Parse
+              ),
+              'week-day-of-month': util.GetOneOfValidator(
+                  'week-day-of-month', week_day_of_month_options
+              ),
+          },
+          required_keys=[
+              'rule-id',
+              'recurrence',
+              'retention-days',
+              'backup-window-start',
+              'backup-window-end',
+          ],
+      ),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=(
+          """Parameters of backup rule to be added to the Backup Plan. This flag can be repeated to add more backup rules.
+          """
+      ),
+  )
+
+
+def AddRemoveBackupRule(parser):
+  """Adds flags required to remove a backup rule.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--remove-backup-rule',
+      required=False,
+      type=str,
+      help=(
+          """Name of an existing backup rule to be removed from the Backup Plan. This flag can be repeated to remove more backup rules.
+          """
+      ),
+      action='append',
+      metavar='RULE-ID',
+  )
+
+
+def AddBackupRulesFromFile(parser):
+  """Adds flags required to add backup rules from a file.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--backup-rules-from-file',
+      required=False,
+      type=arg_parsers.FileContents(),
+      help='Path to a YAML or JSON file containing backup rules.',
   )

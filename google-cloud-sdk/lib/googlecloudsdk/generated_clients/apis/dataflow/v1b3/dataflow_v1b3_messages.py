@@ -1228,6 +1228,21 @@ class DataflowProjectsJobsDebugGetConfigRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
+class DataflowProjectsJobsDebugGetWorkerStacktracesRequest(_messages.Message):
+  r"""A DataflowProjectsJobsDebugGetWorkerStacktracesRequest object.
+
+  Fields:
+    getWorkerStacktracesRequest: A GetWorkerStacktracesRequest resource to be
+      passed as the request body.
+    jobId: The job for which to get stacktraces.
+    projectId: The project id.
+  """
+
+  getWorkerStacktracesRequest = _messages.MessageField('GetWorkerStacktracesRequest', 1)
+  jobId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+
+
 class DataflowProjectsJobsDebugSendCaptureRequest(_messages.Message):
   r"""A DataflowProjectsJobsDebugSendCaptureRequest object.
 
@@ -2844,6 +2859,8 @@ class Environment(_messages.Message):
       The supported resource type is: Google Cloud Storage:
       storage.googleapis.com/{bucket}/{object}
       bucket.storage.googleapis.com/{object}
+    usePublicIps: Optional. True when any worker pool that uses public IPs is
+      present.
     useStreamingEngineResourceBasedBilling: Output only. Whether the job uses
       the Streaming Engine resource-based billing model.
     userAgent: A description of the process that generated the request.
@@ -3027,12 +3044,13 @@ class Environment(_messages.Message):
   shuffleMode = _messages.EnumField('ShuffleModeValueValuesEnum', 11)
   streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 12)
   tempStoragePrefix = _messages.StringField(13)
-  useStreamingEngineResourceBasedBilling = _messages.BooleanField(14)
-  userAgent = _messages.MessageField('UserAgentValue', 15)
-  version = _messages.MessageField('VersionValue', 16)
-  workerPools = _messages.MessageField('WorkerPool', 17, repeated=True)
-  workerRegion = _messages.StringField(18)
-  workerZone = _messages.StringField(19)
+  usePublicIps = _messages.BooleanField(14)
+  useStreamingEngineResourceBasedBilling = _messages.BooleanField(15)
+  userAgent = _messages.MessageField('UserAgentValue', 16)
+  version = _messages.MessageField('VersionValue', 17)
+  workerPools = _messages.MessageField('WorkerPool', 18, repeated=True)
+  workerRegion = _messages.StringField(19)
+  workerZone = _messages.StringField(20)
 
 
 class ExecutionStageState(_messages.Message):
@@ -3538,6 +3556,27 @@ class GetTemplateResponse(_messages.Message):
   runtimeMetadata = _messages.MessageField('RuntimeMetadata', 2)
   status = _messages.MessageField('Status', 3)
   templateType = _messages.EnumField('TemplateTypeValueValuesEnum', 4)
+
+
+class GetWorkerStacktracesRequest(_messages.Message):
+  r"""Request to get worker stacktraces from debug capture.
+
+  Fields:
+    workerId: The worker for which to get stacktraces. The returned
+      stacktraces will be for the SDK harness running on this worker.
+  """
+
+  workerId = _messages.StringField(1)
+
+
+class GetWorkerStacktracesResponse(_messages.Message):
+  r"""Response to get worker stacktraces from debug capture.
+
+  Fields:
+    sdks: Repeated as unified worker may have multiple SDK processes.
+  """
+
+  sdks = _messages.MessageField('Sdk', 1, repeated=True)
 
 
 class Histogram(_messages.Message):
@@ -6257,6 +6296,18 @@ class SDKInfo(_messages.Message):
   version = _messages.StringField(2)
 
 
+class Sdk(_messages.Message):
+  r"""A structured representation of an SDK.
+
+  Fields:
+    sdkId: The SDK harness id.
+    stacks: The stacktraces for the processes running on the SDK harness.
+  """
+
+  sdkId = _messages.StringField(1)
+  stacks = _messages.MessageField('Stack', 2, repeated=True)
+
+
 class SdkBug(_messages.Message):
   r"""A bug found in the Dataflow SDK.
 
@@ -7072,6 +7123,26 @@ class SplitInt64(_messages.Message):
 
   highBits = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   lowBits = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+
+
+class Stack(_messages.Message):
+  r"""A structuredstacktrace for a process running on the worker.
+
+  Fields:
+    stackContent: The raw stack trace.
+    threadCount: With java thread dumps we may get collapsed stacks e.g., N
+      threads in stack "". Instead of having to copy over the same stack trace
+      N times, this int field captures this.
+    threadName: Thread name. For example, "CommitThread-0,10,main"
+    threadState: The state of the thread. For example, "WAITING".
+    timestamp: Timestamp at which the stack was captured.
+  """
+
+  stackContent = _messages.StringField(1)
+  threadCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  threadName = _messages.StringField(3)
+  threadState = _messages.StringField(4)
+  timestamp = _messages.StringField(5)
 
 
 class StageExecutionDetails(_messages.Message):

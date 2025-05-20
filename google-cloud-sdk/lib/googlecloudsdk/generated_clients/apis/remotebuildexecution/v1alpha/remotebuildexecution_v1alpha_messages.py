@@ -1231,6 +1231,10 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         account.
       INVALID_FILENAME: Trying to write a file with a filename that is too
         long.
+      NETWORK_PROXY_GET_NETWORK_ACTIVITY_LOG_ERROR: The bot failed to get the
+        network activity log.
+      NETWORK_PROXY_UPLOAD_NETWORK_ACTIVITY_LOG_ERROR: The bot failed to
+        upload the network activity log.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1288,6 +1292,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     NETWORK_PROXY_UPDATE_POLICY_ERROR = 53
     SERVICE_ACCOUNT_IMPERSONATION_DENIED = 54
     INVALID_FILENAME = 55
+    NETWORK_PROXY_GET_NETWORK_ACTIVITY_LOG_ERROR = 56
+    NETWORK_PROXY_UPLOAD_NETWORK_ACTIVITY_LOG_ERROR = 57
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

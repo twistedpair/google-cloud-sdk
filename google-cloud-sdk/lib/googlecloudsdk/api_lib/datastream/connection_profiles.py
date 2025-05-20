@@ -195,10 +195,23 @@ class ConnectionProfilesClient:
         password=args.mongodb_password,
         secretManagerStoredPassword=args.mongodb_secret_manager_stored_password,
     )
+    if (
+        args.mongodb_direct_connection
+        and not args.mongodb_standard_connection_format
+    ):
+      raise exceptions.InvalidArgumentException(
+          'mongodb-direct-connection',
+          'mongodb direct connection can only be used with the standard'
+          ' connection format.',
+      )
     if args.mongodb_srv_connection_format:
       profile.srvConnectionFormat = {}
     if args.mongodb_standard_connection_format:
-      profile.standardConnectionFormat = {}
+      profile.standardConnectionFormat = (
+          self._messages.StandardConnectionFormat(
+              directConnection=args.mongodb_direct_connection
+          )
+      )
     return profile
 
   def _ParseSslConfig(self, data):
@@ -644,10 +657,15 @@ class ConnectionProfilesClient:
     if args.IsSpecified('mongodb_host_addresses'):
       addresses = []
       for host_address in args.mongodb_host_addresses:
-        hostname, port = host_address.split(':')
-        addresses.append(
-            self._messages.HostAddress(hostname=hostname, port=int(port))
-        )
+        if args.mongodb_srv_connection_format:
+          addresses.append(
+              self._messages.HostAddress(hostname=host_address)
+          )
+        else:
+          hostname, port = host_address.split(':')
+          addresses.append(
+              self._messages.HostAddress(hostname=hostname, port=int(port))
+          )
       connection_profile.mongodbProfile.hostAddresses = addresses
       update_fields.append('monogodbProfile.hostAddresses')
     if args.IsSpecified('mongodb_replica_set'):

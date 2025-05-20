@@ -96,23 +96,12 @@ class InterconnectAttachmentGroup(object):
         ),
     )
 
-  def _MakePatchRequestTuple(
-      self, description, availability_sla, attachments, attachments_to_remove
-  ):
+  def _MakePatchRequestTuple(self, description, availability_sla, attachments):
     """Make a tuple for interconnect attachment group patch request."""
     messages = self._messages
-    additional_properties = self._MakeAdditionalProperties(attachments)
-    if attachments_to_remove:
-      additional_properties.extend([
-          messages.InterconnectAttachmentGroup.AttachmentsValue.AdditionalProperty(
-              key=f'{region}/{attachment}',
-              value=None,
-          )
-          for region, attachment in attachments_to_remove
-      ])
     group_params = {
         'attachments': messages.InterconnectAttachmentGroup.AttachmentsValue(
-            additionalProperties=additional_properties
+            additionalProperties=self._MakeAdditionalProperties(attachments)
         ),
     }
     if description is not None:
@@ -188,14 +177,11 @@ class InterconnectAttachmentGroup(object):
       description=None,
       availability_sla=None,
       attachments=(),
-      attachments_to_remove=(),
       only_generate_request=False,
   ):
     """Patch an interconnect attachment group."""
     requests = [
-        self._MakePatchRequestTuple(
-            description, availability_sla, attachments, attachments_to_remove
-        )
+        self._MakePatchRequestTuple(description, availability_sla, attachments)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

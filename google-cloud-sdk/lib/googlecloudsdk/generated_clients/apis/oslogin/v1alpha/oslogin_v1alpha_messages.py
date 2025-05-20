@@ -133,22 +133,22 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
   r"""A OsloginUsersGetLoginProfileRequest object.
 
   Enums:
-    OperatingSystemTypeValueValuesEnum: The type of operating system
+    OperatingSystemTypeValueValuesEnum: Optional. The type of operating system
       associated with the account.
     ViewValueValuesEnum: The view configures whether to retrieve security keys
       information.
 
   Fields:
     name: Required. The unique ID for the user in format `users/{user}`.
-    operatingSystemType: The type of operating system associated with the
-      account.
-    projectId: The project ID of the Google Cloud Platform project.
-    systemId: A system ID for filtering the results of the request.
+    operatingSystemType: Optional. The type of operating system associated
+      with the account.
+    projectId: Required. The project ID of the Google Cloud Platform project.
+    systemId: Optional. A system ID for filtering the results of the request.
     view: The view configures whether to retrieve security keys information.
   """
 
   class OperatingSystemTypeValueValuesEnum(_messages.Enum):
-    r"""The type of operating system associated with the account.
+    r"""Optional. The type of operating system associated with the account.
 
     Values:
       OPERATING_SYSTEM_TYPE_UNSPECIFIED: The operating system type associated
@@ -221,19 +221,19 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
   r"""A OsloginUsersProjectsDeleteRequest object.
 
   Enums:
-    OperatingSystemTypeValueValuesEnum: The type of operating system
+    OperatingSystemTypeValueValuesEnum: Optional. The type of operating system
       associated with the account.
 
   Fields:
     name: Required. A reference to the POSIX account to update. POSIX accounts
       are identified by the project ID they are associated with. A reference
       to the POSIX account is in format `users/{user}/projects/{project}`.
-    operatingSystemType: The type of operating system associated with the
-      account.
+    operatingSystemType: Optional. The type of operating system associated
+      with the account.
   """
 
   class OperatingSystemTypeValueValuesEnum(_messages.Enum):
-    r"""The type of operating system associated with the account.
+    r"""Optional. The type of operating system associated with the account.
 
     Values:
       OPERATING_SYSTEM_TYPE_UNSPECIFIED: The operating system type associated
@@ -253,7 +253,7 @@ class OsloginUsersProjectsLocationsSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsLocationsSignSshPublicKeyRequest object.
 
   Fields:
-    parent: The parent project and region for the signing request.
+    parent: Required. The parent project and region for the signing request.
     signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
       as the request body.
   """
@@ -280,7 +280,7 @@ class OsloginUsersProjectsZonesSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsZonesSignSshPublicKeyRequest object.
 
   Fields:
-    parent: The parent project and region for the signing request.
+    parent: Required. The parent project and region for the signing request.
     signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
       as the request body.
   """
@@ -333,8 +333,8 @@ class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
       are identified by their SHA-256 fingerprint. The fingerprint of the
       public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
     sshPublicKey: A SshPublicKey resource to be passed as the request body.
-    updateMask: Mask to control which fields get updated. Updates all if not
-      present.
+    updateMask: Optional. Mask to control which fields get updated. Updates
+      all if not present.
   """
 
   name = _messages.StringField(1, required=True)
@@ -425,7 +425,7 @@ class SignSshPublicKeyRequest(_messages.Message):
   r"""A SignSshPublicKeyRequest object.
 
   Fields:
-    sshPublicKey: The SSH public key to sign.
+    sshPublicKey: Required. The SSH public key to sign.
   """
 
   sshPublicKey = _messages.StringField(1)

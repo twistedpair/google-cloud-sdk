@@ -744,6 +744,18 @@ class AccesscontextmanagerServicesListRequest(_messages.Message):
   pageToken = _messages.StringField(2)
 
 
+class AddRequestHeader(_messages.Message):
+  r"""Adds a request header to the API.
+
+  Fields:
+    key: HTTP header key.
+    value: HTTP header value.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class ApiOperation(_messages.Message):
   r"""Identification for an API Operation.
 
@@ -1758,6 +1770,16 @@ class MethodSelector(_messages.Message):
   permission = _messages.StringField(2)
 
 
+class Modifier(_messages.Message):
+  r"""Modifier to apply to the API requests.
+
+  Fields:
+    addRequestHeader: Adds additional HTTP request headers.
+  """
+
+  addRequestHeader = _messages.MessageField('AddRequestHeader', 1)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2116,6 +2138,22 @@ class ScopedAccessSettings(_messages.Message):
   scope = _messages.MessageField('AccessScope', 3)
 
 
+class ServicePattern(_messages.Message):
+  r"""Service patterns used to allow access.
+
+  Fields:
+    modifiers: Modifiers to apply to the requests that match the URL pattern.
+    pattern: URL pattern to allow. Only patterns of ".googleapis.com/*",
+      "www.googleapis.com//*" and "*.appspot.com/* form are supported, where
+      should be alphanumerical name.
+    service: Supported service to allow.
+  """
+
+  modifiers = _messages.MessageField('Modifier', 1, repeated=True)
+  pattern = _messages.StringField(2)
+  service = _messages.StringField(3)
+
+
 class ServicePerimeter(_messages.Message):
   r"""`ServicePerimeter` describes a set of Google Cloud resources which can
   freely import and export data amongst themselves, but not export outside of
@@ -2224,7 +2262,7 @@ class ServicePerimeterConfig(_messages.Message):
       separately. Access is granted if any Ingress Policy grants it. Must be
       empty for a perimeter bridge.
     resources: A list Google Cloud resources that are inside of the service
-      perimeter. Only projects and VPCs are allowed. Project format:
+      perimeter. Only projects, VPCs are allowed. Project format:
       `projects/{project_number}`. VPC network format: `//compute.googleapis.c
       om/projects/{PROJECT_ID}/global/networks/{NETWORK_NAME}`.
     restrictedServices: Google Cloud services that are subject to the Service
@@ -2585,6 +2623,20 @@ class UnsatisfiedResult(_messages.Message):
   resultType = _messages.EnumField('ResultTypeValueValuesEnum', 3)
 
 
+class UnsupportedServicesOptions(_messages.Message):
+  r"""Specifies private access paths that the restriction applies to for
+  unsupported services. Currently, only "private.googleapis.com" is supported.
+  If empty, the VPC accessible services restriction will not be guaranteed for
+  unsupported services.
+
+  Fields:
+    restrictedAccessPaths: The list of private access paths that the
+      restriction applies to for unsupported services.
+  """
+
+  restrictedAccessPaths = _messages.StringField(1, repeated=True)
+
+
 class UserManagedRisk(_messages.Message):
   r"""User managed risk associated with the access level.
 
@@ -2600,6 +2652,8 @@ class VpcAccessibleServices(_messages.Message):
   Perimeter.
 
   Fields:
+    allowedServicePatterns: Specifies which Google services are allowed to be
+      accessed from VPC networks in the service perimeter.
     allowedServices: The list of APIs usable within the Service Perimeter.
       Must be empty unless 'enable_restriction' is True. You can specify a
       list of individual services, as well as include the 'RESTRICTED-
@@ -2607,10 +2661,14 @@ class VpcAccessibleServices(_messages.Message):
       protected by the perimeter.
     enableRestriction: Whether to restrict API calls within the Service
       Perimeter to the list of APIs specified in 'allowed_services'.
+    unsupportedServicesOptions: Specifies which private access paths the
+      restriction applies to for unsupported services.
   """
 
-  allowedServices = _messages.StringField(1, repeated=True)
-  enableRestriction = _messages.BooleanField(2)
+  allowedServicePatterns = _messages.MessageField('ServicePattern', 1, repeated=True)
+  allowedServices = _messages.StringField(2, repeated=True)
+  enableRestriction = _messages.BooleanField(3)
+  unsupportedServicesOptions = _messages.MessageField('UnsupportedServicesOptions', 4)
 
 
 class VpcNetworkSource(_messages.Message):

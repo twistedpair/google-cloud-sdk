@@ -93,6 +93,18 @@ def AddGlobalSettingsFlag(parser):
   )
 
 
+def AddGlobalFilterFlag(parser):
+  """Adds a --global-filter flag to the given parser."""
+  parser.add_argument(
+      '--global-filter',
+      help="""\
+        Filter the source entities based on [AIP-160](https://google.aip.dev/160) standard.
+        This filter will be applied to all subsequent operations on the source entities,
+        such as convert and describe-entities.
+      """,
+  )
+
+
 def AddCommitNameFlag(parser):
   """Adds a --commit-name flag to the given parser."""
   parser.add_argument(

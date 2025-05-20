@@ -282,6 +282,14 @@ def ArgsForClusterRef(
       help='The type of cluster.',
   )
 
+  parser.add_argument(
+      '--tier',
+      hidden=True,
+      metavar='TYPE',
+      choices=['premium', 'standard'],
+      help='The tier of cluster.',
+  )
+
   image_parser = parser.add_mutually_exclusive_group()
   # TODO(b/73291743): Add external doc link to --image
   image_parser.add_argument(
@@ -1419,6 +1427,7 @@ def GetClusterConfig(
       configBucket=args.bucket,
       tempBucket=args.temp_bucket,
       clusterType=_GetCusterType(dataproc, args.cluster_type),
+      clusterTier=_GetClusterTier(dataproc, args.tier),
       gceClusterConfig=gce_cluster_config,
       masterConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_masters,
@@ -1908,6 +1917,34 @@ def _GetCusterType(dataproc, cluster_type):
   raise exceptions.ArgumentError(
       'Unsupported --cluster-type flag value: '
       + cluster_type
+  )
+
+
+def _GetClusterTier(dataproc, cluster_tier):
+  """Get ClusterTier enum value.
+
+  Converts cluster_tier argument value to
+  ClusterTier API enum value.
+
+  Args:
+    dataproc: Dataproc API definition
+    cluster_tier: argument value
+
+  Returns:
+    ClusterTier API enum value
+  """
+  if cluster_tier == 'premium':
+    return dataproc.messages.ClusterConfig.ClusterTierValueValuesEnum(
+        'CLUSTER_TIER_PREMIUM'
+    )
+  if cluster_tier == 'standard':
+    return dataproc.messages.ClusterConfig.ClusterTierValueValuesEnum(
+        'CLUSTER_TIER_STANDARD'
+    )
+  if cluster_tier is None:
+    return None
+  raise exceptions.ArgumentError(
+      'Unsupported --cluster-tier flag value: ' + cluster_tier
   )
 
 

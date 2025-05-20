@@ -55,7 +55,7 @@ class AlloyDbSettings(_messages.Message):
       creation. Required.
     labels: Labels for the AlloyDB cluster created by DMS. An object
       containing a list of 'key', 'value' pairs.
-    primaryInstanceSettings: A PrimaryInstanceSettings attribute.
+    primaryInstanceSettings: Settings for the cluster's primary instance
     vpcNetwork: Required. The resource link for the VPC network in which
       cluster resources are created and from which they are accessible via
       Private IP. The network must belong to the same project as the cluster.
@@ -1098,6 +1098,12 @@ class ConstraintEntity(_messages.Message):
 class ConversionWorkspace(_messages.Message):
   r"""The main conversion workspace resource entity.
 
+  Enums:
+    DestinationProviderValueValuesEnum: Optional. The provider for the
+      destination database.
+    SourceProviderValueValuesEnum: Optional. The provider for the source
+      database.
+
   Messages:
     GlobalSettingsValue: Optional. A generic list of settings for the
       workspace. The settings are database pair dependant and can indicate
@@ -1109,6 +1115,7 @@ class ConversionWorkspace(_messages.Message):
     createTime: Output only. The timestamp when the workspace resource was
       created.
     destination: Required. The destination engine details.
+    destinationProvider: Optional. The provider for the destination database.
     displayName: Optional. The display name for the workspace.
     globalSettings: Optional. A generic list of settings for the workspace.
       The settings are database pair dependant and can indicate default
@@ -1123,9 +1130,58 @@ class ConversionWorkspace(_messages.Message):
     name: Full name of the workspace resource, in the form of: projects/{proje
       ct}/locations/{location}/conversionWorkspaces/{conversion_workspace}.
     source: Required. The source engine details.
+    sourceProvider: Optional. The provider for the source database.
     updateTime: Output only. The timestamp when the workspace resource was
       last updated.
   """
+
+  class DestinationProviderValueValuesEnum(_messages.Enum):
+    r"""Optional. The provider for the destination database.
+
+    Values:
+      DATABASE_PROVIDER_UNSPECIFIED: Use this value for on-premise source
+        database instances and ORACLE.
+      CLOUDSQL: Cloud SQL is the source instance provider.
+      RDS: Amazon RDS is the source instance provider.
+      AURORA: Amazon Aurora is the source instance provider.
+      ALLOYDB: AlloyDB for PostgreSQL is the source instance provider.
+      AZURE_DATABASE: Microsoft Azure Database for MySQL/PostgreSQL.
+      AZURE_SQL_DATABASE: Microsoft Azure SQL Database
+      AZURE_MANAGED_INSTANCE: Microsoft Azure SQL Managed Instance is the
+        source instance provider.
+    """
+    DATABASE_PROVIDER_UNSPECIFIED = 0
+    CLOUDSQL = 1
+    RDS = 2
+    AURORA = 3
+    ALLOYDB = 4
+    AZURE_DATABASE = 5
+    AZURE_SQL_DATABASE = 6
+    AZURE_MANAGED_INSTANCE = 7
+
+  class SourceProviderValueValuesEnum(_messages.Enum):
+    r"""Optional. The provider for the source database.
+
+    Values:
+      DATABASE_PROVIDER_UNSPECIFIED: Use this value for on-premise source
+        database instances and ORACLE.
+      CLOUDSQL: Cloud SQL is the source instance provider.
+      RDS: Amazon RDS is the source instance provider.
+      AURORA: Amazon Aurora is the source instance provider.
+      ALLOYDB: AlloyDB for PostgreSQL is the source instance provider.
+      AZURE_DATABASE: Microsoft Azure Database for MySQL/PostgreSQL.
+      AZURE_SQL_DATABASE: Microsoft Azure SQL Database
+      AZURE_MANAGED_INSTANCE: Microsoft Azure SQL Managed Instance is the
+        source instance provider.
+    """
+    DATABASE_PROVIDER_UNSPECIFIED = 0
+    CLOUDSQL = 1
+    RDS = 2
+    AURORA = 3
+    ALLOYDB = 4
+    AZURE_DATABASE = 5
+    AZURE_SQL_DATABASE = 6
+    AZURE_MANAGED_INSTANCE = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class GlobalSettingsValue(_messages.Message):
@@ -1158,14 +1214,16 @@ class ConversionWorkspace(_messages.Message):
 
   createTime = _messages.StringField(1)
   destination = _messages.MessageField('DatabaseEngineInfo', 2)
-  displayName = _messages.StringField(3)
-  globalSettings = _messages.MessageField('GlobalSettingsValue', 4)
-  hasUncommittedChanges = _messages.BooleanField(5)
-  latestCommitId = _messages.StringField(6)
-  latestCommitTime = _messages.StringField(7)
-  name = _messages.StringField(8)
-  source = _messages.MessageField('DatabaseEngineInfo', 9)
-  updateTime = _messages.StringField(10)
+  destinationProvider = _messages.EnumField('DestinationProviderValueValuesEnum', 3)
+  displayName = _messages.StringField(4)
+  globalSettings = _messages.MessageField('GlobalSettingsValue', 5)
+  hasUncommittedChanges = _messages.BooleanField(6)
+  latestCommitId = _messages.StringField(7)
+  latestCommitTime = _messages.StringField(8)
+  name = _messages.StringField(9)
+  source = _messages.MessageField('DatabaseEngineInfo', 10)
+  sourceProvider = _messages.EnumField('SourceProviderValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class ConversionWorkspaceInfo(_messages.Message):

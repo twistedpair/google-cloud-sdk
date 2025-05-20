@@ -592,8 +592,8 @@ class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
-        r"""Deletes all the log entries in a log for the \_Default Log
-        Bucket. The log reappears if it receives new entries. Log
+        r"""Deletes all the log entries in a log for the global \_Default
+        Log Bucket. The log reappears if it receives new entries. Log
         entries written shortly before the delete operation might not be
         deleted. Entries received after the delete operation with a
         timestamp before the operation will be deleted.

@@ -30,20 +30,18 @@ class AccessKeyCredentials(_messages.Message):
   sessionToken = _messages.StringField(3)
 
 
-class AdaptationFlag(_messages.Message):
-  r"""AdaptationFlag to be used as configuration of the OS adaptation process.
+class AdaptationModifier(_messages.Message):
+  r"""AdaptationModifier a modifier to be used for configuration of the OS
+  adaptation process.
 
   Fields:
-    boolValue: A boolean value.
-    name: Optional. The name of the flag.
-    stringValue: A string value, for example, in case of multiple operating
-      systems,the flag 'file_system_id' requires the actual file system id
-      that will be used.
+    name: Optional. The name of the modifier.
+    value: Optional. The value of the modifier. The actual value depends on
+      the modifier and can also be empty.
   """
 
-  boolValue = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  stringValue = _messages.StringField(3)
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class AdaptingOSStep(_messages.Message):
@@ -1049,8 +1047,8 @@ class ComputeEngineTargetDefaults(_messages.Message):
     MetadataValue: The metadata key/value pairs to assign to the VM.
 
   Fields:
-    adaptationFlags: Optional. AdaptationFlags the set of flags used during OS
-      adaptation.
+    adaptationModifiers: Optional. AdaptationModifiers are the set of
+      modifiers used during OS adaptation.
     additionalLicenses: Additional licenses to assign to the VM.
     appliedLicense: Output only. The OS license returned from the adaptation
       module report.
@@ -1194,7 +1192,7 @@ class ComputeEngineTargetDefaults(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  adaptationFlags = _messages.MessageField('AdaptationFlag', 1, repeated=True)
+  adaptationModifiers = _messages.MessageField('AdaptationModifier', 1, repeated=True)
   additionalLicenses = _messages.StringField(2, repeated=True)
   appliedLicense = _messages.MessageField('AppliedLicense', 3)
   bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 4)
@@ -1237,8 +1235,8 @@ class ComputeEngineTargetDetails(_messages.Message):
     MetadataValue: The metadata key/value pairs to assign to the VM.
 
   Fields:
-    adaptationFlags: Optional. Flags to be used as configuration of the OS
-      adaptation process.
+    adaptationModifiers: Optional. Modifiers to be used as configuration of
+      the OS adaptation process.
     additionalLicenses: Additional licenses to assign to the VM.
     appliedLicense: The OS license returned from the adaptation module report.
     bootConversion: Optional. By default the virtual machine will keep its
@@ -1378,7 +1376,7 @@ class ComputeEngineTargetDetails(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  adaptationFlags = _messages.MessageField('AdaptationFlag', 1, repeated=True)
+  adaptationModifiers = _messages.MessageField('AdaptationModifier', 1, repeated=True)
   additionalLicenses = _messages.StringField(2, repeated=True)
   appliedLicense = _messages.MessageField('AppliedLicense', 3)
   bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 4)
@@ -2227,8 +2225,8 @@ class ImageImportOsAdaptationParameters(_messages.Message):
       apply to the imported image.
 
   Fields:
-    adaptationFlags: Optional. Flags to be used as configuration of the OS
-      adaptation process.
+    adaptationModifiers: Optional. Modifiers to be used as configuration of
+      the OS adaptation process.
     bootConversion: Optional. By default the image will keep its existing boot
       option. Setting this property will trigger an internal process which
       will convert the image from using the existing boot option to another.
@@ -2272,7 +2270,7 @@ class ImageImportOsAdaptationParameters(_messages.Message):
     COMPUTE_ENGINE_LICENSE_TYPE_PAYG = 1
     COMPUTE_ENGINE_LICENSE_TYPE_BYOL = 2
 
-  adaptationFlags = _messages.MessageField('AdaptationFlag', 1, repeated=True)
+  adaptationModifiers = _messages.MessageField('AdaptationModifier', 1, repeated=True)
   bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 2)
   generalize = _messages.BooleanField(3)
   licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 4)

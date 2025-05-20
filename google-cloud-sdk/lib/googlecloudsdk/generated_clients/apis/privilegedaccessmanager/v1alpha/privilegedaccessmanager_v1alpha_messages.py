@@ -284,6 +284,178 @@ class ExternallyModified(_messages.Message):
 
 
 
+class FetchEffectiveSettingsResponse(_messages.Message):
+  r"""The effective value of the settings at the given location resource,
+  evaluated based on the crm resource hierarchy.
+
+  Fields:
+    emailNotificationSettings: Output only. `EmailNotificationSettings`
+      defines effective node-wide email notification preferences for various
+      PAM events.
+    parent: Output only. The resource on which the settings are effective.
+      Possible formats: * `projects/{project-number|project-
+      id}/locations/{region}` * `folders/{folder-number}/locations/{region}` *
+      `organizations/{organization-number}/locations/{region}`
+    serviceAccountApproverSettings: Output only. Effective settings for
+      allowing service account as approvers.
+  """
+
+  emailNotificationSettings = _messages.MessageField('FetchEffectiveSettingsResponseEmailNotificationSettings', 1)
+  parent = _messages.StringField(2)
+  serviceAccountApproverSettings = _messages.MessageField('FetchEffectiveSettingsResponseServiceAccountApproverSettings', 3)
+
+
+class FetchEffectiveSettingsResponseEmailNotificationSettings(_messages.Message):
+  r"""`EmailNotificationSettings` reflects the effective node-wide email
+  notification settings.
+
+  Fields:
+    customNotificationBehavior: Output only. Granular settings of
+      notifications.
+    disableAllNotifications: Output only. Disable all notifications.
+    source: Output only. The name of the resource from which the notification
+      behavior is inherited. This field remains empty if the setting is not
+      defined at either the parent or resource level, in which case PAM's
+      default behavior is applied.
+  """
+
+  customNotificationBehavior = _messages.MessageField('FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehavior', 1)
+  disableAllNotifications = _messages.MessageField('FetchEffectiveSettingsResponseEmailNotificationSettingsDisableAllNotifications', 2)
+  source = _messages.StringField(3)
+
+
+class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehavior(_messages.Message):
+  r"""`CustomNotificationBehavior` reflects the granular notification delivery
+  settings for specific events and personas, as configured by the admin.
+
+  Fields:
+    adminNotifications: Output only. Admin email notifications.
+    approverNotifications: Output only. Approver email notifications.
+    requesterNotifications: Output only. Requester email notifications.
+  """
+
+  adminNotifications = _messages.MessageField('FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorAdminNotifications', 1)
+  approverNotifications = _messages.MessageField('FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorApproverNotifications', 2)
+  requesterNotifications = _messages.MessageField('FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifications', 3)
+
+
+class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorAdminNotifications(_messages.Message):
+  r"""Email notifications specific to Admins.
+
+  Fields:
+    notifyGrantActivated: Output only. Notification delivery for grant
+      activated.
+    notifyGrantActivationFailed: Output only. Notification delivery for grant
+      activation failed.
+    notifyGrantEnded: Output only. Notification delivery for grant ended.
+    notifyGrantExternallyModified: Output only. Notification delivery for
+      grant externally modified.
+  """
+
+  notifyGrantActivated = _messages.BooleanField(1)
+  notifyGrantActivationFailed = _messages.BooleanField(2)
+  notifyGrantEnded = _messages.BooleanField(3)
+  notifyGrantExternallyModified = _messages.BooleanField(4)
+
+
+class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorApproverNotifications(_messages.Message):
+  r"""Email notifications specific to Approvers.
+
+  Fields:
+    notifyPendingApproval: Output only. Notification delivery for pending
+      approval.
+  """
+
+  notifyPendingApproval = _messages.BooleanField(1)
+
+
+class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifications(_messages.Message):
+  r"""Email notifications specific to Requesters.
+
+  Fields:
+    notifyEntitlementAssigned: Output only. Notification delivery for
+      entitlement assigned.
+    notifyEntitlementCreated: Output only. Notification delivery for
+      entitlement created.
+    notifyEntitlementUpdated: Output only. Notification delivery for
+      entitlement updated.
+    notifyGrantActivated: Output only. Notification delivery for grant
+      activated.
+    notifyGrantActivationFailed: Output only. Notification delivery for grant
+      activation failed.
+    notifyGrantDenied: Output only. Notification delivery for grant denied.
+    notifyGrantEnded: Output only. Notification delivery for grant ended.
+    notifyGrantExpired: Output only. Notification delivery for grant request
+      expired.
+    notifyGrantExternallyModified: Output only. Notification delivery for
+      grant externally modified.
+    notifyGrantRevoked: Output only. Notification delivery for grant revoked.
+  """
+
+  notifyEntitlementAssigned = _messages.BooleanField(1)
+  notifyEntitlementCreated = _messages.BooleanField(2)
+  notifyEntitlementUpdated = _messages.BooleanField(3)
+  notifyGrantActivated = _messages.BooleanField(4)
+  notifyGrantActivationFailed = _messages.BooleanField(5)
+  notifyGrantDenied = _messages.BooleanField(6)
+  notifyGrantEnded = _messages.BooleanField(7)
+  notifyGrantExpired = _messages.BooleanField(8)
+  notifyGrantExternallyModified = _messages.BooleanField(9)
+  notifyGrantRevoked = _messages.BooleanField(10)
+
+
+class FetchEffectiveSettingsResponseEmailNotificationSettingsDisableAllNotifications(_messages.Message):
+  r"""This option indicates that all email notifications are disabled."""
+
+
+class FetchEffectiveSettingsResponseServiceAccountApproverSettings(_messages.Message):
+  r"""This controls whether service accounts are allowed to approve grants or
+  can be designated as approvers within PAM entitlements.
+
+  Fields:
+    disablementReason: Output only. The reason why service account approvals
+      are disabled.
+    enabled: Output only. Indicates whether service account is allowed to
+      grant approvals.
+    source: Output only. The resource from which the service account approver
+      setting is inherited. This field remains empty if the setting is not
+      defined at either the parent or resource level, in which case PAM's
+      default behavior is applied.
+  """
+
+  disablementReason = _messages.MessageField('FetchEffectiveSettingsResponseServiceAccountApproverSettingsDisablementReason', 1)
+  enabled = _messages.BooleanField(2)
+  source = _messages.StringField(3)
+
+
+class FetchEffectiveSettingsResponseServiceAccountApproverSettingsDisablementReason(_messages.Message):
+  r"""The reason for disabling service account approvals.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The specific reason type for disabling
+      service account approvals.
+
+  Fields:
+    type: Output only. The specific reason type for disabling service account
+      approvals.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The specific reason type for disabling service account
+    approvals.
+
+    Values:
+      REASON_TYPE_UNSPECIFIED: No specific setting was applied, default PAM
+        behavior in effect.
+      PAM_ADVANCED_TIER_DISABLED: Approval disabled because PAM Advanced tier
+        is disabled.
+    """
+    REASON_TYPE_UNSPECIFIED = 0
+    PAM_ADVANCED_TIER_DISABLED = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class Finding(_messages.Message):
   r"""Finding represents an issue which prevents PAM from functioning properly
   for this resource.
@@ -770,6 +942,21 @@ class PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest(_messa
   parent = _messages.StringField(1, required=True)
 
 
+class PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerFoldersLocationsEffectiveSettingsRequest
+  object.
+
+  Fields:
+    parent: Required. The resource for which the effective settings should be
+      fetched. Should be in one of the following formats: *
+      `projects/{project-number|project-id}/locations/{region}` *
+      `folders/{folder-number}/locations/{region}` *
+      `organizations/{organization-number}/locations/{region}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest
   object.
@@ -1104,6 +1291,16 @@ class PrivilegedaccessmanagerFoldersLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class PrivilegedaccessmanagerFoldersLocationsGetSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerFoldersLocationsGetSettingsRequest object.
+
+  Fields:
+    name: Required. The name of the settings resource to be fetched.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PrivilegedaccessmanagerFoldersLocationsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsListRequest object.
 
@@ -1163,6 +1360,30 @@ class PrivilegedaccessmanagerFoldersLocationsOperationsListRequest(_messages.Mes
   pageToken = _messages.StringField(4)
 
 
+class PrivilegedaccessmanagerFoldersLocationsUpdateSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerFoldersLocationsUpdateSettingsRequest object.
+
+  Fields:
+    name: Identifier. Name of the settings resource. Possible formats:
+      projects/{project-id|project-number}/locations/{location}/settings
+      folders/{folder-number}/locations/{location}/settings
+      organizations/{organization-number}/locations/{location}/settings
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Required. The list of fields to update. A field is overwritten
+      if, and only if, it is in the mask. Any immutable fields set in the mask
+      are ignored by the server. Repeated fields and map fields are only
+      allowed in the last position of a `paths` string and overwrite the
+      existing values. Hence an update to a repeated field or a map should
+      contain the entire list of values. The fields specified in the
+      update_mask are relative to the resource and not to the request. A value
+      of '*' for this field refers to full replacement of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
+
+
 class PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest(_messages.Message):
   r"""A
   PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest
@@ -1171,6 +1392,21 @@ class PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest(
   Fields:
     parent: Required. The resource for which the onboarding status should be
       checked. Should be in one of the following formats: *
+      `projects/{project-number|project-id}/locations/{region}` *
+      `folders/{folder-number}/locations/{region}` *
+      `organizations/{organization-number}/locations/{region}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerOrganizationsLocationsEffectiveSettingsRequest
+  object.
+
+  Fields:
+    parent: Required. The resource for which the effective settings should be
+      fetched. Should be in one of the following formats: *
       `projects/{project-number|project-id}/locations/{region}` *
       `folders/{folder-number}/locations/{region}` *
       `organizations/{organization-number}/locations/{region}`
@@ -1519,6 +1755,17 @@ class PrivilegedaccessmanagerOrganizationsLocationsGetRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
+class PrivilegedaccessmanagerOrganizationsLocationsGetSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerOrganizationsLocationsGetSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the settings resource to be fetched.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PrivilegedaccessmanagerOrganizationsLocationsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerOrganizationsLocationsListRequest object.
 
@@ -1581,6 +1828,31 @@ class PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest(_messag
   pageToken = _messages.StringField(4)
 
 
+class PrivilegedaccessmanagerOrganizationsLocationsUpdateSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerOrganizationsLocationsUpdateSettingsRequest
+  object.
+
+  Fields:
+    name: Identifier. Name of the settings resource. Possible formats:
+      projects/{project-id|project-number}/locations/{location}/settings
+      folders/{folder-number}/locations/{location}/settings
+      organizations/{organization-number}/locations/{location}/settings
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Required. The list of fields to update. A field is overwritten
+      if, and only if, it is in the mask. Any immutable fields set in the mask
+      are ignored by the server. Repeated fields and map fields are only
+      allowed in the last position of a `paths` string and overwrite the
+      existing values. Hence an update to a repeated field or a map should
+      contain the entire list of values. The fields specified in the
+      update_mask are relative to the resource and not to the request. A value
+      of '*' for this field refers to full replacement of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
+
+
 class PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest
   object.
@@ -1588,6 +1860,21 @@ class PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest(_mess
   Fields:
     parent: Required. The resource for which the onboarding status should be
       checked. Should be in one of the following formats: *
+      `projects/{project-number|project-id}/locations/{region}` *
+      `folders/{folder-number}/locations/{region}` *
+      `organizations/{organization-number}/locations/{region}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerProjectsLocationsEffectiveSettingsRequest
+  object.
+
+  Fields:
+    parent: Required. The resource for which the effective settings should be
+      fetched. Should be in one of the following formats: *
       `projects/{project-number|project-id}/locations/{region}` *
       `folders/{folder-number}/locations/{region}` *
       `organizations/{organization-number}/locations/{region}`
@@ -1934,6 +2221,16 @@ class PrivilegedaccessmanagerProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class PrivilegedaccessmanagerProjectsLocationsGetSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerProjectsLocationsGetSettingsRequest object.
+
+  Fields:
+    name: Required. The name of the settings resource to be fetched.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PrivilegedaccessmanagerProjectsLocationsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerProjectsLocationsListRequest object.
 
@@ -1992,6 +2289,30 @@ class PrivilegedaccessmanagerProjectsLocationsOperationsListRequest(_messages.Me
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class PrivilegedaccessmanagerProjectsLocationsUpdateSettingsRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerProjectsLocationsUpdateSettingsRequest object.
+
+  Fields:
+    name: Identifier. Name of the settings resource. Possible formats:
+      projects/{project-id|project-number}/locations/{location}/settings
+      folders/{folder-number}/locations/{location}/settings
+      organizations/{organization-number}/locations/{location}/settings
+    settings: A Settings resource to be passed as the request body.
+    updateMask: Required. The list of fields to update. A field is overwritten
+      if, and only if, it is in the mask. Any immutable fields set in the mask
+      are ignored by the server. Repeated fields and map fields are only
+      allowed in the last position of a `paths` string and overwrite the
+      existing values. Hence an update to a repeated field or a map should
+      contain the entire list of values. The fields specified in the
+      update_mask are relative to the resource and not to the request. A value
+      of '*' for this field refers to full replacement of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+  settings = _messages.MessageField('Settings', 2)
+  updateMask = _messages.StringField(3)
 
 
 class Requested(_messages.Message):
@@ -2167,6 +2488,372 @@ class SearchGrantsResponse(_messages.Message):
 
   grants = _messages.MessageField('Grant', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class Settings(_messages.Message):
+  r"""`Settings` resource defines the properties, applied directly to the
+  resource or inherited through the hierarchy, to enable consistent, federated
+  use of PAM. The behavior is as follows: 1. If explicitly set to empty at the
+  node level, PAM's default settings are applied for that node. 2. If not set
+  at the node level, settings are inherited from the closest ancestor with a
+  non-empty value. If none of the ancestors has the field set, PAM's default
+  settings are applied. 3. If explicitly set to a non-empty value at the node
+  level, the specified settings are applied for that node.
+
+  Fields:
+    createTime: Output only. Create timestamp.
+    emailNotificationSettings: Optional. `EmailNotificationSettings` defines
+      node-wide email notification preferences for various PAM events.
+    etag: Fingerprint for optimistic concurrency returned in the response of
+      `GetSettings`. Must be provided in the requests to `UpdateSettings`. If
+      the value provided does not match the value known to the server, ABORTED
+      will be thrown, and the client should retry the read-modify-write cycle.
+    name: Identifier. Name of the settings resource. Possible formats:
+      projects/{project-id|project-number}/locations/{location}/settings
+      folders/{folder-number}/locations/{location}/settings
+      organizations/{organization-number}/locations/{location}/settings
+    serviceAccountApproverSettings: Optional. This controls the node-level
+      settings for allowing service accounts as approvers.
+    updateTime: Output only. Update timestamp.
+  """
+
+  createTime = _messages.StringField(1)
+  emailNotificationSettings = _messages.MessageField('SettingsEmailNotificationSettings', 2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  serviceAccountApproverSettings = _messages.MessageField('SettingsServiceAccountApproverSettings', 5)
+  updateTime = _messages.StringField(6)
+
+
+class SettingsEmailNotificationSettings(_messages.Message):
+  r"""`EmailNotificationSettings` defines the node-wide email notification
+  settings.
+
+  Fields:
+    customNotificationBehavior: Granular settings of notifications.
+    disableAllNotifications: Disable all notifications.
+  """
+
+  customNotificationBehavior = _messages.MessageField('SettingsEmailNotificationSettingsCustomNotificationBehavior', 1)
+  disableAllNotifications = _messages.MessageField('SettingsEmailNotificationSettingsDisableAllNotifications', 2)
+
+
+class SettingsEmailNotificationSettingsCustomNotificationBehavior(_messages.Message):
+  r"""`CustomNotificationBehavior` provides granular control over email
+  notification delivery. Allows admins to selectively enable/disable
+  notifications for specific events and specific personas.
+
+  Fields:
+    adminNotifications: Optional. Admin email notifications.
+    approverNotifications: Optional. Approver email notifications.
+    requesterNotifications: Optional. Requester email notifications.
+  """
+
+  adminNotifications = _messages.MessageField('SettingsEmailNotificationSettingsCustomNotificationBehaviorAdminNotifications', 1)
+  approverNotifications = _messages.MessageField('SettingsEmailNotificationSettingsCustomNotificationBehaviorApproverNotifications', 2)
+  requesterNotifications = _messages.MessageField('SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifications', 3)
+
+
+class SettingsEmailNotificationSettingsCustomNotificationBehaviorAdminNotifications(_messages.Message):
+  r"""Email notifications specific to Admins.
+
+  Enums:
+    GrantActivatedValueValuesEnum: Optional. Notification mode for grant
+      activated.
+    GrantActivationFailedValueValuesEnum: Optional. Notification mode for
+      grant activation failed.
+    GrantEndedValueValuesEnum: Optional. Notification mode for grant ended.
+    GrantExternallyModifiedValueValuesEnum: Optional. Notification mode for
+      grant externally modified.
+
+  Fields:
+    grantActivated: Optional. Notification mode for grant activated.
+    grantActivationFailed: Optional. Notification mode for grant activation
+      failed.
+    grantEnded: Optional. Notification mode for grant ended.
+    grantExternallyModified: Optional. Notification mode for grant externally
+      modified.
+  """
+
+  class GrantActivatedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant activated.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantActivationFailedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant activation failed.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantEndedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant ended.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantExternallyModifiedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant externally modified.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  grantActivated = _messages.EnumField('GrantActivatedValueValuesEnum', 1)
+  grantActivationFailed = _messages.EnumField('GrantActivationFailedValueValuesEnum', 2)
+  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 3)
+  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 4)
+
+
+class SettingsEmailNotificationSettingsCustomNotificationBehaviorApproverNotifications(_messages.Message):
+  r"""Email notifications specific to Approvers.
+
+  Enums:
+    PendingApprovalValueValuesEnum: Optional. Notification mode for pending
+      approval.
+
+  Fields:
+    pendingApproval: Optional. Notification mode for pending approval.
+  """
+
+  class PendingApprovalValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for pending approval.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  pendingApproval = _messages.EnumField('PendingApprovalValueValuesEnum', 1)
+
+
+class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifications(_messages.Message):
+  r"""Email notifications specific to Requesters.
+
+  Enums:
+    EntitlementAssignedValueValuesEnum: Optional. Notification mode for
+      entitlement assigned.
+    EntitlementCreatedValueValuesEnum: Optional. Notification mode for
+      entitlement created.
+    EntitlementUpdatedValueValuesEnum: Optional. Notification mode for
+      entitlement updated.
+    GrantActivatedValueValuesEnum: Optional. Notification mode for grant
+      activated.
+    GrantActivationFailedValueValuesEnum: Optional. Notification mode for
+      grant activation failed.
+    GrantDeniedValueValuesEnum: Optional. Notification mode for grant denied.
+    GrantEndedValueValuesEnum: Optional. Notification mode for grant ended.
+    GrantExpiredValueValuesEnum: Optional. Notification mode for grant request
+      expired.
+    GrantExternallyModifiedValueValuesEnum: Optional. Notification mode for
+      grant externally modified.
+    GrantRevokedValueValuesEnum: Optional. Notification mode for grant
+      revoked.
+
+  Fields:
+    entitlementAssigned: Optional. Notification mode for entitlement assigned.
+    entitlementCreated: Optional. Notification mode for entitlement created.
+    entitlementUpdated: Optional. Notification mode for entitlement updated.
+    grantActivated: Optional. Notification mode for grant activated.
+    grantActivationFailed: Optional. Notification mode for grant activation
+      failed.
+    grantDenied: Optional. Notification mode for grant denied.
+    grantEnded: Optional. Notification mode for grant ended.
+    grantExpired: Optional. Notification mode for grant request expired.
+    grantExternallyModified: Optional. Notification mode for grant externally
+      modified.
+    grantRevoked: Optional. Notification mode for grant revoked.
+  """
+
+  class EntitlementAssignedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for entitlement assigned.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class EntitlementCreatedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for entitlement created.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class EntitlementUpdatedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for entitlement updated.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantActivatedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant activated.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantActivationFailedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant activation failed.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantDeniedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant denied.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantEndedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant ended.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantExpiredValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant request expired.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantExternallyModifiedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant externally modified.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantRevokedValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant revoked.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  entitlementAssigned = _messages.EnumField('EntitlementAssignedValueValuesEnum', 1)
+  entitlementCreated = _messages.EnumField('EntitlementCreatedValueValuesEnum', 2)
+  entitlementUpdated = _messages.EnumField('EntitlementUpdatedValueValuesEnum', 3)
+  grantActivated = _messages.EnumField('GrantActivatedValueValuesEnum', 4)
+  grantActivationFailed = _messages.EnumField('GrantActivationFailedValueValuesEnum', 5)
+  grantDenied = _messages.EnumField('GrantDeniedValueValuesEnum', 6)
+  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 7)
+  grantExpired = _messages.EnumField('GrantExpiredValueValuesEnum', 8)
+  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 9)
+  grantRevoked = _messages.EnumField('GrantRevokedValueValuesEnum', 10)
+
+
+class SettingsEmailNotificationSettingsDisableAllNotifications(_messages.Message):
+  r"""This option indicates that all email notifications are disabled."""
+
+
+class SettingsServiceAccountApproverSettings(_messages.Message):
+  r"""This controls whether service accounts are allowed to approve grants or
+  can be designated as approvers within PAM entitlements.
+
+  Fields:
+    enabled: Optional. Indicates whether service account is allowed to grant
+      approvals.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

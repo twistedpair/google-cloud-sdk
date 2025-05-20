@@ -826,8 +826,20 @@ def AddCommonDescribeArgs(parser):
   Backup(
       positional=False,
       required=False,
-      text='For a backup operation, the name of the backup '
-      'the operation is executing on.').AddToParser(parser)
+      text=(
+          'For a backup operation, the name of the backup '
+          'the operation is executing on.'
+      ),
+  ).AddToParser(parser)
+  InstancePartition(
+      positional=False,
+      required=False,
+      hidden=False,
+      text=(
+          'For an instance partition operation, the name of the instance '
+          'partition the operation is executing on.'
+      ),
+  ).AddToParser(parser)
   OperationId().AddToParser(parser)
 
 

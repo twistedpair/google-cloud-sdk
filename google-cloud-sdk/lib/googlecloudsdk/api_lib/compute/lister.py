@@ -465,24 +465,75 @@ def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
     scope.add_argument(
         '--zones',
         metavar='ZONE',
-        help=('If provided, only zonal resources are shown. '
-              'If arguments are provided, only resources from the given '
-              'zones are shown.'),
-        type=arg_parsers.ArgList())
+        help=(
+            'If provided, only zonal resources are shown. '
+            'If arguments are provided, only resources from the given '
+            'zones are shown.'
+        ),
+        type=arg_parsers.ArgList(),
+    )
   if regional:
     scope.add_argument(
         '--regions',
         metavar='REGION',
-        help=('If provided, only regional resources are shown. '
-              'If arguments are provided, only resources from the given '
-              'regions are shown.'),
-        type=arg_parsers.ArgList())
+        help=(
+            'If provided, only regional resources are shown. '
+            'If arguments are provided, only resources from the given '
+            'regions are shown.'
+        ),
+        type=arg_parsers.ArgList(),
+    )
   if global_:
     scope.add_argument(
         '--global',
         action='store_true',
         help='If provided, only global resources are shown.',
-        default=False)
+        default=False,
+    )
+
+
+def AddMultiScopeListerFlagsIsg(
+    parser, zonal=False, regional=False, global_=False
+):
+  """Adds scope flags as necessary.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser to add arguments to.
+    zonal: bool, whether to add the --zones flag.
+    regional: bool, whether to add the --regions flag.
+    global_: bool, whether to add the --global flag.
+
+  """
+  scope = parser.add_mutually_exclusive_group()
+  if zonal:
+    scope.add_argument(
+        '--zones',
+        metavar='ZONE',
+        help=(
+            'If provided, only zonal resources are shown. '
+            'If arguments are provided, only resources from the given '
+            'zones are shown.'
+        ),
+        type=arg_parsers.ArgList(),
+    )
+  if regional:
+    scope.add_argument(
+        '--regions',
+        metavar='REGION',
+        help=(
+            'If provided, only regional resources are shown. '
+            'If arguments are provided, only resources from the given '
+            'regions are shown.'
+        ),
+        type=arg_parsers.ArgList(),
+    )
+  if global_:
+    scope.add_argument(
+        '--global',
+        action='store_true',
+        help='If provided, only global resources are shown.',
+        default=False,
+    )
 
 
 class _Frontend(object):

@@ -81,7 +81,6 @@ def _AppProfileChecks(
     cluster=None,
     multi_cluster=False,
     restrict_to=None,
-    failover_radius=None,
     transactional_writes=None,
     row_affinity=False,
     data_boost=False,
@@ -95,8 +94,6 @@ def _AppProfileChecks(
       clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster ids for the new app profile to
       route to using multi cluster routing.
-    failover_radius: string, Restricts clusters that requests can fail over to
-      by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
       writes enabled. This is only possible when using single cluster routing.
     row_affinity: bool, Whether to use row affinity sticky routing.
@@ -109,7 +106,6 @@ def _AppProfileChecks(
         If both multi_cluster and transactional_writes are present.
         If both cluster and row_affinity are present.
         If both cluster and restrict_to are present.
-        If both cluster and failover_radius are present.
         If both multi_cluster and data_boost are present.
         If both transactional_writes and data_boost are present.
 
@@ -136,10 +132,6 @@ def _AppProfileChecks(
     raise exceptions.ConflictingArgumentsException(
         '--route-to', '--restrict-to'
     )
-  if cluster and failover_radius:
-    raise exceptions.ConflictingArgumentsException(
-        '--route-to', '--failover-radius'
-    )
 
   # Data Boost.
   if multi_cluster and data_boost:
@@ -158,7 +150,6 @@ def Create(
     description='',
     multi_cluster=False,
     restrict_to=None,
-    failover_radius=None,
     transactional_writes=None,
     row_affinity=False,
     priority=None,
@@ -177,8 +168,6 @@ def Create(
       clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster ids for the new app profile to
       route to using multi cluster routing.
-    failover_radius: string, Restricts clusters that requests can fail over to
-      by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
       writes enabled. This is only possible when using single cluster routing.
     row_affinity: bool, Whether to use row affinity sticky routing.
@@ -200,7 +189,6 @@ def Create(
       cluster=cluster,
       multi_cluster=multi_cluster,
       restrict_to=restrict_to,
-      failover_radius=failover_radius,
       transactional_writes=transactional_writes,
       row_affinity=row_affinity,
       data_boost=data_boost,
@@ -214,15 +202,8 @@ def Create(
   multi_cluster_routing = None
   single_cluster_routing = None
   if multi_cluster:
-    # Default failover radius to ANY_REGION.
-    failover_radius_enum = (
-        msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
-            failover_radius or 'ANY_REGION'
-        )
-    )
     multi_cluster_routing = msgs.MultiClusterRoutingUseAny(
         clusterIds=restrict_to or [],
-        failoverRadius=failover_radius_enum,
         rowAffinity=msgs.RowAffinity() if row_affinity else None,
     )
   elif cluster:
@@ -267,7 +248,6 @@ def Update(
     description='',
     multi_cluster=False,
     restrict_to=None,
-    failover_radius=None,
     transactional_writes=None,
     row_affinity=None,
     priority=None,
@@ -286,8 +266,6 @@ def Update(
       clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster IDs for the app profile to
       route to using multi cluster routing.
-    failover_radius: string, Restricts clusters that requests can fail over to
-      by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
       writes enabled. This is only possible when using single cluster routing.
     row_affinity: bool, Whether to use row affinity sticky routing. If None,
@@ -310,7 +288,6 @@ def Update(
       cluster=cluster,
       multi_cluster=multi_cluster,
       restrict_to=restrict_to,
-      failover_radius=failover_radius,
       transactional_writes=transactional_writes,
       row_affinity=row_affinity,
       data_boost=data_boost,
@@ -331,22 +308,12 @@ def Update(
         allowTransactionalWrites=transactional_writes,
     )
   elif multi_cluster:
-    if failover_radius:
-      changed_fields.append('multiClusterRoutingUseAny.failoverRadius')
-      failover_radius_enum = (
-          msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
-              failover_radius
-          )
-      )
-    else:
-      failover_radius_enum = None
     if restrict_to:
       changed_fields.append('multiClusterRoutingUseAny.clusterIds')
     if row_affinity is not None:
       changed_fields.append('multiClusterRoutingUseAny.rowAffinity')
     app_profile.multiClusterRoutingUseAny = msgs.MultiClusterRoutingUseAny(
         clusterIds=restrict_to or [],
-        failoverRadius=failover_radius_enum,
         rowAffinity=msgs.RowAffinity() if row_affinity else None,
     )
     # If the only update is from single cluster to default multi cluster config,

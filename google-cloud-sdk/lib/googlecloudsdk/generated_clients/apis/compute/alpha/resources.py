@@ -466,6 +466,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'autoscaler'],
       True
   )
+  REGIONBACKENDBUCKETS = (
+      'regionBackendBuckets',
+      'projects/{project}/regions/{region}/backendBuckets/{backendBucket}',
+      {},
+      ['project', 'region', 'backendBucket'],
+      True
+  )
   REGIONBACKENDSERVICES = (
       'regionBackendServices',
       'projects/{project}/regions/{region}/backendServices/{backendService}',

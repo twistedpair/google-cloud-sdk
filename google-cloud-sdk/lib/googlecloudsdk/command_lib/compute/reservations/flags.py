@@ -395,6 +395,27 @@ def GetEnableEmergentMaintenanceFlag():
   )
 
 
+def GetSchedulingTypeFlag():
+  """--scheduling-type flag."""
+  help_text = """\
+  Maintenance for the reserved capacity.
+  """
+  return base.Argument(
+      '--scheduling-type',
+      choices={
+          'GROUPED': (
+              'In GROUPED mode, maintenance on all reserved instances is'
+              ' synchronized.'
+          ),
+          'INDEPENDENT': (
+              'In INDEPENDENT mode, maintenance is not synchronized for this'
+              ' reservation, and each instance has its own maintenance window.'
+          ),
+      },
+      help=help_text,
+  )
+
+
 def AddCreateFlags(
     parser,
     support_fleet=False,

@@ -343,18 +343,6 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
     BadArgumentException: when mutual exclusive configurations of service are
     set at the same time.
   """
-  if (
-      req.service.encryptionConfig
-      and (req.service.encryptionConfig.kmsKey or
-           req.service.encryptionConfig.kmsKeys)
-      and req.service.metadataIntegration.dataCatalogConfig.enabled
-  ):
-    raise exceptions.BadArgumentException(
-        '--data-catalog-sync',
-        'Data Catalog synchronization cannot be used in conjunction with'
-        ' customer-managed encryption keys.',
-    )
-
   return ValidateServiceMutexConfigForV1(unused_ref, unused_args, req)
 
 
@@ -380,16 +368,6 @@ def ValidateServiceMutexConfigForV1(unused_ref, unused_args, req):
         '--kerberos-principal',
         'Kerberos configuration cannot be used in conjunction with'
         ' --network-config-from-file or --consumer-subnetworks.',
-    )
-  if (
-      req.service.encryptionConfig
-      and req.service.encryptionConfig.kmsKey
-      and req.service.metadataIntegration.dataCatalogConfig.enabled
-  ):
-    raise exceptions.BadArgumentException(
-        '--data-catalog-sync',
-        'Data Catalog synchronization cannot be used in conjunction with'
-        ' customer-managed encryption keys.',
     )
   return req
 

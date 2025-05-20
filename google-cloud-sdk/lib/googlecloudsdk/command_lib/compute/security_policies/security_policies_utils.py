@@ -14,10 +14,6 @@
 # limitations under the License.
 """Code that's shared between multiple security policies subcommands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import base64
 import json
 
@@ -192,6 +188,24 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
             .DdosProtectionValueValuesEnum(
                 parsed_security_policy['ddosProtectionConfig']
                 ['ddosProtection'])))
+    if (
+        'ddosAdaptiveProtection'
+        in parsed_security_policy['ddosProtectionConfig']
+    ):
+      security_policy.ddosProtectionConfig.ddosAdaptiveProtection = messages.SecurityPolicyDdosProtectionConfig.DdosAdaptiveProtectionValueValuesEnum(
+          parsed_security_policy['ddosProtectionConfig'][
+              'ddosAdaptiveProtection'
+          ]
+      )
+    if (
+        'ddosImpactedBaselineThreshold'
+        in parsed_security_policy['ddosProtectionConfig']
+    ):
+      security_policy.ddosProtectionConfig.ddosImpactedBaselineThreshold = (
+          parsed_security_policy['ddosProtectionConfig'][
+              'ddosImpactedBaselineThreshold'
+          ]
+      )
   if 'recaptchaOptionsConfig' in parsed_security_policy:
     security_policy.recaptchaOptionsConfig = (
         messages.SecurityPolicyRecaptchaOptionsConfig())
@@ -606,6 +620,44 @@ def CreateDdosProtectionConfig(client, args, existing_ddos_protection_config):
     ddos_protection_config.ddosProtection = (
         messages.SecurityPolicyDdosProtectionConfig
         .DdosProtectionValueValuesEnum(args.network_ddos_protection))
+
+  return ddos_protection_config
+
+
+def CreateDdosProtectionConfigWithDdosAdaptiveProtection(
+    client, args, existing_ddos_protection_config
+):
+  """Returns a SecurityPolicyDdosProtectionConfig message."""
+
+  messages = client.messages
+  ddos_protection_config = (
+      existing_ddos_protection_config
+      if existing_ddos_protection_config is not None
+      else messages.SecurityPolicyDdosProtectionConfig()
+  )
+  if args.IsSpecified('network_ddos_adaptive_protection'):
+    ddos_protection_config.ddosAdaptiveProtection = messages.SecurityPolicyDdosProtectionConfig.DdosAdaptiveProtectionValueValuesEnum(
+        args.network_ddos_adaptive_protection
+    )
+
+  return ddos_protection_config
+
+
+def CreateDdosProtectionConfigWithNetworkDdosImpactedBaselineThreshold(
+    client, args, existing_ddos_protection_config
+):
+  """Returns a SecurityPolicyDdosProtectionConfig message."""
+
+  messages = client.messages
+  ddos_protection_config = (
+      existing_ddos_protection_config
+      if existing_ddos_protection_config is not None
+      else messages.SecurityPolicyDdosProtectionConfig()
+  )
+  if args.IsSpecified('network_ddos_impacted_baseline_threshold'):
+    ddos_protection_config.ddosImpactedBaselineThreshold = (
+        args.network_ddos_impacted_baseline_threshold
+    )
 
   return ddos_protection_config
 

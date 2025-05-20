@@ -78,6 +78,20 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BatchCreatePullRequestCommentsRequest(_messages.Message):
+  r"""The request to batch create pull request comments.
+
+  Fields:
+    requests: Required. The request message specifying the resources to
+      create. There should be exactly one CreatePullRequestCommentRequest with
+      CommentDetail being REVIEW in the list, and no more than 100
+      CreatePullRequestCommentRequests with CommentDetail being CODE in the
+      list
+  """
+
+  requests = _messages.MessageField('CreatePullRequestCommentRequest', 1, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -163,6 +177,18 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class Branch(_messages.Message):
+  r"""Branch represents a branch involved in a pull request.
+
+  Fields:
+    ref: Required. Name of the branch.
+    sha: Output only. The commit at the tip of the branch.
+  """
+
+  ref = _messages.StringField(1)
+  sha = _messages.StringField(2)
 
 
 class BranchRule(_messages.Message):
@@ -265,6 +291,69 @@ class Check(_messages.Message):
   context = _messages.StringField(1)
 
 
+class CloseIssueRequest(_messages.Message):
+  r"""The request to close an issue.
+
+  Fields:
+    etag: Optional. The current etag of the issue. If the etag is provided and
+      does not match the current etag of the issue, closing will be blocked
+      and an ABORTED error will be returned.
+  """
+
+  etag = _messages.StringField(1)
+
+
+class ClosePullRequestRequest(_messages.Message):
+  r"""ClosePullRequestRequest is the request to close a pull request."""
+
+
+class Code(_messages.Message):
+  r"""The comment on a code line.
+
+  Fields:
+    body: Required. The comment body.
+    effectiveCommitSha: Output only. The effective commit sha this code
+      comment is pointing to.
+    effectiveRootComment: Output only. The root comment of the conversation,
+      derived from the reply field.
+    position: Optional. The position of the comment.
+    reply: Optional. Input only. The PullRequestComment resource name that
+      this comment is replying to.
+    resolved: Output only. Boolean indicator if the comment is resolved.
+  """
+
+  body = _messages.StringField(1)
+  effectiveCommitSha = _messages.StringField(2)
+  effectiveRootComment = _messages.StringField(3)
+  position = _messages.MessageField('Position', 4)
+  reply = _messages.StringField(5)
+  resolved = _messages.BooleanField(6)
+
+
+class Comment(_messages.Message):
+  r"""The general pull request comment.
+
+  Fields:
+    body: Required. The comment body.
+  """
+
+  body = _messages.StringField(1)
+
+
+class CreatePullRequestCommentRequest(_messages.Message):
+  r"""The request to create a pull request comment.
+
+  Fields:
+    parent: Required. The pull request in which to create the pull request
+      comment. Format: `projects/{project_number}/locations/{location_id}/repo
+      sitories/{repository_id}/pullRequests/{pull_request_id}`
+    pullRequestComment: Required. The pull request comment to create.
+  """
+
+  parent = _messages.StringField(1)
+  pullRequestComment = _messages.MessageField('PullRequestComment', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -308,6 +397,115 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FetchBlobResponse(_messages.Message):
+  r"""Response message containing the content of a blob.
+
+  Fields:
+    content: The content of the blob, encoded as base64.
+    sha: The SHA-1 hash of the blob.
+  """
+
+  content = _messages.StringField(1)
+  sha = _messages.StringField(2)
+
+
+class FetchTreeResponse(_messages.Message):
+  r"""Response message containing a list of TreeEntry objects.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    treeEntries: The list of TreeEntry objects.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  treeEntries = _messages.MessageField('TreeEntry', 2, repeated=True)
+
+
+class FileDiff(_messages.Message):
+  r"""Metadata of a FileDiff. FileDiff represents a single file diff in a pull
+  request.
+
+  Enums:
+    ActionValueValuesEnum: Output only. The action taken on the file (eg.
+      added, modified, deleted).
+
+  Fields:
+    action: Output only. The action taken on the file (eg. added, modified,
+      deleted).
+    name: Output only. The name of the file.
+    patch: Output only. The git patch containing the file changes.
+    sha: Output only. The commit pointing to the file changes.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Output only. The action taken on the file (eg. added, modified,
+    deleted).
+
+    Values:
+      ACTION_UNSPECIFIED: Unspecified.
+      ADDED: The file was added.
+      MODIFIED: The file was modified.
+      DELETED: The file was deleted.
+    """
+    ACTION_UNSPECIFIED = 0
+    ADDED = 1
+    MODIFIED = 2
+    DELETED = 3
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  patch = _messages.StringField(3)
+  sha = _messages.StringField(4)
+
+
+class Hook(_messages.Message):
+  r"""Metadata of a Secure Source Manager Hook.
+
+  Enums:
+    EventsValueListEntryValuesEnum:
+
+  Fields:
+    createTime: Output only. Create timestamp.
+    disabled: Optional. Determines if the hook disabled or not. Set to true to
+      stop sending traffic.
+    events: Optional. The events that trigger hook on.
+    name: Identifier. A unique identifier for a Hook. The name should be of
+      the format: `projects/{project}/locations/{location_id}/repositories/{re
+      pository_id}/hooks/{hook_id}`
+    pushOption: Optional. The trigger option for push events.
+    sensitiveQueryString: Optional. The sensitive query string to be appended
+      to the target URI.
+    targetUri: Required. The target URI to which the payloads will be
+      delivered.
+    uid: Output only. Unique identifier of the hook.
+    updateTime: Output only. Update timestamp.
+  """
+
+  class EventsValueListEntryValuesEnum(_messages.Enum):
+    r"""EventsValueListEntryValuesEnum enum type.
+
+    Values:
+      UNSPECIFIED: Unspecified.
+      PUSH: Push events are triggered when pushing to the repository.
+      PULL_REQUEST: Pull request events are triggered when a pull request is
+        opened, closed, reopened, or edited.
+    """
+    UNSPECIFIED = 0
+    PUSH = 1
+    PULL_REQUEST = 2
+
+  createTime = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  events = _messages.EnumField('EventsValueListEntryValuesEnum', 3, repeated=True)
+  name = _messages.StringField(4)
+  pushOption = _messages.MessageField('PushOption', 5)
+  sensitiveQueryString = _messages.StringField(6)
+  targetUri = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class HostConfig(_messages.Message):
@@ -568,6 +766,68 @@ class Instance(_messages.Message):
   workforceIdentityFederationConfig = _messages.MessageField('WorkforceIdentityFederationConfig', 10)
 
 
+class Issue(_messages.Message):
+  r"""Metadata of an Issue.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the issue.
+
+  Fields:
+    body: Optional. Issue body. Provides a detailed description of the issue.
+    closeTime: Output only. Close timestamp (if closed). Cleared when is re-
+      opened.
+    createTime: Output only. Creation timestamp.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    name: Identifier. Unique identifier for an issue. The issue id is
+      generated by the server. Format: projects/{project}/locations/{location}
+      /repositories/{repository}/issues/{issue_id}
+    state: Output only. State of the issue.
+    title: Required. Issue title.
+    updateTime: Output only. Last updated timestamp.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the issue.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      OPEN: An open issue.
+      CLOSED: A closed issue.
+    """
+    STATE_UNSPECIFIED = 0
+    OPEN = 1
+    CLOSED = 2
+
+  body = _messages.StringField(1)
+  closeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  title = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class IssueComment(_messages.Message):
+  r"""IssueComment represents a comment on an issue.
+
+  Fields:
+    body: Required. The comment body.
+    createTime: Output only. Creation timestamp.
+    name: Identifier. Unique identifier for an issue comment. The comment id
+      is generated by the server. Format: projects/{project}/locations/{locati
+      on}/repositories/{repository}/issues/{issue}/issueComments/{comment_id}
+    updateTime: Output only. Last updated timestamp.
+  """
+
+  body = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
 class IssueRedirectTicketInternalRequest(_messages.Message):
   r"""IssueRedirectTicketInternalRequest is the request to issue a redirect
   ticket for an instance. For internal use only.
@@ -602,6 +862,19 @@ class ListBranchRulesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListHooksResponse(_messages.Message):
+  r"""ListHooksResponse is response to list hooks.
+
+  Fields:
+    hooks: The list of hooks.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  hooks = _messages.MessageField('Hook', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListInstancesResponse(_messages.Message):
   r"""A ListInstancesResponse object.
 
@@ -615,6 +888,32 @@ class ListInstancesResponse(_messages.Message):
   instances = _messages.MessageField('Instance', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListIssueCommentsResponse(_messages.Message):
+  r"""The response to list issue comments.
+
+  Fields:
+    issueComments: The list of issue comments.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  issueComments = _messages.MessageField('IssueComment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListIssuesResponse(_messages.Message):
+  r"""The response to list issues.
+
+  Fields:
+    issues: The list of issues.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  issues = _messages.MessageField('Issue', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -641,6 +940,46 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPullRequestCommentsResponse(_messages.Message):
+  r"""The response to list pull request comments.
+
+  Fields:
+    nextPageToken: A token to set as page_token to retrieve the next page. If
+      this field is omitted, there are no subsequent pages.
+    pullRequestComments: The list of pull request comments.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pullRequestComments = _messages.MessageField('PullRequestComment', 2, repeated=True)
+
+
+class ListPullRequestFileDiffsResponse(_messages.Message):
+  r"""ListPullRequestFileDiffsResponse is the response containing file diffs
+  returned from ListPullRequestFileDiffs.
+
+  Fields:
+    fileDiffs: The list of pull request file diffs.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  fileDiffs = _messages.MessageField('FileDiff', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListPullRequestsResponse(_messages.Message):
+  r"""ListPullRequestsResponse is the response to list pull requests.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    pullRequests: The list of pull requests.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pullRequests = _messages.MessageField('PullRequest', 2, repeated=True)
 
 
 class ListRepositoriesResponse(_messages.Message):
@@ -734,6 +1073,26 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class MergePullRequestRequest(_messages.Message):
+  r"""MergePullRequestRequest is the request to merge a pull request."""
+
+
+class OpenIssueRequest(_messages.Message):
+  r"""The request to open an issue.
+
+  Fields:
+    etag: Optional. The current etag of the issue. If the etag is provided and
+      does not match the current etag of the issue, opening will be blocked
+      and an ABORTED error will be returned.
+  """
+
+  etag = _messages.StringField(1)
+
+
+class OpenPullRequestRequest(_messages.Message):
+  r"""OpenPullRequestRequest is the request to open a pull request."""
 
 
 class Operation(_messages.Message):
@@ -949,11 +1308,24 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Position(_messages.Message):
+  r"""The position of the code comment.
+
+  Fields:
+    line: Required. The line number of the comment. Positive value means it's
+      on the new side of the diff, negative value means it's on the old side.
+    path: Required. The path of the file.
+  """
+
+  line = _messages.IntegerField(1)
+  path = _messages.StringField(2)
+
+
 class PrivateConfig(_messages.Message):
   r"""PrivateConfig includes settings for private instance.
 
   Fields:
-    caPool: Required. Immutable. CA pool resource, resource must in the format
+    caPool: Optional. Immutable. CA pool resource, resource must in the format
       of `projects/{project}/locations/{location}/caPools/{ca_pool}`.
     httpServiceAttachment: Output only. Service Attachment for HTTP, resource
       is in the format of `projects/{project}/regions/{region}/serviceAttachme
@@ -972,6 +1344,92 @@ class PrivateConfig(_messages.Message):
   isPrivate = _messages.BooleanField(3)
   pscAllowedProjects = _messages.StringField(4, repeated=True)
   sshServiceAttachment = _messages.StringField(5)
+
+
+class PullRequest(_messages.Message):
+  r"""Metadata of a PullRequest. PullRequest is the request from a user to
+  merge a branch (head) into another branch (base).
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the pull request (open, closed
+      or merged).
+
+  Fields:
+    base: Required. The branch to merge changes in.
+    body: Optional. The pull request body. Provides a detailed description of
+      the changes.
+    closeTime: Output only. Close timestamp (if closed or merged). Cleared
+      when pull request is re-opened.
+    createTime: Output only. Creation timestamp.
+    head: Immutable. The branch containing the changes to be merged.
+    name: Output only. A unique identifier for a PullRequest. The number
+      appended at the end is generated by the server. Format: projects/{projec
+      t}/locations/{location}/repositories/{repository}/pullRequests/{pull_num
+      ber}
+    state: Output only. State of the pull request (open, closed or merged).
+    title: Required. The pull request title.
+    updateTime: Output only. Last updated timestamp.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the pull request (open, closed or merged).
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      OPEN: An open pull request.
+      CLOSED: A closed pull request.
+      MERGED: A merged pull request.
+    """
+    STATE_UNSPECIFIED = 0
+    OPEN = 1
+    CLOSED = 2
+    MERGED = 3
+
+  base = _messages.MessageField('Branch', 1)
+  body = _messages.StringField(2)
+  closeTime = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  head = _messages.MessageField('Branch', 5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  title = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class PullRequestComment(_messages.Message):
+  r"""PullRequestComment represents a comment on a pull request.
+
+  Fields:
+    code: Optional. The comment on a code line.
+    comment: Optional. The general pull request comment.
+    createTime: Output only. Creation timestamp.
+    name: Identifier. Unique identifier for the pull request comment. The
+      comment id is generated by the server. Format: projects/{project}/locati
+      ons/{location}/repositories/{repository}/pullRequests/{pull_request}/pul
+      lRequestComments/{comment_id}
+    review: Optional. The review summary comment.
+    updateTime: Output only. Last updated timestamp.
+  """
+
+  code = _messages.MessageField('Code', 1)
+  comment = _messages.MessageField('Comment', 2)
+  createTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  review = _messages.MessageField('Review', 5)
+  updateTime = _messages.StringField(6)
+
+
+class PushOption(_messages.Message):
+  r"""A PushOption object.
+
+  Fields:
+    branchFilter: Optional. Trigger hook for matching branches only. Specified
+      as glob pattern. If empty or *, events for all branches are reported.
+      Examples: main, {main,release*}. See
+      https://pkg.go.dev/github.com/gobwas/glob documentation.
+  """
+
+  branchFilter = _messages.StringField(1)
 
 
 class Repository(_messages.Message):
@@ -1008,6 +1466,56 @@ class Repository(_messages.Message):
   uid = _messages.StringField(7)
   updateTime = _messages.StringField(8)
   uris = _messages.MessageField('URIs', 9)
+
+
+class ResolvePullRequestCommentsRequest(_messages.Message):
+  r"""The request to resolve multiple pull request comments.
+
+  Fields:
+    autoFill: Optional. If set, at least one comment in a thread is required,
+      rest of the comments in the same thread will be automatically updated to
+      resolved. If unset, all comments in the same thread need be present.
+    names: Required. The names of the pull request comments to resolve.
+      Format: `projects/{project_number}/locations/{location_id}/repositories/
+      {repository_id}/pullRequests/{pull_request_id}/pullRequestComments/{comm
+      ent_id}` Only comments from the same threads are allowed in the same
+      request.
+  """
+
+  autoFill = _messages.BooleanField(1)
+  names = _messages.StringField(2, repeated=True)
+
+
+class Review(_messages.Message):
+  r"""The review summary comment.
+
+  Enums:
+    ActionTypeValueValuesEnum: Required. The review action type.
+
+  Fields:
+    actionType: Required. The review action type.
+    body: Optional. The comment body.
+    effectiveCommitSha: Output only. The effective commit sha this review is
+      pointing to.
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The review action type.
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: Unspecified.
+      COMMENT: A general review comment.
+      CHANGE_REQUESTED: Change required from this review.
+      APPROVED: Change approved from this review.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    COMMENT = 1
+    CHANGE_REQUESTED = 2
+    APPROVED = 3
+
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
+  body = _messages.StringField(2)
+  effectiveCommitSha = _messages.StringField(3)
 
 
 class SecuresourcemanagerProjectsLocationsGetRequest(_messages.Message):
@@ -1389,6 +1897,47 @@ class SecuresourcemanagerProjectsLocationsRepositoriesDeleteRequest(_messages.Me
   name = _messages.StringField(2, required=True)
 
 
+class SecuresourcemanagerProjectsLocationsRepositoriesFetchBlobRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesFetchBlobRequest
+  object.
+
+  Fields:
+    repository: Required. The format is projects/{project_number}/locations/{l
+      ocation_id}/repositories/{repository_id}. Specifies the repository
+      containing the blob.
+    sha: Required. The SHA-1 hash of the blob to retrieve.
+  """
+
+  repository = _messages.StringField(1, required=True)
+  sha = _messages.StringField(2)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesFetchTreeRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesFetchTreeRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, at most 10,000 items will be returned.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    recursive: Optional. If true, include all subfolders and their files in
+      the response. If false, only the immediate children are returned.
+    ref: Optional. `ref` can be a SHA-1 hash, a branch name, or a tag.
+      Specifies which tree to fetch. If not specified, the default branch will
+      be used.
+    repository: Required. The format is `projects/{project_number}/locations/{
+      location_id}/repositories/{repository_id}`. Specifies the repository to
+      fetch the tree from.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  recursive = _messages.BooleanField(3)
+  ref = _messages.StringField(4)
+  repository = _messages.StringField(5, required=True)
+
+
 class SecuresourcemanagerProjectsLocationsRepositoriesGetIamPolicyRequest(_messages.Message):
   r"""A SecuresourcemanagerProjectsLocationsRepositoriesGetIamPolicyRequest
   object.
@@ -1428,6 +1977,289 @@ class SecuresourcemanagerProjectsLocationsRepositoriesGetRequest(_messages.Messa
   name = _messages.StringField(1, required=True)
 
 
+class SecuresourcemanagerProjectsLocationsRepositoriesHooksCreateRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesHooksCreateRequest
+  object.
+
+  Fields:
+    hook: A Hook resource to be passed as the request body.
+    hookId: Required. The ID to use for the hook, which will become the final
+      component of the hook's resource name. This value restricts to lower-
+      case letters, numbers, and hyphen, with the first character a letter,
+      the last a letter or a number, and a 63 character maximum.
+    parent: Required. The repository in which to create the hook. Values are
+      of the form `projects/{project_number}/locations/{location_id}/repositor
+      ies/{repository_id}`
+  """
+
+  hook = _messages.MessageField('Hook', 1)
+  hookId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesHooksDeleteRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesHooksDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the hook to delete. The format is projects/{projec
+      t_number}/locations/{location_id}/repositories/{repository_id}/hooks/{ho
+      ok_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesHooksGetRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesHooksGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the hook to retrieve. The format is `projects/{pro
+      ject_number}/locations/{location_id}/repositories/{repository_id}/hooks/
+      {hook_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesHooksListRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesHooksListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListHooksRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesHooksPatchRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesHooksPatchRequest
+  object.
+
+  Fields:
+    hook: A Hook resource to be passed as the request body.
+    name: Identifier. A unique identifier for a Hook. The name should be of
+      the format: `projects/{project}/locations/{location_id}/repositories/{re
+      pository_id}/hooks/{hook_id}`
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the hook resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. The special value "*"
+      means full replacement.
+  """
+
+  hook = _messages.MessageField('Hook', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesCloseRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesCloseRequest
+  object.
+
+  Fields:
+    closeIssueRequest: A CloseIssueRequest resource to be passed as the
+      request body.
+    name: Required. Name of the issue to close. The format is projects/{projec
+      t_number}/locations/{location_id}/repositories/{repository_id}/issues/{i
+      ssue_id}.
+  """
+
+  closeIssueRequest = _messages.MessageField('CloseIssueRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesCreateRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesCreateRequest
+  object.
+
+  Fields:
+    issue: A Issue resource to be passed as the request body.
+    parent: Required. The repository in which to create the issue. Format: `pr
+      ojects/{project_number}/locations/{location_id}/repositories/{repository
+      _id}`
+  """
+
+  issue = _messages.MessageField('Issue', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesDeleteRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The current etag of the issue. If the etag is provided and
+      does not match the current etag of the issue, deletion will be blocked
+      and an ABORTED error will be returned.
+    name: Required. Name of the issue to delete. The format is projects/{proje
+      ct_number}/locations/{location_id}/repositories/{repository_id}/issues/{
+      issue_id}.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesGetRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the issue to retrieve. The format is `projects/{pr
+      oject}/locations/{location}/repositories/{repository}/issues/{issue_id}`
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsCreateRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsCre
+  ateRequest object.
+
+  Fields:
+    issueComment: A IssueComment resource to be passed as the request body.
+    parent: Required. The issue in which to create the issue comment. Format:
+      `projects/{project_number}/locations/{location_id}/repositories/{reposit
+      ory_id}/issues/{issue_id}`
+  """
+
+  issueComment = _messages.MessageField('IssueComment', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsDeleteRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsDel
+  eteRequest object.
+
+  Fields:
+    name: Required. Name of the issue comment to delete. The format is project
+      s/{project_number}/locations/{location_id}/repositories/{repository_id}/
+      issues/{issue_id}/issueComments/{comment_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsGetRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsGet
+  Request object.
+
+  Fields:
+    name: Required. Name of the issue comment to retrieve. The format is `proj
+      ects/{project}/locations/{location}/repositories/{repository}/issues/{is
+      sue_id}/issueComments/{comment_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsListRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsLis
+  tRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The issue in which to list the comments. Format: `projec
+      ts/{project_number}/locations/{location_id}/repositories/{repository_id}
+      /issues/{issue_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsPatchRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesIssueCommentsPat
+  chRequest object.
+
+  Fields:
+    issueComment: A IssueComment resource to be passed as the request body.
+    name: Identifier. Unique identifier for an issue comment. The comment id
+      is generated by the server. Format: projects/{project}/locations/{locati
+      on}/repositories/{repository}/issues/{issue}/issueComments/{comment_id}
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the issue comment resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. The special
+      value "*" means full replacement.
+  """
+
+  issueComment = _messages.MessageField('IssueComment', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesListRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesListRequest
+  object.
+
+  Fields:
+    filter: Optional. Used to filter the resulting issues list.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The repository in which to list issues. Format: `project
+      s/{project_number}/locations/{location_id}/repositories/{repository_id}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesOpenRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesOpenRequest
+  object.
+
+  Fields:
+    name: Required. Name of the issue to open. The format is projects/{project
+      _number}/locations/{location_id}/repositories/{repository_id}/issues/{is
+      sue_id}.
+    openIssueRequest: A OpenIssueRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  openIssueRequest = _messages.MessageField('OpenIssueRequest', 2)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesIssuesPatchRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesIssuesPatchRequest
+  object.
+
+  Fields:
+    issue: A Issue resource to be passed as the request body.
+    name: Identifier. Unique identifier for an issue. The issue id is
+      generated by the server. Format: projects/{project}/locations/{location}
+      /repositories/{repository}/issues/{issue_id}
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the issue resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. The special value "*"
+      means full replacement.
+  """
+
+  issue = _messages.MessageField('Issue', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Message):
   r"""A SecuresourcemanagerProjectsLocationsRepositoriesListRequest object.
 
@@ -1450,6 +2282,282 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCloseRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCloseRequest
+  object.
+
+  Fields:
+    closePullRequestRequest: A ClosePullRequestRequest resource to be passed
+      as the request body.
+    name: Required. The pull request to close. Format: `projects/{project_numb
+      er}/locations/{location_id}/repositories/{repository_id}/pullRequests/{p
+      ull_request_id}`
+  """
+
+  closePullRequestRequest = _messages.MessageField('ClosePullRequestRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCreateRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The repository that the pull request is created from.
+      Format: `projects/{project_number}/locations/{location_id}/repositories/
+      {repository_id}`
+    pullRequest: A PullRequest resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pullRequest = _messages.MessageField('PullRequest', 2)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsGetRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the pull request to retrieve. The format is `proje
+      cts/{project}/locations/{location}/repositories/{repository}/pullRequest
+      s/{pull_request}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListFileDiffsRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListFileDi
+  ffsRequest object.
+
+  Fields:
+    name: Required. The pull request to list file diffs for. Format: `projects
+      /{project_number}/locations/{location_id}/repositories/{repository_id}/p
+      ullRequests/{pull_request_id}`
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The repository in which to list pull requests. Format: `
+      projects/{project_number}/locations/{location_id}/repositories/{reposito
+      ry_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsMergeRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsMergeRequest
+  object.
+
+  Fields:
+    mergePullRequestRequest: A MergePullRequestRequest resource to be passed
+      as the request body.
+    name: Required. The pull request to merge. Format: `projects/{project_numb
+      er}/locations/{location_id}/repositories/{repository_id}/pullRequests/{p
+      ull_request_id}`
+  """
+
+  mergePullRequestRequest = _messages.MessageField('MergePullRequestRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsOpenRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsOpenRequest
+  object.
+
+  Fields:
+    name: Required. The pull request to open. Format: `projects/{project_numbe
+      r}/locations/{location_id}/repositories/{repository_id}/pullRequests/{pu
+      ll_request_id}`
+    openPullRequestRequest: A OpenPullRequestRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  openPullRequestRequest = _messages.MessageField('OpenPullRequestRequest', 2)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPatchRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPatchRequest
+  object.
+
+  Fields:
+    name: Output only. A unique identifier for a PullRequest. The number
+      appended at the end is generated by the server. Format: projects/{projec
+      t}/locations/{location}/repositories/{repository}/pullRequests/{pull_num
+      ber}
+    pullRequest: A PullRequest resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the pull request resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. The special
+      value "*" means full replacement.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pullRequest = _messages.MessageField('PullRequest', 2)
+  updateMask = _messages.StringField(3)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsBatchCreateRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsBatchCreateRequest object.
+
+  Fields:
+    batchCreatePullRequestCommentsRequest: A
+      BatchCreatePullRequestCommentsRequest resource to be passed as the
+      request body.
+    parent: Required. The pull request in which to create the pull request
+      comments. Format: `projects/{project_number}/locations/{location_id}/rep
+      ositories/{repository_id}/pullRequests/{pull_request_id}`
+  """
+
+  batchCreatePullRequestCommentsRequest = _messages.MessageField('BatchCreatePullRequestCommentsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsCreateRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsCreateRequest object.
+
+  Fields:
+    parent: Required. The pull request in which to create the pull request
+      comment. Format: `projects/{project_number}/locations/{location_id}/repo
+      sitories/{repository_id}/pullRequests/{pull_request_id}`
+    pullRequestComment: A PullRequestComment resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pullRequestComment = _messages.MessageField('PullRequestComment', 2)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsDeleteRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the pull request comment to delete. The format is
+      `projects/{project_number}/locations/{location_id}/repositories/{reposit
+      ory_id}/pullRequests/{pull_request_id}/pullRequestComments/{comment_id}`
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsGetRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the pull request comment to retrieve. The format
+      is `projects/{project_number}/locations/{location_id}/repositories/{repo
+      sitory_id}/pullRequests/{pull_request_id}/pullRequestComments/{comment_i
+      d}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsListRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. If unspecified, at most 100 pull
+      request comments will be returned. The maximum value is 100; values
+      above 100 will be coerced to 100.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The pull request in which to list pull request comments.
+      Format: `projects/{project_number}/locations/{location_id}/repositories/
+      {repository_id}/pullRequests/{pull_request_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsPatchRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsPatchRequest object.
+
+  Fields:
+    name: Identifier. Unique identifier for the pull request comment. The
+      comment id is generated by the server. Format: projects/{project}/locati
+      ons/{location}/repositories/{repository}/pullRequests/{pull_request}/pul
+      lRequestComments/{comment_id}
+    pullRequestComment: A PullRequestComment resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the pull request comment resource by the update.
+      Updatable fields are `body`.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pullRequestComment = _messages.MessageField('PullRequestComment', 2)
+  updateMask = _messages.StringField(3)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsResolveRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsResolveRequest object.
+
+  Fields:
+    parent: Required. The pull request in which to resolve the pull request
+      comments. Format: `projects/{project_number}/locations/{location_id}/rep
+      ositories/{repository_id}/pullRequests/{pull_request_id}`
+    resolvePullRequestCommentsRequest: A ResolvePullRequestCommentsRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  resolvePullRequestCommentsRequest = _messages.MessageField('ResolvePullRequestCommentsRequest', 2)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullRequestCommentsUnresolveRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsPullReques
+  tCommentsUnresolveRequest object.
+
+  Fields:
+    parent: Required. The pull request in which to resolve the pull request
+      comments. Format: `projects/{project_number}/locations/{location_id}/rep
+      ositories/{repository_id}/pullRequests/{pull_request_id}`
+    unresolvePullRequestCommentsRequest: A UnresolvePullRequestCommentsRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  unresolvePullRequestCommentsRequest = _messages.MessageField('UnresolvePullRequestCommentsRequest', 2)
 
 
 class SecuresourcemanagerProjectsLocationsRepositoriesSetIamPolicyRequest(_messages.Message):
@@ -1642,6 +2750,48 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TreeEntry(_messages.Message):
+  r"""Represents an entry within a tree structure (like a Git tree).
+
+  Enums:
+    TypeValueValuesEnum: Output only. The type of the object (TREE, BLOB,
+      COMMIT). Output-only.
+
+  Fields:
+    mode: Output only. The file mode as a string (e.g., "100644"). Indicates
+      file type. Output-only.
+    path: Output only. The path of the file or directory within the tree
+      (e.g., "src/main/java/MyClass.java"). Output-only.
+    sha: Output only. The SHA-1 hash of the object (unique identifier).
+      Output-only.
+    size: Output only. The size of the object in bytes (only for blobs).
+      Output-only.
+    type: Output only. The type of the object (TREE, BLOB, COMMIT). Output-
+      only.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the object (TREE, BLOB, COMMIT). Output-only.
+
+    Values:
+      OBJECT_TYPE_UNSPECIFIED: Default value, indicating the object type is
+        unspecified.
+      TREE: Represents a directory (folder).
+      BLOB: Represents a file (contains file data).
+      COMMIT: Represents a pointer to another repository (submodule).
+    """
+    OBJECT_TYPE_UNSPECIFIED = 0
+    TREE = 1
+    BLOB = 2
+    COMMIT = 3
+
+  mode = _messages.StringField(1)
+  path = _messages.StringField(2)
+  sha = _messages.StringField(3)
+  size = _messages.IntegerField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
 class URIs(_messages.Message):
   r"""URIs for the repository.
 
@@ -1655,6 +2805,24 @@ class URIs(_messages.Message):
   api = _messages.StringField(1)
   gitHttps = _messages.StringField(2)
   html = _messages.StringField(3)
+
+
+class UnresolvePullRequestCommentsRequest(_messages.Message):
+  r"""The request to unresolve multiple pull request comments.
+
+  Fields:
+    autoFill: Optional. If set, at least one comment in a thread is required,
+      rest of the comments in the same thread will be automatically updated to
+      unresolved. If unset, all comments in the same thread need be present.
+    names: Required. The names of the pull request comments to unresolve.
+      Format: `projects/{project_number}/locations/{location_id}/repositories/
+      {repository_id}/pullRequests/{pull_request_id}/pullRequestComments/{comm
+      ent_id}` Only comments from the same threads are allowed in the same
+      request.
+  """
+
+  autoFill = _messages.BooleanField(1)
+  names = _messages.StringField(2, repeated=True)
 
 
 class WorkforceIdentityFederationConfig(_messages.Message):

@@ -84,8 +84,8 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
 
   Fields:
     name: Required. The unique ID for the user in format `users/{user}`.
-    projectId: The project ID of the Google Cloud Platform project.
-    systemId: A system ID for filtering the results of the request.
+    projectId: Required. The project ID of the Google Cloud Platform project.
+    systemId: Optional. A system ID for filtering the results of the request.
   """
 
   name = _messages.StringField(1, required=True)
@@ -167,8 +167,8 @@ class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
       are identified by their SHA-256 fingerprint. The fingerprint of the
       public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
     sshPublicKey: A SshPublicKey resource to be passed as the request body.
-    updateMask: Mask to control which fields get updated. Updates all if not
-      present.
+    updateMask: Optional. Mask to control which fields get updated. Updates
+      all if not present.
   """
 
   name = _messages.StringField(1, required=True)

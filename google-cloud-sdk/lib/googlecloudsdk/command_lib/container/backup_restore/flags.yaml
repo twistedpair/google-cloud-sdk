@@ -177,8 +177,8 @@ backup_destination_project:
   help_text: |
     The project where Backups are allowed to be created.
     The format is `projects/{project}`.
-    Currently, {project} can only be the project number.
-    e.g. `projects/1234567890`.
+    Project can be project number or project ID.
+    E.g. `projects/1234567890` or `projects/my-project`.
 
 delete_lock_days:
   arg_name: delete-lock-days
@@ -265,8 +265,8 @@ restore_destination_project:
   help_text: |
     The project where Restores are allowed to be created.
     The format is `projects/{project}`.
-    Currently, {project} can only be the project number.
-    e.g. `projects/1234567890`.
+    Project can be project number or project ID.
+    E.g. `projects/1234567890` or `projects/my-project`.
 
 volume_data_restore_policy:
   arg_name: volume-data-restore-policy

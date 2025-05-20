@@ -171,6 +171,9 @@ class AzureBlobStorageData(_messages.Message):
       azure#secret_manager) for more information. If `credentials_secret` is
       specified, do not specify azure_credentials. Format:
       `projects/{project_number}/secrets/{secret_name}`
+    federatedIdentityConfig: Optional. Federated identity config of a user
+      registered Azure application. If `federated_identity_config` is
+      specified, do not specify azure_credentials or credentials_secret.
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
@@ -180,8 +183,9 @@ class AzureBlobStorageData(_messages.Message):
   azureCredentials = _messages.MessageField('AzureCredentials', 1)
   container = _messages.StringField(2)
   credentialsSecret = _messages.StringField(3)
-  path = _messages.StringField(4)
-  storageAccount = _messages.StringField(5)
+  federatedIdentityConfig = _messages.MessageField('FederatedIdentityConfig', 4)
+  path = _messages.StringField(5)
+  storageAccount = _messages.StringField(6)
 
 
 class AzureCredentials(_messages.Message):
@@ -412,6 +416,29 @@ class EventStream(_messages.Message):
   name = _messages.StringField(3)
 
 
+class FederatedIdentityConfig(_messages.Message):
+  r"""Identities of a user registered Azure application that enables identity
+  federation to trust tokens issued by the user's Google service account. For
+  more information about Azure application and identity federation, see
+  [Register an application with the Microsoft identity platform]
+  (https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-
+  register-app) Azure RBAC roles then need be assigned to the Azure
+  application to authorize access to the user's Azure data source. For more
+  information about Azure RBAC roles for blobs, see [Manage Access Rights with
+  RBAC] (https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-
+  with-azure-active-directory#manage-access-rights-with-rbac)
+
+  Fields:
+    clientId: Required. Client (application) ID of the application with
+      federated credentials.
+    tenantId: Required. Tenant (directory) ID of the application with
+      federated credentials.
+  """
+
+  clientId = _messages.StringField(1)
+  tenantId = _messages.StringField(2)
+
+
 class GcsData(_messages.Message):
   r"""In a GcsData resource, an object's name is the Cloud Storage object's
   name and its "last modification time" refers to the object's `updated`
@@ -490,8 +517,9 @@ class HttpData(_messages.Message):
 
   Fields:
     listUrl: Required. The URL that points to the file that stores the object
-      list entries. This file must allow public access. Currently, only URLs
-      with HTTP and HTTPS schemes are supported.
+      list entries. This file must allow public access. The URL is either an
+      HTTP/HTTPS address (e.g. `https://example.com/urllist.tsv`) or a Cloud
+      Storage path (e.g. `gs://my-bucket/urllist.tsv`).
   """
 
   listUrl = _messages.StringField(1)
@@ -908,8 +936,14 @@ class ObjectConditions(_messages.Message):
   modification time" refers to the time of the last change to the object's
   content or metadata - specifically, this is the `updated` property of Cloud
   Storage objects, the `LastModified` field of S3 objects, and the `Last-
-  Modified` header of Azure blobs. Transfers with a PosixFilesystem source or
-  destination don't support `ObjectConditions`.
+  Modified` header of Azure blobs. For S3 objects, the `LastModified` value is
+  the time the object begins uploading. If the object meets your "last
+  modification time" criteria, but has not finished uploading, the object is
+  not transferred. See [Transfer from Amazon S3 to Cloud
+  Storage](https://cloud.google.com/storage-transfer/docs/create-
+  transfers/agentless/s3#transfer_options) for more information. Transfers
+  with a PosixFilesystem source or destination don't support
+  `ObjectConditions`.
 
   Fields:
     excludePrefixes: If you specify `exclude_prefixes`, Storage Transfer

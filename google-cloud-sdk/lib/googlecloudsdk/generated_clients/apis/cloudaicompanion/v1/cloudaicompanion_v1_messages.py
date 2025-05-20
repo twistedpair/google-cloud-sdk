@@ -2262,6 +2262,7 @@ class GeminiGcpEnablementSetting(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp.
+    disableWebGrounding: Optional. Whether web grounding should be disabled.
     enableCustomerDataSharing: Optional. Whether customer data sharing should
       be enabled.
     labels: Optional. Labels as key value pairs.
@@ -2295,10 +2296,11 @@ class GeminiGcpEnablementSetting(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  enableCustomerDataSharing = _messages.BooleanField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  disableWebGrounding = _messages.BooleanField(2)
+  enableCustomerDataSharing = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class IntParameterArray(_messages.Message):

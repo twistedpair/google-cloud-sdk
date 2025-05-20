@@ -133,6 +133,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_APPLICATIONS = (
+      'projects.locations.applications',
+      'projects/{projectsId}/locations/{locationsId}/applications/'
+      '{applicationsId}',
+      {},
+      ['projectsId', 'locationsId', 'applicationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_APPLICATIONS_DOMAINMAPPINGS = (
+      'projects.locations.applications.domainMappings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/applications/'
+              '{applicationsId}/domainMappings/{domainMappingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

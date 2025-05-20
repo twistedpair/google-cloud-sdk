@@ -37,7 +37,7 @@ class GenerateOptimizedManifestResponse(_messages.Message):
   r"""A GenerateOptimizedManifestResponse object.
 
   Fields:
-    comments: Includes command bundle
+    comments: A string attribute.
     k8sManifests: A K8SManifest attribute.
   """
 
@@ -52,8 +52,7 @@ class GkerecommenderAcceleratorsListRequest(_messages.Message):
     modelName: A string attribute.
     modelServerName: A string attribute.
     modelServerVersion: A string attribute.
-    performanceRequirements_maxNtpotMilliseconds: The max normalized time per
-      output token.
+    performanceRequirements_maxNtpotMilliseconds: A integer attribute.
   """
 
   modelName = _messages.StringField(1)
@@ -107,13 +106,11 @@ class GkerecommenderOptimizedManifestRequest(_messages.Message):
 
   Fields:
     acceleratorType: A string attribute.
-    kubernetesNamespace: The namespace in which the manifests will be
-      deployed.
+    kubernetesNamespace: A string attribute.
     modelAndModelServerInfo_modelName: A string attribute.
     modelAndModelServerInfo_modelServerName: A string attribute.
     modelAndModelServerInfo_modelServerVersion: A string attribute.
-    targetNtpotMilliseconds: The target number of normalized time per output
-      token.
+    targetNtpotMilliseconds: A integer attribute.
   """
 
   acceleratorType = _messages.StringField(1)
@@ -128,9 +125,9 @@ class K8SManifest(_messages.Message):
   r"""A K8SManifest object.
 
   Fields:
-    apiVersion: Kubernetes API version
-    content: YAML content
-    kind: Kubernetes resource kind
+    apiVersion: A string attribute.
+    content: A string attribute.
+    kind: A string attribute.
   """
 
   apiVersion = _messages.StringField(1)
@@ -145,8 +142,7 @@ class ListCompatibleAcceleratorProfilesResponse(_messages.Message):
     acceleratorOptions: A AcceleratorOption attribute.
     maxNtpotMilliseconds: A integer attribute.
     maxThroughputTokensPerSecond: A integer attribute.
-    minNtpotMilliseconds: The minimum and maximum normalized time per output
-      token.
+    minNtpotMilliseconds: A integer attribute.
     minThroughputTokensPerSecond: A integer attribute.
   """
 
@@ -215,7 +211,7 @@ class PerformanceStats(_messages.Message):
   r"""A PerformanceStats object.
 
   Fields:
-    ntpotMilliseconds: normalized time per output token.
+    ntpotMilliseconds: A integer attribute.
     outputTokensPerSecond: A integer attribute.
     queriesPerSecond: A integer attribute.
   """

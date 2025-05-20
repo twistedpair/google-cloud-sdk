@@ -769,6 +769,7 @@ class DiscoveryOccurrence(_messages.Message):
       occurrence were archived.
     continuousAnalysis: Whether the resource is continuously analyzed.
     cpe: The CPE of the resource being scanned.
+    files: Files that make up the resource described by the occurrence.
     lastScanTime: The last time this resource was scanned.
     sbomStatus: The status of an SBOM generation.
   """
@@ -813,8 +814,9 @@ class DiscoveryOccurrence(_messages.Message):
   archiveTime = _messages.StringField(5)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 6)
   cpe = _messages.StringField(7)
-  lastScanTime = _messages.StringField(8)
-  sbomStatus = _messages.MessageField('SBOMStatus', 9)
+  files = _messages.MessageField('File', 8, repeated=True)
+  lastScanTime = _messages.StringField(9)
+  sbomStatus = _messages.MessageField('SBOMStatus', 10)
 
 
 class Empty(_messages.Message):
@@ -852,6 +854,45 @@ class EnvelopeSignature(_messages.Message):
 
   keyid = _messages.StringField(1)
   sig = _messages.BytesField(2)
+
+
+class File(_messages.Message):
+  r"""A File object.
+
+  Messages:
+    DigestValue: A DigestValue object.
+
+  Fields:
+    digest: A DigestValue attribute.
+    name: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A DigestValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  name = _messages.StringField(2)
 
 
 class FileHashes(_messages.Message):

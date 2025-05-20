@@ -70,6 +70,13 @@ class SparkSqlBase(job_base.JobBase):
         metavar='PACKAGE=LEVEL',
         help=('A list of package to log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
+    parser.add_argument(
+        '--spark-engine',
+        hidden=True,
+        metavar='VALUE',
+        choices=job_base.JobBase.SPARK_ENGINE_CHOICES,
+        help='The Spark engine to use for the job.',
+    )
 
   @staticmethod
   def GetFilesByType(args):
@@ -84,19 +91,26 @@ class SparkSqlBase(job_base.JobBase):
     spark_sql_job = messages.SparkSqlJob(
         jarFileUris=files_by_type['jars'],
         queryFileUri=files_by_type['file'],
-        loggingConfig=logging_config)
+        loggingConfig=logging_config,
+        sparkEngine=job_util.GetSparkEngine(
+            messages.SparkSqlJob, args.spark_engine
+        ),
+    )
 
     if args.queries:
       spark_sql_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
       spark_sql_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
-          args.params, messages.SparkSqlJob.ScriptVariablesValue)
+          args.params, messages.SparkSqlJob.ScriptVariablesValue
+      )
 
     job_properties = job_util.BuildJobProperties(
-        args.properties, args.properties_file)
+        args.properties, args.properties_file
+    )
     if job_properties:
-    # Sort properties to ensure tests comparing messages not fail on ordering.
+      # Sort properties to ensure tests comparing messages not fail on ordering.
       spark_sql_job.properties = encoding.DictToAdditionalPropertyMessage(
-          job_properties, messages.SparkSqlJob.PropertiesValue, sort_items=True)
+          job_properties, messages.SparkSqlJob.PropertiesValue, sort_items=True
+      )
 
     job.sparkSqlJob = spark_sql_job

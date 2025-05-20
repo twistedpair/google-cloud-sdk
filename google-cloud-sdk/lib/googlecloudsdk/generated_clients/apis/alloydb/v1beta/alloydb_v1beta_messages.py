@@ -1120,12 +1120,14 @@ class Backup(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
@@ -1507,12 +1509,14 @@ class Cluster(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the cluster.
@@ -1723,12 +1727,14 @@ class ClusterUpgradeDetails(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   class UpgradeStatusValueValuesEnum(_messages.Enum):
     r"""Upgrade status of the cluster.
@@ -5804,12 +5810,14 @@ class SupportedDatabaseFlag(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   class ValueTypeValueValuesEnum(_messages.Enum):
     r"""ValueTypeValueValuesEnum enum type.
@@ -5954,12 +5962,14 @@ class UpgradeClusterRequest(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   etag = _messages.StringField(1)
   requestId = _messages.StringField(2)
@@ -6034,12 +6044,14 @@ class UpgradeClusterStatus(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Cluster Major Version Upgrade state.
@@ -6072,12 +6084,14 @@ class UpgradeClusterStatus(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
     POSTGRES_16 = 4
+    POSTGRES_17 = 5
 
   cancellable = _messages.BooleanField(1)
   sourceVersion = _messages.EnumField('SourceVersionValueValuesEnum', 2)

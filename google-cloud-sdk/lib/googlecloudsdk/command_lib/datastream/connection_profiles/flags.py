@@ -432,6 +432,13 @@ def AddMongodbProfileGroup(parser, required=True):
       action='store_true',
       default=False,
   )
+  mongodb_profile.add_argument(
+      '--mongodb-direct-connection',
+      help="""Connect to the mongodb hosts directly and do not try to resolve
+      any of the replicas from the replica set.""",
+      action='store_true',
+      default=False,
+  )
 
 
 def AddDepthGroup(parser):

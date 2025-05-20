@@ -75,6 +75,36 @@ backupPlans:
     help: The ID of the Backup Plan
   disable_auto_completers: false
 
+backupPlanDefault:
+  name: backup_plan
+  collection: backupdr.projects.locations.backupPlans
+  request_id_field: backupPlansId
+  attributes:
+  - *project
+  - *locationDefaultGlobal
+  - &backupPlansDefault
+    parameter_name: backupPlansId
+    attribute_name: backup_plan
+    help: The ID of the Backup Plan
+    fallthroughs:
+    - value: "-"
+      hint: |
+        default is all backup plans
+
+backupPlanRevisions:
+  name: backup_plan_revision
+  collection: backupdr.projects.locations.backupPlans.revisions
+  request_id_field: revisionsId
+  attributes:
+  - *project
+  - *location
+  - *backupPlansId
+  - &revisionsId
+    parameter_name: revisionsId
+    attribute_name: backup_plan_revision
+    help: The ID of the Backup Plan Revision
+  disable_auto_completers: false
+
 backupPlanAssociations:
   name: backup_plan_association
   collection: backupdr.projects.locations.backupPlanAssociations

@@ -5,6 +5,120 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 523.0.0 (2025-05-20)
+
+### Breaking Changes
+
+*   **(Cloud Datastore Emulator)** Removed support for running the Datastore emulator
+*   **(Cloud Datastore Emulator)** (`gcloud beta emulators datastore start`) in environment with Java versions
+*   **(Cloud Datastore Emulator)** prior to 21. Users can upgrade to Java 21 or above to continue using the latest
+*   **(Cloud Datastore Emulator)** Datastore emulator. Alternatively, users can use previous `gcloud` CLI
+*   **(Cloud Datastore Emulator)** versions to continue using the Datastore emulator with
+*   **(Cloud Datastore Emulator)** Java 11 support.
+*   **(Cloud Firestore Emulator)** Removed support for running the Firestore emulator
+*   **(Cloud Firestore Emulator)** (`gcloud beta emulators firestore start`) in environment with Java versions
+*   **(Cloud Firestore Emulator)** prior to 21. Users can upgrade to Java 21 or above to continue using the latest
+*   **(Cloud Firestore Emulator)** Firestore emulator. Alternatively, users can use previous `gcloud` CLI
+*   **(Cloud Firestore Emulator)** versions to continue using the previous Firestore emulator with
+*   **(Cloud Firestore Emulator)** Java 11 support.
+
+
+### AI
+
+* Added `gcloud ai model-garden` command group, which supports deploying models in Model Garden.
+  * Added `gcloud ai model-garden models deploy` command to deploy a model from Model Garden.
+  * Added `gcloud ai model-garden models list` command to find models that support deployment.
+  * Added `gcloud ai model-garden models list-deployment-config` command to find supported deployment configurations for each model.
+* Added `--list-model-garden-endpoints-only` flag to `gcloud ai endpoints list` command.
+
+### AlloyDB
+
+* Added support for `--activation-policy` in `alloydb instances update` for beta & GA track.
+
+### Auth Login
+
+* Fixed `gcloud` CLI login flow using a client-id file in a no-browser
+  environment. Running `gcloud auth application-default login --client-id='...'`
+  in a no-browser environment will now execute a working `--no-browser` flow.
+
+### BigQuery
+
+* Fixed the fallback quota project ID for user accounts when running on Cloud Shell or Google Compute Engine VM.
+* Added new flag `--replace_data` to `bq query` and `load` commands to use write disposition `WRITE_TRUNCATE_DATA`.
+* Added support for `--source_column_match` flag for `bq load` command.
+  When you load CSV files into BigQuery, you can now use this flag to load
+  columns based on header names or column position. This feature is in preview.
+* Added support for Routine ACLs for the IAM commands.
+* Added multiple flags for `bq mk` and `bq mkdef` command: `--time_zone` flag to
+  specify a customized time zone; `--date_format`, `--datetime_format`,
+  `--time_format` and `--timestamp_format` flags to define how date and time
+  values are formatted in source files.
+* Added support for capacity commitment id in `bq mk` command.
+* Fixed bug causing invalid json to be produced when running some scripts using `bq query --format=json` or `bq query --format=prettyjson`.
+* Improved the performance of retrieving user configs set in Cloud CLI.
+* Added `dataset_view` to `bq show` command to allow customers to view dataset's metadata, ACL fields or both.
+* Added `update_mode` to `bq update` command to allow customers to update dataset's metadata, ACL fields or both.
+* Added support for `--connection_id` flag for creating Spanner external datasets.
+* Added new flag `--external_catalog_dataset_options` in `bq mk -d` and `bq update -d` to create and update datasets with external catalog options.
+
+### Cloud NetApp
+
+* Added `hot-tier-size` and`enable-hot-tier-auto-resize` flags to `gcloud beta netapp storagepools create` and `gcloud beta netapp storagepools update` commands.
+
+### Cloud SQL
+
+* Increased operation wait timeout for `gcloud sql instances switchover`
+  from 10 minutes to 1 hour.
+
+### Cloud Spanner
+
+* Promoted `--instance-partition` flag of `gcloud spanner operations describe` to GA.
+
+### Compute Engine
+
+* Added `--enable-display-device` flag to `gcloud beta compute instance-templates create`.
+* Promoted `--ncc-gateway` flag to beta.
+
+### Container
+
+* If the `container.googleapis.com` API is not enabled when creating a cluster,
+  the user is asked to enable it and then proceed with creation.
+
+### Database Migration
+
+* Added `--global-filter` flag to `database-migration conversion-workspaces update`.
+
+### Eventarc
+
+* Removed requirement for `--destinations` to set `network_attachment` when `http_endpoint_uri` is not set.
+
+### Kubernetes Engine
+
+*   Added flag option `--anonymous-authentication-config` to block (or enable)
+    anonymous access to all paths other than the health check endpoints /readyz,
+    /healthz and /livez.
+*   Updated the warning message for node pool upgrade operation.
+*   Additional kubectl versions:
+    * kubectl.1.27 (1.27.16)
+    * kubectl.1.28 (1.28.15
+    * kubectl.1.29 (1.29.14)
+    * kubectl.1.30 (1.30.13)
+    * kubectl.1.31 (1.31.9)
+    * kubectl.1.32 (1.32.5)
+    * kubectl.1.33 (1.33.1)
+
+### Network Connectivity
+
+* Added `--allocation-strategy` and `--first-available-ranges-lookup-size`
+  flags to `gcloud network-connectivity internal-ranges create` to support
+  refined allocation options for auto-allocated Internal IP Ranges.
+* Fixed misleading doc text for `gcloud network-connectivity internal-ranges
+  create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 522.0.0 (2025-05-13)
 
 ### Anthos

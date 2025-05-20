@@ -1930,7 +1930,7 @@ class SpannerV1(base_api.BaseApiClient):
           }
 
     def AddSplitPoints(self, request, global_params=None):
-      r"""Adds split points to specified tables, indexes of a database.
+      r"""Adds split points to specified tables and indexes of a database.
 
       Args:
         request: (SpannerProjectsInstancesDatabasesAddSplitPointsRequest) input message
