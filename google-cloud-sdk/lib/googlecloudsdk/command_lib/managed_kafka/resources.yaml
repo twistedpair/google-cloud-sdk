@@ -141,3 +141,17 @@ schema_registry:
     attribute_name: schema_registry
     help: |
       The schema registry name.
+
+subject:
+  name: subject
+  collection: managedkafka.projects.locations.schemaRegistries.subjects
+  request_id_field: createSubjectRequest.subjectId
+  attributes:
+  - *project
+  - *location
+  - *schema_registry
+  - &subject
+    parameter_name: subjectsId
+    attribute_name: subject
+    help: |
+      The subject name.

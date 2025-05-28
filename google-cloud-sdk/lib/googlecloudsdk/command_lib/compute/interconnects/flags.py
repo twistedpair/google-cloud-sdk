@@ -20,10 +20,10 @@ from __future__ import unicode_literals
 
 import collections
 
-from googlecloudsdk.calliope import actions as calliope_actions
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
@@ -61,6 +61,11 @@ REQUESTED_FEATURES_CHOICES = {
         'capable hardware ports. This parameter can only be provided during '
         'interconnect INSERT and cannot be changed using interconnect PATCH.'
     ),
+    'L2_FORWARDING': (
+        'If specified then the interconnect is created on L2 forwarding capable'
+        ' hardware ports. This parameter can only be provided during'
+        ' interconnect INSERT and cannot be changed using interconnect PATCH.'
+    ),
 }
 
 
@@ -68,7 +73,7 @@ REQUESTED_FEATURES_CHOICES = {
 @base.ReleaseTracks(
     base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA, base.ReleaseTrack.GA
 )
-class InterconnectsCompleter(compute_completers.ListCommandCompleter):
+class InterconnectsCompleter(completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(InterconnectsCompleter, self).__init__(
@@ -175,6 +180,12 @@ def GetRequestedFeature(messages, feature_arg):
     return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
         'IF_CROSS_SITE_NETWORK'
     )
+  # TODO(b/346583638): Update the enum value to 'IF_L2_FORWARDING' once the
+  # API is ready.
+  if feature_arg == 'L2_FORWARDING':
+    return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
+        'IF_L2_FORWARDING'
+    )
   return None
 
 
@@ -229,7 +240,7 @@ def AddInterconnectTypeBetaAndAlpha(parser):
   parser.add_argument(
       '--interconnect-type',
       choices=_INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA,
-      action=calliope_actions.DeprecationAction(
+      action=actions.DeprecationAction(
           'interconnect-type',
           removed=False,
           show_add_help=False,

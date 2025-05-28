@@ -842,7 +842,8 @@ class ArgObject(arg_utils.ArgObjectType):
         help_text=self.help_text,
         hidden=field_spec.hidden,
         root_level=is_root,
-        disable_key_description=self.disable_key_description)
+        disable_key_description=self.disable_key_description,
+        allow_key_only=True)
 
     additional_prop_spec_type = _AdditionalPropsType(
         arg_type=arg_obj,
@@ -898,7 +899,8 @@ class ArgObject(arg_utils.ArgObjectType):
         repeated=field_spec.repeated,
         hidden=field_spec.hidden,
         root_level=is_root,
-        disable_key_description=self.disable_key_description)
+        disable_key_description=self.disable_key_description,
+        allow_key_only=True)
 
     return _MessageFieldType(
         arg_type=arg_obj,

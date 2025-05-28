@@ -269,9 +269,9 @@ def GetNestedKeyValueExample(key_type, value_type, shorthand):
   elif not key_str or not value_str:
     return key_str or value_str
   elif shorthand:
-    return '{}={}'.format(key_str, value_str)
+    return f'{key_str}={value_str}' if value_str != '{}' else key_str
   else:
-    return '{}: {}'.format(key_str, value_str)
+    return f'{key_str}: {value_str}'
 
 
 def GetNestedUsageHelpText(field_name, arg_type, required=False):

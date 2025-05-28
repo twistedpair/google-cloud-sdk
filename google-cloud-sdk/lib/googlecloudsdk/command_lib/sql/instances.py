@@ -720,6 +720,15 @@ class _BaseInstances(object):
       if db_aligned_atomic_writes_config is not None:
         settings.dbAlignedAtomicWritesConfig = db_aligned_atomic_writes_config
 
+      final_backup_configuration = reducers.FinalBackupConfiguration(
+          sql_messages,
+          instance,
+          final_backup_enabled=args.final_backup,
+          final_backup_ttl_days=args.final_backup_ttl_days,
+      )
+      if final_backup_configuration:
+        cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
+
     # ALPHA args.
     if _IsAlpha(release_track):
       pass
@@ -887,6 +896,15 @@ class _BaseInstances(object):
       )
       if updated_config is not None:
         settings.connectionPoolConfig = updated_config
+
+      final_backup_configuration = reducers.FinalBackupConfiguration(
+          sql_messages,
+          instance,
+          final_backup_enabled=args.final_backup,
+          final_backup_ttl_days=args.final_backup_ttl_days,
+      )
+      if final_backup_configuration:
+        cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
     return settings
 
   @classmethod
@@ -1165,6 +1183,10 @@ class InstancesV1Beta4(_BaseInstances):
   @staticmethod
   def AddBackupConfigToSettings(settings, backup_config):
     settings.backupConfiguration = backup_config
+
+  @staticmethod
+  def AddFinalBackupConfigToSettings(settings, final_backup_config):
+    settings.finalBackupConfig = final_backup_config
 
   @staticmethod
   def SetIpConfigurationEnabled(settings, assign_ip):

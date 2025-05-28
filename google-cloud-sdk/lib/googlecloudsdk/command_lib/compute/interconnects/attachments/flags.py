@@ -135,6 +135,20 @@ def AddAdminEnabled(parser, default_behavior=True, update=False):
       '--enable-admin', action='store_true', default=None, help=help_text)
 
 
+def AddEnableAdmin(parser):
+  """Adds enable-admin flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--enable-admin',
+      action='store_true',
+      default=None,
+      help="""\
+      Administrative status of the interconnect attachment. If not provided
+      on creation, defaults to enabled.
+      When this is enabled, the attachment is operational and will carry
+      traffic. Use --no-enable-admin to disable it.
+      """)
+
+
 def AddBandwidth(parser, required):
   """Adds bandwidth flag to the argparse.ArgumentParser.
 
@@ -167,6 +181,72 @@ def AddVlan(parser):
       help="""\
       Desired VLAN for this attachment, in the range 2-4093. If not supplied,
       Google will automatically select a VLAN.
+      """)
+
+
+def AddVlanKey(parser, required=False):
+  """Adds vlan-key flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+    required: A boolean indicates whether the vlan-key is required.
+  """
+  parser.add_argument(
+      '--vlan-key',
+      required=required,
+      help="""\
+      Desired VLAN key for L2 forwarding mapping for the attachment. If not
+      supplied, all mappings will be displayed.
+     """)
+
+
+def AddApplianceIpAddress(parser):
+  """Adds appliance-ip-address flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--appliance-ip-address',
+      metavar='ADDRESSES',
+      help=""" A single IPv4 or IPv6 address used as the destination IP address
+      for ingress packets that match on a VLAN tag, but do not match a more
+      specific inner VLAN tag.
+      """)
+
+
+def AddApplianceName(parser):
+  """Adds L2 appliance mapping name flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--appliance-name',
+      help="""\
+      The name of the L2 appliance mapping rule.
+      """)
+
+
+def AddInnerVlanToApplianceMappings(parser):
+  """Adds inner vlan to appliance mappings flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--inner-vlan-to-appliance-mappings',
+      type=arg_parsers.ArgDict(
+          spec={
+              'innerVlanTags': arg_parsers.ArgList(custom_delim_char=';'),
+              'innerApplianceIpAddress': str,
+          },
+      ),
+      action='append',
+      help="""\
+      A list of mapping rules from inner VLAN tags to IP addresses. If the inner
+      VLAN is not explicitly mapped to an IP address range, the
+      applianceIpAddress is used.
       """)
 
 
@@ -474,6 +554,53 @@ def AddSubnetLength(parser):
       """)
 
 
+def AddGeneveVni(parser):
+  """Adds geneve vni flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--geneve-vni',
+      metavar='GENEVE_HEADER',
+      type=int,
+      help="""A VNI identier for Geneve header, as defined in
+      https://datatracker.ietf.org/doc/html/rfc8926, used for L2 forwarding.""",
+  )
+
+
+def AddDefaultApplianceIpAddress(parser):
+  """Adds default appliance ip address flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--default-appliance-ip-address',
+      metavar='DEFAULT_APPLIANCE_IP_ADDRESS',
+      help="""A single IPv4 or IPv6 address used as the default destination IP
+      when there is no VLAN mapping result found for L2 forwarding.
+      Unset field indicates the unmatched packet should be dropped.
+      """,
+  )
+
+
+def AddTunnelEndpointIpAddress(parser, required=True):
+  """Adds tunnel endpoint ip address flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+    required: A boolean indicates whether the tunnel endpoint ip address is
+      required.
+  """
+  parser.add_argument(
+      '--tunnel-endpoint-ip-address',
+      metavar='TUNNEL_ENDPOINT_IP_ADDRESS',
+      required=required,
+      help="""A single IPv4 or IPv6 address. This address will be used as the
+      source IP address for L2 forwarding packets sent to the appliances, and
+      must be used as the destination IP address for packets that should be sent
+      out through this attachment.
+      """,
+  )
+
+
 def AddEnableMulticast(parser, update=False):
   """Adds enableMulticast flag to the argparse.ArgumentParser.
 
@@ -514,7 +641,7 @@ def AddCandidateCloudRouterIpAddress(parser):
       help="""\
       Single IPv4 address + prefix length to be configured on the cloud
       router interface for this interconnect attachment. Example:
-      74.133.16.1/30
+      203.0.113.1/29
       """,
   )
 
@@ -530,7 +657,7 @@ def AddCandidateCustomerRouterIpAddress(parser):
       help="""\
       Single IPv4 address + prefix length to be configured on the customer
       router interface for this interconnect attachment. Example:
-      74.133.16.2/30
+      203.0.113.2/29
       """,
   )
 
@@ -546,7 +673,7 @@ def AddCandidateCloudRouterIpv6Address(parser):
       help="""\
       Single IPv6 address + prefix length to be configured on the cloud
       router interface for this interconnect attachment. Example:
-      2fff:eec0:3201:0:0:0:0:1/125
+      2001:db8::1/125
       """,
   )
 
@@ -562,6 +689,6 @@ def AddCandidateCustomerRouterIpv6Address(parser):
       help="""\
       Single IPv6 address + prefix length to be configured on the customer
       router interface for this interconnect attachment. Example:
-      2fff:eec0:3201:0:0:0:0:2/125
+      2001:db8::2/125
       """,
   )

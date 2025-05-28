@@ -31,17 +31,39 @@ import six
 
 
 IMAGE_URL_MAP = {
-    'base-image': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/base:latest',
-    'clion': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/clion:latest',
-    'codeoss': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest',
-    'codeoss-cuda': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/code-oss-cuda:latest',
-    'goland': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/goland:latest',
-    'intellij': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/intellij-ultimate:latest',
-    'phpstorm': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/phpstorm:latest',
-    'pycharm': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/pycharm:latest',
-    'rider': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/rider:latest',
-    'rubymine': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/rubymine:latest',
-    'webstorm': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/webstorm:latest',
+    'base-image': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/base:latest'
+    ),
+    'clion': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/clion:latest'
+    ),
+    'codeoss': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest'
+    ),
+    'codeoss-cuda': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/code-oss-cuda:latest'
+    ),
+    'goland': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/goland:latest'
+    ),
+    'intellij': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/intellij-ultimate:latest'
+    ),
+    'phpstorm': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/phpstorm:latest'
+    ),
+    'pycharm': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/pycharm:latest'
+    ),
+    'rider': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/rider:latest'
+    ),
+    'rubymine': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/rubymine:latest'
+    ),
+    'webstorm': (
+        '{location}-docker.pkg.dev/cloud-workstations-images/predefined/webstorm:latest'
+    ),
 }
 
 BOOST_CONFIG_MAP = {
@@ -172,25 +194,26 @@ class Configs:
         config.allowedPorts.append(desired_port_range)
 
     # Persistent directory
-    pd = self.messages.PersistentDirectory()
-    pd.mountPath = '/home'
-    if args.pd_reclaim_policy == 'retain':
-      reclaim_policy = (
-          self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.RETAIN
-      )
-    else:
-      reclaim_policy = (
-          self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.DELETE
-      )
+    if not args.no_persistent_storage:
+      pd = self.messages.PersistentDirectory()
+      pd.mountPath = '/home'
+      if args.pd_reclaim_policy == 'retain':
+        reclaim_policy = (
+            self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.RETAIN
+        )
+      else:
+        reclaim_policy = (
+            self.messages.GceRegionalPersistentDisk.ReclaimPolicyValueValuesEnum.DELETE
+        )
 
-    pd.gcePd = self.messages.GceRegionalPersistentDisk(
-        sizeGb=0 if args.pd_source_snapshot else args.pd_disk_size,
-        fsType='' if args.pd_source_snapshot else 'ext4',
-        diskType=args.pd_disk_type,
-        reclaimPolicy=reclaim_policy,
-        sourceSnapshot=args.pd_source_snapshot,
-    )
-    config.persistentDirectories.append(pd)
+      pd.gcePd = self.messages.GceRegionalPersistentDisk(
+          sizeGb=0 if args.pd_source_snapshot else args.pd_disk_size,
+          fsType='' if args.pd_source_snapshot else 'ext4',
+          diskType=args.pd_disk_type,
+          reclaimPolicy=reclaim_policy,
+          sourceSnapshot=args.pd_source_snapshot,
+      )
+      config.persistentDirectories.append(pd)
 
     # Ephemeral directory
     if args.ephemeral_directory:
@@ -349,14 +372,10 @@ class Configs:
 
       if args.enable_localhost_replacement:
         config.httpOptions.disableLocalhostReplacement = False
-        update_mask.append(
-            'http_options.disable_localhost_replacement'
-        )
+        update_mask.append('http_options.disable_localhost_replacement')
       if args.disable_localhost_replacement:
         config.httpOptions.disableLocalhostReplacement = True
-        update_mask.append(
-            'http_options.disable_localhost_replacement'
-        )
+        update_mask.append('http_options.disable_localhost_replacement')
 
     # GCE Instance Config
     config.host = self.messages.Host()
@@ -543,8 +562,7 @@ class Configs:
 
       config.persistentDirectories[0].gcePd = (
           self.messages.GceRegionalPersistentDisk(
-              sizeGb=args.pd_disk_size,
-              diskType=args.pd_disk_type
+              sizeGb=args.pd_disk_size, diskType=args.pd_disk_type
           )
       )
       update_mask.append('persistent_directories')
@@ -554,9 +572,7 @@ class Configs:
         config.persistentDirectories = [self.messages.PersistentDirectory()]
       config.persistentDirectories[0].gcePd = (
           self.messages.GceRegionalPersistentDisk(
-              sizeGb=0,
-              fsType='',
-              sourceSnapshot=args.pd_source_snapshot
+              sizeGb=0, fsType='', sourceSnapshot=args.pd_source_snapshot
           )
       )
       update_mask.append('persistent_directories')

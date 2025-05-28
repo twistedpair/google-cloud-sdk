@@ -444,10 +444,12 @@ class Backup(_messages.Message):
       BACKUP_TYPE_UNSPECIFIED: Backup type is unspecified.
       SCHEDULED: Scheduled backup.
       ON_DEMAND: On demand backup.
+      ON_DEMAND_OPERATIONAL: Operational backup.
     """
     BACKUP_TYPE_UNSPECIFIED = 0
     SCHEDULED = 1
     ON_DEMAND = 2
+    ON_DEMAND_OPERATIONAL = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The Backup resource instance state.
@@ -1024,16 +1026,17 @@ class BackupRule(_messages.Message):
     backupRetentionDays: Required. Configures the duration for which backup
       data will be kept. It is defined in "days". The value should be greater
       than or equal to minimum enforced retention of the backup vault. Minimum
-      value is 1 and maximum value is 90 for hourly backups. Minimum value is
-      1 and maximum value is 186 for daily backups. Minimum value is 7 and
-      maximum value is 366 for weekly backups. Minimum value is 30 and maximum
-      value is 732 for monthly backups. Minimum value is 365 and maximum value
-      is 36159 for yearly backups.
+      value is 1 and maximum value is 36159 for custom retention on-demand
+      backup. Minimum value is 1 and maximum value is 90 for hourly backups.
+      Minimum value is 1 and maximum value is 186 for daily backups. Minimum
+      value is 7 and maximum value is 366 for weekly backups. Minimum value is
+      30 and maximum value is 732 for monthly backups. Minimum value is 365
+      and maximum value is 36159 for yearly backups.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
       hyphens. Pattern, /a-z{,62}/.
-    standardSchedule: Required. Defines a schedule that runs within the
+    standardSchedule: Optional. Defines a schedule that runs within the
       confines of a defined window of time.
   """
 
@@ -1050,6 +1053,8 @@ class BackupVault(_messages.Message):
       future use case and will not be supported in the current release. Access
       restriction for the backup vault. Default value is WITHIN_ORGANIZATION
       if not provided during creation.
+    BackupRetentionInheritanceValueValuesEnum: Optional. Setting for how a
+      backup's enforced retention end time is inherited.
     StateValueValuesEnum: Output only. The BackupVault resource instance
       state.
 
@@ -1072,6 +1077,8 @@ class BackupVault(_messages.Message):
     backupMinimumEnforcedRetentionDuration: Required. The default and minimum
       enforced retention for each backup within the backup vault. The enforced
       retention for each backup can be extended.
+    backupRetentionInheritance: Optional. Setting for how a backup's enforced
+      retention end time is inherited.
     createTime: Output only. The time when the instance was created.
     deletable: Output only. Set to true when there are no backups nested under
       this resource.
@@ -1126,6 +1133,30 @@ class BackupVault(_messages.Message):
     WITHIN_ORGANIZATION = 2
     UNRESTRICTED = 3
     WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA = 4
+
+  class BackupRetentionInheritanceValueValuesEnum(_messages.Enum):
+    r"""Optional.
+
+    Setting for how a backup's enforced retention end time is inherited.
+
+    Values:
+      BACKUP_RETENTION_INHERITANCE_UNSPECIFIED: Inheritance behavior not set.
+        This will default to `INHERIT_VAULT_RETENTION`.
+      INHERIT_VAULT_RETENTION: The enforced retention end time of a backup
+        will be inherited from the backup vault's
+        `backup_minimum_enforced_retention_duration` field. This is the
+        default behavior.
+      MATCH_BACKUP_EXPIRE_TIME: The enforced retention end time of a backup
+        will always match the expire time of the backup. If this is set, the
+        backup's enforced retention end time will be set to match the expire
+        time during creation of the backup. When updating, the ERET and expire
+        time must be updated together and have the same value. Invalid update
+        requests will be rejected by the server.
+    """
+
+    BACKUP_RETENTION_INHERITANCE_UNSPECIFIED = 0
+    INHERIT_VAULT_RETENTION = 1
+    MATCH_BACKUP_EXPIRE_TIME = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The BackupVault resource instance state.
@@ -1200,19 +1231,22 @@ class BackupVault(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 2)
   backupCount = _messages.IntegerField(3)
   backupMinimumEnforcedRetentionDuration = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  deletable = _messages.BooleanField(6)
-  description = _messages.StringField(7)
-  effectiveTime = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  logMinimumEnforcedRetentionDuration = _messages.StringField(11)
-  name = _messages.StringField(12)
-  serviceAccount = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  totalStoredBytes = _messages.IntegerField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  backupRetentionInheritance = _messages.EnumField(
+      'BackupRetentionInheritanceValueValuesEnum', 5
+  )
+  createTime = _messages.StringField(6)
+  deletable = _messages.BooleanField(7)
+  description = _messages.StringField(8)
+  effectiveTime = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  logMinimumEnforcedRetentionDuration = _messages.StringField(12)
+  name = _messages.StringField(13)
+  serviceAccount = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  totalStoredBytes = _messages.IntegerField(16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class BackupWindow(_messages.Message):
@@ -3471,7 +3505,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class Entry(_messages.Message):

@@ -319,8 +319,8 @@ def Apply(
       during actuation. If this flag is set to true, Infrastructure Manager will
       instead attempt to automatically import the resource into the Terraform
       state (for supported resource types) and continue actuation.
-    artifacts_gcs_bucket: User-defined location of Cloud Build logs, artifacts,
-      and Terraform state files in Google Cloud Storage. e.g.
+    artifacts_gcs_bucket: User-defined location of Cloud Build logs and
+       artifacts in Google Cloud Storage. e.g.
       `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
       field is not set or empty
     worker_pool: The User-specified Worker Pool resource in which the Cloud
@@ -946,8 +946,8 @@ def Create(
     stage_bucket: optional string. Destination for storing local config files
       specified by local source flag. e.g. "gs://bucket-name/".
     ignore_file: optional string, a path to a gcloudignore file.
-    artifacts_gcs_bucket: User-defined location of Cloud Build logs, artifacts,
-      and Terraform state files in Google Cloud Storage. e.g.
+    artifacts_gcs_bucket: User-defined location of Cloud Build logs and
+      artifacts in Google Cloud Storage. e.g.
       `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
       field is not set or empty
     worker_pool: The User-specified Worker Pool resource in which the Cloud

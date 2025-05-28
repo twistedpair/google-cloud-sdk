@@ -730,11 +730,10 @@ def AddBootDiskArgs(parser, enable_kms=False):
 
   parser.add_argument(
       '--boot-disk-provisioned-iops',
-      type=arg_parsers.BoundedInt(10000, 120000),
+      type=arg_parsers.BoundedInt(),
       help="""\
       Indicates how many IOPS to provision for the disk. This sets the number
-      of I/O operations per second that the disk can handle. Value must be
-      between 10,000 and 120,000.
+      of I/O operations per second that the disk can handle.
       """)
 
   parser.add_argument(
@@ -1140,6 +1139,9 @@ def _GetAddress(compute_client, address_ref):
                      project=address_ref.project,
                      region=address_ref.region))],
       errors_to_collect=errors)
+  if errors:
+    utils.RaiseToolException(
+        errors, error_message='Could not fetch address resource.')
   return res[0]
 
 

@@ -298,7 +298,7 @@ def AddAndroidTestArgs(parser):
       targets). Each target filter must be fully qualified with the package
       name, class name, or test annotation desired. Any test filter supported by
       `am instrument -e ...` is supported. See
-       https://developer.android.com/reference/android/support/test/runner/AndroidJUnitRunner
+       https://developer.android.com/reference/androidx/test/runner/AndroidJUnitRunner
        for more information. Examples:
 
          * `--test-targets "package com.my.package.name"`
@@ -307,7 +307,8 @@ def AddAndroidTestArgs(parser):
          * `--test-targets "notClass com.foo.ClassName#testMethodToSkip"`
          * `--test-targets "annotation com.foo.AnnotationToRun"`
          * `--test-targets "size large notAnnotation com.foo.AnnotationToSkip"`
-      """)
+      """,
+  )
   parser.add_argument(
       '--use-orchestrator',
       category=ANDROID_INSTRUMENTATION_TEST,

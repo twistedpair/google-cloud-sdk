@@ -1700,14 +1700,13 @@ class DataplexProjectsLocationsGlossariesCategoriesCreateRequest(_messages.Messa
   r"""A DataplexProjectsLocationsGlossariesCategoriesCreateRequest object.
 
   Fields:
-    categoryId: Required. Category ID: GlossaryCategory identifier.
+    categoryId: Required. GlossaryCategory identifier.
     googleCloudDataplexV1GlossaryCategory: A
       GoogleCloudDataplexV1GlossaryCategory resource to be passed as the
       request body.
     parent: Required. The parent resource where this GlossaryCategory will be
-      created. Format:
-      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
-      where locationId refers to a GCP region.
+      created. Format: projects/{project_id_or_number}/locations/{location_id}
+      /glossaries/{glossary_id} where locationId refers to a GCP region.
   """
 
   categoryId = _messages.StringField(1)
@@ -1720,8 +1719,8 @@ class DataplexProjectsLocationsGlossariesCategoriesDeleteRequest(_messages.Messa
 
   Fields:
     name: Required. The name of the GlossaryCategory to delete. Format: projec
-      ts/{project}/locations/{location}/glossary/{glossary}/categories/{glossa
-      ry_category}
+      ts/{project_id_or_number}/locations/{location_id}/glossaries/{glossary_i
+      d}/categories/{category_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1757,8 +1756,8 @@ class DataplexProjectsLocationsGlossariesCategoriesGetRequest(_messages.Message)
 
   Fields:
     name: Required. The name of the GlossaryCategory to retrieve. Format: proj
-      ects/{project}/locations/{location}/glossaries/{glossary}/categories/{gl
-      ossary_category}
+      ects/{project_id_or_number}/locations/{location_id}/glossaries/{glossary
+      _id}/categories/{category_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1768,25 +1767,28 @@ class DataplexProjectsLocationsGlossariesCategoriesListRequest(_messages.Message
   r"""A DataplexProjectsLocationsGlossariesCategoriesListRequest object.
 
   Fields:
-    filter: Optional. Filter expression that filters categories listed in the
-      response. Filters supported: List GlossaryCategories based on immediate
-      parent in the resource hierarchy. This will only return the
-      GlossaryCategories nested directly under the parent and no other
-      subsequent nested categories will be returned.
-    orderBy: Optional. Order by expression that orders categories listed in
-      the response. Order by fields are: name or create_time for the result.
-      If not specified, the ordering is undefined.
-    pageSize: Optional. The maximum number of categories to return. The
-      service may return fewer than this value. If unspecified, at most 50
-      categories will be returned. The maximum value is 1000; values above
-      1000 will be coerced to 1000.
+    filter: Optional. Filter expression that filters GlossaryCategories listed
+      in the response. Filters are supported on the following fields: -
+      immediate_parentExamples of using a filter are: - immediate_parent="proj
+      ects/{project_id_or_number}/locations/{location_id}/glossaries/{glossary
+      _id}" - immediate_parent="projects/{project_id_or_number}/locations/{loc
+      ation_id}/glossaries/{glossary_id}/categories/{category_id}"This will
+      only return the GlossaryCategories that are directly nested under the
+      specified parent.
+    orderBy: Optional. Order by expression that orders GlossaryCategories
+      listed in the response. Order by fields are: name or create_time for the
+      result. If not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of GlossaryCategories to return.
+      The service may return fewer than this value. If unspecified, at most 50
+      GlossaryCategories will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
     pageToken: Optional. A page token, received from a previous
       ListGlossaryCategories call. Provide this to retrieve the subsequent
       page. When paginating, all other parameters provided to
       ListGlossaryCategories must match the call that provided the page token.
-    parent: Required. The parent, which has this collection of categories.
-      Format: projects/{project}/locations/{location}/glossaries/{glossary}
-      Location is the GCP region.
+    parent: Required. The parent, which has this collection of
+      GlossaryCategories. Format: projects/{project_id_or_number}/locations/{l
+      ocation_id}/glossaries/{glossary_id} Location is the GCP region.
   """
 
   filter = _messages.StringField(1)
@@ -1804,8 +1806,8 @@ class DataplexProjectsLocationsGlossariesCategoriesPatchRequest(_messages.Messag
       GoogleCloudDataplexV1GlossaryCategory resource to be passed as the
       request body.
     name: Output only. Identifier. The resource name of the GlossaryCategory.
-      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
-      Id}/categories/{categoryId}
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id}/categories/{category_id}
     updateMask: Required. The list of fields to update.
   """
 
@@ -1856,10 +1858,10 @@ class DataplexProjectsLocationsGlossariesCreateRequest(_messages.Message):
     googleCloudDataplexV1Glossary: A GoogleCloudDataplexV1Glossary resource to
       be passed as the request body.
     parent: Required. The parent resource where this Glossary will be created.
-      Format: projects/{projectId}/locations/{locationId} where locationId
-      refers to a GCP region.
+      Format: projects/{project_id_or_number}/locations/{location_id} where
+      location_id refers to a GCP region.
     validateOnly: Optional. Validates the request without actually creating
-      the glossary. Default: false.
+      the Glossary. Default: false.
   """
 
   glossaryId = _messages.StringField(1)
@@ -1875,8 +1877,8 @@ class DataplexProjectsLocationsGlossariesDeleteRequest(_messages.Message):
     etag: Optional. The etag of the Glossary. If this is provided, it must
       match the server's etag. If the etag is provided and does not match the
       server-computed etag, the request must fail with a ABORTED error code.
-    name: Required. The name of the Glossary to delete. Format:
-      projects/{project}/locations/{location}/glossary/{glossary}
+    name: Required. The name of the Glossary to delete. Format: projects/{proj
+      ect_id_or_number}/locations/{location_id}/glossaries/{glossary_id}
   """
 
   etag = _messages.StringField(1)
@@ -1911,8 +1913,8 @@ class DataplexProjectsLocationsGlossariesGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesGetRequest object.
 
   Fields:
-    name: Required. The name of the Glossary to retrieve. Format:
-      projects/{project}/locations/{location}/glossaries/{glossary}
+    name: Required. The name of the Glossary to retrieve. Format: projects/{pr
+      oject_id_or_number}/locations/{location_id}/glossaries/{glossary_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1922,22 +1924,24 @@ class DataplexProjectsLocationsGlossariesListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesListRequest object.
 
   Fields:
-    filter: Optional. Filter expression that filters glossaries listed in the
-      response. Initially, no filter is supported.
-    orderBy: Optional. Order by expression that orders glossaries listed in
+    filter: Optional. Filter expression that filters Glossaries listed in the
+      response. Filters on proto fields of Glossary are supported. Examples of
+      using a filter are: - display_name="my-glossary" - categoryCount=1 -
+      termCount=0
+    orderBy: Optional. Order by expression that orders Glossaries listed in
       the response. Order by fields are: name or create_time for the result.
       If not specified, the ordering is undefined.
-    pageSize: Optional. The maximum number of glossaries to return. The
+    pageSize: Optional. The maximum number of Glossaries to return. The
       service may return fewer than this value. If unspecified, at most 50
-      glossaries will be returned. The maximum value is 1000; values above
+      Glossaries will be returned. The maximum value is 1000; values above
       1000 will be coerced to 1000.
     pageToken: Optional. A page token, received from a previous ListGlossaries
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to ListGlossaries must match the call that
       provided the page token.
-    parent: Required. The parent, which has this collection of glossaries.
-      Format: projects/{project}/locations/{location} Location is the GCP
-      region.
+    parent: Required. The parent, which has this collection of Glossaries.
+      Format: projects/{project_id_or_number}/locations/{location_id} where
+      location_id refers to a GCP region.
   """
 
   filter = _messages.StringField(1)
@@ -1954,10 +1958,11 @@ class DataplexProjectsLocationsGlossariesPatchRequest(_messages.Message):
     googleCloudDataplexV1Glossary: A GoogleCloudDataplexV1Glossary resource to
       be passed as the request body.
     name: Output only. Identifier. The resource name of the Glossary. Format:
-      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
+      projects/{project_id_or_number}/locations/{location_id}/glossaries/{glos
+      sary_id}
     updateMask: Required. The list of fields to update.
     validateOnly: Optional. Validates the request without actually updating
-      the glossary. Default: false.
+      the Glossary. Default: false.
   """
 
   googleCloudDataplexV1Glossary = _messages.MessageField('GoogleCloudDataplexV1Glossary', 1)
@@ -1987,11 +1992,10 @@ class DataplexProjectsLocationsGlossariesTermsCreateRequest(_messages.Message):
   Fields:
     googleCloudDataplexV1GlossaryTerm: A GoogleCloudDataplexV1GlossaryTerm
       resource to be passed as the request body.
-    parent: Required. The parent resource where this GlossaryTerm will be
-      created. Format:
-      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
-      where locationId refers to a GCP region.
-    termId: Required. Term ID: GlossaryTerm identifier.
+    parent: Required. The parent resource where the GlossaryTerm will be
+      created. Format: projects/{project_id_or_number}/locations/{location_id}
+      /glossaries/{glossary_id} where location_id refers to a GCP region.
+    termId: Required. GlossaryTerm identifier.
   """
 
   googleCloudDataplexV1GlossaryTerm = _messages.MessageField('GoogleCloudDataplexV1GlossaryTerm', 1)
@@ -2004,7 +2008,8 @@ class DataplexProjectsLocationsGlossariesTermsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the GlossaryTerm to delete. Format: projects/{
-      project}/locations/{location}/glossary/{glossary}/terms/{glossary_term}
+      project_id_or_number}/locations/{location_id}/glossaries/{glossary_id}/t
+      erms/{term_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -2039,8 +2044,8 @@ class DataplexProjectsLocationsGlossariesTermsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the GlossaryTerm to retrieve. Format: projects
-      /{project}/locations/{location}/glossaries/{glossary}/terms/{glossary_te
-      rm}
+      /{project_id_or_number}/locations/{location_id}/glossaries/{glossary_id}
+      /terms/{term_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -2050,25 +2055,28 @@ class DataplexProjectsLocationsGlossariesTermsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesTermsListRequest object.
 
   Fields:
-    filter: Optional. Filter expression that filters terms listed in the
-      response. Filters supported: List GlossaryTerms based on immediate
-      parent in the resource hierarchy. This will only return the terms nested
-      directly under the parent and no other subsequent nested terms will be
-      returned.
-    orderBy: Optional. Order by expression that orders terms listed in the
-      response. Order by fields are: name or create_time for the result. If
-      not specified, the ordering is undefined.
-    pageSize: Optional. The maximum number of terms to return. The service may
-      return fewer than this value. If unspecified, at most 50 terms will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
+    filter: Optional. Filter expression that filters GlossaryTerms listed in
+      the response. Filters are supported on the following fields: -
+      immediate_parentExamples of using a filter are: - immediate_parent="proj
+      ects/{project_id_or_number}/locations/{location_id}/glossaries/{glossary
+      _id}" - immediate_parent="projects/{project_id_or_number}/locations/{loc
+      ation_id}/glossaries/{glossary_id}/categories/{category_id}"This will
+      only return the GlossaryTerms that are directly nested under the
+      specified parent.
+    orderBy: Optional. Order by expression that orders GlossaryTerms listed in
+      the response. Order by fields are: name or create_time for the result.
+      If not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of GlossaryTerms to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      GlossaryTerms will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
     pageToken: Optional. A page token, received from a previous
       ListGlossaryTerms call. Provide this to retrieve the subsequent page.
       When paginating, all other parameters provided to ListGlossaryTerms must
       match the call that provided the page token.
-    parent: Required. The parent, which has this collection of terms. Format:
-      projects/{project}/locations/{location}/glossaries/{glossary} Location
-      is the GCP region.
+    parent: Required. The parent, which has this collection of GlossaryTerms.
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id} where location_id refers to a GCP region.
   """
 
   filter = _messages.StringField(1)
@@ -2085,8 +2093,8 @@ class DataplexProjectsLocationsGlossariesTermsPatchRequest(_messages.Message):
     googleCloudDataplexV1GlossaryTerm: A GoogleCloudDataplexV1GlossaryTerm
       resource to be passed as the request body.
     name: Output only. Identifier. The resource name of the GlossaryTerm.
-      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
-      Id}/terms/{termId}
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id}/terms/{term_id}
     updateMask: Required. The list of fields to update.
   """
 
@@ -5242,6 +5250,10 @@ class GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(_messages.M
       the BigQuery dataset is in single region, it must be in the same single
       region as the datascan.For supported values, refer to
       https://cloud.google.com/bigquery/docs/locations#supported_locations.
+    project: Optional. The project of the BigQuery dataset to publish BigLake
+      external or non-BigLake external tables to. If not specified, the
+      project of the Cloud Storage bucket will be used. The format is
+      "projects/{project_id_or_number}".
     tableType: Optional. Determines whether to publish discovered tables as
       BigLake external tables or non-BigLake external tables.
   """
@@ -5265,7 +5277,8 @@ class GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(_messages.M
 
   connection = _messages.StringField(1)
   location = _messages.StringField(2)
-  tableType = _messages.EnumField('TableTypeValueValuesEnum', 3)
+  project = _messages.StringField(3)
+  tableType = _messages.EnumField('TableTypeValueValuesEnum', 4)
 
 
 class GoogleCloudDataplexV1DataDiscoverySpecStorageConfig(_messages.Message):
@@ -5618,13 +5631,17 @@ class GoogleCloudDataplexV1DataQualityColumnResult(_messages.Message):
 
   Fields:
     column: Output only. The column specified in the DataQualityRule.
+    dimensions: Output only. The dimension-level results for this column.
+    passed: Output only. Whether the column passed or failed.
     score: Output only. The column-level data quality score for this data scan
       job if and only if the 'column' field is set.The score ranges between
       between 0, 100 (up to two decimal points).
   """
 
   column = _messages.StringField(1)
-  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 2, repeated=True)
+  passed = _messages.BooleanField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualityDimension(_messages.Message):
@@ -5662,6 +5679,8 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
   r"""The output of a DataQualityScan.
 
   Fields:
+    catalogPublishingStatus: Output only. The status of publishing the data
+      scan to Catalog.
     columns: Output only. A list of results at the column level.A column will
       have a corresponding DataQualityColumnResult if and only if there is at
       least one rule with the 'column' field set to it.
@@ -5678,14 +5697,15 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
       between 0, 100 (up to two decimal points).
   """
 
-  columns = _messages.MessageField('GoogleCloudDataplexV1DataQualityColumnResult', 1, repeated=True)
-  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 2, repeated=True)
-  passed = _messages.BooleanField(3)
-  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 4)
-  rowCount = _messages.IntegerField(5)
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 6, repeated=True)
-  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 7)
-  score = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  catalogPublishingStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanCatalogPublishingStatus', 1)
+  columns = _messages.MessageField('GoogleCloudDataplexV1DataQualityColumnResult', 2, repeated=True)
+  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 3, repeated=True)
+  passed = _messages.BooleanField(4)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 5)
+  rowCount = _messages.IntegerField(6)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 7, repeated=True)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 8)
+  score = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualityResultPostScanActionsResult(_messages.Message):
@@ -6076,6 +6096,8 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
   r"""DataQualityScan related setting.
 
   Fields:
+    catalogPublishingEnabled: Optional. If set, the latest DataScan job result
+      will be published to Dataplex Catalog.
     postScanActions: Optional. Actions to take upon job completion.
     rowFilter: Optional. A filter applied to all rows in a single DataScan
       job. The filter needs to be a valid SQL expression for a WHERE clause in
@@ -6090,10 +6112,11 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
       sampling_percent is not specified, 0 or 100.
   """
 
-  postScanActions = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpecPostScanActions', 1)
-  rowFilter = _messages.StringField(2)
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 3, repeated=True)
-  samplingPercent = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  catalogPublishingEnabled = _messages.BooleanField(1)
+  postScanActions = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpecPostScanActions', 2)
+  rowFilter = _messages.StringField(3)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 4, repeated=True)
+  samplingPercent = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualitySpecPostScanActions(_messages.Message):
@@ -6304,6 +6327,31 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   updateTime = _messages.StringField(18)
 
 
+class GoogleCloudDataplexV1DataScanCatalogPublishingStatus(_messages.Message):
+  r"""The status of publishing the data scan result to Catalog.
+
+  Enums:
+    StateValueValuesEnum: Output only. Execution state for catalog publishing.
+
+  Fields:
+    state: Output only. Execution state for catalog publishing.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Execution state for catalog publishing.
+
+    Values:
+      STATE_UNSPECIFIED: The publishing state is unspecified.
+      SUCCEEDED: Publish to catalog completed successfully.
+      FAILED: Publish to catalog failed.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
 class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
   r"""These messages contain information about the execution of a datascan.
   The monitored resource is 'DataScan'
@@ -6315,6 +6363,8 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
     TypeValueValuesEnum: The type of the data scan.
 
   Fields:
+    catalogPublishingStatus: The status of publishing the data scan to
+      Catalog.
     createTime: The time when the data scan job was created.
     dataProfile: Data profile result for data profile type data scan.
     dataProfileConfigs: Applied configs for data profile type data scan.
@@ -6390,22 +6440,23 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
     DATA_QUALITY = 2
     DATA_DISCOVERY = 3
 
-  createTime = _messages.StringField(1)
-  dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 2)
-  dataProfileConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs', 3)
-  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 4)
-  dataQualityConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityAppliedConfigs', 5)
-  dataSource = _messages.StringField(6)
-  endTime = _messages.StringField(7)
-  jobId = _messages.StringField(8)
-  message = _messages.StringField(9)
-  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataScanEventPostScanActionsResult', 10)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 11)
-  specVersion = _messages.StringField(12)
-  startTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  trigger = _messages.EnumField('TriggerValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  catalogPublishingStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanCatalogPublishingStatus', 1)
+  createTime = _messages.StringField(2)
+  dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 3)
+  dataProfileConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs', 4)
+  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 5)
+  dataQualityConfigs = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityAppliedConfigs', 6)
+  dataSource = _messages.StringField(7)
+  endTime = _messages.StringField(8)
+  jobId = _messages.StringField(9)
+  message = _messages.StringField(10)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataScanEventPostScanActionsResult', 11)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 12)
+  specVersion = _messages.StringField(13)
+  startTime = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class GoogleCloudDataplexV1DataScanEventDataProfileAppliedConfigs(_messages.Message):
@@ -7879,31 +7930,34 @@ class GoogleCloudDataplexV1GenerateDataQualityRulesResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1Glossary(_messages.Message):
-  r"""A Glossary represents a collection of categories and terms defined by
-  the user. Glossary is a top level resource and is the GCP parent resource of
-  all the categories and terms within it.
+  r"""A Glossary represents a collection of GlossaryCategories and
+  GlossaryTerms defined by the user. Glossary is a top level resource and is
+  the GCP parent resource of all the GlossaryCategories and GlossaryTerms
+  within it.
 
   Messages:
     LabelsValue: Optional. User-defined labels for the Glossary.
 
   Fields:
-    categoryCount: Output only. The number of categories in the glossary.
-    createTime: Output only. The time at which the glossary was created.
-    description: Optional. The user-mutable description of the glossary.
-    displayName: Optional. User friendly display name of the glossary. This is
-      user-mutable. This will be same as the glossaryId, if not specified.
+    categoryCount: Output only. The number of GlossaryCategories in the
+      Glossary.
+    createTime: Output only. The time at which the Glossary was created.
+    description: Optional. The user-mutable description of the Glossary.
+    displayName: Optional. User friendly display name of the Glossary. This is
+      user-mutable. This will be same as the GlossaryId, if not specified.
     etag: Optional. Needed for resource freshness validation. This checksum is
       computed by the server based on the value of other fields, and may be
       sent on update and delete requests to ensure the client has an up-to-
       date value before proceeding.
     labels: Optional. User-defined labels for the Glossary.
     name: Output only. Identifier. The resource name of the Glossary. Format:
-      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
-    termCount: Output only. The number of terms in the glossary.
+      projects/{project_id_or_number}/locations/{location_id}/glossaries/{glos
+      sary_id}
+    termCount: Output only. The number of GlossaryTerms in the Glossary.
     uid: Output only. System generated unique id for the Glossary. This ID
       will be different if the Glossary is deleted and re-created with the
       same name.
-    updateTime: Output only. The time at which the glossary was last updated.
+    updateTime: Output only. The time at which the Glossary was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -7943,8 +7997,8 @@ class GoogleCloudDataplexV1Glossary(_messages.Message):
 
 
 class GoogleCloudDataplexV1GlossaryCategory(_messages.Message):
-  r"""A GlossaryCategory represents a collection of categories and terms
-  within a Glossary that are related to each other.
+  r"""A GlossaryCategory represents a collection of GlossaryCategories and
+  GlossaryTerms within a Glossary that are related to each other.
 
   Messages:
     LabelsValue: Optional. User-defined labels for the GlossaryCategory.
@@ -7955,17 +8009,17 @@ class GoogleCloudDataplexV1GlossaryCategory(_messages.Message):
     description: Optional. The user-mutable description of the
       GlossaryCategory.
     displayName: Optional. User friendly display name of the GlossaryCategory.
-      This is user-mutable. This will be same as the categoryId, if not
-      specified.
+      This is user-mutable. This will be same as the GlossaryCategoryId, if
+      not specified.
     labels: Optional. User-defined labels for the GlossaryCategory.
     name: Output only. Identifier. The resource name of the GlossaryCategory.
-      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
-      Id}/categories/{categoryId}
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id}/categories/{category_id}
     parent: Required. The immediate parent of the GlossaryCategory in the
-      resource-hierarchy. It can either be a Glossary or a Category. Format:
-      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId} OR p
-      rojects/{projectId}/locations/{locationId}/glossaries/{glossaryId}/categ
-      ories/{categoryId}
+      resource-hierarchy. It can either be a Glossary or a GlossaryCategory.
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id} OR projects/{project_id_or_number}/locations/{location_
+      id}/glossaries/{glossary_id}/categories/{category_id}
     uid: Output only. System generated unique id for the GlossaryCategory.
       This ID will be different if the GlossaryCategory is deleted and re-
       created with the same name.
@@ -8008,8 +8062,8 @@ class GoogleCloudDataplexV1GlossaryCategory(_messages.Message):
 
 
 class GoogleCloudDataplexV1GlossaryTerm(_messages.Message):
-  r"""GlossaryTerms are the core of glossary. A GlossaryTerm holds a rich text
-  description that can be attached to entries or specific columns to enrich
+  r"""GlossaryTerms are the core of Glossary. A GlossaryTerm holds a rich text
+  description that can be attached to Entries or specific columns to enrich
   them.
 
   Messages:
@@ -8019,16 +8073,17 @@ class GoogleCloudDataplexV1GlossaryTerm(_messages.Message):
     createTime: Output only. The time at which the GlossaryTerm was created.
     description: Optional. The user-mutable description of the GlossaryTerm.
     displayName: Optional. User friendly display name of the GlossaryTerm.
-      This is user-mutable. This will be same as the termId, if not specified.
+      This is user-mutable. This will be same as the GlossaryTermId, if not
+      specified.
     labels: Optional. User-defined labels for the GlossaryTerm.
     name: Output only. Identifier. The resource name of the GlossaryTerm.
-      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
-      Id}/terms/{termId}
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id}/terms/{term_id}
     parent: Required. The immediate parent of the GlossaryTerm in the
-      resource-hierarchy. It can either be a Glossary or a Category. Format:
-      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId} OR p
-      rojects/{projectId}/locations/{locationId}/glossaries/{glossaryId}/categ
-      ories/{categoryId}
+      resource-hierarchy. It can either be a Glossary or a GlossaryCategory.
+      Format: projects/{project_id_or_number}/locations/{location_id}/glossari
+      es/{glossary_id} OR projects/{project_id_or_number}/locations/{location_
+      id}/glossaries/{glossary_id}/categories/{category_id}
     uid: Output only. System generated unique id for the GlossaryTerm. This ID
       will be different if the GlossaryTerm is deleted and re-created with the
       same name.
@@ -8922,7 +8977,7 @@ class GoogleCloudDataplexV1ListGlossariesResponse(_messages.Message):
   r"""List Glossaries Response
 
   Fields:
-    glossaries: Lists the glossaries in the specified parent.
+    glossaries: Lists the Glossaries in the specified parent.
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachableLocations: Locations that the service couldn't reach.
@@ -8937,7 +8992,7 @@ class GoogleCloudDataplexV1ListGlossaryCategoriesResponse(_messages.Message):
   r"""List GlossaryCategories Response
 
   Fields:
-    categories: Lists the glossaryCategories in the specified parent.
+    categories: Lists the GlossaryCategories in the specified parent.
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachableLocations: Locations that the service couldn't reach.
@@ -8954,7 +9009,7 @@ class GoogleCloudDataplexV1ListGlossaryTermsResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    terms: Lists the terms in the specified parent.
+    terms: Lists the GlossaryTerms in the specified parent.
     unreachableLocations: Locations that the service couldn't reach.
   """
 
@@ -9232,23 +9287,32 @@ class GoogleCloudDataplexV1MetadataJobImportJobResult(_messages.Message):
   Fields:
     createdEntries: Output only. The total number of entries that were
       created.
+    createdEntryLinks: Output only. The total number of entry links that were
+      successfully created.
     deletedEntries: Output only. The total number of entries that were
       deleted.
+    deletedEntryLinks: Output only. The total number of entry links that were
+      successfully deleted.
     recreatedEntries: Output only. The total number of entries that were
       recreated.
     unchangedEntries: Output only. The total number of entries that were
       unchanged.
+    unchangedEntryLinks: Output only. The total number of entry links that
+      were left unchanged.
     updateTime: Output only. The time when the status was updated.
     updatedEntries: Output only. The total number of entries that were
       updated.
   """
 
   createdEntries = _messages.IntegerField(1)
-  deletedEntries = _messages.IntegerField(2)
-  recreatedEntries = _messages.IntegerField(3)
-  unchangedEntries = _messages.IntegerField(4)
-  updateTime = _messages.StringField(5)
-  updatedEntries = _messages.IntegerField(6)
+  createdEntryLinks = _messages.IntegerField(2)
+  deletedEntries = _messages.IntegerField(3)
+  deletedEntryLinks = _messages.IntegerField(4)
+  recreatedEntries = _messages.IntegerField(5)
+  unchangedEntries = _messages.IntegerField(6)
+  unchangedEntryLinks = _messages.IntegerField(7)
+  updateTime = _messages.StringField(8)
+  updatedEntries = _messages.IntegerField(9)
 
 
 class GoogleCloudDataplexV1MetadataJobImportJobSpec(_messages.Message):
@@ -9395,6 +9459,13 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(_messages.Mess
       Only entries and aspects that belong to the specified entry group are
       affected by the job.Must contain exactly one element. The entry group
       and the job must be in the same location.
+    entryLinkTypes: Optional. The entry link types that are in scope for the
+      import job, specified as relative resource names in the format projects/
+      {project_number_or_id}/locations/{location_id}/entryLinkTypes/{entry_lin
+      k_type_id}. The job modifies only the entryLinks that belong to these
+      entry link types.If the metadata import file attempts to create or
+      delete an entry link whose entry link type isn't included in this list,
+      the import job will skip those entry links.
     entryTypes: Required. The entry types that are in scope for the import
       job, specified as relative resource names in the format projects/{projec
       t_number_or_id}/locations/{location_id}/entryTypes/{entry_type_id}. The
@@ -9403,11 +9474,28 @@ class GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(_messages.Mess
       isn't included in this list, the import job is halted before modifying
       any entries or aspects.The location of an entry type must either match
       the location of the job, or the entry type must be global.
+    glossaries: Optional. The glossaries that are in scope for the import job,
+      specified as relative resource names in the format projects/{project_num
+      ber_or_id}/locations/{location_id}/glossaries/{glossary_id}.While
+      importing Business Glossary entries, the user must provide glossaries.
+      While importing entries, the user does not have to provide glossaries.
+      If the metadata import file attempts to modify Business Glossary entries
+      whose glossary isn't included in this list, the import job will skip
+      those entries.The location of a glossary must either match the location
+      of the job, or the glossary must be global.
+    referencedEntryScopes: Optional. Defines the scope of entries that can be
+      referenced in the entry links.Currently, projects are supported as valid
+      scopes. Format: projects/{project_number_or_id}If the metadata import
+      file attempts to create an entry link which references an entry that is
+      not in the scope, the import job will skip that entry link.
   """
 
   aspectTypes = _messages.StringField(1, repeated=True)
   entryGroups = _messages.StringField(2, repeated=True)
-  entryTypes = _messages.StringField(3, repeated=True)
+  entryLinkTypes = _messages.StringField(3, repeated=True)
+  entryTypes = _messages.StringField(4, repeated=True)
+  glossaries = _messages.StringField(5, repeated=True)
+  referencedEntryScopes = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudDataplexV1MetadataJobStatus(_messages.Message):

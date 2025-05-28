@@ -135,9 +135,7 @@ def Connect(conn_context, already_activated_service=False):
     # pylint: enable=protected-access
     yield ServerlessOperations(
         client,
-        conn_info.api_name,
-        conn_info.api_version,
-        conn_info.region,
+        conn_info,
         op_client,
     )
 
@@ -209,23 +207,23 @@ class _AddDigestToImageChange(config_changes_mod.TemplateConfigChanger):
 class ServerlessOperations(object):
   """Client used by Serverless to communicate with the actual Serverless API."""
 
-  def __init__(self, client, api_name, api_version, region, op_client):
+  def __init__(self, client, conn_context, op_client):
     """Inits ServerlessOperations with given API clients.
 
     Args:
       client: The API client for interacting with Kubernetes Cloud Run APIs.
-      api_name: str, The name of the Cloud Run API.
-      api_version: str, The version of the Cloud Run API.
-      region: str, The region of the control plane if operating against hosted
-        Cloud Run, else None.
+      conn_context: the connection context used to create this object.
       op_client: The API client for interacting with One Platform APIs. Or None
         if interacting with Cloud Run for Anthos.
     """
     self._client = client
     self._registry = resources.REGISTRY.Clone()
-    self._registry.RegisterApiByName(api_name, api_version)
+    self._registry.RegisterApiByName(
+        conn_context.api_name, conn_context.api_version
+    )
     self._op_client = op_client
-    self._region = region
+    self._region = conn_context.region
+    self._conn_context = conn_context
 
   @property
   def messages_module(self):
@@ -299,21 +297,6 @@ class ServerlessOperations(object):
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
-  def ListWorkerPools(self, namespace_ref):
-    """Returns all worker pools in the namespace."""
-    messages = self.messages_module
-    request = messages.RunNamespacesWorkerpoolsListRequest(
-        parent=namespace_ref.RelativeName()
-    )
-    try:
-      with metrics.RecordDuration(metric_names.LIST_WORKER_POOLS):
-        response = self._client.namespaces_workerpools.List(request)
-      return [
-          worker_pool_lib.WorkerPool(item, messages) for item in response.items
-      ]
-    except api_exceptions.InvalidDataFromServerError as e:
-      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
-
   def ListConfigurations(self, namespace_ref):
     """Returns all configurations in the namespace."""
     messages = self.messages_module
@@ -378,24 +361,6 @@ class ServerlessOperations(object):
         as_dict = encoding.MessageToPyValue(operation.response)
         as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
         return service.Service(as_pb, self.messages_module)
-    except api_exceptions.InvalidDataFromServerError as e:
-      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
-    except api_exceptions.HttpNotFoundError:
-      return None
-
-  def GetWorkerPool(self, worker_pool_ref):
-    """Return the relevant WorkerPool from the server, or None if 404."""
-    messages = self.messages_module
-    worker_pool_get_request = messages.RunNamespacesWorkerpoolsGetRequest(
-        name=worker_pool_ref.RelativeName()
-    )
-
-    try:
-      with metrics.RecordDuration(metric_names.GET_WORKER_POOL):
-        worker_pool_get_response = self._client.namespaces_workerpools.Get(
-            worker_pool_get_request
-        )
-        return worker_pool_lib.WorkerPool(worker_pool_get_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
@@ -836,6 +801,7 @@ class ServerlessOperations(object):
       prefetch=False,
       build_image=None,
       build_pack=None,
+      build_region=None,
       build_source=None,
       repo_to_create=None,
       already_activated_services=False,
@@ -877,6 +843,7 @@ class ServerlessOperations(object):
         service.
       build_image: The build image reference to the build.
       build_pack: The build pack reference to the build.
+      build_region: The region to use for the build, in case of multi-region.
       build_source: The build source reference to the build.
       repo_to_create: Optional
         googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
@@ -909,6 +876,7 @@ class ServerlessOperations(object):
         base.ReleaseTrack.ALPHA,
         base.ReleaseTrack.BETA,
     ]
+    region = build_region or self._region
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(
@@ -923,56 +891,57 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      if should_validate_service:
-
-        self._ValidateServiceBeforeSourceDeploy(
-            tracker, service_ref, prefetch, config_changes, generate_name
+      new_conn = self._conn_context.GetContextWithRegionOverride(region)
+      with new_conn:
+        if should_validate_service:
+          self._ValidateServiceBeforeSourceDeploy(
+              tracker, service_ref, prefetch, config_changes, generate_name
+          )
+        # TODO(b/355762514): Either remove or re-enable this validation.
+        # self._ValidateService(service_ref, config_changes)
+        (
+            image_digest,
+            build_base_image,
+            build_id,
+            uploaded_source,
+            build_name,
+        ) = deployer.CreateImage(
+            tracker,
+            build_image,
+            build_source,
+            build_pack,
+            repo_to_create,
+            release_track,
+            already_activated_services,
+            region,
+            service_ref,
+            delegate_builds,
+            base_image,
+            build_service_account,
+            build_worker_pool,
+            build_env_vars,
+            enable_automatic_updates,
+            source_bucket,
+            kms_key,
         )
-      # TODO(b/355762514): Either remove or re-enable this validation.
-      # self._ValidateService(service_ref, config_changes)
-      (
-          image_digest,
-          build_base_image,
-          build_id,
-          uploaded_source,
-          build_name,
-      ) = deployer.CreateImage(
-          tracker,
-          build_image,
-          build_source,
-          build_pack,
-          repo_to_create,
-          release_track,
-          already_activated_services,
-          self._region,
-          service_ref,
-          delegate_builds,
-          base_image,
-          build_service_account,
-          build_worker_pool,
-          build_env_vars,
-          enable_automatic_updates,
-          source_bucket,
-          kms_key,
-      )
-      if image_digest is None:
-        return
-      self._ClearRunFunctionsAnnotations(config_changes)
-      self._AddRunFunctionsAnnotations(
-          config_changes=config_changes,
-          uploaded_source=uploaded_source,
-          service_account=build_service_account,
-          worker_pool=build_worker_pool,
-          build_env_vars=build_env_vars,
-          build_pack=build_pack,
-          build_id=build_id,
-          build_image=build_image,
-          build_name=build_name,
-          build_base_image=build_base_image,
-          build_from_source_container_name=build_from_source_container_name,
-          enable_automatic_updates=enable_automatic_updates,
-      )
-      config_changes.append(_AddDigestToImageChange(image_digest))
+        if image_digest is None:
+          return
+        self._ClearRunFunctionsAnnotations(config_changes)
+        self._AddRunFunctionsAnnotations(
+            config_changes=config_changes,
+            uploaded_source=uploaded_source,
+            service_account=build_service_account,
+            worker_pool=build_worker_pool,
+            build_env_vars=build_env_vars,
+            build_pack=build_pack,
+            build_id=build_id,
+            build_image=build_image,
+            build_name=build_name,
+            build_base_image=build_base_image,
+            build_from_source_container_name=build_from_source_container_name,
+            enable_automatic_updates=enable_automatic_updates,
+        )
+        config_changes.append(_AddDigestToImageChange(image_digest))
     if prefetch is None:
       serv = None
     elif build_source:
@@ -1161,6 +1130,197 @@ class ServerlessOperations(object):
         tracker.CompleteStageWithWarning(
             stages.SERVICE_IAP_ENABLE, warning_message=warning_message
         )
+
+  def GetWorkerPool(self, worker_pool_ref):
+    """Return the relevant WorkerPool from the server, or None if 404."""
+    messages = self.messages_module
+    worker_pool_get_request = messages.RunNamespacesWorkerpoolsGetRequest(
+        name=worker_pool_ref.RelativeName()
+    )
+
+    try:
+      with metrics.RecordDuration(metric_names.GET_WORKER_POOL):
+        worker_pool_get_response = self._client.namespaces_workerpools.Get(
+            worker_pool_get_request
+        )
+        return worker_pool_lib.WorkerPool(worker_pool_get_response, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+  def ListWorkerPools(self, namespace_ref):
+    """Returns all worker pools in the namespace."""
+    messages = self.messages_module
+    request = messages.RunNamespacesWorkerpoolsListRequest(
+        parent=namespace_ref.RelativeName()
+    )
+    try:
+      with metrics.RecordDuration(metric_names.LIST_WORKER_POOLS):
+        response = self._client.namespaces_workerpools.List(request)
+      return [
+          worker_pool_lib.WorkerPool(item, messages) for item in response.items
+      ]
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+
+  def ReplaceWorkerPool(
+      self,
+      worker_pool_ref,
+      config_changes,
+      tracker,
+      asyn,
+      dry_run,
+  ):
+    """Replace the given worker pool in prod using the given config_changes.
+
+    Args:
+      worker_pool_ref: Resource, the worker pool to replace.
+      config_changes: list, objects that implement Adjust().
+      tracker: StagedProgressTracker, to report on the progress of releasing.
+      asyn: bool, if True, return without waiting for the worker pool to be
+        updated.
+      dry_run: bool. If true, only validate the configuration.
+
+    Returns:
+      worker_pool.WorkerPool, the worker pool as returned by the server on the
+      POST/PUT request to create/update the worker pool.
+    """
+    if tracker is None:
+      tracker = progress_tracker.NoOpStagedProgressTracker(
+          stages.WorkerPoolStages(),
+          interruptable=True,
+          aborted_message='aborted',
+      )
+    worker_pool = self.GetWorkerPool(worker_pool_ref)
+
+    if worker_pool and worker_pool.metadata.deletionTimestamp is not None:
+      raise serverless_exceptions.DeploymentFailedError(
+          'Worker pool [{}] is in the process of being deleted.'.format(
+              worker_pool_ref.workerpoolsId
+          )
+      )
+
+    # update or create worker pool
+    updated_worker_pool = self._UpdateOrCreateWorkerPool(
+        worker_pool_ref, config_changes, worker_pool, dry_run
+    )
+
+    if not asyn and not dry_run:
+      if updated_worker_pool.conditions.IsReady():
+        return updated_worker_pool
+    if updated_worker_pool.operation_id is None:
+      getter = functools.partial(self.GetWorkerPool, worker_pool_ref)
+    else:
+      getter = functools.partial(
+          self.WaitWorkerPool, updated_worker_pool.operation_id
+      )
+    poller = op_pollers.WorkerPoolConditionPoller(
+        getter,
+        tracker,
+        worker_pool=updated_worker_pool,
+    )
+    self.WaitForCondition(poller)
+    for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
+      tracker.AddWarning(msg)
+    updated_worker_pool = poller.GetResource()
+
+    return updated_worker_pool
+
+  def WaitWorkerPool(self, operation_id):
+    """Return the relevant WorkerPool from the server, or None if 404."""
+    messages = self.messages_module
+    project = properties.VALUES.core.project.Get(required=True)
+    op_name = (
+        f'projects/{project}/locations/{self._region}/operations/{operation_id}'
+    )
+    op_ref = self._registry.ParseRelativeName(
+        op_name, collection='run.projects.locations.operations'
+    )
+    try:
+      with metrics.RecordDuration(metric_names.WAIT_OPERATION):
+        poller = op_pollers.WaitOperationPoller(
+            self.messages_module,
+            self._client.projects_locations_workerpools,
+            self._client.projects_locations_operations,
+        )
+        operation = waiter.PollUntilDone(poller, op_ref)
+        as_dict = encoding.MessageToPyValue(operation.response)
+        as_pb = encoding.PyValueToMessage(messages.WorkerPool, as_dict)
+        return worker_pool_lib.WorkerPool(as_pb, self.messages_module)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+  def _UpdateOrCreateWorkerPool(
+      self,
+      worker_pool_ref,
+      config_changes,
+      worker_pool,
+      dry_run,
+  ):
+    """Update or create worker pool."""
+    messages = self.messages_module
+    try:
+      if worker_pool:
+        # PUT the changed WorkerPool
+        worker_pool = config_changes_mod.WithChanges(
+            worker_pool, config_changes
+        )
+        worker_pool_name = worker_pool_ref.RelativeName()
+        worker_pool_update_req = (
+            messages.RunNamespacesWorkerpoolsReplaceWorkerPoolRequest(
+                workerPool=worker_pool.Message(),
+                name=worker_pool_name,
+                dryRun=('all' if dry_run else None),
+            )
+        )
+        with metrics.RecordDuration(metric_names.UPDATE_WORKER_POOL):
+          updated = self._client.namespaces_workerpools.ReplaceWorkerPool(
+              worker_pool_update_req
+          )
+        return worker_pool_lib.WorkerPool(updated, messages)
+      else:
+        # POST a new WorkerPool
+        new_worker_pool = worker_pool_lib.WorkerPool.New(
+            self._client, worker_pool_ref.namespacesId
+        )
+        new_worker_pool.name = worker_pool_ref.workerpoolsId
+        parent = worker_pool_ref.Parent().RelativeName()
+        new_worker_pool = config_changes_mod.WithChanges(
+            new_worker_pool, config_changes
+        )
+        worker_pool_create_req = messages.RunNamespacesWorkerpoolsCreateRequest(
+            workerPool=new_worker_pool.Message(),
+            parent=parent,
+            dryRun='all' if dry_run else None,
+        )
+        with metrics.RecordDuration(metric_names.CREATE_WORKER_POOL):
+          raw_worker_pool = self._client.namespaces_workerpools.Create(
+              worker_pool_create_req
+          )
+        return worker_pool_lib.WorkerPool(raw_worker_pool, messages)
+    except api_exceptions.HttpBadRequestError as e:
+      exceptions.reraise(serverless_exceptions.HttpError(e))
+    except api_exceptions.HttpNotFoundError as e:
+      parsed_err = api_lib_exceptions.HttpException(e)
+      if (
+          hasattr(parsed_err.payload, 'domain_details')
+          and 'run.googleapis.com' in parsed_err.payload.domain_details
+      ):
+        raise parsed_err
+      error_msg = 'Deployment endpoint was not found.'
+      all_regions = global_methods.ListRegions(self._op_client)
+      if self._region not in all_regions:
+        regions = ['* {}'.format(r) for r in all_regions]
+        error_msg += (
+            ' The provided region was invalid. '
+            'Pass the `--region` flag or set the '
+            '`run/region` property to a valid region and retry.'
+            '\nAvailable regions:\n{}'.format('\n'.join(regions))
+        )
+      raise serverless_exceptions.DeploymentFailedError(error_msg)
+    except api_exceptions.HttpError as e:
+      exceptions.reraise(e)
 
   # TODO(b/322180968): Once Worker API is ready, factor out worker related
   # operations wired up to the API in a separate file.

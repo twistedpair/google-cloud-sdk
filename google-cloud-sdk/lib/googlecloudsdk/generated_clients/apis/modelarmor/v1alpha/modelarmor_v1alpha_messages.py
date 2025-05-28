@@ -37,6 +37,8 @@ class ByteDataItem(_messages.Message):
       WORD_DOCUMENT: DOCX, DOCM, DOTX, DOTM
       EXCEL_DOCUMENT: XLSX, XLSM, XLTX, XLYM
       POWERPOINT_DOCUMENT: PPTX, PPTM, POTX, POTM, POT
+      TXT: TXT
+      CSV: CSV
     """
     BYTE_ITEM_TYPE_UNSPECIFIED = 0
     PLAINTEXT_UTF8 = 1
@@ -44,6 +46,8 @@ class ByteDataItem(_messages.Message):
     WORD_DOCUMENT = 3
     EXCEL_DOCUMENT = 4
     POWERPOINT_DOCUMENT = 5
+    TXT = 6
+    CSV = 7
 
   byteData = _messages.BytesField(1)
   byteDataType = _messages.EnumField('ByteDataTypeValueValuesEnum', 2)
@@ -666,6 +670,10 @@ class ModelarmorProjectsLocationsUpdateFloorSettingRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class MultiLanguageDetectionMetadata(_messages.Message):
+  r"""Message for Translation Support."""
+
+
 class PiAndJailbreakFilterResult(_messages.Message):
   r"""Prompt injection and Jailbreak Filter Result.
 
@@ -1152,11 +1160,14 @@ class SanitizeModelResponseRequest(_messages.Message):
 
   Fields:
     modelResponseData: Required. Model response data to sanitize.
+    multiLanguageDetectionMetadata: Optional. Metadata related for
+      Translations.
     userPrompt: Optional. User Prompt associated with Model response.
   """
 
   modelResponseData = _messages.MessageField('DataItem', 1)
-  userPrompt = _messages.StringField(2)
+  multiLanguageDetectionMetadata = _messages.MessageField('MultiLanguageDetectionMetadata', 2)
+  userPrompt = _messages.StringField(3)
 
 
 class SanitizeModelResponseResponse(_messages.Message):

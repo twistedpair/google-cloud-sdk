@@ -333,14 +333,14 @@ def AddGroupPlacementArgs(parser, messages, track):
         type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=3),
         help='Specifies the number of max logical switches between VMs.'
     )
-    parser.add_argument(
-        '--gpu-topology',
-        type=str,
-        help=(
-            'Specifies the shape of the GPU slice, in slice based GPU families'
-            ' eg. A4X.'
-        ),
-    )
+  parser.add_argument(
+      '--gpu-topology',
+      type=str,
+      help=(
+          'Specifies the shape of the GPU slice, in slice based GPU families'
+          ' eg. A4X.'
+      ),
+  )
 
 
 def GetCollocationFlagMapper(messages, track):

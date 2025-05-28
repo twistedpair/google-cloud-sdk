@@ -279,12 +279,7 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
   if args.IsSpecified('collocation'):
     collocation = flags.GetCollocationFlagMapper(
         messages, track).GetEnumForChoice(args.collocation)
-  gpu_topology = None
-  if track in (
-      base.ReleaseTrack.ALPHA,
-      base.ReleaseTrack.BETA,
-  ) and args.IsSpecified('gpu_topology'):
-    gpu_topology = args.gpu_topology
+  gpu_topology = args.gpu_topology if args.IsSpecified('gpu_topology') else None
   placement_policy = None
   if track == base.ReleaseTrack.ALPHA and args.IsSpecified('scope'):
     scope = flags.GetAvailabilityDomainScopeFlagMapper(

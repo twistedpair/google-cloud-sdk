@@ -876,7 +876,6 @@ def AddWorkloadPolicyFlag(parser: parser_arguments.ArgumentInterceptor):
           'can be a full or partial URL to a resource policy containing '
           'the workload policy.'
       ),
-      hidden=True,
   )
 
 
@@ -888,13 +887,12 @@ def AddRemoveWorkloadPolicyFlag(parser: parser_arguments.ArgumentInterceptor):
       help=(
           'Detaches the workload policy from the managed instance group.'
       ),
-      hidden=True,
   )
 
 
 def AddWorkloadPolicyFlags(parser: parser_arguments.ArgumentInterceptor):
   """Add flags for managing workload policy."""
-  workload_policy_group = parser.add_group(mutex=True, hidden=True)
+  workload_policy_group = parser.add_group(mutex=True)
   AddWorkloadPolicyFlag(workload_policy_group)
   AddRemoveWorkloadPolicyFlag(workload_policy_group)
 

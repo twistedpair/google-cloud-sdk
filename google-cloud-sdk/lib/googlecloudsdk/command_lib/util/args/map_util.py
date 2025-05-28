@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
 import dotenv
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -141,11 +142,27 @@ class ArgDictWithYAMLOrEnv(object):
     self.value_type = value_type
 
   def __call__(self, file_path):
+    """Interpret a YAML or .env file as a dict.Try to parse the file as a .env file first, if it fails, try to parse it as a YAML file.
+
+    Args:
+      file_path: The path to the file to parse.
+
+    Returns:
+      A dict with the parsed values.
+    """
     map_dict = {}
-    map_file_dict = {}
+
+    if not os.path.exists(file_path):
+      raise arg_parsers.ArgumentTypeError(
+          'File [{}] does not exist.'.format(file_path)
+      )
 
     if file_path.endswith('.env'):
       map_file_dict = dotenv.dotenv_values(dotenv_path=file_path)
+      if not map_file_dict:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid .env file [{}], expected map-like data.'.format(file_path)
+        )
     else:
       map_file_dict = yaml.load_path(file_path)
       if not yaml.dict_like(map_file_dict):

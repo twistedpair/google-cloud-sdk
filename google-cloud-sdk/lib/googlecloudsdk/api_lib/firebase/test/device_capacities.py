@@ -82,6 +82,8 @@ class DeviceCapacities(object):
       for version_info in model.perVersionInfo:
         if version_info.versionId not in model.supportedVersionIds:
           continue
+        if version_info.deviceCapacity is None:
+          continue
         capacity_data.append(
             CapacityEntry(
                 model=model.id,

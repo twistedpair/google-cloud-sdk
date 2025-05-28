@@ -17,6 +17,7 @@
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 def GetProject(args):
@@ -163,3 +164,21 @@ def GetRolloutResourceSpec():
       locationsId=LocationAttributeConfig(),
       projectsId=ProjectAttributeConfig(),
   )
+
+
+def AddUriFlags(parser, collection, api_version):
+  """Adds `--uri` flag to the parser object for list commands.
+
+  Args:
+    parser: The argparse parser.
+    collection: str, The resource collection name.
+    api_version: str, The API version to use.
+  """
+
+  def _GetResourceUri(resource):
+    resource_relative_name = resources.REGISTRY.ParseRelativeName(
+        resource.name, collection=collection, api_version=api_version
+    )
+    return resource_relative_name.SelfLink()
+
+  parser.display_info.AddUriFunc(_GetResourceUri)

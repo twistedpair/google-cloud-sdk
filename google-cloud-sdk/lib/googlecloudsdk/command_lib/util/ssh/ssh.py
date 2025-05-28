@@ -30,6 +30,7 @@ import subprocess
 import tempfile
 import textwrap
 
+from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.oslogin import oslogin_utils
@@ -1188,21 +1189,36 @@ def GetOsloginState(
   ):
     user_email = quote(user_email, safe=':@')
     ValidateCertificate(oslogin_state, project.name, zone, instance.id)
-    # TODO: b/395159475 - Conditionally call ProvisionPosixAccount based on if
-    # a regional GetLoginProfile call returns NOT_FOUND.
-    oslogin.ProvisionPosixAccount(user_email, project.name, region)
     if not oslogin_state.signed_ssh_key:
-      sign_response = oslogin.SignSshPublicKeyForInstance(
-          public_key,
-          project.name,
-          region,
-          service_account=instance.serviceAccounts[0].email
-          if instance.serviceAccounts
-          else '',
-          compute_instance=(
-              f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
-          ),
-      )
+      try:
+        sign_response = oslogin.SignSshPublicKeyForInstance(
+            public_key,
+            project.name,
+            region,
+            service_account=instance.serviceAccounts[0].email
+            if instance.serviceAccounts
+            else '',
+            compute_instance=(
+                f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
+            ),
+        )
+      except exceptions.HttpNotFoundError:
+        log.status.Print(
+            'No OS Login profile found for user [{0}] for project [{1}].'
+            ' Creating POSIX account.'.format(user_email, project.name)
+        )
+        oslogin.ProvisionPosixAccount(user_email, project.name, region)
+        sign_response = oslogin.SignSshPublicKeyForInstance(
+            public_key,
+            project.name,
+            region,
+            service_account=instance.serviceAccounts[0].email
+            if instance.serviceAccounts
+            else '',
+            compute_instance=(
+                f'projects/{project.name}/zones/{zone}/instances/{instance.id}'
+            ),
+        )
       WriteCertificate(
           sign_response.signedSshPublicKey, project.name, zone, instance.id
       )

@@ -41,6 +41,7 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import local_state
+from googlecloudsdk.core.updater import python_manager
 from googlecloudsdk.core.updater import release_notes
 from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.updater import update_check
@@ -1103,6 +1104,9 @@ version [{1}].  To clear your fixed version setting, run:
           'Failed to update universe descriptors: %s',
           e,
       )
+
+    # Install Python on Mac if not already installed.
+    python_manager.PromptAndInstallPythonOnMac()
 
     sha256dict2 = self._HashRcfiles(_SHELL_RCFILES)
     if sha256dict1 != sha256dict2:

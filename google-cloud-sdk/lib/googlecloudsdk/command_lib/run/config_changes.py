@@ -36,6 +36,7 @@ from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.api_lib.run import worker_pool
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import name_generator
@@ -271,6 +272,33 @@ class ReplaceServiceChange(NonTemplateConfigChanger):
         if k.startswith(k8s_object.SERVING_GROUP):
           self.new_service.annotations[k] = v
     return self.new_service
+
+
+@dataclasses.dataclass(frozen=True)
+class ReplaceWorkerPoolChange(NonTemplateConfigChanger):
+  """Represents the user intent to replace the worker pool.
+
+  Attributes:
+    new_worker_pool: New worker pool that will replace the existing worker pool.
+  """
+
+  new_worker_pool: worker_pool.WorkerPool
+
+  def Adjust(self, resource):
+    """Returns a replacement for resource.
+
+    The returned worker pool is the worker pool provided to the constructor. If
+    resource.metadata.resourceVersion is not empty, has metadata.resourceVersion
+    of returned worker pool set to this value.
+
+    Args:
+      resource: worker_pool.WorkerPool, The worker pool to adjust.
+    """
+    if resource.metadata.resourceVersion:
+      self.new_worker_pool.metadata.resourceVersion = (
+          resource.metadata.resourceVersion
+      )
+    return self.new_worker_pool
 
 
 @dataclasses.dataclass(frozen=True, init=False)

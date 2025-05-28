@@ -581,8 +581,28 @@ def AddPdDiskType(parser):
   )
 
 
+def AddNoPersistentStorageOrPd(parser):
+  """Adds a --no-persistent-storage or group of persistent directory flags to the given parser."""
+  top_level_mutex_group = parser.add_mutually_exclusive_group()
+
+  help_text = """\
+  If set, workstations under this configuration will not have a persistent directory."""
+  top_level_mutex_group.add_argument(
+      '--no-persistent-storage',
+      action='store_true',
+      help=help_text,
+  )
+
+  help_text = """\
+  Persistent directory configuration."""
+  pd_group = top_level_mutex_group.add_group(mutex=False, help=help_text)
+  AddPdDiskType(pd_group)
+  AddPdDiskSizeOrSnapshot(pd_group)
+  AddPdReclaimPolicy(pd_group)
+
+
 def AddPdDiskSizeOrSnapshot(parser):
-  """Adds a --pd-disk-size and --pd-source-snapshot flag to the given parser."""
+  """Adds a --pd-disk-size or --pd-source-snapshot flag to the given parser."""
   help_text = """\
   Size of the persistent directory in GB."""
   group = parser.add_mutually_exclusive_group()
@@ -670,15 +690,29 @@ def AddPdReclaimPolicy(parser):
 
 
 def AddEphemeralDirectory(parser):
+  """Adds a --ephemeral-directory flag to the given parser."""
   spec = {
       'mount-path': str,
       'disk-type': str,
       'source-snapshot': str,
       'source-image': str,
-      'read-only': bool,
+      'read-only': arg_parsers.ArgBoolean(),
   }
   help_text = """\
-  Ephemeral directory which won't persist across workstation sessions."""
+  Ephemeral directory which won't persist across workstation sessions. An ephemeral directory is backed by a Compute Engine persistent disk whose mount-path, source-snapshot, source-image, and read-only are configurable.
+
+  *mount-path*::: Location of this directory in the running workstation.
+
+  *source-snapshot:: Name of the snapshot to use as the source for the disk. Must be empty if [source_image][] is set. Must be empty if [read_only][] is false. Updating [source_snapshot][] will update content in the ephemeral directory after the workstation is restarted.
+
+  *source-image::: Name of the disk image to use as the source for the disk. Must be empty if [source_snapshot][] is set. Updating [source_image][] will update content in the ephemeral directory after the workstation is restarted.
+
+  *read-only::: Whether the disk is read only. If true, the disk may be shared by multiple VMs and [source_snapshot][] must be set. Set to false when not specified and true when specified.
+
+  Example:
+
+    $ {command} --ephemeral-directory="mount-path=/home2,disk-type=pd-balanced,source-snapshot=projects/my-project/global/snapshots/snapshot,read-only=true"
+  """
   parser.add_argument(
       '--ephemeral-directory',
       type=arg_parsers.ArgDict(spec=spec),

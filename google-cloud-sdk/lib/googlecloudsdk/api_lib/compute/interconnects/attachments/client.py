@@ -95,6 +95,10 @@ class InterconnectAttachment(object):
       candidate_customer_router_ip_address,
       candidate_cloud_router_ipv6_address,
       candidate_customer_router_ipv6_address,
+      network,
+      geneve_vni,
+      default_appliance_ip_address,
+      tunnel_endpoint_ip_address,
   ):
     """Make an interconnect attachment insert request."""
     interconnect_self_link = None
@@ -127,14 +131,19 @@ class InterconnectAttachment(object):
       attachment.ipsecInternalAddresses = ipsec_internal_addresses
 
     if stack_type is not None:
-      attachment.stackType = self._messages.InterconnectAttachment.StackTypeValueValuesEnum(
-          stack_type)
+      attachment.stackType = (
+          self._messages.InterconnectAttachment.StackTypeValueValuesEnum(
+              stack_type
+          )
+      )
     if candidate_ipv6_subnets is not None:
       attachment.candidateIpv6Subnets = candidate_ipv6_subnets
     if cloud_router_ipv6_interface_id is not None:
       attachment.cloudRouterIpv6InterfaceId = cloud_router_ipv6_interface_id
     if customer_router_ipv6_interface_id is not None:
-      attachment.customerRouterIpv6InterfaceId = customer_router_ipv6_interface_id
+      attachment.customerRouterIpv6InterfaceId = (
+          customer_router_ipv6_interface_id
+      )
     if subnet_length is not None:
       attachment.subnetLength = subnet_length
     if multicast_enabled is not None:
@@ -154,6 +163,30 @@ class InterconnectAttachment(object):
     if candidate_customer_router_ipv6_address is not None:
       attachment.candidateCustomerRouterIpv6Address = (
           candidate_customer_router_ipv6_address
+      )
+    if network is not None:
+      if attachment.l2Forwarding is None:
+        attachment.l2Forwarding = (
+            self._messages.InterconnectAttachmentL2Forwarding()
+        )
+      attachment.l2Forwarding.network = network.SelfLink()
+    if tunnel_endpoint_ip_address is not None:
+      if attachment.l2Forwarding is None:
+        attachment.l2Forwarding = (
+            self._messages.InterconnectAttachmentL2Forwarding()
+        )
+      attachment.l2Forwarding.tunnelEndpointIpAddress = (
+          tunnel_endpoint_ip_address
+      )
+    if geneve_vni is not None:
+      attachment.l2Forwarding.geneveHeader = (
+          self._messages.InterconnectAttachmentL2ForwardingGeneveHeader(
+              vni=geneve_vni,
+          )
+      )
+    if default_appliance_ip_address is not None:
+      attachment.l2Forwarding.defaultApplianceIpAddress = (
+          default_appliance_ip_address
       )
 
     if validate_only is not None:
@@ -185,6 +218,8 @@ class InterconnectAttachment(object):
       multicast_enabled=None,
       candidate_cloud_router_ipv6_address=None,
       candidate_customer_router_ipv6_address=None,
+      geneve_vni=None,
+      default_appliance_ip_address=None,
   ):
     """Make an interconnect attachment patch request."""
     interconnect_attachment = self._messages.InterconnectAttachment(
@@ -225,6 +260,24 @@ class InterconnectAttachment(object):
       interconnect_attachment.candidateCustomerRouterIpv6Address = (
           candidate_customer_router_ipv6_address
       )
+    if geneve_vni is not None:
+      if interconnect_attachment.l2Forwarding is None:
+        interconnect_attachment.l2Forwarding = (
+            self._messages.InterconnectAttachmentL2Forwarding()
+        )
+        interconnect_attachment.l2Forwarding.geneveHeader = (
+            self._messages.InterconnectAttachmentL2ForwardingGeneveHeader(
+                vni=geneve_vni,
+            )
+        )
+    if default_appliance_ip_address is not None:
+      if interconnect_attachment.l2Forwarding is None:
+        interconnect_attachment.l2Forwarding = (
+            self._messages.InterconnectAttachmentL2Forwarding()
+        )
+      interconnect_attachment.l2Forwarding.defaultApplianceIpAddress = (
+          default_appliance_ip_address
+      )
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
@@ -245,6 +298,55 @@ class InterconnectAttachment(object):
                 project=self.ref.project,
                 region=self.ref.region,
                 interconnectAttachment=self.ref.Name()))
+
+  def _MakePatchMappingRequestTuple(
+      self,
+      vlan_key,
+      appliance_name,
+      appliance_ip_address,
+      inner_vlan_to_appliance_mappings,
+  ):
+    """Make an interconnect attachment patch request for L2 mappings."""
+    attachment = self._messages.InterconnectAttachment(
+        name=self.ref.Name(),
+        l2Forwarding=self._messages.InterconnectAttachmentL2Forwarding(
+            applianceMappings=self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue(
+                additionalProperties=[
+                    self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue.AdditionalProperty(
+                        key=vlan_key,
+                        value=self._messages.InterconnectAttachmentL2ForwardingApplianceMapping(
+                            applianceIpAddress=appliance_ip_address,
+                            innerVlanToApplianceMappings=[],
+                            name=appliance_name,
+                        ),
+                    )
+                ],
+            ),
+        ),
+    )
+
+    for inner_mapping in inner_vlan_to_appliance_mappings:
+      attachment.l2Forwarding.applianceMappings.additionalProperties[
+          0
+      ].value.innerVlanToApplianceMappings.append(
+          self._messages.InterconnectAttachmentL2ForwardingApplianceMappingInnerVlanToApplianceMapping(
+              innerVlanTags=inner_mapping.get('innerVlanTags', []),
+              innerApplianceIpAddress=inner_mapping.get(
+                  'innerApplianceIpAddress', ''
+              ),
+          )
+      )
+
+    return (
+        self._client.interconnectAttachments,
+        'Patch',
+        self._messages.ComputeInterconnectAttachmentsPatchRequest(
+            project=self.ref.project,
+            region=self.ref.region,
+            interconnectAttachment=self.ref.Name(),
+            interconnectAttachmentResource=attachment,
+        ),
+    )
 
   def Create(
       self,
@@ -277,6 +379,10 @@ class InterconnectAttachment(object):
       candidate_customer_router_ip_address=None,
       candidate_cloud_router_ipv6_address=None,
       candidate_customer_router_ipv6_address=None,
+      network=None,
+      geneve_vni=None,
+      default_appliance_ip_address=None,
+      tunnel_endpoint_ip_address=None,
   ):
     """Create an interconnectAttachment."""
     if edge_availability_domain is not None:
@@ -331,6 +437,10 @@ class InterconnectAttachment(object):
             candidate_customer_router_ip_address,
             candidate_cloud_router_ipv6_address,
             candidate_customer_router_ipv6_address,
+            network,
+            geneve_vni,
+            default_appliance_ip_address,
+            tunnel_endpoint_ip_address,
         )
     ]
     if not only_generate_request:
@@ -359,6 +469,8 @@ class InterconnectAttachment(object):
       multicast_enabled=None,
       candidate_cloud_router_ipv6_address=None,
       candidate_customer_router_ipv6_address=None,
+      geneve_vni=None,
+      default_appliance_ip_address=None,
   ):
     """Patch an interconnectAttachment."""
     if bandwidth:
@@ -389,6 +501,8 @@ class InterconnectAttachment(object):
             multicast_enabled,
             candidate_cloud_router_ipv6_address,
             candidate_customer_router_ipv6_address,
+            geneve_vni,
+            default_appliance_ip_address,
         )
     ]
     if not only_generate_request:
@@ -403,8 +517,72 @@ class InterconnectAttachment(object):
       return resources[0]
     return requests
 
+  def DescribeMapping(self, vlan_key=None, only_generate_request=False):
+    """Describe an interconnect attachment L2 inner mapping."""
+    requests = [self._MakeDescribeRequestTuple()]
+    if only_generate_request:
+      return requests
+
+    l2_forwarding = getattr(
+        self._compute_client.MakeRequests(requests)[0], 'l2Forwarding', None
+    )
+    appliance_mapping = getattr(l2_forwarding, 'applianceMappings', None)
+    inner_mapping = getattr(appliance_mapping, 'additionalProperties', [])
+    if vlan_key is not None:
+      for mapping in inner_mapping:
+        if mapping.key == vlan_key:
+          return {mapping.key: mapping.value}
+    return {}
+
+  def ListMapping(self, is_json=False, only_generate_request=False,):
+    """List all interconnect attachment L2 inner mappings."""
+    requests = [self._MakeDescribeRequestTuple()]
+    if only_generate_request:
+      return requests
+    l2_forwarding = getattr(
+        self._compute_client.MakeRequests(requests)[0], 'l2Forwarding', None
+    )
+    appliance_mapping = getattr(l2_forwarding, 'applianceMappings', None)
+    inner_mapping = getattr(appliance_mapping, 'additionalProperties', [])
+
+    if is_json:
+      return inner_mapping
+
+    list_results = []
+    for mapping in inner_mapping:
+      list_results.append({
+          'key': mapping.key,
+          'name': mapping.value.name,
+          'innerApplianceIpAddress': mapping.value.applianceIpAddress,
+      })
+    return list_results
+
   def Delete(self, only_generate_request=False):
     requests = [self._MakeDeleteRequestTuple()]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
+    return requests
+
+  def UpdateMapping(
+      self,
+      vlan_key=None,
+      appliance_name=None,
+      appliance_ip_address=None,
+      inner_vlan_to_appliance_mappings=None,
+      only_generate_request=False,
+  ):
+    """Add an interconnectAttachment."""
+    if inner_vlan_to_appliance_mappings is None:
+      inner_vlan_to_appliance_mappings = []
+    requests = [
+        self._MakePatchMappingRequestTuple(
+            vlan_key,
+            appliance_name,
+            appliance_ip_address,
+            inner_vlan_to_appliance_mappings,
+        )
+    ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
     return requests

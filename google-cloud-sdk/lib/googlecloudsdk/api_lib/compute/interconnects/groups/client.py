@@ -125,7 +125,7 @@ class InterconnectGroup(object):
     )
 
   def _MakePatchRequestTuple(
-      self, topology_capability, interconnects, **kwargs
+      self, topology_capability, interconnects, update_mask, **kwargs
   ):
     """Make a tuple for interconnect group patch request."""
     messages = self._messages
@@ -148,6 +148,7 @@ class InterconnectGroup(object):
             interconnectGroupResource=messages.InterconnectGroup(
                 **group_params
             ),
+            updateMask=update_mask,
         ),
     )
 
@@ -238,13 +239,14 @@ class InterconnectGroup(object):
       self,
       topology_capability=None,
       interconnects=(),
+      update_mask='',
       only_generate_request=False,
       **kwargs
   ):
     """Patch description, topology capability and member interconnects of an interconnect group."""
     requests = [
         self._MakePatchRequestTuple(
-            topology_capability, interconnects, **kwargs
+            topology_capability, interconnects, update_mask, **kwargs
         )
     ]
     if not only_generate_request:

@@ -45,6 +45,7 @@ from googlecloudsdk.core.util import files
 import six
 
 
+CSV_FIELD_SEPARATOR = ','
 _CSV_COLUMNS_COUNT = 10
 _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 
@@ -222,7 +223,15 @@ def get_csv_line_from_resource(resource):
       crc32c,
       md5,
   ]
-  return ','.join(['' if x is None else six.text_type(x) for x in line_values])
+  return CSV_FIELD_SEPARATOR.join(
+      ['' if x is None else six.text_type(x) for x in line_values]
+  )
+
+
+def get_fields_from_csv_line(line):
+  """Splits and returns the fields from a CSV line."""
+  # Capping splits prevents commas in URL from being caught.
+  return line.rstrip().rsplit(CSV_FIELD_SEPARATOR, _CSV_COLUMNS_COUNT)
 
 
 def parse_csv_line_to_resource(line, is_managed_folder=False):
@@ -240,7 +249,7 @@ def parse_csv_line_to_resource(line, is_managed_folder=False):
   if not line:
     return None
   # Capping splits prevents commas in URL from being caught.
-  line_information = line.rstrip().rsplit(',', _CSV_COLUMNS_COUNT)
+  line_information = get_fields_from_csv_line(line)
   url_string = line_information[0]
   url_object = storage_url.storage_url_from_string(url_string)
 
@@ -262,7 +271,7 @@ def parse_csv_line_to_resource(line, is_managed_folder=False):
       mode_base_eight_string,
       crc32c_string,
       md5_string,
-  ) = line.rstrip().rsplit(',', _CSV_COLUMNS_COUNT)
+  ) = line.rstrip().rsplit(CSV_FIELD_SEPARATOR, _CSV_COLUMNS_COUNT)
 
   cloud_object = resource_reference.ObjectResource(
       url_object,

@@ -29,9 +29,7 @@ _MESSAGE = apis.GetMessagesModule("managedkafka", "v1")
 def ValidateCPU(cpu):
   """Validate CPU >= 3."""
   if cpu < 3:
-    raise exceptions.BadArgumentException(
-        "--cpu", "CPU must be at least 3"
-    )
+    raise exceptions.BadArgumentException("--cpu", "CPU must be at least 3")
   return cpu
 
 
@@ -62,7 +60,7 @@ def PrepareUpdateWithSubnets(_, args, request):
 
 
 def PrepareUpdateWithCaPools(_, args, request):
-  """Prepare the update request with the information from the CA pool flag.
+  """Prepare the update request with the information from the mTLS CA pool flag.
 
   Args:
     _:  resource parameter required but unused variable.
@@ -72,7 +70,7 @@ def PrepareUpdateWithCaPools(_, args, request):
   Returns:
     The updated request with the CA pool.
   """
-  if not args.ca_pools:
+  if not args.mtls_ca_pools:
     return request
 
   # The cluster is not created yet if only the CA pool flag is set. This is
@@ -119,9 +117,7 @@ def MapSubnetsToNetworkConfig(_, args, request):
   for subnet in args.subnets:
     network_config = {"subnet": subnet}
     request.cluster.gcpConfig.accessConfig.networkConfigs.append(
-        encoding.DictToMessage(
-            network_config, _MESSAGE.NetworkConfig
-        )
+        encoding.DictToMessage(network_config, _MESSAGE.NetworkConfig)
     )
   return request
 
@@ -138,14 +134,14 @@ def MapCaPoolsToCASConfig(_, args, request):
     The updated request with CertificateAuthorityServiceConfig in the JSON
     format.
   """
-  if not args.ca_pools:
+  if not args.mtls_ca_pools:
     return request
 
   # Reference the existing CAS config if already created for the request.
   if not request.cluster.tlsConfig:
     request.cluster.tlsConfig = {}
   request.cluster.tlsConfig.trustConfig = {"casConfigs": []}
-  for ca_pool in args.ca_pools:
+  for ca_pool in args.mtls_ca_pools:
     cas_config = {"caPool": ca_pool}
     request.cluster.tlsConfig.trustConfig.casConfigs.append(
         encoding.DictToMessage(
@@ -202,11 +198,11 @@ def SynthesizeBootstrapAddr(response, cluster):
   domain_prefixed_project = project.split(":")
   if len(domain_prefixed_project) == 2:
     project = f"{domain_prefixed_project[1]}.{domain_prefixed_project[0]}"
-  bootstrap = (
-      f"bootstrap.{name}.{location}.managedkafka.{project}.cloud.goog"
-  )
+  bootstrap = f"bootstrap.{name}.{location}.managedkafka.{project}.cloud.goog"
   synthesized = core.resource.resource_projector.MakeSerializable(response)
-  synthesized["bootstrapAddress"] = bootstrap
+  synthesized["bootstrapAddress"] = f"{bootstrap}"
+  if hasattr(response, "tlsConfig") and response.tlsConfig:
+    synthesized["bootstrapAddressMTLS"] = f"{bootstrap}:9192"
   return synthesized
 
 
@@ -413,3 +409,63 @@ def PatchConfigs(_, args, request):
   if args.clear_configs:
     request.updateMask = AppendUpdateMask(request.updateMask, "configs")
   return request
+
+
+def ParseMode(mode) -> str:
+  """Parse the mode enum to a string.
+
+  Args:
+    mode: The mode enum of the schema registry or subject.
+
+  Returns:
+    The mode string.
+  """
+
+  if mode == _MESSAGE.SchemaMode.ModeValueValuesEnum.READWRITE:
+    return "READWRITE"
+  elif mode == _MESSAGE.SchemaMode.ModeValueValuesEnum.READONLY:
+    return "READONLY"
+  elif mode == _MESSAGE.SchemaMode.ModeValueValuesEnum.IMPORT:
+    return "IMPORT"
+  else:
+    return "NONE"
+
+
+def ParseCompatibility(compatibility) -> str:
+  """Parse the compatibility enum to a string.
+
+  Args:
+    compatibility: The compatibility enum of the schema registry or subject.
+
+  Returns:
+    The compatibility string.
+  """
+  if (
+      compatibility
+      == _MESSAGE.SchemaConfig.CompatibilityValueValuesEnum.BACKWARD
+  ):
+    return "BACKWARD"
+  elif (
+      compatibility
+      == _MESSAGE.SchemaConfig.CompatibilityValueValuesEnum.BACKWARD_TRANSITIVE
+  ):
+    return "BACKWARD_TRANSITIVE"
+  elif (
+      compatibility
+      == _MESSAGE.SchemaConfig.CompatibilityValueValuesEnum.FORWARD
+  ):
+    return "FORWARD"
+  elif (
+      compatibility
+      == _MESSAGE.SchemaConfig.CompatibilityValueValuesEnum.FORWARD_TRANSITIVE
+  ):
+    return "FORWARD_TRANSITIVE"
+  elif compatibility == _MESSAGE.SchemaConfig.CompatibilityValueValuesEnum.FULL:
+    return "FULL"
+  elif (
+      compatibility
+      == _MESSAGE.SchemaConfig.CompatibilityValueValuesEnum.FULL_TRANSITIVE
+  ):
+    return "FULL_TRANSITIVE"
+  else:
+    return "NONE"

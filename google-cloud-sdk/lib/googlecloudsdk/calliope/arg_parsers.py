@@ -1340,7 +1340,13 @@ class ArgDict(ArgList):
         key = self.key_type(key)
       except ValueError:
         raise ArgumentTypeError('Invalid key [{0}]'.format(key))
-    convert_value = self.operators.get(op, None)
+
+    if self.allow_key_only:
+      default_convert = self.operators.get('=', None)
+    else:
+      default_convert = None
+    convert_value = self.operators.get(op, default_convert)
+
     if convert_value:
       try:
         value = convert_value(value)
@@ -1536,6 +1542,7 @@ class ArgObject(ArgDict):
     (2) --inputs='{"foo": {"bar": 1}}'
     (3) --inputs=path_to_json.(json|yaml)
   """
+  _file_path_pattern = r'^\S*\.(yaml|json)$'
 
   def _UpdateAsNested(self, arg_type):
     if isinstance(arg_type, ArgObject):
@@ -1553,7 +1560,8 @@ class ArgObject(ArgDict):
   def __init__(self, key_type=None, value_type=None, spec=None,
                required_keys=None, help_text=None, repeated=False,
                hidden=None, enable_shorthand=True, enable_file_upload=True,
-               disable_key_description=False, root_level=True):
+               disable_key_description=False, root_level=True,
+               allow_key_only=False):
     # label nested values as not root level
     if value_type:
       self._UpdateAsNested(value_type)
@@ -1568,7 +1576,7 @@ class ArgObject(ArgDict):
     super(ArgObject, self).__init__(
         key_type=key_type, value_type=self._JSONValueType(value_type),
         spec=spec_type, required_keys=required_keys, includes_json=True,
-        cleanup_input=True)
+        cleanup_input=True, allow_key_only=allow_key_only)
     self.help_text = help_text
     self.repeated = repeated
     self._keyed_values = key_type is not None or spec is not None
@@ -1640,9 +1648,6 @@ class ArgObject(ArgDict):
 
   def _CheckIfJsonObject(self, arg_value):
     """Checks if arg_value can be loaded into a json object."""
-    if not self._keyed_values:
-      return False
-
     # pylint: disable=g-import-not-at-top
     from googlecloudsdk.core import yaml
     # pylint: enable=g-import-not-at-top
@@ -1653,7 +1658,9 @@ class ArgObject(ArgDict):
       else:
         json_dict = parsed_json
 
-      if not isinstance(json_dict, dict):
+      if isinstance(json_dict, str) and self.enable_file_upload:
+        return re.match(self._file_path_pattern, arg_value)
+      elif not isinstance(json_dict, dict):
         # Only return true for arg_values that parse into key-value pairs.
         return False
       elif all(val is None for val in json_dict.values()):
@@ -1678,8 +1685,7 @@ class ArgObject(ArgDict):
     from googlecloudsdk.core import yaml
     # pylint: enable=g-import-not-at-top
 
-    file_path_pattern = r'^\S*\.(yaml|json)$'
-    if re.match(file_path_pattern, arg_value) and self.enable_file_upload:
+    if re.match(self._file_path_pattern, arg_value) and self.enable_file_upload:
       arg_value = FileContents()(arg_value)
 
     if self._keyed_values or self.repeated:
@@ -1706,7 +1712,7 @@ class ArgObject(ArgDict):
 
   def _ContainsArgDict(self, arg_value):
     ops = '|'.join(self.operators.keys())
-    return re.search(f'({ops})', arg_value)
+    return re.search(f'({ops})', arg_value) or self.allow_key_only
 
   def _ParseArgDict(self, arg_value):
     stripped_value = arg_value.strip()
@@ -1721,15 +1727,23 @@ class ArgObject(ArgDict):
       arg_dict_str = arg_value
     return super(ArgObject, self).__call__(arg_dict_str)
 
+  def _CheckIfArgDictFormat(self, arg_value):
+    if not self.parse_as_arg_dict:
+      return False
+
+    empty_obj_shorthand = ''
+    return arg_value == empty_obj_shorthand or (
+        self._ContainsArgDict(arg_value)
+        and not self._CheckIfJsonObject(arg_value)
+    )
+
   def __call__(self, arg_value):
     if not isinstance(arg_value, str):
       raise ValueError(
           'ArgObject can only convert string values. Received {}.'.format(
               arg_value))
 
-    if (self.parse_as_arg_dict and
-        self._ContainsArgDict(arg_value) and
-        not self._CheckIfJsonObject(arg_value)):
+    if self._CheckIfArgDictFormat(arg_value):
       # If value contains arg_dict syntax and does not easily parse into a
       # json object, we assume it is an arg_dict.
       value = self._ParseArgDict(arg_value)

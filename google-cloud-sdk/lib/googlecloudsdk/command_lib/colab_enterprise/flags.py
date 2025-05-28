@@ -359,6 +359,7 @@ def AddRuntimeTemplateSoftwareConfigFlags(parser):
   """Adds Resource arg for runtime template to the parser."""
 
   software_config_group = parser.add_group(
+      hidden=True,
       help='The software configuration of the runtime template.',
   )
   software_config_group.add_argument(

@@ -2506,7 +2506,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""GlossaryCategory APIs are CCFE passthrough APIs. Creates a new GlossaryCategory resource.
+      r"""Creates a new GlossaryCategory resource.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesCategoriesCreateRequest) input message
@@ -2533,7 +2533,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a GlossaryCategory resource. All the categories and terms nested directly under the category will be moved one level up to the parent in the hierarchy.
+      r"""Deletes a GlossaryCategory resource. All the GlossaryCategories and GlossaryTerms nested directly under the specified GlossaryCategory will be moved one level up to the parent in the hierarchy.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesCategoriesDeleteRequest) input message
@@ -2560,7 +2560,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a specified GlossaryCategory resource.
+      r"""Gets a GlossaryCategory resource.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesCategoriesGetRequest) input message
@@ -2614,7 +2614,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists GlossaryCategory resources in a glossary.
+      r"""Lists GlossaryCategory resources in a Glossary.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesCategoriesListRequest) input message
@@ -2732,7 +2732,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""GlossaryTerm APIs are CCFE passthrough APIs. Creates a new GlossaryTerm resource.
+      r"""Creates a new GlossaryTerm resource.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesTermsCreateRequest) input message
@@ -2786,7 +2786,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a specified GlossaryTerm resource.
+      r"""Gets a GlossaryTerm resource.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesTermsGetRequest) input message
@@ -2840,7 +2840,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists GlossaryTerm resources in a glossary.
+      r"""Lists GlossaryTerm resources in a Glossary.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesTermsListRequest) input message
@@ -2985,7 +2985,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Glossary resource. All the categories and terms within the glossary must be deleted before a glossary can be deleted.
+      r"""Deletes a Glossary resource. All the categories and terms within the Glossary must be deleted before the Glossary can be deleted.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesDeleteRequest) input message
@@ -3012,7 +3012,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a specified Glossary resource.
+      r"""Gets a Glossary resource.
 
       Args:
         request: (DataplexProjectsLocationsGlossariesGetRequest) input message

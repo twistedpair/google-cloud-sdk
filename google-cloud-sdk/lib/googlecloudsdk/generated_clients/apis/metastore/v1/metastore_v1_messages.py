@@ -618,14 +618,9 @@ class EncryptionConfig(_messages.Message):
       to use for customer data encryption, in the following format:projects/{p
       roject_number}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys
       /{crypto_key_id}.
-    kmsKeys: Optional. The list of fully qualified customer provided Cloud KMS
-      key names for the multi-regional service. Each key must be in the
-      following format:projects/{project_number}/locations/{location_id}/keyRi
-      ngs/{key_ring_id}/cryptoKeys/{crypto_key_id}.
   """
 
   kmsKey = _messages.StringField(1)
-  kmsKeys = _messages.StringField(2, repeated=True)
 
 
 class ErrorDetails(_messages.Message):
@@ -1362,6 +1357,20 @@ class MaintenanceWindow(_messages.Message):
   hourOfDay = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class MessageSet(_messages.Message):
+  r"""This is proto2's version of MessageSet.DEPRECATED: DO NOT USE FOR NEW
+  FIELDS.If you are using editions or proto2, please make your own extendable
+  messages for your use case. If you are using proto3, please use Any
+  instead.MessageSet was the implementation of extensions for proto1. When
+  proto2 was introduced, extensions were implemented as a first-class feature.
+  This schema for MessageSet was meant to be a "bridge" solution to migrate
+  MessageSet-bearing messages from proto1 to proto2.This schema has been open-
+  sourced only to facilitate the migration of Google products with MessageSet-
+  bearing messages to open-source environments.
+  """
+
+
+
 class MetadataExport(_messages.Message):
   r"""The details of a metadata export operation.
 
@@ -1679,6 +1688,8 @@ class MetastoreProjectsLocationsListRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in AIP-160 (https://google.aip.dev/160).
@@ -1689,10 +1700,11 @@ class MetastoreProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class MetastoreProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -3369,6 +3381,33 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StatusProto(_messages.Message):
+  r"""Wire-format for a Status object
+
+  Fields:
+    canonicalCode: copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 canonical_code = 6;
+    code: Numeric code drawn from the space specified below. Often, this is
+      the canonical error space, and code is drawn from
+      google3/util/task/codes.proto copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional int32 code = 1;
+    message: Detail message copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional string message = 3;
+    messageSet: message_set associates an arbitrary proto message with the
+      status. copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
+      optional proto2.bridge.MessageSet message_set = 5;
+    space: copybara:strip_begin(b/383363683) Space to which this status
+      belongs copybara:strip_end_and_replace optional string space = 2; //
+      Space to which this status belongs
+  """
+
+  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  message = _messages.StringField(3)
+  messageSet = _messages.MessageField('MessageSet', 4)
+  space = _messages.StringField(5)
 
 
 class TelemetryConfig(_messages.Message):

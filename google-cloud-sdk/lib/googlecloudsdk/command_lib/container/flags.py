@@ -626,6 +626,30 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
   )
 
 
+def AddEnableDefaultComputeClassFlag(parser, hidden=True):
+  """Adds default compute class flag to parser.
+
+  Default compute class flag is --enable-default-compute-class.
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+  parser.add_argument(
+      '--enable-default-compute-class',
+      required=False,
+      default=None,
+      help="""\
+Enable the default compute class to use for the cluster.
+
+To disable Default Compute Class in an existing cluster, explicitly set flag
+`--no-enable-default-compute-class`.
+      """,
+      hidden=hidden,
+      action='store_true',
+  )
+
+
 def AddHPAProfilesFlag(parser, hidden=False):
   """Adds workload autoscaling profiles flag to parser.
 
@@ -6507,11 +6531,14 @@ def AddCPDiskEncryptionKeyFlag(parser):
   )
 
 
+workload_policies_validator = arg_parsers.RegexpValidator(
+    r'^allow-net-admin$',
+    'Workload policy only supports "allow-net-admin"',
+)
+
+
 def AddWorkloadPoliciesFlag(parser, hidden=False):
   """Adds workload policies related flags to parser."""
-  type_validator = arg_parsers.RegexpValidator(
-      r'^allow-net-admin$', 'Workload policy only supports "allow-net-admin"'
-  )
   help_text = """\
 Add Autopilot workload policies to the cluster.
 
@@ -6523,15 +6550,15 @@ The only supported workload policy is 'allow-net-admin'.
 """
 
   parser.add_argument(
-      '--workload-policies', type=type_validator, help=help_text, hidden=hidden
+      '--workload-policies',
+      type=workload_policies_validator,
+      help=help_text,
+      hidden=hidden,
   )
 
 
 def AddRemoveWorkloadPoliciesFlag(parser, hidden=False):
   """Adds Remove workload policies related flags to parser."""
-  type_validator = arg_parsers.RegexpValidator(
-      r'^allow-net-admin$', 'Workload policy only supports "allow-net-admin"'
-  )
   help_text = """\
 Remove Autopilot workload policies from the cluster.
 
@@ -6544,7 +6571,65 @@ The only supported workload policy is 'allow-net-admin'.
 
   parser.add_argument(
       '--remove-workload-policies',
-      type=type_validator,
+      type=workload_policies_validator,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddAutopilotWorkloadPoliciesFlag(parser, hidden=True):
+  """Adds workload policies related flags to parser.
+
+  This is for use in GKE Standard.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+Add Autopilot workload policies to the cluster.
+
+Examples:
+
+  $ {command} example-cluster --autopilot-workload-policies=allow-net-admin
+
+The only supported workload policy is 'allow-net-admin'.
+"""
+
+  parser.add_argument(
+      '--autopilot-workload-policies',
+      dest='workload_policies',
+      type=workload_policies_validator,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddRemoveAutopilotWorkloadPoliciesFlag(parser, hidden=True):
+  """Adds Remove workload policies related flags to parser.
+
+  This is for use in GKE Standard.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+Remove Autopilot workload policies from the cluster.
+
+Examples:
+
+  $ {command} example-cluster --remove-autopilot-workload-policies=allow-net-admin
+
+The only supported workload policy is 'allow-net-admin'.
+"""
+
+  parser.add_argument(
+      '--remove-autopilot-workload-policies',
+      dest='remove_workload_policies',
+      type=workload_policies_validator,
       help=help_text,
       hidden=hidden,
   )

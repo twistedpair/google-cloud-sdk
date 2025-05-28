@@ -184,6 +184,7 @@ def PopulateClusterMessage(req, messages, args):
         args.control_plane_node_storage_schema
     )
   SetContainerRuntimeConfig(req, args, messages)
+  EnableGoogleGroupAuthentication(req, args, messages)
 
 
 def PopulateClusterAlphaMessage(req, args):
@@ -322,3 +323,21 @@ def EnableClusterIsolationConfig(req, args):
           'Unsupported --enable_cluster_isolation value: '
           + args.enable_cluster_isolation
       )
+
+
+def EnableGoogleGroupAuthentication(req, args, messages):
+  """Set Google Group authentication config in the cluster request message.
+
+  Args:
+   req: Create cluster request message.
+   args: Command line arguments.
+   messages: Message module of edgecontainer cluster.
+  """
+
+  if flags.FlagIsExplicitlySet(args, 'enable_google_group_authentication'):
+    req.cluster.googleGroupAuthentication = (
+        messages.GoogleGroupAuthenticationConfig()
+    )
+    req.cluster.googleGroupAuthentication.enable = (
+        args.enable_google_group_authentication)
+

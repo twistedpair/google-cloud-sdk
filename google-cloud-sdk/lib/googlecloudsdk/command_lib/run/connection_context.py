@@ -418,6 +418,12 @@ class MultiRegionConnectionContext(ConnectionInfo):
     with _OverrideEndpointOverrides(self._api_name, self.endpoint):
       yield self
 
+  def GetContextWithRegionOverride(self, region):
+    if region == self.region:
+      return self
+    else:
+      return RegionalConnectionContext(region, self._api_name, self._version)
+
 
 class RegionalConnectionContext(ConnectionInfo):
   """Context manager to connect a particular Cloud Run region."""
@@ -449,6 +455,12 @@ class RegionalConnectionContext(ConnectionInfo):
   @property
   def supports_one_platform(self):
     return True
+
+  def GetContextWithRegionOverride(self, region):
+    if region == self.region:
+      return self
+    else:
+      return RegionalConnectionContext(region, self._api_name, self._version)
 
 
 def _GetApiName(product, release_track, is_cluster=False):

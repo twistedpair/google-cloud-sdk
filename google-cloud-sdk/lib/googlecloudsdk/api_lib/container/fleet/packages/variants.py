@@ -14,33 +14,12 @@
 # limitations under the License.
 """Utilities for Package Rollouts Variants API."""
 
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.container.fleet.packages import util
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.core import resources
 
 _LIST_REQUEST_BATCH_SIZE_ATTRIBUTE = 'pageSize'
 
-
-def GetClientInstance(no_http=False):
-  """Returns instance of generated Config Delivery gapic client."""
-  return apis.GetClientInstance('configdelivery', 'v1alpha', no_http=no_http)
-
-
-def GetMessagesModule(client=None):
-  """Returns generated Config Delivery gapic messages."""
-  client = client or GetClientInstance()
-  return client.MESSAGES_MODULE
-
-
-def GetVariantURI(resource):
-  """Returns URI of Variant for use with gapic client."""
-  variant = resources.REGISTRY.ParseRelativeName(
-      resource.name,
-      collection=(
-          'configdelivery.projects.locations.resourceBundles.releases.variants'
-      ),
-  )
-  return variant.SelfLink()
+VARIANT_COLLECTION = 'configdelivery.projects.locations.resourceBundles.releases.variants'
 
 
 def _ParentPath(project, location, parent_bundle, parent_release):
@@ -61,9 +40,10 @@ def GetFullyQualifiedPath(project, location, resource_bundle, release, variant):
 class VariantsClient(object):
   """Client for Variants in Config Delivery Package Rollouts API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, api_version, client=None, messages=None):
+    self._api_version = api_version or util.DEFAULT_API_VERSION
+    self.client = client or util.GetClientInstance(self._api_version)
+    self.messages = messages or util.GetMessagesModule(self.client)
     self._service = (
         self.client.projects_locations_resourceBundles_releases_variants
     )

@@ -29,6 +29,10 @@ projects_locations:
     parameter_name: locationsId
     attribute_name: location
     help: The location id of the {resource} resource.
+    fallthroughs:
+    - value: "global"
+      hint: |
+        default is global
   disable_auto_completers: true
 projects_locations_cloud_locations:
   name: cloudLocation

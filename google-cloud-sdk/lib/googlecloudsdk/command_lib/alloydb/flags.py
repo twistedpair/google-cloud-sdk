@@ -505,6 +505,25 @@ def AddAllocatedIPRangeName(parser):
   )
 
 
+def AddAllocatedIPRangeOverride(parser):
+  """Adds the `--allocated-ip-range-override` flag to the parser."""
+  parser.add_argument(
+      '--allocated-ip-range-override',
+      required=False,
+      hidden=True,
+      type=str,
+      help=(
+          'Name of the allocated IP range for the private IP AlloyDB instance,'
+          ' for example: "google-managed-services-default". If set, the'
+          ' instance IPs will be created from this allocated range and will'
+          ' override the IP range used by the parent cluster. The range name'
+          ' must comply with RFC 1035. Specifically, the name must be 1-63'
+          ' characters long and match the regular expression'
+          ' [a-z]([-a-z0-9]*[a-z0-9])?.'
+      ),
+  )
+
+
 def AddReadPoolNodeCount(parser):
   """Adds a --node-count flag to parser.
 
@@ -1657,18 +1676,23 @@ def AddRequireConnectors(parser):
   )
 
 
-def AddDatabaseVersion(parser, alloydb_messages):
+def AddDatabaseVersion(parser, alloydb_messages, release_track):
   """Adds Database Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
+    release_track: The command version being used - GA/BETA/ALPHA.
   """
   choices = [
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16,
   ]
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    choices.append(
+        alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_17
+    )
   parser.add_argument(
       '--database-version',
       required=False,

@@ -130,7 +130,8 @@ setup_cloudsdk_python() {
           . "$GLOBAL_CONFIG/virtenv/bin/activate"
         fi
       fi
-      CLOUDSDK_PYTHON=$(order_python python3 python python3.12 python3.13 python3.11 python3.10 python3.9 python3.8)
+      primary_python=python3.12
+      CLOUDSDK_PYTHON=$(order_python python3 "$primary_python" python3.13 python3.11 python3.10 python3.9 python3.8 python)
       if [ -z "$CLOUDSDK_PYTHON" ]; then
         CLOUDSDK_PYTHON=$(order_python_no_check python3 python)
       fi

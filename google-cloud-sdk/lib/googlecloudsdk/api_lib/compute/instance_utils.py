@@ -603,29 +603,40 @@ def ParseDiskResourceFromAttachedDisk(resources, attached_disk):
   """
   try:
     disk = resources.Parse(
-        attached_disk.source, collection='compute.regionDisks')
+        attached_disk.source, collection='compute.regionDisks'
+    )
     if disk:
       return disk
-  except (cloud_resources.WrongResourceCollectionException,
-          cloud_resources.RequiredFieldOmittedException):
+  except (
+      cloud_resources.WrongResourceCollectionException,
+      cloud_resources.RequiredFieldOmittedException,
+  ):
     pass
 
   try:
     disk = resources.Parse(attached_disk.source, collection='compute.disks')
     if disk:
       return disk
-  except (cloud_resources.WrongResourceCollectionException,
-          cloud_resources.RequiredFieldOmittedException):
+  except (
+      cloud_resources.WrongResourceCollectionException,
+      cloud_resources.RequiredFieldOmittedException,
+  ):
     pass
 
-  raise cloud_resources.InvalidResourceException('Unable to parse [{}]'.format(
-      attached_disk.source))
+  raise cloud_resources.InvalidResourceException(
+      "Unable to parse disk's source: [{0}] of device name: [{1}], try using"
+      ' `--device-name` instead.'.format(
+          attached_disk.source,
+          attached_disk.deviceName,
+      )
+  )
 
 
 def GetDiskDeviceName(disk, name, container_mount_disk):
   """Helper method to get device-name for a disk message."""
-  if (container_mount_disk and filter(
-      bool, [d.get('name', name) == name for d in container_mount_disk])):
+  if container_mount_disk and filter(
+      bool, [d.get('name', name) == name for d in container_mount_disk]
+  ):
     # device-name must be the same as name if it is being mounted to a
     # container.
     if not disk.get('device-name'):

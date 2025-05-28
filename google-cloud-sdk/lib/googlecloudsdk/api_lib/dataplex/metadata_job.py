@@ -66,9 +66,22 @@ def GenerateImportMetadataJobSpec(args):
           args.import_entry_sync_mode
       ),
       scope=module.GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(
-          entryGroups=args.import_entry_groups,
-          entryTypes=args.import_entry_types,
-          aspectTypes=args.import_aspect_types,
+          entryGroups=args.import_entry_groups
+          if args.import_entry_groups
+          else [],
+          glossaries=args.import_glossaries if args.import_glossaries else [],
+          entryTypes=args.import_entry_types
+          if args.import_entry_types
+          else [],
+          aspectTypes=args.import_aspect_types
+          if args.import_aspect_types
+          else [],
+          entryLinkTypes=args.import_entry_link_types
+          if args.import_entry_link_types
+          else [],
+          referencedEntryScopes=args.import_referenced_entry_scopes
+          if args.import_referenced_entry_scopes
+          else [],
       ),
       sourceCreateTime=args.import_source_create_time,
       sourceStorageUri=args.import_source_storage_uri,

@@ -513,6 +513,8 @@ apis:
           path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+        zones:
+          path: projects/{project}/zones/{zone}
   configdelivery:
     v1alpha:
       discovery_doc: configdelivery_v1alpha.json
@@ -1812,16 +1814,6 @@ apis:
     v1:
       discovery_doc: telcoautomation_v1.json
       default: true
-  workloadcertificate:
-    v1alpha1:
-      discovery_doc: workloadcertificate_v1alpha1.json
-      default: true
-      # Include projects.locations.workloadCertificateFeature collection explicitly.
-      # This is not imported automatically since gcloud skips collections that do not have a GET
-      # method. Workload Certificate Feature only implemented GetWorkloadCertificateFeature.
-      resources:
-        projects.locations.workloadCertificateFeature:
-          path: projects/{projectsId}/locations/global/workloadCertificateFeature
   messagestreams:
     v1alpha:
       discovery_doc: messagestreams_v1alpha.json

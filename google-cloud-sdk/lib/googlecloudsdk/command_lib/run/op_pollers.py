@@ -290,6 +290,14 @@ class ServiceConditionPoller(ConditionPoller):
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
 
 
+class WorkerPoolConditionPoller(ConditionPoller):
+  """A ConditionPoller for worker pools."""
+
+  def __init__(self, getter, tracker, dependencies=None, worker_pool=None):
+    super().__init__(getter, tracker, dependencies)
+    self._resource_fail_type = serverless_exceptions.DeploymentFailedError
+
+
 class RevisionNameBasedPoller(waiter.OperationPoller):
   """Poll for the revision with the given name to exist."""
 

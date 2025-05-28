@@ -15,40 +15,19 @@
 """Utilities for Package Rollouts Rollouts API."""
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.container.fleet.packages import util
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.command_lib.container.fleet.packages import utils
-from googlecloudsdk.core import resources
 
-
-def GetClientInstance(no_http=False):
-  """Returns instance of generated Config Delivery gapic client."""
-  return apis.GetClientInstance(
-      'configdelivery', utils.ApiVersion(), no_http=no_http
-  )
-
-
-def GetMessagesModule(client=None):
-  """Returns generated Config Delivery gapic messages."""
-  client = client or GetClientInstance()
-  return client.MESSAGES_MODULE
-
-
-def GetRolloutURI(resource):
-  """Returns URI of Rollout for use with gapic client."""
-  rollout = resources.REGISTRY.ParseRelativeName(
-      resource.name,
-      collection='configdelivery.projects.locations.fleetPackages.rollouts',
-  )
-  return rollout.SelfLink()
+ROLLOUT_COLLECTION = 'configdelivery.projects.locations.fleetPackages.rollouts'
 
 
 class RolloutsClient(object):
   """Client for Rollouts in Config Delivery Package Rollouts API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, api_version, client=None, messages=None):
+    self._api_version = api_version or util.DEFAULT_API_VERSION
+    self.client = client or util.GetClientInstance(self._api_version)
+    self.messages = messages or util.GetMessagesModule(self.client)
     self._service = self.client.projects_locations_fleetPackages_rollouts
     self.rollout_waiter = waiter.CloudOperationPollerNoResources(
         operation_service=self.client.projects_locations_operations,

@@ -14,10 +14,6 @@
 # limitations under the License.
 """Flags for backup-dr commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import argparse
 import itertools
 from typing import Any
@@ -679,6 +675,21 @@ Access restrictions can be modified to be more or less restrictive.
       default=default,
       hidden=hidden,
       help=help_text,
+  )
+
+
+def AddForceUpdateAccessRestriction(parser):
+  """Adds the --force-update-access-restriction flag to the given parser."""
+  help_text = (
+      'If set, the access restriction can be updated even if there are'
+      ' non-compliant data sources. Backups for those data sources will fail'
+      ' afterward.'
+  )
+  parser.add_argument(
+      '--force-update-access-restriction',
+      action='store_true',
+      help=help_text,
+      hidden=True,
   )
 
 

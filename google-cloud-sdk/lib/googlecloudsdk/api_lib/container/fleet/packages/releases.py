@@ -15,34 +15,15 @@
 """Utilities for Package Rollouts Releases API."""
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.container.fleet.packages import util
 from googlecloudsdk.api_lib.container.fleet.packages import variants as variants_apis
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.core import resources
 
 _LIST_REQUEST_BATCH_SIZE_ATTRIBUTE = 'pageSize'
 _VARIANT_STORAGE_STRATEGY_LABEL_KEY = 'configdelivery-variant-storage-strategy'
 _VARIANT_STORAGE_STRATEGY_LABEL_VALUE_NESTED = 'nested'
 
-
-def GetClientInstance(no_http=False):
-  """Returns instance of generated Config Delivery gapic client."""
-  return apis.GetClientInstance('configdelivery', 'v1alpha', no_http=no_http)
-
-
-def GetMessagesModule(client=None):
-  """Returns generated Config Delivery gapic messages."""
-  client = client or GetClientInstance()
-  return client.MESSAGES_MODULE
-
-
-def GetReleaseURI(resource):
-  """Returns URI of Release for use with gapic client."""
-  release = resources.REGISTRY.ParseRelativeName(
-      resource.name,
-      collection='configdelivery.projects.locations.resourceBundles.releases',
-  )
-  return release.SelfLink()
+RELEASE_COLLECTION = 'configdelivery.projects.locations.resourceBundles.releases'
 
 
 def _ParentPath(project, location, parent_bundle):
@@ -59,9 +40,10 @@ def _FullyQualifiedPath(project, location, resource_bundle, release):
 class ReleasesClient(object):
   """Client for Releases in Config Delivery Package Rollouts API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, api_version, client=None, messages=None):
+    self._api_version = api_version or util.DEFAULT_API_VERSION
+    self.client = client or util.GetClientInstance(self._api_version)
+    self.messages = messages or util.GetMessagesModule(self.client)
     self._service = self.client.projects_locations_resourceBundles_releases
     self.release_waiter = waiter.CloudOperationPollerNoResources(
         operation_service=self.client.projects_locations_operations,
@@ -194,7 +176,7 @@ class ReleasesClient(object):
         f'Creating Release {fully_qualified_path}',
     )
     for variant, variant_resources in variants.items():
-      variants_client = variants_apis.VariantsClient()
+      variants_client = variants_apis.VariantsClient(self._api_version)
       variants_client.Create(
           resource_bundle=resource_bundle,
           release=version.replace('.', '-'),

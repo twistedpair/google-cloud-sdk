@@ -544,3 +544,13 @@ def AddEnableClusterIsolation(parser):
       If set, the cluster will be created in a secure cluster isolation mode.
       """,
   )
+
+
+def AddEnableGoogleGroupAuthentication(parser):
+  parser.add_argument(
+      '--enable-google-group-authentication',
+      action='store_true',
+      help="""
+      If set, the cluster will be configured to use Google Group authentication.
+      """,
+  )

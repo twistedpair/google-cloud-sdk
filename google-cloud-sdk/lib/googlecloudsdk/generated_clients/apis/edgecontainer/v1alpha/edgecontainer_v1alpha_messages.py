@@ -2493,7 +2493,7 @@ class ServiceAccount(_messages.Message):
   Fields:
     createTime: Output only. The time when the project service account was
       created.
-    key: Optional. service account keys.
+    keys: Optional. service account keys.
     labels: Optional. Labels associated with this resource.
     name: Identifier. The canonical resource name of the project service
       account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
@@ -2529,7 +2529,7 @@ class ServiceAccount(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  key = _messages.MessageField('ServiceAccountKey', 2, repeated=True)
+  keys = _messages.MessageField('ServiceAccountKey', 2, repeated=True)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
@@ -3045,6 +3045,7 @@ class Zone(_messages.Message):
     LabelsValue: Optional. Labels associated with this resource.
 
   Fields:
+    certificateAuthorities: Output only. The web CA certificate for the zone.
     createTime: Output only. The time when the zone was created.
     labels: Optional. Labels associated with this resource.
     name: Identifier. The canonical resource name of the zone. E.g.
@@ -3075,9 +3076,10 @@ class Zone(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
+  certificateAuthorities = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
 
 
 class ZoneMetadata(_messages.Message):

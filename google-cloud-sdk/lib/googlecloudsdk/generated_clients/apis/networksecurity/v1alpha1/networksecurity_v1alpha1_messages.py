@@ -505,11 +505,14 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
   r"""Describes the properties of a single source.
 
   Fields:
+    ipBlocks: Optional. A list of IPs or CIDRs to match against the source IP
+      of a request. Limited to 5 ip_blocks.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 5 resources.
   """
 
-  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 1, repeated=True)
+  ipBlocks = _messages.MessageField('AuthzPolicyAuthzRuleIpBlock', 1, repeated=True)
+  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 2, repeated=True)
 
 
 class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):
@@ -522,6 +525,18 @@ class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 2)
+
+
+class AuthzPolicyAuthzRuleIpBlock(_messages.Message):
+  r"""Represents a range of IP Addresses.
+
+  Fields:
+    length: Required. The length of the address range.
+    prefix: Required. The address prefix.
+  """
+
+  length = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  prefix = _messages.StringField(2)
 
 
 class AuthzPolicyAuthzRuleRequestResource(_messages.Message):
@@ -2449,6 +2464,10 @@ class InterceptEndpointGroupAssociation(_messages.Message):
       association, for example: `projects/123456789/locations/global/intercept
       EndpointGroupAssociations/my-eg-association`. See
       https://google.aip.dev/122 for more details.
+    nccGateway: Optional. Immutable. A Network Connectivity Center gateway
+      spoke that is associated. for example: `projects/123456789/locations/us-
+      central1/spokes/my-spoke`. Exactly one of `network` and `ncc_gateway`
+      must be set. See https://google.aip.dev/124.
     network: Required. Immutable. The VPC network that is associated. for
       example: `projects/123456789/global/networks/my-network`. See
       https://google.aip.dev/124.
@@ -2521,10 +2540,11 @@ class InterceptEndpointGroupAssociation(_messages.Message):
   locations = _messages.MessageField('InterceptLocation', 4, repeated=True)
   locationsDetails = _messages.MessageField('InterceptEndpointGroupAssociationLocationDetails', 5, repeated=True)
   name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  nccGateway = _messages.StringField(7)
+  network = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class InterceptEndpointGroupAssociationDetails(_messages.Message):
@@ -3716,12 +3736,16 @@ class MirroringEndpoint(_messages.Message):
         terminal state and the endpoint is not expected to be usable as some
         of its resources have been deleted. The only permitted operation is to
         retry deleting the endpoint.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the endpoint.
+        The endpoint is not expected to be usable. This state can result in
+        undefined behavior.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     DELETE_FAILED = 4
+    OUT_OF_SYNC = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -9252,18 +9276,11 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
   Fields:
     availableSymantecSites: Output only. Symantec site IDs that the user can
       choose to connect to.
-    secretId: Optional. API Key used to call Symantec APIs on the user's
-      behalf. Required if using SYMANTEC_CLOUD_SWG. ID of the Secret
-      containing the Symantec API Key which will be used to call the Symantec
-      API on the customer's behalf. Required if using SYMANTEC_CLOUD_SWG. A
-      secret or secret version name (URI) can be specified, but it will be
-      parsed and stored as just the ID. For example, if the user inputs
-      "projects/my-project/secrets/my-secret/versions/1", the SAC Realm will
-      hold just "my-secret". This field is deprecated and only visible to
-      v1alpha1. Use secret_path instead.
-    secretPath: Optional. A secret ID or secret name can be specified, but it
-      will be parsed and stored as secret URI in the format of
-      "projects/{PROJECT_NUMBER}/secrets/my-secret".
+    secretPath: Optional. API Key used to call Symantec APIs on the user's
+      behalf. Required if using SYMANTEC_CLOUD_SWG. P4SA account needs
+      permissions granted to read this secret. A secret ID, secret name, or
+      secret URI can be specified, but it will be parsed and stored as secret
+      URI in the format of "projects/{PROJECT_NUMBER}/secrets/my-secret".
     symantecConnectionState: Output only. [Output only] Connection status to
       Symantec API.
   """
@@ -9286,9 +9303,8 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
     REQUEST_TO_SYMANTEC_FAILED = 3
 
   availableSymantecSites = _messages.StringField(1, repeated=True)
-  secretId = _messages.StringField(2)
-  secretPath = _messages.StringField(3)
-  symantecConnectionState = _messages.EnumField('SymantecConnectionStateValueValuesEnum', 4)
+  secretPath = _messages.StringField(2)
+  symantecConnectionState = _messages.EnumField('SymantecConnectionStateValueValuesEnum', 3)
 
 
 class SSEGatewayReference(_messages.Message):

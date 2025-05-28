@@ -59,9 +59,8 @@ auto-rebalance:
   - arg_value: false
     enum_value: NO_REBALANCE
 
-ca-pools:
-  arg_name: ca-pools
-  # arg_field: cluster.tlsConfig.trustConfig.casConfigs.caPool
+mtls-ca-pools:
+  arg_name: mtls-ca-pools
   type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
   help_text: |
     A comma-separated list of CA pools from the Google Cloud Certificate Authority Service.

@@ -181,6 +181,7 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       assign_inbound_public_ip=args.assign_inbound_public_ip,
       authorized_external_networks=args.authorized_external_networks,
       outbound_public_ip=args.outbound_public_ip,
+      allocated_ip_range_override=args.allocated_ip_range_override,
   )
 
   if (
@@ -287,6 +288,7 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
       assign_inbound_public_ip=args.assign_inbound_public_ip,
       authorized_external_networks=args.authorized_external_networks,
       outbound_public_ip=args.outbound_public_ip,
+      allocated_ip_range_override=args.allocated_ip_range_override,
   )
   if (
       args.allowed_psc_projects
@@ -725,11 +727,13 @@ def NetworkConfig(**kwargs):
   authorized_external_networks = kwargs.get('authorized_external_networks')
   alloydb_messages = kwargs.get('alloydb_messages')
   outbound_public_ip = kwargs.get('outbound_public_ip')
+  allocated_ip_range_override = kwargs.get('allocated_ip_range_override')
 
   should_generate_config = any([
       assign_inbound_public_ip,
       outbound_public_ip is not None,
       authorized_external_networks is not None,
+      allocated_ip_range_override is not None,
   ])
   if not should_generate_config:
     return None
@@ -761,6 +765,11 @@ def NetworkConfig(**kwargs):
             authorized_external_networks,
             instance_network_config.enablePublicIp,
         )
+    )
+
+  if allocated_ip_range_override is not None:
+    instance_network_config.allocatedIpRangeOverride = (
+        allocated_ip_range_override
     )
   return instance_network_config
 

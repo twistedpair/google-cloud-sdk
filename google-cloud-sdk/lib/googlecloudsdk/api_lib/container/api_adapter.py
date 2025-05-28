@@ -834,6 +834,7 @@ class CreateClusterOptions(object):
       enable_auto_ipam=None,
       enable_k8s_tokens_via_dns=None,
       enable_legacy_lustre_port=None,
+      enable_default_compute_class=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1120,6 +1121,7 @@ class CreateClusterOptions(object):
     self.enable_auto_ipam = enable_auto_ipam
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
+    self.enable_default_compute_class = enable_default_compute_class
 
 
 class UpdateClusterOptions(object):
@@ -1295,6 +1297,7 @@ class UpdateClusterOptions(object):
       disable_auto_ipam=None,
       enable_k8s_tokens_via_dns=None,
       enable_legacy_lustre_port=None,
+      enable_default_compute_class=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1512,6 +1515,7 @@ class UpdateClusterOptions(object):
     self.disable_auto_ipam = disable_auto_ipam
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
+    self.enable_default_compute_class = enable_default_compute_class
 
 
 class SetMasterAuthOptions(object):
@@ -2547,21 +2551,14 @@ class APIAdapter(object):
 
     if options.autopilot:
       cluster.autopilot = self.messages.Autopilot()
-      cluster.autopilot.enabled = True
-
-      if options.workload_policies:
-        if cluster.autopilot.workloadPolicyConfig is None:
-          cluster.autopilot.workloadPolicyConfig = (
-              self.messages.WorkloadPolicyConfig()
-          )
-        if options.workload_policies == 'allow-net-admin':
-          cluster.autopilot.workloadPolicyConfig.allowNetAdmin = True
+      cluster.autopilot.enabled = options.autopilot
 
       if options.enable_secret_manager:
         if cluster.secretManagerConfig is None:
           cluster.secretManagerConfig = self.messages.SecretManagerConfig(
               enabled=False
           )
+
       if options.boot_disk_kms_key:
         if cluster.autoscaling is None:
           cluster.autoscaling = self.messages.ClusterAutoscaling()
@@ -2572,6 +2569,17 @@ class APIAdapter(object):
         cluster.autoscaling.autoprovisioningNodePoolDefaults.bootDiskKmsKey = (
             options.boot_disk_kms_key
         )
+
+    if options.workload_policies:
+      if cluster.autopilot is None:
+        cluster.autopilot = self.messages.Autopilot()
+        cluster.autopilot.enabled = False
+      if cluster.autopilot.workloadPolicyConfig is None:
+        cluster.autopilot.workloadPolicyConfig = (
+            self.messages.WorkloadPolicyConfig()
+        )
+      if options.workload_policies == 'allow-net-admin':
+        cluster.autopilot.workloadPolicyConfig.allowNetAdmin = True
 
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
@@ -3745,6 +3753,7 @@ class APIAdapter(object):
     if (
         options.enable_autoprovisioning is not None
         or options.autoscaling_profile is not None
+        or options.enable_default_compute_class is not None
     ):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, False
@@ -3796,9 +3805,18 @@ class APIAdapter(object):
         autoscaling.enableNodeAutoprovisioning = (
             cluster.autoscaling.enableNodeAutoprovisioning
         )
+        autoscaling.defaultComputeClassConfig = (
+            cluster.autoscaling.defaultComputeClassConfig
+        )
     else:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
 
+    if options.enable_default_compute_class is not None:
+      autoscaling.defaultComputeClassConfig = (
+          self.messages.DefaultComputeClassConfig(
+              enabled=options.enable_default_compute_class,
+          )
+      )
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
       util.ValidateAutoprovisioningConfigFile(
@@ -4388,6 +4406,7 @@ class APIAdapter(object):
     elif (
         options.enable_autoprovisioning is not None
         or options.autoscaling_profile is not None
+        or options.enable_default_compute_class is not None
     ):
       autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, True
@@ -7444,6 +7463,7 @@ class V1Beta1Adapter(V1Adapter):
     if (
         options.enable_autoprovisioning is not None
         or options.autoscaling_profile is not None
+        or options.enable_default_compute_class is not None
     ):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False
@@ -7832,6 +7852,16 @@ class V1Beta1Adapter(V1Adapter):
       autoscaling.enableNodeAutoprovisioning = (
           cluster.autoscaling.enableNodeAutoprovisioning
       )
+      autoscaling.defaultComputeClassConfig = (
+          cluster.autoscaling.defaultComputeClassConfig
+      )
+
+    if options.enable_default_compute_class is not None:
+      autoscaling.defaultComputeClassConfig = (
+          self.messages.DefaultComputeClassConfig(
+              enabled=options.enable_default_compute_class
+          )
+      )
 
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
@@ -8066,6 +8096,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if (
         options.enable_autoprovisioning is not None
         or options.autoscaling_profile is not None
+        or options.enable_default_compute_class is not None
     ):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False
@@ -8666,6 +8697,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.autoscaling_profile is not None:
       autoscaling.autoscalingProfile = self.CreateAutoscalingProfileCommon(
           options
+      )
+
+    if options.enable_default_compute_class is not None:
+      autoscaling.defaultComputeClassConfig = (
+          self.messages.DefaultComputeClassConfig(
+              enabled=options.enable_default_compute_class
+          )
       )
 
     self.ValidateClusterAutoscaling(autoscaling, for_update)

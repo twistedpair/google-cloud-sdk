@@ -17,8 +17,6 @@
 Implements CloudApi for the GCS JSON API. Example functions include listing
 buckets, uploading objects, and setting lifecycle conditions.
 
-TODO(b/160601969): Update class with remaining API methods for ls and cp.
-    Note, this class has not been tested against the GCS API yet.
 """
 
 from __future__ import absolute_import

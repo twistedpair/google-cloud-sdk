@@ -5,6 +5,99 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 524.0.0 (2025-05-28)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified enum value names for 'rollout-plan' flag in `gcloud beta compute preview-features update` commands.
+
+
+### AlloyDB
+
+* Added support for `POSTGRES_17` as a version in `alloydb clusters create` for alpha & beta track.
+* Added support for `POSTGRES_17` as a version in `alloydb clusters migrate-cloud-sql` for alpha & beta track.
+
+### Cloud Build
+
+* Updated output format of `gcloud builds get-default-service-account`.
+
+### Cloud Dataplex
+
+* Promoted `gcloud dataplex datascans create data-discovery` command to GA.
+* Promoted `gcloud dataplex datascans update data-discovery` command to GA.
+
+### Cloud IAM
+
+* Added `--detailed-audit-logging` flag to the [Workforce Pool Provider](https://cloud.google.com/iam/docs/manage-workforce-identity-pools-providers) configuration.
+
+### Cloud Managed Kafka
+
+* Promoted existing alpha Schema Registries commands to beta.
+* Added alpha Schema Registries subject describe command for Managed Kafka
+Schema Registry subjects. This allows a user to see the details of a subject.
+
+### Cloud Observability
+
+* Initial surface for Observability API.
+
+### Cloud Run
+
+* Added support for multi-region source deployment in `gcloud beta run deploy`.
+
+### Cloud Spanner
+
+* Added `--kms-keys` flag to `gcloud spanner databases update` command to support updating Cloud KMS(Key Management Service) keys for Cloud Spanner Customer Managed Encryption(CMEK).
+
+### Cloud Workstations
+
+* Added `--no-persistent-storage` flag to `gcloud workstations config create` and `gcloud beta workstations config create`.
+
+### Colab
+
+*   Removed `--post-startup-script` flag from `gcloud notebooks instances
+    create` command.
+
+### Compute Engine
+
+* Support `--provisoining-model` for `gcloud compute instance-templates create-with-container` command.
+* Added `--candidate-cloud-router-ip-address` and
+  `--candidate-customer-router-ip-address` flags for
+  `gcloud beta compute interconnects attachments dedicated create`,
+  `gcloud beta compute interconnects attachments partner create`, and
+  `gcloud beta compute interconnects attachments provider create` to allow users
+  to add custom ranges to the interconnect attachment.
+* Added `--candidate-cloud-router-ipv6-address` and
+  `--candidate-customer-router-ipv6-address` flags for
+  `gcloud beta compute interconnects attachments dedicated create`,
+  `gcloud beta compute interconnects attachments partner create`,
+  `gcloud beta compute interconnects attachments provider create`
+  `gcloud beta compute interconnects attachments dedicated update`,
+  `gcloud beta compute interconnects attachments partner update`, and
+  `gcloud beta compute interconnects attachments provider update`
+   to allow users to add custom ranges to the interconnect attachment.
+* Promoted `--workload-policy` and `--remove-workload-policy` flags for
+  `gcloud compute instance-groups managed create` and
+  `gcloud compute instance-groups managed update` to GA.
+* Support deleting regional PDs with `--delete-disks` in `gcloud compute instance delete`.
+* Promoted `--zonal-affinity-spillover` and `--zonal-affinity-spillover-ratio` of `gcloud compute backend-services create|update` commands to beta.
+* Promoted `--gpu-topology` and `--workload-policy` to GA.
+
+### Gemini
+
+*   Added a new flag `--disable-web-grounding` when creating or updating a GeminiGcpEnablementSetting.
+
+### Network Services
+
+* Promoted `gcloud network-services operations` to beta and GA.
+
+### Security Command Center
+
+*   Added `--organization`, `--location` argument flags to `gcloud scc iac-validation-reports list` to list scc's iac validation reports for organization level.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 523.0.1 (2025-05-22)
 
 ### Cloud Datastore Emulator

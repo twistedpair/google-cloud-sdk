@@ -4377,18 +4377,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'workloadcertificate': {
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.workloadcertificate.v1alpha1',
-                    client_classpath='workloadcertificate_v1alpha1_client.WorkloadcertificateV1alpha1',
-                    base_url='https://workloadcertificate.googleapis.com/',
-                    messages_modulepath='workloadcertificate_v1alpha1_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
     'workstations': {
         'v1':
             APIDef(

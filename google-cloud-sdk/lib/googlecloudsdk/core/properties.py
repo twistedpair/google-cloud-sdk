@@ -1306,6 +1306,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.gkebackup = self._Add('gkebackup', hidden=True)
     self.gkehub = self._Add('gkehub', hidden=True)
     self.gkerecommender = self._Add('gkerecommender', hidden=True)
+    self.observability = self._Add(
+        'observability', command='gcloud observability')
     self.transcoder = self._Add(
         'transcoder', command='gcloud transcoder', hidden=True
     )
@@ -3756,6 +3758,16 @@ class _SectionStorage(_Section):
             'Number of files processed at a time by the rsync command when'
             ' it builds and compares the list of files at the source'
             ' and destination.'
+        ),
+    )
+
+    self.use_url_based_rsync_sorting = self._AddBool(
+        'use_url_based_rsync_sorting',
+        default=False,
+        hidden=True,
+        help_text=(
+            'Enables url based sorting for tracker files used by gcloud storage'
+            ' rsync .'
         ),
     )
 

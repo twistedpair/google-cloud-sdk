@@ -827,13 +827,18 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     parser.add_argument(
         '--stop-max-idle',
         type=arg_parsers.Duration(),
+        # TODO: b/368979261 - Unhide scheduled stop flags after release.
+        hidden=True,
         help="""\
           The duration after the last job completes to auto-stop the cluster,
           such as "2h" or "1d".
           See $ gcloud topic datetimes for information on duration formats.
           """,
     )
-    auto_stop_group = parser.add_mutually_exclusive_group()
+    auto_stop_group = parser.add_mutually_exclusive_group(
+        # TODO: b/368979261 - Unhide scheduled stop flags after release.
+        hidden=True,
+    )
     auto_stop_group.add_argument(
         '--stop-max-age',
         type=arg_parsers.Duration(),

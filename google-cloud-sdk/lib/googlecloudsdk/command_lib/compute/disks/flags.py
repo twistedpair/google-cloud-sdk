@@ -134,6 +134,16 @@ class SnapshotsCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
+class SnapshotGroupsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(SnapshotGroupsCompleter, self).__init__(
+        collection='compute.snapshotGroups',
+        list_command='alpha compute snapshot-groups list --uri',
+        api_version='alpha',
+        **kwargs)
+
+
 class SnapshotsCompleterAlpha(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
@@ -245,6 +255,33 @@ def AddBulkCreateArgs(parser):
       # This argument is required because consistent cloning is only supported
       # feature under the BulkCreate now. May become optional in the future.
       required=True)
+
+  help_text = """Target {0} of the created disks, which currently must be the same as the source {0}. {1}"""
+  scope_parser = parser.add_mutually_exclusive_group(required=True)
+  scope_parser.add_argument(
+      '--zone',
+      completer=compute_completers.ZonesCompleter,
+      action=actions.StoreProperty(properties.VALUES.compute.zone),
+      help=help_text.format('zone', compute_flags.ZONE_PROPERTY_EXPLANATION))
+  scope_parser.add_argument(
+      '--region',
+      completer=compute_completers.RegionsCompleter,
+      action=actions.StoreProperty(properties.VALUES.compute.region),
+      help=help_text.format('region',
+                            compute_flags.REGION_PROPERTY_EXPLANATION))
+
+
+def AddBulkCreateArgsAlpha(parser):
+  """Adds bulk create specific arguments to parser."""
+  parser.add_argument(
+      '--source-consistency-group-policy',
+      help='''
+      URL of the source consistency group resource policy. The resource policy
+      is always the same region as the source disks.
+      ''',
+      # This argument is optional because we now support bulk insert from
+      # multiple source types.
+      required=False)
 
   help_text = """Target {0} of the created disks, which currently must be the same as the source {0}. {1}"""
   scope_parser = parser.add_mutually_exclusive_group(required=True)
@@ -431,6 +468,25 @@ SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     short_help='Name of the source instant snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP,
     scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS)
+
+SOURCE_INSTANT_SNAPSHOT_GROUP_ARG = compute_flags.ResourceArgument(
+    resource_name='source instant snapshot group',
+    name='--source-instant-snapshot-group',
+    completer=compute_completers.InstantSnapshotGroupsCompleter,
+    short_help='Source instant snapshot group used to create the disks.',
+    zonal_collection='compute.instantSnapshotGroups',
+    regional_collection='compute.regionInstantSnapshotGroups',
+    required=False,
+)
+
+SOURCE_SNAPSHOT_GROUP_ARG = compute_flags.ResourceArgument(
+    resource_name='source snapshot group',
+    name='--source-snapshot-group',
+    completer=SnapshotGroupsCompleter,
+    short_help='Source snapshot group used to create the disks.',
+    global_collection='compute.snapshotGroups',
+    required=False,
+)
 
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',

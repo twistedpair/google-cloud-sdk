@@ -28,8 +28,6 @@ def _get_full_id_string(resource_type: str, resource_id: str) -> str:
   return f"{resource_type}/{resource_id}/locations/global/intelligenceConfig"
 
 
-# TODO: b/373586209 - Add GCS API error handling decorators for the API methods
-# if needed.
 class StorageIntelligenceApi:
   """Client for Storage Intelligence API."""
 

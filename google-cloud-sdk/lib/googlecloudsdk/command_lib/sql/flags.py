@@ -375,6 +375,33 @@ def AddEnableFinalBackup(parser):
   )
 
 
+def AddFinalBackup(parser):
+  parser.add_argument(
+      '--final-backup',
+      required=False,
+      action=arg_parsers.StoreTrueFalseAction,
+      hidden=True,
+      help=(
+          'Enables the final backup to be taken at the time of instance'
+          ' deletion.'
+      ),
+  )
+
+
+def AddFinalbackupTtlDays(parser):
+  help_text = (
+      'Specifies number of days to retain final backup. The valid range is'
+      ' between 1 and 365. Default value is 30 days.'
+  )
+  parser.add_argument(
+      '--final-backup-ttl-days',
+      type=arg_parsers.BoundedInt(1, 365, unlimited=False),
+      required=False,
+      hidden=True,
+      help=help_text,
+  )
+
+
 def AddFinalbackupRetentionDays(parser):
   help_text = (
       'Specifies number of days to retain final backup. The valid range is'

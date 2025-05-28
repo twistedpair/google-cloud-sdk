@@ -37,6 +37,24 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
+def sorting_key_for_csv_line(csv_line):
+  """Returns the sorting key for the chunk CSV line.
+
+  This key is based on only the first field of the CSV line, which is the URL of
+  the resource. Since we use comma as a delimiter, we can't use the
+  entire CSV line as the key since there are unicode characters before the comma
+  like #, $, " which if present in the csv line can cause sorting issues.
+
+  Args:
+    csv_line (str): The CSV line to get the sorting key for.
+
+  Returns:
+    str: The sorting key for the CSV line.
+  """
+  fields = rsync_command_util.get_fields_from_csv_line(csv_line)
+  return fields[0]
+
+
 class GetSortedContainerContentsTask(task.Task):
   """Updates a local file's POSIX metadata."""
 
@@ -140,12 +158,20 @@ class GetSortedContainerContentsTask(task.Task):
                 is_managed_folder_list=self._managed_folders_only,
             )
         )
-        sorted_encoded_chunk = sorted(
-            [
-                rsync_command_util.get_csv_line_from_resource(x)
-                for x in resources_chunk
-            ]
-        )
+        if properties.VALUES.storage.use_url_based_rsync_sorting.GetBool():
+          sorted_encoded_chunk = sorted(
+              [
+                  rsync_command_util.get_csv_line_from_resource(x)
+                  for x in resources_chunk
+              ],
+              key=sorting_key_for_csv_line,
+          )
+        else:
+          sorted_encoded_chunk = sorted([
+              rsync_command_util.get_csv_line_from_resource(x)
+              for x in resources_chunk
+          ])
+
         sorted_encoded_chunk.append('')  # Add trailing newline.
         files.WriteFileContents(
             chunk_file_paths[-1],
@@ -154,7 +180,12 @@ class GetSortedContainerContentsTask(task.Task):
 
       chunk_file_readers = [files.FileReader(path) for path in chunk_file_paths]
       with files.FileWriter(self._output_path, create_path=True) as file_writer:
-        file_writer.writelines(heapq.merge(*chunk_file_readers))
+        if properties.VALUES.storage.use_url_based_rsync_sorting.GetBool():
+          file_writer.writelines(
+              heapq.merge(*chunk_file_readers, key=sorting_key_for_csv_line)
+          )
+        else:
+          file_writer.writelines(heapq.merge(*chunk_file_readers))
 
     except OSError as e:
       if e.errno == errno.EMFILE:

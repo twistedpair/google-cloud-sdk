@@ -37,7 +37,8 @@ def RepoRegion(args, cluster_location=None):
   """Returns the region for the Artifact Registry repo.
 
    The intended behavior is platform-specific:
-   * managed: Same region as the service (run/region or --region)
+   * managed: Same region as the service (run/region or --region). For
+     multi-region services, we will use the first specified region.
    * gke: Appropriate region based on cluster zone (cluster_location arg)
    * kubernetes: The run/region config value will be used or an exception
      raised when unset.
@@ -53,7 +54,9 @@ def RepoRegion(args, cluster_location=None):
   """
   if cluster_location:
     return _RegionFromZone(cluster_location)
-
+  first_region = flags.GetFirstRegion(args)
+  if first_region:
+    return first_region
   region = flags.GetRegion(args, prompt=False)
   if region:
     return region

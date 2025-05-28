@@ -213,3 +213,14 @@ class InstanceSplits(collections_abc.MutableMapping):
   def __repr__(self):
     content = ', '.join('{}: {}'.format(k, v) for k, v in self.items())
     return '[%s]' % content
+
+  def AddSplit(self, key, percent):
+    """Add a new instance split assignments for the given key.
+
+    Mainly for testing.
+
+    Args:
+      key: Name of the revision (or "LATEST") to set the percent for.
+      percent: Percent of instance split to set.
+    """
+    self._m.append(NewInstanceSplit(self._messages, key, percent))

@@ -602,16 +602,17 @@ def EnableDropProtection(required=False):
 
 
 def EnableUpdateKmsKeys(required=False):
-  # TODO(b/331587247): Remove hidden flag once the feature is launched.
   return base.Argument(
       '--kms-keys',
       required=required,
       metavar='KMS_KEY',
-      hidden=True,
       action=arg_parsers.StoreOnceAction,
       dest='kms_keys',
       type=arg_parsers.ArgList(min_length=1),
-      help='Update KMS key references for this database.',
+      help=(
+          'Update KMS key references for this database. Users should always'
+          ' provide the full set of required KMS key references.'
+      ),
   )
 
 

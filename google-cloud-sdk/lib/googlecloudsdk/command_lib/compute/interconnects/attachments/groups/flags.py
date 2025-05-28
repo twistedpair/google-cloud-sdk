@@ -80,6 +80,18 @@ def AddIntendedAvailabilitySlaForUpdate(parser):
   )
 
 
+def AddUpdateMask(parser):
+  """Adds UpdateMask flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--update-mask',
+      help="""\
+      Optional update mask to specify which fields to update. Use commas to
+      separate masks. If not specified, all fields present in the command will
+      be updated.
+      """,
+  )
+
+
 def GetIntendedAvailabilitySla(messages, intended_availability_sla):
   """Converts the intended-availability-sla flag to a message enum.
 

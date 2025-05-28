@@ -170,6 +170,18 @@ def AddIntendedTopologyCapabilityForUpdate(parser):
   )
 
 
+def AddUpdateMask(parser):
+  """Adds UpdateMask flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--update-mask',
+      help="""\
+      Optional update mask to specify which fields to update. Use commas to
+      separate masks. If not specified, all fields present in the command will
+      be updated.
+      """,
+  )
+
+
 def GetTopologyCapability(messages, intended_topology_capability):
   """Converts the intended-topology-capability flag to a message enum.
 

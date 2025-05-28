@@ -3636,6 +3636,17 @@ def GetMultiRegion(args):
   return regions
 
 
+def GetFirstRegion(args):
+  """Returns the first region if multi-region is defined. Empty otherwise."""
+  multi_region = GetMultiRegion(args)
+  if not multi_region:
+    return None
+  regions = multi_region.split(',')
+  if regions:
+    return regions[0]
+  return None
+
+
 def GetRegion(args, prompt=False, region_label=None):
   """Prompt for region if not provided.
 
