@@ -328,13 +328,23 @@ def AddMigrationJobObjectsConfigFlagForCreateAndUpdate(parser):
   AddAllDatabasesFlag(database_config)
 
 
-def AddMigrationJobObjectsConfigFlagForRestartAndPromote(parser):
+def AddMigrationJobObjectsConfigFlagForPromote(parser):
   """Adds migration job objects config flag group to the given parser."""
   migration_config = parser.add_group(
       'The migration job objects config.',
       mutex=True,
   )
   AddDatabasesFilterFlagForSqlServer(migration_config)
+
+
+def AddMigrationJobObjectsConfigFlagForRestart(parser):
+  """Adds migration job objects config flag group to the given parser."""
+  migration_config = parser.add_group(
+      'The migration job objects config.',
+      mutex=True,
+  )
+  AddDatabasesFilterFlagForSqlServer(migration_config)
+  AddObjectFilterFlagForHeterogeneous(migration_config)
 
 
 def AddDatabasesFilterFlag(parser):
@@ -373,6 +383,28 @@ def AddDatabasesFilterFlagForSqlServer(parser):
       metavar='databaseName',
       type=arg_parsers.ArgList(min_length=1),
       help=help_text,
+  )
+
+
+def AddObjectFilterFlagForHeterogeneous(parser):
+  """Adds a --object-filter flag to the given parser."""
+  help_text = """\
+    A list of schema and table names to be migrated to the destination instance.
+    Usage: --object-filter schema=schema1,table=table1 --object-filter schema=schema2,table=table2
+    This flag is used only for heterogeneous migrations.
+    """
+  parser.add_argument(
+      '--object-filter',
+      type=arg_parsers.ArgDict(
+          spec={
+              'schema': str,
+              'table': str,
+          },
+          required_keys=['schema', 'table'],
+      ),
+      action='append',
+      help=help_text,
+      hidden=True,
   )
 
 

@@ -50,11 +50,13 @@ def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
 
   if args.project:
     request = (
-        messages.CloudquotasProjectsLocationsGetQuotaAdjusterSettingsRequest(
+        messages.CloudquotasProjectsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
             name=name
         )
     )
-    return client.projects_locations.GetQuotaAdjusterSettings(request)
+    return client.projects_locations_quotaAdjusterSettings.GetQuotaAdjusterSettings(
+        request
+    )
 
 
 def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
@@ -81,10 +83,12 @@ def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
 
   if args.project:
     request = (
-        messages.CloudquotasProjectsLocationsUpdateQuotaAdjusterSettingsRequest(
+        messages.CloudquotasProjectsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
             name=name,
             quotaAdjusterSettings=quota_adjuster_settings,
             validateOnly=args.validate_only,
         )
     )
-    return client.projects_locations.UpdateQuotaAdjusterSettings(request)
+    return client.projects_locations_quotaAdjusterSettings.UpdateQuotaAdjusterSettings(
+        request
+    )

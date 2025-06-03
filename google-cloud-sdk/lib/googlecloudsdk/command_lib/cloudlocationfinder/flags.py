@@ -21,6 +21,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 def LocationAttributeConfig():
@@ -82,33 +83,40 @@ def GetSourceCloudLocationResourceSpec():
   )
 
 
-def AddLocationFlag(parser, flag_name_overrides=None):
+def AddLocationFlag(parser):
   """Adds a flag for specifying a location.
 
   Args:
     parser: The parser to add the flag to.
-    flag_name_overrides: A dictionary of flag name overrides.
   """
   concept_parsers.ConceptParser.ForResource(
       name='--location',
       resource_spec=GetLocationResourceSpec(),
       group_help='The resource location.',
       required=False,
-      flag_name_overrides=flag_name_overrides,
   ).AddToParser(parser)
 
 
-def AddSourceCloudLocationFlag(parser):
+def AddSourceCloudLocationFlag(parser, flag_name_overrides=None):
   """Adds a flag for specifying a source Cloud location.
 
   Args:
     parser: The parser to add the flag to.
+    flag_name_overrides: A dictionary of flag name overrides.
   """
-  concept_parsers.ConceptParser.ForResource(
-      name='--source-cloud-location',
-      resource_spec=GetSourceCloudLocationResourceSpec(),
-      group_help='The source Cloud location.',
-      required=True,
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              name='--source-cloud-location',
+              concept_spec=GetSourceCloudLocationResourceSpec(),
+              group_help='The source Cloud location.',
+              required=True,
+              flag_name_overrides=flag_name_overrides,
+          )
+      ],
+      command_level_fallthroughs={
+          '--source-cloud-location.location': ['--location']
+      },
   ).AddToParser(parser)
 
 
@@ -128,8 +136,8 @@ def AddSearchFlags(parser):
   Args:
     parser: The parser to add the flags to.
   """
-  AddLocationFlag(parser, flag_name_overrides={'location': ''})
-  AddSourceCloudLocationFlag(parser)
+  AddLocationFlag(parser)
+  AddSourceCloudLocationFlag(parser, flag_name_overrides={'location': ''})
   parser.add_argument(
       '--query',
       help='Query to use for searching Cloudlocations.',

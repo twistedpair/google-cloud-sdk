@@ -108,7 +108,7 @@ class CloudlocationfinderV1alpha(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""Searchs cloud locations from a given source location.
+      r"""Searches for cloud locations from a given source location.
 
       Args:
         request: (CloudlocationfinderProjectsLocationsCloudLocationsSearchRequest) input message

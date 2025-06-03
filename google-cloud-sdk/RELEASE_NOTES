@@ -5,6 +5,69 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 525.0.0 (2025-06-03)
+
+### Breaking Changes
+
+*   **(Cloud Managed Kafka)** Included SASL port in bootstrap address on cluster describe and list commands.
+
+
+### AlloyDB
+
+* Added `gcloud alloydb clusters migrate-cloud-sql` command to support migrating data from an existing Cloud SQL instance backup to an AlloyDB cluster in GA track.
+
+### Cloud Bigtable Emulator
+
+* Rebuilt cbt emulator with golang.org/x/net version 0.39.0 which fixes CVE-2025-22870.
+
+### Cloud Dataplex
+
+* Promoted `gcloud dataplex metadata_jobs` commands to GA.
+
+### Cloud Dataproc
+
+* Added `tier` flag to `gcloud dataproc clusters create` allowing user to create premium tier or standard tier clusters.
+
+### Cloud Managed Kafka
+
+* Added the sslPrincipalMappingRules as a flag for create and update cluster.
+
+### Compute Engine
+
+*   Promoted `--load-balancing-scheme` flag for
+  `gcloud compute backend-buckets create` to GA.
+* Added `gcloud compute reservations sub-blocks list` command in beta and v1.
+* Added `gcloud compute reservations sub-blocks describe` command in beta and v1.
+
+### Compute Firewall Policies
+
+* Promoted `--policy-type` flag to beta in
+ `gcloud compute network-firewall-policies create`.
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles create alloydb` to support POSTGRES_17 version option for AlloyDB connection profiles.
+
+### GKE Hub
+
+* Promoted `--custom-role` flag of `gcloud container fleet scopes rbacrolebindings` to beta and GA.
+* Promoted `gcloud container fleet rbacrolebindingactuation` commands to beta and GA.
+* add in support for performance-monitoring unit for cluster create and
+node-pools create.
+
+### Network Connectivity
+
+* Added IPV6 option to `--protocol-version` flag of `gcloud network-connectivity
+  policy-based-routes`.
+
+### Service Extensions
+
+* Added `gcloud service-extensions lb-edge-extensions` command group in beta for managing LbEdgeExtension resources.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 524.0.0 (2025-05-28)
 
 ### Breaking Changes

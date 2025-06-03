@@ -430,11 +430,14 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
   r"""Describes the properties of a single source.
 
   Fields:
+    ipBlocks: Optional. A list of IPs or CIDRs to match against the source IP
+      of a request. Limited to 5 ip_blocks.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 5 resources.
   """
 
-  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 1, repeated=True)
+  ipBlocks = _messages.MessageField('AuthzPolicyAuthzRuleIpBlock', 1, repeated=True)
+  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 2, repeated=True)
 
 
 class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):
@@ -447,6 +450,18 @@ class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 2)
+
+
+class AuthzPolicyAuthzRuleIpBlock(_messages.Message):
+  r"""Represents a range of IP Addresses.
+
+  Fields:
+    length: Required. The length of the address range.
+    prefix: Required. The address prefix.
+  """
+
+  length = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  prefix = _messages.StringField(2)
 
 
 class AuthzPolicyAuthzRuleRequestResource(_messages.Message):

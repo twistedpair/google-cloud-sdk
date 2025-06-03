@@ -17,8 +17,7 @@
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-
-_RFC3339_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+from googlecloudsdk.core.util import times
 
 
 def GetComputeAdviceCalendarModeRequest(args, messages):
@@ -182,33 +181,33 @@ def GetTargetResources(args, messages):
 
 
 def GetTimeRangeSpec(args, messages):
-  """Helper function to get the time range spec in RFC3339 format."""
+  """Helper function to get the time ranges."""
   flexible_time_range = messages.FlexibleTimeRange()
 
   # Start time range.
   if args.start_time_range:
     start_time_from = args.start_time_range.get('from', None)
     if start_time_from is not None:
-      flexible_time_range.startTimeNotEarlierThan = start_time_from.strftime(
-          _RFC3339_FORMAT
+      flexible_time_range.startTimeNotEarlierThan = times.FormatDateTime(
+          start_time_from
       )
     start_time_to = args.start_time_range.get('to', None)
     if start_time_to is not None:
-      flexible_time_range.startTimeNotLaterThan = start_time_to.strftime(
-          _RFC3339_FORMAT
+      flexible_time_range.startTimeNotLaterThan = times.FormatDateTime(
+          start_time_to
       )
 
   # End time range.
   if args.end_time_range:
     end_time_from = args.end_time_range.get('from', None)
     if end_time_from is not None:
-      flexible_time_range.endTimeNotEarlierThan = end_time_from.strftime(
-          _RFC3339_FORMAT
+      flexible_time_range.endTimeNotEarlierThan = times.FormatDateTime(
+          end_time_from
       )
     end_time_to = args.end_time_range.get('to', None)
     if end_time_to is not None:
-      flexible_time_range.endTimeNotLaterThan = end_time_to.strftime(
-          _RFC3339_FORMAT
+      flexible_time_range.endTimeNotLaterThan = times.FormatDateTime(
+          end_time_to
       )
 
   # Duration range.

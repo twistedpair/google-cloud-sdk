@@ -378,6 +378,30 @@ class MigrationJobsClient(object):
     source_objects_conifg.objectConfigs = source_object_configs
     return source_objects_conifg
 
+  def _GetSourceObjectsConfigForSpecifiedTables(self, object_filters):
+    """Returns the source objects config."""
+    source_objects_config = self.messages.SourceObjectsConfig(
+        objectsSelectionType=self.messages.SourceObjectsConfig.ObjectsSelectionTypeValueValuesEnum.SPECIFIED_OBJECTS
+    )
+    for object_filter in object_filters:
+      schema_name = object_filter['schema']
+      table_name = object_filter['table']
+      source_object_identifier = self.messages.SourceObjectIdentifier(
+          schema=schema_name,
+          table=table_name,
+          type=self.messages.SourceObjectIdentifier.TypeValueValuesEnum.lookup_by_name(
+              'TABLE'
+          ),
+      )
+      if source_objects_config.objectConfigs is None:
+        source_objects_config.objectConfigs = []
+      source_objects_config.objectConfigs.append(
+          self.messages.SourceObjectConfig(
+              objectIdentifier=source_object_identifier,
+          ),
+      )
+    return source_objects_config
+
   def _GetMigrationJobObjectsConfig(self, args):
     """Returns the migration job objects config.
 
@@ -392,6 +416,10 @@ class MigrationJobsClient(object):
     elif args.IsKnownAndSpecified('databases_filter'):
       source_objects_conifg = self._GetSourceObjectsConfigForSpecifiedDatabases(
           args.databases_filter
+      )
+    elif args.IsKnownAndSpecified('object_filter'):
+      source_objects_conifg = self._GetSourceObjectsConfigForSpecifiedTables(
+          args.object_filter
       )
 
     return self.messages.MigrationJobObjectsConfig(
@@ -1087,7 +1115,9 @@ class MigrationJobsClient(object):
       Operation: the operation for promoting the migration job.
     """
     restart_mj_req = self.messages.RestartMigrationJobRequest()
-    if args.IsKnownAndSpecified('databases_filter'):
+    if args.IsKnownAndSpecified('databases_filter') or args.IsKnownAndSpecified(
+        'object_filter'
+    ):
       restart_mj_req.objectsFilter = self._GetMigrationJobObjectsConfig(args)
     if args.IsKnownAndSpecified('skip_validation'):
       restart_mj_req.skipValidation = True

@@ -24,6 +24,8 @@ from googlecloudsdk.calliope import exceptions
 # Retrieve all message type for conversions from gcloud primitives to
 # apitool types.
 _MESSAGE = apis.GetMessagesModule("managedkafka", "v1")
+SASL_PORT = "9092"
+MTLS_PORT = "9192"
 
 
 def ValidateCPU(cpu):
@@ -200,9 +202,9 @@ def SynthesizeBootstrapAddr(response, cluster):
     project = f"{domain_prefixed_project[1]}.{domain_prefixed_project[0]}"
   bootstrap = f"bootstrap.{name}.{location}.managedkafka.{project}.cloud.goog"
   synthesized = core.resource.resource_projector.MakeSerializable(response)
-  synthesized["bootstrapAddress"] = f"{bootstrap}"
+  synthesized["bootstrapAddress"] = f"{bootstrap}:{SASL_PORT}"
   if hasattr(response, "tlsConfig") and response.tlsConfig:
-    synthesized["bootstrapAddressMTLS"] = f"{bootstrap}:9192"
+    synthesized["bootstrapAddressMTLS"] = f"{bootstrap}:{MTLS_PORT}"
   return synthesized
 
 

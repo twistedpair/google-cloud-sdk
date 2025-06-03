@@ -503,6 +503,8 @@ apis:
           path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+        zones:
+          path: projects/{project}/zones/{zone}
     v1:
       discovery_doc: compute_v1.json
       default: true
@@ -725,6 +727,10 @@ apis:
       resources:
         projects.agent:
           path: projects/{projectsId}/agent
+  designcenter:
+    v1alpha:
+      discovery_doc: designcenter_v1alpha.json
+      default: true
   discovery:
     v1:
       discovery_doc: discovery_v1.json
@@ -2110,6 +2116,10 @@ canonical_surfaces:
   developerconnect:
     name: developerconnect
     command: developerconnect
+    hidden: true
+  designcenter:
+    name: designcenter
+    command: design-center
     hidden: true
   discovery:
     name: discovery

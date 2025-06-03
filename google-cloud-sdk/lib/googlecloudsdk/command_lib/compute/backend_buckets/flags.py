@@ -71,6 +71,21 @@ REQUIRED_GCS_BUCKET_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendBuckets',
     detailed_help=_GCS_BUCKET_DETAILED_HELP)
 
+GLOBAL_REGIONAL_MULTI_BACKEND_BUCKET_ARG = compute_flags.ResourceArgument(
+    name='backend_bucket_name',
+    resource_name='backend bucket',
+    completer=BackendBucketsCompleter,
+    plural=True,
+    regional_collection='compute.regionBackendBuckets',
+    global_collection='compute.backendBuckets')
+
+GLOBAL_REGIONAL_BACKEND_BUCKET_ARG = compute_flags.ResourceArgument(
+    name='backend_bucket_name',
+    resource_name='backend bucket',
+    completer=BackendBucketsCompleter,
+    regional_collection='compute.regionBackendBuckets',
+    global_collection='compute.backendBuckets')
+
 
 def BackendBucketArgumentForUrlMap(required=True):
   return compute_flags.ResourceArgument(
@@ -81,15 +96,22 @@ def BackendBucketArgumentForUrlMap(required=True):
       global_collection='compute.backendBuckets')
 
 
-def AddUpdatableArgs(cls, parser, operation_type):
+def AddUpdatableArgs(
+    cls, parser, operation_type, support_regional_global_flags=False
+):
   """Adds top-level backend bucket arguments that can be updated.
 
   Args:
     cls: type, Class to add backend bucket argument to.
     parser: The argparse parser.
     operation_type: str, operation_type forwarded to AddArgument(...)
+    support_regional_global_flags: bool, whether to support regional and global
+      flags.
   """
-  cls.BACKEND_BUCKET_ARG = BackendBucketArgument()
+  if support_regional_global_flags:
+    cls.BACKEND_BUCKET_ARG = GLOBAL_REGIONAL_BACKEND_BUCKET_ARG
+  else:
+    cls.BACKEND_BUCKET_ARG = BackendBucketArgument()
   cls.BACKEND_BUCKET_ARG.AddArgument(parser, operation_type=operation_type)
 
   parser.add_argument(

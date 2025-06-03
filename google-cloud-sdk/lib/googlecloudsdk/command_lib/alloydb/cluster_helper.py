@@ -872,3 +872,43 @@ def ConstructMigrateCloudSqlRequestFromArgsBeta(
       parent=location_ref.RelativeName(),
       restoreFromCloudSQLRequest=migrate_cloud_sql_request,
   )
+
+
+def ConstructMigrateCloudSqlRequestFromArgsGA(
+    alloydb_messages: types.ModuleType,
+    location_ref: resources.Resource,
+    args: argparse.Namespace,
+) -> messages.Message:
+  """Constructs the Migrate Cloud Sql request for GA release track.
+
+  Args:
+    alloydb_messages: The AlloyDB messages module.
+    location_ref: The location reference for the request.
+    args: An object that contains the values for the arguments specified in the
+      .Args() method.
+
+  Returns:
+    The Migrate Cloud Sql request based on args for GA release track.
+  """
+  migrate_cloud_sql_request = alloydb_messages.RestoreFromCloudSQLRequest()
+  migrate_cloud_sql_request.cluster = _ConstructClusterForCreateRequestGA(
+      alloydb_messages, args
+  )
+  migrate_cloud_sql_request.clusterId = args.cluster
+  migrate_cloud_sql_request.cloudsqlBackupRunSource = (
+      alloydb_messages.CloudSQLBackupRunSource()
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.backupRunId = (
+      args.cloud_sql_backup_id
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.instanceId = (
+      args.cloud_sql_instance_id
+  )
+  migrate_cloud_sql_request.cloudsqlBackupRunSource.project = (
+      args.cloud_sql_project_id
+  )
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersRestoreFromCloudSQLRequest(
+      parent=location_ref.RelativeName(),
+      restoreFromCloudSQLRequest=migrate_cloud_sql_request,
+  )

@@ -35,8 +35,6 @@ import six.moves.urllib.parse
 class JobBase(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Jobs."""
 
-  SPARK_ENGINE_CHOICES = ('native', 'default')
-
   def __init__(self, *args, **kwargs):
     super(JobBase, self).__init__(*args, **kwargs)
     self.files_by_type = {}

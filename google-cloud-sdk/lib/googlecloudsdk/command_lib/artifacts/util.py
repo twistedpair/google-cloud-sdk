@@ -487,6 +487,11 @@ def EscapePackageName(pkg_ref, unused_args, request):
   return request
 
 
+def EscapePackageStr(pkg: str):
+  """Escapes slashes and pluses in package name of type string."""
+  return pkg.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E")
+
+
 def AppendSortingToRequest(unused_ref, ver_args, request):
   """Adds order_by and page_size parameters to the request."""
   order_by = common_args.ParseSortByArg(ver_args.sort_by)

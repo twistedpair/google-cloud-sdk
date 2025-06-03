@@ -22,7 +22,8 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the accelerator cards exposed to an
       instance.
     acceleratorType: The accelerator type resource name. List of supported
-      accelerators [here](https://cloud.google.com/compute/docs/gpus)
+      accelerators [here](https://{$universe.dns_names.final_documentation_dom
+      ain}/compute/docs/gpus)
     gpuDriverInstallationConfig: The configuration for auto installation of
       GPU driver.
     gpuPartitionSize: Size of partitions to create on the GPU. Valid values
@@ -137,7 +138,8 @@ class AddonsConfig(_messages.Message):
       addon is deprecated, and will be disabled in 1.15. It is recommended to
       use the Cloud Console to manage and monitor your Kubernetes clusters,
       workloads and applications. For more information, see:
-      https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/concepts/dashboards
     lustreCsiDriverConfig: Configuration for the Lustre CSI driver.
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
@@ -486,8 +488,8 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       boot disk attached to each node in the node pool. This should be of the
       form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
       /cryptoKeys/[KEY_NAME]. For more information about protecting resources
-      with Cloud KMS Keys please see:
-      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+      with Cloud KMS Keys please see: https://{$universe.dns_names.final_docum
+      entation_domain}/compute/docs/disks/customer-managed-encryption
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
@@ -495,8 +497,8 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
     imageType: The image type to use for NAP created node. Please see
-      https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
-      available image types.
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/concepts/node-images for available image types.
     insecureKubeletReadonlyPortEnabled: DEPRECATED. Use
       NodePoolAutoConfig.NodeKubeletConfig instead.
     management: Specifies the node management options for NAP created node-
@@ -505,12 +507,12 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       created node pools. The instance may be scheduled on the specified or
       newer CPU platform. Applicable values are the friendly names of CPU
       platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform:
-      Intel Sandy Bridge. For more information, read [how to specify min CPU
-      platform](https://cloud.google.com/compute/docs/instances/specify-min-
-      cpu-platform). This field is deprecated, min_cpu_platform should be
-      specified using `cloud.google.com/requested-min-cpu-platform` label
-      selector on the pod. To unset the min cpu platform field pass
-      "automatic" as field value.
+      Intel Sandy Bridge. For more information, read [how to specify min CPU p
+      latform](https://{$universe.dns_names.final_documentation_domain}/comput
+      e/docs/instances/specify-min-cpu-platform). This field is deprecated,
+      min_cpu_platform should be specified using `cloud.google.com/requested-
+      min-cpu-platform` label selector on the pod. To unset the min cpu
+      platform field pass "automatic" as field value.
     oauthScopes: Scopes that are used by NAP when creating node pools.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs.
@@ -692,13 +694,13 @@ class CancelOperationRequest(_messages.Message):
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the operation resides. This field has been deprecated and replaced by
-      the name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the operation resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   name = _messages.StringField(1)
@@ -840,8 +842,8 @@ class Cluster(_messages.Message):
     currentNodeCount: Output only. The number of nodes currently in the
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
-    currentNodeVersion: Output only. Deprecated, use
-      [NodePools.version](https://cloud.google.com/kubernetes-
+    currentNodeVersion: Output only. Deprecated, use [NodePools.version](https
+      ://{$universe.dns_names.final_documentation_domain}/kubernetes-
       engine/docs/reference/rest/v1/projects.locations.clusters.nodePools)
       instead. The current version of the node software components. If they
       are currently at multiple versions because they're in the process of
@@ -886,8 +888,8 @@ class Cluster(_messages.Message):
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "","-": picks the default Kubernetes version
     initialNodeCount: The number of nodes to create in this cluster. You must
-      ensure that your Compute Engine [resource
-      quota](https://cloud.google.com/compute/quotas) is sufficient for this
+      ensure that your Compute Engine [resource quota](https://{$universe.dns_
+      names.final_documentation_domain}/compute/quotas) is sufficient for this
       number of instances. You must also have available firewall and routes
       quota. For requests, this field should only be used in lieu of a
       "node_pool" object, since this configuration (along with the
@@ -899,22 +901,22 @@ class Cluster(_messages.Message):
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
     legacyAbac: Configuration for the legacy ABAC authorization mode.
-    location: Output only. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
-      zones#available) or
-      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
+    location: Output only. The name of the Google Compute Engine [zone](https:
+      //{$universe.dns_names.final_documentation_domain}/compute/docs/regions-
+      zones/regions-zones#available) or [region](https://{$universe.dns_names.
+      final_documentation_domain}/compute/docs/regions-zones/regions-
       zones#available) in which the cluster resides.
-    locations: The list of Google Compute Engine
-      [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster's nodes should be located. This field provides a default
-      value if [NodePool.Locations](https://cloud.google.com/kubernetes-engine
-      /docs/reference/rest/v1/projects.locations.clusters.nodePools#NodePool.F
-      IELDS.locations) are not specified during node pool creation. Warning:
-      changing cluster locations will update the
-      [NodePool.Locations](https://cloud.google.com/kubernetes-engine/docs/ref
-      erence/rest/v1/projects.locations.clusters.nodePools#NodePool.FIELDS.loc
-      ations) of all node pools and will result in nodes being added and/or
-      removed.
+    locations: The list of Google Compute Engine [zones](https://{$universe.dn
+      s_names.final_documentation_domain}/compute/docs/zones#available) in
+      which the cluster's nodes should be located. This field provides a
+      default value if [NodePool.Locations](https://{$universe.dns_names.final
+      _documentation_domain}/kubernetes-engine/docs/reference/rest/v1/projects
+      .locations.clusters.nodePools#NodePool.FIELDS.locations) are not
+      specified during node pool creation. Warning: changing cluster locations
+      will update the [NodePool.Locations](https://{$universe.dns_names.final_
+      documentation_domain}/kubernetes-engine/docs/reference/rest/v1/projects.
+      locations.clusters.nodePools#NodePool.FIELDS.locations) of all node
+      pools and will result in nodes being added and/or removed.
     loggingConfig: Logging configuration for the cluster.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options: * `logging.googleapis.com/kubernetes` - The
@@ -951,8 +953,8 @@ class Cluster(_messages.Message):
       characters with the following restrictions: * Lowercase letters,
       numbers, and hyphens only. * Must start with a letter. * Must end with a
       number or a letter.
-    network: The name of the Google Compute Engine
-      [network](https://cloud.google.com/compute/docs/networks-and-
+    network: The name of the Google Compute Engine [network](https://{$univers
+      e.dns_names.final_documentation_domain}/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. If left
       unspecified, the `default` network will be used.
     networkConfig: Configuration for cluster networking.
@@ -1012,9 +1014,9 @@ class Cluster(_messages.Message):
     status: Output only. The current status of this cluster.
     statusMessage: Output only. Deprecated. Use conditions instead. Additional
       information about the current status of this cluster, if available.
-    subnetwork: The name of the Google Compute Engine
-      [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
-      the cluster is connected.
+    subnetwork: The name of the Google Compute Engine [subnetwork](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/subnetworks)
+      to which the cluster is connected.
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
@@ -1028,9 +1030,10 @@ class Cluster(_messages.Message):
       configuration.
     workloadIdentityConfig: Configuration for the use of Kubernetes Service
       Accounts in GCP IAM policies.
-    zone: Output only. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field is deprecated, use location instead.
+    zone: Output only. The name of the Google Compute Engine [zone](https://{$
+      universe.dns_names.final_documentation_domain}/compute/docs/zones#availa
+      ble) in which the cluster resides. This field is deprecated, use
+      location instead.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -1207,9 +1210,9 @@ class ClusterAutoscaling(_messages.Message):
     AutoscalingProfileValueValuesEnum: Defines autoscaling behaviour.
 
   Fields:
-    autoprovisioningLocations: The list of Google Compute Engine
-      [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the NodePool's nodes can be created by NAP.
+    autoprovisioningLocations: The list of Google Compute Engine [zones](https
+      ://{$universe.dns_names.final_documentation_domain}/compute/docs/zones#a
+      vailable) in which the NodePool's nodes can be created by NAP.
     autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
       contains defaults for a node pool created by NAP.
     autoscalingProfile: Defines autoscaling behaviour.
@@ -1357,12 +1360,12 @@ class ClusterUpdate(_messages.Message):
     desiredK8sBetaApis: Desired Beta APIs to be enabled for cluster.
     desiredL4ilbSubsettingConfig: The desired L4 Internal Load Balancer
       Subsetting configuration.
-    desiredLocations: The desired list of Google Compute Engine
-      [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster's nodes should be located. This list must always include the
-      cluster's primary zone. Warning: changing cluster locations will update
-      the locations of all node pools and will result in nodes being added
-      and/or removed.
+    desiredLocations: The desired list of Google Compute Engine [zones](https:
+      //{$universe.dns_names.final_documentation_domain}/compute/docs/zones#av
+      ailable) in which the cluster's nodes should be located. This list must
+      always include the cluster's primary zone. Warning: changing cluster
+      locations will update the locations of all node pools and will result in
+      nodes being added and/or removed.
     desiredLoggingConfig: The desired logging configuration.
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options: * `logging.googleapis.com/kubernetes`
@@ -1472,7 +1475,9 @@ class ClusterUpdate(_messages.Message):
     removedAdditionalPodRangesConfig: The additional pod ranges that are to be
       removed from the cluster. The pod ranges specified here must have been
       specified earlier in the 'additional_pod_ranges_config' argument.
-    userManagedKeysConfig: The Custom keys configuration for the cluster.
+    userManagedKeysConfig: The Custom keys configuration for the cluster. This
+      field is deprecated. Use ClusterUpdate.desired_user_managed_keys_config
+      instead.
   """
 
   class DesiredDatapathProviderValueValuesEnum(_messages.Enum):
@@ -1482,8 +1487,8 @@ class ClusterUpdate(_messages.Message):
       DATAPATH_PROVIDER_UNSPECIFIED: Default value.
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
       ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
-        features. See the [GKE Dataplane V2
-        documentation](https://cloud.google.com/kubernetes-engine/docs/how-
+        features. See the [GKE Dataplane V2 documentation](https://{$universe.
+        dns_names.final_documentation_domain}/kubernetes-engine/docs/how-
         to/dataplane-v2) for more.
       MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
         nodes should use ADVANCED_DATAPATH.
@@ -1717,13 +1722,13 @@ class CompleteIPRotationRequest(_messages.Message):
       complete IP rotation. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -1917,13 +1922,13 @@ class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to delete.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -1967,13 +1972,13 @@ class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to retrieve.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -1990,13 +1995,13 @@ class ContainerProjectsLocationsClustersListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides, or "-" for all zones. This field has been
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
       deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides, or "-" for all zones. This field has
+      been deprecated and replaced by the parent field.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2032,13 +2037,13 @@ class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message
     nodePoolId: Deprecated. The name of the node pool to delete. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2077,13 +2082,13 @@ class ContainerProjectsLocationsClustersNodePoolsGetRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool. This field has been
       deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2103,13 +2108,13 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
       will be listed. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      parent field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the parent field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2139,13 +2144,13 @@ class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
     name: The name (project and location) of the server config to get,
       specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) to return
-      operations for. This field has been deprecated and replaced by the name
-      field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) to return operations for. This field has been deprecated and
+      replaced by the name field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2162,13 +2167,13 @@ class ContainerProjectsLocationsOperationsGetRequest(_messages.Message):
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2185,13 +2190,13 @@ class ContainerProjectsLocationsOperationsListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) to return
-      operations for, or `-` for all zones. This field has been deprecated and
-      replaced by the parent field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) to return operations for, or `-` for all zones. This field has been
+      deprecated and replaced by the parent field.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2208,13 +2213,13 @@ class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to delete.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2246,13 +2251,13 @@ class ContainerProjectsZonesClustersGetRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to retrieve.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2269,13 +2274,13 @@ class ContainerProjectsZonesClustersListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides, or "-" for all zones. This field has been
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
       deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides, or "-" for all zones. This field has
+      been deprecated and replaced by the parent field.
   """
 
   parent = _messages.StringField(1)
@@ -2295,13 +2300,13 @@ class ContainerProjectsZonesClustersNodePoolsDeleteRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to delete. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2339,13 +2344,13 @@ class ContainerProjectsZonesClustersNodePoolsGetRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool. This field has been
       deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2365,13 +2370,13 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
       will be listed. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      parent field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the parent field.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2387,13 +2392,13 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
     name: The name (project and location) of the server config to get,
       specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) to return
-      operations for. This field has been deprecated and replaced by the name
-      field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) to return operations for. This field has been deprecated and
+      replaced by the name field.
   """
 
   name = _messages.StringField(1)
@@ -2410,13 +2415,13 @@ class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
     operationId: Deprecated. The server-assigned `name` of the operation. This
       field has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   name = _messages.StringField(1)
@@ -2433,13 +2438,13 @@ class ContainerProjectsZonesOperationsListRequest(_messages.Message):
       listed. Specified in the format `projects/*/locations/*`. Location "-"
       matches all zones and all regions.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) to return
-      operations for, or `-` for all zones. This field has been deprecated and
-      replaced by the parent field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) to return operations for, or `-` for all zones. This field has been
+      deprecated and replaced by the parent field.
   """
 
   parent = _messages.StringField(1)
@@ -2484,19 +2489,19 @@ class CreateClusterRequest(_messages.Message):
   r"""CreateClusterRequest creates a cluster.
 
   Fields:
-    cluster: Required. A [cluster
-      resource](https://cloud.google.com/container-
+    cluster: Required. A [cluster resource](https://{$universe.dns_names.final
+      _documentation_domain}/container-
       engine/reference/rest/v1/projects.locations.clusters)
     parent: The parent (project and location) where the cluster will be
       created. Specified in the format `projects/*/locations/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      parent field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the parent field.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -2516,13 +2521,13 @@ class CreateNodePoolRequest(_messages.Message):
       will be created. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      parent field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      parent field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the parent field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the parent field.
   """
 
   clusterId = _messages.StringField(1)
@@ -2648,6 +2653,8 @@ class DNSEndpointConfig(_messages.Message):
       if this is false.
     dnsAliases: Alternate hostnames for the cluster. The default hostname is
       not included in this list.
+    enableK8sCertsViaDns: Controls whether the k8s certs auth is allowed via
+      DNS.
     enableK8sTokensViaDns: Controls whether the k8s token auth is allowed via
       DNS.
     endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
@@ -2658,8 +2665,9 @@ class DNSEndpointConfig(_messages.Message):
 
   allowExternalTraffic = _messages.BooleanField(1)
   dnsAliases = _messages.MessageField('DNSAlias', 2, repeated=True)
-  enableK8sTokensViaDns = _messages.BooleanField(3)
-  endpoint = _messages.StringField(4)
+  enableK8sCertsViaDns = _messages.BooleanField(3)
+  enableK8sTokensViaDns = _messages.BooleanField(4)
+  endpoint = _messages.StringField(5)
 
 
 class DailyMaintenanceWindow(_messages.Message):
@@ -2883,14 +2891,15 @@ class EphemeralStorageLocalSsdConfig(_messages.Message):
       support flexible numbers of local ssds, zero (or unset) means to disable
       using local SSDs as ephemeral storage. The limit for this value is
       dependent upon the maximum number of disk available on a machine per
-      zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
-      more information. 2. For Gen3 machines which dictate a specific number
-      of local ssds, zero (or unset) means to use the default number of local
-      ssds that goes with that machine type. For example, for a
-      c3-standard-8-lssd machine, 2 local ssds would be provisioned. For
-      c3-standard-8 (which doesn't support local ssds), 0 will be provisioned.
-      See https://cloud.google.com/compute/docs/disks/local-
-      ssd#choose_number_local_ssds for more info.
+      zone. See: https://{$universe.dns_names.final_documentation_domain}/comp
+      ute/docs/disks/local-ssd for more information. 2. For Gen3 machines
+      which dictate a specific number of local ssds, zero (or unset) means to
+      use the default number of local ssds that goes with that machine type.
+      For example, for a c3-standard-8-lssd machine, 2 local ssds would be
+      provisioned. For c3-standard-8 (which doesn't support local ssds), 0
+      will be provisioned. See https://{$universe.dns_names.final_documentatio
+      n_domain}/compute/docs/disks/local-ssd#choose_number_local_ssds for more
+      info.
   """
 
   dataCacheCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3102,7 +3111,9 @@ class Fleet(_messages.Message):
 
 class GCPSecretManagerCertificateConfig(_messages.Message):
   r"""GCPSecretManagerCertificateConfig configures a secret from [Google
-  Secret Manager](https://cloud.google.com/secret-manager).
+  Secret
+  Manager](https://{$universe.dns_names.final_documentation_domain}/secret-
+  manager).
 
   Fields:
     secretUri: Secret URI, in the form
@@ -3943,17 +3954,17 @@ class LocalNvmeSsdBlockConfig(_messages.Message):
   Fields:
     localSsdCount: Number of local NVMe SSDs to use. The limit for this value
       is dependent upon the maximum number of disk available on a machine per
-      zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
-      more information. A zero (or unset) value has different meanings
-      depending on machine type being used: 1. For pre-Gen3 machines, which
-      support flexible numbers of local ssds, zero (or unset) means to disable
-      using local SSDs as ephemeral storage. 2. For Gen3 machines which
-      dictate a specific number of local ssds, zero (or unset) means to use
-      the default number of local ssds that goes with that machine type. For
-      example, for a c3-standard-8-lssd machine, 2 local ssds would be
-      provisioned. For c3-standard-8 (which doesn't support local ssds), 0
-      will be provisioned. See
-      https://cloud.google.com/compute/docs/disks/local-
+      zone. See: https://{$universe.dns_names.final_documentation_domain}/comp
+      ute/docs/disks/local-ssd for more information. A zero (or unset) value
+      has different meanings depending on machine type being used: 1. For pre-
+      Gen3 machines, which support flexible numbers of local ssds, zero (or
+      unset) means to disable using local SSDs as ephemeral storage. 2. For
+      Gen3 machines which dictate a specific number of local ssds, zero (or
+      unset) means to use the default number of local ssds that goes with that
+      machine type. For example, for a c3-standard-8-lssd machine, 2 local
+      ssds would be provisioned. For c3-standard-8 (which doesn't support
+      local ssds), 0 will be provisioned. See https://{$universe.dns_names.fin
+      al_documentation_domain}/compute/docs/disks/local-
       ssd#choose_number_local_ssds for more info.
   """
 
@@ -4215,16 +4226,16 @@ class MasterAuth(_messages.Message):
       creation, username must be non-empty. Warning: basic authentication is
       deprecated, and will be removed in GKE control plane versions 1.19 and
       newer. For a list of recommended authentication methods, see:
-      https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-
-      authentication
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/how-to/api-server-authentication
     username: The username to use for HTTP basic authentication to the master
       endpoint. For clusters v1.6.0 and later, basic authentication can be
       disabled by leaving username unspecified (or setting it to the empty
       string). Warning: basic authentication is deprecated, and will be
       removed in GKE control plane versions 1.19 and newer. For a list of
       recommended authentication methods, see:
-      https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-
-      authentication
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/how-to/api-server-authentication
   """
 
   clientCertificate = _messages.StringField(1)
@@ -4427,20 +4438,20 @@ class NetworkConfig(_messages.Message):
       API on this cluster.
     inTransitEncryptionConfig: Specify the details of in-transit encryption.
       Now named inter-node transparent encryption.
-    network: Output only. The relative name of the Google Compute Engine
-      [network](https://cloud.google.com/compute/docs/networks-and-
-      firewalls#networks) to which the cluster is connected. Example:
-      projects/my-project/global/networks/my-network
+    network: Output only. The relative name of the Google Compute Engine [netw
+      ork](https://{$universe.dns_names.final_documentation_domain}/compute/do
+      cs/networks-and-firewalls#networks) to which the cluster is connected.
+      Example: projects/my-project/global/networks/my-network
     networkPerformanceConfig: Network bandwidth tier configuration.
     privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
       Services. By default, no private IPv6 access to or from Google Services
       (all access will be via IPv4)
     serviceExternalIpsConfig: ServiceExternalIPsConfig specifies if services
       with externalIPs field are blocked or not.
-    subnetwork: Output only. The relative name of the Google Compute Engine
-      [subnetwork](https://cloud.google.com/compute/docs/vpc) to which the
-      cluster is connected. Example: projects/my-project/regions/us-
-      central1/subnetworks/my-subnet
+    subnetwork: Output only. The relative name of the Google Compute Engine [s
+      ubnetwork](https://{$universe.dns_names.final_documentation_domain}/comp
+      ute/docs/vpc) to which the cluster is connected. Example: projects/my-
+      project/regions/us-central1/subnetworks/my-subnet
   """
 
   class DatapathProviderValueValuesEnum(_messages.Enum):
@@ -4451,8 +4462,8 @@ class NetworkConfig(_messages.Message):
       DATAPATH_PROVIDER_UNSPECIFIED: Default value.
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
       ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
-        features. See the [GKE Dataplane V2
-        documentation](https://cloud.google.com/kubernetes-engine/docs/how-
+        features. See the [GKE Dataplane V2 documentation](https://{$universe.
+        dns_names.final_documentation_domain}/kubernetes-engine/docs/how-
         to/dataplane-v2) for more.
       MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
         nodes should use ADVANCED_DATAPATH.
@@ -4628,8 +4639,8 @@ class NetworkTierConfig(_messages.Message):
 
 class NodeAffinity(_messages.Message):
   r"""Specifies the NodeAffinity key, values, and affinity operator according
-  to [shared sole tenant node group
-  affinities](https://cloud.google.com/compute/docs/nodes/sole-tenant-
+  to [shared sole tenant node group affinities](https://{$universe.dns_names.f
+  inal_documentation_domain}/compute/docs/nodes/sole-tenant-
   nodes#node_affinity_and_anti-affinity).
 
   Enums:
@@ -4700,16 +4711,16 @@ class NodeConfig(_messages.Message):
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
-      See https://cloud.google.com/compute/docs/gpus for more information
-      about support for GPUs.
+      See https://{$universe.dns_names.final_documentation_domain}/compute/doc
+      s/gpus for more information about support for GPUs.
     advancedMachineFeatures: Advanced features for the Compute Engine VM.
     bootDisk: The boot disk configuration for the node pool.
     bootDiskKmsKey:  The Customer Managed Encryption Key used to encrypt the
       boot disk attached to each node in the node pool. This should be of the
       form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
       /cryptoKeys/[KEY_NAME]. For more information about protecting resources
-      with Cloud KMS Keys please see:
-      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+      with Cloud KMS Keys please see: https://{$universe.dns_names.final_docum
+      entation_domain}/compute/docs/disks/customer-managed-encryption
     confidentialNodes: Confidential nodes config. All the nodes in the node
       pool will be Confidential VM once enabled.
     containerdConfig: Parameters for containerd customization.
@@ -4734,8 +4745,8 @@ class NodeConfig(_messages.Message):
     gvnic: Enable or disable gvnic in the node pool.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used. Please see
-      https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
-      available image types.
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/concepts/node-images for available image types.
     kubeletConfig: Node kubelet configs.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
@@ -4749,15 +4760,15 @@ class NodeConfig(_messages.Message):
     localNvmeSsdBlockConfig: Parameters for using raw-block Local NVMe SSDs.
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependent upon the maximum number of disks
-      available on a machine per zone. See:
-      https://cloud.google.com/compute/docs/disks/local-ssd for more
+      available on a machine per zone. See: https://{$universe.dns_names.final
+      _documentation_domain}/compute/docs/disks/local-ssd for more
       information.
     localSsdEncryptionMode: Specifies which method should be used for
       encrypting the Local SSDs attached to the node.
     loggingConfig: Logging configuration.
-    machineType: The name of a Google Compute Engine [machine
-      type](https://cloud.google.com/compute/docs/machine-types) If
-      unspecified, the default machine type is `e2-medium`.
+    machineType: The name of a Google Compute Engine [machine type](https://{$
+      universe.dns_names.final_documentation_domain}/compute/docs/machine-
+      types) If unspecified, the default machine type is `e2-medium`.
     maxRunDuration: The maximum duration for the nodes to exist. If
       unspecified, the nodes can exist indefinitely.
     metadata: The metadata key/value pairs assigned to instances in the
@@ -4779,13 +4790,13 @@ class NodeConfig(_messages.Message):
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
       `minCpuPlatform: "Intel Haswell"` or `minCpuPlatform: "Intel Sandy
-      Bridge"`. For more information, read [how to specify min CPU
-      platform](https://cloud.google.com/compute/docs/instances/specify-min-
-      cpu-platform)
+      Bridge"`. For more information, read [how to specify min CPU platform](h
+      ttps://{$universe.dns_names.final_documentation_domain}/compute/docs/ins
+      tances/specify-min-cpu-platform)
     nodeGroup: Setting this field will assign instances of this pool to run on
       the specified node group. This is useful for running workloads on [sole
-      tenant nodes](https://cloud.google.com/compute/docs/nodes/sole-tenant-
-      nodes).
+      tenant nodes](https://{$universe.dns_names.final_documentation_domain}/c
+      ompute/docs/nodes/sole-tenant-nodes).
     nodeImageConfig: The node image configuration to use for this node pool.
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
@@ -4795,17 +4806,18 @@ class NodeConfig(_messages.Message):
       `https://www.googleapis.com/auth/compute` is required for mounting
       persistent storage on your nodes. *
       `https://www.googleapis.com/auth/devstorage.read_only` is required for
-      communicating with **gcr.io** (the [Google Container
-      Registry](https://cloud.google.com/container-registry/)). If
-      unspecified, no scopes are added, unless Cloud Logging or Cloud
+      communicating with **gcr.io** (the [Google Container Registry](https://{
+      $universe.dns_names.final_documentation_domain}/container-registry/)).
+      If unspecified, no scopes are added, unless Cloud Logging or Cloud
       Monitoring are enabled, in which case their required scopes will be
       added.
     preemptible: Whether the nodes are created as preemptible VM instances.
-      See: https://cloud.google.com/compute/docs/instances/preemptible for
-      more information about preemptible VM instances.
+      See: https://{$universe.dns_names.final_documentation_domain}/compute/do
+      cs/instances/preemptible for more information about preemptible VM
+      instances.
     reservationAffinity: The optional reservation affinity. Setting this field
-      will apply the specified [Zonal Compute
-      Reservation](https://cloud.google.com/compute/docs/instances/reserving-
+      will apply the specified [Zonal Compute Reservation](https://{$universe.
+      dns_names.final_documentation_domain}/compute/docs/instances/reserving-
       zonal-resources) to this node pool.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
@@ -5138,7 +5150,8 @@ class NodeKubeletConfig(_messages.Message):
       50% of the boot disk size. The swap file is placed on boot disk by
       default. Swap_size is subtracted from the boot disk size when
       calculating reserved ephemeral storage
-      https://cloud.google.com/kubernetes-engine/docs/concepts/plan-node-
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/concepts/plan-node-
       sizes#local_ephemeral_storage_reservation. System pods cannot use swap.
       Swap is not supported on all TPU machines and some GPU (A4X, A4, A3)
       machines. Swap is not supported on CgroupV1. Swap is disabled if the
@@ -5331,21 +5344,20 @@ class NodePool(_messages.Message):
       pool fields, and may be sent on update requests to ensure the client has
       an up-to-date value before proceeding.
     initialNodeCount: The initial node count for the pool. You must ensure
-      that your Compute Engine [resource
-      quota](https://cloud.google.com/compute/quotas) is sufficient for this
-      number of instances. You must also have available firewall and routes
-      quota.
+      that your Compute Engine [resource quota](https://{$universe.dns_names.f
+      inal_documentation_domain}/compute/quotas) is sufficient for this number
+      of instances. You must also have available firewall and routes quota.
     instanceGroupUrls: Output only. The resource URLs of the [managed instance
-      groups](https://cloud.google.com/compute/docs/instance-groups/creating-
-      groups-of-managed-instances) associated with this node pool. During the
-      node pool blue-green upgrade operation, the URLs contain both blue and
-      green resources.
-    locations: The list of Google Compute Engine
-      [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the NodePool's nodes should be located. If this value is unspecified
-      during node pool creation, the
-      [Cluster.Locations](https://cloud.google.com/kubernetes-engine/docs/refe
-      rence/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
+      groups](https://{$universe.dns_names.final_documentation_domain}/compute
+      /docs/instance-groups/creating-groups-of-managed-instances) associated
+      with this node pool. During the node pool blue-green upgrade operation,
+      the URLs contain both blue and green resources.
+    locations: The list of Google Compute Engine [zones](https://{$universe.dn
+      s_names.final_documentation_domain}/compute/docs/zones#available) in
+      which the NodePool's nodes should be located. If this value is
+      unspecified during node pool creation, the [Cluster.Locations](https://{
+      $universe.dns_names.final_documentation_domain}/kubernetes-engine/docs/r
+      eference/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
       value will be used, instead. Warning: changing node pool locations will
       result in nodes being added and/or removed.
     management: NodeManagement configuration for this NodePool.
@@ -5368,8 +5380,8 @@ class NodePool(_messages.Message):
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     version: The version of Kubernetes running on this NodePool's nodes. If
-      unspecified, it defaults as described
-      [here](https://cloud.google.com/kubernetes-
+      unspecified, it defaults as described [here](https://{$universe.dns_name
+      s.final_documentation_domain}/kubernetes-
       engine/versioning#specifying_node_version).
   """
 
@@ -5660,10 +5672,10 @@ class Operation(_messages.Message):
     endTime: Output only. The time the operation completed, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     error: The error result of the operation in case of failure.
-    location: Output only. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
-      zones#available) or
-      [region](https://cloud.google.com/compute/docs/regions-zones/regions-
+    location: Output only. The name of the Google Compute Engine [zone](https:
+      //{$universe.dns_names.final_documentation_domain}/compute/docs/regions-
+      zones/regions-zones#available) or [region](https://{$universe.dns_names.
+      final_documentation_domain}/compute/docs/regions-zones/regions-
       zones#available) in which the cluster resides.
     name: Output only. The server-assigned ID for the operation.
     nodepoolConditions: Which conditions caused the current node pool state.
@@ -5689,10 +5701,10 @@ class Operation(_messages.Message):
       central1-c/clusters/my-cluster/nodePools/my-np`
       `https://container.googleapis.com/v1/projects/123/zones/us-
       central1-c/clusters/my-cluster/nodePools/my-np/node/my-node`
-    zone: Output only. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the operation is taking place. This field is deprecated, use location
-      instead.
+    zone: Output only. The name of the Google Compute Engine [zone](https://{$
+      universe.dns_names.final_documentation_domain}/compute/docs/zones#availa
+      ble) in which the operation is taking place. This field is deprecated,
+      use location instead.
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
@@ -5710,24 +5722,25 @@ class Operation(_messages.Message):
         the deletion will be automatically retried until completed.
       UPGRADE_MASTER: The cluster version is being updated. Note that this
         includes "upgrades" to the same version, which are simply a
-        recreation. This also includes [auto-
-        upgrades](https://cloud.google.com/kubernetes-
+        recreation. This also includes [auto-upgrades](https://{$universe.dns_
+        names.final_documentation_domain}/kubernetes-
         engine/docs/concepts/cluster-upgrades#upgrading_automatically). For
-        more details, see [documentation on cluster
-        upgrades](https://cloud.google.com/kubernetes-
+        more details, see [documentation on cluster upgrades](https://{$univer
+        se.dns_names.final_documentation_domain}/kubernetes-
         engine/docs/concepts/cluster-upgrades#cluster_upgrades).
       UPGRADE_NODES: A node pool is being updated. Despite calling this an
         "upgrade", this includes most forms of updates to node pools. This
-        also includes [auto-upgrades](https://cloud.google.com/kubernetes-
-        engine/docs/how-to/node-auto-upgrades). This operation sets the
-        progress field and may be canceled. The upgrade strategy depends on
-        [node pool configuration](https://cloud.google.com/kubernetes-
+        also includes [auto-upgrades](https://{$universe.dns_names.final_docum
+        entation_domain}/kubernetes-engine/docs/how-to/node-auto-upgrades).
+        This operation sets the progress field and may be canceled. The
+        upgrade strategy depends on [node pool configuration](https://{$univer
+        se.dns_names.final_documentation_domain}/kubernetes-
         engine/docs/concepts/node-pool-upgrade-strategies). The nodes are
         generally still usable during this operation.
       REPAIR_CLUSTER: A problem has been detected with the control plane and
         is being repaired. This operation type is initiated by GKE. For more
-        details, see [documentation on
-        repairs](https://cloud.google.com/kubernetes-
+        details, see [documentation on repairs](https://{$universe.dns_names.f
+        inal_documentation_domain}/kubernetes-
         engine/docs/concepts/maintenance-windows-and-exclusions#repairs).
       UPDATE_CLUSTER: The cluster is being updated. This is a broad category
         of operations and includes operations that only change metadata as
@@ -5736,28 +5749,28 @@ class Operation(_messages.Message):
         clusters. Some features require recreating the nodes as well. Those
         will be recreated as separate operations and the update may not be
         completely functional until the node pools recreations finish. Node
-        recreations will generally follow [maintenance
-        policies](https://cloud.google.com/kubernetes-
+        recreations will generally follow [maintenance policies](https://{$uni
+        verse.dns_names.final_documentation_domain}/kubernetes-
         engine/docs/concepts/maintenance-windows-and-exclusions). Some GKE-
         initiated operations use this type. This includes certain types of
         auto-upgrades and incident mitigations.
       CREATE_NODE_POOL: A node pool is being created. The node pool should be
         assumed to be unusable until this operation finishes. In the event of
-        an error, the node pool may be partially created. If enabled, [node
-        autoprovisioning](https://cloud.google.com/kubernetes-engine/docs/how-
-        to/node-auto-provisioning) may have automatically initiated such
-        operations.
+        an error, the node pool may be partially created. If enabled, [node au
+        toprovisioning](https://{$universe.dns_names.final_documentation_domai
+        n}/kubernetes-engine/docs/how-to/node-auto-provisioning) may have
+        automatically initiated such operations.
       DELETE_NODE_POOL: The node pool is being deleted. The node pool should
         be assumed to be unusable as soon as this operation starts.
       SET_NODE_POOL_MANAGEMENT: The node pool's manamagent field is being
         updated. These operations only update metadata and may be concurrent
         with most other operations.
       AUTO_REPAIR_NODES: A problem has been detected with nodes and [they are
-        being repaired](https://cloud.google.com/kubernetes-engine/docs/how-
-        to/node-auto-repair). This operation type is initiated by GKE,
-        typically automatically. This operation may be concurrent with other
-        operations and there may be multiple repairs occurring on the same
-        node pool.
+        being repaired](https://{$universe.dns_names.final_documentation_domai
+        n}/kubernetes-engine/docs/how-to/node-auto-repair). This operation
+        type is initiated by GKE, typically automatically. This operation may
+        be concurrent with other operations and there may be multiple repairs
+        occurring on the same node pool.
       AUTO_UPGRADE_NODES: Unused. Automatic node upgrade uses UPGRADE_NODES.
       SET_LABELS: Unused. Updating labels uses UPDATE_CLUSTER.
       SET_MASTER_AUTH: Unused. Updating master auth uses UPDATE_CLUSTER.
@@ -5771,8 +5784,9 @@ class Operation(_messages.Message):
         is initiated by GKE. These operations are often performed preemptively
         to ensure that the control plane has sufficient resources and is not
         typically an indication of issues. For more details, see
-        [documentation on resizes](https://cloud.google.com/kubernetes-
-        engine/docs/concepts/maintenance-windows-and-exclusions#repairs).
+        [documentation on resizes](https://{$universe.dns_names.final_document
+        ation_domain}/kubernetes-engine/docs/concepts/maintenance-windows-and-
+        exclusions#repairs).
       FLEET_FEATURE_UPGRADE: Fleet features of GKE Enterprise are being
         upgraded. The cluster should be assumed to be blocked for other
         upgrades until the operation finishes.
@@ -5949,7 +5963,8 @@ class PlacementPolicy(_messages.Message):
       and region as the node pool. If not found, InvalidArgument error is
       returned.
     tpuTopology: Optional. TPU placement topology for pod slice node pool.
-      https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies
+      https://{$universe.dns_names.final_documentation_domain}/tpu/docs/types-
+      topologies#tpu_topologies
     type: The type of placement.
   """
 
@@ -6363,9 +6378,10 @@ class ReleaseChannelConfig(_messages.Message):
 
 
 class ReservationAffinity(_messages.Message):
-  r"""[ReservationAffinity](https://cloud.google.com/compute/docs/instances/re
-  serving-zonal-resources) is the configuration of desired reservation which
-  instances could take capacity from.
+  r"""[ReservationAffinity](https://{$universe.dns_names.final_documentation_d
+  omain}/compute/docs/instances/reserving-zonal-resources) is the
+  configuration of desired reservation which instances could take capacity
+  from.
 
   Enums:
     ConsumeReservationTypeValueValuesEnum: Corresponds to the type of
@@ -6402,7 +6418,8 @@ class ReservationAffinity(_messages.Message):
 
 
 class ResourceLabels(_messages.Message):
-  r"""Collection of [GCP labels](https://cloud.google.com/resource-
+  r"""Collection of [GCP
+  labels](https://{$universe.dns_names.final_documentation_domain}/resource-
   manager/docs/creating-managing-labels).
 
   Messages:
@@ -6458,9 +6475,9 @@ class ResourceManagerTags(_messages.Message):
   r"""A map of resource manager tag keys and values to be attached to the
   nodes for managing Compute Engine firewalls using Network Firewall Policies.
   Tags must be according to specifications in
-  https://cloud.google.com/vpc/docs/tags-firewalls-overview#specifications. A
-  maximum of 5 tag key-value pairs can be specified. Existing tags will be
-  replaced with new values.
+  https://{$universe.dns_names.final_documentation_domain}/vpc/docs/tags-
+  firewalls-overview#specifications. A maximum of 5 tag key-value pairs can be
+  specified. Existing tags will be replaced with new values.
 
   Messages:
     TagsValue: TagKeyValue must be in one of the following formats
@@ -6537,15 +6554,15 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to rollback. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
     respectPdb: Option for rollback to ignore the PodDisruptionBudget. Default
       value is false.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -6816,13 +6833,13 @@ class SetAddonsConfigRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set addons.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
@@ -6852,14 +6869,14 @@ class SetLabelsRequest(_messages.Message):
     name: The name (project, location, cluster name) of the cluster to set
       labels. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
     resourceLabels: Required. The labels to set for that cluster.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6908,13 +6925,13 @@ class SetLegacyAbacRequest(_messages.Message):
       legacy abac. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -6930,22 +6947,22 @@ class SetLocationsRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
-    locations: Required. The desired list of Google Compute Engine
-      [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster's nodes should be located. Changing the locations a cluster
-      is in will result in nodes being either created or removed from the
-      cluster, depending on whether locations are being added or removed. This
-      list must always include the cluster's primary zone.
+    locations: Required. The desired list of Google Compute Engine [zones](htt
+      ps://{$universe.dns_names.final_documentation_domain}/compute/docs/zones
+      #available) in which the cluster's nodes should be located. Changing the
+      locations a cluster is in will result in nodes being either created or
+      removed from the cluster, depending on whether locations are being added
+      or removed. This list must always include the cluster's primary zone.
     name: The name (project, location, cluster) of the cluster to set
       locations. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -6972,13 +6989,13 @@ class SetLoggingServiceRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set logging.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -6999,11 +7016,11 @@ class SetMaintenancePolicyRequest(_messages.Message):
       maintenance policy. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Required. The Google Developers Console [project ID or project
-      number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects).
-    zone: Required. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides.
+      number](https://{$universe.dns_names.final_documentation_domain}/resourc
+      e-manager/docs/creating-managing-projects).
+    zone: Required. The name of the Google Compute Engine [zone](https://{$uni
+      verse.dns_names.final_documentation_domain}/compute/docs/zones#available
+      ) in which the cluster resides.
   """
 
   clusterId = _messages.StringField(1)
@@ -7027,14 +7044,14 @@ class SetMasterAuthRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set auth.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
     update: Required. A description of the update.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -7079,13 +7096,13 @@ class SetMonitoringServiceRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to set
       monitoring. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7107,13 +7124,13 @@ class SetNetworkPolicyRequest(_messages.Message):
     networkPolicy: Required. Configuration options for the NetworkPolicy
       feature.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7137,13 +7154,13 @@ class SetNodePoolAutoscalingRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
@@ -7168,13 +7185,13 @@ class SetNodePoolManagementRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7198,13 +7215,13 @@ class SetNodePoolSizeRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7351,14 +7368,14 @@ class StartIPRotationRequest(_messages.Message):
       IP rotation. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
     rotateCredentials: Whether to rotate credentials during IP rotation.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7641,14 +7658,14 @@ class UpdateClusterRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
     update: Required. A description of the update.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7685,13 +7702,13 @@ class UpdateMasterRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   clusterId = _messages.StringField(1)
@@ -7706,8 +7723,8 @@ class UpdateNodePoolRequest(_messages.Message):
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
-      See https://cloud.google.com/compute/docs/gpus for more information
-      about support for GPUs.
+      See https://{$universe.dns_names.final_documentation_domain}/compute/doc
+      s/gpus for more information about support for GPUs.
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     confidentialNodes: Confidential nodes config. All the nodes in the node
@@ -7735,24 +7752,25 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: Required. The desired image type for the node pool. Please see
-      https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
-      available image types.
+      https://{$universe.dns_names.final_documentation_domain}/kubernetes-
+      engine/docs/concepts/node-images for available image types.
     kubeletConfig: Node kubelet configs.
     labels: The desired node labels to be applied to all nodes in the node
       pool. If this field is not present, the labels will not be changed.
       Otherwise, the existing node labels will be *replaced* with the provided
       labels.
     linuxNodeConfig: Parameters that can be configured on Linux nodes.
-    locations: The desired list of Google Compute Engine
-      [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the node pool's nodes should be located. Changing the locations for a
-      node pool will result in nodes being either created or removed from the
-      node pool, depending on whether locations are being added or removed.
+    locations: The desired list of Google Compute Engine [zones](https://{$uni
+      verse.dns_names.final_documentation_domain}/compute/docs/zones#available
+      ) in which the node pool's nodes should be located. Changing the
+      locations for a node pool will result in nodes being either created or
+      removed from the node pool, depending on whether locations are being
+      added or removed.
     loggingConfig: Logging configuration.
-    machineType: Optional. The desired [Google Compute Engine machine
-      type](https://cloud.google.com/compute/docs/machine-types) for nodes in
-      the node pool. Initiates an upgrade operation that migrates the nodes in
-      the node pool to the specified machine type.
+    machineType: Optional. The desired [Google Compute Engine machine type](ht
+      tps://{$universe.dns_names.final_documentation_domain}/compute/docs/mach
+      ine-types) for nodes in the node pool. Initiates an upgrade operation
+      that migrates the nodes in the node pool to the specified machine type.
     maxRunDuration: The maximum duration for the nodes to exist. If
       unspecified, the nodes can exist indefinitely.
     name: The name (project, location, cluster, node pool) of the node pool to
@@ -7770,9 +7788,9 @@ class UpdateNodePoolRequest(_messages.Message):
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects). This field has been deprecated and replaced by the
-      name field.
+      project number](https://{$universe.dns_names.final_documentation_domain}
+      /resource-manager/docs/creating-managing-projects). This field has been
+      deprecated and replaced by the name field.
     queuedProvisioning: Specifies the configuration of queued provisioning.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
@@ -7795,10 +7813,10 @@ class UpdateNodePoolRequest(_messages.Message):
     windowsNodeConfig: Parameters that can be configured on Windows nodes.
     workloadMetadataConfig: The desired workload metadata config for the node
       pool.
-    zone: Deprecated. The name of the Google Compute Engine
-      [zone](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster resides. This field has been deprecated and replaced by the
-      name field.
+    zone: Deprecated. The name of the Google Compute Engine [zone](https://{$u
+      niverse.dns_names.final_documentation_domain}/compute/docs/zones#availab
+      le) in which the cluster resides. This field has been deprecated and
+      replaced by the name field.
   """
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)

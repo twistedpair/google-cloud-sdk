@@ -43,6 +43,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 
 def AddAvailabilityType(parser):
@@ -500,7 +501,7 @@ def AddAllocatedIPRangeName(parser):
           'the instance IPs for this cluster will be created in the '
           'allocated range. The range name must comply with RFC 1035. '
           'Specifically, the name must be 1-63 characters long and match the '
-          'regular expression [a-z]([-a-z0-9]*[a-z0-9])?.'
+          'regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`.'
       ),
   )
 
@@ -519,7 +520,7 @@ def AddAllocatedIPRangeOverride(parser):
           ' override the IP range used by the parent cluster. The range name'
           ' must comply with RFC 1035. Specifically, the name must be 1-63'
           ' characters long and match the regular expression'
-          ' [a-z]([-a-z0-9]*[a-z0-9])?.'
+          ' `[a-z]([-a-z0-9]*[a-z0-9])?`.'
       ),
   )
 
@@ -651,28 +652,29 @@ def AddMachineType(parser, required=False):
     parser: argparse.Parser: Parser object for command line inputs.
     required: Whether or not --machine-type is required.
   """
+  choices = [
+      'n2-highmem-2',
+      'n2-highmem-4',
+      'n2-highmem-8',
+      'n2-highmem-16',
+      'n2-highmem-32',
+      'n2-highmem-64',
+      'n2-highmem-96',
+      'n2-highmem-128',
+      'c4a-highmem-1',
+      'c4a-highmem-4-lssd',
+      'c4a-highmem-8-lssd',
+      'c4a-highmem-16-lssd',
+      'c4a-highmem-32-lssd',
+      'c4a-highmem-48-lssd',
+      'c4a-highmem-64-lssd',
+      'c4a-highmem-72-lssd',
+  ]
   parser.add_argument(
       '--machine-type',
       required=required,
       type=str,
-      choices=[
-          'n2-highmem-2',
-          'n2-highmem-4',
-          'n2-highmem-8',
-          'n2-highmem-16',
-          'n2-highmem-32',
-          'n2-highmem-64',
-          'n2-highmem-96',
-          'n2-highmem-128',
-          'c4a-highmem-1',
-          'c4a-highmem-4-lssd',
-          'c4a-highmem-8-lssd',
-          'c4a-highmem-16-lssd',
-          'c4a-highmem-32-lssd',
-          'c4a-highmem-48-lssd',
-          'c4a-highmem-64-lssd',
-          'c4a-highmem-72-lssd',
-      ],
+      choices=choices if properties.IsDefaultUniverse() else None,
       help='Specifies machine type for the instance.',
   )
 

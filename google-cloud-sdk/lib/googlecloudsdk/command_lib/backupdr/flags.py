@@ -513,6 +513,32 @@ def AddEnforcedRetention(parser, required):
   )
 
 
+def AddBackupRetentionInheritance(parser):
+  """Adds the --backup-retention-inheritance flag to the given parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--backup-retention-inheritance',
+      required=False,
+      choices=[
+          'inherit-vault-retention',
+          'match-backup-expire-time',
+      ],
+      hidden=True,
+      help=(
+          'The inheritance mode for enforced retention end time of the backup'
+          ' within this backup vault. Once set, the inheritance mode cannot be'
+          ' changed. Default is inherit-vault-retention. If set to'
+          ' inherit-vault-retention, the backup retention period will be'
+          ' inherited from the backup vault. If set to'
+          ' match-backup-expire-time, the backup retention period will  be the'
+          ' same as the backup expiration time. '
+      ),
+  )
+
+
 def AddBackupEnforcedRetentionEndTime(parser):
   """Adds the --enforced-retention-end-time flag to the given parser."""
   help_text = """

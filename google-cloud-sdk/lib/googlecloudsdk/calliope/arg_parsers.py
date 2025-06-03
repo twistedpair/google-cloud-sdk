@@ -1830,10 +1830,21 @@ class ArgObject(ArgDict):
 
   def _GetCodeExamples(self, flag_name):
     """Returns a string of user input examples."""
+    shorthand_snippet = self.GetUsageExample(shorthand=True)
+
+    # If simple primitive value, just separate by commas
+    if not self._keyed_values and self.repeated:
+      append = False
+      snippet = f'{shorthand_snippet},{shorthand_snippet}'
+    # If more complicated input, use append action
+    else:
+      append = self.repeated
+      snippet = shorthand_snippet
+
     shorthand_example = usage_text.FormatCodeSnippet(
         arg_name=flag_name,
-        arg_value=self.GetUsageExample(shorthand=True),
-        append=self.repeated)
+        arg_value=snippet,
+        append=append)
 
     json_example = usage_text.FormatCodeSnippet(
         arg_name=flag_name, arg_value=self.GetUsageExample(shorthand=False))

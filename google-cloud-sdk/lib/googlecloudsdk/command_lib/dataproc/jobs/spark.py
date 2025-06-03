@@ -79,13 +79,6 @@ class SparkBase(job_base.JobBase):
         metavar='PACKAGE=LEVEL',
         help=('List of package to log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
-    parser.add_argument(
-        '--spark-engine',
-        hidden=True,
-        metavar='VALUE',
-        choices=job_base.JobBase.SPARK_ENGINE_CHOICES,
-        help='The Spark engine to use for the job.',
-    )
 
   @staticmethod
   def GetFilesByType(args):
@@ -107,9 +100,6 @@ class SparkBase(job_base.JobBase):
         mainClass=args.main_class,
         mainJarFileUri=files_by_type['main_jar'],
         loggingConfig=logging_config,
-        sparkEngine=job_util.GetSparkEngine(
-            messages.SparkJob, args.spark_engine
-        ),
     )
 
     job_properties = job_util.BuildJobProperties(

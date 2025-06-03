@@ -14,6 +14,9 @@
 # limitations under the License.
 """Interconnect Attachment."""
 
+import json
+
+from apitools.base.py import encoding
 from googlecloudsdk.core import log
 
 
@@ -348,6 +351,98 @@ class InterconnectAttachment(object):
         ),
     )
 
+  def _MakeRemoveMappingRequestTuple(
+      self,
+      vlan_key,
+  ):
+    """Make an interconnect attachment patch request for L2 mappings."""
+    def _NullValueEncoder(message):
+      def _EncodeApplianceMappings(message):
+        mapping = {}
+
+        if message.applianceIpAddress is not None:
+          mapping['applianceIpAddress'] = message.applianceIpAddress
+        if message.name is not None:
+          mapping['name'] = message.name
+
+        mapping['innerVlanToApplianceMappings'] = []
+        for inner_mapping in message.innerVlanToApplianceMappings:
+          mapping['innerVlanToApplianceMappings'].append({
+              'innerVlanTags': list(inner_mapping.innerVlanTags),
+              'innerApplianceIpAddress': inner_mapping.innerApplianceIpAddress,
+          })
+
+        return mapping
+
+      return json.dumps({
+          property.key: (
+              _EncodeApplianceMappings(property.value)
+              if property.value
+              else None
+          )
+          for property in message.additionalProperties
+      })
+
+    def _NullValueDecoder(data):
+      def _DecodeApplianceMappings(data):
+        value = (
+            self._messages.InterconnectAttachmentL2ForwardingApplianceMapping(
+                applianceIpAddress=data.get('applianceIpAddress', None),
+                innerVlanToApplianceMappings=[],
+                name=data.get('name', None),
+            )
+        )
+        for inner_mapping in data.get('innerVlanToApplianceMappings', []):
+          value.innerVlanToApplianceMappings.append(
+              self._messages.InterconnectAttachmentL2ForwardingApplianceMappingInnerVlanToApplianceMapping(
+                  innerVlanTags=inner_mapping.get('innerVlanTags', []),
+                  innerApplianceIpAddress=inner_mapping.get(
+                      'innerApplianceIpAddress', ''
+                  ),
+              )
+          )
+        return value
+
+      py_object = json.loads(data)
+      return self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue(
+          additionalProperties=[
+              self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue.AdditionalProperty(
+                  key=key,
+                  value=_DecodeApplianceMappings(value) if value else None,
+              )
+              for key, value in py_object.items()
+          ]
+      )
+
+    encoding.RegisterCustomMessageCodec(
+        encoder=_NullValueEncoder, decoder=_NullValueDecoder
+    )(self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue)
+
+    attachment = self._messages.InterconnectAttachment(
+        name=self.ref.Name(),
+        l2Forwarding=self._messages.InterconnectAttachmentL2Forwarding(
+            applianceMappings=self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue(
+                additionalProperties=[
+                    self._messages.InterconnectAttachmentL2Forwarding.ApplianceMappingsValue.AdditionalProperty(
+                        key=vlan_key,
+                        value=None,
+                    )
+                ],
+            ),
+        ),
+    )
+
+    return (
+        self._client.interconnectAttachments,
+        'Patch',
+        self._messages.ComputeInterconnectAttachmentsPatchRequest(
+            project=self.ref.project,
+            region=self.ref.region,
+            interconnectAttachment=self.ref.Name(),
+            interconnectAttachmentResource=attachment,
+        ),
+    )
+
   def Create(
       self,
       description='',
@@ -571,7 +666,7 @@ class InterconnectAttachment(object):
       inner_vlan_to_appliance_mappings=None,
       only_generate_request=False,
   ):
-    """Add an interconnectAttachment."""
+    """Add an interconnectAttachmen L2 appliance mapping."""
     if inner_vlan_to_appliance_mappings is None:
       inner_vlan_to_appliance_mappings = []
     requests = [
@@ -580,6 +675,22 @@ class InterconnectAttachment(object):
             appliance_name,
             appliance_ip_address,
             inner_vlan_to_appliance_mappings,
+        )
+    ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def RemoveMapping(
+      self,
+      vlan_key=None,
+      only_generate_request=False,
+  ):
+    """Remove an interconnectAttachment L2 appliance mapping."""
+    requests = [
+        self._MakeRemoveMappingRequestTuple(
+            vlan_key,
         )
     ]
     if not only_generate_request:

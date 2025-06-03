@@ -70,6 +70,18 @@ mtls-ca-pools:
     Each CA pool must be in the format
     projects/``PROJECT_ID''/locations/``LOCATION''/caPools/``CA_POOL''.
 
+ssl-principal-mapping-rules:
+  api_field: cluster.tlsConfig.sslPrincipalMappingRules
+  arg_name: ssl-principal-mapping-rules
+  type: str
+  help_text: |
+    The rules for mapping mTLS certificate Distinguished Names (DNs) to shortened principal names
+    for Kafka ACLs. This flag corresponds exactly to the `ssl.principal.mapping.rules` broker config
+    and matches the format and syntax defined in the Apache Kafka documentation.
+    Setting or modifying this field will trigger a rolling restart of the Kafka brokers
+    to apply the change. An empty string means that the default Kafka behavior is used.
+    Example: "RULE:^CN=(.*?),OU=ServiceUsers.*$/$1@example.com/,DEFAULT"
+
 # Trying to define this as a resouce causes test failures in yaml_command_schema_test so we define
 # it as a flag instead.
 kafka-cluster:

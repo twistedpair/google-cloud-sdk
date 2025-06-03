@@ -1,0 +1,57 @@
+organization:
+  name: organization
+  collection: edgecontainer.organizations
+  attributes:
+  - &organization
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: The organization name.
+
+location:
+  name: location
+  collection: edgecontainer.organizations.locations
+  attributes:
+  - *organization
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The global location name.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: edgecontainer.organizations.locations.operations
+  attributes:
+  - *organization
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: Edge-container long running operation.
+  disable_auto_completers: false
+
+zone:
+  name: zone
+  collection: edgecontainer.organizations.locations.zones
+  request_id_field: zoneId
+  attributes:
+  - *organization
+  - *location
+  - &zone
+    parameter_name: zonesId
+    attribute_name: zone
+    help: The name of the Google Distributed Cloud Edge zone.
+  disable_auto_completers: false
+
+zonalProject:
+  name: Zonal Project
+  collection: edgecontainer.organizations.locations.zones.zonalProjects
+  request_id_field: zonalProjectId
+  attributes:
+  - *organization
+  - *location
+  - *zone
+  - &zonalProject
+    parameter_name: zonalProjectsId
+    attribute_name: zonal_project
+    help: Edge-container zonal project.
+  disable_auto_completers: false

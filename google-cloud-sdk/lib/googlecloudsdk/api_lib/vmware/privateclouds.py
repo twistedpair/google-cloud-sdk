@@ -163,6 +163,14 @@ class PrivateCloudsClient(util.VmwareClientBase):
         )
     )
 
+  def DeleteNow(self, resource):
+    request = (
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsPrivateCloudDeletionNowRequest(
+            name=resource.RelativeName()
+        )
+    )
+    return self.service.PrivateCloudDeletionNow(request)
+
   def List(self, location_resource):
     location = location_resource.RelativeName()
     request = (

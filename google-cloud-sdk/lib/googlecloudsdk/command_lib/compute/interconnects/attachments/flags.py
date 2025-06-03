@@ -184,6 +184,21 @@ def AddVlan(parser):
       """)
 
 
+def AddZ2zVlan(parser):
+  """Adds vlan flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--z2z-vlan',
+      type=arg_parsers.BoundedInt(2, 4093),
+      help="""\
+      Desired VLAN for this attachment, in the range 2-4093.
+      Required for Z2Z attachments.
+      """)
+
+
 def AddVlanKey(parser, required=False):
   """Adds vlan-key flag to the argparse.ArgumentParser.
 

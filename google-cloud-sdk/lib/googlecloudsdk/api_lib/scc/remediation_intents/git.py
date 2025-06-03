@@ -17,7 +17,7 @@
 import os
 import subprocess
 import tempfile
-from typing import List, Mapping, Tuple
+from typing import Mapping, Tuple
 
 from googlecloudsdk.api_lib.scc.remediation_intents import const
 from googlecloudsdk.command_lib.code import run_subprocess
@@ -153,23 +153,6 @@ def push_commit(files_data, commit_message, remote_name, branch_name):
   )
 
 
-def get_file_modifiers(files_data: Mapping[str, str]) -> List[str]:
-  """Returns the file modifiers for the given files data.
-
-  Args:
-    files_data: Dictionary of file path and file data.
-  """
-  log_command = ['git', 'log', '-s', '-n1', '--pretty=format:%ae%n']
-  for file_path, _ in files_data.items():
-    log_command.append(file_path)
-  try:
-    return run_subprocess.GetOutputLines(
-        log_command, timeout_sec=const.TF_CMD_TIMEOUT, strip_output=True
-    )
-  except Exception:  # pylint: disable=broad-exception-caught
-    return None
-
-
 def create_pr(
     title, desc, remote_name, branch_name, base_branch, reviewers
 ) -> Tuple[bool, str]:
@@ -216,13 +199,52 @@ def create_pr(
     )
     pr_link = p.stdout.strip()
   except subprocess.CalledProcessError as e:
-    return False, const.PR_FAILURE_MSG.format(
-        stdout=e.stdout, stderr=e.stderr
-    )
+    return False, const.PR_FAILURE_MSG.format(stdout=e.stdout, stderr=e.stderr)
 
   subprocess.run(  # cleanup the worktree
       ['git', 'worktree', 'remove', '--force', worktree_dir],
-      check=False, cwd=worktree_dir,
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+      check=False,
+      cwd=worktree_dir,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
   )
   return True, pr_link
+
+
+def get_file_modifiers(
+    files_data: Mapping[str, str], first: bool = False
+) -> str:
+  """Returns the first (creators) or last modifiers for the given files.
+
+  By default, it returns the last modifiers.
+
+  Args:
+    files_data: Dictionary of file path and file contents.
+    first: If True, returns the first modifiers for the files. Otherwise,
+      returns the last modifiers for the files.
+
+  Returns:
+    A string containing the modifiers for the given files. Format:
+    file_path1: last_modifier_emailAddr1
+    file_path2: last_modifier_emailAddr2
+    ...
+    file_pathn: last_modifier_emailAddrn
+
+    If there's an error, returns an empty string.
+  """
+  file_modifiers = {}
+  base_cmd = [
+      'git', 'log',
+      *(['--reverse'] if first else []),
+      '-s', '-n1', '--pretty=format:%ae%n',
+  ]  # By default, the cmd gives the last modifier for the file.
+  try:
+    for file_path, _ in files_data.items():
+      cmd = base_cmd + [file_path]
+      # If successful, cmd_output: <email_address> followed by \n
+      file_modifiers[file_path] = run_subprocess.GetOutputLines(
+          cmd, timeout_sec=const.TF_CMD_TIMEOUT, strip_output=True
+      )
+    return '\n'.join(f'{fp}: {ea}' for fp, ea in file_modifiers.items())
+  except subprocess.CalledProcessError:
+    return ''

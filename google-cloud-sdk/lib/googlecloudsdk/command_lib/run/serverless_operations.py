@@ -1092,12 +1092,7 @@ class ServerlessOperations(object):
         tracker.StartStage(stages.SERVICE_IAP_ENABLE)
         tracker.UpdateStage(stages.SERVICE_IAP_ENABLE, '')
         if iap_enabled:
-          self.AddOrRemoveIamPolicyBinding(
-              service_ref,
-              True,
-              iap_service_agent,
-              ALLOW_UNAUTH_POLICY_BINDING_ROLE,
-          )
+          self._AddIamPolicyBindingWithRetry(service_ref, iap_service_agent)
         else:
           self.AddOrRemoveIamPolicyBinding(
               service_ref,
@@ -1130,6 +1125,12 @@ class ServerlessOperations(object):
         tracker.CompleteStageWithWarning(
             stages.SERVICE_IAP_ENABLE, warning_message=warning_message
         )
+
+  @retry.RetryOnException(max_retrials=10, sleep_ms=15 * 1000)
+  def _AddIamPolicyBindingWithRetry(self, service_ref, iap_service_agent):
+    return self.AddOrRemoveIamPolicyBinding(
+        service_ref, True, iap_service_agent, ALLOW_UNAUTH_POLICY_BINDING_ROLE
+    )
 
   def GetWorkerPool(self, worker_pool_ref):
     """Return the relevant WorkerPool from the server, or None if 404."""

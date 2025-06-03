@@ -172,6 +172,7 @@ def AddDatabaseVersionFlag(parser):
       'POSTGRES_14',
       'POSTGRES_15',
       'POSTGRES_16',
+      'POSTGRES_17',
   ]
 
   parser.add_argument('--database-version', help=help_text, choices=choices)

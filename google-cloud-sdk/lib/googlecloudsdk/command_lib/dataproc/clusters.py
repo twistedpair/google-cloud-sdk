@@ -284,10 +284,9 @@ def ArgsForClusterRef(
 
   parser.add_argument(
       '--tier',
-      hidden=True,
-      metavar='TYPE',
+      metavar='TIER',
       choices=['premium', 'standard'],
-      help='The tier of cluster.',
+      help='Cluster tier',
   )
 
   image_parser = parser.add_mutually_exclusive_group()

@@ -49,6 +49,7 @@ class DNSEndpointOrUseApplicationDefaultCredentialsError(Error):
         ' should be set at a time.'
     )
 
+
 GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME = 'gke_gcloud_auth_plugin_cache'
 
 
@@ -113,7 +114,8 @@ class Kubeconfig(object):
     # and updating the kubeconfig allowed for a "reset" of the cache.
     dirname = os.path.dirname(self._filename)
     gke_gcloud_auth_plugin_file_path = os.path.join(
-        dirname, GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME)
+        dirname, GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME
+    )
     if os.path.exists(gke_gcloud_auth_plugin_file_path):
       file_utils.WriteFileAtomically(gke_gcloud_auth_plugin_file_path, '')
 
@@ -129,7 +131,8 @@ class Kubeconfig(object):
       for key in ('clusters', 'users', 'contexts'):
         if not isinstance(data[key], list):
           raise Error(
-              'invalid type for {0}: {1}'.format(data[key], type(data[key])))
+              'invalid type for {0}: {1}'.format(data[key], type(data[key]))
+          )
     except KeyError as error:
       raise Error('expected key {0} not found'.format(error))
 
@@ -138,8 +141,11 @@ class Kubeconfig(object):
     try:
       data = yaml.load_path(filename)
     except yaml.Error as error:
-      raise Error('unable to load kubeconfig for {0}: {1}'.format(
-          filename, error.inner_error))
+      raise Error(
+          'unable to load kubeconfig for {0}: {1}'.format(
+              filename, error.inner_error
+          )
+      )
     cls._Validate(data)
     return cls(data, filename)
 
@@ -195,7 +201,10 @@ class Kubeconfig(object):
           'environment variable {vars} or KUBECONFIG must be set to store '
           'credentials for kubectl'.format(
               vars='HOMEDRIVE/HOMEPATH, USERPROFILE, HOME,'
-              if platforms.OperatingSystem.IsWindows() else 'HOME'))
+              if platforms.OperatingSystem.IsWindows()
+              else 'HOME'
+          )
+      )
     return os.path.join(home_dir, '.kube', 'config')
 
   def Merge(self, kubeconfig):
@@ -209,11 +218,12 @@ class Kubeconfig(object):
     """
     self.SetCurrentContext(self.current_context or kubeconfig.current_context)
     self.clusters = dict(
-        list(kubeconfig.clusters.items()) + list(self.clusters.items()))
-    self.users = dict(
-        list(kubeconfig.users.items()) + list(self.users.items()))
+        list(kubeconfig.clusters.items()) + list(self.clusters.items())
+    )
+    self.users = dict(list(kubeconfig.users.items()) + list(self.users.items()))
     self.contexts = dict(
-        list(kubeconfig.contexts.items()) + list(self.contexts.items()))
+        list(kubeconfig.contexts.items()) + list(self.contexts.items())
+    )
 
 
 def Cluster(name, server, ca_path=None, ca_data=None, has_dns_endpoint=False):
@@ -229,24 +239,24 @@ def Cluster(name, server, ca_path=None, ca_data=None, has_dns_endpoint=False):
     cluster['certificate-authority-data'] = ca_data
   elif not has_dns_endpoint:
     cluster['insecure-skip-tls-verify'] = True
-  return {
-      'name': name,
-      'cluster': cluster
-  }
+  return {'name': name, 'cluster': cluster}
 
 
-def User(name,
-         auth_provider=None,
-         auth_provider_cmd_path=None,
-         auth_provider_cmd_args=None,
-         auth_provider_expiry_key=None,
-         auth_provider_token_key=None,
-         cert_path=None,
-         cert_data=None,
-         key_path=None,
-         key_data=None,
-         dns_endpoint=None,
-         impersonate_service_account=None):
+def User(
+    name,
+    auth_provider=None,
+    auth_provider_cmd_path=None,
+    auth_provider_cmd_args=None,
+    auth_provider_expiry_key=None,
+    auth_provider_token_key=None,
+    cert_path=None,
+    cert_data=None,
+    key_path=None,
+    key_data=None,
+    dns_endpoint=None,
+    impersonate_service_account=None,
+    iam_token=None,
+):
   """Generates and returns a user kubeconfig object.
 
   Args:
@@ -262,6 +272,8 @@ def User(name,
     key_data: str, base64 encoded client key data.
     dns_endpoint: str, cluster's DNS endpoint.
     impersonate_service_account: str, service account to impersonate.
+    iam_token: str, IAM token to use for authentication.
+
   Returns:
     dict, valid kubeconfig user entry.
 
@@ -269,8 +281,9 @@ def User(name,
     Error: if no auth info is provided (auth_provider or cert AND key)
   """
   # TODO(b/70856999) Figure out what the correct behavior for client certs is.
-  if not (auth_provider or (cert_path and key_path) or
-          (cert_data and key_data)):
+  if not (
+      auth_provider or (cert_path and key_path) or (cert_data and key_data)
+  ):
     raise Error('either auth_provider or cert & key must be provided')
   user = {}
   use_exec_auth = _UseExecAuth()
@@ -280,14 +293,21 @@ def User(name,
     # if certain 'auth_provider_' fields are "present" OR
     # if use_exec_auth is set to False
     # pylint: disable=line-too-long
-    if auth_provider_cmd_path or auth_provider_cmd_args or auth_provider_expiry_key or auth_provider_token_key or not use_exec_auth:
+    if (
+        auth_provider_cmd_path
+        or auth_provider_cmd_args
+        or auth_provider_expiry_key
+        or auth_provider_token_key
+        or not use_exec_auth
+    ):
       # auth-provider is being deprecated in favor of "exec" in k8s 1.25.
       user['auth-provider'] = _AuthProvider(
           name=auth_provider,
           cmd_path=auth_provider_cmd_path,
           cmd_args=auth_provider_cmd_args,
           expiry_key=auth_provider_expiry_key,
-          token_key=auth_provider_token_key)
+          token_key=auth_provider_token_key,
+      )
     else:
       user['exec'] = _ExecAuthPlugin(dns_endpoint, impersonate_service_account)
 
@@ -305,10 +325,11 @@ def User(name,
   elif key_data:
     user['client-key-data'] = key_data
 
-  return {
-      'name': name,
-      'user': user
-  }
+  if iam_token:
+    user['token'] = iam_token
+    log.status.Print(f'Added IAM token to kubeconfig entry for user {name}.')
+
+  return {'name': name, 'user': user}
 
 
 def _UseExecAuth():
@@ -321,24 +342,30 @@ def _UseExecAuth():
   use_exec_auth = True
 
   use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(
-      os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN')
+      os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN'
+  )
   # if use_gke_gcloud_auth_plugin is explicitly set(True/False), take action.
   # if use_gke_gcloud_auth_plugin is NOT explicitly set, do nothing
-  if use_gke_gcloud_auth_plugin and use_gke_gcloud_auth_plugin.lower(
-  ) == 'true':
+  if (
+      use_gke_gcloud_auth_plugin
+      and use_gke_gcloud_auth_plugin.lower() == 'true'
+  ):
     use_exec_auth = True
-  elif use_gke_gcloud_auth_plugin and use_gke_gcloud_auth_plugin.lower(
-  ) == 'false':
+  elif (
+      use_gke_gcloud_auth_plugin
+      and use_gke_gcloud_auth_plugin.lower() == 'false'
+  ):
     use_exec_auth = False
 
   return use_exec_auth
 
-SDK_BIN_PATH_NOT_FOUND = '''\
+
+SDK_BIN_PATH_NOT_FOUND = """\
 Path to sdk installation not found. Please switch to application default
 credentials using one of
 
 $ gcloud config set container/use_application_default_credentials true
-$ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
+$ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true"""
 
 GKE_GCLOUD_AUTH_INSTALL_HINT = """\
 Install gke-gcloud-auth-plugin for use with kubectl by following \
@@ -367,6 +394,7 @@ def _ExecAuthPlugin(dns_endpoint=None, impersonate_service_account=None):
   Args:
     dns_endpoint: str, DNS endpoint.
     impersonate_service_account: str, service account to impersonate.
+
   Returns:
     dict, valid exec auth plugin config entry.
   Raises:
@@ -401,11 +429,9 @@ def _ExecAuthPlugin(dns_endpoint=None, impersonate_service_account=None):
   return exec_cfg
 
 
-def _AuthProvider(name='gcp',
-                  cmd_path=None,
-                  cmd_args=None,
-                  expiry_key=None,
-                  token_key=None):
+def _AuthProvider(
+    name='gcp', cmd_path=None, cmd_args=None, expiry_key=None, token_key=None
+):
   """Generates and returns an auth provider config.
 
   Constructs an auth provider config entry readable by kubectl. This tells
@@ -431,8 +457,10 @@ def _AuthProvider(name='gcp',
     $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true.
   """
   provider = {'name': name}
-  if (name == 'gcp' and not
-      properties.VALUES.container.use_app_default_credentials.GetBool()):
+  if (
+      name == 'gcp'
+      and not properties.VALUES.container.use_app_default_credentials.GetBool()
+  ):
     bin_name = 'gcloud'
     if platforms.OperatingSystem.IsWindows():
       bin_name = 'gcloud.cmd'
@@ -453,17 +481,17 @@ def _AuthProvider(name='gcp',
 
     cfg = {
         # Command for gcloud credential helper
-        'cmd-path':
-            cmd_path,
+        'cmd-path': cmd_path,
         # Args for gcloud credential helper
-        'cmd-args':
-            cmd_args if cmd_args else 'config config-helper --format=json',
+        'cmd-args': (
+            cmd_args if cmd_args else 'config config-helper --format=json'
+        ),
         # JSONpath to the field that is the raw access token
-        'token-key':
-            token_key if token_key else '{.credential.access_token}',
+        'token-key': token_key if token_key else '{.credential.access_token}',
         # JSONpath to the field that is the expiration timestamp
-        'expiry-key':
+        'expiry-key': (
             expiry_key if expiry_key else '{.credential.token_expiry}'
+        ),
         # Note: we're omitting 'time-fmt' field, which if provided, is a
         # format string of the golang reference time. It can be safely omitted
         # because config-helper's default time format is RFC3339, which is the
@@ -490,11 +518,13 @@ def _GetGkeGcloudPluginCommandAndPrintWarning():
   # Check if command is in PATH and executable. Else, print critical(RED)
   # warning as kubectl will break if command is not executable.
   try:
-    subprocess.run([command, '--version'],
-                   timeout=5,
-                   check=False,
-                   stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL)
+    subprocess.run(
+        [command, '--version'],
+        timeout=5,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
   except Exception:  # pylint: disable=broad-except
     # Provide SDK Full path if command is not in PATH. This helps work
     # around scenarios where cloud-sdk install location is not in PATH
@@ -507,11 +537,13 @@ def _GetGkeGcloudPluginCommandAndPrintWarning():
         log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
       else:
         sdk_path_bin_name = os.path.join(sdk_bin_path, command)
-        subprocess.run([sdk_path_bin_name, '--version'],
-                       timeout=5,
-                       check=False,
-                       stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL)
+        subprocess.run(
+            [sdk_path_bin_name, '--version'],
+            timeout=5,
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         command = sdk_path_bin_name  # update command if sdk_path_bin_name works
     except Exception:  # pylint: disable=broad-except
       log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)

@@ -252,6 +252,18 @@ def _GenerateUpdateMask(args):
       '--no-enable-scheduled-backup': 'scheduled_backup.enabled',
       '--scheduled-backup-cron': 'scheduled_backup',
       '--scheduled-backup-location': 'scheduled_backup',
+      '--clear-bigquery-metastore-migration-config': (
+          'bigquery_metastore_migration_config'
+      ),
+      '--bigquery-project-id': (
+          'bigquery_metastore_migration_config.bigquery_project_id'
+      ),
+      '--bigquery-dataset-location': (
+          'bigquery_metastore_migration_config.bigquery_dataset_location'
+      ),
+      '--desired-migration-state': (
+          'bigquery_metastore_migration_config.desired_migration_state'
+      ),
   }
 
   update_mask = set()

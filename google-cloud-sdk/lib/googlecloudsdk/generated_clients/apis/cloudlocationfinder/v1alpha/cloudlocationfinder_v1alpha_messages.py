@@ -20,8 +20,8 @@ class CloudLocation(_messages.Message):
     CloudLocationTypeValueValuesEnum: Optional. The type of the cloud
       location.
     CloudProviderValueValuesEnum: Optional. The provider of the cloud
-      location. Values can be GCP, 3P providers like AWS and Azure, or private
-      deployments.
+      location. Values can be Google Cloud or third-party providers, including
+      AWS, Azure, or Oracle Cloud Infrastructure.
 
   Fields:
     carbonFreeEnergyPercentage: Optional. The carbon free energy percentage of
@@ -33,17 +33,18 @@ class CloudLocation(_messages.Message):
       carbon footprint data is not available.
     cloudLocationType: Optional. The type of the cloud location.
     cloudProvider: Optional. The provider of the cloud location. Values can be
-      GCP, 3P providers like AWS and Azure, or private deployments.
+      Google Cloud or third-party providers, including AWS, Azure, or Oracle
+      Cloud Infrastructure.
     containingCloudLocation: Output only. The containing cloud location in the
       strict nesting hierarchy. For example, the containing cloud location of
       a zone is a region.
     displayName: Optional. The human-readable name of the cloud location.
-      Example: us-east-2, us-east1, etc.
+      Example: us-east-2, us-east1.
     name: Identifier. Name of the cloud location. Unique name of the cloud
       location including project and location using the form: `projects/{proje
       ct_id}/locations/{location}/cloudLocations/{cloud_location}`
     territoryCode: Optional. The two-letter ISO 3166-1 alpha-2 code of the
-      cloud location. Examples: US, JP, KR, etc.
+      cloud location. Examples: US, JP, KR.
   """
 
   class CloudLocationTypeValueValuesEnum(_messages.Enum):
@@ -62,12 +63,13 @@ class CloudLocation(_messages.Message):
     CLOUD_LOCATION_TYPE_REGION_EXTENSION = 3
 
   class CloudProviderValueValuesEnum(_messages.Enum):
-    r"""Optional. The provider of the cloud location. Values can be GCP, 3P
-    providers like AWS and Azure, or private deployments.
+    r"""Optional. The provider of the cloud location. Values can be Google
+    Cloud or third-party providers, including AWS, Azure, or Oracle Cloud
+    Infrastructure.
 
     Values:
       CLOUD_PROVIDER_UNSPECIFIED: Unspecified type.
-      CLOUD_PROVIDER_GCP: Cloud provider type for GCP.
+      CLOUD_PROVIDER_GCP: Cloud provider type for Google Cloud.
       CLOUD_PROVIDER_AWS: Cloud provider type for AWS.
       CLOUD_PROVIDER_AZURE: Cloud provider type for Azure.
       CLOUD_PROVIDER_OCI: Cloud provider type for OCI.
@@ -109,10 +111,10 @@ class CloudlocationfinderProjectsLocationsCloudLocationsListRequest(_messages.Me
       default, each expression is an AND expression. However, you can include
       AND and OR expressions explicitly.
     pageSize: Optional. The maximum number of cloud locations to return per
-      page. The service may return fewer cloud locations than this value. If
+      page. The service might return fewer cloud locations than this value. If
       unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
-      should return. Provide Page token returned by a previous
+      should return. Provide page token returned by a previous
       'ListCloudLocations' call to retrieve the next page of results. When
       paginating, all other parameters provided to 'ListCloudLocations' must
       match the call that provided the page token.
@@ -132,7 +134,7 @@ class CloudlocationfinderProjectsLocationsCloudLocationsSearchRequest(_messages.
 
   Fields:
     pageSize: Optional. The maximum number of cloud locations to return. The
-      service may return fewer cloud locations than this value. If
+      service might return fewer cloud locations than this value. If
       unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return. Provide Page token returned by a previous
@@ -143,7 +145,7 @@ class CloudlocationfinderProjectsLocationsCloudLocationsSearchRequest(_messages.
       locations. Format: projects/{project}/locations/{location}
     query: Optional. The query string in search query syntax. While filter is
       used to filter the search results by attributes, query is used to
-      specify the search requirements. syntax is described at go/clf-query.
+      specify the search requirements.
     sourceCloudLocation: Required. The source cloud location to search from.
       Example search can be searching nearby cloud locations from the source
       cloud location by latency.

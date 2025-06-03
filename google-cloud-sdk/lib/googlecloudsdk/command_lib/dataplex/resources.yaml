@@ -368,3 +368,18 @@ metadata_job:
     attribute_name: metadata_job
     help: |
       Identifier of the Dataplex Metadata Job resource.
+
+entry_link:
+  name: entry link
+  collection: dataplex.projects.locations.entryGroups.entryLinks
+  request_id_field: entryLinkId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *entry_group
+  - &entry_link
+    parameter_name: entryLinksId
+    attribute_name: entry_link
+    help: |
+        Entry Link between two entries.

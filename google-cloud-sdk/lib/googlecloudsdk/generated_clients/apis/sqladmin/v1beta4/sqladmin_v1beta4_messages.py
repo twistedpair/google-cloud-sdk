@@ -1221,6 +1221,8 @@ class DatabaseInstance(_messages.Message):
       `EXTERNAL`: A database server that is not managed by Google. This
       property is read-only; use the `tier` property in the `settings` object
       to determine the database type.
+    clearNetwork: Clears private network settings when the instance is
+      restored.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     createTime: Output only. The time when the instance was created in [RFC
@@ -1275,6 +1277,8 @@ class DatabaseInstance(_messages.Message):
       proactive database wellness job for OutOfDisk issues. * Writers: * the
       proactive database wellness job for OOD. * Readers: * the proactive
       database wellness job
+    pitrFields: Input only. PITR related fields added for Instance Independent
+      PITR.
     primaryDnsName: Output only. DEPRECATED: please use write_endpoint
       instead.
     project: The project ID of the project containing the Cloud SQL instance.
@@ -1717,58 +1721,60 @@ class DatabaseInstance(_messages.Message):
 
   availableMaintenanceVersions = _messages.StringField(1, repeated=True)
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 2)
-  connectionName = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  currentDiskSize = _messages.IntegerField(5)
-  databaseInstalledVersion = _messages.StringField(6)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
-  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 8)
-  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 9)
-  dnsName = _messages.StringField(10)
-  dnsNames = _messages.MessageField('DnsNameMapping', 11, repeated=True)
-  etag = _messages.StringField(12)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 13)
-  gceZone = _messages.StringField(14)
-  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 15)
-  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(16)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 17)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 18)
-  ipAddresses = _messages.MessageField('IpMapping', 19, repeated=True)
-  ipv6Address = _messages.StringField(20)
-  kind = _messages.StringField(21)
-  maintenanceVersion = _messages.StringField(22)
-  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(23)
-  masterInstanceName = _messages.StringField(24)
-  maxDiskSize = _messages.IntegerField(25)
-  name = _messages.StringField(26)
-  nodeCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  nodes = _messages.MessageField('PoolNodeConfig', 28, repeated=True)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 29)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 30)
-  primaryDnsName = _messages.StringField(31)
-  project = _messages.StringField(32)
-  pscServiceAttachmentLink = _messages.StringField(33)
-  region = _messages.StringField(34)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 35)
-  replicaNames = _messages.StringField(36, repeated=True)
-  replicationCluster = _messages.MessageField('ReplicationCluster', 37)
-  rootPassword = _messages.StringField(38)
-  satisfiesPzi = _messages.BooleanField(39)
-  satisfiesPzs = _messages.BooleanField(40)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 41)
-  secondaryGceZone = _messages.StringField(42)
-  selfLink = _messages.StringField(43)
-  serverCaCert = _messages.MessageField('SslCert', 44)
-  serviceAccountEmailAddress = _messages.StringField(45)
-  settings = _messages.MessageField('Settings', 46)
-  sourceInstanceNames = _messages.StringField(47, repeated=True)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 48)
-  state = _messages.EnumField('StateValueValuesEnum', 49)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 50, repeated=True)
-  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(51)
-  tags = _messages.MessageField('TagsValue', 52)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 53, repeated=True)
-  writeEndpoint = _messages.StringField(54)
+  clearNetwork = _messages.BooleanField(3)
+  connectionName = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  currentDiskSize = _messages.IntegerField(6)
+  databaseInstalledVersion = _messages.StringField(7)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 8)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 9)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 10)
+  dnsName = _messages.StringField(11)
+  dnsNames = _messages.MessageField('DnsNameMapping', 12, repeated=True)
+  etag = _messages.StringField(13)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 14)
+  gceZone = _messages.StringField(15)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 16)
+  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(17)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 18)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 19)
+  ipAddresses = _messages.MessageField('IpMapping', 20, repeated=True)
+  ipv6Address = _messages.StringField(21)
+  kind = _messages.StringField(22)
+  maintenanceVersion = _messages.StringField(23)
+  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(24)
+  masterInstanceName = _messages.StringField(25)
+  maxDiskSize = _messages.IntegerField(26)
+  name = _messages.StringField(27)
+  nodeCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  nodes = _messages.MessageField('PoolNodeConfig', 29, repeated=True)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 30)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 31)
+  pitrFields = _messages.MessageField('PITRFields', 32)
+  primaryDnsName = _messages.StringField(33)
+  project = _messages.StringField(34)
+  pscServiceAttachmentLink = _messages.StringField(35)
+  region = _messages.StringField(36)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 37)
+  replicaNames = _messages.StringField(38, repeated=True)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 39)
+  rootPassword = _messages.StringField(40)
+  satisfiesPzi = _messages.BooleanField(41)
+  satisfiesPzs = _messages.BooleanField(42)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 43)
+  secondaryGceZone = _messages.StringField(44)
+  selfLink = _messages.StringField(45)
+  serverCaCert = _messages.MessageField('SslCert', 46)
+  serviceAccountEmailAddress = _messages.StringField(47)
+  settings = _messages.MessageField('Settings', 48)
+  sourceInstanceNames = _messages.StringField(49, repeated=True)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 50)
+  state = _messages.EnumField('StateValueValuesEnum', 51)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 52, repeated=True)
+  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(53)
+  tags = _messages.MessageField('TagsValue', 54)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 55, repeated=True)
+  writeEndpoint = _messages.StringField(56)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -3732,6 +3738,25 @@ class OperationsListResponse(_messages.Message):
   warnings = _messages.MessageField('ApiWarning', 4, repeated=True)
 
 
+class PITRFields(_messages.Message):
+  r"""PITR related fields include enablement settings, archiving settings, and
+  the bucket name.
+
+  Fields:
+    enableBinLog: The enablement setting for PITR for MySQL.
+    replicationLogArchivingEnabled: The enablement setting for PITR for
+      PostgreSQL.
+    sqlserverPitrEnabled: The enablement setting for PITR for SQL Server.
+    transactionLogRetentionDays: The number of transaction log days to retain
+      for PITR
+  """
+
+  enableBinLog = _messages.BooleanField(1)
+  replicationLogArchivingEnabled = _messages.BooleanField(2)
+  sqlserverPitrEnabled = _messages.BooleanField(3)
+  transactionLogRetentionDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class PasswordStatus(_messages.Message):
   r"""Read-only password status.
 
@@ -4821,6 +4846,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         that this is an error and will block the migration.
       SELECTED_OBJECTS_NOT_EXIST_ON_SOURCE: The selected objects don't exist
         on the source instance.
+      PSC_ONLY_INSTANCE_WITH_NO_NETWORK_ATTACHMENT_URI: PSC only destination
+        instance does not have a network attachment URI.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -4876,6 +4903,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_SYSTEM_OBJECTS = 51
     UNSUPPORTED_TABLES_WITH_REPLICA_IDENTITY = 52
     SELECTED_OBJECTS_NOT_EXIST_ON_SOURCE = 53
+    PSC_ONLY_INSTANCE_WITH_NO_NETWORK_ATTACHMENT_URI = 54
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -6293,8 +6321,6 @@ class User(_messages.Message):
 
   Enums:
     DualPasswordTypeValueValuesEnum: Dual password status for the user.
-    IamStatusValueValuesEnum: Indicates if user is active for IAM
-      Authentication.
     TypeValueValuesEnum: The user type. It determines the method to
       authenticate the user during login. The default is the database's built-
       in user type.
@@ -6310,7 +6336,6 @@ class User(_messages.Message):
       PostgreSQL or SQL Server instance, it's optional.
     iamEmail: The full email for an IAM user. For normal database users, this
       will not be filled. Only applicable to MySQL database users.
-    iamStatus: Indicates if user is active for IAM Authentication.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID. Can be omitted for *update* because it is already specified
       on the URL.
@@ -6342,20 +6367,6 @@ class User(_messages.Message):
     NO_DUAL_PASSWORD = 2
     DUAL_PASSWORD = 3
 
-  class IamStatusValueValuesEnum(_messages.Enum):
-    r"""Indicates if user is active for IAM Authentication.
-
-    Values:
-      IAM_STATUS_UNSPECIFIED: The default value for users that are not of type
-        CLOUD_IAM_GROUP. Only CLOUD_IAM_GROUP users will be inactive/active.
-        Will not display any value in UI.
-      INACTIVE: User is not available for IAM Authentication.
-      ACTIVE: User is available for IAM Authentication.
-    """
-    IAM_STATUS_UNSPECIFIED = 0
-    INACTIVE = 1
-    ACTIVE = 2
-
   class TypeValueValuesEnum(_messages.Enum):
     r"""The user type. It determines the method to authenticate the user
     during login. The default is the database's built-in user type.
@@ -6381,15 +6392,14 @@ class User(_messages.Message):
   etag = _messages.StringField(2)
   host = _messages.StringField(3)
   iamEmail = _messages.StringField(4)
-  iamStatus = _messages.EnumField('IamStatusValueValuesEnum', 5)
-  instance = _messages.StringField(6)
-  kind = _messages.StringField(7)
-  name = _messages.StringField(8)
-  password = _messages.StringField(9)
-  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 10)
-  project = _messages.StringField(11)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  instance = _messages.StringField(5)
+  kind = _messages.StringField(6)
+  name = _messages.StringField(7)
+  password = _messages.StringField(8)
+  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 9)
+  project = _messages.StringField(10)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class UserPasswordValidationPolicy(_messages.Message):

@@ -1281,6 +1281,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.datastream = self._Add('datastream', command='gcloud datastream')
     self.deploymentmanager = self._Add(
         'deploymentmanager', command='gcloud deployment-manager')
+    # TODO(b/420912196): Unhide after gcloud client releases to GA.
+    self.designcenter = self._Add(
+        'designcenter', command='gcloud design-center', hidden=True)
     self.developerconnect = self._Add(
         'developerconnect', command='gcloud developer-connect')
     self.discovery = self._Add('discovery', hidden=True)
@@ -1381,7 +1384,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.policysimulator = self._Add('policysimulator', hidden=True)
     self.policytroubleshooter = self._Add('policytroubleshooter', hidden=True)
     self.privateca = self._Add('privateca', command='gcloud privateca')
-    self.privilegedaccessmanager = self._Add('pam', command='gcloud pam')
+    self.privilegedaccessmanager = self._Add(
+        'privilegedaccessmanager', command='gcloud pam'
+    )
     self.publicca = self._Add('publicca', command='gcloud publicca')
     self.pubsub = self._Add('pubsub', command='gcloud pubsub')
     self.pubsublite = self._Add('pubsublite', hidden=True)

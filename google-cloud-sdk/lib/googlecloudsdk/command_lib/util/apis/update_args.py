@@ -569,7 +569,8 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
 
     key_field = arg_utils.GetFieldFromMessage(field.type, 'key')
     key_type = key_field.type or arg_utils.TYPES.get(key_field.variant)
-    key_list = arg_parsers.ArgList(element_type=key_type)
+    key_list = arg_parsers.ArgObject(
+        value_type=key_type, repeated=True)
 
     return self._CreateBasicFlag(
         flag_prefix=Prefix.REMOVE,

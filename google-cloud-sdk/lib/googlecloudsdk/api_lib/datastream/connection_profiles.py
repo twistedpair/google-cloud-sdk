@@ -212,6 +212,8 @@ class ConnectionProfilesClient:
               directConnection=args.mongodb_direct_connection
           )
       )
+    if args.mongodb_tls:
+      profile.sslConfig = {}
     return profile
 
   def _ParseSslConfig(self, data):

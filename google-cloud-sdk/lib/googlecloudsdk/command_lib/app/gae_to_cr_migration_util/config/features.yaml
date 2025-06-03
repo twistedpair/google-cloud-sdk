@@ -25,6 +25,27 @@ unsupported:
     app_yaml: build_env_variables
   severity: major
   reason: No support for passing environment vars to buildpacks at the time of building.
+range_limited:
+- path:
+    admin_api: resources.cpu
+    app_yaml: resources.cpu
+  range:
+    max: 8
+    min: 0
+  severity: major
+  reason: Cloud Run supports max 8 CPUs.
+  flags:
+  - --cpu
+- path:
+    admin_api: resources.memoryGb
+    app_yaml: resources.memory_gb
+  range:
+    max: 32
+    min: 0.5369
+  severity: major
+  reason: Cloud Run supports max 32Gi of memory.
+  flags:
+  - --memory
 - path:
     admin_api: automaticScaling.standardSchedulerSettings.minInstances
     app_yaml: automatic_scaling.min_instances
@@ -39,7 +60,7 @@ unsupported:
     admin_api: automaticScaling.standardSchedulerSettings.maxInstances
     app_yaml: automatic_scaling.max_instances
   range:
-    max: 1000 //check what is the upper limit for max instances its default value is 100.
+    max: 1000
     min: 0
   severity: major
   reason: Cloud Run supports automatic scaling max instances values between 0 to 1000.

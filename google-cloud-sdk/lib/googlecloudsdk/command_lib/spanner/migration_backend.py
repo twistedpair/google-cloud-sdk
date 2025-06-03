@@ -210,6 +210,43 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.append('--log-level')
     return exec_args
 
+  def ParseImportArgs(self,
+                      instance,
+                      database,
+                      source_uri,
+                      source_format,
+                      table_name=None,
+                      project=None,
+                      schema_uri=None,
+                      csv_line_delimiter=None,
+                      csv_field_delimiter=None,
+                      database_dialect=None,
+                      **kwargs):
+    """"Parse args for the import command."""
+    del kwargs
+    exec_args = ['import']
+    if instance:
+      exec_args.extend(['--instance', instance])
+    if database:
+      exec_args.extend(['--database', database])
+    if table_name:
+      exec_args.extend(['--table-name', table_name])
+    if source_uri:
+      exec_args.extend(['--source-uri', source_uri])
+    if source_format:
+      exec_args.extend(['--source-format', source_format])
+    if schema_uri:
+      exec_args.extend(['--schema-uri', schema_uri])
+    if csv_line_delimiter:
+      exec_args.extend(['--csv-line-delimiter', csv_line_delimiter])
+    if csv_field_delimiter:
+      exec_args.extend(['--csv-field-delimiter', csv_field_delimiter])
+    if project:
+      exec_args.extend(['--project', project])
+    if database_dialect:
+      exec_args.extend(['--database-dialect', database_dialect])
+    return exec_args
+
   def _ParseArgsForCommand(self, command, **kwargs):
     """Call the parser corresponding to the command."""
     if command == 'schema':
@@ -222,6 +259,8 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       return self._ParseWebArgs(**kwargs)
     elif command == 'cleanup':
       return self.ParseCleanupArgs(**kwargs)
+    elif command == 'import':
+      return self.ParseImportArgs(**kwargs)
     else:
       raise binary_operations.InvalidOperationForBinary(
           'Invalid Operation [{}] for spanner-migration-tool'.format(command))

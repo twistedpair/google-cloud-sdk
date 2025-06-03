@@ -39,11 +39,13 @@ class BackupVaultsClient(util.BackupDrClientBase):
   def Create(
       self,
       resource,
+      support_backup_retention_inheritance: bool,
       backup_min_enforced_retention: str,
       description: Optional[str],
       labels: Mapping[str, str],
       effective_time: Optional[str],
       access_restriction: Optional[str],
+      backup_retention_inheritance: Optional[str],
   ) -> Any:
 
     parent = resource.Parent().RelativeName()
@@ -55,6 +57,10 @@ class BackupVaultsClient(util.BackupDrClientBase):
         effectiveTime=effective_time,
         accessRestriction=self.ParseAccessRestrictionEnum(access_restriction),
     )
+    if support_backup_retention_inheritance:
+      backup_vault.backupRetentionInheritance = (
+          self.ParseBackupRetentionInheritanceEnum(backup_retention_inheritance)
+      )
     request_id = command_util.GenerateRequestId()
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsCreateRequest(
@@ -64,6 +70,22 @@ class BackupVaultsClient(util.BackupDrClientBase):
         requestId=request_id,
     )
     return self.service.Create(request)
+
+  def ParseBackupRetentionInheritanceEnum(
+      self, backup_retention_inheritance_str: Optional[str]
+  ):
+    if backup_retention_inheritance_str is None:
+      return (
+          self.messages.BackupVault.BackupRetentionInheritanceValueValuesEnum.BACKUP_RETENTION_INHERITANCE_UNSPECIFIED
+      )
+    elif backup_retention_inheritance_str == 'inherit-vault-retention':
+      return (
+          self.messages.BackupVault.BackupRetentionInheritanceValueValuesEnum.INHERIT_VAULT_RETENTION
+      )
+    elif backup_retention_inheritance_str == 'match-backup-expire-time':
+      return (
+          self.messages.BackupVault.BackupRetentionInheritanceValueValuesEnum.MATCH_BACKUP_EXPIRE_TIME
+      )
 
   def ParseAccessRestrictionEnum(self, access_restriction_str: Optional[str]):
     if access_restriction_str is None:

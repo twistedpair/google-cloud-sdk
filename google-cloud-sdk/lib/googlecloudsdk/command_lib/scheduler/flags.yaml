@@ -23,10 +23,11 @@ retry_duration: &retry_duration
   type: googlecloudsdk.core.util.times:ParseDuration
   processor: googlecloudsdk.core.util.times:FormatDurationForJson
   help_text: |
-    Time limit for retrying a failed task, measured from when the task was
+    Time limit for retrying a failed job, measured from when the job was
     first run. If specified with `--max-retry-attempts` greater than 0, the
-    task will be retried until both limits are reached. Default is 0 (which
-    means unlimited).
+    job will be retried until both limits are reached. Default is 0 seconds
+    (which means unlimited); however, if `--max-retry-attempts` is also 0, a
+    job attempt won't be retried if it fails.
 
 clearable_retry_duration:
   group:
@@ -46,7 +47,7 @@ min_backoff: &min_backoff
   processor: googlecloudsdk.core.util.times:FormatDurationForJson
   default: 5s
   help_text: |
-    Minimum amount of time to wait before retrying a task after it
+    Minimum amount of time to wait before retrying a job after it
     fails. For example, `10s`. Default is `5s`.
 
 clearable_min_backoff:
@@ -63,12 +64,12 @@ clearable_min_backoff:
 max_backoff: &max_backoff
   api_field: job.retryConfig.maxBackoffDuration
   arg_name: max-backoff
-  default: 1h
+  default: 3600s
   type: googlecloudsdk.core.util.times:ParseDuration
   processor: googlecloudsdk.core.util.times:FormatDurationForJson
   help_text: |
-    Maximum amount of time to wait before retrying a task after it
-    fails. For example, `10m`. Default is `1h`.
+    Maximum amount of time to wait before retrying a job after it
+    fails. For example, `60s`. Default is `3600s` (1 hour).
 
 clearable_max_backoff:
   group:
@@ -84,7 +85,7 @@ clearable_max_backoff:
 max_doublings: &max_doublings
   api_field: job.retryConfig.maxDoublings
   arg_name: max-doublings
-  default: 16
+  default: 5
   help_text: |
     Maximum number of times that the interval between failed job
     retries will be doubled before the increase becomes constant.
@@ -112,15 +113,15 @@ schedule:
     the `n+1` execution is scheduled to run at `16:00` but the `n`
     execution takes until `16:15`, the `n+1` execution will not start
     until `16:15`. A scheduled start time will be delayed if the previous
-    execution has not ended when its scheduled time occurs.
+    execution has not ended when its scheduled time occurs. Learn more about the
+    [cron job format](https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules).
 
-    If --retry-count > 0 and a job attempt fails, the job will be tried a
-    total of --retry-count times, with exponential backoff, until the next
-    scheduled start time.
-
-    The schedule can be either of the following types:
-    * Crontab: http://en.wikipedia.org/wiki/Cron#Overview
-    * English-like schedule: https://cloud.google.com/scheduler/docs/quickstart#defining_the_job_schedule
+    If `--retry-count` > 0 and a job attempt fails, the job will be tried a
+    total of `--retry-count` times, with exponential backoff, until the job
+    succeeds or the number of retries is exhausted. Note that the next
+    scheduled execution time might be skipped if the retries continue
+    through that time. For more information, see
+    [Retry jobs](https://cloud.google.com/scheduler/docs/configuring/retry-jobs).
 
 timezone: &timezone
   api_field: job.timeZone

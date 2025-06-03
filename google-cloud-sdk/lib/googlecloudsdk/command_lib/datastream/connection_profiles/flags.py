@@ -439,6 +439,12 @@ def AddMongodbProfileGroup(parser, required=True):
       action='store_true',
       default=False,
   )
+  ssl_config = mongodb_profile.add_group()
+  ssl_config.add_argument(
+      '--mongodb-tls',
+      help="""Enable Transport Layer Security for the monogodb connection.""",
+      action='store_true',
+      default=False)
 
 
 def AddDepthGroup(parser):

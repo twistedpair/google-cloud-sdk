@@ -128,6 +128,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
     self.reservationBlocks = self.ReservationBlocksService(self)
+    self.reservationSubBlocks = self.ReservationSubBlocksService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
     self.routers = self.RoutersService(self)
@@ -20101,6 +20102,68 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='reservationsBlocksPerformMaintenanceRequest',
         request_type_name='ComputeReservationBlocksPerformMaintenanceRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ReservationSubBlocksService(base_api.BaseApiService):
+    """Service class for the reservationSubBlocks resource."""
+
+    _NAME = 'reservationSubBlocks'
+
+    def __init__(self, client):
+      super(ComputeBeta.ReservationSubBlocksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified reservation subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationSubBlocksGetResponse) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.reservationSubBlocks.get',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}',
+        request_field='',
+        request_type_name='ComputeReservationSubBlocksGetRequest',
+        response_type_name='ReservationSubBlocksGetResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of reservation subBlocks under a single reservation.
+
+      Args:
+        request: (ComputeReservationSubBlocksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationSubBlocksListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.reservationSubBlocks.list',
+        ordered_params=['project', 'zone', 'parentName'],
+        path_params=['parentName', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks',
+        request_field='',
+        request_type_name='ComputeReservationSubBlocksListRequest',
+        response_type_name='ReservationSubBlocksListResponse',
         supports_download=False,
     )
 

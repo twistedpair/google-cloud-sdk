@@ -115,7 +115,7 @@ def _downscope_credential(creds, scopes):
   ]:
     # TODO(b/223649175): Add support for other credential types(e.g GCE).
     log.warning(
-        'This command may not working as expected '
+        'This command may not work as expected '
         'for account type {}.'.format(cred_type.key)
     )
 

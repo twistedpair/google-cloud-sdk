@@ -74,11 +74,13 @@ class AlloyDbSettings(_messages.Message):
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
       POSTGRES_16: The database version is Postgres 16.
+      POSTGRES_17: The database version is Postgres 17.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_14 = 1
     POSTGRES_15 = 2
     POSTGRES_16 = 3
+    POSTGRES_17 = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3472,10 +3474,16 @@ class GenerateTcpProxyScriptRequest(_messages.Message):
 class GoogleCloudClouddmsV1OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Messages:
+    MetadataValue: Output only. Additional metadata that is returned by the
+      backend for the operation.
+
   Fields:
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    metadata: Output only. Additional metadata that is returned by the backend
+      for the operation.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have google.longrunning.Operation.error
@@ -3488,13 +3496,39 @@ class GoogleCloudClouddmsV1OperationMetadata(_messages.Message):
     verb: Output only. Name of the verb executed by the operation.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Output only. Additional metadata that is returned by the backend for
+    the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
 
 
 class ImportMappingRulesRequest(_messages.Message):
@@ -6138,6 +6172,12 @@ class SslConfig(_messages.Message):
     TypeValueValuesEnum: Optional. The ssl config type according to
       'client_key', 'client_certificate' and 'ca_certificate'.
 
+  Messages:
+    SslFlagsValue: Optional. SSL flags used for establishing SSL connection to
+      the source database. Only source specific flags are supported. An object
+      containing a list of "key": "value" pairs. Example: {
+      "server_certificate_hostname": "server.com"}.
+
   Fields:
     caCertificate: Required. Input only. The x509 PEM-encoded certificate of
       the CA that signed the source database server's certificate. The replica
@@ -6148,6 +6188,10 @@ class SslConfig(_messages.Message):
     clientKey: Input only. The unencrypted PKCS#1 or PKCS#8 PEM-encoded
       private key associated with the Client Certificate. If this field is
       used then the 'client_certificate' field is mandatory.
+    sslFlags: Optional. SSL flags used for establishing SSL connection to the
+      source database. Only source specific flags are supported. An object
+      containing a list of "key": "value" pairs. Example: {
+      "server_certificate_hostname": "server.com"}.
     type: Optional. The ssl config type according to 'client_key',
       'client_certificate' and 'ca_certificate'.
   """
@@ -6171,10 +6215,38 @@ class SslConfig(_messages.Message):
     REQUIRED = 3
     NONE = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SslFlagsValue(_messages.Message):
+    r"""Optional. SSL flags used for establishing SSL connection to the source
+    database. Only source specific flags are supported. An object containing a
+    list of "key": "value" pairs. Example: { "server_certificate_hostname":
+    "server.com"}.
+
+    Messages:
+      AdditionalProperty: An additional property for a SslFlagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SslFlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SslFlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   caCertificate = _messages.StringField(1)
   clientCertificate = _messages.StringField(2)
   clientKey = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  sslFlags = _messages.MessageField('SslFlagsValue', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class StandardQueryParameters(_messages.Message):

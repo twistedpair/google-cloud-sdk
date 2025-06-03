@@ -671,6 +671,14 @@ class Collections(enum.Enum):
       ['project', 'zone', 'reservation', 'reservationBlock'],
       True
   )
+  RESERVATIONSUBBLOCKS = (
+      'reservationSubBlocks',
+      'projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/'
+      '{reservationSubBlock}',
+      {},
+      ['project', 'zone', 'parentName', 'reservationSubBlock'],
+      True
+  )
   RESERVATIONS = (
       'reservations',
       'projects/{project}/zones/{zone}/reservations/{reservation}',
@@ -867,7 +875,10 @@ class Collections(enum.Enum):
   ZONES = (
       'zones',
       'projects/{project}/zones/{zone}',
-      {},
+      {
+          '':
+              'projects/{project}/zones/{zone}',
+      },
       ['project', 'zone'],
       True
   )

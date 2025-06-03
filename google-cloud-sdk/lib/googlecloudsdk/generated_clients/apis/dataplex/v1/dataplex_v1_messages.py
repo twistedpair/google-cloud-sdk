@@ -8400,6 +8400,9 @@ class GoogleCloudDataplexV1ImportItem(_messages.Message):
       those aspects that are present within the specified entry. Dataplex
       implicitly adds the keys for all of the required aspects of an entry.
     entry: Information about an entry and its attached aspects.
+    entryLink: Information about the entry link. User should provide either
+      one of the entry or entry_link. While providing entry_link, user should
+      not provide update_mask and aspect_keys.
     updateMask: The fields to update, in paths that are relative to the Entry
       resource. Separate each field with a comma.In FULL entry sync mode,
       Dataplex includes the paths of all of the fields for an entry that can
@@ -8419,7 +8422,8 @@ class GoogleCloudDataplexV1ImportItem(_messages.Message):
 
   aspectKeys = _messages.StringField(1, repeated=True)
   entry = _messages.MessageField('GoogleCloudDataplexV1Entry', 2)
-  updateMask = _messages.StringField(3)
+  entryLink = _messages.MessageField('GoogleCloudDataplexV1EntryLink', 3)
+  updateMask = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1Job(_messages.Message):

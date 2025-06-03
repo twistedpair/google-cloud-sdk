@@ -38,6 +38,7 @@ from googlecloudsdk.core.console import console_io
 
 _ROLES = (
     'roles/developerconnect.insightsAgent',
+    'roles/cloudasset.owner',
 )
 # Wait till service account is available for setIamPolicy
 _MAX_WAIT_TIME_IN_MS = 20 * 1000
@@ -108,6 +109,13 @@ class InsightsConfigClient(object):
   def Create(self, insight_config_ref, app_hub, user_artifact_configs):
     """Creates the insight config."""
     app_hub_application = name.parse_app_hub_application_uri(app_hub)
+    if app_hub_application.project_id() != insight_config_ref.projectsId:
+      raise InsightsConfigInitializationError(
+          'Mismatch: App Hub application project'
+          f' [{app_hub_application.project_id()}] must be the same as the'
+          ' project where the insight config is being created'
+          f' [{insight_config_ref.projectsId}].'
+      )
     user_artifact_configs_dict = name.parse_artifact_configs(
         user_artifact_configs
     )
@@ -137,7 +145,6 @@ class InsightsConfigClient(object):
           dependent_projects,
           management_project=False,
       )
-
     create_request = self.messages.DeveloperconnectProjectsLocationsInsightsConfigsCreateRequest(
         parent=insight_config_ref.Parent().RelativeName(),
         insightsConfigId=insight_config_ref.insightsConfigsId,

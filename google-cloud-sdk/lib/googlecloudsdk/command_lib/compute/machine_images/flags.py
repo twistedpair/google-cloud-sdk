@@ -28,6 +28,8 @@ DEFAULT_LIST_FORMAT = """\
       status
     )"""
 
+DISK_FILTER_FORMAT = 'DISK_DEVICE_NAME[,DISK_DEVICE_NAME]'
+
 
 def MakeSourceInstanceArg():
   return compute_flags.ResourceArgument(
@@ -37,7 +39,8 @@ def MakeSourceInstanceArg():
       required=True,
       zonal_collection='compute.instances',
       short_help='The source instance to create a machine image from.',
-      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+  )
 
 
 def MakeMachineImageArg(plural=False):
@@ -46,7 +49,8 @@ def MakeMachineImageArg(plural=False):
       resource_name='machineImage',
       completer=compute_completers.MachineImagesCompleter,
       plural=plural,
-      global_collection='compute.machineImages')
+      global_collection='compute.machineImages',
+  )
 
 
 def AddNetworkArgs(parser):
@@ -58,7 +62,8 @@ def AddNetworkArgs(parser):
       machine image. If `--subnet` is also specified, then the subnet must
       be a subnetwork of network specified by `--network`. If neither is
       specified, the `default` network is used.
-      """)
+      """,
+  )
 
   parser.add_argument(
       '--subnet',
@@ -66,7 +71,8 @@ def AddNetworkArgs(parser):
       Specifies the subnet for the VMs created from the imported machine
       image. If `--network` is also specified, the subnet must be
       a subnetwork of the network specified by `--network`.
-      """)
+      """,
+  )
 
 
 def AddNoRestartOnFailureArgs(parser):
@@ -78,7 +84,8 @@ def AddNoRestartOnFailureArgs(parser):
       The VMs created from the imported machine image are restarted if
       they are terminated by Compute Engine. This does not affect terminations
       performed by the user.
-      """)
+      """,
+  )
 
 
 def AddTagsArgs(parser):
@@ -102,7 +109,8 @@ def AddTagsArgs(parser):
       To list VMs tagged with a specific tag, `tag1`, run:
 
         $ gcloud compute instances list --filter='tags:tag1'
-      """)
+      """,
+  )
 
 
 def AddNetworkTierArgs(parser):
@@ -115,7 +123,7 @@ def AddNetworkTierArgs(parser):
         Specifies the network tier that will be used to configure the machine
         image. ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The
         default value is `PREMIUM`.
-        """
+        """,
   )
 
 
@@ -127,7 +135,7 @@ def AddCanIpForwardArgs(parser):
         If provided, allows the VMs created from the imported machine
         image to send and receive packets with non-matching destination or
         source IP addresses.
-        """
+        """,
   )
 
 
@@ -139,4 +147,34 @@ def AddPrivateNetworkIpArgs(parser):
         Specifies the RFC1918 IP to assign to the VMs created from the
         imported machine image. The IP should be in the subnet or legacy network
         IP range.
-      """)
+      """,
+  )
+
+
+def AddDiskFilterArgs(parser):
+  """Adds exclusion and inclusion filters for machine image disks."""
+  group = parser.add_mutually_exclusive_group(hidden=True)
+  group.add_argument(
+      '--exclude-disks',
+      metavar=DISK_FILTER_FORMAT,
+      help="""\
+        Specifies a filter for disks to be excluded from the machine image.
+        The filter is a comma-separated list of disk device names. Excluding the
+        boot disk device name is not permitted.
+        Cannot be used in conjunction with --include-disks.
+      """,
+      type=arg_parsers.ArgList(min_length=1),
+      hidden=True,
+  )
+  group.add_argument(
+      '--include-disks',
+      metavar=DISK_FILTER_FORMAT,
+      help="""\
+        Specifies a filter for disks to be included in the machine image.
+        The filter is a comma-separated list of disk device names. Always
+        include the boot disk device name.
+        Cannot be used in conjunction with --exclude-disks.
+      """,
+      type=arg_parsers.ArgList(min_length=1),
+      hidden=True,
+  )

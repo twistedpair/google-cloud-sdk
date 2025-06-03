@@ -108,9 +108,6 @@ def ProcessInstanceTypeAndNodes(args):
   return num_nodes
 
 
-@base.ReleaseTracks(
-    base.ReleaseTrack.GA, base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA
-)
 class ArgAdder(object):
   """A class for adding Bigtable command-line arguments."""
 
@@ -627,6 +624,26 @@ class ArgAdder(object):
     return self.AddScalingArgs(
         num_nodes_default=3, require_all_essential_autoscaling_args=True
     )
+
+  def AddTags(self, required=False):
+    """Add argument group for tags to parser."""
+    self.parser.add_argument(
+        '--tags',
+        metavar='KEY=VALUE',
+        help=textwrap.dedent("""\
+            List of tags KEY=VALUE pairs to bind.
+            Each item must be specified in either ID
+            `<tag_key_id>=<tag_value_id>`
+            or namespace format
+            `<tag-key-namespaced-name>=<tag-value-short-name>`.
+            Example: `123/environment=production,123/costCenter=marketing`
+        """),
+        required=required,
+        type=arg_parsers.ArgDict(),
+        action=arg_parsers.UpdateAction,
+        hidden=True,  # TODO(b/745685146): Unhide
+    )
+    return self
 
 
 def InstanceAttributeConfig():

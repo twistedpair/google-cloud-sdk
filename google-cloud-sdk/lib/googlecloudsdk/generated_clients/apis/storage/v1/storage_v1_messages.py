@@ -376,6 +376,8 @@ class Bucket(_messages.Message):
         object.
 
     Fields:
+      allowCrossOrgVpcs: Whether to allow cross-org VPCs in the bucket's IP
+        filter configuration.
       mode: The mode of the IP filter. Valid values are 'Enabled' and
         'Disabled'.
       publicNetworkSource: The public network source of the bucket's IP
@@ -408,9 +410,10 @@ class Bucket(_messages.Message):
       allowedIpCidrRanges = _messages.StringField(1, repeated=True)
       network = _messages.StringField(2)
 
-    mode = _messages.StringField(1)
-    publicNetworkSource = _messages.MessageField('PublicNetworkSourceValue', 2)
-    vpcNetworkSources = _messages.MessageField('VpcNetworkSourcesValueListEntry', 3, repeated=True)
+    allowCrossOrgVpcs = _messages.BooleanField(1)
+    mode = _messages.StringField(2)
+    publicNetworkSource = _messages.MessageField('PublicNetworkSourceValue', 3)
+    vpcNetworkSources = _messages.MessageField('VpcNetworkSourcesValueListEntry', 4, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

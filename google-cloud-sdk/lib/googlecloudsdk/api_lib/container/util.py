@@ -33,6 +33,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
@@ -270,10 +271,18 @@ def _GetClusterEndpoint(
       use_dns_endpoint
       and cluster.controlPlaneEndpointsConfig is not None
       and cluster.controlPlaneEndpointsConfig.dnsEndpointConfig is not None
-      and not (cluster.controlPlaneEndpointsConfig.dnsEndpointConfig
-               .allowExternalTraffic)
+      and not (
+          cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.allowExternalTraffic
+      )
   ):
-    raise AllowExternalTrafficIsDisabledError(cluster)
+    if not _IsGoogleInternalUser():
+      raise AllowExternalTrafficIsDisabledError(cluster)
+    else:
+      log.warning(
+          'Retrieving DNS endpoint for internal user even though'
+          ' allowExternalTraffic is disabled. Remove the --dns-endpoint flag if'
+          ' this is not intended.'
+      )
 
   if use_dns_endpoint or (
       # TODO(b/365115169)
@@ -445,10 +454,9 @@ class ClusterConfig(object):
     self.client_cert_data = kwargs.get('client_cert_data')
     self.client_key_data = kwargs.get('client_key_data')
     self.dns_endpoint = kwargs.get('dns_endpoint')
-    self.impersonate_service_account = kwargs.get(
-        'impersonate_service_account'
-    )
+    self.impersonate_service_account = kwargs.get('impersonate_service_account')
     self.kubecontext_override = kwargs.get('kubecontext_override')
+    self.use_iam_token = kwargs.get('use_iam_token')
 
   def __str__(self):
     return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
@@ -536,6 +544,9 @@ class ClusterConfig(object):
       user_kwargs['impersonate_service_account'] = (
           self.impersonate_service_account
       )
+    if self.use_iam_token:
+      user_kwargs['iam_token'] = _GenerateIamToken()
+
     # Use same key for context, cluster, and user
     kubeconfig.contexts[context] = kconfig.Context(context, context, context)
     kubeconfig.users[context] = kconfig.User(context, **user_kwargs)
@@ -562,6 +573,7 @@ class ClusterConfig(object):
       use_dns_endpoint=None,
       impersonate_service_account=None,
       kubecontext_override=None,
+      use_iam_token=False,
   ):
     """Saves config data for the given cluster.
 
@@ -580,9 +592,12 @@ class ClusterConfig(object):
       impersonate_service_account: the service account to impersonate when
         connecting to the cluster.
       kubecontext_override: the path to the kubeconfig file to write to.
+      use_iam_token: whether to generate and persist an IAM token in the
+        kubeconfig file.
 
     Returns:
       ClusterConfig of the persisted data.
+
     Raises:
       Error: if cluster has no endpoint (will be the case for first few
         seconds while cluster is PROVISIONING).
@@ -600,6 +615,7 @@ class ClusterConfig(object):
         'project_id': project_id,
         'server': 'https://' + endpoint,
         'kubecontext_override': kubecontext_override,
+        'use_iam_token': use_iam_token,
     }
     if use_dns_endpoint or (
         # TODO(b/365115169)
@@ -849,7 +865,7 @@ def LoadSystemConfigFromYAML(
     # node_config.kubeletConfig.memoryManager = kubelet_config_opts.get(
     #     NC_MEMORY_MANAGER
     # )
-     # Parse memory manager.
+    # Parse memory manager.
     memory_manager_opts = kubelet_config_opts.get(NC_MEMORY_MANAGER)
     if memory_manager_opts:
       node_config.kubeletConfig.memoryManager = messages.MemoryManager()
@@ -859,9 +875,7 @@ def LoadSystemConfigFromYAML(
     # Parse topology manager.
     topology_manager_opts = kubelet_config_opts.get(NC_TOPOLOGY_MANAGER)
     if topology_manager_opts:
-      node_config.kubeletConfig.topologyManager = (
-          messages.TopologyManager()
-      )
+      node_config.kubeletConfig.topologyManager = messages.TopologyManager()
       topology_manager_policy = topology_manager_opts.get(
           NC_TOPOLOGY_MANAGER_POLICY
       )
@@ -1500,3 +1514,39 @@ def LoadSoleTenantConfigFromNodeAffinityYaml(affinities_yaml, messages):
     node_affinities.append(node_affinity)
 
   return messages.SoleTenantConfig(nodeAffinities=node_affinities)
+
+
+def _IsGoogleInternalUser():
+  """Returns a bool noting if User is a Googler."""
+  email = properties.VALUES.core.account.Get()
+  return email is not None and email.lower().endswith('@google.com')
+
+
+def _GenerateIamToken() -> str:
+  """Generates an IAM token for the current user, if the user is a Googler.
+
+  The IAM token consists of three concatenated strings:
+  1. The `iam-` prefix.
+  2. The token associated with the credentials from the active account.
+  3. The authorization token stored in the auth.authorization_token_file
+     property.
+
+  Returns:
+    The IAM token for the current user.
+
+  Raises:
+    Error: if the user is not a Googler.
+  """
+  if not _IsGoogleInternalUser():
+    raise Error(
+        'IAM tokens are only supported for internal users. Please use a '
+        'Google account.'
+    )
+
+  cred = c_store.Load(use_google_auth=True, allow_account_impersonation=False)
+  auth_token_file = properties.VALUES.auth.authorization_token_file.Get(
+      required=True
+  )
+  auth_token = file_utils.ReadFileContents(auth_token_file)
+
+  return f'iam-{cred.token}^{auth_token}'

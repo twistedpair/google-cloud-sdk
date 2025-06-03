@@ -55,7 +55,18 @@ FIREWALL_FINDINGS = (
     # go/keep-sorted end
 )
 
-GIT_MSG = (
+COMMIT_MSG = (
     "[Gemini Generated] [SCC] Remediation for finding: {finding_id}, Project:"
     " {project_id}, Category {category}"
+)
+
+PR_TITLE = (
+    "[Gemini Generated] [SCC] Remediation for finding: {finding_id}, Project:"
+    " {project_id}, Category {category}"
+)
+
+PR_DESC = (
+    "Remediation explanation: {remediation_explanation}\n"
+    "Last file modifiers:\n{file_modifiers}\n"
+    "File owners:\n{file_owners}\n"
 )

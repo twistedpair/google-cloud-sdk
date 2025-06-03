@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.artifacts import containeranalysis_util as ca_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
+from googlecloudsdk.command_lib.artifacts import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -120,6 +121,8 @@ DOCKER_IMG_REGEX = (
 _VERSION_COLLECTION_NAME = (
     "artifactregistry.projects.locations.repositories.packages.versions"
 )
+
+_VERSION_REGEX = r"projects\/(?P<project>[^\/]+)\/locations\/(?P<location>[^\/]+)\/repositories\/(?P<repository>[^\/]+)\/packages\/(?P<package>.+)\/versions\/(?P<version>[^\/]+)$"
 
 DOCKER_URI_REGEX = r"https://(?P<docker_string>.*(docker\.pkg\.dev|gcr\.io).*)"
 
@@ -234,24 +237,21 @@ def ParseDockerVersionStr(version_str):
   Returns:
     A DockerVersion.
   """
-  try:
-    version_resource = resources.REGISTRY.ParseRelativeName(
-        version_str,
-        collection=_VERSION_COLLECTION_NAME,
-    )
+  # Resource collection parser cannot be used for resource path with packages
+  # containing unescaped "/".
+  match = re.match(_VERSION_REGEX, version_str)
+  if match:
     return DockerVersion(
         DockerImage(
             DockerRepo(
-                version_resource.projectsId,
-                version_resource.locationsId,
-                version_resource.repositoriesId,
+                match.group("project"),
+                match.group("location"),
+                match.group("repository"),
             ),
-            version_resource.packagesId,
+            util.EscapePackageStr(match.group("package")),
         ),
-        version_resource.versionsId,
+        match.group("version"),
     )
-  except resources.InvalidResourceException:
-    pass
 
   try:
     docker_repo = _ParseInput(version_str)

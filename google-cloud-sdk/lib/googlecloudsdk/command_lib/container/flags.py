@@ -1170,15 +1170,19 @@ def AddLocationFlags(parser):
   group.add_argument(
       '--zone',
       '-z',
-      help='Compute zone (e.g. us-central1-a) for a zonal cluster. Overrides '
-      'the default compute/zone property value for this command invocation.',
+      help=(
+          'Compute zone (e.g. us-central1-a) for a zonal cluster. Overrides '
+          'the default compute/zone property value for this command invocation.'
+      ),
       action=actions.StoreProperty(properties.VALUES.compute.zone),
   )
   group.add_argument(
       '--region',
-      help='Compute region (e.g. us-central1) for a regional cluster. '
-      'Overrides the default compute/region property value for this command '
-      'invocation.'
+      help=(
+          'Compute region (e.g. us-central1) for a regional cluster. Overrides'
+          ' the default compute/region property value for this command'
+          ' invocation.'
+      ),
   )
 
 
@@ -1866,8 +1870,7 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
   )
 
 
-def AddDataCacheCountFlag(
-    parser, for_node_pool=False, hidden=False):
+def AddDataCacheCountFlag(parser, for_node_pool=False, hidden=False):
   """Adds a --data-cache-count flag to the given parser."""
   target = 'node pool' if for_node_pool else 'cluster'
   help_text = """
@@ -3911,7 +3914,8 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
   if disable_addons_args and disable_addons_args.get('Istio'):
     return
   if istio_config_args or (
-      disable_addons_args and disable_addons_args.get('Istio') is False):  # pylint: disable=g-bool-id-comparison
+      disable_addons_args and disable_addons_args.get('Istio') is False  # pylint: disable=g-bool-id-comparison
+  ):
     raise exceptions.InvalidArgumentException(
         '--istio-config', 'The Istio addon is no longer supported.'
     )
@@ -4446,8 +4450,7 @@ def AddStackTypeFlag(parser, hidden=False):
   )
 
 
-def AddLocalSsdEncryptionModeFlag(
-    parser, for_node_pool=False, hidden=False):
+def AddLocalSsdEncryptionModeFlag(parser, for_node_pool=False, hidden=False):
   """Adds --local-ssd-encryption-mode flag to the given parser."""
   target = 'node pool' if for_node_pool else 'cluster'
   help_text = """
@@ -4463,7 +4466,8 @@ Encryption mode for Local SSDs on the {}.
 
 
 def AddStoragePoolsFlag(
-    parser, for_node_pool=False, for_create=True, hidden=False):
+    parser, for_node_pool=False, for_create=True, hidden=False
+):
   """Adds a --storage-pools flag to the given parser."""
   target = 'node pool' if for_node_pool else 'cluster'
   if for_create:
@@ -5796,7 +5800,7 @@ def AddEnableNestedVirtualizationFlag(parser, for_node_pool=False, hidden=True):
   )
 
 
-def AddPerformanceMonitoringUnit(parser, hidden=True):
+def AddPerformanceMonitoringUnit(parser, hidden=False):
   help_text = """
       Sets the Performance Monitoring Unit level.
       Valid values are `architectural`, `standard` and `enhanced`
@@ -6695,9 +6699,7 @@ def AddEnableCiliumClusterwideNetworkPolicyFlag(parser, is_update=False):
 
 
 def AddDisableL4LbFirewallReconciliationFlag(
-    parser,
-    hidden=False,
-    is_update=False
+    parser, hidden=False, is_update=False
 ):
   """Adds a disable-l4-lb-firewall-reconciliation to the given cluster parser.
 
@@ -7370,9 +7372,13 @@ traffic reaching cluster's control plane via private IP.
 
 def AddEnableAutopilotCompatibilityAuditingFlag(parser, hidden=False):
   help_text = """\
-        Enables the Autopilot Compatibility Auditing Feature. See
-        https://cloud.google.com/sdk/gcloud/reference/container/clusters/check-autopilot-compatibility.
-        Only applicable to clusters with version >= 1.32.
+        Lets you run the
+        [gcloud container clusters check-autopilot-compatibility](https://cloud.google.com/sdk/gcloud/reference/container/clusters/check-autopilot-compatibility)
+        command to check whether your workloads are compatible with Autopilot
+        mode. This flag is only applicable to clusters that run version
+        1.31.6-gke.1027000 or later.
+
+        Note: This flag causes a control plane restart.
     """
 
   parser.add_argument(
@@ -7512,6 +7518,24 @@ def AddEnableLegacyLustrePortFlag(parser, hidden=True):
       '--enable-legacy-lustre-port',
       default=None,
       hidden=hidden,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddUseIamTokenFlag(parser):
+  """Adds the --use-iam-token flag to parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = """\
+  Whether to generate and persist an IAM token in the kubeconfig file.
+  """
+
+  parser.add_argument(
+      '--use-iam-token',
+      hidden=True,
       action='store_true',
       help=help_text,
   )

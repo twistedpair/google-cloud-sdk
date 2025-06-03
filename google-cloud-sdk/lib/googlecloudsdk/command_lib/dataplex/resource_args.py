@@ -198,6 +198,18 @@ def GetEntryTypeResourceSpec():
   )
 
 
+def GetDataplexEntryLinkResourceSpec():
+  """Gets Entry Link resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.entryGroups.entryLinks',
+      resource_name='entry link',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      entryGroupsId=EntryGroupAttributeConfig(),
+      entryLinksId=EntryLinkAttributeConfig(),
+  )
+
+
 def GetGovernanceRuleResourceSpec():
   """Gets GovernanceRule resource spec."""
   return concepts.ResourceSpec(
@@ -340,7 +352,7 @@ def DataAttributeBindingAttributeConfig():
 
 def EntryGroupAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='entry_group', help_text='The name of {resource} to use.'
+      name='entry-group', help_text='The name of {resource} to use.'
   )
 
 
@@ -353,6 +365,12 @@ def AspectTypeAttributeConfig():
 def EntryTypeAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='entry_type', help_text='The name of {resource} to use.'
+  )
+
+
+def EntryLinkAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='entry-link', help_text='The name of {resource} to use.'
   )
 
 
@@ -558,7 +576,7 @@ def AddDataAttributeBindingResourceArg(parser, verb, positional=True):
 
 def AddDataplexEntryGroupResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex EntryGroup."""
-  name = 'entry_group' if positional else '--entry_group'
+  name = 'entry_group' if positional else '--entry-group'
   return concept_parsers.ConceptParser.ForResource(
       name,
       GetDataplexEntryGroupResourceSpec(),
@@ -611,6 +629,18 @@ def AddEntryResourceArg(parser):
       concepts.ResourceSpec.FromYaml(entry_data.GetData(), is_positional=True),
       'Arguments and flags that define the Dataplex Entry you want to'
       ' reference.',
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddDataplexEntryLinkResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex EntryLink."""
+  name = 'entry_link' if positional else '--entry-link'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataplexEntryLinkResourceSpec(),
+      'Arguments and flags that define the Dataplex entry link you want {}'
+      .format(verb),
       required=True,
   ).AddToParser(parser)
 

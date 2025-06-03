@@ -1050,3 +1050,35 @@ def GetSpannerMigrationDataflowTemplateFlag():
 
 def GetSplitPoints(args):
   return split_file_parser.ParseSplitPoints(args)
+
+
+def TableName(req, text='Cloud Spanner table name'):
+  return base.Argument(
+      '--table-name', required=req, help=text)
+
+
+def SourceUri(req, text='URI of the file with data to import'):
+  return base.Argument(
+      '--source-uri', required=req, help=text)
+
+
+def SourceFormat(req, text='Format of the file with data to import.'
+                 'Supported formats: csv or myssqldump or pgdump'):
+  return base.Argument(
+      '--source-format', required=req, help=text)
+
+
+def SchemaUri(req, text='URI of the file with schema of the data to import'):
+  return base.Argument(
+      '--schema-uri', required=req, help=text)
+
+
+def CsvFieldDelimiter(req, text='Field delimiter for CSV files.'):
+  return base.Argument(
+      '--csv-field-delimiter', required=req, help=text)
+
+
+def CsvLineDelimiter(req, text='Line delimiter for CSV files.'):
+  return base.Argument(
+      '--csv-line-delimiter', required=req, help=text)
+

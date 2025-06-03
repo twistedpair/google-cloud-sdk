@@ -259,7 +259,7 @@ class HubV2Client(object):
       typically using waiter.WaitFor to present a user-friendly spinner.
     """
     req = self.messages.GkehubProjectsLocationsMembershipsFeaturesCreateRequest(
-        membership_feature=membership_feature,
+        membershipFeature=membership_feature,
         featureId=feature_id,
         parent=parent,
     )

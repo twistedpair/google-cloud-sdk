@@ -375,10 +375,6 @@ class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationB
   Fields:
     notifyEntitlementAssigned: Output only. Notification delivery for
       entitlement assigned.
-    notifyEntitlementCreated: Output only. Notification delivery for
-      entitlement created.
-    notifyEntitlementUpdated: Output only. Notification delivery for
-      entitlement updated.
     notifyGrantActivated: Output only. Notification delivery for grant
       activated.
     notifyGrantActivationFailed: Output only. Notification delivery for grant
@@ -393,15 +389,13 @@ class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationB
   """
 
   notifyEntitlementAssigned = _messages.BooleanField(1)
-  notifyEntitlementCreated = _messages.BooleanField(2)
-  notifyEntitlementUpdated = _messages.BooleanField(3)
-  notifyGrantActivated = _messages.BooleanField(4)
-  notifyGrantActivationFailed = _messages.BooleanField(5)
-  notifyGrantDenied = _messages.BooleanField(6)
-  notifyGrantEnded = _messages.BooleanField(7)
-  notifyGrantExpired = _messages.BooleanField(8)
-  notifyGrantExternallyModified = _messages.BooleanField(9)
-  notifyGrantRevoked = _messages.BooleanField(10)
+  notifyGrantActivated = _messages.BooleanField(2)
+  notifyGrantActivationFailed = _messages.BooleanField(3)
+  notifyGrantDenied = _messages.BooleanField(4)
+  notifyGrantEnded = _messages.BooleanField(5)
+  notifyGrantExpired = _messages.BooleanField(6)
+  notifyGrantExternallyModified = _messages.BooleanField(7)
+  notifyGrantRevoked = _messages.BooleanField(8)
 
 
 class FetchEffectiveSettingsResponseEmailNotificationSettingsDisableAllNotifications(_messages.Message):
@@ -2666,10 +2660,6 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
   Enums:
     EntitlementAssignedValueValuesEnum: Optional. Notification mode for
       entitlement assigned.
-    EntitlementCreatedValueValuesEnum: Optional. Notification mode for
-      entitlement created.
-    EntitlementUpdatedValueValuesEnum: Optional. Notification mode for
-      entitlement updated.
     GrantActivatedValueValuesEnum: Optional. Notification mode for grant
       activated.
     GrantActivationFailedValueValuesEnum: Optional. Notification mode for
@@ -2685,8 +2675,6 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
 
   Fields:
     entitlementAssigned: Optional. Notification mode for entitlement assigned.
-    entitlementCreated: Optional. Notification mode for entitlement created.
-    entitlementUpdated: Optional. Notification mode for entitlement updated.
     grantActivated: Optional. Notification mode for grant activated.
     grantActivationFailed: Optional. Notification mode for grant activation
       failed.
@@ -2700,32 +2688,6 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
 
   class EntitlementAssignedValueValuesEnum(_messages.Enum):
     r"""Optional. Notification mode for entitlement assigned.
-
-    Values:
-      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
-        PAM's standard settings.
-      ENABLED: Notifications are enabled.
-      DISABLED: Notifications are disabled.
-    """
-    NOTIFICATION_MODE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
-
-  class EntitlementCreatedValueValuesEnum(_messages.Enum):
-    r"""Optional. Notification mode for entitlement created.
-
-    Values:
-      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
-        PAM's standard settings.
-      ENABLED: Notifications are enabled.
-      DISABLED: Notifications are disabled.
-    """
-    NOTIFICATION_MODE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
-
-  class EntitlementUpdatedValueValuesEnum(_messages.Enum):
-    r"""Optional. Notification mode for entitlement updated.
 
     Values:
       NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
@@ -2829,15 +2791,13 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
     DISABLED = 2
 
   entitlementAssigned = _messages.EnumField('EntitlementAssignedValueValuesEnum', 1)
-  entitlementCreated = _messages.EnumField('EntitlementCreatedValueValuesEnum', 2)
-  entitlementUpdated = _messages.EnumField('EntitlementUpdatedValueValuesEnum', 3)
-  grantActivated = _messages.EnumField('GrantActivatedValueValuesEnum', 4)
-  grantActivationFailed = _messages.EnumField('GrantActivationFailedValueValuesEnum', 5)
-  grantDenied = _messages.EnumField('GrantDeniedValueValuesEnum', 6)
-  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 7)
-  grantExpired = _messages.EnumField('GrantExpiredValueValuesEnum', 8)
-  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 9)
-  grantRevoked = _messages.EnumField('GrantRevokedValueValuesEnum', 10)
+  grantActivated = _messages.EnumField('GrantActivatedValueValuesEnum', 2)
+  grantActivationFailed = _messages.EnumField('GrantActivationFailedValueValuesEnum', 3)
+  grantDenied = _messages.EnumField('GrantDeniedValueValuesEnum', 4)
+  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 5)
+  grantExpired = _messages.EnumField('GrantExpiredValueValuesEnum', 6)
+  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 7)
+  grantRevoked = _messages.EnumField('GrantRevokedValueValuesEnum', 8)
 
 
 class SettingsEmailNotificationSettingsDisableAllNotifications(_messages.Message):

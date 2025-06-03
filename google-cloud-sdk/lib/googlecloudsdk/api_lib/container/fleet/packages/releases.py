@@ -57,39 +57,6 @@ class ReleasesClient(object):
     else:
       return self.messages.Release.LifecycleValueValuesEnum.PUBLISHED
 
-  def _VariantsValueFromInputVariants(self, variants):
-    """Converts input-format variants to internal variant objects.
-
-    Args:
-      variants: input-format variants
-
-    Returns:
-      A VariantsValue object, that contains a list of variants. To be used in
-      API requests.
-    """
-    additional_properties = []
-    if variants:
-      # Only used in case of inline variants.
-      for variant_entry in variants:
-        variant = self.messages.Variant(
-            labels=None, resources=variants[variant_entry]
-        )
-        if len(variants) == 1:
-          additional_properties.append(
-              self.messages.Release.VariantsValue.AdditionalProperty(
-                  key='default', value=variant
-              )
-          )
-        else:
-          additional_properties.append(
-              self.messages.Release.VariantsValue.AdditionalProperty(
-                  key=variant_entry, value=variant
-              )
-          )
-    return self.messages.Release.VariantsValue(
-        additionalProperties=additional_properties
-    )
-
   def List(self, project, location, parent_bundle, limit=None, page_size=100):
     """List Releases of a ResourceBundle.
 
@@ -251,7 +218,6 @@ class ReleasesClient(object):
       resource_bundle,
       labels=None,
       lifecycle=None,
-      variants=None,
       update_mask=None,
   ):
     """Update Release for a ResourceBundle.
@@ -263,7 +229,6 @@ class ReleasesClient(object):
       resource_bundle: Name of parent ResourceBundle.
       labels: Labels of the Release.
       lifecycle: Lifecycle of the Release.
-      variants: Variants of the Release.
       update_mask: Fields to be updated.
 
     Returns:
@@ -272,12 +237,10 @@ class ReleasesClient(object):
     fully_qualified_path = _FullyQualifiedPath(
         project, location, resource_bundle, release
     )
-    variants_value = self._VariantsValueFromInputVariants(variants)
     release = self.messages.Release(
         name=fully_qualified_path,
         labels=labels,
         lifecycle=self.GetLifecycleEnum(lifecycle),
-        variants=variants_value,
         version=release,
     )
     update_request = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesPatchRequest(

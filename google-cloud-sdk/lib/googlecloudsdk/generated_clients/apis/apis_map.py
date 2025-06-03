@@ -1741,6 +1741,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/'),
     },
+    'designcenter': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.designcenter.v1alpha',
+                    client_classpath='designcenter_v1alpha_client.DesigncenterV1alpha',
+                    base_url='https://designcenter.googleapis.com/',
+                    messages_modulepath='designcenter_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'developerconnect': {
         'v1':
             APIDef(
