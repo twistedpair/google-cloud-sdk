@@ -28,6 +28,7 @@ from google.auth import credentials as ga_credentials  # type: ignore
 from google.oauth2 import service_account # type: ignore
 
 from google.iam.v1 import iam_policy_pb2  # type: ignore
+from google.iam.v1 import policy_pb2  # type: ignore
 from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as gcr_worker_pool
@@ -146,6 +147,16 @@ class WorkerPoolsTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.get_iam_policy: gapic_v1.method.wrap_method(
+                self.get_iam_policy,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.set_iam_policy: gapic_v1.method.wrap_method(
+                self.set_iam_policy,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.test_iam_permissions: gapic_v1.method.wrap_method(
                 self.test_iam_permissions,
                 default_timeout=None,
@@ -209,6 +220,24 @@ class WorkerPoolsTransport(abc.ABC):
             Union[
                 operations_pb2.Operation,
                 Awaitable[operations_pb2.Operation]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def get_iam_policy(self) -> Callable[
+            [iam_policy_pb2.GetIamPolicyRequest],
+            Union[
+                policy_pb2.Policy,
+                Awaitable[policy_pb2.Policy]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def set_iam_policy(self) -> Callable[
+            [iam_policy_pb2.SetIamPolicyRequest],
+            Union[
+                policy_pb2.Policy,
+                Awaitable[policy_pb2.Policy]
             ]]:
         raise NotImplementedError()
 

@@ -92,6 +92,7 @@ VALID_ALGORITHMS_MAP = {
         'rsa-sign-raw-pkcs1-4096',
         'pq-sign-ml-dsa-65',
         'pq-sign-slh-dsa-sha2-128s',
+        'pq-sign-hash-slh-dsa-sha2-128s-sha256',
     ],
     PURPOSE_ENUM.ASYMMETRIC_DECRYPT: [
         'rsa-decrypt-oaep-2048-sha1',

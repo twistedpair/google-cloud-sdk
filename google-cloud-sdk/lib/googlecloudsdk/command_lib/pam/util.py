@@ -141,3 +141,17 @@ def LoadGrantScopeFromYaml(stream):
     # Return an empty list if no file is provided or the file is empty.
     return []
   return yaml.load(stream[0])
+
+
+# TODO(b/261183749): Remove modify_request_hook when singleton resource args
+# are enabled in declarative.
+def UpdateSettingsResource(unused_ref, unused_args, req):
+  """Modify request hook to update the resource field in settings requests."""
+  req.name = req.name + '/settings'
+  return req
+
+
+def SetUpdateMaskInUpdateSettingsRequest(unused_ref, unused_args, req):
+  """Modify request hook to set the update mask field in update settings requests to '*'."""
+  req.updateMask = '*'
+  return req

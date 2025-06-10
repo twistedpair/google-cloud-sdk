@@ -192,6 +192,7 @@ def AddZ2zVlan(parser):
   """
   parser.add_argument(
       '--z2z-vlan',
+      hidden=True,
       type=arg_parsers.BoundedInt(2, 4093),
       help="""\
       Desired VLAN for this attachment, in the range 2-4093.

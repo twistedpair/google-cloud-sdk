@@ -121,7 +121,7 @@ def get_apitools_metadata_from_url(cloud_url):
   elif cloud_url.is_object():
     generation = int(cloud_url.generation) if cloud_url.generation else None
     return messages.Object(
-        name=cloud_url.object_name,
+        name=cloud_url.resource_name,
         bucket=cloud_url.bucket_name,
         generation=generation)
 
@@ -220,7 +220,7 @@ def get_anywhere_cache_resource_from_metadata(metadata):
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS,
       bucket_name=metadata.bucket,
-      object_name=metadata.anywhereCacheId,
+      resource_name=metadata.anywhereCacheId,
   )
   return gcs_resource_reference.GcsAnywhereCacheResource(
       admission_policy=metadata.admissionPolicy,
@@ -256,7 +256,7 @@ def get_object_resource_from_metadata(metadata):
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS,
       bucket_name=metadata.bucket,
-      object_name=metadata.name,
+      resource_name=metadata.name,
       generation=generation)
 
   if metadata.customerEncryption:
@@ -735,7 +735,7 @@ def get_should_gzip_locally(attributes_resource, request_config):
   if isinstance(attributes_resource, resource_reference.FileObjectResource):
     return gzip_util.should_gzip_locally(
         request_config.gzip_settings,
-        attributes_resource.storage_url.object_name,
+        attributes_resource.storage_url.resource_name,
     )
 
   return False
@@ -893,7 +893,7 @@ def get_managed_folder_resource_from_metadata(metadata):
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS,
       bucket_name=metadata.bucket,
-      object_name=metadata.name,
+      resource_name=metadata.name,
   )
   return resource_reference.ManagedFolderResource(
       url,
@@ -909,7 +909,7 @@ def get_folder_resource_from_metadata(metadata):
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS,
       bucket_name=metadata.bucket,
-      object_name=metadata.name,
+      resource_name=metadata.name,
   )
   return resource_reference.FolderResource(
       url,

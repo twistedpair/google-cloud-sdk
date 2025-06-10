@@ -1929,6 +1929,33 @@ class NetappV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EstablishPeering(self, request, global_params=None):
+      r"""Establish volume peering. This is used to establish cluster and svm peerings between the GCNV and OnPrem clusters.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesEstablishPeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EstablishPeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EstablishPeering.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:establishPeering',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.establishPeering',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:establishPeering',
+        request_field='establishVolumePeeringRequest',
+        request_type_name='NetappProjectsLocationsVolumesEstablishPeeringRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Volume.
 

@@ -13,9 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Builder for ConversionWorkspace message objects."""
+from typing import Dict
 
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.database_migration.conversion_workspaces import enums
+from googlecloudsdk.generated_clients.apis.datamigration.v1 import datamigration_v1_messages as messages
 
 
 class ConversionWorkspaceBuilder:
@@ -27,26 +30,31 @@ class ConversionWorkspaceBuilder:
   def Build(
       self,
       display_name: str,
-      source_database_engine: str,
+      source_database_provider: enums.SourceDatabaseProvider,
+      source_database_engine: enums.SourceDatabaseEngine,
       source_database_version: str,
-      destination_database_engine: str,
+      destination_database_provider: enums.DestinationDatabaseProvider,
+      destination_database_engine: enums.DestinationDatabaseEngine,
       destination_database_version: str,
-      global_settings,
-  ):
+      global_settings: messages.ConversionWorkspace.GlobalSettingsValue,
+  ) -> messages.ConversionWorkspace:
     """Returns a conversion workspace.
 
     Args:
-      display_name: str, the display name for the conversion workspace.
-      source_database_engine: str, the source database engine for the conversion
+      display_name: the display name for the conversion workspace.
+      source_database_provider: the source database provider for the conversion
         workspace.
-      source_database_version: str, the source database version for the
-        conversion workspace.
-      destination_database_engine: str, the destination database engine for the
-        conversion workspace.
-      destination_database_version: str, the destination database version for
-        the conversion workspace.
-      global_settings: GlobalSettings, the global settings for the conversion
+      source_database_engine: the source database engine for the conversion
         workspace.
+      source_database_version: the source database version for the conversion
+        workspace.
+      destination_database_provider: the destination database provider for the
+        conversion workspace.
+      destination_database_engine: the destination database engine for the
+        conversion workspace.
+      destination_database_version: the destination database version for the
+        conversion workspace.
+      global_settings: the global settings for the conversion workspace.
 
     Returns:
       A ConversionWorkspace message object.
@@ -55,46 +63,100 @@ class ConversionWorkspaceBuilder:
     return self.messages.ConversionWorkspace(
         globalSettings=global_settings,
         displayName=display_name,
-        source=self._GetDatabaseEngineInfo(
-            database_engine=source_database_engine,
-            database_version=source_database_version,
+        source=self.messages.DatabaseEngineInfo(
+            engine=self._source_engine_to_engine_mapping.get(
+                source_database_engine,
+                self.messages.DatabaseEngineInfo.EngineValueValuesEnum.DATABASE_ENGINE_UNSPECIFIED,
+            ),
+            version=source_database_version,
         ),
-        destination=self._GetDatabaseEngineInfo(
-            database_engine=destination_database_engine,
-            database_version=destination_database_version,
+        destination=self.messages.DatabaseEngineInfo(
+            engine=self._destination_engine_to_engine_mapping.get(
+                destination_database_engine,
+                self.messages.DatabaseEngineInfo.EngineValueValuesEnum.DATABASE_ENGINE_UNSPECIFIED,
+            ),
+            version=destination_database_version,
+        ),
+        sourceProvider=self._source_provider_to_provider_mapping.get(
+            source_database_provider,
+            self.messages.ConversionWorkspace.SourceProviderValueValuesEnum.DATABASE_PROVIDER_UNSPECIFIED,
+        ),
+        destinationProvider=self._destination_provider_to_provider_mapping.get(
+            destination_database_provider,
+            self.messages.ConversionWorkspace.DestinationProviderValueValuesEnum.DATABASE_PROVIDER_UNSPECIFIED,
         ),
     )
 
-  def _GetDatabaseEngineInfo(
+  @property
+  def _source_engine_to_engine_mapping(
       self,
-      database_engine: str,
-      database_version: str,
-  ):
-    """Returns a DatabaseEngineInfo message object.
+  ) -> Dict[
+      enums.SourceDatabaseEngine,
+      messages.DatabaseEngineInfo.EngineValueValuesEnum,
+  ]:
+    """Returns a mapping from source database engine CLI-enum to engine API-enum."""
+    return {
+        enums.SourceDatabaseEngine.ORACLE: (
+            self.messages.DatabaseEngineInfo.EngineValueValuesEnum.ORACLE
+        ),
+        enums.SourceDatabaseEngine.SQL_SERVER: (
+            self.messages.DatabaseEngineInfo.EngineValueValuesEnum.SQLSERVER
+        ),
+    }
 
-    Args:
-      database_engine: str, the database engine for the conversion workspace.
-      database_version: str, the database version for the conversion workspace.
+  @property
+  def _destination_engine_to_engine_mapping(
+      self,
+  ) -> Dict[
+      enums.DestinationDatabaseEngine,
+      messages.DatabaseEngineInfo.EngineValueValuesEnum,
+  ]:
+    """Returns a mapping from destination database engine CLI-enum to engine API-enum."""
+    return {
+        enums.DestinationDatabaseEngine.POSTGRESQL: (
+            self.messages.DatabaseEngineInfo.EngineValueValuesEnum.POSTGRESQL
+        ),
+    }
 
-    Returns:
-      A DatabaseEngineInfo message object.
-    """
-    return self.messages.DatabaseEngineInfo(
-        engine=self._GetDatabaseEngine(database_engine=database_engine),
-        version=database_version,
-    )
+  @property
+  def _source_provider_to_provider_mapping(
+      self,
+  ) -> Dict[
+      enums.SourceDatabaseProvider,
+      messages.ConversionWorkspace.SourceProviderValueValuesEnum,
+  ]:
+    """Returns a mapping from source database provider CLI-enum to provider API-enum."""
+    return {
+        enums.SourceDatabaseProvider.UNSPECIFIED: (
+            self.messages.ConversionWorkspace.SourceProviderValueValuesEnum.DATABASE_PROVIDER_UNSPECIFIED
+        ),
+        enums.SourceDatabaseProvider.AMAZON_RDS: (
+            self.messages.ConversionWorkspace.SourceProviderValueValuesEnum.RDS
+        ),
+        enums.SourceDatabaseProvider.CLOUDSQL: (
+            self.messages.ConversionWorkspace.SourceProviderValueValuesEnum.CLOUDSQL
+        ),
+        enums.SourceDatabaseProvider.AZURE_MANAGED_INSTANCE: (
+            self.messages.ConversionWorkspace.SourceProviderValueValuesEnum.AZURE_MANAGED_INSTANCE
+        ),
+        enums.SourceDatabaseProvider.AZURE_SQL_DATABASE: (
+            self.messages.ConversionWorkspace.SourceProviderValueValuesEnum.AZURE_SQL_DATABASE
+        ),
+    }
 
-  def _GetDatabaseEngine(self, database_engine: str):
-    """Returns a EngineValue enum value.
-
-    Args:
-      database_engine: str, the database engine for the conversion workspace.
-
-    Returns:
-      An EngineValue enum value.
-    """
-    return (
-        self.messages.DatabaseEngineInfo.EngineValueValuesEnum.lookup_by_name(
-            database_engine,
-        )
-    )
+  @property
+  def _destination_provider_to_provider_mapping(
+      self,
+  ) -> Dict[
+      enums.DestinationDatabaseProvider,
+      messages.ConversionWorkspace.DestinationProviderValueValuesEnum,
+  ]:
+    """Returns a mapping from destination database provider CLI-enum to provider API-enum."""
+    return {
+        enums.DestinationDatabaseProvider.CLOUDSQL: (
+            self.messages.ConversionWorkspace.DestinationProviderValueValuesEnum.CLOUDSQL
+        ),
+        enums.DestinationDatabaseProvider.ALLOYDB: (
+            self.messages.ConversionWorkspace.DestinationProviderValueValuesEnum.ALLOYDB
+        ),
+    }

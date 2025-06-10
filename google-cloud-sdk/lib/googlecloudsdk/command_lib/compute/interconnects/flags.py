@@ -444,3 +444,46 @@ def AddAaiProfileDescription(parser):
       help="""\
       Add profile description for application awareness.""",
   )
+
+
+def AddAaiBandwidthPercentages(parser):
+  """Adds bandwidthPercentages flag to the argparse.ArgumentParser."""
+
+  parser.add_argument(
+      '--bandwidth-percentages',
+      type=arg_parsers.ArgDict(
+          spec={
+              'TC1': int,
+              'TC2': int,
+              'TC3': int,
+              'TC4': int,
+              'TC5': int,
+              'TC6': int,
+          },
+      ),
+      required=True,
+      help="""\
+      A list of bandwidth percentages for each application awareness profile.
+      The sum of all bandwidth percentages must be 100.
+      """,
+  )
+
+
+def GetAaiBandwidthPercentages(messages, bandwidth_percentages_arg):
+  """Converts the bandwidth percentages argument to a dictionary of enums to ints.
+
+  Args:
+    messages: The API messages holder.
+    bandwidth_percentages_arg: The bandwidth percentages flag value.
+
+  Returns:
+    An dictionary of TrafficClassValueValuesEnum to percentage
+  """
+  result = {}
+  for traffic_class, percentage in bandwidth_percentages_arg.items():
+    result[
+        messages.InterconnectApplicationAwareInterconnectBandwidthPercentage.TrafficClassValueValuesEnum(
+            traffic_class
+        )
+    ] = percentage
+  return result

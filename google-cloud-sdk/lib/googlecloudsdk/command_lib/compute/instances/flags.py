@@ -1775,8 +1775,11 @@ def AddAddressArgs(parser,
       """)
 
   if support_vlan_nic:
+    network_interface_help_texts.append("""
+      *vlan*::: VLAN tag of a dynamic network interface, must be  an integer in
+      the range from 2 to 255 inclusively.
+      """)
     multiple_network_interface_cards_spec['vlan'] = int
-    # TODO(b/274638343): Add help text before release.
 
   if support_igmp_query:
     network_interface_help_texts.append("""

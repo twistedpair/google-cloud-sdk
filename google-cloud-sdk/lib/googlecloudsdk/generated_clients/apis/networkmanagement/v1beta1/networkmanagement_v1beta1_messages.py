@@ -378,12 +378,16 @@ class CloudRunRevisionEndpoint(_messages.Message):
   r"""Wrapper for Cloud Run revision attributes.
 
   Fields:
+    serviceUri: Output only. The URI of the Cloud Run service that the
+      revision belongs to. The format is:
+      projects/{project}/locations/{location}/services/{service}
     uri: A [Cloud Run](https://cloud.google.com/run) [revision](https://cloud.
       google.com/run/docs/reference/rest/v1/namespaces.revisions/get) URI. The
       format is: projects/{project}/locations/{location}/revisions/{revision}
   """
 
-  uri = _messages.StringField(1)
+  serviceUri = _messages.StringField(1)
+  uri = _messages.StringField(2)
 
 
 class CloudRunRevisionInfo(_messages.Message):
@@ -517,9 +521,13 @@ class DeliverInfo(_messages.Message):
   r"""Details of the final state "deliver" and associated resource.
 
   Enums:
+    GoogleServiceTypeValueValuesEnum: Recognized type of a Google Service the
+      packet is delivered to (if applicable).
     TargetValueValuesEnum: Target type where the packet is delivered to.
 
   Fields:
+    googleServiceType: Recognized type of a Google Service the packet is
+      delivered to (if applicable).
     ipAddress: IP address of the target (if applicable).
     pscGoogleApiTarget: PSC Google API target the packet is delivered to (if
       applicable).
@@ -528,6 +536,33 @@ class DeliverInfo(_messages.Message):
       (if applicable).
     target: Target type where the packet is delivered to.
   """
+
+  class GoogleServiceTypeValueValuesEnum(_messages.Enum):
+    r"""Recognized type of a Google Service the packet is delivered to (if
+    applicable).
+
+    Values:
+      GOOGLE_SERVICE_TYPE_UNSPECIFIED: Unspecified Google Service.
+      IAP: Identity aware proxy. https://cloud.google.com/iap/docs/using-tcp-
+        forwarding
+      GFE_PROXY_OR_HEALTH_CHECK_PROBER: One of two services sharing IP ranges:
+        * Load Balancer proxy * Centralized Health Check prober
+        https://cloud.google.com/load-balancing/docs/firewall-rules
+      CLOUD_DNS: Connectivity from Cloud DNS to forwarding targets or
+        alternate name servers that use private routing.
+        https://cloud.google.com/dns/docs/zones/forwarding-zones#firewall-
+        rules https://cloud.google.com/dns/docs/policies#firewall-rules
+      PRIVATE_GOOGLE_ACCESS: private.googleapis.com and
+        restricted.googleapis.com
+      SERVERLESS_VPC_ACCESS: Google API via Serverless VPC Access.
+        https://cloud.google.com/vpc/docs/serverless-vpc-access
+    """
+    GOOGLE_SERVICE_TYPE_UNSPECIFIED = 0
+    IAP = 1
+    GFE_PROXY_OR_HEALTH_CHECK_PROBER = 2
+    CLOUD_DNS = 3
+    PRIVATE_GOOGLE_ACCESS = 4
+    SERVERLESS_VPC_ACCESS = 5
 
   class TargetValueValuesEnum(_messages.Enum):
     r"""Target type where the packet is delivered to.
@@ -581,11 +616,12 @@ class DeliverInfo(_messages.Message):
     REDIS_INSTANCE = 16
     REDIS_CLUSTER = 17
 
-  ipAddress = _messages.StringField(1)
-  pscGoogleApiTarget = _messages.StringField(2)
-  resourceUri = _messages.StringField(3)
-  storageBucket = _messages.StringField(4)
-  target = _messages.EnumField('TargetValueValuesEnum', 5)
+  googleServiceType = _messages.EnumField('GoogleServiceTypeValueValuesEnum', 1)
+  ipAddress = _messages.StringField(2)
+  pscGoogleApiTarget = _messages.StringField(3)
+  resourceUri = _messages.StringField(4)
+  storageBucket = _messages.StringField(5)
+  target = _messages.EnumField('TargetValueValuesEnum', 6)
 
 
 class DirectVpcEgressConnectionInfo(_messages.Message):
@@ -1232,6 +1268,9 @@ class FirewallInfo(_messages.Message):
     policy: The name of the firewall policy that this rule is associated with.
       This field is not applicable to VPC firewall rules and implied VPC
       firewall rules.
+    policyPriority: The priority of the firewall policy that this rule is
+      associated with. This field is not applicable to VPC firewall rules and
+      implied VPC firewall rules.
     policyUri: The URI of the firewall policy that this rule is associated
       with. This field is not applicable to VPC firewall rules and implied VPC
       firewall rules.
@@ -1301,11 +1340,12 @@ class FirewallInfo(_messages.Message):
   firewallRuleType = _messages.EnumField('FirewallRuleTypeValueValuesEnum', 4)
   networkUri = _messages.StringField(5)
   policy = _messages.StringField(6)
-  policyUri = _messages.StringField(7)
-  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  targetServiceAccounts = _messages.StringField(9, repeated=True)
-  targetTags = _messages.StringField(10, repeated=True)
-  uri = _messages.StringField(11)
+  policyPriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  policyUri = _messages.StringField(8)
+  priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  targetServiceAccounts = _messages.StringField(10, repeated=True)
+  targetTags = _messages.StringField(11, repeated=True)
+  uri = _messages.StringField(12)
 
 
 class ForwardInfo(_messages.Message):
@@ -1465,6 +1505,9 @@ class GoogleServiceInfo(_messages.Message):
 class InstanceInfo(_messages.Message):
   r"""For display only. Metadata associated with a Compute Engine instance.
 
+  Enums:
+    StatusValueValuesEnum: The status of the instance.
+
   Fields:
     displayName: Name of a Compute Engine instance.
     externalIp: External IP address of the network interface.
@@ -1475,9 +1518,23 @@ class InstanceInfo(_messages.Message):
     pscNetworkAttachmentUri: URI of the PSC network attachment the NIC is
       attached to (if relevant).
     running: Indicates whether the Compute Engine instance is running.
+      Deprecated: use the `status` field instead.
     serviceAccount: Service account authorized for the instance.
+    status: The status of the instance.
     uri: URI of a Compute Engine instance.
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of the instance.
+
+    Values:
+      STATUS_UNSPECIFIED: Default unspecified value.
+      RUNNING: The instance is running.
+      NOT_RUNNING: The instance has any status other than "RUNNING".
+    """
+    STATUS_UNSPECIFIED = 0
+    RUNNING = 1
+    NOT_RUNNING = 2
 
   displayName = _messages.StringField(1)
   externalIp = _messages.StringField(2)
@@ -1488,7 +1545,8 @@ class InstanceInfo(_messages.Message):
   pscNetworkAttachmentUri = _messages.StringField(7)
   running = _messages.BooleanField(8)
   serviceAccount = _messages.StringField(9)
-  uri = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  uri = _messages.StringField(11)
 
 
 class LatencyDistribution(_messages.Message):
@@ -1898,7 +1956,6 @@ class NatInfo(_messages.Message):
 
 class NetworkInfo(_messages.Message):
   r"""For display only. Metadata associated with a Compute Engine network.
-  Next ID: 7
 
   Fields:
     displayName: Name of a Compute Engine network.
@@ -2002,6 +2059,97 @@ class NetworkmanagementOrganizationsLocationsListRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
+
+
+class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsCreateRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the VPC Flow Logs configuration
+      to create: `projects/{project_id}/locations/global`
+      `organizations/{organization_id}/locations/global`
+    vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
+      request body.
+    vpcFlowLogsConfigId: Required. ID of the `VpcFlowLogsConfig`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 2)
+  vpcFlowLogsConfigId = _messages.StringField(3)
+
+
+class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsDeleteRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. `VpcFlowLogsConfig` resource name using one of the form: `
+      projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs
+      _config}` `organizations/{organization_id}/locations/global/vpcFlowLogsC
+      onfigs/{vpc_flow_logs_config}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsGetRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
+      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
+      }` `organizations/{organization_id}/locations/global/vpcFlowLogsConfigs/
+      {vpc_flow_logs_config}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsListRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Lists the `VpcFlowLogsConfigs` that match the filter
+      expression. A filter expression must use the supported [CEL logic
+      operators] (https://cloud.google.com/vpc/docs/about-flow-logs-
+      records#supported_cel_logic_operators).
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
+    pageToken: Optional. Page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource of the VpcFlowLogsConfig:
+      `projects/{project_id}/locations/global`
+      `organizations/{organization_id}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsPatchRequest(_messages.Message):
+  r"""A NetworkmanagementOrganizationsLocationsVpcFlowLogsConfigsPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. Unique name of the configuration using one of the forms:
+      `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
+      s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
+      ogsConfigs/{vpc_flow_logs_config_id}`
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+    vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 3)
 
 
 class NetworkmanagementProjectsLocationsGetRequest(_messages.Message):
@@ -2350,6 +2498,28 @@ class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest(_messages
   vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 3)
 
 
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsConfigsRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLog
+  sConfigsRequest object.
+
+  Fields:
+    filter: Optional. Lists the `VpcFlowLogsConfigs` that match the filter
+      expression. A filter expression must use the supported [CEL logic
+      operators] (https://cloud.google.com/vpc/docs/about-flow-logs-
+      records#supported_cel_logic_operators).
+    pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
+    pageToken: Optional. Page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource of the VpcFlowLogsConfig:
+      `projects/{project_id}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2668,6 +2838,21 @@ class ProxyConnectionInfo(_messages.Message):
   oldSourcePort = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   protocol = _messages.StringField(10)
   subnetUri = _messages.StringField(11)
+
+
+class QueryOrgVpcFlowLogsConfigsResponse(_messages.Message):
+  r"""Response for the `QueryVpcFlowLogsConfigs` method.
+
+  Fields:
+    nextPageToken: Page token to fetch the next set of configurations.
+    unreachable: Locations that could not be reached (when querying all
+      locations with `-`).
+    vpcFlowLogsConfigs: List of VPC Flow Log configurations.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  vpcFlowLogsConfigs = _messages.MessageField('VpcFlowLogsConfig', 3, repeated=True)
 
 
 class ReachabilityDetails(_messages.Message):
@@ -3442,6 +3627,10 @@ class VpcFlowLogsConfig(_messages.Message):
   Enums:
     AggregationIntervalValueValuesEnum: Optional. The aggregation interval for
       the logs. Default value is INTERVAL_5_SEC.
+    CrossProjectMetadataValueValuesEnum: Optional. Determines whether to
+      include cross project annotations in the logs. This field is available
+      only for organization configurations. If not specified in org configs
+      will be set to CROSS_PROJECT_METADATA_ENABLED.
     MetadataValueValuesEnum: Optional. Configures whether all, none or a
       subset of metadata fields should be added to the reported VPC flow logs.
       Default value is INCLUDE_ALL_METADATA.
@@ -3461,6 +3650,10 @@ class VpcFlowLogsConfig(_messages.Message):
     aggregationInterval: Optional. The aggregation interval for the logs.
       Default value is INTERVAL_5_SEC.
     createTime: Output only. The time the config was created.
+    crossProjectMetadata: Optional. Determines whether to include cross
+      project annotations in the logs. This field is available only for
+      organization configurations. If not specified in org configs will be set
+      to CROSS_PROJECT_METADATA_ENABLED.
     description: Optional. The user-supplied description of the VPC Flow Logs
       configuration. Maximum of 512 characters.
     filterExpr: Optional. Export filter used to define which VPC Flow Logs
@@ -3484,9 +3677,14 @@ class VpcFlowLogsConfig(_messages.Message):
       `projects/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_log
       s_config_id}` `organizations/{organization_id}/locations/global/vpcFlowL
       ogsConfigs/{vpc_flow_logs_config_id}`
+    network: Traffic will be logged from VMs, VPN tunnels and Interconnect
+      Attachments within the network. Format:
+      projects/{project_id}/global/networks/{name}
     state: Optional. The state of the VPC Flow Log configuration. Default
       value is ENABLED. When creating a new configuration, it must be enabled.
       Setting state=DISABLED will pause the log generation for this config.
+    subnet: Traffic will be logged from VMs within the subnetwork. Format:
+      projects/{project_id}/regions/{region}/subnetworks/{name}
     targetResourceState: Output only. A diagnostic bit - describes the state
       of the configured target resource for diagnostic purposes.
     updateTime: Output only. The time the config was updated.
@@ -3515,6 +3713,24 @@ class VpcFlowLogsConfig(_messages.Message):
     INTERVAL_5_MIN = 4
     INTERVAL_10_MIN = 5
     INTERVAL_15_MIN = 6
+
+  class CrossProjectMetadataValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines whether to include cross project annotations in
+    the logs. This field is available only for organization configurations. If
+    not specified in org configs will be set to
+    CROSS_PROJECT_METADATA_ENABLED.
+
+    Values:
+      CROSS_PROJECT_METADATA_UNSPECIFIED: If not specified, the default is
+        CROSS_PROJECT_METADATA_ENABLED.
+      CROSS_PROJECT_METADATA_ENABLED: When CROSS_PROJECT_METADATA_ENABLED,
+        metadata from other projects will be included in the logs.
+      CROSS_PROJECT_METADATA_DISABLED: When CROSS_PROJECT_METADATA_DISABLED,
+        metadata from other projects will not be included in the logs.
+    """
+    CROSS_PROJECT_METADATA_UNSPECIFIED = 0
+    CROSS_PROJECT_METADATA_ENABLED = 1
+    CROSS_PROJECT_METADATA_DISABLED = 2
 
   class MetadataValueValuesEnum(_messages.Enum):
     r"""Optional. Configures whether all, none or a subset of metadata fields
@@ -3588,18 +3804,21 @@ class VpcFlowLogsConfig(_messages.Message):
 
   aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  filterExpr = _messages.StringField(4)
-  flowSampling = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  interconnectAttachment = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  metadata = _messages.EnumField('MetadataValueValuesEnum', 8)
-  metadataFields = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  targetResourceState = _messages.EnumField('TargetResourceStateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
-  vpnTunnel = _messages.StringField(14)
+  crossProjectMetadata = _messages.EnumField('CrossProjectMetadataValueValuesEnum', 3)
+  description = _messages.StringField(4)
+  filterExpr = _messages.StringField(5)
+  flowSampling = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  interconnectAttachment = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 9)
+  metadataFields = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  subnet = _messages.StringField(14)
+  targetResourceState = _messages.EnumField('TargetResourceStateValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
+  vpnTunnel = _messages.StringField(17)
 
 
 class VpnGatewayInfo(_messages.Message):

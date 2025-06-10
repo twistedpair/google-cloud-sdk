@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://modelarmor.googleapis.com/v1beta/'
+BASE_URL = 'https://modelarmor.us.rep.googleapis.com/v1beta/'
 DOCS_URL = 'https://cloud.google.com/security-command-center/docs/model-armor-overview'
 
 

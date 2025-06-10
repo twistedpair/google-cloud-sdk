@@ -37,4 +37,4 @@ properties:
       compatible with Cloud IAP settings in the BackendService. Enabling IAP in
       both places will result in request failure. Ensure that IAP is enabled in
       either the AuthzPolicy or the BackendService but not in both places.
-    $ref: AuthzPolicyCustomProviderCloudIap.yaml
+    type: authzpolicycustomprovidercloudiap

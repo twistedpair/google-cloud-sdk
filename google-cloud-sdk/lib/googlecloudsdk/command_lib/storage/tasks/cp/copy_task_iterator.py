@@ -263,7 +263,7 @@ def _destination_is_container(destination):
   destination_url = destination.storage_url
   if isinstance(destination_url, storage_url.FileUrl):
     # We don't want to treat non-existing file paths as valid containers.
-    return os.path.isdir(destination_url.object_name)
+    return os.path.isdir(destination_url.resource_name)
 
   return (destination_url.versionless_url_string.endswith(
       destination_url.delimiter) or
@@ -430,14 +430,14 @@ class CopyTaskIterator:
       raise errors.InvalidUrlError(
           'Destination URL must name an existing directory.'
           ' Provided: {}.'.format(
-              self._raw_destination.storage_url.object_name))
+              self._raw_destination.storage_url.resource_name))
 
   def _raise_if_download_destination_ends_with_delimiter_and_does_not_exist(
       self,
   ):
     if isinstance(self._raw_destination.storage_url, storage_url.FileUrl):
       # Download operation.
-      destination_path = self._raw_destination.storage_url.object_name
+      destination_path = self._raw_destination.storage_url.resource_name
       if destination_path.endswith(
           self._raw_destination.storage_url.delimiter
       ) and not self._raw_destination.storage_url.isdir():
@@ -552,7 +552,7 @@ class CopyTaskIterator:
       )
       if (isinstance(source.resource, resource_reference.ObjectResource) and
           isinstance(destination_url, storage_url.FileUrl) and
-          destination_url.object_name.endswith(destination_url.delimiter)):
+          destination_url.resource_name.endswith(destination_url.delimiter)):
         log.debug('Skipping downloading {} to {} since the destination ends in'
                   ' a file system delimiter.'.format(
                       source_url.versionless_url_string,

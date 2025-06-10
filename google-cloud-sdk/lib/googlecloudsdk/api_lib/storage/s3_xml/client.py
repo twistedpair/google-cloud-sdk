@@ -409,7 +409,7 @@ class S3XmlClient(cloud_api.CloudApi):
       else:
         existing_acl_dict = self.client.get_object_acl(
             Bucket=destination_resource.storage_url.bucket_name,
-            Key=destination_resource.storage_url.object_name)
+            Key=destination_resource.storage_url.resource_name)
         acl_dict = (
             xml_metadata_util.get_acl_policy_with_added_and_removed_grants(
                 existing_acl_dict, request_config
@@ -418,7 +418,7 @@ class S3XmlClient(cloud_api.CloudApi):
 
       put_acl_kwargs = {
           'Bucket': destination_resource.storage_url.bucket_name,
-          'Key': destination_resource.storage_url.object_name,
+          'Key': destination_resource.storage_url.resource_name,
           'AccessControlPolicy': acl_dict,
       }
       self.client.put_object_acl(**put_acl_kwargs)
@@ -426,13 +426,13 @@ class S3XmlClient(cloud_api.CloudApi):
       acl_dict = None
 
     source_kwargs = {'Bucket': source_resource.storage_url.bucket_name,
-                     'Key': source_resource.storage_url.object_name}
+                     'Key': source_resource.storage_url.resource_name}
     if source_resource.storage_url.generation:
       source_kwargs['VersionId'] = source_resource.storage_url.generation
 
     copy_kwargs = {
         'Bucket': destination_resource.storage_url.bucket_name,
-        'Key': destination_resource.storage_url.object_name,
+        'Key': destination_resource.storage_url.resource_name,
         'CopySource': source_kwargs,
     }
 
@@ -478,7 +478,7 @@ class S3XmlClient(cloud_api.CloudApi):
 
     delete_object_kwargs = {
         'Bucket': object_url.bucket_name,
-        'Key': object_url.object_name,
+        'Key': object_url.resource_name,
     }
     if object_url.generation:
       delete_object_kwargs['VersionId'] = object_url.generation
@@ -722,7 +722,7 @@ class S3XmlClient(cloud_api.CloudApi):
       resource_reference.ObjectResource with uploaded object's metadata.
     """
     bucket_name = destination_resource.storage_url.bucket_name
-    object_name = destination_resource.storage_url.object_name
+    object_name = destination_resource.storage_url.resource_name
     multipart_chunksize = scaled_integer.ParseInteger(
         properties.VALUES.storage.multipart_chunksize.Get())
     multipart_threshold = scaled_integer.ParseInteger(
@@ -760,7 +760,7 @@ class S3XmlClient(cloud_api.CloudApi):
     """
     kwargs = {
         'Bucket': destination_resource.storage_url.bucket_name,
-        'Key': destination_resource.storage_url.object_name,
+        'Key': destination_resource.storage_url.resource_name,
         'Body': source_stream,
     }
     kwargs.update(extra_args)
@@ -769,7 +769,7 @@ class S3XmlClient(cloud_api.CloudApi):
         self.scheme,
         response,
         destination_resource.storage_url.bucket_name,
-        destination_resource.storage_url.object_name,
+        destination_resource.storage_url.resource_name,
     )
 
   @_catch_client_error_raise_s3_api_error()

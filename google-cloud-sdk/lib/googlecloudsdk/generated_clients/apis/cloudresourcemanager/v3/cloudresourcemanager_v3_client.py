@@ -55,7 +55,6 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     self.projects_effectiveSettings = self.ProjectsEffectiveSettingsService(self)
     self.projects_settings = self.ProjectsSettingsService(self)
     self.projects = self.ProjectsService(self)
-    self.tagBindingCollection = self.TagBindingCollectionService(self)
     self.tagBindings = self.TagBindingsService(self)
     self.tagKeys = self.TagKeysService(self)
     self.tagValues_tagHolds = self.TagValuesTagHoldsService(self)
@@ -807,6 +806,33 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudresourcemanagerLocationsTagBindingCollectionsGetRequest',
         response_type_name='TagBindingCollection',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates tag bindings directly attached to a GCP resource.
+
+      Args:
+        request: (TagBindingCollection) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/locations/{locationsId}/tagBindingCollections/{tagBindingCollectionsId}',
+        http_method='PUT',
+        method_id='cloudresourcemanager.locations.tagBindingCollections.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='<request>',
+        request_type_name='TagBindingCollection',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1611,43 +1637,6 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         relative_path='v3/{+name}:undelete',
         request_field='undeleteProjectRequest',
         request_type_name='CloudresourcemanagerProjectsUndeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class TagBindingCollectionService(base_api.BaseApiService):
-    """Service class for the tagBindingCollection resource."""
-
-    _NAME = 'tagBindingCollection'
-
-    def __init__(self, client):
-      super(CloudresourcemanagerV3.TagBindingCollectionService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Patch(self, request, global_params=None):
-      r"""Updates tag bindings directly attached to a GCP resource. Supports standard Patch semantics.
-
-      Args:
-        request: (CloudresourcemanagerTagBindingCollectionPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3/tagBindingCollection/{tagBindingCollectionId}',
-        http_method='PATCH',
-        method_id='cloudresourcemanager.tagBindingCollection.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v3/{+name}',
-        request_field='tagBindingCollection',
-        request_type_name='CloudresourcemanagerTagBindingCollectionPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

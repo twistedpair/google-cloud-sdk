@@ -52,7 +52,7 @@ def _get_temporary_component_name(
     source_resource, destination_resource, random_prefix, component_id
 ):
   """Gets a temporary object name for a component of source_resource."""
-  source_name = source_resource.storage_url.object_name
+  source_name = source_resource.storage_url.resource_name
   salted_name = _PARALLEL_UPLOAD_STATIC_PREFIX + source_name
   sha1_hash = hashlib.sha1(salted_name.encode('utf-8'))
 
@@ -64,7 +64,7 @@ def _get_temporary_component_name(
   if component_prefix.startswith(delimiter):
     prefix = component_prefix.lstrip(delimiter)
   else:
-    destination_object_name = destination_resource.storage_url.object_name
+    destination_object_name = destination_resource.storage_url.resource_name
     destination_prefix, _, _ = destination_object_name.rpartition(delimiter)
     prefix = (
         _ensure_truthy_path_ends_with_single_delimiter(
@@ -89,7 +89,7 @@ def create_file_if_needed(source_resource, destination_resource):
     destination_resource(FileObjectResource|UnknownResource): Contains path to
       create file at.
   """
-  file_path = destination_resource.storage_url.object_name
+  file_path = destination_resource.storage_url.resource_name
   if os.path.exists(
       file_path) and os.path.getsize(file_path) <= source_resource.size:
     return

@@ -813,7 +813,7 @@ class JsonClient(cloud_api.CloudApi):
     source_messages = []
     for source in source_resources:
       source_message = self.messages.ComposeRequest.SourceObjectsValueListEntry(
-          name=source.storage_url.object_name)
+          name=source.storage_url.resource_name)
       if source.storage_url.generation is not None:
         generation = int(source.storage_url.generation)
         source_message.generation = generation
@@ -840,7 +840,7 @@ class JsonClient(cloud_api.CloudApi):
     compose_request = self.messages.StorageObjectsComposeRequest(
         composeRequest=compose_request_payload,
         destinationBucket=destination_resource.storage_url.bucket_name,
-        destinationObject=destination_resource.storage_url.object_name,
+        destinationObject=destination_resource.storage_url.resource_name,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match)
 
@@ -928,9 +928,9 @@ class JsonClient(cloud_api.CloudApi):
       while True:
         request = self.messages.StorageObjectsRewriteRequest(
             sourceBucket=source_resource.storage_url.bucket_name,
-            sourceObject=source_resource.storage_url.object_name,
+            sourceObject=source_resource.storage_url.resource_name,
             destinationBucket=destination_resource.storage_url.bucket_name,
-            destinationObject=destination_resource.storage_url.object_name,
+            destinationObject=destination_resource.storage_url.resource_name,
             object=destination_metadata,
             sourceGeneration=source_generation,
             ifGenerationMatch=copy_util.get_generation_match_value(
@@ -983,7 +983,7 @@ class JsonClient(cloud_api.CloudApi):
 
     request = self.messages.StorageObjectsDeleteRequest(
         bucket=object_url.bucket_name,
-        object=object_url.object_name,
+        object=object_url.resource_name,
         generation=generation,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match)
@@ -1210,7 +1210,7 @@ class JsonClient(cloud_api.CloudApi):
             storage_url.CloudUrl(
                 scheme=storage_url.ProviderPrefix.GCS,
                 bucket_name=bucket_name,
-                object_name=prefix_string),
+                resource_name=prefix_string),
             prefix=prefix_string)
 
       if not next_page_token:
@@ -1675,7 +1675,7 @@ class JsonClient(cloud_api.CloudApi):
             ifMetagenerationMatch=(
                 request_config.precondition_metageneration_match
             ),
-            object=url.object_name,
+            object=url.resource_name,
         )
     )
     return metadata_util.get_object_resource_from_metadata(object_metadata)

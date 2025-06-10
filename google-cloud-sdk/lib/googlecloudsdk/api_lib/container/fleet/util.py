@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2022 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -456,4 +456,33 @@ def RolloutId(args: parser_extensions.Namespace) -> str:
   rollout_ref = RolloutRef(args)
   if rollout_ref:
     return rollout_ref.Name()
+  return None
+
+
+def RolloutSequenceRef(
+    args: parser_extensions.Namespace,
+) -> resources.Resource:
+  if getattr(args.CONCEPTS, 'rolloutsequence', None):
+    return args.CONCEPTS.rolloutsequence.Parse()
+  return None
+
+
+def RolloutSequenceName(args: parser_extensions.Namespace) -> str:
+  rollout_sequence_ref = RolloutSequenceRef(args)
+  if rollout_sequence_ref:
+    return rollout_sequence_ref.RelativeName()
+  return None
+
+
+def RolloutSequenceParentName(args: parser_extensions.Namespace):
+  rollout_sequence_ref = RolloutSequenceRef(args)
+  if rollout_sequence_ref:
+    return rollout_sequence_ref.Parent().RelativeName()
+  return None
+
+
+def RolloutSequenceId(args: parser_extensions.Namespace) -> str:
+  rollout_sequence_ref = RolloutSequenceRef(args)
+  if rollout_sequence_ref:
+    return rollout_sequence_ref.Name()
   return None

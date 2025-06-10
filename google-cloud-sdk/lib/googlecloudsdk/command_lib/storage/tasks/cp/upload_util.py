@@ -180,7 +180,7 @@ def get_stream(source_resource,
     source_stream = os.fdopen(0, 'rb')
   else:
     source_stream = files.BinaryFileReader(
-        source_resource.storage_url.object_name)
+        source_resource.storage_url.resource_name)
 
   if source_resource.storage_url.is_stream:
     max_buffer_size = scaled_integer.ParseBinaryInteger(

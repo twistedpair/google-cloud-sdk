@@ -1460,6 +1460,33 @@ class ManagedkafkaV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Delete(self, request, global_params=None):
+      r"""Delete schema mode for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaMode) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/contexts/{contextsId}/mode/{modeId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.contexts.mode.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeDeleteRequest',
+        response_type_name='SchemaMode',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get mode at global level or for a subject.
 
@@ -2035,6 +2062,33 @@ class ManagedkafkaV1(base_api.BaseApiClient):
       super(ManagedkafkaV1.ProjectsLocationsSchemaRegistriesModeService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete schema mode for a subject.
+
+      Args:
+        request: (ManagedkafkaProjectsLocationsSchemaRegistriesModeDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaMode) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schemaRegistries/{schemaRegistriesId}/mode/{modeId}',
+        http_method='DELETE',
+        method_id='managedkafka.projects.locations.schemaRegistries.mode.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedkafkaProjectsLocationsSchemaRegistriesModeDeleteRequest',
+        response_type_name='SchemaMode',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Get mode at global level or for a subject.

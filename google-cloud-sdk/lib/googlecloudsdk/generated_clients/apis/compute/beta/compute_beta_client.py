@@ -12726,7 +12726,7 @@ class ComputeBeta(base_api.BaseApiClient):
           }
 
     def AddAssociation(self, request, global_params=None):
-      r"""Inserts an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+      r"""Inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message

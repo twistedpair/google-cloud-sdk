@@ -98,6 +98,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.publicAdvertisedPrefixes = self.PublicAdvertisedPrefixesService(self)
     self.publicDelegatedPrefixes = self.PublicDelegatedPrefixesService(self)
+    self.recoverableSnapshots = self.RecoverableSnapshotsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendBuckets = self.RegionBackendBucketsService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
@@ -13292,7 +13293,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AddAssociation(self, request, global_params=None):
-      r"""Inserts an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+      r"""Inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -14823,6 +14824,224 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RecoverableSnapshotsService(base_api.BaseApiService):
+    """Service class for the recoverableSnapshots resource."""
+
+    _NAME = 'recoverableSnapshots'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RecoverableSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of all of the RecoverableSnapshots in your project across all regions and global scope.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RecoverableSnapshotAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.recoverableSnapshots.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/recoverableSnapshots',
+        request_field='',
+        request_type_name='ComputeRecoverableSnapshotsAggregatedListRequest',
+        response_type_name='RecoverableSnapshotAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified RecoverableSnapshot. Deleting a recoverable snapshot will delete the underlying PD snapshot and is irreversible.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.recoverableSnapshots.delete',
+        ordered_params=['project', 'recoverableSnapshot'],
+        path_params=['project', 'recoverableSnapshot'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/recoverableSnapshots/{recoverableSnapshot}',
+        request_field='',
+        request_type_name='ComputeRecoverableSnapshotsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified RecoverableSnapshot resource.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RecoverableSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.recoverableSnapshots.get',
+        ordered_params=['project', 'recoverableSnapshot'],
+        path_params=['project', 'recoverableSnapshot'],
+        query_params=[],
+        relative_path='projects/{project}/global/recoverableSnapshots/{recoverableSnapshot}',
+        request_field='',
+        request_type_name='ComputeRecoverableSnapshotsGetRequest',
+        response_type_name='RecoverableSnapshot',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.recoverableSnapshots.getIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/global/recoverableSnapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeRecoverableSnapshotsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of all of the RecoverableSnapshots in your project.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RecoverableSnapshotList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.recoverableSnapshots.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/recoverableSnapshots',
+        request_field='',
+        request_type_name='ComputeRecoverableSnapshotsListRequest',
+        response_type_name='RecoverableSnapshotList',
+        supports_download=False,
+    )
+
+    def Recover(self, request, global_params=None):
+      r"""Recovers the specified RecoverableSnapshot.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsRecoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Recover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Recover.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.recoverableSnapshots.recover',
+        ordered_params=['project', 'recoverableSnapshot'],
+        path_params=['project', 'recoverableSnapshot'],
+        query_params=['requestId', 'snapshotName'],
+        relative_path='projects/{project}/global/recoverableSnapshots/{recoverableSnapshot}/recover',
+        request_field='',
+        request_type_name='ComputeRecoverableSnapshotsRecoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.recoverableSnapshots.setIamPolicy',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/recoverableSnapshots/{resource}/setIamPolicy',
+        request_field='globalSetPolicyRequest',
+        request_type_name='ComputeRecoverableSnapshotsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRecoverableSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.recoverableSnapshots.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/recoverableSnapshots/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRecoverableSnapshotsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionAutoscalersService(base_api.BaseApiService):
     """Service class for the regionAutoscalers resource."""
 
@@ -15122,7 +15341,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         ordered_params=['project', 'region'],
         path_params=['project', 'region'],
         query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/regionBackendBuckets',
+        relative_path='projects/{project}/regions/{region}/backendBuckets',
         request_field='backendBucket',
         request_type_name='ComputeRegionBackendBucketsInsertRequest',
         response_type_name='Operation',

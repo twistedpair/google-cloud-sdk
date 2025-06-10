@@ -119,7 +119,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     for source in source_resources:
       source_message = (
           self._gapic_client.types.ComposeObjectRequest.SourceObject(
-              name=source.storage_url.object_name
+              name=source.storage_url.resource_name
           )
       )
       if source.storage_url.generation is not None:
@@ -148,7 +148,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
         destination_resource.storage_url.bucket_name
     )
     final_destination_metadata.name = (
-        destination_resource.storage_url.object_name
+        destination_resource.storage_url.resource_name
     )
     compose_request = self._gapic_client.types.ComposeObjectRequest(
         source_objects=source_messages,
@@ -253,11 +253,11 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
             source_bucket=grpc_util.get_full_bucket_name(
                 source_resource.storage_url.bucket_name
             ),
-            source_object=source_resource.storage_url.object_name,
+            source_object=source_resource.storage_url.resource_name,
             destination_bucket=grpc_util.get_full_bucket_name(
                 destination_resource.storage_url.bucket_name
             ),
-            destination_name=destination_resource.storage_url.object_name,
+            destination_name=destination_resource.storage_url.resource_name,
             destination=destination_metadata,
             source_generation=source_generation,
             if_generation_match=copy_util.get_generation_match_value(
@@ -319,7 +319,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
 
     request = self._gapic_client.types.DeleteObjectRequest(
         bucket=grpc_util.get_full_bucket_name(object_url.bucket_name),
-        object=object_url.object_name,
+        object=object_url.resource_name,
         generation=generation,
         if_generation_match=request_config.precondition_generation_match,
         if_metageneration_match=request_config.precondition_metageneration_match,
@@ -339,7 +339,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     object_metadata = self._gapic_client.storage.restore_object(
         self._gapic_client.types.RestoreObjectRequest(
             bucket=grpc_util.get_full_bucket_name(url.bucket_name),
-            object=url.object_name,
+            object=url.resource_name,
             generation=int(url.generation),
             if_generation_match=request_config.precondition_generation_match,
             if_metageneration_match=(

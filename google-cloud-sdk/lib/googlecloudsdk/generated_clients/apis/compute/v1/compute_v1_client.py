@@ -1541,6 +1541,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def BulkSetLabels(self, request, global_params=None):
+      r"""Sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeDisksBulkSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkSetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkSetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.bulkSetLabels',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'resource'],
+        relative_path='projects/{project}/zones/{zone}/disks/bulkSetLabels',
+        request_field='bulkZoneSetLabelsRequest',
+        request_type_name='ComputeDisksBulkSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def CreateSnapshot(self, request, global_params=None):
       r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 

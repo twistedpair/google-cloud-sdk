@@ -469,6 +469,12 @@ def AddRegionResourceArg(
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddPscGroup(parser):
+  """Add a group which contains the PSC-related arguments to the given parser."""
+  psc_group = parser.add_group(required=False, mutex=True)
+  AddExportPscFlag(psc_group)
+
+
 def AddExportPscFlag(parser):
   """Add the --export-psc flag to the given parser."""
   parser.add_argument(

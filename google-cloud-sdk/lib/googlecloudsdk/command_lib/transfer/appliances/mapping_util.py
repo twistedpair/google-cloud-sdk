@@ -150,7 +150,7 @@ def _get_bucket_folder_from_url_string(url_string):
   """Takes a storage_url string and returns a tuple of bucket and folder."""
   url = storage_url.storage_url_from_string(url_string)
   bucket = url.bucket_name
-  folder = url.object_name
+  folder = url.resource_name
   if folder is not None and not folder.endswith('/'):
     folder += '/'
   return bucket, folder

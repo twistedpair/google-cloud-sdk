@@ -125,7 +125,7 @@ class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
 
     if self._delete_source:
       # Delete original source file.
-      os.remove(self._source_resource.storage_url.object_name)
+      os.remove(self._source_resource.storage_url.resource_name)
 
   def _perform_composite_upload(
       self,
@@ -168,7 +168,7 @@ class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
       temporary_component_resources.append(temporary_component_resource)
 
       component_name_length = len(
-          temporary_component_resource.storage_url.object_name.encode()
+          temporary_component_resource.storage_url.resource_name.encode()
       )
 
       if component_name_length > api_client.MAX_OBJECT_NAME_LENGTH:
@@ -254,7 +254,7 @@ class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
     )
     if should_create_symlink_placeholder:
       symlink_path = symlink_util.get_symlink_placeholder_file(
-          self._source_resource.storage_url.object_name
+          self._source_resource.storage_url.resource_name
       )
       temporary_paths_to_clean_up.append(symlink_path)
       return symlink_path
@@ -309,11 +309,11 @@ class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
     source_url = self._source_resource.storage_url
     temporary_paths_to_clean_up = []
     if source_url.is_stream:
-      source_path = source_url.object_name
+      source_path = source_url.resource_name
       size = None
     else:
       symlink_transformed_path = self._handle_symlink_placeholder_transform(
-          source_url.object_name,
+          source_url.resource_name,
           temporary_paths_to_clean_up
       )
       source_path = self._handle_gzip_transform(

@@ -75,7 +75,7 @@ class DeleteFileTask(DeleteTask):
   """Task to delete a file."""
 
   def _perform_deletion(self):
-    os.remove(self._url.object_name)
+    os.remove(self._url.resource_name)
 
 
 class CloudDeleteTask(DeleteTask):
@@ -125,7 +125,7 @@ class DeleteManagedFolderTask(CloudDeleteTask):
 
   def _make_delete_api_call(self, client, request_config):
     del request_config  # Unused.
-    client.delete_managed_folder(self._url.bucket_name, self._url.object_name)
+    client.delete_managed_folder(self._url.bucket_name, self._url.resource_name)
 
 
 class DeleteFolderTask(CloudDeleteTask):
@@ -141,7 +141,7 @@ class DeleteFolderTask(CloudDeleteTask):
 
   def _make_delete_api_call(self, client, request_config):
     del request_config  # Unused.
-    client.delete_folder(self._url.bucket_name, self._url.object_name)
+    client.delete_folder(self._url.bucket_name, self._url.resource_name)
 
 
 class DeleteObjectTask(CloudDeleteTask):

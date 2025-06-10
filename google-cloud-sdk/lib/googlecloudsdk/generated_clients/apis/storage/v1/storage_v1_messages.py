@@ -376,6 +376,8 @@ class Bucket(_messages.Message):
         object.
 
     Fields:
+      allowAllServiceAgentAccess: Whether to allow all service agents to
+        access the bucket regardless of the IP filter configuration.
       allowCrossOrgVpcs: Whether to allow cross-org VPCs in the bucket's IP
         filter configuration.
       mode: The mode of the IP filter. Valid values are 'Enabled' and
@@ -410,10 +412,11 @@ class Bucket(_messages.Message):
       allowedIpCidrRanges = _messages.StringField(1, repeated=True)
       network = _messages.StringField(2)
 
-    allowCrossOrgVpcs = _messages.BooleanField(1)
-    mode = _messages.StringField(2)
-    publicNetworkSource = _messages.MessageField('PublicNetworkSourceValue', 3)
-    vpcNetworkSources = _messages.MessageField('VpcNetworkSourcesValueListEntry', 4, repeated=True)
+    allowAllServiceAgentAccess = _messages.BooleanField(1)
+    allowCrossOrgVpcs = _messages.BooleanField(2)
+    mode = _messages.StringField(3)
+    publicNetworkSource = _messages.MessageField('PublicNetworkSourceValue', 4)
+    vpcNetworkSources = _messages.MessageField('VpcNetworkSourcesValueListEntry', 5, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

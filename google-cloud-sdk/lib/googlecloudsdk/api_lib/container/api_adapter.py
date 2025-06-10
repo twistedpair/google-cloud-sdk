@@ -5098,7 +5098,7 @@ class APIAdapter(object):
           options.service_account_verification_keys
       )
       update = self.messages.ClusterUpdate(
-          userManagedKeysConfig=updated_user_managed_keys_config
+          desiredUserManagedKeysConfig=updated_user_managed_keys_config
       )
 
     if options.service_account_signing_keys is not None:
@@ -5110,7 +5110,7 @@ class APIAdapter(object):
           options.service_account_signing_keys
       )
       update = self.messages.ClusterUpdate(
-          userManagedKeysConfig=updated_user_managed_keys_config
+          desiredUserManagedKeysConfig=updated_user_managed_keys_config
       )
     if options.disable_auto_ipam:
       update = self.messages.ClusterUpdate(

@@ -73,13 +73,13 @@ class CopyManagedFolderTask(copy_util.CopyTaskWithExitHandler):
       progress_callback = None
 
     source_policy = api_client.get_managed_folder_iam_policy(
-        source_url.bucket_name, source_url.object_name
+        source_url.bucket_name, source_url.resource_name
     )
 
     try:
       api_client.create_managed_folder(
           destination_url.bucket_name,
-          destination_url.object_name,
+          destination_url.resource_name,
       )
     except errors.ConflictError:
       pass
@@ -93,7 +93,7 @@ class CopyManagedFolderTask(copy_util.CopyTaskWithExitHandler):
 
     api_client.set_managed_folder_iam_policy(
         destination_url.bucket_name,
-        destination_url.object_name,
+        destination_url.resource_name,
         source_policy,
     )
 

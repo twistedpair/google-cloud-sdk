@@ -390,7 +390,7 @@ def _compute_hashes_and_return_match(source_resource, destination_resource):
 
   local_hash = hash_util.get_base64_hash_digest_string(
       hash_util.get_hash_from_file(
-          local_resource.storage_url.object_name, hash_algorithm
+          local_resource.storage_url.resource_name, hash_algorithm
       )
   )
   return cloud_hash == local_hash
@@ -467,11 +467,13 @@ def _get_copy_task(
   if dry_run:
     if isinstance(source_resource, resource_reference.FileObjectResource):
       try:
-        with files.BinaryFileReader(source_resource.storage_url.object_name):
+        with files.BinaryFileReader(source_resource.storage_url.resource_name):
           pass
       except:  # pylint: disable=broad-except
         log.error(
-            'Could not open {}'.format(source_resource.storage_url.object_name)
+            'Could not open {}'.format(
+                source_resource.storage_url.resource_name
+            )
         )
         raise
     log.status.Print(

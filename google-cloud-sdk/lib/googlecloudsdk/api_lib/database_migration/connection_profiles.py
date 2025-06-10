@@ -242,6 +242,31 @@ class ConnectionProfilesClient(object):
         type=self.messages.SslConfig.TypeValueValuesEnum.NONE
     )
 
+  def _GetSslFlags(self, args):
+    """Gets the SSL flags.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      SslFlagsValue, to use when creating the connection profile.
+    """
+    if not args.IsSpecified('ssl_flags'):
+      return None
+
+    ssl_flags_dict = args.ssl_flags
+    flags = []
+
+    for key, value in ssl_flags_dict.items():
+      flags.append(
+          self.messages.SslConfig.SslFlagsValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+
+    return self.messages.SslConfig.SslFlagsValue(additionalProperties=flags)
+
   def _GetSslServerOnlyOrRequiredConfig(self, args):
     """Gets the SSL config based on the specified SSL type.
 
@@ -256,15 +281,22 @@ class ConnectionProfilesClient(object):
       calliope_exceptions.InvalidArgumentException: If the specified SSL type is
         unsupported.
     """
+    ssl_config = None
     if args.IsSpecified('ssl_type'):
       if args.ssl_type == 'SERVER_ONLY':
-        return self._GetSslServerOnlyConfigWithType(args)
+        ssl_config = self._GetSslServerOnlyConfigWithType(args)
       elif args.ssl_type == 'REQUIRED':
-        return self._GetSslRequiredConfig()
+        ssl_config = self._GetSslRequiredConfig()
       elif args.ssl_type == 'NONE':
-        return self._GetSslNoneConfig()
+        ssl_config = self._GetSslNoneConfig()
     elif args.IsSpecified('ca_certificate'):
-      return self._GetSslServerOnlyConfig(args)
+      ssl_config = self._GetSslServerOnlyConfig(args)
+    if ssl_config is not None:
+      return self.messages.SslConfig(
+          type=ssl_config.type,
+          caCertificate=ssl_config.caCertificate,
+          sslFlags=self._GetSslFlags(args),
+      )
 
   def _GetSslConfig(self, args):
     return self.messages.SslConfig(
@@ -836,9 +868,8 @@ class ConnectionProfilesClient(object):
     Returns:
       SqlServerConnectionProfile, to use when creating the connection profile.
     """
-    ssl_config = self._GetSslServerOnlyOrRequiredConfig(args)
     connection_profile_obj = self.messages.SqlServerConnectionProfile(
-        ssl=ssl_config
+        ssl=self._GetSslServerOnlyOrRequiredConfig(args),
     )
     if args.IsKnownAndSpecified('host'):
       connection_profile_obj.host = args.host

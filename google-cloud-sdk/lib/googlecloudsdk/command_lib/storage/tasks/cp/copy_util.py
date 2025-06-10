@@ -177,7 +177,7 @@ def check_for_cloud_clobber(user_request_args, api_client,
   try:
     api_client.get_object_metadata(
         destination_resource.storage_url.bucket_name,
-        destination_resource.storage_url.object_name,
+        destination_resource.storage_url.resource_name,
         fields_scope=cloud_api.FieldsScope.SHORT)
   except api_errors.NotFoundError:
     return False

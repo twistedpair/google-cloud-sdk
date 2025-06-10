@@ -588,7 +588,62 @@ class RagCorpus(proto.Message):
             Only applicable to RagManagedDb option for
             Vector DB. This field can only be set at corpus
             creation time, and cannot be updated or deleted.
+        corpus_type_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagCorpus.CorpusTypeConfig):
+            Optional. The corpus type config of the
+            RagCorpus.
     """
+
+    class CorpusTypeConfig(proto.Message):
+        r"""The config for the corpus type of the RagCorpus.
+
+        This message has `oneof`_ fields (mutually exclusive fields).
+        For each oneof, at most one member field can be set at the same time.
+        Setting any member of the oneof automatically clears all other
+        members.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            document_corpus (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagCorpus.CorpusTypeConfig.DocumentCorpus):
+                Optional. Config for the document corpus.
+
+                This field is a member of `oneof`_ ``corpus_type_config``.
+            memory_corpus (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagCorpus.CorpusTypeConfig.MemoryCorpus):
+                Optional. Config for the memory corpus.
+
+                This field is a member of `oneof`_ ``corpus_type_config``.
+        """
+
+        class DocumentCorpus(proto.Message):
+            r"""Config for the document corpus.
+            """
+
+        class MemoryCorpus(proto.Message):
+            r"""Config for the memory corpus.
+
+            Attributes:
+                llm_parser (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagFileParsingConfig.LlmParser):
+                    The LLM parser to use for the memory corpus.
+            """
+
+            llm_parser: 'RagFileParsingConfig.LlmParser' = proto.Field(
+                proto.MESSAGE,
+                number=1,
+                message='RagFileParsingConfig.LlmParser',
+            )
+
+        document_corpus: 'RagCorpus.CorpusTypeConfig.DocumentCorpus' = proto.Field(
+            proto.MESSAGE,
+            number=1,
+            oneof='corpus_type_config',
+            message='RagCorpus.CorpusTypeConfig.DocumentCorpus',
+        )
+        memory_corpus: 'RagCorpus.CorpusTypeConfig.MemoryCorpus' = proto.Field(
+            proto.MESSAGE,
+            number=2,
+            oneof='corpus_type_config',
+            message='RagCorpus.CorpusTypeConfig.MemoryCorpus',
+        )
 
     vector_db_config: 'RagVectorDbConfig' = proto.Field(
         proto.MESSAGE,
@@ -647,6 +702,11 @@ class RagCorpus(proto.Message):
         proto.MESSAGE,
         number=12,
         message=gca_encryption_spec.EncryptionSpec,
+    )
+    corpus_type_config: CorpusTypeConfig = proto.Field(
+        proto.MESSAGE,
+        number=13,
+        message=CorpusTypeConfig,
     )
 
 

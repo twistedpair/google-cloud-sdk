@@ -89,7 +89,7 @@ class GetSortedContainerContentsTask(task.Task):
       container_url_trailing_delimiter = container.storage_url.join('')
       if isinstance(container_url_trailing_delimiter, storage_url.FileUrl):
         # Remove 'file://' prefix.
-        container_prefix = container_url_trailing_delimiter.object_name
+        container_prefix = container_url_trailing_delimiter.resource_name
       else:
         container_prefix = (
             container_url_trailing_delimiter.versionless_url_string

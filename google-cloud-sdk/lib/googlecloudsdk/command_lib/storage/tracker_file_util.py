@@ -201,9 +201,9 @@ def get_tracker_file_path(destination_url,
     if component_number is not None:
       # Strip component numbers from destination urls so they all share the
       # same prefix when hashed. This is required for cleaning up components.
-      object_name, _, _ = destination_url.object_name.rpartition('_')
+      object_name, _, _ = destination_url.resource_name.rpartition('_')
     else:
-      object_name = destination_url.object_name
+      object_name = destination_url.resource_name
 
     # Encode the destination bucket and object name into the tracker file name.
     raw_result_tracker_file_name = 'resumable_upload__{}__{}__{}.url'.format(
@@ -211,29 +211,29 @@ def get_tracker_file_path(destination_url,
   elif tracker_file_type is TrackerFileType.DOWNLOAD:
     # Encode the fully-qualified destination file into the tracker file name.
     raw_result_tracker_file_name = 'resumable_download__{}__{}.etag'.format(
-        os.path.realpath(destination_url.object_name),
+        os.path.realpath(destination_url.resource_name),
         destination_url.scheme.value)
   elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
     # Encode the fully-qualified destination file name and the component number
     # into the tracker file name.
     raw_result_tracker_file_name = 'resumable_download__{}__{}__{}.etag'.format(
-        os.path.realpath(destination_url.object_name),
+        os.path.realpath(destination_url.resource_name),
         destination_url.scheme.value, component_number)
   elif tracker_file_type is TrackerFileType.PARALLEL_UPLOAD:
     # Encode the destination bucket and object names as well as the source file
     # into the tracker file name.
     raw_result_tracker_file_name = 'parallel_upload__{}__{}__{}__{}.url'.format(
-        destination_url.bucket_name, destination_url.object_name, source_url,
+        destination_url.bucket_name, destination_url.resource_name, source_url,
         destination_url.scheme.value)
   elif tracker_file_type is TrackerFileType.SLICED_DOWNLOAD:
     # Encode the fully-qualified destination file into the tracker file name.
     raw_result_tracker_file_name = 'sliced_download__{}__{}.etag'.format(
-        os.path.realpath(destination_url.object_name),
+        os.path.realpath(destination_url.resource_name),
         destination_url.scheme.value)
   elif tracker_file_type is TrackerFileType.REWRITE:
     raw_result_tracker_file_name = 'rewrite__{}__{}__{}__{}__{}.token'.format(
-        source_url.bucket_name, source_url.object_name,
-        destination_url.bucket_name, destination_url.object_name,
+        source_url.bucket_name, source_url.resource_name,
+        destination_url.bucket_name, destination_url.resource_name,
         destination_url.scheme.value)
 
   result_tracker_file_name = get_delimiterless_file_path(
@@ -349,10 +349,10 @@ def hash_gcs_rewrite_parameters_for_tracker_file(source_object_resource,
     Error if argument is missing required property.
   """
   mandatory_parameters = (source_object_resource.storage_url.bucket_name,
-                          source_object_resource.storage_url.object_name,
+                          source_object_resource.storage_url.resource_name,
                           source_object_resource.etag,
                           destination_object_resource.storage_url.bucket_name,
-                          destination_object_resource.storage_url.object_name)
+                          destination_object_resource.storage_url.resource_name)
   if not all(mandatory_parameters):
     raise errors.Error('Missing required parameter values.')
 
@@ -576,10 +576,10 @@ def read_or_create_download_tracker_file(source_object_resource,
 
   if component_number is not None:
     download_name_for_logger = '{} component {}'.format(
-        destination_url.object_name, component_number)
+        destination_url.resource_name, component_number)
     tracker_file_type = TrackerFileType.DOWNLOAD_COMPONENT
   else:
-    download_name_for_logger = destination_url.object_name
+    download_name_for_logger = destination_url.resource_name
     if total_components is not None:
       tracker_file_type = TrackerFileType.SLICED_DOWNLOAD
     else:

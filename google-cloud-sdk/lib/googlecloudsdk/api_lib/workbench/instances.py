@@ -19,11 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import enum
+
 from googlecloudsdk.api_lib.workbench import util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.workbench import flags
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+
 
 _RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'
 
@@ -35,7 +38,13 @@ def GetNetworkRelativeName(args):
 
 def GetSubnetRelativeName(args):
   if args.IsSpecified('subnet'):
-    return args.CONCEPTS.subnet.Parse().RelativeName()
+    try:
+      return args.CONCEPTS.subnet.Parse().RelativeName()
+    except AttributeError:
+      raise exceptions.Error(
+          'Subnet is not formatted correctly. Expected format:'
+          ' projects/{project-id}/regions/{region}/subnetworks/{subnet-name}'
+      )
 
 
 def CreateNetworkConfigMessage(args, messages):
@@ -46,9 +55,15 @@ def CreateNetworkConfigMessage(args, messages):
     messages: Module containing messages definition for the specified API.
 
   Returns:
-    Network config for the instance.
+    A list of NetworkInterface messages for the instance.
   """
-  network_config = messages.NetworkInterface
+  if not (
+      args.IsSpecified('network')
+      or args.IsSpecified('subnet')
+      or args.IsSpecified('nic_type')
+  ):
+    return []
+
   network_name = None
   subnet_name = None
   nic_type = None
@@ -59,32 +74,49 @@ def CreateNetworkConfigMessage(args, messages):
   if args.IsSpecified('nic_type'):
     nic_type = arg_utils.ChoiceEnumMapper(
         arg_name='nic-type',
-        message_enum=network_config.NicTypeValueValuesEnum,
+        message_enum=messages.NetworkInterface.NicTypeValueValuesEnum,
         include_filter=lambda x: 'UNSPECIFIED' not in x,
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.nic_type))
-  return network_config(
+  return [messages.NetworkInterface(
       network=network_name,
       subnet=subnet_name,
       nicType=nic_type,
-  )
+  )]
 
 
 def CreateAcceleratorConfigMessage(args, messages):
-  accelerator_config = messages.AcceleratorConfig
+  """Creates the accelerator config for the instance.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    A list of AcceleratorConfig messages for the instance.
+  """
+  if not (
+      args.IsSpecified('accelerator_type')
+      or args.IsSpecified('accelerator_core_count')
+  ):
+    return []
+
   type_enum = None
   if args.IsSpecified('accelerator_type'):
     type_enum = arg_utils.ChoiceEnumMapper(
         arg_name='accelerator-type',
-        message_enum=accelerator_config.TypeValueValuesEnum,
+        message_enum=messages.AcceleratorConfig.TypeValueValuesEnum,
         include_filter=lambda x: 'UNSPECIFIED' not in x,
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.accelerator_type))
-  return accelerator_config(
+  return [messages.AcceleratorConfig(
       type=type_enum, coreCount=args.accelerator_core_count
-  )
+  )]
 
 
 def CreateServiceAccountConfigMessage(args, messages):
-  return messages.ServiceAccount(email=args.service_account_email)
+  if not args.IsSpecified('service_account_email'):
+    return []
+
+  return [messages.ServiceAccount(email=args.service_account_email)]
 
 
 def CreateGPUDriverConfigMessage(args, messages):
@@ -93,6 +125,7 @@ def CreateGPUDriverConfigMessage(args, messages):
       or args.IsSpecified('install_gpu_driver')
   ):
     return None
+
   return messages.GPUDriverConfig(
       customGpuDriverPath=args.custom_gpu_driver_path,
       enableGpuDriver=args.install_gpu_driver,
@@ -115,6 +148,7 @@ def CreateReservationConfigMessage(args, messages):
       or args.IsSpecified('reservation_values')
   ):
     return None
+
   reservation_type_enum = None
   if args.IsSpecified('reservation_type'):
     reservation_type_enum = flags.GetReservationTypeMapper(
@@ -140,6 +174,14 @@ def GetBootDisk(args, messages):
   Returns:
     Boot disk config for the instance.
   """
+  if not (
+      args.IsSpecified('boot_disk_size')
+      or args.IsSpecified('boot_disk_type')
+      or args.IsSpecified('boot_disk_encryption')
+      or args.IsSpecified('boot_disk_kms_key')
+  ):
+    return None
+
   boot_disk_message = messages.BootDisk
   boot_disk_encryption_enum = None
   boot_disk_type_enum = None
@@ -176,6 +218,14 @@ def GetDataDisk(args, messages):
   Returns:
     Data disk config for the instance.
   """
+  if not (
+      args.IsSpecified('data_disk_size')
+      or args.IsSpecified('data_disk_type')
+      or args.IsSpecified('data_disk_encryption')
+      or args.IsSpecified('data_disk_kms_key')
+  ):
+    return []
+
   data_disk_message = messages.DataDisk
   data_disk_encryption_enum = None
   data_disk_type_enum = None
@@ -194,66 +244,84 @@ def GetDataDisk(args, messages):
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.data_disk_encryption))
   if args.IsSpecified('data_disk_kms_key'):
     kms_key = args.CONCEPTS.data_disk_kms_key.Parse().RelativeName()
-  return data_disk_message(
-      diskType=data_disk_type_enum,
-      diskEncryption=data_disk_encryption_enum,
-      diskSizeGb=args.data_disk_size,
-      kmsKey=kms_key,
-  )
+  return [
+      data_disk_message(
+          diskType=data_disk_type_enum,
+          diskEncryption=data_disk_encryption_enum,
+          diskSizeGb=args.data_disk_size,
+          kmsKey=kms_key,
+      )
+  ]
 
 
 def CreateContainerImageFromArgs(args, messages):
-  if args.IsSpecified('container_repository'):
-    container_image = messages.ContainerImage(
-        repository=args.container_repository, tag=args.container_tag)
-    return container_image
-  return None
+  if not (
+      args.IsSpecified('container_repository')
+      or args.IsSpecified('container_tag')
+  ):
+    return None
+
+  container_image = messages.ContainerImage(
+      repository=args.container_repository, tag=args.container_tag
+  )
+  return container_image
 
 
 def CreateVmImageFromArgs(args, messages):
   """Create VmImage Message from an environment or from args."""
+  if not (
+      args.IsSpecified('vm_image_project')
+      or args.IsSpecified('vm_image_family')
+      or args.IsSpecified('vm_image_name')
+  ):
+    return None
+
+  vm_image = messages.VmImage()
   if args.IsSpecified('vm_image_project'):
-    vm_image = messages.VmImage(project=args.vm_image_project)
-    if args.IsSpecified('vm_image_family'):
-      vm_image.family = args.vm_image_family
-    else:
-      vm_image.name = args.vm_image_name
-    return vm_image
-  return None
+    vm_image.project = args.vm_image_project
+  if args.IsSpecified('vm_image_family'):
+    vm_image.family = args.vm_image_family
+  else:
+    vm_image.name = args.vm_image_name
+  return vm_image
 
 
 def GetInstanceOwnersFromArgs(args):
-  if args.IsSpecified('instance_owners'):
-    return [args.instance_owners]
-  return []
+  if not args.IsSpecified('instance_owners'):
+    return []
+
+  return [args.instance_owners]
 
 
 def GetLabelsFromArgs(args, messages):
-  if args.IsSpecified('labels'):
-    labels_message = messages.Instance.LabelsValue
-    return labels_message(additionalProperties=[
-        labels_message.AdditionalProperty(key=key, value=value)
-        for key, value in args.labels.items()
-    ])
-  return None
+  if not args.IsSpecified('labels'):
+    return None
+
+  labels_message = messages.Instance.LabelsValue
+  return labels_message(additionalProperties=[
+      labels_message.AdditionalProperty(key=key, value=value)
+      for key, value in args.labels.items()
+  ])
 
 
 def GetTagsFromArgs(args):
-  if args.IsSpecified('tags'):
-    return args.tags
-  return []
+  if not args.IsSpecified('tags'):
+    return []
+
+  return args.tags
 
 
 def GetMetadataFromArgs(args, messages):
-  if args.IsSpecified('metadata'):
-    metadata_message = messages.GceSetup.MetadataValue
-    return metadata_message(
-        additionalProperties=[
-            metadata_message.AdditionalProperty(key=key, value=value)
-            for key, value in args.metadata.items()
-        ]
-    )
-  return None
+  if not args.IsSpecified('metadata'):
+    return None
+
+  metadata_message = messages.GceSetup.MetadataValue
+  return metadata_message(
+      additionalProperties=[
+          metadata_message.AdditionalProperty(key=key, value=value)
+          for key, value in args.metadata.items()
+      ]
+  )
 
 
 def GetShieldedInstanceConfigFromArgs(args, messages):
@@ -272,21 +340,22 @@ def GetShieldedInstanceConfigFromArgs(args, messages):
       or args.IsSpecified('shielded_integrity_monitoring')
   ):
     return None
+
   true_values = ['1', 'true', 'on', 'yes', 'y']
   if args.IsSpecified('shielded_secure_boot'):
     shielded_secure_boot = args.shielded_secure_boot.lower() in true_values
   else:
-    shielded_secure_boot = False
+    shielded_secure_boot = None
   if args.IsSpecified('shielded_vtpm'):
     shielded_vtpm = args.shielded_vtpm.lower() in true_values
   else:
-    shielded_vtpm = True
+    shielded_vtpm = None
   if args.IsSpecified('shielded_integrity_monitoring'):
     shielded_integrity_monitoring = (
         args.shielded_integrity_monitoring.lower() in true_values
     )
   else:
-    shielded_integrity_monitoring = True
+    shielded_integrity_monitoring = None
   shielded_instance_config_message = messages.ShieldedInstanceConfig
   return shielded_instance_config_message(
       enableIntegrityMonitoring=shielded_integrity_monitoring,
@@ -321,6 +390,42 @@ def GetConfidentialInstanceConfigFromArgs(args, messages):
   )
 
 
+def GetMachineTypeFromArgs(args):
+  if not args.IsSpecified('machine_type'):
+    return None
+  return args.machine_type
+
+
+def GetMinCpuPlatformFromArgs(args):
+  if not args.IsSpecified('min_cpu_platform'):
+    return None
+  return args.min_cpu_platform
+
+
+def GetDisablePublicIpFromArgs(args):
+  if not args.IsSpecified('disable_public_ip'):
+    return None
+  return args.disable_public_ip
+
+
+def GetEnableIpForwardingFromArgs(args):
+  if not args.IsSpecified('enable_ip_forwarding'):
+    return None
+  return args.enable_ip_forwarding
+
+
+def GetEnableThirdPartyIdentityFromArgs(args):
+  if not args.IsSpecified('enable_third_party_identity'):
+    return None
+  return args.enable_third_party_identity
+
+
+def GetDisableProxyAccessFromArgs(args):
+  if not args.IsSpecified('disable_proxy_access'):
+    return None
+  return args.disable_proxy_access
+
+
 def CreateInstance(args, messages):
   """Creates the Instance message for the create request.
 
@@ -333,34 +438,34 @@ def CreateInstance(args, messages):
   """
 
   gce_setup = messages.GceSetup(
-      acceleratorConfigs=[CreateAcceleratorConfigMessage(args, messages)],
+      acceleratorConfigs=CreateAcceleratorConfigMessage(args, messages),
       bootDisk=GetBootDisk(args, messages),
       containerImage=CreateContainerImageFromArgs(args, messages),
-      dataDisks=[GetDataDisk(args, messages)],
-      disablePublicIp=args.disable_public_ip,
-      enableIpForwarding=args.enable_ip_forwarding,
+      dataDisks=GetDataDisk(args, messages),
+      disablePublicIp=GetDisablePublicIpFromArgs(args),
+      enableIpForwarding=GetEnableIpForwardingFromArgs(args),
       gpuDriverConfig=CreateGPUDriverConfigMessage(args, messages),
-      machineType=args.machine_type,
-      minCpuPlatform=args.min_cpu_platform,
+      machineType=GetMachineTypeFromArgs(args),
+      minCpuPlatform=GetMinCpuPlatformFromArgs(args),
       metadata=GetMetadataFromArgs(args, messages),
-      networkInterfaces=[CreateNetworkConfigMessage(args, messages)],
+      networkInterfaces=CreateNetworkConfigMessage(args, messages),
       reservationAffinity=CreateReservationConfigMessage(args, messages),
-      serviceAccounts=[CreateServiceAccountConfigMessage(args, messages)],
+      serviceAccounts=CreateServiceAccountConfigMessage(args, messages),
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
       confidentialInstanceConfig=GetConfidentialInstanceConfigFromArgs(
           args, messages
       ),
       tags=GetTagsFromArgs(args),
       vmImage=CreateVmImageFromArgs(args, messages),
-    )
+  )
   instance = messages.Instance(
       name=args.instance,
-      disableProxyAccess=args.disable_proxy_access,
-      gceSetup=gce_setup,
+      disableProxyAccess=GetDisableProxyAccessFromArgs(args),
+      gceSetup=gce_setup if gce_setup != messages.GceSetup() else None,
       instanceOwners=GetInstanceOwnersFromArgs(args),
       labels=GetLabelsFromArgs(args, messages),
-      enableThirdPartyIdentity=args.enable_third_party_identity,
-    )
+      enableThirdPartyIdentity=GetEnableThirdPartyIdentityFromArgs(args),
+  )
   return instance
 
 
@@ -485,22 +590,18 @@ def UpdateInstance(args, messages):
     Instance of the Instance message.
   """
   gce_setup = messages.GceSetup(
+      acceleratorConfigs=CreateAcceleratorConfigMessage(args, messages),
       gpuDriverConfig=CreateGPUDriverConfigMessage(args, messages),
-      machineType=args.machine_type,
+      machineType=GetMachineTypeFromArgs(args),
       metadata=GetMetadataFromArgs(args, messages),
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
       tags=GetTagsFromArgs(args),
       containerImage=CreateContainerImageFromArgs(args, messages),
   )
-  if args.IsSpecified('accelerator_type') or args.IsSpecified(
-      'accelerator_core_count'
-  ):
-    gce_setup.acceleratorConfigs = [
-        CreateAcceleratorConfigMessage(args, messages)
-    ]
+
   instance = messages.Instance(
       name=args.instance,
-      gceSetup=gce_setup,
+      gceSetup=gce_setup if gce_setup != messages.GceSetup() else None,
       labels=GetLabelsFromArgs(args, messages),
   )
   return instance

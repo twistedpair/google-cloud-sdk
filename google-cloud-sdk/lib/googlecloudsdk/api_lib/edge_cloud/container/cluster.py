@@ -205,6 +205,7 @@ def PopulateClusterAlphaMessage(req, args):
   resource_args.SetSystemAddonsConfig(args, req)
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
   EnableClusterIsolationConfig(req, args)
+  EnableRemoteBackupConfig(req, args)
 
 
 def IsLCPCluster(args):
@@ -341,3 +342,14 @@ def EnableGoogleGroupAuthentication(req, args, messages):
     req.cluster.googleGroupAuthentication.enable = (
         args.enable_google_group_authentication)
 
+
+def EnableRemoteBackupConfig(req, args):
+  """Set remote backup config in the cluster request message.
+
+  Args:
+   req: Create cluster request message.
+   args: Command line arguments.
+  """
+
+  if flags.FlagIsExplicitlySet(args, 'enable_remote_backup'):
+    req.cluster.enableRemoteBackup = args.enable_remote_backup

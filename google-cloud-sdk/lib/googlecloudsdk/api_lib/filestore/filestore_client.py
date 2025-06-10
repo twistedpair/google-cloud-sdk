@@ -804,18 +804,18 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
 
     Args:
       instance: The filestore instance struct.
-      managed_ad: The managed_ad cli paramters
+      managed_ad: The --managed-ad flag value.
 
     Raises:
       InvalidArgumentError: If managed_ad argument constraints are violated.
     """
     domain = managed_ad.get('domain')
     if domain is None:
-      raise InvalidArgumentError('Domain parameter is missing in --managed_ad.')
+      raise InvalidArgumentError('Domain parameter is missing in --managed-ad.')
     computer = managed_ad.get('computer')
     if computer is None:
       raise InvalidArgumentError(
-          'Computer parameter is missing in --managed_ad.'
+          'Computer parameter is missing in --managed-ad.'
       )
 
     instance.directoryServices = self.messages.DirectoryServicesConfig(
@@ -966,6 +966,60 @@ class FilestoreAdapter(BetaFilestoreAdapter):
       )
       instance.fileShares.append(file_share_config)
 
+  def ParseManagedADIntoInstance(self, instance, managed_ad):
+    """Parses managed-ad configs into an instance message.
+
+    Args:
+      instance: The filestore instance struct.
+      managed_ad: The --managed-ad flag value.
+
+    Raises:
+      InvalidArgumentError: If managed_ad argument constraints are violated.
+    """
+    domain = managed_ad.get('domain')
+    if domain is None:
+      raise InvalidArgumentError('Domain parameter is missing in --managed-ad.')
+    computer = managed_ad.get('computer')
+    if computer is None:
+      raise InvalidArgumentError(
+          'Computer parameter is missing in --managed-ad.'
+      )
+
+    instance.directoryServices = self.messages.DirectoryServicesConfig(
+        managedActiveDirectory=self.messages.ManagedActiveDirectoryConfig(
+            domain=domain, computer=computer
+        )
+    )
+
+  def ParseLdapIntoInstance(self, instance, ldap):
+    """Parses ldap configs into an instance message.
+
+    Args:
+      instance: The filestore instance struct.
+      ldap: The ldap cli parameters
+
+    Raises:
+      InvalidArgumentError: If ldap argument constraints are violated.
+    """
+    domain = ldap.get('domain')
+    if domain is None:
+      raise InvalidArgumentError('Domain parameter is missing in `--ldap`.')
+    servers = ldap.get('servers')
+    if servers is None:
+      raise InvalidArgumentError('Servers parameter is missing in `--ldap`.')
+    servers = servers.split(',')
+    usersou = ldap.get('users-ou')
+    groupsou = ldap.get('groups-ou')
+    # usersou and groupsou are optional
+
+    instance.directoryServices = self.messages.DirectoryServicesConfig(
+        ldap=self.messages.LdapConfig(
+            domain=domain,
+            servers=servers,
+            usersOu=usersou,
+            groupsOu=groupsou,
+        )
+    )
 
 def GetFilestoreRegistry(api_version=V1_API_VERSION):
   registry = resources.REGISTRY.Clone()

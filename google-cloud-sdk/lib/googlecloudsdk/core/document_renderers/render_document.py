@@ -327,7 +327,10 @@ class MarkdownRenderer(object):
                 ret += buf[i:index_at_air_quote]
                 i = index_at_air_quote
                 continue
-          if r == c:
+          if is_literal and c == '_' and r == '_':
+            # '__' should be considered a literal '_' when in a code block
+            i += 1
+          elif r == c:
             # Doubled markers are literal.
             c += c
             i += 1

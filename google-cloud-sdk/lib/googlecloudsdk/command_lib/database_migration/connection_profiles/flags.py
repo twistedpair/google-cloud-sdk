@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.database_migration import api_util
+from googlecloudsdk.calliope import arg_parsers
 
 
 def AddNoAsyncFlag(parser):
@@ -114,13 +115,27 @@ def AddSslServerOnlyConfigGroup(parser):
   AddCaCertificateFlag(ssl_config, True)
 
 
-def AddSslServerOnlyOrRequiredConfigGroup(parser, hidden=False):
+def AddSslServerOnlyOrRequiredConfigGroup(parser):
   """Adds ssl server only & required config group to the given parser."""
-  ssl_config = parser.add_group(hidden=hidden)
+  ssl_config = parser.add_group()
   AddSslTypeFlag(
       ssl_config, hidden=False, choices=['SERVER_ONLY', 'REQUIRED', 'NONE']
   )
   AddCaCertificateFlag(ssl_config)
+
+
+def AddSslFlags(parser):
+  """Adds a --ssl-flags flag to the given parser."""
+  help_text = """\
+    Comma-separated list of SSL flags used for establishing SSL connection to
+    the database. Use an equals sign to separate the flag name and value.
+    Example: `--ssl-flags ssl_mode=enable,server_certificate_hostname=server.com`.
+  """
+  parser.add_argument(
+      '--ssl-flags',
+      type=arg_parsers.ArgDict(),
+      metavar='FLAG=VALUE',
+      help=help_text)
 
 
 def AddSslTypeFlag(parser, hidden=False, choices=None):

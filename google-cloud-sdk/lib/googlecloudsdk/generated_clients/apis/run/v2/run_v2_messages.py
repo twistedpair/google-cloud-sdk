@@ -2710,6 +2710,10 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
     dockerBuild: Build the source using Docker. This means the source has a
       Dockerfile.
     imageUri: Required. Artifact Registry URI to store the built image.
+    machineType: Optional. The machine type from default pool to use for the
+      build. If left blank, cloudbuild will use a sensible default. Currently
+      only E2_HIGHCPU_8 is supported. If worker_pool is set, this field will
+      be ignored.
     serviceAccount: Optional. The service account to use for the build. If not
       set, the default Cloud Build service account for the project will be
       used.
@@ -2726,10 +2730,11 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
   buildpackBuild = _messages.MessageField('GoogleCloudRunV2BuildpacksBuild', 1)
   dockerBuild = _messages.MessageField('GoogleCloudRunV2DockerBuild', 2)
   imageUri = _messages.StringField(3)
-  serviceAccount = _messages.StringField(4)
-  storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 5)
-  tags = _messages.StringField(6, repeated=True)
-  workerPool = _messages.StringField(7)
+  machineType = _messages.StringField(4)
+  serviceAccount = _messages.StringField(5)
+  storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 6)
+  tags = _messages.StringField(7, repeated=True)
+  workerPool = _messages.StringField(8)
 
 
 class GoogleCloudRunV2SubmitBuildResponse(_messages.Message):
@@ -2969,13 +2974,18 @@ class GoogleCloudRunV2TaskAttemptResult(_messages.Message):
   Fields:
     exitCode: Output only. The exit code of this attempt. This may be unset if
       the container was unable to exit cleanly with a code due to some other
-      failure. See status field for possible failure details.
+      failure. See status field for possible failure details. At most one of
+      exit_code or term_signal will be set.
     status: Output only. The status of this attempt. If the status code is OK,
       then the attempt succeeded.
+    termSignal: Output only. Termination signal of the container. This is set
+      to non-zero if the container is terminated by the system. At most one of
+      exit_code or term_signal will be set.
   """
 
   exitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   status = _messages.MessageField('GoogleRpcStatus', 2)
+  termSignal = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudRunV2TaskTemplate(_messages.Message):
@@ -3589,7 +3599,6 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
       permissions the revision has. If not provided, the revision will use the
       project's default service account.
     serviceMesh: Optional. Enables service mesh connectivity.
-    sessionAffinity: Optional. Enable session affinity.
     volumes: Optional. A list of Volumes to make available to containers.
     vpcAccess: Optional. VPC Access configuration to use for this Revision.
       For more information, visit
@@ -3684,9 +3693,8 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
   revision = _messages.StringField(8)
   serviceAccount = _messages.StringField(9)
   serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 10)
-  sessionAffinity = _messages.BooleanField(11)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 12, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 13)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 11, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 12)
 
 
 class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
@@ -3701,6 +3709,20 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
       scaling mode.
     maxInstanceCount: Optional. The maximum count of instances distributed
       among revisions based on the specified instance split percentages.
+    maxSurge: Optional. A maximum percentage of instances that will be moved
+      in each step of traffic split changes. When set to a positive value, the
+      server will bring up, at most, that percentage of new instances at a
+      time before moving traffic to them. After moving traffic, the server
+      will bring down instances of the old revision. This can reduce a spike
+      of total active instances during changes from one revision to another
+      but specifying how many extra instances can be brought up at a time.
+    maxUnavailable: Optional. A maximum percentage of instances that may be
+      unavailable during changes from one revision to another. When set to a
+      positive value, the server may bring down instances before bringing up
+      new instances. This can prevent a spike of total active instances during
+      changes from one revision by reducing the pool of instances before
+      bringing up new ones. Some requests may be slow or fail to serve during
+      the transition.
     minInstanceCount: Optional. The minimum count of instances distributed
       among revisions based on the specified instance split percentages.
     scalingMode: Optional. The scaling mode for the worker pool.
@@ -3712,7 +3734,7 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
     Values:
       SCALING_MODE_UNSPECIFIED: Unspecified.
       AUTOMATIC: Automatically scale between min and max instances.
-      MANUAL: Scale to exactly min instances and ignore the max instances.
+      MANUAL: Scale to manual instance count.
     """
     SCALING_MODE_UNSPECIFIED = 0
     AUTOMATIC = 1
@@ -3720,8 +3742,10 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
 
   manualInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 4)
+  maxSurge = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 6)
 
 
 class GoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):
@@ -4596,8 +4620,7 @@ class GoogleDevtoolsCloudbuildV1GitSourceRepository(_messages.Message):
   r"""A repository for a git source.
 
   Fields:
-    developerConnect: The Developer Connect Git repository link or the url
-      that matches a repository link in the current project, formatted as
+    developerConnect: The Developer Connect Git repository link formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLink/*`
     url: Location of the Git repository.
   """
@@ -4745,8 +4768,8 @@ class GoogleDevtoolsCloudbuildV1MavenArtifact(_messages.Message):
       Artifact Registry.
     groupId: Maven `groupId` value used when uploading the artifact to
       Artifact Registry.
-    path: Path to an artifact in the build's workspace to be uploaded to
-      Artifact Registry. This can be either an absolute path, e.g.
+    path: Optional. Path to an artifact in the build's workspace to be
+      uploaded to Artifact Registry. This can be either an absolute path, e.g.
       /workspace/my-app/target/my-app-1.0.SNAPSHOT.jar or a relative path from
       /workspace, e.g. my-app/target/my-app-1.0.SNAPSHOT.jar.
     repository: Artifact Registry repository, in the form "https://$REGION-
@@ -6482,6 +6505,32 @@ class RunProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class RunProjectsLocationsWorkerPoolsGetIamPolicyRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class RunProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsWorkerPoolsGetRequest object.
 
@@ -6597,6 +6646,22 @@ class RunProjectsLocationsWorkerPoolsRevisionsListRequest(_messages.Message):
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   showDeleted = _messages.BooleanField(4)
+
+
+class RunProjectsLocationsWorkerPoolsSetIamPolicyRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsWorkerPoolsTestIamPermissionsRequest(_messages.Message):
@@ -6716,3 +6781,5 @@ encoding.AddCustomJsonFieldMapping(
     RunProjectsLocationsJobsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     RunProjectsLocationsServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsWorkerPoolsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

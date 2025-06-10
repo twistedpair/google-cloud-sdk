@@ -121,6 +121,17 @@ SUPPORTED_SERVICES = (
     SecurityCenterService('web-security-scanner', abbreviation='wss'),
     SecurityCenterService('vm-threat-detection-aws', abbreviation='vmtd-aws'),
     SecurityCenterService('cloud-run-threat-detection', abbreviation='crtd'),
+    SecurityCenterService('vm-manager', abbreviation='vmm'),
+    SecurityCenterService(
+        'ec2-vulnerability-assessment', abbreviation='ec2-va'
+    ),
+    SecurityCenterService(
+        'gce-vulnerability-assessment', abbreviation='gce-va'
+    ),
+    SecurityCenterService(
+        'azure-vulnerability-assessment', abbreviation='azure-va'
+    ),
+    SecurityCenterService('notebook-security-scanner', abbreviation='nss'),
 )
 
 SERVICE_INVENTORY: Dict[str, SecurityCenterService] = make_service_inventory(

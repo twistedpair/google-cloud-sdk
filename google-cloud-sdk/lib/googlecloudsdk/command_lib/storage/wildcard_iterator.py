@@ -226,12 +226,15 @@ class FileWildcardIterator(WildcardIterator):
     self._ignore_symlinks = ignore_symlinks
     self._preserve_symlinks = preserve_symlinks
 
-    if force_include_hidden_files and url.object_name.rstrip('*')[-1] != os.sep:
+    if (
+        force_include_hidden_files
+        and url.resource_name.rstrip('*')[-1] != os.sep
+    ):
       raise command_errors.InvalidUrlError(
           'If force-including hidden files, input URL must be directory or'
           ' directory followed by wildcards.'
       )
-    self._path = self._url.object_name
+    self._path = self._url.resource_name
     self._recurse = '**' in self._path
     self._include_hidden_files = (
         self._recurse or force_include_hidden_files or _is_hidden(self._path)
@@ -242,7 +245,7 @@ class FileWildcardIterator(WildcardIterator):
     if self._url.is_stdio:
       if self._files_only:
         raise command_errors.InvalidUrlError(
-            _FILES_ONLY_ERROR_FORMAT.format(self._url.object_name)
+            _FILES_ONLY_ERROR_FORMAT.format(self._url.resource_name)
         )
       yield resource_reference.FileObjectResource(self._url)
       return
@@ -287,7 +290,7 @@ class FileWildcardIterator(WildcardIterator):
       if self._files_only and not os.path.isfile(path):
         if storage_url.is_named_pipe(path):
           raise command_errors.InvalidUrlError(
-              _FILES_ONLY_ERROR_FORMAT.format(self._url.object_name)
+              _FILES_ONLY_ERROR_FORMAT.format(self._url.resource_name)
           )
         continue
 
@@ -444,7 +447,7 @@ class CloudWildcardIterator(WildcardIterator):
             if self._files_only and (
                 not isinstance(resource, resource_reference.ObjectResource)
                 or (  # Directory placeholder object.
-                    resource.storage_url.object_name.endswith(
+                    resource.storage_url.resource_name.endswith(
                         storage_url.CLOUD_URL_DELIMITER
                     )
                     and resource.size == 0
@@ -511,7 +514,7 @@ class CloudWildcardIterator(WildcardIterator):
     try:
       resource = self._client.get_object_metadata(
           bucket_name,
-          self._url.object_name,
+          self._url.resource_name,
           # TODO(b/197754758): add user request args from surface.
           request_config_factory.get_request_config(self._url),
           generation=self._url.generation,
@@ -528,7 +531,7 @@ class CloudWildcardIterator(WildcardIterator):
   def _fetch_sub_bucket_resources(self, bucket_name, is_hns_bucket=False):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
-        contains_wildcard(self._url.object_name)
+        contains_wildcard(self._url.resource_name)
         or self._object_state_requires_expansion
         or self._url.url_string.endswith(self._url.delimiter)
     )
@@ -688,7 +691,7 @@ class CloudWildcardIterator(WildcardIterator):
     try:
       prefix_url = resource.storage_url
       return self._client.get_managed_folder(
-          prefix_url.bucket_name, prefix_url.object_name
+          prefix_url.bucket_name, prefix_url.resource_name
       )
     except api_errors.NotFoundError:
       return resource
@@ -718,7 +721,7 @@ class CloudWildcardIterator(WildcardIterator):
     try:
       prefix_url = resource.storage_url
       return self._client.get_folder(
-          prefix_url.bucket_name, prefix_url.object_name
+          prefix_url.bucket_name, prefix_url.resource_name
       )
     except api_errors.NotFoundError:
       return resource
@@ -734,9 +737,9 @@ class CloudWildcardIterator(WildcardIterator):
       resource_reference.Resource objects where each resource can be
       an ObjectResource object or a PrefixResource object.
     """
-    original_object_name = self._url.object_name
+    original_object_name = self._url.resource_name
     if original_object_name.endswith(self._url.delimiter):
-      if not contains_wildcard(self._url.object_name):
+      if not contains_wildcard(self._url.resource_name):
         # Get object with trailing slash in addition to prefix check below.
         direct_query_result = self._try_getting_object_directly(bucket_name)
         if direct_query_result:
@@ -770,7 +773,7 @@ class CloudWildcardIterator(WildcardIterator):
       )
 
       for resource in filtered_resources:
-        resource_path = resource.storage_url.object_name
+        resource_path = resource.storage_url.resource_name
         if wildcard_parts.suffix:
           # pylint: disable=unidiomatic-typecheck
           # We do not want this check to pass for child classes.
@@ -867,7 +870,7 @@ class CloudWildcardIterator(WildcardIterator):
         # Filter based on generation, if generation is present in the request.
         continue
       for regex_pattern in regex_patterns:
-        if regex_pattern.match(resource.storage_url.object_name):
+        if regex_pattern.match(resource.storage_url.resource_name):
           yield resource
           break
 

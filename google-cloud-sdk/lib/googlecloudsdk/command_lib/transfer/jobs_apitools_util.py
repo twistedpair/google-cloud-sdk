@@ -67,7 +67,7 @@ def _prompt_user_and_add_valid_scheme(url, valid_schemes):
   if url.scheme is storage_url.ProviderPrefix.FILE:
     if not console_io.CanPrompt():
       raise errors.InvalidUrlError(
-          'Did you mean "posix://{}"'.format(url.object_name)
+          'Did you mean "posix://{}"'.format(url.resource_name)
       )
     scheme_index = console_io.PromptChoice(
         [scheme.value + '://' for scheme in valid_schemes],
@@ -99,14 +99,14 @@ def add_source_url(specs, args, messages, source_url):
   """
   if source_url.scheme is storage_url.ProviderPrefix.HDFS:
     specs.hdfsDataSource = messages.HdfsData(
-        path=source_url.object_name)
+        path=source_url.resource_name)
   elif source_url.scheme is storage_url.ProviderPrefix.POSIX:
     specs.posixDataSource = messages.PosixFilesystem(
-        rootDirectory=source_url.object_name)
+        rootDirectory=source_url.resource_name)
   elif source_url.scheme is storage_url.ProviderPrefix.GCS:
     specs.gcsDataSource = messages.GcsData(
         bucketName=source_url.bucket_name,
-        path=source_url.object_name,
+        path=source_url.resource_name,
     )
   elif source_url.scheme is storage_url.ProviderPrefix.S3:
     if args.source_endpoint:
@@ -114,19 +114,19 @@ def add_source_url(specs, args, messages, source_url):
           messages.AwsS3CompatibleData(
               bucketName=source_url.bucket_name,
               endpoint=args.source_endpoint,
-              path=source_url.object_name,
+              path=source_url.resource_name,
               region=args.source_signing_region,
               s3Metadata=_get_s3_compatible_metadata(args, messages)))
     else:
       specs.awsS3DataSource = messages.AwsS3Data(
           bucketName=source_url.bucket_name,
-          path=source_url.object_name,
+          path=source_url.resource_name,
       )
   elif isinstance(source_url, storage_url.AzureUrl):
     specs.azureBlobStorageDataSource = (
         messages.AzureBlobStorageData(
             container=source_url.bucket_name,
-            path=source_url.object_name,
+            path=source_url.resource_name,
             storageAccount=source_url.account,
         ))
 
@@ -145,11 +145,11 @@ def add_destination_url(specs, messages, destination_url):
   if destination_url.scheme is storage_url.ProviderPrefix.GCS:
     specs.gcsDataSink = messages.GcsData(
         bucketName=destination_url.bucket_name,
-        path=destination_url.object_name,
+        path=destination_url.resource_name,
     )
   elif destination_url.scheme is storage_url.ProviderPrefix.POSIX:
     specs.posixDataSink = messages.PosixFilesystem(
-        rootDirectory=destination_url.object_name)
+        rootDirectory=destination_url.resource_name)
 
 
 def validate_and_add_source_url(
@@ -418,7 +418,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
         args.intermediate_storage_path)
     job.transferSpec.gcsIntermediateDataLocation = messages.GcsData(
         bucketName=intermediate_storage_url.bucket_name,
-        path=intermediate_storage_url.object_name)
+        path=intermediate_storage_url.resource_name)
   if getattr(args, 'manifest_file', None):
     job.transferSpec.transferManifest = messages.TransferManifest(
         location=args.manifest_file)

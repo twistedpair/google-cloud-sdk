@@ -158,6 +158,8 @@ class Condition(proto.Message):
             INTERNAL (16):
                 An internal error occurred. Further
                 information may be in the message.
+            VPC_NETWORK_NOT_FOUND (17):
+                User-provided VPC network was not found.
         """
         COMMON_REASON_UNDEFINED = 0
         UNKNOWN = 1
@@ -174,6 +176,7 @@ class Condition(proto.Message):
         IMMEDIATE_RETRY = 14
         POSTPONED_RETRY = 15
         INTERNAL = 16
+        VPC_NETWORK_NOT_FOUND = 17
 
     class RevisionReason(proto.Enum):
         r"""Reasons specific to Revision resource.

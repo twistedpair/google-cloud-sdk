@@ -346,7 +346,7 @@ class CloudresourcemanagerFoldersPatchRequest(_messages.Message):
 
   Fields:
     folder: A Folder resource to be passed as the request body.
-    name: Output only. The resource name of the folder. Its format is
+    name: Identifier. The resource name of the folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
     updateMask: Required. Fields to be updated. Only the `display_name` can be
       updated.
@@ -1053,26 +1053,6 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
   undeleteProjectRequest = _messages.MessageField('UndeleteProjectRequest', 2)
 
 
-class CloudresourcemanagerTagBindingCollectionPatchRequest(_messages.Message):
-  r"""A CloudresourcemanagerTagBindingCollectionPatchRequest object.
-
-  Fields:
-    name: Identifier. The name of the TagBindingCollection, following the
-      convention: `locations/{location}/tagBindingCollections/{encoded-full-
-      resource-name}` where the encoded-full-resource-name is the UTF-8
-      encoded name of the GCP resource the TagBindings are bound to. "location
-      s/global/tagBindingCollections/%2f%2fcloudresourcemanager.googleapis.com
-      %2fprojects%2f123"
-    tagBindingCollection: A TagBindingCollection resource to be passed as the
-      request body.
-    updateMask: Optional. An update mask to selectively update fields.
-  """
-
-  name = _messages.StringField(1, required=True)
-  tagBindingCollection = _messages.MessageField('TagBindingCollection', 2)
-  updateMask = _messages.StringField(3)
-
-
 class CloudresourcemanagerTagBindingsCreateRequest(_messages.Message):
   r"""A CloudresourcemanagerTagBindingsCreateRequest object.
 
@@ -1601,12 +1581,12 @@ class EffectiveTagBindingCollection(_messages.Message):
   Messages:
     EffectiveTagsValue: Tag keys/values effectively bound to this resource,
       specified in namespaced format. For example: "123/environment":
-      "production", "email": "xyz@email.com"
+      "production"
 
   Fields:
     effectiveTags: Tag keys/values effectively bound to this resource,
       specified in namespaced format. For example: "123/environment":
-      "production", "email": "xyz@email.com"
+      "production"
     fullResourceName: The full resource name of the resource the TagBindings
       are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     name: Identifier. The name of the EffectiveTagBindingCollection, following
@@ -1621,8 +1601,7 @@ class EffectiveTagBindingCollection(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EffectiveTagsValue(_messages.Message):
     r"""Tag keys/values effectively bound to this resource, specified in
-    namespaced format. For example: "123/environment": "production", "email":
-    "xyz@email.com"
+    namespaced format. For example: "123/environment": "production"
 
     Messages:
       AdditionalProperty: An additional property for a EffectiveTagsValue
@@ -1730,7 +1709,7 @@ class Folder(_messages.Message):
     managementProject: Output only. Management Project associated with this
       folder (if app-management capability is enabled). Example:
       `projects/google-mp-123` OUTPUT ONLY.
-    name: Output only. The resource name of the folder. Its format is
+    name: Identifier. The resource name of the folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
     parent: Required. The folder's parent's resource name. Updates to the
       folder's parent must be performed using MoveFolder.
@@ -2405,6 +2384,10 @@ class Project(_messages.Message):
       "marketing" Note: Currently this field is in Preview.
 
   Fields:
+    configuredCapabilities: Output only. If this project is a Management
+      Project, list of capabilities configured on the parent folder. Note,
+      presence of any capability implies that this is a Management Project.
+      Example: `folders/123/capabilities/app-management`. OUTPUT ONLY.
     createTime: Output only. Creation time.
     deleteTime: Output only. The time at which this resource was requested for
       deletion.
@@ -2514,17 +2497,18 @@ class Project(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  parent = _messages.StringField(7)
-  projectId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  tags = _messages.MessageField('TagsValue', 10)
-  updateTime = _messages.StringField(11)
+  configuredCapabilities = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  parent = _messages.StringField(8)
+  projectId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  tags = _messages.MessageField('TagsValue', 11)
+  updateTime = _messages.StringField(12)
 
 
 class ProjectCreationStatus(_messages.Message):
@@ -2847,12 +2831,12 @@ class TagBindingCollection(_messages.Message):
 
   Messages:
     TagsValue: Tag keys/values directly bound to this resource, specified in
-      namespaced format. For example: "123/environment": "production",
-      "email": "xyz@email.com"
+      namespaced format. For example: "123/environment": "production"
 
   Fields:
-    etag: Optional. Entity tag which users can pass to prevent race
-      conditions. This field is always set in server responses.
+    etag: Optional. A checksum based on the current bindings which can be
+      passed to prevent race conditions. This field is always set in server
+      responses.
     fullResourceName: The full resource name of the resource the TagBindings
       are bound to. E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     name: Identifier. The name of the TagBindingCollection, following the
@@ -2862,15 +2846,13 @@ class TagBindingCollection(_messages.Message):
       s/global/tagBindingCollections/%2f%2fcloudresourcemanager.googleapis.com
       %2fprojects%2f123"
     tags: Tag keys/values directly bound to this resource, specified in
-      namespaced format. For example: "123/environment": "production",
-      "email": "xyz@email.com"
+      namespaced format. For example: "123/environment": "production"
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
     r"""Tag keys/values directly bound to this resource, specified in
-    namespaced format. For example: "123/environment": "production", "email":
-    "xyz@email.com"
+    namespaced format. For example: "123/environment": "production"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -2947,6 +2929,9 @@ class TagKey(_messages.Message):
       formatting of this field. Purpose data cannot be changed once set.
 
   Fields:
+    allowedValuesRegex: Optional. Regular expression constraint for freeform
+      tag values. If present, it implicitly allows freeform values
+      (constrained by the regex).
     createTime: Output only. Creation time.
     description: Optional. User-assigned description of the TagKey. Must not
       exceed 256 characters. Read-write.
@@ -2973,7 +2958,7 @@ class TagKey(_messages.Message):
       of this field. Purpose data cannot be changed once set.
     shortName: Required. Immutable. The user friendly name for a TagKey. The
       short name should be unique for TagKeys within the same tag namespace.
-      The short name must be 1-63 characters, beginning and ending with an
+      The short name must be 1-256 characters, beginning and ending with an
       alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),
       dots (.), and alphanumerics between.
     updateTime: Output only. Update time.
@@ -3032,16 +3017,17 @@ class TagKey(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  name = _messages.StringField(4)
-  namespacedName = _messages.StringField(5)
-  parent = _messages.StringField(6)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 7)
-  purposeData = _messages.MessageField('PurposeDataValue', 8)
-  shortName = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  allowedValuesRegex = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  namespacedName = _messages.StringField(6)
+  parent = _messages.StringField(7)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 8)
+  purposeData = _messages.MessageField('PurposeDataValue', 9)
+  shortName = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class TagValue(_messages.Message):
@@ -3065,7 +3051,7 @@ class TagValue(_messages.Message):
       Must be of the form `tagKeys/{tag_key_id}`.
     shortName: Required. Immutable. User-assigned short name for TagValue. The
       short name should be unique for TagValues within the same parent TagKey.
-      The short name must be 63 characters or less, beginning and ending with
+      The short name must be 256 characters or less, beginning and ending with
       an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores
       (_), dots (.), and alphanumerics between.
     updateTime: Output only. Update time.

@@ -11,8 +11,8 @@ class ModelarmorV1(base_api.BaseApiClient):
   """Generated client library for service modelarmor version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = 'https://modelarmor.googleapis.com/'
-  MTLS_BASE_URL = 'https://modelarmor.mtls.googleapis.com/'
+  BASE_URL = 'https://modelarmor.us.rep.googleapis.com/'
+  MTLS_BASE_URL = 'https://modelarmor.us.rep.mtls.googleapis.com/'
 
   _PACKAGE = 'modelarmor'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']

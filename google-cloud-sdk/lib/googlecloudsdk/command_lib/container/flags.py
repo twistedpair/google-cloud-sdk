@@ -1221,17 +1221,16 @@ used for production workloads."""
   )
 
 
-def AddAlphaClusterFeatureGatesFlags(parser, hidden=True):
+def AddAlphaClusterFeatureGatesFlags(parser):
   """Adds the --alpha-cluster-feature-gates flag to parser."""
   help_text = """\
-Allow selectively enable or disable Kubernetes alpha/beta feature gates on alpha cluster.
+Selectively enable or disable Kubernetes alpha and beta kubernetesfeature gates on alpha GKE cluster.
 Alpha clusters are not covered by the Kubernetes Engine SLA and should not be used for production workloads."""
   parser.add_argument(
       '--alpha-cluster-feature-gates',
       type=arg_parsers.ArgList(),
       default=None,
       metavar='FEATURE=true|false',
-      hidden=hidden,
       help=help_text,
   )
 

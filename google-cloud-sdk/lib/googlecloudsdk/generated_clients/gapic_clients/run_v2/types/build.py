@@ -79,6 +79,11 @@ class SubmitBuildRequest(proto.Message):
         tags (MutableSequence[str]):
             Optional. Additional tags to annotate the
             build.
+        machine_type (str):
+            Optional. The machine type from default pool to use for the
+            build. If left blank, cloudbuild will use a sensible
+            default. Currently only E2_HIGHCPU_8 is supported. If
+            worker_pool is set, this field will be ignored.
     """
 
     class DockerBuild(proto.Message):
@@ -191,6 +196,10 @@ class SubmitBuildRequest(proto.Message):
     tags: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=8,
+    )
+    machine_type: str = proto.Field(
+        proto.STRING,
+        number=9,
     )
 
 

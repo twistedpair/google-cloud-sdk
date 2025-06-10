@@ -39,11 +39,13 @@ class CloudquotasV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_quotaAdjusterSettings = self.FoldersLocationsQuotaAdjusterSettingsService(self)
     self.folders_locations_quotaPreferences = self.FoldersLocationsQuotaPreferencesService(self)
     self.folders_locations_services_quotaInfos = self.FoldersLocationsServicesQuotaInfosService(self)
     self.folders_locations_services = self.FoldersLocationsServicesService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
+    self.organizations_locations_quotaAdjusterSettings = self.OrganizationsLocationsQuotaAdjusterSettingsService(self)
     self.organizations_locations_quotaPreferences = self.OrganizationsLocationsQuotaPreferencesService(self)
     self.organizations_locations_services_quotaInfos = self.OrganizationsLocationsServicesQuotaInfosService(self)
     self.organizations_locations_services = self.OrganizationsLocationsServicesService(self)
@@ -55,6 +57,75 @@ class CloudquotasV1(base_api.BaseApiClient):
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsQuotaAdjusterSettingsService(base_api.BaseApiService):
+    """Service class for the folders_locations_quotaAdjusterSettings resource."""
+
+    _NAME = 'folders_locations_quotaAdjusterSettings'
+
+    def __init__(self, client):
+      super(
+          CloudquotasV1.FoldersLocationsQuotaAdjusterSettingsService, self
+      ).__init__(client)
+      self._upload_configs = {}
+
+    def GetQuotaAdjusterSettings(self, request, global_params=None):
+      r"""RPC Method for getting QuotaAdjusterSettings based on the request.
+
+      Args:
+        request:
+          (CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest)
+          input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (QuotaAdjusterSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetQuotaAdjusterSettings')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    GetQuotaAdjusterSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/quotaAdjusterSettings',
+        http_method='GET',
+        method_id='cloudquotas.folders.locations.quotaAdjusterSettings.getQuotaAdjusterSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest',
+        response_type_name='QuotaAdjusterSettings',
+        supports_download=False,
+    )
+
+    def UpdateQuotaAdjusterSettings(self, request, global_params=None):
+      r"""RPC Method for updating QuotaAdjusterSettings based on the request.
+
+      Args:
+        request:
+          (CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest)
+          input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (QuotaAdjusterSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateQuotaAdjusterSettings')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    UpdateQuotaAdjusterSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/quotaAdjusterSettings',
+        http_method='PATCH',
+        method_id='cloudquotas.folders.locations.quotaAdjusterSettings.updateQuotaAdjusterSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='quotaAdjusterSettings',
+        request_type_name='CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest',
+        response_type_name='QuotaAdjusterSettings',
+        supports_download=False,
+    )
 
   class FoldersLocationsQuotaPreferencesService(base_api.BaseApiService):
     """Service class for the folders_locations_quotaPreferences resource."""
@@ -258,12 +329,37 @@ class CloudquotasV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(CloudquotasV1.FoldersService, self).__init__(client)
+      self._upload_configs = {}
+
+  class OrganizationsLocationsQuotaAdjusterSettingsService(
+      base_api.BaseApiService
+  ):
+    """Service class for the organizations_locations_quotaAdjusterSettings resource."""
+
+    _NAME = 'organizations_locations_quotaAdjusterSettings'
+
+    def __init__(self, client):
+      super(
+          CloudquotasV1.OrganizationsLocationsQuotaAdjusterSettingsService, self
+      ).__init__(client)
+      self._upload_configs = {}
+
     def GetQuotaAdjusterSettings(self, request, global_params=None):
       r"""RPC Method for getting QuotaAdjusterSettings based on the request.
 
       Args:
-        request: (CloudquotasFoldersLocationsGetQuotaAdjusterSettingsRequest) input message
+        request:
+          (CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest)
+          input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
         (QuotaAdjusterSettings) The response message.
       """
@@ -272,15 +368,15 @@ class CloudquotasV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetQuotaAdjusterSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/folders/{foldersId}/locations/{locationsId}/quotaAdjusterSettings',
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/quotaAdjusterSettings',
         http_method='GET',
-        method_id='cloudquotas.folders.locations.getQuotaAdjusterSettings',
+        method_id='cloudquotas.organizations.locations.quotaAdjusterSettings.getQuotaAdjusterSettings',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
         request_field='',
-        request_type_name='CloudquotasFoldersLocationsGetQuotaAdjusterSettingsRequest',
+        request_type_name='CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest',
         response_type_name='QuotaAdjusterSettings',
         supports_download=False,
     )
@@ -289,8 +385,11 @@ class CloudquotasV1(base_api.BaseApiClient):
       r"""RPC Method for updating QuotaAdjusterSettings based on the request.
 
       Args:
-        request: (CloudquotasFoldersLocationsUpdateQuotaAdjusterSettingsRequest) input message
+        request:
+          (CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest)
+          input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
         (QuotaAdjusterSettings) The response message.
       """
@@ -299,28 +398,18 @@ class CloudquotasV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     UpdateQuotaAdjusterSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/folders/{foldersId}/locations/{locationsId}/quotaAdjusterSettings',
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/quotaAdjusterSettings',
         http_method='PATCH',
-        method_id='cloudquotas.folders.locations.updateQuotaAdjusterSettings',
+        method_id='cloudquotas.organizations.locations.quotaAdjusterSettings.updateQuotaAdjusterSettings',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='quotaAdjusterSettings',
-        request_type_name='CloudquotasFoldersLocationsUpdateQuotaAdjusterSettingsRequest',
+        request_type_name='CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest',
         response_type_name='QuotaAdjusterSettings',
         supports_download=False,
     )
-
-  class FoldersService(base_api.BaseApiService):
-    """Service class for the folders resource."""
-
-    _NAME = 'folders'
-
-    def __init__(self, client):
-      super(CloudquotasV1.FoldersService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class OrganizationsLocationsQuotaPreferencesService(base_api.BaseApiService):
     """Service class for the organizations_locations_quotaPreferences resource."""
@@ -523,60 +612,6 @@ class CloudquotasV1(base_api.BaseApiClient):
       super(CloudquotasV1.OrganizationsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GetQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for getting QuotaAdjusterSettings based on the request.
-
-      Args:
-        request: (CloudquotasOrganizationsLocationsGetQuotaAdjusterSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QuotaAdjusterSettings) The response message.
-      """
-      config = self.GetMethodConfig('GetQuotaAdjusterSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetQuotaAdjusterSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/quotaAdjusterSettings',
-        http_method='GET',
-        method_id='cloudquotas.organizations.locations.getQuotaAdjusterSettings',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='CloudquotasOrganizationsLocationsGetQuotaAdjusterSettingsRequest',
-        response_type_name='QuotaAdjusterSettings',
-        supports_download=False,
-    )
-
-    def UpdateQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for updating QuotaAdjusterSettings based on the request.
-
-      Args:
-        request: (CloudquotasOrganizationsLocationsUpdateQuotaAdjusterSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QuotaAdjusterSettings) The response message.
-      """
-      config = self.GetMethodConfig('UpdateQuotaAdjusterSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateQuotaAdjusterSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/quotaAdjusterSettings',
-        http_method='PATCH',
-        method_id='cloudquotas.organizations.locations.updateQuotaAdjusterSettings',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask', 'validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='quotaAdjusterSettings',
-        request_type_name='CloudquotasOrganizationsLocationsUpdateQuotaAdjusterSettingsRequest',
-        response_type_name='QuotaAdjusterSettings',
-        supports_download=False,
-    )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""

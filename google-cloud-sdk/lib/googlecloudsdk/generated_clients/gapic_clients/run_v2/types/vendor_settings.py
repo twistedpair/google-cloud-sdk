@@ -399,7 +399,7 @@ class WorkerPoolScaling(proto.Message):
     """
     class ScalingMode(proto.Enum):
         r"""The scaling mode for the worker pool. If not provided, it
-        defaults to AUTOMATIC.
+        defaults to MANUAL
 
         Values:
             SCALING_MODE_UNSPECIFIED (0):
@@ -408,8 +408,7 @@ class WorkerPoolScaling(proto.Message):
                 Automatically scale between min and max
                 instances.
             MANUAL (2):
-                Scale to exactly min instances and ignore the
-                max instances.
+                Scale to manual instance count.
         """
         SCALING_MODE_UNSPECIFIED = 0
         AUTOMATIC = 1

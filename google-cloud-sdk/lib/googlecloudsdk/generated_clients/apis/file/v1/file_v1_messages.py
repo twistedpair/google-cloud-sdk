@@ -279,6 +279,19 @@ class DenyMaintenancePeriod(_messages.Message):
   time = _messages.MessageField('TimeOfDay', 3)
 
 
+class DirectoryServicesConfig(_messages.Message):
+  r"""Directory Services configuration for Kerberos-based authentication.
+
+  Fields:
+    ldap: Configuration for LDAP servers.
+    managedActiveDirectory: Configuration for Managed Service for Microsoft
+      Active Directory.
+  """
+
+  ldap = _messages.MessageField('LdapConfig', 1)
+  managedActiveDirectory = _messages.MessageField('ManagedActiveDirectoryConfig', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1315,6 +1328,9 @@ class Instance(_messages.Message):
     deletionProtectionReason: Optional. The reason for enabling deletion
       protection.
     description: The description of the instance (2048 characters or less).
+    directoryServices: Optional. Directory Services configuration for
+      Kerberos-based authentication. Should only be set if protocol is
+      "NFS_V4_1".
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -1502,23 +1518,51 @@ class Instance(_messages.Message):
   deletionProtectionEnabled = _messages.BooleanField(3)
   deletionProtectionReason = _messages.StringField(4)
   description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  fileShares = _messages.MessageField('FileShareConfig', 7, repeated=True)
-  kmsKeyName = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  networks = _messages.MessageField('NetworkConfig', 11, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 12)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 13)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
-  replication = _messages.MessageField('Replication', 15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 20, repeated=True)
-  tags = _messages.MessageField('TagsValue', 21)
-  tier = _messages.EnumField('TierValueValuesEnum', 22)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 6)
+  etag = _messages.StringField(7)
+  fileShares = _messages.MessageField('FileShareConfig', 8, repeated=True)
+  kmsKeyName = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  networks = _messages.MessageField('NetworkConfig', 12, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 13)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 14)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
+  replication = _messages.MessageField('Replication', 16)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 21, repeated=True)
+  tags = _messages.MessageField('TagsValue', 22)
+  tier = _messages.EnumField('TierValueValuesEnum', 23)
+
+
+class LdapConfig(_messages.Message):
+  r"""LdapConfig contains all the parameters for connecting to LDAP servers.
+
+  Fields:
+    domain: Required. The LDAP domain name in the format of `my-domain.com`.
+    groupsOu: Optional. The groups Organizational Unit (OU) is optional. This
+      parameter is a hint to allow faster lookup in the LDAP namespace. In
+      case that this parameter is not provided, Filestore instance will query
+      the whole LDAP namespace.
+    servers: Required. The servers names are used for specifying the LDAP
+      servers names. The LDAP servers names can come with two formats: 1. DNS
+      name, for example: `ldap.example1.com`, `ldap.example2.com`. 2. IP
+      address, for example: `10.0.0.1`, `10.0.0.2`, `10.0.0.3`. All servers
+      names must be in the same format: either all DNS names or all IP
+      addresses.
+    usersOu: Optional. The users Organizational Unit (OU) is optional. This
+      parameter is a hint to allow faster lookup in the LDAP namespace. In
+      case that this parameter is not provided, Filestore instance will query
+      the whole LDAP namespace.
+  """
+
+  domain = _messages.StringField(1)
+  groupsOu = _messages.StringField(2)
+  servers = _messages.StringField(3, repeated=True)
+  usersOu = _messages.StringField(4)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1770,6 +1814,23 @@ class MaintenanceWindow(_messages.Message):
 
   dailyCycle = _messages.MessageField('DailyCycle', 1)
   weeklyCycle = _messages.MessageField('WeeklyCycle', 2)
+
+
+class ManagedActiveDirectoryConfig(_messages.Message):
+  r"""ManagedActiveDirectoryConfig contains all the parameters for connecting
+  to Managed Service for Microsoft Active Directory (Managed Microsoft AD).
+
+  Fields:
+    computer: Required. The computer name is used as a prefix in the command
+      to mount the remote target. For example: if the computer is `my-
+      computer`, the mount command will look like: `$mount -o
+      vers=4.1,sec=krb5 my-computer.filestore.: `.
+    domain: Required. The domain resource name, in the format
+      `projects/{project_id}/locations/global/domains/{domain}`.
+  """
+
+  computer = _messages.StringField(1)
+  domain = _messages.StringField(2)
 
 
 class NetworkConfig(_messages.Message):

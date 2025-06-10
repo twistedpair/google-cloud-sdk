@@ -52,7 +52,7 @@ class RewriteObjectTask(task.Task):
     api_client = api_factory.get_api(provider)
     existing_object_resource = api_client.get_object_metadata(
         self._object_resource.storage_url.bucket_name,
-        self._object_resource.storage_url.object_name,
+        self._object_resource.storage_url.resource_name,
         generation=self._object_resource.storage_url.generation,
         request_config=request_config)
 

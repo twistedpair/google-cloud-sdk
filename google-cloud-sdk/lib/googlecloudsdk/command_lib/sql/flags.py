@@ -1154,6 +1154,21 @@ def AddSimulateMaintenanceEvent(parser):
   )
 
 
+def AddReconcilePsaNetworking(parser):
+  """Adds the `--reconcile-psa-networking` flag to the parser."""
+  parser.add_argument(
+      '--reconcile-psa-networking',
+      action='store_true',
+      required=False,
+      help=(
+          "Reconciles the instance's PSA networking configuration. If the "
+          "instance is already on a PSA network, the DNS zone and records "
+          "associated with the PSA write endpoint are either added if missing "
+          "or updated if incorrect."
+      ),
+  )
+
+
 def AddSqlServerAudit(parser, hidden=False):
   """Adds SQL Server audit related flags to the parser."""
   parser.add_argument(

@@ -44,8 +44,8 @@ def AddVlanArg(parser):
       '--vlan',
       type=int,
       help="""
-        VLAN tag of a dynamic network interface, must be in range from 2 to
-        4094 inclusively.
+        VLAN tag of a dynamic network interface, must be  an integer in the
+        range from 2 to 255 inclusively.
       """,
   )
 

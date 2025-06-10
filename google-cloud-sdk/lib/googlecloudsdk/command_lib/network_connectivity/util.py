@@ -22,7 +22,8 @@ import argparse
 from typing import Any
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta.networkconnectivity_v1beta_messages import GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute
+import googlecloudsdk.generated_clients.apis.networkconnectivity.v1.networkconnectivity_v1_messages as v1
+import googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta.networkconnectivity_v1beta_messages as v1beta
 
 
 # Constants
@@ -88,6 +89,18 @@ def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path."""
 
   request.parent += "/locations/global"
+  return request
+
+
+def SetExportPscBeta(unused_ref, args, request):
+  """Set legacy export_psc field based on new PSC flags."""
+  if not args.IsSpecified("export_psc"):
+    # If either of the new flags are specified, set export_psc to true too.
+    if (
+        args.export_psc_published_services_and_regional_google_apis
+        or args.export_psc_global_google_apis
+    ):
+      request.googleCloudNetworkconnectivityV1betaHub.exportPsc = True
   return request
 
 
@@ -226,12 +239,13 @@ def SetGatewayAdvertisedRouteRecipient(unused_ref, args, request):
   Args:
     args: The command arguments.
     request: The request to set the `recipient` field on.
+
   Returns:
     The request with the `recipient` field set.
   """
   if args.advertise_to_hub:
     request.googleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute.recipient = (
-        GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute.RecipientValueValuesEnum.ADVERTISE_TO_HUB
+        v1beta.GoogleCloudNetworkconnectivityV1betaGatewayAdvertisedRoute.RecipientValueValuesEnum.ADVERTISE_TO_HUB
     )
   return request
 
@@ -267,6 +281,7 @@ def CheckForRouteTableAndHubWildcardMismatch(unused_ref, unused_args, request):
 
   Args:
    request: The request object.
+
   Returns:
     The unmodified request object.
   Raises:
@@ -284,3 +299,28 @@ def CheckForRouteTableAndHubWildcardMismatch(unused_ref, unused_args, request):
         "A route table must be specified if a hub is specified"
     )
   return request
+
+
+def ProhibitHybridInspection(unused_ref, unused_args, request):
+  """Reject requests with HYBRID_INSPECTION preset topology.
+
+  Args:
+    request: A CreateHubRequest object.
+
+  Returns:
+    The unmodified request object.
+  Raises:
+    InvalidInputError: If the CreateHubRequest has the HYBRID_INSPECTION preset
+    topology.
+  """
+  if not hasattr(request.hub, "presetTopology"):
+    return request
+  if (request.hub.presetTopology !=
+      v1.Hub.PresetTopologyValueValuesEnum.HYBRID_INSPECTION):
+    return request
+
+  raise InvalidInputError(
+      "HYBRID_INSPECTION unsupported in the GA component; "
+      "use the beta component instead. "
+      "See https://cloud.google.com/sdk/gcloud#release_levels"
+  )

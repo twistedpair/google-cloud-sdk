@@ -302,7 +302,6 @@ def DeployConnectAgent(kube_client, args,
   # Delete the ns if necessary
   kube_util.DeleteNamespace(kube_client, namespace)
 
-  # TODO(b/138816749): add check for cluster-admin permissions
   _PurgeAlphaInstaller(kube_client, namespace, project_id)
   # # Create or update the agent install deployment and related resources.
   _, err = kube_client.Apply(full_manifest)

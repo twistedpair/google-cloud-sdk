@@ -20,6 +20,7 @@ from typing import MutableMapping, MutableSequence
 import proto  # type: ignore
 
 from cloudsdk.google.protobuf import duration_pb2  # type: ignore
+from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from google.type import date_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import openapi
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import tool
@@ -39,12 +40,15 @@ __protobuf__ = proto.module(
         'PrebuiltVoiceConfig',
         'VoiceConfig',
         'SpeechConfig',
+        'ProactivityConfig',
         'GenerationConfig',
         'SafetySetting',
         'SafetyRating',
         'CitationMetadata',
         'Citation',
         'Candidate',
+        'UrlContextMetadata',
+        'UrlMetadata',
         'LogprobsResult',
         'Segment',
         'GroundingChunk',
@@ -202,8 +206,11 @@ class Part(proto.Message):
 
             This field is a member of `oneof`_ ``metadata``.
         thought (bool):
-            Output only. Indicates if the part is thought
+            Optional. Indicates if the part is thought
             from the model.
+        thought_signature (bytes):
+            Optional. An opaque signature for the thought
+            so it can be reused in subsequent requests.
     """
 
     text: str = proto.Field(
@@ -256,6 +263,10 @@ class Part(proto.Message):
     thought: bool = proto.Field(
         proto.BOOL,
         number=10,
+    )
+    thought_signature: bytes = proto.Field(
+        proto.BYTES,
+        number=11,
     )
 
 
@@ -411,6 +422,29 @@ class SpeechConfig(proto.Message):
     )
 
 
+class ProactivityConfig(proto.Message):
+    r"""Config for proactivity features.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        proactive_audio (bool):
+            Optional. If enabled, the model can reject
+            responding to the last prompt. For example, this
+            allows the model to ignore out of context speech
+            or to stay silent if the user did not make a
+            request, yet.
+
+            This field is a member of `oneof`_ ``_proactive_audio``.
+    """
+
+    proactive_audio: bool = proto.Field(
+        proto.BOOL,
+        number=2,
+        optional=True,
+    )
+
+
 class GenerationConfig(proto.Message):
     r"""Generation config.
 
@@ -484,6 +518,49 @@ class GenerationConfig(proto.Message):
             response.
 
             This field is a member of `oneof`_ ``_response_schema``.
+        response_json_schema (google.protobuf.struct_pb2.Value):
+            Optional. Output schema of the generated response. This is
+            an alternative to ``response_schema`` that accepts `JSON
+            Schema <https://json-schema.org/>`__.
+
+            If set, ``response_schema`` must be omitted, but
+            ``response_mime_type`` is required.
+
+            While the full JSON Schema may be sent, not all features are
+            supported. Specifically, only the following properties are
+            supported:
+
+            -  ``$id``
+            -  ``$defs``
+            -  ``$ref``
+            -  ``$anchor``
+            -  ``type``
+            -  ``format``
+            -  ``title``
+            -  ``description``
+            -  ``enum`` (for strings and numbers)
+            -  ``items``
+            -  ``prefixItems``
+            -  ``minItems``
+            -  ``maxItems``
+            -  ``minimum``
+            -  ``maximum``
+            -  ``anyOf``
+            -  ``oneOf`` (interpreted the same as ``anyOf``)
+            -  ``properties``
+            -  ``additionalProperties``
+            -  ``required``
+
+            The non-standard ``propertyOrdering`` property may also be
+            set.
+
+            Cyclic references are unrolled to a limited degree and, as
+            such, may only be used within non-required properties.
+            (Nullable properties are not sufficient.) If ``$ref`` is set
+            on a sub-schema, no other properties, except for than those
+            starting as a ``$``, may be set.
+
+            This field is a member of `oneof`_ ``_response_json_schema``.
         routing_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig.RoutingConfig):
             Optional. Routing configuration.
 
@@ -510,6 +587,11 @@ class GenerationConfig(proto.Message):
             for models that don't support thinking.
         model_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig.ModelConfig):
             Optional. Config for model selection.
+        enable_affective_dialog (bool):
+            Optional. If enabled, the model will detect
+            emotions and adapt its responses accordingly.
+
+            This field is a member of `oneof`_ ``_enable_affective_dialog``.
     """
     class Modality(proto.Enum):
         r"""The modalities of the response.
@@ -770,6 +852,12 @@ class GenerationConfig(proto.Message):
         optional=True,
         message=openapi.Schema,
     )
+    response_json_schema: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=28,
+        optional=True,
+        message=struct_pb2.Value,
+    )
     routing_config: RoutingConfig = proto.Field(
         proto.MESSAGE,
         number=17,
@@ -807,6 +895,11 @@ class GenerationConfig(proto.Message):
         proto.MESSAGE,
         number=27,
         message=ModelConfig,
+    )
+    enable_affective_dialog: bool = proto.Field(
+        proto.BOOL,
+        number=29,
+        optional=True,
     )
 
 
@@ -1072,6 +1165,9 @@ class Candidate(proto.Message):
         grounding_metadata (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GroundingMetadata):
             Output only. Metadata specifies sources used
             to ground generated content.
+        url_context_metadata (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.UrlContextMetadata):
+            Output only. Metadata related to url context
+            retrieval tool.
     """
     class FinishReason(proto.Enum):
         r"""The reason why the model stopped generating tokens.
@@ -1110,6 +1206,9 @@ class Candidate(proto.Message):
             MALFORMED_FUNCTION_CALL (9):
                 The function call generated by the model is
                 invalid.
+            UNEXPECTED_TOOL_CALL (15):
+                The tool call generated by the model is
+                invalid.
         """
         FINISH_REASON_UNSPECIFIED = 0
         STOP = 1
@@ -1121,6 +1220,7 @@ class Candidate(proto.Message):
         PROHIBITED_CONTENT = 7
         SPII = 8
         MALFORMED_FUNCTION_CALL = 9
+        UNEXPECTED_TOOL_CALL = 15
 
     index: int = proto.Field(
         proto.INT32,
@@ -1164,6 +1264,61 @@ class Candidate(proto.Message):
         proto.MESSAGE,
         number=7,
         message='GroundingMetadata',
+    )
+    url_context_metadata: 'UrlContextMetadata' = proto.Field(
+        proto.MESSAGE,
+        number=13,
+        message='UrlContextMetadata',
+    )
+
+
+class UrlContextMetadata(proto.Message):
+    r"""Metadata related to url context retrieval tool.
+
+    Attributes:
+        url_metadata (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.UrlMetadata]):
+            Output only. List of url context.
+    """
+
+    url_metadata: MutableSequence['UrlMetadata'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='UrlMetadata',
+    )
+
+
+class UrlMetadata(proto.Message):
+    r"""Context of the a single url retrieval.
+
+    Attributes:
+        retrieved_url (str):
+            Retrieved url by the tool.
+        url_retrieval_status (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.UrlMetadata.UrlRetrievalStatus):
+            Status of the url retrieval.
+    """
+    class UrlRetrievalStatus(proto.Enum):
+        r"""Status of the url retrieval.
+
+        Values:
+            URL_RETRIEVAL_STATUS_UNSPECIFIED (0):
+                Default value. This value is unused.
+            URL_RETRIEVAL_STATUS_SUCCESS (1):
+                Url retrieval is successful.
+            URL_RETRIEVAL_STATUS_ERROR (2):
+                Url retrieval is failed due to error.
+        """
+        URL_RETRIEVAL_STATUS_UNSPECIFIED = 0
+        URL_RETRIEVAL_STATUS_SUCCESS = 1
+        URL_RETRIEVAL_STATUS_ERROR = 2
+
+    retrieved_url: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    url_retrieval_status: UrlRetrievalStatus = proto.Field(
+        proto.ENUM,
+        number=2,
+        enum=UrlRetrievalStatus,
     )
 
 
@@ -1418,8 +1573,10 @@ class GroundingSupport(proto.Message):
             the claim.
         confidence_scores (MutableSequence[float]):
             Confidence score of the support references. Ranges from 0 to
-            1. 1 is the most confident. This list must have the same
-            size as the grounding_chunk_indices.
+            1. 1 is the most confident. For Gemini 2.0 and before, this
+            list must have the same size as the grounding_chunk_indices.
+            For Gemini 2.5 and after, this list will be empty and should
+            be ignored.
     """
 
     segment: 'Segment' = proto.Field(

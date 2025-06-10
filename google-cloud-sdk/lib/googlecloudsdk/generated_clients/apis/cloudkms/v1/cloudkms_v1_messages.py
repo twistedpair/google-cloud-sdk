@@ -1909,6 +1909,9 @@ class CryptoKeyVersion(_messages.Message):
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
+      PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
+        based digital signature algorithm, at security level 1. Randomized
+        pre-hash version supporting SHA256 digests.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1948,6 +1951,7 @@ class CryptoKeyVersion(_messages.Message):
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
     PQ_SIGN_ML_DSA_65 = 36
     PQ_SIGN_SLH_DSA_SHA2_128S = 37
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1979,7 +1983,7 @@ class CryptoKeyVersion(_messages.Message):
       ENABLED: This version may be used for cryptographic operations.
       DISABLED: This version may not be used, but the key material is still
         available, and the version can be placed back into the ENABLED state.
-      DESTROYED: This key material of this version is destroyed and no longer
+      DESTROYED: The key material of this version is destroyed and no longer
         stored. This version may only become ENABLED again if this version is
         reimport_eligible and the original key material is reimported with a
         call to KeyManagementService.ImportCryptoKeyVersion.
@@ -2128,6 +2132,9 @@ class CryptoKeyVersionTemplate(_messages.Message):
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
+      PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
+        based digital signature algorithm, at security level 1. Randomized
+        pre-hash version supporting SHA256 digests.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -2167,6 +2174,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
     PQ_SIGN_ML_DSA_65 = 36
     PQ_SIGN_SLH_DSA_SHA2_128S = 37
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2722,6 +2730,9 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
+      PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
+        based digital signature algorithm, at security level 1. Randomized
+        pre-hash version supporting SHA256 digests.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -2761,6 +2772,7 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
     PQ_SIGN_ML_DSA_65 = 36
     PQ_SIGN_SLH_DSA_SHA2_128S = 37
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -3781,6 +3793,9 @@ class PublicKey(_messages.Message):
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
         signature algorithm, at security level 1. Randomized version.
+      PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256: The post-quantum stateless hash-
+        based digital signature algorithm, at security level 1. Randomized
+        pre-hash version supporting SHA256 digests.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -3820,6 +3835,7 @@ class PublicKey(_messages.Message):
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
     PQ_SIGN_ML_DSA_65 = 36
     PQ_SIGN_SLH_DSA_SHA2_128S = 37
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.

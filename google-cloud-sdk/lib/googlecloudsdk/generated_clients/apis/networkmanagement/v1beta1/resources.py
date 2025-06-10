@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_VPCFLOWLOGSCONFIGS = (
+      'organizations.locations.vpcFlowLogsConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'vpcFlowLogsConfigs/{vpcFlowLogsConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

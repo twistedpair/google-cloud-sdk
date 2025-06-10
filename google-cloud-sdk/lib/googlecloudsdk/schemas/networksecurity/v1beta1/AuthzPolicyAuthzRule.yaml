@@ -26,10 +26,10 @@ properties:
     items:
       type: string
   from:
-    description: Describes properties of one or more sources of a request.
+    description: Describes properties of a source of a request.
     $ref: AuthzPolicyAuthzRuleFrom.yaml
   to:
-    description: Describes properties of one or more targets of a request.
+    description: Describes properties of a target of a request.
     $ref: AuthzPolicyAuthzRuleTo.yaml
   when:
     description: |-

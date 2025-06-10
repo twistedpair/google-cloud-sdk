@@ -105,8 +105,6 @@ class WorkerPoolRevisionTemplate(proto.Message):
             Optional. If encryption_key_revocation_action is SHUTDOWN,
             the duration before shutting down all instances. The minimum
             increment is 1 hour.
-        session_affinity (bool):
-            Optional. Enable session affinity.
         node_selector (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.NodeSelector):
             Optional. The node selector for the revision
             template.
@@ -163,10 +161,6 @@ class WorkerPoolRevisionTemplate(proto.Message):
         proto.MESSAGE,
         number=11,
         message=duration_pb2.Duration,
-    )
-    session_affinity: bool = proto.Field(
-        proto.BOOL,
-        number=12,
     )
     node_selector: vendor_settings.NodeSelector = proto.Field(
         proto.MESSAGE,

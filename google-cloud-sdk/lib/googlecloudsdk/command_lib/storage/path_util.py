@@ -56,9 +56,9 @@ def sanitize_file_resource_for_windows(resource):
     return resource
 
   sanitized_resource = copy.deepcopy(resource)
-  sanitized_resource.storage_url.object_name = (
+  sanitized_resource.storage_url.resource_name = (
       platforms.MakePathWindowsCompatible(
-          sanitized_resource.storage_url.object_name
+          sanitized_resource.storage_url.resource_name
       )
   )
   return sanitized_resource

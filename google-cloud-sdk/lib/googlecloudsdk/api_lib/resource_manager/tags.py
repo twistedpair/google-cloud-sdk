@@ -81,9 +81,3 @@ def OperationsService():
   """Returns the operations service class."""
   client = TagClient()
   return client.operations
-
-
-def UpdateTagBindingCollectionService():
-  """Returns the update tag binding collection service class."""
-  client = TagClient()
-  return client.tagBindingCollection

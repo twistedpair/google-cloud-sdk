@@ -2961,12 +2961,16 @@ class DeveloperConnectEventConfig(_messages.Message):
       GITHUB_ENTERPRISE: The SCM repo is GITHUB_ENTERPRISE.
       GITLAB: The SCM repo is GITLAB.
       GITLAB_ENTERPRISE: The SCM repo is GITLAB_ENTERPRISE.
+      BITBUCKET_DATA_CENTER: The SCM repo is BITBUCKET_DATA_CENTER.
+      BITBUCKET_CLOUD: The SCM repo is BITBUCKET_CLOUD.
     """
     GIT_REPOSITORY_LINK_TYPE_UNSPECIFIED = 0
     GITHUB = 1
     GITHUB_ENTERPRISE = 2
     GITLAB = 3
     GITLAB_ENTERPRISE = 4
+    BITBUCKET_DATA_CENTER = 5
+    BITBUCKET_CLOUD = 6
 
   gitRepositoryLink = _messages.StringField(1)
   gitRepositoryLinkType = _messages.EnumField('GitRepositoryLinkTypeValueValuesEnum', 2)
@@ -4004,6 +4008,11 @@ class MavenArtifact(_messages.Message):
   Fields:
     artifactId: Maven `artifactId` value used when uploading the artifact to
       Artifact Registry.
+    deployFolder: Optional. Path to a folder containing the files to upload to
+      Artifact Registry. This can be either an absolute path, e.g.
+      `/workspace/my-app/target/`, or a relative path from /workspace, e.g.
+      `my-app/target/`. This field is mutually exclusive with the `path`
+      field.
     groupId: Maven `groupId` value used when uploading the artifact to
       Artifact Registry.
     path: Optional. Path to an artifact in the build's workspace to be
@@ -4019,10 +4028,11 @@ class MavenArtifact(_messages.Message):
   """
 
   artifactId = _messages.StringField(1)
-  groupId = _messages.StringField(2)
-  path = _messages.StringField(3)
-  repository = _messages.StringField(4)
-  version = _messages.StringField(5)
+  deployFolder = _messages.StringField(2)
+  groupId = _messages.StringField(3)
+  path = _messages.StringField(4)
+  repository = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class NetworkConfig(_messages.Message):
@@ -5345,7 +5355,7 @@ class WorkerConfig(_messages.Message):
   Fields:
     diskSizeGb: Size of the disk attached to the worker, in GB. See [Worker
       pool config file](https://cloud.google.com/build/docs/private-
-      pools/worker-pool-config-file-schema). Specify a value of up to 2000. If
+      pools/worker-pool-config-file-schema). Specify a value of up to 4000. If
       `0` is specified, Cloud Build will use a standard disk size.
     machineType: Optional. Machine type of a worker, such as `e2-medium`. See
       [Worker pool config file](https://cloud.google.com/build/docs/private-

@@ -15,6 +15,7 @@
 """Flags and helpers for the conversion workspace related commands."""
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.database_migration.conversion_workspaces import enums
 
 
 def AddNoAsyncFlag(parser):
@@ -38,21 +39,41 @@ def AddDisplayNameFlag(parser):
   )
 
 
-def AddDatabaseEngineFlag(parser):
+def AddDatabaseEngineFlags(parser):
   """Adds the --source-database-engine and --destination-database-engine flags to the given parser."""
-  # TODO(b/384659164): Add SQLSERVER choice.
   parser.add_argument(
       '--source-database-engine',
       help='Source database engine type.',
-      choices=['ORACLE'],
+      type=enums.SourceDatabaseEngine,
+      choices=list(enums.SourceDatabaseEngine),
       required=True,
   )
 
   parser.add_argument(
       '--destination-database-engine',
       help='Destination database engine type.',
-      choices=['POSTGRESQL'],
+      type=enums.DestinationDatabaseEngine,
+      choices=list(enums.DestinationDatabaseEngine),
       required=True,
+  )
+
+
+def AddDatabaseProviderFlags(parser):
+  """Adds the --source-database-provider and --destination-database-provider flags to the given parser."""
+  parser.add_argument(
+      '--source-database-provider',
+      help='Source database provider.',
+      type=enums.SourceDatabaseProvider,
+      choices=list(enums.SourceDatabaseProvider),
+      default=enums.SourceDatabaseProvider.UNSPECIFIED.value,
+  )
+
+  parser.add_argument(
+      '--destination-database-provider',
+      help='Destination database provider.',
+      type=enums.DestinationDatabaseProvider,
+      choices=list(enums.DestinationDatabaseProvider),
+      default=enums.DestinationDatabaseProvider.CLOUDSQL.value,
   )
 
 

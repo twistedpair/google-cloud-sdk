@@ -54,7 +54,7 @@ class PatchObjectTask(task.Task):
 
     api_factory.get_api(provider).patch_object_metadata(
         self._object_resource.storage_url.bucket_name,
-        self._object_resource.storage_url.object_name,
+        self._object_resource.storage_url.resource_name,
         self._object_resource,
         request_config=request_config,
         posix_to_set=self._posix_to_set,

@@ -134,7 +134,7 @@ class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
 
   def _get_temporary_destination_resource(self):
     temporary_resource = copy.deepcopy(self._destination_resource)
-    temporary_resource.storage_url.object_name += (
+    temporary_resource.storage_url.resource_name += (
         storage_url.TEMPORARY_FILE_SUFFIX)
     return temporary_resource
 
@@ -182,7 +182,7 @@ class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
     log.status.Print('Temporary download file corrupt.'
                      ' Restarting download {}'.format(self._source_resource))
     temporary_download_url = self._temporary_destination_resource.storage_url
-    os.remove(temporary_download_url.object_name)
+    os.remove(temporary_download_url.resource_name)
     tracker_file_util.delete_download_tracker_files(temporary_download_url)
 
   def execute(self, task_status_queue=None):
@@ -205,7 +205,7 @@ class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
     # more information: https://github.com/GoogleCloudPlatform/gsutil/pull/1202.
     # Note that it's not enough to check the results of `exists()`, since that
     # method returns False if the path points to a broken symlink.
-    is_destination_symlink = os.path.islink(destination_url.object_name)
+    is_destination_symlink = os.path.islink(destination_url.resource_name)
     if is_destination_symlink or destination_url.exists():
       if self._user_request_args and self._user_request_args.no_clobber:
         log.status.Print(copy_util.get_no_clobber_message(destination_url))
@@ -215,12 +215,12 @@ class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
               self._destination_resource,
               copy_util.get_no_clobber_message(destination_url))
         return
-      os.remove(destination_url.object_name)
+      os.remove(destination_url.resource_name)
 
     temporary_download_file_exists = (
         self._temporary_destination_resource.storage_url.exists())
     if temporary_download_file_exists and os.path.getsize(
-        self._temporary_destination_resource.storage_url.object_name
+        self._temporary_destination_resource.storage_url.resource_name
     ) > self._source_resource.size:
       self._restart_download()
 
@@ -276,8 +276,8 @@ class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
     )
     download_util.finalize_download(
         self._source_resource,
-        temporary_file_url.object_name,
-        destination_url.object_name,
+        temporary_file_url.resource_name,
+        destination_url.resource_name,
         convert_symlinks=preserve_symlinks,
         do_not_decompress_flag=self._do_not_decompress,
         server_encoding=server_encoding,

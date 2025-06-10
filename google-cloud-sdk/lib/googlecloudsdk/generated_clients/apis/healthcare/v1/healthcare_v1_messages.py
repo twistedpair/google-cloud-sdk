@@ -14,6 +14,53 @@ from apitools.base.py import extra_types
 package = 'healthcare'
 
 
+class AccessDeterminationLogConfig(_messages.Message):
+  r"""Configures consent audit log config for FHIR create, read, update, and
+  delete (CRUD) operations. Cloud audit log for healthcare API must be
+  [enabled](https://cloud.google.com/logging/docs/audit/configure-data-
+  access#config-console-enable). The consent-related logs are included as part
+  of `protoPayload.metadata`.
+
+  Enums:
+    LogLevelValueValuesEnum: Optional. Controls the amount of detail to
+      include as part of the audit logs.
+
+  Fields:
+    logLevel: Optional. Controls the amount of detail to include as part of
+      the audit logs.
+  """
+
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls the amount of detail to include as part of the
+    audit logs.
+
+    Values:
+      LOG_LEVEL_UNSPECIFIED: No log level specified. This value is unused.
+      DISABLED: No additional consent-related logging is added to audit logs.
+      MINIMUM: The following information is included: * One of the following
+        [`consentMode`](https://cloud.google.com/healthcare-api/docs/fhir-
+        consent#audit_logs) fields:
+        (`off`|`emptyScope`|`enforced`|`btg`|`bypass`). * The accessor's
+        request headers * The `log_level` of the AccessDeterminationLogConfig
+        * The final consent evaluation (`PERMIT`, `DENY`, or `NO_CONSENT`) * A
+        human-readable summary of the evaluation
+      VERBOSE: Includes `MINIMUM` and, for each resource owner, returns: * The
+        resource owner's name * Most specific part of the `X-Consent-Scope`
+        resulting in consensual determination * Timestamp of the applied
+        enforcement leading to the decision * Enforcement version at the time
+        the applicable consents were applied * The Consent resource name * The
+        timestamp of the Consent resource used for enforcement * Policy type
+        (`PATIENT` or `ADMIN`) Note that this mode adds some overhead to CRUD
+        operations.
+    """
+    LOG_LEVEL_UNSPECIFIED = 0
+    DISABLED = 1
+    MINIMUM = 2
+    VERBOSE = 3
+
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 1)
+
+
 class ActivateConsentRequest(_messages.Message):
   r"""Activates the latest revision of the specified Consent by committing a
   new revision with `state` updated to `ACTIVE`. If the latest revision of the
@@ -34,6 +81,21 @@ class ActivateConsentRequest(_messages.Message):
   consentArtifact = _messages.StringField(1)
   expireTime = _messages.StringField(2)
   ttl = _messages.StringField(3)
+
+
+class AdminConsents(_messages.Message):
+  r"""List of admin Consent resources to be applied.
+
+  Fields:
+    names: Optional. The versioned names of the admin Consent resource(s), in
+      the format `projects/{project_id}/locations/{location}/datasets/{dataset
+      _id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}/_history/{ver
+      sion_id}`. For FHIR stores with `disable_resource_versioning=true`, the
+      format is `projects/{project_id}/locations/{location}/datasets/{dataset_
+      id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}`.
+  """
+
+  names = _messages.StringField(1, repeated=True)
 
 
 class AnalyzeEntitiesRequest(_messages.Message):
@@ -101,6 +163,132 @@ class AnalyzeEntitiesResponse(_messages.Message):
   entityMentions = _messages.MessageField('EntityMention', 2, repeated=True)
   fhirBundle = _messages.StringField(3)
   relationships = _messages.MessageField('EntityMentionRelationship', 4, repeated=True)
+
+
+class ApplyAdminConsentsErrorDetail(_messages.Message):
+  r"""Contains the error details of the unsupported admin Consent resources
+  for when the ApplyAdminConsents method fails to apply one or more Consent
+  resources.
+
+  Fields:
+    consentErrors: The list of Consent resources that are unsupported or
+      cannot be applied and the error associated with each of them.
+    existingOperationId: The currently in progress non-validate-only
+      ApplyAdminConsents operation ID if exist.
+  """
+
+  consentErrors = _messages.MessageField('ConsentErrors', 1, repeated=True)
+  existingOperationId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+
+
+class ApplyAdminConsentsRequest(_messages.Message):
+  r"""Request to apply the admin Consent resources for the specified FHIR
+  store.
+
+  Fields:
+    newConsentsList: A new list of admin Consent resources to be applied. Any
+      existing enforced Consents, which are specified in
+      `consent_config.enforced_admin_consents` of the FhirStore, that are not
+      part of this list will be disabled. An empty list is equivalent to
+      clearing or disabling all Consents enforced on the FHIR store. When a
+      FHIR store has `disable_resource_versioning=true` and this list contains
+      a Consent resource that exists in
+      `consent_config.enforced_admin_consents`, the method enforces any
+      updates to the existing resource since the last enforcement. If the
+      existing resource hasn't been updated since the last enforcement, the
+      resource is unaffected. After the method finishes, the resulting consent
+      enforcement model is determined by the contents of the Consent
+      resource(s) when the method was called: * When
+      `disable_resource_versioning=true`, the result is identical to the
+      current resource(s) in the FHIR store. * When
+      `disable_resource_versioning=false`, the result is based on the
+      historical version(s) of the Consent resource(s) at the point in time
+      when the method was called. At most 200 Consents can be specified.
+    validateOnly: Optional. If true, the method only validates Consent
+      resources to make sure they are supported. Otherwise, the method applies
+      the aggregate consent information to update the enforcement model and
+      reindex the FHIR resources. If all Consent resources can be applied
+      successfully, the ApplyAdminConsentsResponse is returned containing the
+      following fields: * `consent_apply_success` to indicate the number of
+      Consent resources applied. * `affected_resources` to indicate the number
+      of resources that might have had their consent access changed. If,
+      however, one or more Consent resources are unsupported or cannot be
+      applied, the method fails and ApplyAdminConsentsErrorDetail is is
+      returned with details about the unsupported Consent resources.
+  """
+
+  newConsentsList = _messages.MessageField('AdminConsents', 1)
+  validateOnly = _messages.BooleanField(2)
+
+
+class ApplyAdminConsentsResponse(_messages.Message):
+  r"""Response when all admin Consent resources in scope were processed and
+  all affected resources were reindexed successfully. This structure will be
+  included in the response when the operation finishes successfully.
+
+  Fields:
+    affectedResources: The number of resources (including the Consent
+      resources) that may have consent access change.
+    consentApplySuccess: If `validate_only=false` in
+      ApplyAdminConsentsRequest, this counter contains the number of Consent
+      resources that were successfully applied. Otherwise, it is the number of
+      Consent resources that are supported.
+    failedResources: The number of resources (including the Consent resources)
+      that ApplyAdminConsents failed to re-index.
+  """
+
+  affectedResources = _messages.IntegerField(1)
+  consentApplySuccess = _messages.IntegerField(2)
+  failedResources = _messages.IntegerField(3)
+
+
+class ApplyConsentsRequest(_messages.Message):
+  r"""Request to apply the Consent resources for the specified FHIR store.
+
+  Fields:
+    patientScope: Optional. Scope down to a list of patients.
+    timeRange: Optional. Scope down to patients whose most recent consent
+      changes are in the time range. Can only be used with a versioning store
+      (i.e. when disable_resource_versioning is set to false).
+    validateOnly: Optional. If true, the method only validates Consent
+      resources to make sure they are supported. When the operation completes,
+      ApplyConsentsResponse is returned where `consent_apply_success` and
+      `consent_apply_failure` indicate supported and unsupported (or invalid)
+      Consent resources, respectively. Otherwise, the method propagates the
+      aggregate consensual information to the patient's resources. Upon
+      success, `affected_resources` in the ApplyConsentsResponse indicates the
+      number of resources that may have consensual access changed.
+  """
+
+  patientScope = _messages.MessageField('PatientScope', 1)
+  timeRange = _messages.MessageField('TimeRange', 2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class ApplyConsentsResponse(_messages.Message):
+  r"""Response when all Consent resources in scope were processed and all
+  affected resources were reindexed successfully. This structure is included
+  in the response when the operation finishes successfully.
+
+  Fields:
+    affectedResources: The number of resources (including the Consent
+      resources) that may have consensual access change.
+    consentApplyFailure: If `validate_only = false` in ApplyConsentsRequest,
+      this counter is the number of Consent resources that were failed to
+      apply. Otherwise, it is the number of Consent resources that are not
+      supported or invalid.
+    consentApplySuccess: If `validate_only = false` in ApplyConsentsRequest,
+      this counter is the number of Consent resources that were successfully
+      applied. Otherwise, it is the number of Consent resources that are
+      supported.
+    failedResources: The number of resources (including the Consent resources)
+      that ApplyConsents failed to re-index.
+  """
+
+  affectedResources = _messages.IntegerField(1)
+  consentApplyFailure = _messages.IntegerField(2)
+  consentApplySuccess = _messages.IntegerField(3)
+  failedResources = _messages.IntegerField(4)
 
 
 class ArchiveUserDataMappingRequest(_messages.Message):
@@ -331,6 +519,103 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BlobStorageInfo(_messages.Message):
+  r"""BlobStorageInfo contains details about the data stored in Blob Storage
+  for the referenced resource. Note: Storage class is only valid for DICOM and
+  hence will only be populated for DICOM resources.
+
+  Enums:
+    StorageClassValueValuesEnum: The storage class in which the Blob data is
+      stored.
+
+  Fields:
+    sizeBytes: Size in bytes of data stored in Blob Storage.
+    storageClass: The storage class in which the Blob data is stored.
+    storageClassUpdateTime: The time at which the storage class was updated.
+      This is used to compute early deletion fees of the resource.
+  """
+
+  class StorageClassValueValuesEnum(_messages.Enum):
+    r"""The storage class in which the Blob data is stored.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: This stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: This stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: This stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: This stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+    ARCHIVE = 4
+
+  sizeBytes = _messages.IntegerField(1)
+  storageClass = _messages.EnumField('StorageClassValueValuesEnum', 2)
+  storageClassUpdateTime = _messages.StringField(3)
+
+
+class BlobStorageSettings(_messages.Message):
+  r"""Settings for data stored in Blob storage.
+
+  Enums:
+    BlobStorageClassValueValuesEnum: The Storage class in which the Blob data
+      is stored.
+
+  Fields:
+    blobStorageClass: The Storage class in which the Blob data is stored.
+  """
+
+  class BlobStorageClassValueValuesEnum(_messages.Enum):
+    r"""The Storage class in which the Blob data is stored.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: This stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: This stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: This stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: This stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+    ARCHIVE = 4
+
+  blobStorageClass = _messages.EnumField('BlobStorageClassValueValuesEnum', 1)
+
+
+class BulkExportGcsDestination(_messages.Message):
+  r"""The configuration for exporting to Cloud Storage using the bulk export
+  API.
+
+  Fields:
+    uriPrefix: Optional. URI for a Cloud Storage directory where the server
+      writes result files, in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`. If there is no trailing slash, the
+      service appends one when composing the object path. The user is
+      responsible for creating the Cloud Storage bucket referenced in
+      `uri_prefix`.
+  """
+
+  uriPrefix = _messages.StringField(1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -339,8 +624,8 @@ class CharacterMaskConfig(_messages.Message):
   r"""Mask a string by replacing its characters with a fixed character.
 
   Fields:
-    maskingCharacter: Character to mask the sensitive values. If not supplied,
-      defaults to "*".
+    maskingCharacter: Optional. Character to mask the sensitive values. If not
+      supplied, defaults to "*".
   """
 
   maskingCharacter = _messages.StringField(1)
@@ -588,6 +873,26 @@ class Consent(_messages.Message):
   userId = _messages.StringField(10)
 
 
+class ConsentAccessorScope(_messages.Message):
+  r"""The accessor scope that describes who can access, for what purpose, in
+  which environment.
+
+  Fields:
+    actor: An individual, group, or access role that identifies the accessor
+      or a characteristic of the accessor. This can be a resource ID (such as
+      `{resourceType}/{id}`) or an external URI. This value must be present.
+    environment: An abstract identifier that describes the environment or
+      conditions under which the accessor is acting. If it's not specified, it
+      applies to all environments.
+    purpose: The intent of data use. If it's not specified, it applies to all
+      purposes.
+  """
+
+  actor = _messages.StringField(1)
+  environment = _messages.StringField(2)
+  purpose = _messages.StringField(3)
+
+
 class ConsentArtifact(_messages.Message):
   r"""Documentation of a user's consent.
 
@@ -647,6 +952,80 @@ class ConsentArtifact(_messages.Message):
   witnessSignature = _messages.MessageField('Signature', 8)
 
 
+class ConsentConfig(_messages.Message):
+  r"""Configures whether to enforce consent for the FHIR store and which
+  consent enforcement version is being used.
+
+  Enums:
+    VersionValueValuesEnum: Required. Specifies which consent enforcement
+      version is being used for this FHIR store. This field can only be set
+      once by either CreateFhirStore or UpdateFhirStore. After that, you must
+      call ApplyConsents to change the version.
+
+  Fields:
+    accessDeterminationLogConfig: Optional. Specifies how the server logs the
+      consent-aware requests. If not specified, the
+      `AccessDeterminationLogConfig.LogLevel.MINIMUM` option is used.
+    accessEnforced: Optional. The default value is false. If set to true, when
+      accessing FHIR resources, the consent headers will be verified against
+      consents given by patients. See the ConsentEnforcementVersion for the
+      supported consent headers.
+    consentHeaderHandling: Optional. Different options to configure the
+      behaviour of the server when handling the `X-Consent-Scope` header.
+    enforcedAdminConsents: Output only. The versioned names of the enforced
+      admin Consent resource(s), in the format `projects/{project_id}/location
+      s/{location}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Conse
+      nt/{resource_id}/_history/{version_id}`. For FHIR stores with
+      `disable_resource_versioning=true`, the format is `projects/{project_id}
+      /locations/{location}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/f
+      hir/Consent/{resource_id}`. This field can only be updated using
+      ApplyAdminConsents.
+    version: Required. Specifies which consent enforcement version is being
+      used for this FHIR store. This field can only be set once by either
+      CreateFhirStore or UpdateFhirStore. After that, you must call
+      ApplyConsents to change the version.
+  """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies which consent enforcement version is being used
+    for this FHIR store. This field can only be set once by either
+    CreateFhirStore or UpdateFhirStore. After that, you must call
+    ApplyConsents to change the version.
+
+    Values:
+      CONSENT_ENFORCEMENT_VERSION_UNSPECIFIED: Users must specify an
+        enforcement version or an error is returned.
+      V1: Enforcement version 1. See the [FHIR Consent resources in the Cloud
+        Healthcare API](https://cloud.google.com/healthcare-api/docs/fhir-
+        consent) guide for more details.
+    """
+    CONSENT_ENFORCEMENT_VERSION_UNSPECIFIED = 0
+    V1 = 1
+
+  accessDeterminationLogConfig = _messages.MessageField('AccessDeterminationLogConfig', 1)
+  accessEnforced = _messages.BooleanField(2)
+  consentHeaderHandling = _messages.MessageField('ConsentHeaderHandling', 3)
+  enforcedAdminConsents = _messages.StringField(4, repeated=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 5)
+
+
+class ConsentErrors(_messages.Message):
+  r"""The Consent resource name and error.
+
+  Fields:
+    error: The error code and message.
+    name: The versioned name of the admin Consent resource, in the format `pro
+      jects/{project_id}/locations/{location}/datasets/{dataset_id}/fhirStores
+      /{fhir_store_id}/fhir/Consent/{resource_id}/_history/{version_id}`. For
+      FHIR stores with `disable_resource_versioning=true`, the format is `proj
+      ects/{project_id}/locations/{location}/datasets/{dataset_id}/fhirStores/
+      {fhir_store_id}/fhir/Consent/{resource_id}`.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  name = _messages.StringField(2)
+
+
 class ConsentEvaluation(_messages.Message):
   r"""The detailed evaluation of a particular Consent.
 
@@ -683,6 +1062,47 @@ class ConsentEvaluation(_messages.Message):
     HAS_SATISFIED_POLICY = 4
 
   evaluationResult = _messages.EnumField('EvaluationResultValueValuesEnum', 1)
+
+
+class ConsentHeaderHandling(_messages.Message):
+  r"""How the server handles the consent header.
+
+  Enums:
+    ProfileValueValuesEnum: Optional. Specifies the default server behavior
+      when the header is empty. If not specified, the
+      `ScopeProfile.PERMIT_EMPTY_SCOPE` option is used.
+
+  Fields:
+    profile: Optional. Specifies the default server behavior when the header
+      is empty. If not specified, the `ScopeProfile.PERMIT_EMPTY_SCOPE` option
+      is used.
+  """
+
+  class ProfileValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the default server behavior when the header is
+    empty. If not specified, the `ScopeProfile.PERMIT_EMPTY_SCOPE` option is
+    used.
+
+    Values:
+      SCOPE_PROFILE_UNSPECIFIED: If not specified, the default value
+        `PERMIT_EMPTY_SCOPE` is used.
+      PERMIT_EMPTY_SCOPE: When no consent scopes are provided (for example, if
+        there's an empty or missing header), then consent check is disabled,
+        similar to when `access_enforced` is `false`. You can use audit logs
+        to differentiate these two cases by looking at the value of
+        `protopayload.metadata.consentMode`. If consents scopes are present,
+        they must be valid and within the allowed limits, otherwise the
+        request will be rejected with a `4xx` code.
+      REQUIRED_ON_READ: The consent header must be non-empty when performing
+        read and search operations, otherwise the request is rejected with a
+        `4xx` code. Additionally, invalid consent scopes or scopes exceeding
+        the allowed limits are rejected.
+    """
+    SCOPE_PROFILE_UNSPECIFIED = 0
+    PERMIT_EMPTY_SCOPE = 1
+    REQUIRED_ON_READ = 2
+
+  profile = _messages.EnumField('ProfileValueValuesEnum', 1)
 
 
 class ConsentList(_messages.Message):
@@ -810,6 +1230,8 @@ class Dataset(_messages.Message):
       Google encryption key.
     name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
+    satisfiesPzi: Output only. Whether the dataset satisfies zone isolation.
+    satisfiesPzs: Output only. Whether the dataset satisfies zone separation.
     timeZone: Optional. The default timezone used by this dataset. Must be a
       either a valid IANA time zone name such as "America/New_York" or empty,
       which defaults to UTC. This is used for parsing times in resources, such
@@ -818,7 +1240,9 @@ class Dataset(_messages.Message):
 
   encryptionSpec = _messages.MessageField('EncryptionSpec', 1)
   name = _messages.StringField(2)
-  timeZone = _messages.StringField(3)
+  satisfiesPzi = _messages.BooleanField(3)
+  satisfiesPzs = _messages.BooleanField(4)
+  timeZone = _messages.StringField(5)
 
 
 class DateShiftConfig(_messages.Message):
@@ -846,11 +1270,11 @@ class DeidentifiedStoreDestination(_messages.Message):
   r"""Contains configuration for streaming de-identified FHIR export.
 
   Fields:
-    config: The configuration to use when de-identifying resources that are
-      added to this store.
-    store: The full resource name of a Cloud Healthcare FHIR store, for
-      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
-      t_id}/fhirStores/{fhir_store_id}`.
+    config: Optional. The configuration to use when de-identifying resources
+      that are added to this store.
+    store: Optional. The full resource name of a Cloud Healthcare FHIR store,
+      for example, `projects/{project_id}/locations/{location_id}/datasets/{da
+      taset_id}/fhirStores/{fhir_store_id}`.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -863,18 +1287,18 @@ class DeidentifyConfig(_messages.Message):
   media type or subtype. Configs are applied in a nested manner at runtime.
 
   Fields:
-    dicom: Configures de-id of application/DICOM content.
-    fhir: Configures de-id of application/FHIR content.
-    image: Configures de-identification of image pixels wherever they are
-      found in the source_dataset.
-    text: Configures de-identification of text wherever it is found in the
-      source_dataset.
-    useRegionalDataProcessing: Ensures in-flight data remains in the region of
-      origin during de-identification. Using this option results in a
-      significant reduction of throughput, and is not compatible with
-      `LOCATION` or `ORGANIZATION_NAME` infoTypes. `LOCATION` must be excluded
-      within TextConfig, and must also be excluded within ImageConfig if image
-      redaction is required.
+    dicom: Optional. Configures de-id of application/DICOM content.
+    fhir: Optional. Configures de-id of application/FHIR content.
+    image: Optional. Configures de-identification of image pixels wherever
+      they are found in the source_dataset.
+    text: Optional. Configures de-identification of text wherever it is found
+      in the source_dataset.
+    useRegionalDataProcessing: Optional. Ensures in-flight data remains in the
+      region of origin during de-identification. The default value is false.
+      Using this option results in a significant reduction of throughput, and
+      is not compatible with `LOCATION` or `ORGANIZATION_NAME` infoTypes.
+      `LOCATION` must be excluded within TextConfig, and must also be excluded
+      within ImageConfig if image redaction is required.
   """
 
   dicom = _messages.MessageField('DicomConfig', 1)
@@ -989,7 +1413,7 @@ class DicomConfig(_messages.Message):
       keep/remove.
     keepList: List of tags to keep. Remove all other tags.
     removeList: List of tags to remove. Keep all other tags.
-    skipIdRedaction: If true, skip replacing StudyInstanceUID,
+    skipIdRedaction: Optional. If true, skip replacing StudyInstanceUID,
       SeriesInstanceUID, SOPInstanceUID, and MediaStorageSOPInstanceUID and
       leave them untouched. The Cloud Healthcare API regenerates these UIDs by
       default based on the DICOM Standard's reasoning: "Whilst these UIDs
@@ -1073,8 +1497,8 @@ class DicomStore(_messages.Message):
     name: Identifier. Resource name of the DICOM store, of the form `projects/
       {project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/{
       dicom_store_id}`.
-    notificationConfig: Notification destination for new DICOM instances.
-      Supplied by the client.
+    notificationConfig: Optional. Notification destination for new DICOM
+      instances. Supplied by the client.
     streamConfigs: Optional. A list of streaming configs used to configure the
       destination of streaming exports for every DICOM instance insertion in
       this DICOM store. After a new config is added to `stream_configs`, DICOM
@@ -1382,6 +1806,124 @@ class EvaluateUserConsentsResponse(_messages.Message):
   results = _messages.MessageField('Result', 2, repeated=True)
 
 
+class ExplainDataAccessConsentInfo(_messages.Message):
+  r"""The enforcing consent's metadata.
+
+  Enums:
+    TypeValueValuesEnum: The policy type of consent resource (e.g. PATIENT,
+      ADMIN).
+    VariantsValueListEntryValuesEnum:
+
+  Fields:
+    cascadeOrigins: The compartment base resources that matched a cascading
+      policy. Each resource has the following format: `projects/{project_id}/l
+      ocations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/
+      fhir/{resource_type}/{resource_id}`
+    consentResource: The resource name of this consent resource, in the
+      format: `projects/{project_id}/locations/{location}/datasets/{dataset_id
+      }/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}`.
+    enforcementTime: Last enforcement timestamp of this consent resource.
+    matchingAccessorScopes: A list of all the matching accessor scopes of this
+      consent policy that enforced
+      ExplainDataAccessConsentScope.accessor_scope.
+    patientConsentOwner: The patient owning the consent (only applicable for
+      patient consents), in the format: `projects/{project_id}/locations/{loca
+      tion_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Patient/{
+      patient_id}`
+    type: The policy type of consent resource (e.g. PATIENT, ADMIN).
+    variants: The consent's variant combinations. A single consent may have
+      multiple variants.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The policy type of consent resource (e.g. PATIENT, ADMIN).
+
+    Values:
+      CONSENT_POLICY_TYPE_UNSPECIFIED: Unspecified policy type.
+      CONSENT_POLICY_TYPE_PATIENT: Consent represent a patient consent.
+      CONSENT_POLICY_TYPE_ADMIN: Consent represent an admin consent.
+    """
+    CONSENT_POLICY_TYPE_UNSPECIFIED = 0
+    CONSENT_POLICY_TYPE_PATIENT = 1
+    CONSENT_POLICY_TYPE_ADMIN = 2
+
+  class VariantsValueListEntryValuesEnum(_messages.Enum):
+    r"""VariantsValueListEntryValuesEnum enum type.
+
+    Values:
+      CONSENT_VARIANT_UNSPECIFIED: Consent variant unspecified.
+      CONSENT_VARIANT_STANDARD: Consent is a standard patient or admin
+        consent.
+      CONSENT_VARIANT_CASCADE: Consent is a cascading consent.
+    """
+    CONSENT_VARIANT_UNSPECIFIED = 0
+    CONSENT_VARIANT_STANDARD = 1
+    CONSENT_VARIANT_CASCADE = 2
+
+  cascadeOrigins = _messages.StringField(1, repeated=True)
+  consentResource = _messages.StringField(2)
+  enforcementTime = _messages.StringField(3)
+  matchingAccessorScopes = _messages.MessageField('ConsentAccessorScope', 4, repeated=True)
+  patientConsentOwner = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  variants = _messages.EnumField('VariantsValueListEntryValuesEnum', 7, repeated=True)
+
+
+class ExplainDataAccessConsentScope(_messages.Message):
+  r"""A single consent scope that provides info on who has access to the
+  requested resource scope for a particular purpose and environment, enforced
+  by which consent.
+
+  Enums:
+    DecisionValueValuesEnum: Whether the current consent scope is permitted or
+      denied access on the requested resource.
+
+  Fields:
+    accessorScope: The accessor scope that describes who can access, for what
+      purpose, and in which environment.
+    decision: Whether the current consent scope is permitted or denied access
+      on the requested resource.
+    enforcingConsents: Metadata of the consent resources that enforce the
+      consent scope's access.
+    exceptions: Other consent scopes that created exceptions within this
+      scope.
+  """
+
+  class DecisionValueValuesEnum(_messages.Enum):
+    r"""Whether the current consent scope is permitted or denied access on the
+    requested resource.
+
+    Values:
+      CONSENT_DECISION_TYPE_UNSPECIFIED: Unspecified consent decision type.
+      CONSENT_DECISION_TYPE_PERMIT: Consent permitted access.
+      CONSENT_DECISION_TYPE_DENY: Consent denied access.
+    """
+    CONSENT_DECISION_TYPE_UNSPECIFIED = 0
+    CONSENT_DECISION_TYPE_PERMIT = 1
+    CONSENT_DECISION_TYPE_DENY = 2
+
+  accessorScope = _messages.MessageField('ConsentAccessorScope', 1)
+  decision = _messages.EnumField('DecisionValueValuesEnum', 2)
+  enforcingConsents = _messages.MessageField('ExplainDataAccessConsentInfo', 3, repeated=True)
+  exceptions = _messages.MessageField('ExplainDataAccessConsentScope', 4, repeated=True)
+
+
+class ExplainDataAccessResponse(_messages.Message):
+  r"""List of consent scopes that are applicable to the explained access on a
+  given resource.
+
+  Fields:
+    consentScopes: List of applicable consent scopes. Sorted in order of actor
+      such that scopes belonging to the same actor will be adjacent to each
+      other in the list.
+    warning: Warnings associated with this response. It inform user with
+      exceeded scope limit errors.
+  """
+
+  consentScopes = _messages.MessageField('ExplainDataAccessConsentScope', 1, repeated=True)
+  warning = _messages.StringField(2)
+
+
 class ExportDicomDataRequest(_messages.Message):
   r"""Exports data from the specified DICOM store. If a given resource, such
   as a DICOM object with the same SOPInstance UID, already exists in the
@@ -1580,15 +2122,15 @@ class FhirConfig(_messages.Message):
   r"""Specifies how to handle de-identification of a FHIR store.
 
   Fields:
-    defaultKeepExtensions: The behaviour for handling FHIR extensions that
-      aren't otherwise specified for de-identification. If true, all
-      extensions are preserved during de-identification by default. If false
-      or unspecified, all extensions are removed during de-identification by
-      default.
-    fieldMetadataList: Specifies FHIR paths to match and how to transform
-      them. Any field that is not matched by a FieldMetadata is passed through
-      to the output dataset unmodified. All extensions will be processed
-      according to `default_keep_extensions`.
+    defaultKeepExtensions: Optional. The behaviour for handling FHIR
+      extensions that aren't otherwise specified for de-identification. If
+      true, all extensions are preserved during de-identification by default.
+      If false or unspecified, all extensions are removed during de-
+      identification by default.
+    fieldMetadataList: Optional. Specifies FHIR paths to match and how to
+      transform them. Any field that is not matched by a FieldMetadata is
+      passed through to the output dataset unmodified. All extensions will be
+      processed according to `default_keep_extensions`.
   """
 
   defaultKeepExtensions = _messages.BooleanField(1)
@@ -1610,9 +2152,10 @@ class FhirNotificationConfig(_messages.Message):
   r"""Contains the configuration for FHIR notifications.
 
   Fields:
-    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
-      that notifications of changes are published on. Supplied by the client.
-      The notification is a `PubsubMessage` with the following fields: *
+    pubsubTopic: Optional. The
+      [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic that
+      notifications of changes are published on. Supplied by the client. The
+      notification is a `PubsubMessage` with the following fields: *
       `PubsubMessage.Data` contains the resource name. *
       `PubsubMessage.MessageId` is the ID of this notification. It is
       guaranteed to be unique within the topic. * `PubsubMessage.PublishTime`
@@ -1628,16 +2171,16 @@ class FhirNotificationConfig(_messages.Message):
       If a notification can't be published to Pub/Sub, errors are logged to
       Cloud Logging. For more information, see [Viewing error logs in Cloud
       Logging](https://cloud.google.com/healthcare-api/docs/how-tos/logging).
-    sendFullResource: Whether to send full FHIR resource to this Pub/Sub
-      topic.
-    sendPreviousResourceOnDelete: Whether to send full FHIR resource to this
-      Pub/Sub topic for deleting FHIR resource. Note that setting this to true
-      does not guarantee that all previous resources will be sent in the
-      format of full FHIR resource. When a resource change is too large or
-      during heavy traffic, only the resource name will be sent. Clients
-      should always check the "payloadType" label from a Pub/Sub message to
-      determine whether it needs to fetch the full previous resource as a
-      separate operation.
+    sendFullResource: Optional. Whether to send full FHIR resource to this
+      Pub/Sub topic. The default value is false.
+    sendPreviousResourceOnDelete: Optional. Whether to send full FHIR resource
+      to this Pub/Sub topic for deleting FHIR resource. The default value is
+      false. Note that setting this to true does not guarantee that all
+      previous resources will be sent in the format of full FHIR resource.
+      When a resource change is too large or during heavy traffic, only the
+      resource name will be sent. Clients should always check the
+      "payloadType" label from a Pub/Sub message to determine whether it needs
+      to fetch the full previous resource as a separate operation.
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -1649,15 +2192,16 @@ class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
   Enums:
-    ComplexDataTypeReferenceParsingValueValuesEnum: Enable parsing of
-      references within complex FHIR data types such as Extensions. If this
+    ComplexDataTypeReferenceParsingValueValuesEnum: Optional. Enable parsing
+      of references within complex FHIR data types such as Extensions. If this
       value is set to ENABLED, then features like referential integrity and
       Bundle reference rewriting apply to all references. If this flag has not
       been specified the behavior of the FHIR store will not change,
       references in complex data types will not be parsed. New stores will
       have this value set to ENABLED after a notification period. Warning:
       turning on this flag causes processing existing resources to fail if
-      they contain references to non-existent resources.
+      they contain references to non-existent resources. Cannot be disabled in
+      R5.
     VersionValueValuesEnum: Required. Immutable. The FHIR specification
       version that this FHIR store supports natively. This field is immutable
       after store creation. Requests are rejected if they contain FHIR
@@ -1675,22 +2219,31 @@ class FhirStore(_messages.Message):
       with a given store.
 
   Fields:
-    complexDataTypeReferenceParsing: Enable parsing of references within
-      complex FHIR data types such as Extensions. If this value is set to
-      ENABLED, then features like referential integrity and Bundle reference
-      rewriting apply to all references. If this flag has not been specified
-      the behavior of the FHIR store will not change, references in complex
-      data types will not be parsed. New stores will have this value set to
-      ENABLED after a notification period. Warning: turning on this flag
-      causes processing existing resources to fail if they contain references
-      to non-existent resources.
-    defaultSearchHandlingStrict: If true, overrides the default search
-      behavior for this FHIR store to `handling=strict` which returns an error
-      for unrecognized search parameters. If false, uses the FHIR
+    bulkExportGcsDestination: Optional. FHIR bulk export exports resources to
+      the specified Cloud Storage destination. A Cloud Storage destination is
+      a URI for a Cloud Storage directory where result files will be written.
+      Only used in the spec-defined bulk $export methods. The Cloud Healthcare
+      Service Agent requires the `roles/storage.objectAdmin` Cloud IAM role on
+      the destination.
+    complexDataTypeReferenceParsing: Optional. Enable parsing of references
+      within complex FHIR data types such as Extensions. If this value is set
+      to ENABLED, then features like referential integrity and Bundle
+      reference rewriting apply to all references. If this flag has not been
+      specified the behavior of the FHIR store will not change, references in
+      complex data types will not be parsed. New stores will have this value
+      set to ENABLED after a notification period. Warning: turning on this
+      flag causes processing existing resources to fail if they contain
+      references to non-existent resources. Cannot be disabled in R5.
+    consentConfig: Optional. Specifies whether this store has consent
+      enforcement. Not available for DSTU2 FHIR version due to absence of
+      Consent resources. Not supported for R5 FHIR version.
+    defaultSearchHandlingStrict: Optional. If true, overrides the default
+      search behavior for this FHIR store to `handling=strict` which returns
+      an error for unrecognized search parameters. If false, uses the FHIR
       specification default `handling=lenient` which ignores unrecognized
       search parameters. The handling can always be changed from the default
       on an individual API call by setting the HTTP header `Prefer:
-      handling=strict` or `Prefer: handling=lenient`.
+      handling=strict` or `Prefer: handling=lenient`. Defaults to false.
     disableReferentialIntegrity: Immutable. Whether to disable referential
       integrity in this FHIR store. This field is immutable after FHIR store
       creation. The default value is false, meaning that the API enforces
@@ -1701,14 +2254,13 @@ class FhirStore(_messages.Message):
       if broken references exist.
     disableResourceVersioning: Immutable. Whether to disable resource
       versioning for this FHIR store. This field can not be changed after the
-      creation of FHIR store. If set to false, which is the default behavior,
-      all write operations cause historical versions to be recorded
-      automatically. The historical versions can be fetched through the
-      history APIs, but cannot be updated. If set to true, no historical
-      versions are kept. The server sends errors for attempts to read the
-      historical versions.
-    enableUpdateCreate: Whether this FHIR store has the [updateCreate
-      capability](https://www.hl7.org/fhir/capabilitystatement-
+      creation of FHIR store. If set to false, all write operations cause
+      historical versions to be recorded automatically. The historical
+      versions can be fetched through the history APIs, but cannot be updated.
+      If set to true, no historical versions are kept. The server sends errors
+      for attempts to read the historical versions. Defaults to false.
+    enableUpdateCreate: Optional. Whether this FHIR store has the
+      [updateCreate capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
       determines if the client can use an Update operation to create a new
       resource with a client-specified ID. If false, all IDs are server-
@@ -1717,7 +2269,8 @@ class FhirStore(_messages.Message):
       or encode any sensitive data such as patient identifiers in client-
       specified resource IDs. Those IDs are part of the FHIR resource path
       recorded in Cloud audit logs and Pub/Sub notifications. Those IDs can
-      also be contained in reference fields within other resources.
+      also be contained in reference fields within other resources. Defaults
+      to false.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
@@ -1733,24 +2286,25 @@ class FhirStore(_messages.Message):
       non-empty, publish all resource modifications of this FHIR store to this
       destination. The Pub/Sub message attributes contain a map with a string
       describing the action that has triggered the notification. For example,
-      "action":"CreateResource".
-    notificationConfigs: Specifies where and whether to send notifications
-      upon changes to a FHIR store.
-    streamConfigs: A list of streaming configs that configure the destinations
-      of streaming export for every resource mutation in this FHIR store. Each
-      store is allowed to have up to 10 streaming configs. After a new config
-      is added, the next resource mutation is streamed to the new location in
-      addition to the existing ones. When a location is removed from the list,
-      the server stops streaming to that location. Before adding a new config,
-      you must add the required
+      "action":"CreateResource". Not supported in R5. Use
+      `notification_configs` instead.
+    notificationConfigs: Optional. Specifies where and whether to send
+      notifications upon changes to a FHIR store.
+    streamConfigs: Optional. A list of streaming configs that configure the
+      destinations of streaming export for every resource mutation in this
+      FHIR store. Each store is allowed to have up to 10 streaming configs.
+      After a new config is added, the next resource mutation is streamed to
+      the new location in addition to the existing ones. When a location is
+      removed from the list, the server stops streaming to that location.
+      Before adding a new config, you must add the required
       [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
       control#bigquery.dataEditor) role to your project's **Cloud Healthcare
       Service Agent** [service
       account](https://cloud.google.com/iam/docs/service-accounts). Some lag
       (typically on the order of dozens of seconds) is expected before the
       results show up in the streaming destination.
-    validationConfig: Configuration for how to validate incoming FHIR
-      resources against configured profiles.
+    validationConfig: Optional. Configuration for how to validate incoming
+      FHIR resources against configured profiles.
     version: Required. Immutable. The FHIR specification version that this
       FHIR store supports natively. This field is immutable after store
       creation. Requests are rejected if they contain FHIR resources of a
@@ -1758,15 +2312,15 @@ class FhirStore(_messages.Message):
   """
 
   class ComplexDataTypeReferenceParsingValueValuesEnum(_messages.Enum):
-    r"""Enable parsing of references within complex FHIR data types such as
-    Extensions. If this value is set to ENABLED, then features like
+    r"""Optional. Enable parsing of references within complex FHIR data types
+    such as Extensions. If this value is set to ENABLED, then features like
     referential integrity and Bundle reference rewriting apply to all
     references. If this flag has not been specified the behavior of the FHIR
     store will not change, references in complex data types will not be
     parsed. New stores will have this value set to ENABLED after a
     notification period. Warning: turning on this flag causes processing
     existing resources to fail if they contain references to non-existent
-    resources.
+    resources. Cannot be disabled in R5.
 
     Values:
       COMPLEX_DATA_TYPE_REFERENCE_PARSING_UNSPECIFIED: No parsing behavior
@@ -1791,11 +2345,13 @@ class FhirStore(_messages.Message):
         2](https://www.hl7.org/fhir/DSTU2)
       STU3: Standard for Trial Use, [Release 3](https://www.hl7.org/fhir/STU3)
       R4: [Release 4](https://www.hl7.org/fhir/R4)
+      R5: [Release 5](https://www.hl7.org/fhir/R5)
     """
     VERSION_UNSPECIFIED = 0
     DSTU2 = 1
     STU3 = 2
     R4 = 3
+    R5 = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1828,18 +2384,20 @@ class FhirStore(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 1)
-  defaultSearchHandlingStrict = _messages.BooleanField(2)
-  disableReferentialIntegrity = _messages.BooleanField(3)
-  disableResourceVersioning = _messages.BooleanField(4)
-  enableUpdateCreate = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  notificationConfig = _messages.MessageField('NotificationConfig', 8)
-  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 9, repeated=True)
-  streamConfigs = _messages.MessageField('StreamConfig', 10, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 11)
-  version = _messages.EnumField('VersionValueValuesEnum', 12)
+  bulkExportGcsDestination = _messages.MessageField('BulkExportGcsDestination', 1)
+  complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 2)
+  consentConfig = _messages.MessageField('ConsentConfig', 3)
+  defaultSearchHandlingStrict = _messages.BooleanField(4)
+  disableReferentialIntegrity = _messages.BooleanField(5)
+  disableResourceVersioning = _messages.BooleanField(6)
+  enableUpdateCreate = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  notificationConfig = _messages.MessageField('NotificationConfig', 10)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 11, repeated=True)
+  streamConfigs = _messages.MessageField('StreamConfig', 12, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 13)
+  version = _messages.EnumField('VersionValueValuesEnum', 14)
 
 
 class FhirStoreMetric(_messages.Message):
@@ -1900,15 +2458,15 @@ class FieldMetadata(_messages.Message):
   matching fields.
 
   Enums:
-    ActionValueValuesEnum: Deidentify action for one field.
+    ActionValueValuesEnum: Optional. Deidentify action for one field.
 
   Fields:
-    action: Deidentify action for one field.
-    paths: List of paths to FHIR fields to be redacted. Each path is a period-
-      separated list where each component is either a field name or FHIR type
-      name, for example: Patient, HumanName. For "choice" types (those defined
-      in the FHIR spec with the form: field[x]) we use two separate
-      components. For example, "deceasedAge.unit" is matched by
+    action: Optional. Deidentify action for one field.
+    paths: Optional. List of paths to FHIR fields to be redacted. Each path is
+      a period-separated list where each component is either a field name or
+      FHIR type name, for example: Patient, HumanName. For "choice" types
+      (those defined in the FHIR spec with the form: field[x]) we use two
+      separate components. For example, "deceasedAge.unit" is matched by
       "Deceased.Age.unit". Supported types are: AdministrativeGenderCode,
       Base64Binary, Boolean, Code, Date, DateTime, Decimal, HumanName, Id,
       Instant, Integer, LanguageCode, Markdown, Oid, PositiveInt, String,
@@ -1916,10 +2474,10 @@ class FieldMetadata(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Deidentify action for one field.
+    r"""Optional. Deidentify action for one field.
 
     Values:
-      ACTION_UNSPECIFIED: No action specified.
+      ACTION_UNSPECIFIED: No action specified. Defaults to DO_NOT_TRANSFORM.
       TRANSFORM: Transform the entire field.
       INSPECT_AND_TRANSFORM: Inspect and transform any found PHI.
       DO_NOT_TRANSFORM: Do not transform.
@@ -2059,25 +2617,25 @@ class GoogleCloudHealthcareV1DicomBigQueryDestination(_messages.Message):
   r"""The BigQuery table where the server writes the output.
 
   Enums:
-    WriteDispositionValueValuesEnum: Determines whether the existing table in
-      the destination is to be overwritten or appended to. If a
+    WriteDispositionValueValuesEnum: Optional. Determines whether the existing
+      table in the destination is to be overwritten or appended to. If a
       write_disposition is specified, the `force` parameter is ignored.
 
   Fields:
-    force: Use `write_disposition` instead. If `write_disposition` is
-      specified, this parameter is ignored. force=false is equivalent to
+    force: Optional. Use `write_disposition` instead. If `write_disposition`
+      is specified, this parameter is ignored. force=false is equivalent to
       write_disposition=WRITE_EMPTY and force=true is equivalent to
       write_disposition=WRITE_TRUNCATE.
-    tableUri: BigQuery URI to a table, up to 2000 characters long, in the
-      format `bq://projectId.bqDatasetId.tableId`
-    writeDisposition: Determines whether the existing table in the destination
-      is to be overwritten or appended to. If a write_disposition is
-      specified, the `force` parameter is ignored.
+    tableUri: Optional. BigQuery URI to a table, up to 2000 characters long,
+      in the format `bq://projectId.bqDatasetId.tableId`
+    writeDisposition: Optional. Determines whether the existing table in the
+      destination is to be overwritten or appended to. If a write_disposition
+      is specified, the `force` parameter is ignored.
   """
 
   class WriteDispositionValueValuesEnum(_messages.Enum):
-    r"""Determines whether the existing table in the destination is to be
-    overwritten or appended to. If a write_disposition is specified, the
+    r"""Optional. Determines whether the existing table in the destination is
+    to be overwritten or appended to. If a write_disposition is specified, the
     `force` parameter is ignored.
 
     Values:
@@ -2194,29 +2752,32 @@ class GoogleCloudHealthcareV1FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
   Enums:
-    WriteDispositionValueValuesEnum: Determines if existing data in the
-      destination dataset is overwritten, appended to, or not written if the
-      tables contain data. If a write_disposition is specified, the `force`
-      parameter is ignored.
+    WriteDispositionValueValuesEnum: Optional. Determines if existing data in
+      the destination dataset is overwritten, appended to, or not written if
+      the tables contain data. If a write_disposition is specified, the
+      `force` parameter is ignored.
 
   Fields:
-    datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
-      long, in the format `bq://projectId.bqDatasetId`.
-    force: If this flag is `TRUE`, all tables are deleted from the dataset
-      before the new exported tables are written. If the flag is not set and
-      the destination dataset contains tables, the export call returns an
-      error. If `write_disposition` is specified, this parameter is ignored.
-      force=false is equivalent to write_disposition=WRITE_EMPTY and
-      force=true is equivalent to write_disposition=WRITE_TRUNCATE.
-    schemaConfig: The configuration for the exported BigQuery schema.
-    writeDisposition: Determines if existing data in the destination dataset
-      is overwritten, appended to, or not written if the tables contain data.
-      If a write_disposition is specified, the `force` parameter is ignored.
+    datasetUri: Optional. BigQuery URI to an existing dataset, up to 2000
+      characters long, in the format `bq://projectId.bqDatasetId`.
+    force: Optional. The default value is false. If this flag is `TRUE`, all
+      tables are deleted from the dataset before the new exported tables are
+      written. If the flag is not set and the destination dataset contains
+      tables, the export call returns an error. If `write_disposition` is
+      specified, this parameter is ignored. force=false is equivalent to
+      write_disposition=WRITE_EMPTY and force=true is equivalent to
+      write_disposition=WRITE_TRUNCATE.
+    schemaConfig: Optional. The configuration for the exported BigQuery
+      schema.
+    writeDisposition: Optional. Determines if existing data in the destination
+      dataset is overwritten, appended to, or not written if the tables
+      contain data. If a write_disposition is specified, the `force` parameter
+      is ignored.
   """
 
   class WriteDispositionValueValuesEnum(_messages.Enum):
-    r"""Determines if existing data in the destination dataset is overwritten,
-    appended to, or not written if the tables contain data. If a
+    r"""Optional. Determines if existing data in the destination dataset is
+    overwritten, appended to, or not written if the tables contain data. If a
     write_disposition is specified, the `force` parameter is ignored.
 
     Values:
@@ -3081,6 +3642,7 @@ class HealthcareProjectsLocationsDatasetsDeidentifyRequest(_messages.Message):
       as the request body.
     sourceDataset: Required. Source dataset resource name. For example,
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
+      R5 FHIR stores are not supported and will be skipped.
   """
 
   deidentifyDatasetRequest = _messages.MessageField('DeidentifyDatasetRequest', 1)
@@ -3163,6 +3725,44 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesGetSeri
   """
 
   series = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesIns
+  tancesGetStorageInfoRequest object.
+
+  Fields:
+    resource: Required. The path of the instance to return storage info for,
+      in the form: `projects/{projectID}/locations/{locationID}/datasets/{data
+      setID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{se
+      riesUID}/instances/{instanceUID}`
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSetBlobStorageSettingsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSetBlobSt
+  orageSettingsRequest object.
+
+  Fields:
+    resource: Required. The path of the resource to update the blob storage
+      settings in the format of `projects/{projectID}/locations/{locationID}/d
+      atasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUI
+      D}`, `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/d
+      icomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUID}
+      /`, or `projects/{projectID}/locations/{locationID}/datasets/{datasetID}
+      /dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUI
+      D}/instances/{instanceUID}`. If `filter_config` is specified, set the
+      value of `resource` to the resource name of a DICOM store in the format
+      `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/dicomS
+      tores/{dicomStoreID}`.
+    setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
+      be passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setBlobStorageSettingsRequest = _messages.MessageField('SetBlobStorageSettingsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Message):
@@ -3353,6 +3953,31 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSearchForStudiesRequest(_mes
   parent = _messages.StringField(2, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresSetBlobStorageSettingsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDicomStoresSetBlobStorageSettingsRequest
+  object.
+
+  Fields:
+    resource: Required. The path of the resource to update the blob storage
+      settings in the format of `projects/{projectID}/locations/{locationID}/d
+      atasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUI
+      D}`, `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/d
+      icomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUID}
+      /`, or `projects/{projectID}/locations/{locationID}/datasets/{datasetID}
+      /dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUI
+      D}/instances/{instanceUID}`. If `filter_config` is specified, set the
+      value of `resource` to the resource name of a DICOM store in the format
+      `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/dicomS
+      tores/{dicomStoreID}`.
+    setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
+      be passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setBlobStorageSettingsRequest = _messages.MessageField('SetBlobStorageSettingsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest
   object.
@@ -3533,10 +4158,14 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFrames
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
       t_id}/dicomStores/{dicom_store_id}`.
+    viewport: Optional. The viewport setting to use as specified in https://di
+      com.nema.org/medical/dicom/current/output/chtml/part18/sect_8.3.5.html#s
+      ect_8.3.5.1.3
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
   parent = _messages.StringField(2, required=True)
+  viewport = _messages.StringField(3)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrieveInstanceRequest(_messages.Message):
@@ -3584,10 +4213,14 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrie
     parent: Required. The name of the DICOM store that is being accessed. For
       example, `projects/{project_id}/locations/{location_id}/datasets/{datase
       t_id}/dicomStores/{dicom_store_id}`.
+    viewport: Optional. The viewport setting to use as specified in https://di
+      com.nema.org/medical/dicom/current/output/chtml/part18/sect_8.3.5.html#s
+      ect_8.3.5.1.3
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
   parent = _messages.StringField(2, required=True)
+  viewport = _messages.StringField(3)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesRetrieveMetadataRequest(_messages.Message):
@@ -3678,6 +4311,75 @@ class HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresApplyAdminConsentsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresApplyAdminConsentsRequest
+  object.
+
+  Fields:
+    applyAdminConsentsRequest: A ApplyAdminConsentsRequest resource to be
+      passed as the request body.
+    name: Required. The name of the FHIR store to enforce, in the format `proj
+      ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStor
+      es/{fhir_store_id}`.
+  """
+
+  applyAdminConsentsRequest = _messages.MessageField('ApplyAdminConsentsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresApplyConsentsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresApplyConsentsRequest
+  object.
+
+  Fields:
+    applyConsentsRequest: A ApplyConsentsRequest resource to be passed as the
+      request body.
+    name: Required. The name of the FHIR store to enforce, in the format `proj
+      ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStor
+      es/{fhir_store_id}`.
+  """
+
+  applyConsentsRequest = _messages.MessageField('ApplyConsentsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresBulkExportGroupRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresBulkExportGroupRequest
+  object.
+
+  Fields:
+    _since: Optional. If provided, only resources updated after this time are
+      exported. The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For
+      example, `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The
+      time must be specified to the second and include a time zone.
+    _type: Optional. String of comma-delimited FHIR resource types. If
+      provided, only resources of the specified resource type(s) are exported.
+    name: Required. Name of the Group resource that is exported, in format `pr
+      ojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirSt
+      ores/{fhir_store_id}/fhir/Group/{group_id}`.
+    organizeOutputBy: Optional. Required. The FHIR resource type used to
+      organize exported resources. Only supports "Patient". When organized by
+      Patient resource, output files are grouped as follows: * Patient file(s)
+      containing the Patient resources. Each Patient is sequentially followed
+      by all resources the Patient references, and all resources that
+      reference the Patient (equivalent to a GetPatientEverything request). *
+      Individual files grouped by resource type for resources in the Group's
+      member field and the Group resource itself. Resources may be duplicated
+      across multiple Patients. For example, if two Patient resources
+      reference the same Organization resource, it will appear twice, once
+      after each Patient. The Group resource from the request does not appear
+      in the Patient files.
+    outputFormat: Optional. Output format of the export. This field is
+      optional and only `application/fhir+ndjson` is supported.
+  """
+
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  organizeOutputBy = _messages.StringField(4)
+  outputFormat = _messages.StringField(5)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest object.
 
@@ -3701,7 +4403,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest(_messages.M
       passed as the request body.
     sourceStore: Required. Source FHIR store resource name. For example, `proj
       ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStor
-      es/{fhir_store_id}`.
+      es/{fhir_store_id}`. R5 stores are not supported.
   """
 
   deidentifyFhirStoreRequest = _messages.MessageField('DeidentifyFhirStoreRequest', 1)
@@ -3718,6 +4420,22 @@ class HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest(_messages.Messa
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresExplainDataAccessRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresExplainDataAccessRequest
+  object.
+
+  Fields:
+    name: Required. The name of the FHIR store to enforce, in the format `proj
+      ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStor
+      es/{fhir_store_id}`.
+    resourceId: Required. The ID (`{resourceType}/{id}`) of the resource to
+      explain data access on.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resourceId = _messages.StringField(2)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresExportRequest object.
 
@@ -3731,6 +4449,78 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Messa
 
   exportResourcesRequest = _messages.MessageField('ExportResourcesRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryCreateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the FHIR store this resource belongs to.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryReadRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryReadRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Binary resource to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryUpdateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryUpdateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    name: Required. The name of the resource to update.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Binary resource version to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBulkExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBulkExportRequest
+  object.
+
+  Fields:
+    _since: Optional. If provided, only resources updated after this time are
+      exported. The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For
+      example, `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The
+      time must be specified to the second and include a time zone.
+    _type: Optional. String of comma-delimited FHIR resource types. If
+      provided, only resources of the specified resource type(s) are exported.
+    name: Required. The name of the FHIR store to export resources from, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/fhirStores/{fhir_store_id}`.
+    outputFormat: Optional. Output format of the export. This field is
+      optional and only `application/fhir+ndjson` is supported.
+  """
+
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  outputFormat = _messages.StringField(4)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest(_messages.Message):
@@ -3752,10 +4542,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(
   Fields:
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to delete, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -3771,10 +4562,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to update, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)).
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -3791,16 +4583,30 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to update, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-      Must match the resource type in the provided content.
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)). Must match the
+      resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
   parent = _messages.StringField(2, required=True)
   type = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConsentEnforcementStatusRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirConsentEnforcementSta
+  tusRequest object.
+
+  Fields:
+    name: Required. The name of the consent resource to find enforcement
+      status, in the format `projects/{project_id}/locations/{location_id}/dat
+      asets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Consent/{consent_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.Message):
@@ -3810,11 +4616,12 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.M
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store this resource belongs to.
     type: Required. The FHIR resource type to create, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-      Must match the resource type in the provided content.
+      Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)). Must match the
+      resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -3892,6 +4699,29 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatchRequest(_messages.Me
   name = _messages.StringField(2, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientConsentEnforcementStatusRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientConsentEnforce
+  mentStatusRequest object.
+
+  Fields:
+    _count: Optional. The maximum number of results on a page. If not
+      specified, 100 is used. May not be larger than 1000.
+    _page_token: Optional. Used to retrieve the first, previous, next, or last
+      page of consent enforcement statuses when using pagination. Value should
+      be set to the value of `_page_token` set in next or previous page links'
+      URLs. Next and previous page are returned in the response bundle's links
+      field, where `link.relation` is "previous" or "next". Omit `_page_token`
+      if no previous request has been made.
+    name: Required. The name of the patient to find enforcement statuses, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/fhirStores/{fhir_store_id}/fhir/Patient/{patient_id}`
+  """
+
+  _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  _page_token = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(_messages.Message):
   r"""A
   HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest
@@ -3963,18 +4793,19 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store that holds the profiles being
       used for validation.
-    profile: Required. The canonical URL of a profile that this resource
+    profile: Optional. The canonical URL of a profile that this resource
       should be validated against. For example, to validate a Patient resource
       against the US Core Patient profile this parameter would be
       `http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient`. A
       StructureDefinition with this canonical URL must exist in the FHIR
       store.
     type: Required. The FHIR resource type of the resource being validated.
-      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
-      /implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      or [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-      Must match the resource type in the provided content.
+      For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html), or
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)). Must match the
+      resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -4002,11 +4833,12 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messag
 
   Fields:
     parent: Required. Name of the FHIR store to retrieve resources from.
-    resourceType: Required. The FHIR resource type to search, such as Patient
-      or Observation. For a complete list, see the FHIR Resource Index ([DSTU2
-      ](http://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+    resourceType: Optional. The FHIR resource type to search, such as Patient
+      or Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)).
     searchResourcesRequest: A SearchResourcesRequest resource to be passed as
       the request body.
   """
@@ -4141,6 +4973,32 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresOperationsDeleteFhirOperationRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresOperationsDeleteFhirOpera
+  tionRequest object.
+
+  Fields:
+    name: Required. Name of the operation to be deleted, in the format `projec
+      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores
+      /{fhir_store_id}/operations/{operation_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresOperationsGetFhirOperationStatusRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresOperationsGetFhirOperatio
+  nStatusRequest object.
+
+  Fields:
+    name: Required. Name of the operation to query, in the format `projects/{p
+      roject_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhi
+      r_store_id}/operations/{operation_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Message):
@@ -4608,6 +5466,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
   updateMask = _messages.StringField(3)
 
 
+class HealthcareProjectsLocationsDatasetsHl7V2StoresRollbackRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresRollbackRequest object.
+
+  Fields:
+    name: Required. The name of the HL7v2 store to rollback, in the format of
+      "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /hl7V2Stores/{hl7v2_store_id}".
+    rollbackHl7V2MessagesRequest: A RollbackHl7V2MessagesRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackHl7V2MessagesRequest = _messages.MessageField('RollbackHl7V2MessagesRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest
   object.
@@ -4762,6 +5635,8 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsListRequest object.
 
   Fields:
+    extraLocationTypes: Optional. A list of extra location types that should
+      be used as conditions for controlling the visibility of the locations.
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -4772,10 +5647,11 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
       response. Send that page token to receive the subsequent page.
   """
 
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest(_messages.Message):
@@ -4857,9 +5733,9 @@ class Hl7V2NotificationConfig(_messages.Message):
   store.
 
   Fields:
-    filter: Restricts notifications sent for messages matching a filter. If
-      this is empty, all messages are matched. The following syntax is
-      available: * A string field value can be written as text inside
+    filter: Optional. Restricts notifications sent for messages matching a
+      filter. If this is empty, all messages are matched. The following syntax
+      is available: * A string field value can be written as text inside
       quotation marks, for example `"query text"`. The only valid relational
       operation for text fields is equality (`=`), where text is searched
       within the field, rather than having the field be equal to the text. For
@@ -4945,21 +5821,23 @@ class Hl7V2Store(_messages.Message):
     name: Identifier. Resource name of the HL7v2 store, of the form `projects/
       {project_id}/locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{
       hl7v2_store_id}`.
-    notificationConfigs: A list of notification configs. Each configuration
-      uses a filter to determine whether to publish a message (both Ingest &
-      Create) on the corresponding notification destination. Only the message
-      name is sent as part of the notification. Supplied by the client.
-    parserConfig: The configuration for the parser. It determines how the
-      server parses the messages.
-    rejectDuplicateMessage: Determines whether to reject duplicate messages. A
-      duplicate message is a message with the same raw bytes as a message that
-      has already been ingested/created in this HL7v2 store. The default value
-      is false, meaning that the store accepts the duplicate messages and it
-      also returns the same ACK message in the IngestMessageResponse as has
-      been returned previously. Note that only one resource is created in the
-      store. When this field is set to true, CreateMessage/IngestMessage
-      requests with a duplicate message will be rejected by the store, and
-      IngestMessageErrorDetail returns a NACK message upon rejection.
+    notificationConfigs: Optional. A list of notification configs. Each
+      configuration uses a filter to determine whether to publish a message
+      (both Ingest & Create) on the corresponding notification destination.
+      Only the message name is sent as part of the notification. Supplied by
+      the client.
+    parserConfig: Optional. The configuration for the parser. It determines
+      how the server parses the messages.
+    rejectDuplicateMessage: Optional. Determines whether to reject duplicate
+      messages. A duplicate message is a message with the same raw bytes as a
+      message that has already been ingested/created in this HL7v2 store. The
+      default value is false, meaning that the store accepts the duplicate
+      messages and it also returns the same ACK message in the
+      IngestMessageResponse as has been returned previously. Note that only
+      one resource is created in the store. When this field is set to true,
+      CreateMessage/IngestMessage requests with a duplicate message will be
+      rejected by the store, and IngestMessageErrorDetail returns a NACK
+      message upon rejection.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5116,15 +5994,15 @@ class ImageConfig(_messages.Message):
   r"""Specifies how to handle de-identification of image pixels.
 
   Enums:
-    TextRedactionModeValueValuesEnum: Determines how to redact text from
-      image.
+    TextRedactionModeValueValuesEnum: Optional. Determines how to redact text
+      from image.
 
   Fields:
-    textRedactionMode: Determines how to redact text from image.
+    textRedactionMode: Optional. Determines how to redact text from image.
   """
 
   class TextRedactionModeValueValuesEnum(_messages.Enum):
-    r"""Determines how to redact text from image.
+    r"""Optional. Determines how to redact text from image.
 
     Values:
       TEXT_REDACTION_MODE_UNSPECIFIED: No text redaction specified. Same as
@@ -5149,13 +6027,16 @@ class ImportDicomDataRequest(_messages.Message):
   instances by ignoring the newly-pushed instance. It does not overwrite.
 
   Fields:
+    blobStorageSettings: Optional. The blob storage settings for the data
+      imported by this operation.
     gcsSource: Cloud Storage source data location and import configuration.
       The Cloud Healthcare Service Agent requires the
       `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
       location.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1DicomGcsSource', 1)
+  blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
+  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1DicomGcsSource', 2)
 
 
 class ImportDicomDataResponse(_messages.Message):
@@ -5247,8 +6128,8 @@ class InfoTypeTransformation(_messages.Message):
     characterMaskConfig: Config for character mask.
     cryptoHashConfig: Config for crypto hash.
     dateShiftConfig: Config for date shift.
-    infoTypes: InfoTypes to apply this transformation to. If this is not
-      specified, the transformation applies to any info_type.
+    infoTypes: Optional. InfoTypes to apply this transformation to. If this is
+      not specified, the transformation applies to any info_type.
     redactConfig: Config for text redaction.
     replaceWithInfoTypeConfig: Config for replace with InfoType.
   """
@@ -5609,17 +6490,19 @@ class Message(_messages.Message):
       bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
-    messageType: The message type for this message. MSH-9.1.
+    messageType: Output only. The message type for this message. MSH-9.1.
     name: Output only. Resource name of the Message, of the form `projects/{pr
       oject_id}/locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7
       _v2_store_id}/messages/{message_id}`.
     parsedData: Output only. The parsed version of the raw message data.
-    patientIds: All patient IDs listed in the PID-2, PID-3, and PID-4 segments
-      of this message.
-    schematizedData: The parsed version of the raw message data schematized
-      according to this store's schemas and type definitions.
-    sendFacility: The hospital that this message came from. MSH-4.
-    sendTime: The datetime the sending application sent this message. MSH-7.
+    patientIds: Output only. All patient IDs listed in the PID-2, PID-3, and
+      PID-4 segments of this message.
+    schematizedData: Output only. The parsed version of the raw message data
+      schematized according to this store's schemas and type definitions.
+    sendFacility: Output only. The hospital that this message came from.
+      MSH-4.
+    sendTime: Output only. The datetime the sending application sent this
+      message. MSH-7.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5848,12 +6731,13 @@ class ParserConfig(_messages.Message):
       immutable after HL7v2 store creation.
 
   Fields:
-    allowNullHeader: Determines whether messages with no header are allowed.
-    schema: Schemas used to parse messages in this store, if schematized
-      parsing is desired.
-    segmentTerminator: Byte(s) to use as the segment terminator. If this is
-      unset, '\r' is used as segment terminator, matching the HL7 version 2
-      specification.
+    allowNullHeader: Optional. Determines whether messages with no header are
+      allowed.
+    schema: Optional. Schemas used to parse messages in this store, if
+      schematized parsing is desired.
+    segmentTerminator: Optional. Byte(s) to use as the segment terminator. If
+      this is unset, '\r' is used as segment terminator, matching the HL7
+      version 2 specification.
     version: Immutable. Determines the version of both the default parser to
       be used when `schema` is not given, as well as the schematized parser
       used when `schema` is specified. This field is immutable after HL7v2
@@ -5902,6 +6786,18 @@ class PatientId(_messages.Message):
 
   type = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class PatientScope(_messages.Message):
+  r"""Apply consents given by a list of patients.
+
+  Fields:
+    patientIds: Optional. The list of patient IDs whose Consent resources will
+      be enforced. At most 10,000 patients can be specified. An empty list is
+      equivalent to all patients (meaning the entire FHIR store).
+  """
+
+  patientIds = _messages.StringField(1, repeated=True)
 
 
 class Policy(_messages.Message):
@@ -6295,6 +7191,76 @@ class RollbackFhirResourcesResponse(_messages.Message):
   fhirStore = _messages.StringField(1)
 
 
+class RollbackHL7MessagesFilteringFields(_messages.Message):
+  r"""Filtering fields for an HL7v2 rollback. Currently only supports a list
+  of operation ids to roll back.
+
+  Fields:
+    operationIds: Optional. A list of operation IDs to roll back.
+  """
+
+  operationIds = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.UINT64)
+
+
+class RollbackHl7V2MessagesRequest(_messages.Message):
+  r"""Point in time recovery rollback request.
+
+  Enums:
+    ChangeTypeValueValuesEnum: Optional. CREATE/UPDATE/DELETE/ALL for
+      reverting all txns of a certain type.
+
+  Fields:
+    changeType: Optional. CREATE/UPDATE/DELETE/ALL for reverting all txns of a
+      certain type.
+    excludeRollbacks: Optional. Specifies whether to exclude earlier
+      rollbacks.
+    filteringFields: Optional. Parameters for filtering.
+    force: Optional. When enabled, changes will be reverted without explicit
+      confirmation.
+    inputGcsObject: Optional. Cloud storage object containing list of
+      {resourceId} lines, identifying resources to be reverted
+    resultGcsBucket: Required. Bucket to deposit result
+    rollbackTime: Required. Times point to rollback to.
+  """
+
+  class ChangeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. CREATE/UPDATE/DELETE/ALL for reverting all txns of a certain
+    type.
+
+    Values:
+      CHANGE_TYPE_UNSPECIFIED: When unspecified, revert all transactions
+      ALL: All transactions
+      CREATE: Revert only CREATE transactions
+      UPDATE: Revert only Update transactions
+      DELETE: Revert only Delete transactions
+    """
+    CHANGE_TYPE_UNSPECIFIED = 0
+    ALL = 1
+    CREATE = 2
+    UPDATE = 3
+    DELETE = 4
+
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
+  excludeRollbacks = _messages.BooleanField(2)
+  filteringFields = _messages.MessageField('RollbackHL7MessagesFilteringFields', 3)
+  force = _messages.BooleanField(4)
+  inputGcsObject = _messages.StringField(5)
+  resultGcsBucket = _messages.StringField(6)
+  rollbackTime = _messages.StringField(7)
+
+
+class RollbackHl7V2MessagesResponse(_messages.Message):
+  r"""Final response of rollback HL7v2 messages request.
+
+  Fields:
+    hl7v2Store: The name of the HL7v2 store to rollback, in the format of
+      "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /hl7v2Stores/{hl7v2_store_id}".
+  """
+
+  hl7v2Store = _messages.StringField(1)
+
+
 class SchemaConfig(_messages.Message):
   r"""Configuration for the FHIR BigQuery schema. Determines how the server
   generates the schema.
@@ -6374,31 +7340,32 @@ class SchemaPackage(_messages.Message):
   r"""A schema package contains a set of schemas and type definitions.
 
   Enums:
-    SchematizedParsingTypeValueValuesEnum: Determines how messages that fail
-      to parse are handled.
-    UnexpectedSegmentHandlingValueValuesEnum: Determines how unexpected
-      segments (segments not matched to the schema) are handled.
+    SchematizedParsingTypeValueValuesEnum: Optional. Determines how messages
+      that fail to parse are handled.
+    UnexpectedSegmentHandlingValueValuesEnum: Optional. Determines how
+      unexpected segments (segments not matched to the schema) are handled.
 
   Fields:
-    ignoreMinOccurs: Flag to ignore all min_occurs restrictions in the schema.
-      This means that incoming messages can omit any group, segment, field,
-      component, or subcomponent.
-    schemas: Schema configs that are layered based on their VersionSources
-      that match the incoming message. Schema configs present in higher
-      indices override those in lower indices with the same message type and
-      trigger event if their VersionSources all match an incoming message.
-    schematizedParsingType: Determines how messages that fail to parse are
-      handled.
-    types: Schema type definitions that are layered based on their
+    ignoreMinOccurs: Optional. Flag to ignore all min_occurs restrictions in
+      the schema. This means that incoming messages can omit any group,
+      segment, field, component, or subcomponent.
+    schemas: Optional. Schema configs that are layered based on their
+      VersionSources that match the incoming message. Schema configs present
+      in higher indices override those in lower indices with the same message
+      type and trigger event if their VersionSources all match an incoming
+      message.
+    schematizedParsingType: Optional. Determines how messages that fail to
+      parse are handled.
+    types: Optional. Schema type definitions that are layered based on their
       VersionSources that match the incoming message. Type definitions present
       in higher indices override those in lower indices with the same type
       name if their VersionSources all match an incoming message.
-    unexpectedSegmentHandling: Determines how unexpected segments (segments
-      not matched to the schema) are handled.
+    unexpectedSegmentHandling: Optional. Determines how unexpected segments
+      (segments not matched to the schema) are handled.
   """
 
   class SchematizedParsingTypeValueValuesEnum(_messages.Enum):
-    r"""Determines how messages that fail to parse are handled.
+    r"""Optional. Determines how messages that fail to parse are handled.
 
     Values:
       SCHEMATIZED_PARSING_TYPE_UNSPECIFIED: Unspecified schematized parsing
@@ -6413,8 +7380,8 @@ class SchemaPackage(_messages.Message):
     HARD_FAIL = 2
 
   class UnexpectedSegmentHandlingValueValuesEnum(_messages.Enum):
-    r"""Determines how unexpected segments (segments not matched to the
-    schema) are handled.
+    r"""Optional. Determines how unexpected segments (segments not matched to
+    the schema) are handled.
 
     Values:
       UNEXPECTED_SEGMENT_HANDLING_MODE_UNSPECIFIED: Unspecified handling mode,
@@ -6470,11 +7437,12 @@ class SearchResourcesRequest(_messages.Message):
   r"""Request to search the resources in the specified FHIR store.
 
   Fields:
-    resourceType: Required. The FHIR resource type to search, such as Patient
-      or Observation. For a complete list, see the FHIR Resource Index ([DSTU2
-      ](http://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+    resourceType: Optional. The FHIR resource type to search, such as Patient
+      or Observation. For a complete list, see the FHIR Resource Index
+      ([DSTU2](https://hl7.org/fhir/DSTU2/resourcelist.html),
+      [STU3](https://hl7.org/fhir/STU3/resourcelist.html),
+      [R4](https://hl7.org/fhir/R4/resourcelist.html)),
+      [R5](https://hl7.org/fhir/R5/resourcelist.html)).
   """
 
   resourceType = _messages.StringField(1)
@@ -6568,6 +7536,29 @@ class SeriesMetrics(_messages.Message):
   instanceCount = _messages.IntegerField(2)
   series = _messages.StringField(3)
   structuredStorageSizeBytes = _messages.IntegerField(4)
+
+
+class SetBlobStorageSettingsRequest(_messages.Message):
+  r"""Request message for `SetBlobStorageSettings` method.
+
+  Fields:
+    blobStorageSettings: The blob storage settings to update for the specified
+      resources. Only fields listed in `update_mask` are applied.
+    filterConfig: Optional. A filter configuration. If `filter_config` is
+      specified, set the value of `resource` to the resource name of a DICOM
+      store in the format `projects/{projectID}/locations/{locationID}/dataset
+      s/{datasetID}/dicomStores/{dicomStoreID}`.
+  """
+
+  blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
+  filterConfig = _messages.MessageField('DicomFilterConfig', 2)
+
+
+class SetBlobStorageSettingsResponse(_messages.Message):
+  r"""Returns additional info in regards to a completed set blob storage
+  settings API.
+  """
+
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -6747,60 +7738,81 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StorageInfo(_messages.Message):
+  r"""StorageInfo encapsulates all the storage info of a resource.
+
+  Fields:
+    blobStorageInfo: Info about the data stored in blob storage for the
+      resource.
+    referencedResource: The resource whose storage info is returned. For
+      example: `projects/{projectID}/locations/{locationID}/datasets/{datasetI
+      D}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{series
+      UID}/instances/{instanceUID}`
+    structuredStorageInfo: Info about the data stored in structured storage
+      for the resource.
+  """
+
+  blobStorageInfo = _messages.MessageField('BlobStorageInfo', 1)
+  referencedResource = _messages.StringField(2)
+  structuredStorageInfo = _messages.MessageField('StructuredStorageInfo', 3)
+
+
 class StreamConfig(_messages.Message):
   r"""Contains configuration for streaming FHIR export.
 
   Fields:
-    bigqueryDestination: The destination BigQuery structure that contains both
-      the dataset location and corresponding schema config. The output is
-      organized in one table per resource type. The server reuses the existing
-      tables (if any) that are named after the resource types. For example,
-      "Patient", "Observation". When there is no existing table for a given
-      resource type, the server attempts to create one. When a table schema
-      doesn't align with the schema config, either because of existing
-      incompatible schema or out of band incompatible modification, the server
-      does not stream in new data. BigQuery imposes a 1 MB limit on streaming
-      insert row size, therefore any resource mutation that generates more
-      than 1 MB of BigQuery data is not streamed. One resolution in this case
-      is to delete the incompatible table and let the server recreate one,
-      though the newly created table only contains data after the table
-      recreation. Results are written to BigQuery tables according to the
-      parameters in BigQueryDestination.WriteDisposition. Different versions
-      of the same resource are distinguishable by the meta.versionId and
-      meta.lastUpdated columns. The operation (CREATE/UPDATE/DELETE) that
-      results in the new version is recorded in the meta.tag. The tables
-      contain all historical resource versions since streaming was enabled.
-      For query convenience, the server also creates one view per table of the
-      same name containing only the current resource version. The streamed
-      data in the BigQuery dataset is not guaranteed to be completely unique.
-      The combination of the id and meta.versionId columns should ideally
-      identify a single unique row. But in rare cases, duplicates may exist.
-      At query time, users may use the SQL select statement to keep only one
-      of the duplicate rows given an id and meta.versionId pair.
-      Alternatively, the server created view mentioned above also filters out
-      duplicates. If a resource mutation cannot be streamed to BigQuery,
-      errors are logged to Cloud Logging. For more information, see [Viewing
-      error logs in Cloud
+    bigqueryDestination: Optional. The destination BigQuery structure that
+      contains both the dataset location and corresponding schema config. The
+      output is organized in one table per resource type. The server reuses
+      the existing tables (if any) that are named after the resource types.
+      For example, "Patient", "Observation". When there is no existing table
+      for a given resource type, the server attempts to create one. When a
+      table schema doesn't align with the schema config, either because of
+      existing incompatible schema or out of band incompatible modification,
+      the server does not stream in new data. BigQuery imposes a 1 MB limit on
+      streaming insert row size, therefore any resource mutation that
+      generates more than 1 MB of BigQuery data is not streamed. One
+      resolution in this case is to delete the incompatible table and let the
+      server recreate one, though the newly created table only contains data
+      after the table recreation. Results are written to BigQuery tables
+      according to the parameters in BigQueryDestination.WriteDisposition.
+      Different versions of the same resource are distinguishable by the
+      meta.versionId and meta.lastUpdated columns. The operation
+      (CREATE/UPDATE/DELETE) that results in the new version is recorded in
+      the meta.tag. The tables contain all historical resource versions since
+      streaming was enabled. For query convenience, the server also creates
+      one view per table of the same name containing only the current resource
+      version. The streamed data in the BigQuery dataset is not guaranteed to
+      be completely unique. The combination of the id and meta.versionId
+      columns should ideally identify a single unique row. But in rare cases,
+      duplicates may exist. At query time, users may use the SQL select
+      statement to keep only one of the duplicate rows given an id and
+      meta.versionId pair. Alternatively, the server created view mentioned
+      above also filters out duplicates. If a resource mutation cannot be
+      streamed to BigQuery, errors are logged to Cloud Logging. For more
+      information, see [Viewing error logs in Cloud
       Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     deidentifiedStoreDestination: The destination FHIR store for de-identified
       resources. After this field is added, all subsequent
       creates/updates/patches to the source store will be de-identified using
       the provided configuration and applied to the destination store.
-      Importing resources to the source store will not trigger the streaming.
-      If the source store already contains resources when this option is
-      enabled, those resources will not be copied to the destination store
-      unless they are subsequently updated. This may result in invalid
-      references in the destination store. Before adding this config, you must
-      grant the healthcare.fhirResources.update permission on the destination
-      store to your project's **Cloud Healthcare Service Agent** [service
-      account](https://cloud.google.com/healthcare/docs/how-tos/permissions-
-      healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The
-      destination store must set enable_update_create to true. The destination
-      store must have disable_referential_integrity set to true. If a resource
-      cannot be de-identified, errors will be logged to Cloud Logging (see
-      [Viewing error logs in Cloud
-      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
-    resourceTypes: Supply a FHIR resource type (such as "Patient" or
+      Resources deleted from the source store will be deleted from the
+      destination store. Importing resources to the source store will not
+      trigger the streaming. If the source store already contains resources
+      when this option is enabled, those resources will not be copied to the
+      destination store unless they are subsequently updated. This may result
+      in invalid references in the destination store. Before adding this
+      config, you must grant the healthcare.fhirResources.update permission on
+      the destination store to your project's **Cloud Healthcare Service
+      Agent** [service account](https://cloud.google.com/healthcare/docs/how-
+      tos/permissions-healthcare-api-gcp-
+      products#the_cloud_healthcare_service_agent). The destination store must
+      set enable_update_create to true. The destination store must have
+      disable_referential_integrity set to true. If a resource cannot be de-
+      identified, errors will be logged to Cloud Logging (see [Viewing error
+      logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-
+      tos/logging)). Not supported for R5 stores.
+    resourceTypes: Optional. Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an
       empty list as an intent to stream all the supported resource types in
@@ -6810,6 +7822,17 @@ class StreamConfig(_messages.Message):
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirBigQueryDestination', 1)
   deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
   resourceTypes = _messages.StringField(3, repeated=True)
+
+
+class StructuredStorageInfo(_messages.Message):
+  r"""StructuredStorageInfo contains details about the data stored in
+  Structured Storage for the referenced resource.
+
+  Fields:
+    sizeBytes: Size in bytes of data stored in structured storage.
+  """
+
+  sizeBytes = _messages.IntegerField(1)
 
 
 class StudyMetrics(_messages.Message):
@@ -6838,11 +7861,11 @@ class TagFilterList(_messages.Message):
   r"""List of tags to be filtered.
 
   Fields:
-    tags: Tags to be filtered. Tags must be DICOM Data Elements, File Meta
-      Elements, or Directory Structuring Elements, as defined at: http://dicom
-      .nema.org/medical/dicom/current/output/html/part06.html#table_6-1,. They
-      may be provided by "Keyword" or "Tag". For example "PatientID",
-      "00100010".
+    tags: Optional. Tags to be filtered. Tags must be DICOM Data Elements,
+      File Meta Elements, or Directory Structuring Elements, as defined at: ht
+      tp://dicom.nema.org/medical/dicom/current/output/html/part06.html#table_
+      6-1,. They may be provided by "Keyword" or "Tag". For example
+      "PatientID", "00100010".
   """
 
   tags = _messages.StringField(1, repeated=True)
@@ -6876,12 +7899,12 @@ class TextConfig(_messages.Message):
   r"""A TextConfig object.
 
   Fields:
-    additionalTransformations: Transformations to apply to the detected data,
-      overridden by `exclude_info_types`.
-    excludeInfoTypes: InfoTypes to skip transforming, overriding
+    additionalTransformations: Optional. Transformations to apply to the
+      detected data, overridden by `exclude_info_types`.
+    excludeInfoTypes: Optional. InfoTypes to skip transforming, overriding
       `additional_transformations`.
-    transformations: The transformations to apply to the detected data.
-      Deprecated. Use `additional_transformations` instead.
+    transformations: Optional. The transformations to apply to the detected
+      data. Deprecated. Use `additional_transformations` instead.
   """
 
   additionalTransformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
@@ -6931,6 +7954,25 @@ class TimePartitioning(_messages.Message):
 
   expirationMs = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class TimeRange(_messages.Message):
+  r"""Apply consents given by patients whose most recent consent changes are
+  in the time range. Note that after identifying these patients, the server
+  applies all Consent resources given by those patients, not just the Consent
+  resources within the timestamp in the range.
+
+  Fields:
+    end: Optional. The latest consent change time, in format YYYY-MM-
+      DDThh:mm:ss.sss+zz:zz If not specified, the system uses the time when
+      ApplyConsents was called.
+    start: Optional. The earliest consent change time, in format YYYY-MM-
+      DDThh:mm:ss.sss+zz:zz If not specified, the system uses the FHIR store
+      creation time.
+  """
+
+  end = _messages.StringField(1)
+  start = _messages.StringField(2)
 
 
 class Type(_messages.Message):
@@ -7001,29 +8043,32 @@ class ValidationConfig(_messages.Message):
   r"""Contains the configuration for FHIR profiles and validation.
 
   Fields:
-    disableFhirpathValidation: Whether to disable FHIRPath validation for
-      incoming resources. Set this to true to disable checking incoming
-      resources for conformance against FHIRPath requirement defined in the
-      FHIR specification. This property only affects resource types that do
-      not have profiles configured for them, any rules in enabled
-      implementation guides will still be enforced.
-    disableProfileValidation: Whether to disable profile validation for this
-      FHIR store. Set this to true to disable checking incoming resources for
-      conformance against structure definitions in this FHIR store.
-    disableReferenceTypeValidation: Whether to disable reference type
-      validation for incoming resources. Set this to true to disable checking
-      incoming resources for conformance against reference type requirement
-      defined in the FHIR specification. This property only affects resource
-      types that do not have profiles configured for them, any rules in
-      enabled implementation guides will still be enforced.
-    disableRequiredFieldValidation: Whether to disable required fields
-      validation for incoming resources. Set this to true to disable checking
-      incoming resources for conformance against required fields requirement
-      defined in the FHIR specification. This property only affects resource
-      types that do not have profiles configured for them, any rules in
-      enabled implementation guides will still be enforced.
-    enabledImplementationGuides: A list of implementation guide URLs in this
-      FHIR store that are used to configure the profiles to use for
+    disableFhirpathValidation: Optional. Whether to disable FHIRPath
+      validation for incoming resources. The default value is false. Set this
+      to true to disable checking incoming resources for conformance against
+      FHIRPath requirement defined in the FHIR specification. This property
+      only affects resource types that do not have profiles configured for
+      them, any rules in enabled implementation guides will still be enforced.
+    disableProfileValidation: Optional. Whether to disable profile validation
+      for this FHIR store. The default value is false. Set this to true to
+      disable checking incoming resources for conformance against structure
+      definitions in this FHIR store.
+    disableReferenceTypeValidation: Optional. Whether to disable reference
+      type validation for incoming resources. The default value is false. Set
+      this to true to disable checking incoming resources for conformance
+      against reference type requirement defined in the FHIR specification.
+      This property only affects resource types that do not have profiles
+      configured for them, any rules in enabled implementation guides will
+      still be enforced.
+    disableRequiredFieldValidation: Optional. Whether to disable required
+      fields validation for incoming resources. The default value is false.
+      Set this to true to disable checking incoming resources for conformance
+      against required fields requirement defined in the FHIR specification.
+      This property only affects resource types that do not have profiles
+      configured for them, any rules in enabled implementation guides will
+      still be enforced.
+    enabledImplementationGuides: Optional. A list of implementation guide URLs
+      in this FHIR store that are used to configure the profiles to use for
       validation. For example, to use the US Core profiles for validation, set
       `enabled_implementation_guides` to
       `["http://hl7.org/fhir/us/core/ImplementationGuide/ig"]`. If

@@ -338,7 +338,7 @@ def set_posix_attributes_on_file_if_valid(
       user did not have permission to perform. Other permission errors from
       OS functions are possible. Also see `raise_if_invalid_file_permissions`.
   """
-  destination_path = destination_resource.storage_url.object_name
+  destination_path = destination_resource.storage_url.resource_name
   raise_if_invalid_file_permissions(
       system_posix_data,
       source_resource,
@@ -540,7 +540,7 @@ def get_posix_attributes_from_resource(resource, preserve_symlinks=False):
     return get_posix_attributes_from_cloud_resource(resource)
   if isinstance(resource, resource_reference.FileObjectResource):
     return get_posix_attributes_from_file(
-        resource.storage_url.object_name, preserve_symlinks
+        resource.storage_url.resource_name, preserve_symlinks
     )
   raise errors.InvalidUrlError(
       'Can only retrieve POSIX attributes from file or cloud'

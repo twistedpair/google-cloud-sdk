@@ -52,17 +52,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_DATASETS_ANNOTATIONSTORES = (
-      'projects.locations.datasets.annotationStores',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/datasets/'
-              '{datasetsId}/annotationStores/{annotationStoresId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_DATASETS_CONSENTSTORES = (
       'projects.locations.datasets.consentStores',
       '{+name}',

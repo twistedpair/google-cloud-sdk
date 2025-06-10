@@ -62,7 +62,7 @@ def download_object(gapic_client,
 
   request = gapic_client.types.ReadObjectRequest(
       bucket=bucket_name,
-      object_=cloud_resource.storage_url.object_name,
+      object_=cloud_resource.storage_url.resource_name,
       generation=(
           int(cloud_resource.generation) if cloud_resource.generation else None
       ),

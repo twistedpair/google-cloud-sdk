@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import dataclasses
 import types
+from typing import Any
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.command_lib.alloydb import flags
@@ -265,11 +267,21 @@ def ConstructCreateRequestFromArgsAlpha(alloydb_messages, location_ref, args):
   )
 
 
-def _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
+@dataclasses.dataclass(frozen=True)
+class RestoreSource:
+  """Restore source for a cluster."""
+
+  backup: Any = None
+  backup_dr_backup: Any = None
+  backup_dr_pitr: Any = None
+  continuous_backup: Any = None
+
+
+def _ConstructRestoreSource(
     alloydb_messages,
     resource_parser,
     args,
-):
+) -> RestoreSource:
   """Returns the backup and continuous backup source for restore request."""
   # AlloyDB backup.
   if args.backup:
@@ -281,17 +293,28 @@ def _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
             'locationsId': args.region,
         },
     )
-    backup_source = alloydb_messages.BackupSource(
-        backupName=backup_ref.RelativeName()
+    return RestoreSource(
+        backup=alloydb_messages.BackupSource(
+            backupName=backup_ref.RelativeName()
+        )
     )
-    return backup_source, None, None
 
   # BackupDR backup.
   if hasattr(args, 'backupdr_backup') and args.backupdr_backup:
-    backup_dr_backup_source = alloydb_messages.BackupDrBackupSource(
-        backup=args.backupdr_backup,
+    return RestoreSource(
+        backup_dr_backup=alloydb_messages.BackupDrBackupSource(
+            backup=args.backupdr_backup,
+        )
     )
-    return None, backup_dr_backup_source, None
+
+  # BackupDR PITR.
+  if hasattr(args, 'backupdr_data_source') and args.backupdr_data_source:
+    return RestoreSource(
+        backup_dr_pitr=alloydb_messages.BackupDrPitrSource(
+            dataSource=args.backupdr_data_source,
+            pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+        )
+    )
 
   # AlloyDB source cluster is the remaining case.
   # Note the gcloud flags library guarantees that args.source_cluster is
@@ -304,11 +327,12 @@ def _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
           'locationsId': args.region,
       },
   )
-  continuous_backup_source = alloydb_messages.ContinuousBackupSource(
-      cluster=cluster_ref.RelativeName(),
-      pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+  return RestoreSource(
+      continuous_backup=alloydb_messages.ContinuousBackupSource(
+          cluster=cluster_ref.RelativeName(),
+          pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+      )
   )
-  return None, None, continuous_backup_source
 
 
 def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
@@ -345,19 +369,17 @@ def ConstructRestoreRequestFromArgsGA(
       alloydb_messages, args
   )
 
-  backup_source, _, continuous_backup_source = (
-      _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-          alloydb_messages,
-          resource_parser,
-          args,
-      )
+  restore_source = _ConstructRestoreSource(
+      alloydb_messages,
+      resource_parser,
+      args,
   )
 
   return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
       parent=location_ref.RelativeName(),
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
-          backupSource=backup_source,
-          continuousBackupSource=continuous_backup_source,
+          backupSource=restore_source.backup,
+          continuousBackupSource=restore_source.continuous_backup,
           # TODO(b/400420101): support backup_dr_backup_source
           clusterId=args.cluster,
           cluster=cluster_resource,
@@ -382,12 +404,10 @@ def ConstructRestoreRequestFromArgsAlpha(
       alloydb_messages, args
   )
 
-  backup_source, backup_dr_backup_source, continuous_backup_source = (
-      _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-          alloydb_messages,
-          resource_parser,
-          args,
-      )
+  restore_source = _ConstructRestoreSource(
+      alloydb_messages,
+      resource_parser,
+      args,
   )
   cluster_resource.tags = flags.GetTagsFromArgs(
       args, alloydb_messages.Cluster.TagsValue
@@ -395,9 +415,10 @@ def ConstructRestoreRequestFromArgsAlpha(
   return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
       parent=location_ref.RelativeName(),
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
-          backupSource=backup_source,
-          continuousBackupSource=continuous_backup_source,
-          backupdrBackupSource=backup_dr_backup_source,
+          backupSource=restore_source.backup,
+          continuousBackupSource=restore_source.continuous_backup,
+          backupdrBackupSource=restore_source.backup_dr_backup,
+          backupdrPitrSource=restore_source.backup_dr_pitr,
           clusterId=args.cluster,
           cluster=cluster_resource,
       ),
@@ -421,20 +442,19 @@ def ConstructRestoreRequestFromArgsBeta(
       alloydb_messages, args
   )
 
-  backup_source, backup_dr_backup_source, continuous_backup_source = (
-      _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
-          alloydb_messages,
-          resource_parser,
-          args,
-      )
+  restore_source = _ConstructRestoreSource(
+      alloydb_messages,
+      resource_parser,
+      args,
   )
 
   return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
       parent=location_ref.RelativeName(),
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
-          backupSource=backup_source,
-          continuousBackupSource=continuous_backup_source,
-          backupdrBackupSource=backup_dr_backup_source,
+          backupSource=restore_source.backup,
+          continuousBackupSource=restore_source.continuous_backup,
+          backupdrBackupSource=restore_source.backup_dr_backup,
+          backupdrPitrSource=restore_source.backup_dr_pitr,
           clusterId=args.cluster,
           cluster=cluster_resource,
       ),

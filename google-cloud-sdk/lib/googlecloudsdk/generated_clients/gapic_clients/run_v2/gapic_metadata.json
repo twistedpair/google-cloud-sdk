@@ -539,6 +539,11 @@
                 "delete_worker_pool"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "get_iam_policy"
+              ]
+            },
             "GetWorkerPool": {
               "methods": [
                 "get_worker_pool"
@@ -547,6 +552,11 @@
             "ListWorkerPools": {
               "methods": [
                 "list_worker_pools"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "set_iam_policy"
               ]
             },
             "TestIamPermissions": {
@@ -574,6 +584,11 @@
                 "delete_worker_pool"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "get_iam_policy"
+              ]
+            },
             "GetWorkerPool": {
               "methods": [
                 "get_worker_pool"
@@ -582,6 +597,11 @@
             "ListWorkerPools": {
               "methods": [
                 "list_worker_pools"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "set_iam_policy"
               ]
             },
             "TestIamPermissions": {
@@ -609,6 +629,11 @@
                 "delete_worker_pool"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "get_iam_policy"
+              ]
+            },
             "GetWorkerPool": {
               "methods": [
                 "get_worker_pool"
@@ -617,6 +642,11 @@
             "ListWorkerPools": {
               "methods": [
                 "list_worker_pools"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "set_iam_policy"
               ]
             },
             "TestIamPermissions": {

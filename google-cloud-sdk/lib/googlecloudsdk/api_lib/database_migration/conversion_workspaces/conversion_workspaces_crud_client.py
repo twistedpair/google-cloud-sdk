@@ -19,6 +19,8 @@ from typing import Optional, Set, Tuple
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.api_lib.database_migration.conversion_workspaces import base_conversion_workspaces_client
 from googlecloudsdk.api_lib.database_migration.conversion_workspaces import conversion_workspace_builder
+from googlecloudsdk.command_lib.database_migration.conversion_workspaces import enums
+from googlecloudsdk.generated_clients.apis.datamigration.v1 import datamigration_v1_messages as messages
 
 
 class ConversionWorkspacesCRUDClient(
@@ -40,27 +42,33 @@ class ConversionWorkspacesCRUDClient(
       parent_ref: str,
       conversion_workspace_id: str,
       display_name: str,
-      source_database_engine: str,
+      source_database_provider: enums.SourceDatabaseProvider,
+      source_database_engine: enums.SourceDatabaseEngine,
       source_database_version: str,
-      destination_database_engine: str,
+      destination_database_provider: enums.DestinationDatabaseProvider,
+      destination_database_engine: enums.DestinationDatabaseEngine,
       destination_database_version: str,
-      global_settings,
-  ):
+      global_settings: messages.ConversionWorkspace.GlobalSettingsValue,
+  ) -> messages.Operation:
     """Creates a conversion workspace.
 
     Args:
       parent_ref: a Resource reference to a parent
         datamigration.projects.locations resource for this conversion workspace.
-      conversion_workspace_id: str, the name of the resource to create.
-      display_name: str, the display name for the conversion workspace.
-      source_database_engine: str, the source database engine for the conversion
+      conversion_workspace_id: the name of the resource to create.
+      display_name: the display name for the conversion workspace.
+      source_database_provider: the source database provider for the conversion
         workspace.
-      source_database_version: str, the source database version for the
+      source_database_engine: the source database engine for the conversion
+        workspace.
+      source_database_version: the source database version for the conversion
+        workspace.
+      destination_database_provider: the destination database provider for the
         conversion workspace.
-      destination_database_engine: str, the destination database engine for the
+      destination_database_engine: the destination database engine for the
         conversion workspace.
-      destination_database_version: str, the destination database version for
-        the conversion workspace.
+      destination_database_version: the destination database version for the
+        conversion workspace.
       global_settings: GlobalSettings, the global settings for the conversion
         workspace.
 
@@ -71,8 +79,10 @@ class ConversionWorkspacesCRUDClient(
         self.messages.DatamigrationProjectsLocationsConversionWorkspacesCreateRequest(
             conversionWorkspace=self.cw_builder.Build(
                 display_name=display_name,
+                source_database_provider=source_database_provider,
                 source_database_engine=source_database_engine,
                 source_database_version=source_database_version,
+                destination_database_provider=destination_database_provider,
                 destination_database_engine=destination_database_engine,
                 destination_database_version=destination_database_version,
                 global_settings=global_settings,

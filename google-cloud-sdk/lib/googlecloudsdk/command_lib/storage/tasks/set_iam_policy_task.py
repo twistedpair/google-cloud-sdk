@@ -74,7 +74,7 @@ class SetManagedFolderIamPolicyTask(_SetIamPolicyTask):
 
   def _make_set_api_call(self, client):
     return client.set_managed_folder_iam_policy(
-        self._url.bucket_name, self._url.object_name, self._policy
+        self._url.bucket_name, self._url.resource_name, self._policy
     )
 
 
@@ -83,7 +83,7 @@ class SetObjectIamPolicyTask(_SetIamPolicyTask):
   def _make_set_api_call(self, client):
     return client.set_object_iam_policy(
         self._url.bucket_name,
-        self._url.object_name,
+        self._url.resource_name,
         self._policy,
         generation=self._url.generation,
     )

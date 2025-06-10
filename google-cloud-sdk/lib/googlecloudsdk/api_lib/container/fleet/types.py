@@ -131,6 +131,27 @@ GkehubProjectsLocationsRolloutsResumeRequest = Union[
     # ga_messages.GkehubProjectsLocationsRolloutsResumeRequest,
 ]
 
+GkehubProjectsLocationsRolloutSequencesCreateRequest = Union[
+    alpha_messages.GkehubProjectsLocationsRolloutSequencesCreateRequest,
+    # RolloutSequences are not yet available in beta or GA.
+    # beta_messages.GkehubProjectsLocationsRolloutSequencesCreateRequest,
+    # ga_messages.GkehubProjectsLocationsRolloutSequencesCreateRequest,
+]
+
+GkehubProjectsLocationsRolloutSequencesGetRequest = Union[
+    alpha_messages.GkehubProjectsLocationsRolloutSequencesGetRequest,
+    # RolloutSequences are not yet available in beta or GA.
+    # beta_messages.GkehubProjectsLocationsRolloutSequencesGetRequest,
+    # ga_messages.GkehubProjectsLocationsRolloutSequencesGetRequest,
+]
+
+GkehubProjectsLocationsRolloutSequencesListRequest = Union[
+    alpha_messages.GkehubProjectsLocationsRolloutSequencesListRequest,
+    # RolloutSequences are not yet available in beta or GA.
+    # beta_messages.GkehubProjectsLocationsRolloutSequencesListRequest,
+    # ga_messages.GkehubProjectsLocationsRolloutSequencesListRequest,
+]
+
 Operation = Union[
     alpha_messages.Operation, beta_messages.Operation, ga_messages.Operation
 ]
@@ -148,7 +169,16 @@ Rollout = Union[
     # ga_messages.Rollout,
 ]
 
+RolloutSequence = Union[
+    alpha_messages.RolloutSequence,
+    # RolloutSequences are not yet available in beta or GA.
+    # beta_messages.RolloutSequence,
+    # ga_messages.RolloutSequence,
+]
+
 RolloutGenerator = Generator[Rollout, None, None]
+
+RolloutSequenceGenerator = Generator[RolloutSequence, None, None]
 
 SecurityPostureConfig = Union[
     alpha_messages.SecurityPostureConfig,

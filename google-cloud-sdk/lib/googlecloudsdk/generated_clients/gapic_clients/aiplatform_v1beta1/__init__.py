@@ -39,12 +39,15 @@ from .types.content import LogprobsResult
 from .types.content import ModalityTokenCount
 from .types.content import Part
 from .types.content import PrebuiltVoiceConfig
+from .types.content import ProactivityConfig
 from .types.content import RetrievalMetadata
 from .types.content import SafetyRating
 from .types.content import SafetySetting
 from .types.content import SearchEntryPoint
 from .types.content import Segment
 from .types.content import SpeechConfig
+from .types.content import UrlContextMetadata
+from .types.content import UrlMetadata
 from .types.content import VideoMetadata
 from .types.content import VoiceConfig
 from .types.content import HarmCategory
@@ -129,6 +132,7 @@ from .types.tool import RetrievalConfig
 from .types.tool import Tool
 from .types.tool import ToolConfig
 from .types.tool import ToolUseExample
+from .types.tool import UrlContext
 from .types.tool import VertexAISearch
 from .types.tool import VertexRagStore
 from .types.types import BoolArray
@@ -237,6 +241,7 @@ __all__ = (
 'PredictResponse',
 'PredictionServiceClient',
 'Presets',
+'ProactivityConfig',
 'RagChunk',
 'RagCorpus',
 'RagEmbeddingModelConfig',
@@ -279,6 +284,9 @@ __all__ = (
 'ToolUseExample',
 'Type',
 'UploadRagFileConfig',
+'UrlContext',
+'UrlContextMetadata',
+'UrlMetadata',
 'VertexAISearch',
 'VertexAiSearchConfig',
 'VertexRagStore',

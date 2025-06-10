@@ -30,6 +30,7 @@ __protobuf__ = proto.module(
     package='google.cloud.aiplatform.v1beta1',
     manifest={
         'Tool',
+        'UrlContext',
         'ToolUseExample',
         'FunctionDeclaration',
         'FunctionCall',
@@ -95,6 +96,14 @@ class Tool(proto.Message):
             Optional. CodeExecution tool type.
             Enables the model to execute code as part of
             generation.
+        url_context (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.UrlContext):
+            Optional. Tool to support URL context
+            retrieval.
+        computer_use (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.ComputerUse):
+            Optional. Tool to support the model
+            interacting directly with the computer. If
+            enabled, it automatically populates computer-use
+            specific Function Declarations.
     """
 
     class GoogleSearch(proto.Message):
@@ -111,6 +120,32 @@ class Tool(proto.Message):
         and output to this tool.
 
         """
+
+    class ComputerUse(proto.Message):
+        r"""Tool to support computer use.
+
+        Attributes:
+            environment (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Tool.ComputerUse.Environment):
+                Required. The environment being operated.
+        """
+        class Environment(proto.Enum):
+            r"""Represents the environment being operated, such as a web
+            browser.
+
+            Values:
+                ENVIRONMENT_UNSPECIFIED (0):
+                    Defaults to browser.
+                ENVIRONMENT_BROWSER (1):
+                    Operates in a web browser.
+            """
+            ENVIRONMENT_UNSPECIFIED = 0
+            ENVIRONMENT_BROWSER = 1
+
+        environment: 'Tool.ComputerUse.Environment' = proto.Field(
+            proto.ENUM,
+            number=1,
+            enum='Tool.ComputerUse.Environment',
+        )
 
     function_declarations: MutableSequence['FunctionDeclaration'] = proto.RepeatedField(
         proto.MESSAGE,
@@ -142,6 +177,21 @@ class Tool(proto.Message):
         number=4,
         message=CodeExecution,
     )
+    url_context: 'UrlContext' = proto.Field(
+        proto.MESSAGE,
+        number=10,
+        message='UrlContext',
+    )
+    computer_use: ComputerUse = proto.Field(
+        proto.MESSAGE,
+        number=11,
+        message=ComputerUse,
+    )
+
+
+class UrlContext(proto.Message):
+    r"""Tool to support URL context.
+    """
 
 
 class ToolUseExample(proto.Message):
@@ -274,12 +324,37 @@ class FunctionDeclaration(proto.Message):
             required:
 
              - param1
+        parameters_json_schema (google.protobuf.struct_pb2.Value):
+            Optional. Describes the parameters to the function in JSON
+            Schema format. The schema must describe an object where the
+            properties are the parameters to the function. For example:
+
+            ::
+
+               {
+                 "type": "object",
+                 "properties": {
+                   "name": { "type": "string" },
+                   "age": { "type": "integer" }
+                 },
+                 "additionalProperties": false,
+                 "required": ["name", "age"],
+                 "propertyOrdering": ["name", "age"]
+               }
+
+            This field is mutually exclusive with ``parameters``.
         response (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Schema):
             Optional. Describes the output from this
             function in JSON Schema format. Reflects the
             Open API 3.03 Response Object. The Schema
             defines the type used for the response value of
             the function.
+        response_json_schema (google.protobuf.struct_pb2.Value):
+            Optional. Describes the output from this function in JSON
+            Schema format. The value specified by the schema is the
+            response value of the function.
+
+            This field is mutually exclusive with ``response``.
     """
 
     name: str = proto.Field(
@@ -295,10 +370,20 @@ class FunctionDeclaration(proto.Message):
         number=3,
         message=openapi.Schema,
     )
+    parameters_json_schema: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=struct_pb2.Value,
+    )
     response: openapi.Schema = proto.Field(
         proto.MESSAGE,
         number=4,
         message=openapi.Schema,
+    )
+    response_json_schema: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=struct_pb2.Value,
     )
 
 
@@ -545,6 +630,15 @@ class VertexRagStore(proto.Message):
         rag_retrieval_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagRetrievalConfig):
             Optional. The retrieval config for the Rag
             query.
+        store_context (bool):
+            Optional. Currently only supported for Gemini Multimodal
+            Live API.
+
+            In Gemini Multimodal Live API, if ``store_context`` bool is
+            specified, Gemini will leverage it to automatically memorize
+            the interactions between the client and Gemini, and retrieve
+            context when needed to augment the response generation for
+            users' ongoing and future interactions.
     """
 
     class RagResource(proto.Message):
@@ -591,6 +685,10 @@ class VertexRagStore(proto.Message):
         proto.MESSAGE,
         number=6,
         message='RagRetrievalConfig',
+    )
+    store_context: bool = proto.Field(
+        proto.BOOL,
+        number=7,
     )
 
 

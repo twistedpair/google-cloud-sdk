@@ -141,7 +141,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     request_config = request_config_factory.get_request_config(
         destination_url,
         content_type=upload_util.get_content_type(
-            self._source_resource.storage_url.object_name,
+            self._source_resource.storage_url.resource_name,
             self._source_resource.storage_url.is_stream),
         md5_hash=self._source_resource.md5_hash,
         size=self._length,
@@ -186,8 +186,9 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         else:
           # TODO(b/190093425): Print a better message for component uploads once
           # the final destination resource is available in ComponentUploadTask.
-          log.status.Print('Resuming upload for ' + destination_url.object_name)
-
+          log.status.Print(
+              'Resuming upload for ' + destination_url.resource_name
+          )
           serialization_data = tracker_data.serialization_data
 
           if tracker_data.complete:
@@ -201,7 +202,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
               # not. This is desirable since we want to re-upload objects with
               # the wrong key, and need the object's hash for validation.
               destination_resource = api.get_object_metadata(
-                  destination_url.bucket_name, destination_url.object_name,
+                  destination_url.bucket_name, destination_url.resource_name,
                   metadata_request_config)
             except api_errors.CloudApiError:
               # Any problem fetching existing object metadata can be ignored,

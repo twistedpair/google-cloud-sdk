@@ -1531,6 +1531,44 @@ class FleetClient(object):
     """Delete a fleet rollout."""
     return self.client.projects_locations_rollouts.Delete(req)
 
+  def CreateRolloutSequence(
+      self, req: types.GkehubProjectsLocationsRolloutSequencesCreateRequest
+  ):
+    """Creates a rollout sequence resource.
+
+    Args:
+      req: An HTTP create rollout sequence request to be sent to the API server.
+
+    Returns:
+      A long-running operation.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    return self.client.projects_locations_rolloutSequences.Create(req)
+
+  def DescribeRolloutSequence(
+      self, req: types.GkehubProjectsLocationsRolloutSequencesGetRequest
+  ) -> types.RolloutSequence:
+    """Describes a rollout sequence."""
+    return self.client.projects_locations_rolloutSequences.Get(req)
+
+  def ListRolloutSequences(
+      self,
+      req: types.GkehubProjectsLocationsRolloutSequencesListRequest,
+      page_size=None,
+      limit=None,
+  ) -> types.RolloutSequenceGenerator:
+    """Lists rollout sequences."""
+    return list_pager.YieldFromList(
+        self.client.projects_locations_rolloutSequences,
+        req,
+        field='rolloutSequences',
+        batch_size=page_size,
+        limit=limit,
+        batch_size_attribute='pageSize',
+    )
+
 
 class OperationClient:
   """Client for the GKE Hub API long-running operations."""

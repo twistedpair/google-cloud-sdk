@@ -132,7 +132,7 @@ class FinalizeCompositeUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
       os.remove(path)
     if self._delete_source:
       # Delete original source file.
-      os.remove(self._source_resource.storage_url.object_name)
+      os.remove(self._source_resource.storage_url.resource_name)
 
     return task.Output(
         additional_task_iterators=[

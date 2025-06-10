@@ -203,7 +203,7 @@ def _get_object_url_from_xml_response(scheme,
   return storage_url.CloudUrl(
       scheme=scheme,
       bucket_name=bucket_name,
-      object_name=object_name,
+      resource_name=object_name,
       generation=object_dict.get('VersionId'))
 
 
@@ -373,7 +373,7 @@ def get_prefix_resource_from_xml_response(scheme, prefix_dict, bucket_name):
       storage_url.CloudUrl(
           scheme=scheme,
           bucket_name=bucket_name,
-          object_name=prefix),
+          resource_name=prefix),
       prefix=prefix)
 
 

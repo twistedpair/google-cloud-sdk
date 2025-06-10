@@ -116,6 +116,13 @@ table(
 )
 """
 
+ROLLOUTSEQUENCE_LIST_FORMAT = """
+table(
+    name.basename():label=NAME,
+    name.segment(3):label=LOCATION
+)
+"""
+
 APP_OPERATOR_LIST_FORMAT = """
     table(
       principal:sort=1:label=PRINCIPAL,

@@ -1138,6 +1138,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateKey(self, request, global_params=None):
+      r"""GenerateServiceAccountKey generates a keypair for the given service account resource.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsGenerateKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateServiceAccountKeyResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}:generateKey',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.serviceAccounts.generateKey',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:generateKey',
+        request_field='generateServiceAccountKeyRequest',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsGenerateKeyRequest',
+        response_type_name='GenerateServiceAccountKeyResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""GetServiceAccount gets the service account details.
 

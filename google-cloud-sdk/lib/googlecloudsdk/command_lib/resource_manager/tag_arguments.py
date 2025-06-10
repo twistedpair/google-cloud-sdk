@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -63,6 +65,23 @@ def AddDescriptionArgToParser(parser):
       metavar="DESCRIPTION",
       help=("User-assigned description of the TagKey or TagValue. "
             "Must not exceed 256 characters."))
+
+
+def AddAllowedValuesRegexArgToParser(parser: argparse.ArgumentParser) -> None:
+  """Adds argument for the Regex of allowed TagValues under a TagKey.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--allowed-values-regex",
+      metavar="ALLOWED_VALUES_REGEX",
+      type=str,
+      help=(
+          "User-assigned regex of allowed short names of TagValues under a"
+          " TagKey."
+      ),
+  )
 
 
 def AddPurposeArgToParser(parser):

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import multitype
@@ -26,6 +27,7 @@ from googlecloudsdk.command_lib.secrets import completers as secrets_completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
+
 
 # Args
 
@@ -708,3 +710,32 @@ def MakeGetUriFunc(collection: str, api_version: str = 'v1'):
     return parsed.SelfLink()
 
   return _GetUri
+
+
+def GetTagsArg():
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  return base.Argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='\n'.join(help_parts),
+      hidden=True,
+  )
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(additionalProperties=[
+      tags_message.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(tags.items())])

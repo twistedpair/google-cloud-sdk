@@ -40,6 +40,7 @@ EFFECTIVE_FIREWALL_LIST_FORMAT = """\
   table(
     type,
     firewall_policy_name,
+    firewall_policy_priority,
     priority,
     action,
     direction,
@@ -494,6 +495,71 @@ def SortFirewallPolicyRules(client, rules):
   return ingress_org_firewall_rule + egress_org_firewall_rule
 
 
+def _FirewallPolicyTypeOrder(client, fp_type):
+  """Defines Firewall evaluation order.
+
+  Args:
+    client: API client.
+    fp_type: Firewall Policy type.
+
+  Returns:
+    int representing type ordering
+  """
+  if (
+      fp_type
+      == client.messages.NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.HIERARCHY
+      or fp_type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.HIERARCHY
+      or fp_type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.HIERARCHY
+  ):
+    return 0
+  if (
+      fp_type
+      == client.messages.NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM
+      or fp_type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_GLOBAL
+      or fp_type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_GLOBAL
+  ):
+    return 1
+  if (
+      fp_type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_REGIONAL
+      or fp_type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.SYSTEM_REGIONAL
+  ):
+    return 2
+  if (
+      fp_type
+      == client.messages.NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK
+      or fp_type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK
+      or fp_type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK
+  ):
+    return 3
+  if (
+      fp_type
+      == client.messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK_REGIONAL
+      or fp_type
+      == client.messages.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.TypeValueValuesEnum.NETWORK_REGIONAL
+  ):
+    return 4
+  return -1
+
+
+def SortFirewallPolicies(client, fps):
+  """Sort Firewall Policies in their evaluation order."""
+  return sorted(
+      fps,
+      key=lambda fp: (
+          _FirewallPolicyTypeOrder(client, fp.type),
+          0 if fp.priority is None else fp.priority,
+      ),
+  )
+
+
 def ConvertFirewallPolicyRulesToEffectiveFwRules(client, firewall_policy):
   """Convert organization firewall policy rules to effective firewall rules."""
   result = []
@@ -556,6 +622,7 @@ def ConvertFirewallPolicyRule(client, firewall_policy, rule):
     item.update({'type': 'system-network-regional-firewall-policy'})
   else:
     item.update({'type': 'unknown'})
+  item.update({'firewall_policy_priority': firewall_policy.priority})
   item.update({'description': rule.description})
   item.update({'firewall_policy_name': firewall_policy.name})
   item.update({'priority': rule.priority})

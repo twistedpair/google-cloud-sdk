@@ -236,7 +236,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     """
 
     destination_object = self._client.types.Object(
-        name=self._destination_resource.storage_url.object_name,
+        name=self._destination_resource.storage_url.resource_name,
         bucket=grpc_util.get_full_bucket_name(
             self._destination_resource.storage_url.bucket_name),
         size=size)

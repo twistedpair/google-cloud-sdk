@@ -452,6 +452,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'publicDelegatedPrefix'],
       True
   )
+  RECOVERABLESNAPSHOTS = (
+      'recoverableSnapshots',
+      'projects/{project}/global/recoverableSnapshots/{recoverableSnapshot}',
+      {},
+      ['project', 'recoverableSnapshot'],
+      True
+  )
   REGIONACCELERATORTYPES = (
       'regionAcceleratorTypes',
       'projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}',

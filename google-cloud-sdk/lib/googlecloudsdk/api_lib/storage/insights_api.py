@@ -391,7 +391,7 @@ class InsightsApi:
         metadataFields=metadata_fields,
         storageDestinationOptions=self.messages.CloudStorageDestinationOptions(
             bucket=destination_url.bucket_name,
-            destinationPath=destination_url.object_name),
+            destinationPath=destination_url.resource_name),
         storageFilters=self.messages.CloudStorageFilters(
             bucket=source_bucket))
 
@@ -423,10 +423,10 @@ class InsightsApi:
       filter_list.append(
           'objectMetadataReportOptions.storageDestinationOptions.'
           'bucket="{}"'.format(destination.bucket_name))
-      if destination.object_name is not None:
+      if destination.resource_name is not None:
         filter_list.append(
             'objectMetadataReportOptions.storageDestinationOptions.'
-            'destinationPath="{}"'.format(destination.object_name))
+            'destinationPath="{}"'.format(destination.resource_name))
     if filter_list:
       return ' AND '.join(filter_list)
     else:
@@ -519,7 +519,7 @@ class InsightsApi:
       storage_destination_message = (
           self.messages.CloudStorageDestinationOptions(
               bucket=destination_url.bucket_name,
-              destinationPath=destination_url.object_name,
+              destinationPath=destination_url.resource_name,
           )
       )
       update_mask.append(

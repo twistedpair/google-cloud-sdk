@@ -5,6 +5,103 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 526.0.0 (2025-06-10)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Updated `gcloud storage batch-operations jobs list` to include transformation type in the `TRANSFORMATION` column.
+
+
+### BigQuery
+
+* Fixed a bug that would sometimes cause a crash when running with Python versions older than 3.9.2.
+* Fixed a bug that would cause a crash when running `bq query` with `--dry_run=true` and `--rpc=true`.
+
+### Certificate Authority Service
+
+* Removed the requirement to enter a project ID when using CAS in `gcloud` CLI. It is now possible to use project number instead of project ID when using `gcloud privateca`.
+
+### Cloud DNS
+
+* Add support for DNS64 policies in GA.
+
+### Cloud Filestore
+
+* Added `--ldap` flag to `gcloud v1 filestore instances create`.
+
+### Cloud Key Management Service
+
+*   Added support for the prehash post-quantum asymmetric signing algorithm
+`HASH-SLH-DSA-SHA2-128s-SHA256`.
+
+### Cloud Resource Manager
+
+* Added `--allowed-values-regex` flag to `gcloud resource-manager
+tags keys update` command to allow the user to update the regex of the allowed
+values under a TagKey.
+
+* Added `--allowed-values-regex` flag to `gcloud resource-manager
+tags keys create` command to allow the Tag Values shortName confining to the
+regex getting created during the time of Binding creation.
+
+### Cloud Run
+
+* Promoted `--condition` flag for `gcloud run services {add,remove}-iam-policy-binding` from beta to GA.
+
+### Cloud Storage
+
+* Fixed issue where `gcloud storage cp|mv|rsync` failed the command for
+(Parallel Composite Upload)[https://cloud.google.com/storage/docs/parallel-composite-uploads]
+if the `storage.buckets.get` permissions were missing.
+
+### Compute Engine
+
+*   Promoted `--phase1-encryption`, `--phase1-integrity`, `--phase1-prf`,
+    `--phase1-dh`, `--phase2-encryption`, `--phase2-integrity`, `--phase2-pfs`
+    flags in `gcloud compute vpn-tunnels create` to beta.
+
+### Container
+
+* Added `--alpha-cluster-feature-gates` flag to `gcloud container clusters create` command to specify the feature gates for alpha clusters.
+
+### Database Migration
+
+* Added SQLServer as source engine to `gcloud database-migration conversion-workspaces create`.
+* Added AlloyDB as destination provider to `gcloud database-migration conversion-workspaces create`.
+* Added `--ssl-flags` flag to `gcloud database-migration connection-profiles create sqlserver`.
+
+### Developer Connect
+
+*   Added `gcloud developer-connect insights-configs` command group. This
+    group allows users to manage Developer Connect Insights Configs and
+    includes commands to `create`, `delete`, `describe`, `list`, and `update`
+    these resources.
+
+### Network Connectivity
+
+*   Added `gcloud beta network-connectivity spokes gateways` commands for
+    managing NCC gateway spokes.
+*   Added `gcloud beta network-connectivity spokes gateways advertised-routes`
+    commands for managing routes that attract traffic to NCC gateway spokes.
+
+### Network Security
+
+*   Added `gcloud network-security secure-access-connect` commands which allow customers to establish connections to SSE providers.
+*   Updated import and export schemas for `gcloud beta network-security authz-policies`.
+
+### Pubsub Emulator
+
+*   Add support for topic and subscription Single Message Transforms (SMTs).
+
+### Security Command Center
+
+*   Added `--organization` and `--location` argument flags to `gcloud scc posture-deployments list` to list scc's posture deployments for organization level.
+* Added `vm-manager`, `ec2-vulnerability-assessment`, `gce-vulnerability-assessment`, `azure-vulnerability-assessment`, and `notebook-security-scanner` services to the `SUPPORTED_SERVICES` list.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 525.0.0 (2025-06-03)
 
 ### Breaking Changes

@@ -15,6 +15,7 @@
 """API interface for interacting with cloud storage providers."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -23,7 +24,6 @@ import re
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import resource
 from googlecloudsdk.core import exceptions as core_exceptions
-
 from six.moves import urllib
 
 
@@ -85,7 +85,18 @@ class ResumableUploadAbortError(CloudApiError):
 
 
 class GcsApiError(CloudApiError, api_exceptions.HttpException):
-  pass
+  """Base class for GCS API errors."""
+
+  @property
+  def status_code(self) -> int | None:
+    """Returns the status code of the error, or None if it is not available."""
+    if hasattr(self, 'error') and self.error:
+      # api_exception HttpException contains a error attribute that can be used
+      # to get the status code.
+      try:
+        return getattr(self.error, 'status_code', None)
+      except KeyError:
+        return None
 
 
 class GcsNotFoundError(GcsApiError, NotFoundError):

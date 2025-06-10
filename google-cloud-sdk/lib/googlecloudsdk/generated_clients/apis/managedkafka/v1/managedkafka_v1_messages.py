@@ -217,6 +217,8 @@ class Cluster(_messages.Message):
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the cluster.
     tlsConfig: Optional. TLS configuration for the Kafka cluster.
+    updateOptions: Optional. UpdateOptions represents options that control how
+      updates to the cluster are applied.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
@@ -295,7 +297,8 @@ class Cluster(_messages.Message):
   satisfiesPzs = _messages.BooleanField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   tlsConfig = _messages.MessageField('TlsConfig', 11)
-  updateTime = _messages.StringField(12)
+  updateOptions = _messages.MessageField('UpdateOptions', 12)
+  updateTime = _messages.StringField(13)
 
 
 class ConnectAccessConfig(_messages.Message):
@@ -2017,6 +2020,20 @@ class ManagedkafkaProjectsLocationsSchemaRegistriesContextsListRequest(_messages
   parent = _messages.StringField(1, required=True)
 
 
+class ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of subject to delete the mode for. The
+      format is * projects/{project}/locations/{location}/schemaRegistries/{sc
+      hema_registry}/mode/{subject} * projects/{project}/locations/{location}/
+      schemaRegistries/{schema_registry}/contexts/{context}/mode/{subject}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeGetRequest(_messages.Message):
   r"""A ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeGetRequest
   object.
@@ -2361,6 +2378,19 @@ class ManagedkafkaProjectsLocationsSchemaRegistriesListRequest(_messages.Message
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class ManagedkafkaProjectsLocationsSchemaRegistriesModeDeleteRequest(_messages.Message):
+  r"""A ManagedkafkaProjectsLocationsSchemaRegistriesModeDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of subject to delete the mode for. The
+      format is * projects/{project}/locations/{location}/schemaRegistries/{sc
+      hema_registry}/mode/{subject} * projects/{project}/locations/{location}/
+      schemaRegistries/{schema_registry}/contexts/{context}/mode/{subject}
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ManagedkafkaProjectsLocationsSchemaRegistriesModeGetRequest(_messages.Message):
@@ -3298,6 +3328,24 @@ class TrustConfig(_messages.Message):
   """
 
   casConfigs = _messages.MessageField('CertificateAuthorityServiceConfig', 1, repeated=True)
+
+
+class UpdateOptions(_messages.Message):
+  r"""UpdateOptions specifies options that influence how a cluster update is
+  applied. These options control the behavior of the update process, rather
+  than defining the desired end-state of a cluster.
+
+  Fields:
+    allowBrokerDownscaleOnClusterUpscale: Optional. If true, allows an update
+      operation that increases the total vCPU and/or memory allocation of the
+      cluster to significantly decrease the per-broker vCPU and/or memory
+      allocation. This can result in reduced performance and availability. By
+      default, the update operation will fail if an upscale request results in
+      a vCPU or memory allocation for the brokers that is smaller than 90% of
+      the current broker size.
+  """
+
+  allowBrokerDownscaleOnClusterUpscale = _messages.BooleanField(1)
 
 
 class UpdateSchemaConfigRequest(_messages.Message):

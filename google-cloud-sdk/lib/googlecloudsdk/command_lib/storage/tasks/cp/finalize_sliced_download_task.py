@@ -95,9 +95,9 @@ class FinalizeSlicedDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
           'Failed to download one or more component of sliced download.')
 
     temporary_object_path = (
-        self._temporary_destination_resource.storage_url.object_name)
+        self._temporary_destination_resource.storage_url.resource_name)
     final_destination_object_path = (
-        self._final_destination_resource.storage_url.object_name)
+        self._final_destination_resource.storage_url.resource_name)
     if (properties.VALUES.storage.check_hashes.Get() !=
         properties.CheckHashes.NEVER.value and
         self._source_resource.crc32c_hash):

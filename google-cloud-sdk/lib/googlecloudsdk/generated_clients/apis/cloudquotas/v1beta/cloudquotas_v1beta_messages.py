@@ -15,8 +15,12 @@ from apitools.base.py import encoding
 package = 'cloudquotas'
 
 
-class CloudquotasFoldersLocationsGetQuotaAdjusterSettingsRequest(_messages.Message):
-  r"""A CloudquotasFoldersLocationsGetQuotaAdjusterSettingsRequest object.
+class CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
+    _messages.Message
+):
+  r"""A CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettin
+
+  gsRequest object.
 
   Fields:
     name: Required. Name of the `quotaAdjusterSettings` configuration. Only a
@@ -24,6 +28,33 @@ class CloudquotasFoldersLocationsGetQuotaAdjusterSettingsRequest(_messages.Messa
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
+    _messages.Message
+):
+  r"""A CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSet
+
+  tingsRequest object.
+
+  Fields:
+    name: Identifier. Name of the config would be of the format:
+      projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+      organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
+    quotaAdjusterSettings: A QuotaAdjusterSettings resource to be passed as
+      the request body.
+    updateMask: Optional. The list of fields to update.
+    validateOnly: Optional. If set to true, checks the syntax of the request
+      but doesn't update the quota adjuster settings value. Note that although
+      a request can be valid, that doesn't guarantee that the request will be
+      fulfilled.
+  """
+
+  name = _messages.StringField(1, required=True)
+  quotaAdjusterSettings = _messages.MessageField('QuotaAdjusterSettings', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class CloudquotasFoldersLocationsQuotaPreferencesCreateRequest(_messages.Message):
@@ -192,8 +223,27 @@ class CloudquotasFoldersLocationsServicesQuotaInfosListRequest(_messages.Message
   parent = _messages.StringField(3, required=True)
 
 
-class CloudquotasFoldersLocationsUpdateQuotaAdjusterSettingsRequest(_messages.Message):
-  r"""A CloudquotasFoldersLocationsUpdateQuotaAdjusterSettingsRequest object.
+class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
+    _messages.Message
+):
+  r"""A CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjuster
+
+  SettingsRequest object.
+
+  Fields:
+    name: Required. Name of the `quotaAdjusterSettings` configuration. Only a
+      single setting per project is supported.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
+    _messages.Message
+):
+  r"""A CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjus
+
+  terSettingsRequest object.
 
   Fields:
     name: Identifier. Name of the config would be of the format:
@@ -213,18 +263,6 @@ class CloudquotasFoldersLocationsUpdateQuotaAdjusterSettingsRequest(_messages.Me
   quotaAdjusterSettings = _messages.MessageField('QuotaAdjusterSettings', 2)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
-
-
-class CloudquotasOrganizationsLocationsGetQuotaAdjusterSettingsRequest(_messages.Message):
-  r"""A CloudquotasOrganizationsLocationsGetQuotaAdjusterSettingsRequest
-  object.
-
-  Fields:
-    name: Required. Name of the `quotaAdjusterSettings` configuration. Only a
-      single setting per project is supported.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class CloudquotasOrganizationsLocationsQuotaPreferencesCreateRequest(_messages.Message):
@@ -391,30 +429,6 @@ class CloudquotasOrganizationsLocationsServicesQuotaInfosListRequest(_messages.M
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class CloudquotasOrganizationsLocationsUpdateQuotaAdjusterSettingsRequest(_messages.Message):
-  r"""A CloudquotasOrganizationsLocationsUpdateQuotaAdjusterSettingsRequest
-  object.
-
-  Fields:
-    name: Identifier. Name of the config would be of the format:
-      projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
-      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
-      organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
-    quotaAdjusterSettings: A QuotaAdjusterSettings resource to be passed as
-      the request body.
-    updateMask: Optional. The list of fields to update.
-    validateOnly: Optional. If set to true, checks the syntax of the request
-      but doesn't update the quota adjuster settings value. Note that although
-      a request can be valid, that doesn't guarantee that the request will be
-      fulfilled.
-  """
-
-  name = _messages.StringField(1, required=True)
-  quotaAdjusterSettings = _messages.MessageField('QuotaAdjusterSettings', 2)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
 
 
 class CloudquotasProjectsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(_messages.Message):
@@ -743,6 +757,7 @@ class OperationMetadata(_messages.Message):
 
 class QuotaAdjusterSettings(_messages.Message):
   r"""The QuotaAdjusterSettings resource defines the settings for the Quota
+
   Adjuster.
 
   Enums:
@@ -756,6 +771,14 @@ class QuotaAdjusterSettings(_messages.Message):
       is provided on update and does not match the current server's ETag in
       the QuotaAdjusterSettings, the request is blocked and returns an ABORTED
       error. See https://google.aip.dev/134#etags for more details on ETags.
+    inherited: Optional. Indicates whether the setting is inherited or
+      explicitly specified.
+    inheritedFrom: Output only. The resource container from which the setting
+      is inherited. This refers to the nearest ancestor with enablement set
+      (either ENABLED or DISABLED). The value can be an
+      organizations/{organization_id}, folders/{folder_id}, or can be
+      'default' if no ancestor exists with enablement set. The value will be
+      empty when enablement is directly set on this container.
     name: Identifier. Name of the config would be of the format:
       projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
       folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
@@ -779,8 +802,10 @@ class QuotaAdjusterSettings(_messages.Message):
 
   enablement = _messages.EnumField('EnablementValueValuesEnum', 1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  inherited = _messages.BooleanField(3)
+  inheritedFrom = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class QuotaConfig(_messages.Message):

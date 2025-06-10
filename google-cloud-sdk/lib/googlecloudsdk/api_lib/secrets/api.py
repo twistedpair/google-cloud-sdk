@@ -116,6 +116,7 @@ class Secrets(Client):
       policy,
       locations,
       labels,
+      tags,
       expire_time=None,
       ttl=None,
       keys=None,
@@ -161,6 +162,7 @@ class Secrets(Client):
             secretId=secret_ref.Name(),
             secret=self.messages.Secret(
                 labels=labels,
+                tags=tags,
                 replication=replication,
                 expireTime=expire_time,
                 ttl=ttl,

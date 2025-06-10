@@ -103,7 +103,7 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       predefined_acl = None
 
     object_metadata = self._messages.Object(
-        name=self._destination_resource.storage_url.object_name,
+        name=self._destination_resource.storage_url.resource_name,
         bucket=self._destination_resource.storage_url.bucket_name)
 
     if (isinstance(self._source_resource, resource_reference.ObjectResource) and

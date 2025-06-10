@@ -1838,7 +1838,7 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyV
 
   Fields:
     pageSize: Optional. The maximum number of items to return. The service may
-      return fewer than this value. If unspecified, at most 50 items will be
+      return fewer than this value. If unspecified, at most 1000 items will be
       returned. The maximum value is 1000; values above 1000 will be coerced
       to 1000.
     pageToken: Optional. A page token, received from a previous call. Provide

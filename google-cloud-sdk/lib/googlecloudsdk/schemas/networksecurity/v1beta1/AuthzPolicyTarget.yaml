@@ -33,7 +33,7 @@ properties:
       All gateways and forwarding rules referenced by this policy and extensions
       must share the same load balancing scheme. Supported values:
       `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information, refer to
-      [Choosing a load balancer](https://cloud.google.com/load-
+      [Backend services overview](https://cloud.google.com/load-
       balancing/docs/backend-service).
     type: string
     enum:

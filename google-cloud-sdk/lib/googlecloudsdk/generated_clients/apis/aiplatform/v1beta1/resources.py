@@ -1159,6 +1159,46 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REASONINGENGINES_EXAMPLES = (
+      'projects.locations.reasoningEngines.examples',
+      'projects/{projectsId}/locations/{locationsId}/reasoningEngines/'
+      '{reasoningEnginesId}/examples/{examplesId}',
+      {},
+      ['projectsId', 'locationsId', 'reasoningEnginesId', 'examplesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES_EXAMPLES_OPERATIONS = (
+      'projects.locations.reasoningEngines.examples.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/examples/{examplesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES_MEMORIES = (
+      'projects.locations.reasoningEngines.memories',
+      'projects/{projectsId}/locations/{locationsId}/reasoningEngines/'
+      '{reasoningEnginesId}/memories/{memoriesId}',
+      {},
+      ['projectsId', 'locationsId', 'reasoningEnginesId', 'memoriesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES_MEMORIES_OPERATIONS = (
+      'projects.locations.reasoningEngines.memories.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_REASONINGENGINES_OPERATIONS = (
       'projects.locations.reasoningEngines.operations',
       '{+name}',
@@ -1198,6 +1238,18 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES_SESSIONS_OPERATIONS = (
+      'projects.locations.reasoningEngines.sessions.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/sessions/{sessionsId}/'
+              'operations/{operationsId}',
       },
       ['name'],
       True

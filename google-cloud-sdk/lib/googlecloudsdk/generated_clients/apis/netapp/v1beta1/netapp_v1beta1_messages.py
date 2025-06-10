@@ -368,19 +368,19 @@ class BackupRetentionPolicy(_messages.Message):
     backupMinimumEnforcedRetentionDays: Required. Minimum retention duration
       in days for backups in the backup vault.
     dailyBackupImmutable: Optional. Indicates if the daily backups are
-      immutable. Atleast one of daily_backup_immutable,
+      immutable. At least one of daily_backup_immutable,
       weekly_backup_immutable, monthly_backup_immutable and
       manual_backup_immutable must be true.
     manualBackupImmutable: Optional. Indicates if the manual backups are
-      immutable. Atleast one of daily_backup_immutable,
+      immutable. At least one of daily_backup_immutable,
       weekly_backup_immutable, monthly_backup_immutable and
       manual_backup_immutable must be true.
     monthlyBackupImmutable: Optional. Indicates if the monthly backups are
-      immutable. Atleast one of daily_backup_immutable,
+      immutable. At least one of daily_backup_immutable,
       weekly_backup_immutable, monthly_backup_immutable and
       manual_backup_immutable must be true.
     weeklyBackupImmutable: Optional. Indicates if the weekly backups are
-      immutable. Atleast one of daily_backup_immutable,
+      immutable. At least one of daily_backup_immutable,
       weekly_backup_immutable, monthly_backup_immutable and
       manual_backup_immutable must be true.
   """
@@ -693,6 +693,27 @@ class EstablishPeeringRequest(_messages.Message):
   peerVolumeName = _messages.StringField(4)
 
 
+class EstablishVolumePeeringRequest(_messages.Message):
+  r"""EstablishVolumePeeringRequest establishes cluster and svm peerings
+  between the source and destination clusters.
+
+  Fields:
+    peerClusterName: Required. Name of the user's local source cluster to be
+      peered with the destination cluster.
+    peerIpAddresses: Optional. List of IPv4 ip addresses to be used for
+      peering.
+    peerSvmName: Required. Name of the user's local source vserver svm to be
+      peered with the destination vserver svm.
+    peerVolumeName: Required. Name of the user's local source volume to be
+      peered with the destination volume.
+  """
+
+  peerClusterName = _messages.StringField(1)
+  peerIpAddresses = _messages.StringField(2, repeated=True)
+  peerSvmName = _messages.StringField(3)
+  peerVolumeName = _messages.StringField(4)
+
+
 class ExportPolicy(_messages.Message):
   r"""Defines the export policy for the volume.
 
@@ -837,19 +858,19 @@ class HybridPeeringDetails(_messages.Message):
   r"""HybridPeeringDetails contains details about the hybrid peering.
 
   Fields:
-    command: Optional. Copy-paste-able commands to be used on user's ONTAP to
-      accept peering requests.
-    commandExpiryTime: Optional. Expiration time for the peering command to be
-      executed on user's ONTAP.
-    passphrase: Optional. Temporary passphrase generated to accept cluster
+    command: Output only. Copy-paste-able commands to be used on user's ONTAP
+      to accept peering requests.
+    commandExpiryTime: Output only. Expiration time for the peering command to
+      be executed on user's ONTAP.
+    passphrase: Output only. Temporary passphrase generated to accept cluster
       peering command.
-    peerClusterName: Optional. Name of the user's local source cluster to be
-      peered with the destination cluster.
-    peerSvmName: Optional. Name of the user's local source vserver svm to be
-      peered with the destination vserver svm.
-    peerVolumeName: Optional. Name of the user's local source volume to be
+    peerClusterName: Output only. Name of the user's local source cluster to
+      be peered with the destination cluster.
+    peerSvmName: Output only. Name of the user's local source vserver svm to
+      be peered with the destination vserver svm.
+    peerVolumeName: Output only. Name of the user's local source volume to be
       peered with the destination volume.
-    subnetIp: Optional. IP address of the subnet.
+    subnetIp: Output only. IP address of the subnet.
   """
 
   command = _messages.StringField(1)
@@ -1344,6 +1365,7 @@ class LocationMetadata(_messages.Message):
     SupportedServiceLevelsValueListEntryValuesEnum:
 
   Fields:
+    hasVcp: Output only. Indicates if the location has VCP support.
     supportedFlexPerformance: Output only. Supported flex performance in a
       location.
     supportedServiceLevels: Output only. Supported service levels in a
@@ -1378,8 +1400,9 @@ class LocationMetadata(_messages.Message):
     STANDARD = 3
     FLEX = 4
 
-  supportedFlexPerformance = _messages.EnumField('SupportedFlexPerformanceValueListEntryValuesEnum', 1, repeated=True)
-  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 2, repeated=True)
+  hasVcp = _messages.BooleanField(1)
+  supportedFlexPerformance = _messages.EnumField('SupportedFlexPerformanceValueListEntryValuesEnum', 2, repeated=True)
+  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 3, repeated=True)
 
 
 class MonthlySchedule(_messages.Message):
@@ -2154,6 +2177,20 @@ class NetappProjectsLocationsVolumesDeleteRequest(_messages.Message):
   """
 
   force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetappProjectsLocationsVolumesEstablishPeeringRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesEstablishPeeringRequest object.
+
+  Fields:
+    establishVolumePeeringRequest: A EstablishVolumePeeringRequest resource to
+      be passed as the request body.
+    name: Required. The volume resource name, in the format
+      `projects/{project_id}/locations/{location}/volumes/{volume_id}`
+  """
+
+  establishVolumePeeringRequest = _messages.MessageField('EstablishVolumePeeringRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -3369,10 +3406,10 @@ class StoragePool(_messages.Message):
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
-    totalIops: Optional. Custom Performance Total IOPS of the pool If not
+    totalIops: Optional. Custom Performance Total IOPS of the pool if not
       provided, it will be calculated based on the total_throughput_mibps
     totalThroughputMibps: Optional. Custom Performance Total Throughput of the
-      pool (in MiB/s)
+      pool (in MiBps)
     unifiedPool: Optional. Flag indicating if the pool has unified storage.
     volumeCapacityGib: Output only. Allocated size of all volumes in GIB in
       the storage pool
@@ -3562,8 +3599,8 @@ class TransferStats(_messages.Message):
       failure.
     totalTransferDuration: Cumulative time taken across all transfers for the
       replication relationship.
-    transferBytes: Cumulative bytes trasferred so far for the replication
-      relatinonship.
+    transferBytes: Cumulative bytes transferred so far for the replication
+      relationship.
     updateTime: Time when progress was updated last.
   """
 

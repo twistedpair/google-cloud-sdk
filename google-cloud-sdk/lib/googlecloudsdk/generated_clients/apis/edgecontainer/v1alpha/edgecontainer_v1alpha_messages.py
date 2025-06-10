@@ -480,6 +480,18 @@ class CreateIdentityProviderRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class DNSServer(_messages.Message):
+  r"""Represents a DNS server for the zone.
+
+  Fields:
+    ipAddress: Output only. The IP address of the DNS server.
+    tld: Output only. The DNS server's top level domain.
+  """
+
+  ipAddress = _messages.StringField(1)
+  tld = _messages.StringField(2)
+
+
 class Details(_messages.Message):
   r"""The created connection details.
 
@@ -1127,6 +1139,22 @@ class EdgecontainerProjectsLocationsServiceAccountsDeleteRequest(_messages.Messa
   name = _messages.StringField(1, required=True)
 
 
+class EdgecontainerProjectsLocationsServiceAccountsGenerateKeyRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsGenerateKeyRequest
+  object.
+
+  Fields:
+    generateServiceAccountKeyRequest: A GenerateServiceAccountKeyRequest
+      resource to be passed as the request body.
+    name: Required. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+  """
+
+  generateServiceAccountKeyRequest = _messages.MessageField('GenerateServiceAccountKeyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class EdgecontainerProjectsLocationsServiceAccountsGetRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsServiceAccountsGetRequest object.
 
@@ -1418,6 +1446,34 @@ class GenerateOfflineCredentialResponse(_messages.Message):
   clientKey = _messages.StringField(2)
   expireTime = _messages.StringField(3)
   userId = _messages.StringField(4)
+
+
+class GenerateServiceAccountKeyRequest(_messages.Message):
+  r"""Request proto for GenerateServiceAccountKey API."""
+
+
+class GenerateServiceAccountKeyResponse(_messages.Message):
+  r"""Response proto for GenerateServiceAccountKey API.
+
+  Fields:
+    ca_cert: Output only. The CA cert.
+    format_version: Output only. The format version.
+    name: Output only. The name of service identity.
+    private_key: Output only. The private key.
+    private_key_id: Output only. The private key id.
+    project: Output only. The project that the service account belongs to.
+    token_uri: Output only. The token URI.
+    type: The credential type.
+  """
+
+  ca_cert = _messages.StringField(1)
+  format_version = _messages.StringField(2)
+  name = _messages.StringField(3)
+  private_key = _messages.StringField(4)
+  private_key_id = _messages.StringField(5)
+  project = _messages.StringField(6)
+  token_uri = _messages.StringField(7)
+  type = _messages.StringField(8)
 
 
 class GoogleGroupAuthenticationConfig(_messages.Message):
@@ -2493,7 +2549,6 @@ class ServiceAccount(_messages.Message):
   Fields:
     createTime: Output only. The time when the project service account was
       created.
-    keys: Optional. service account keys.
     labels: Optional. Labels associated with this resource.
     name: Identifier. The canonical resource name of the project service
       account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
@@ -2529,31 +2584,10 @@ class ServiceAccount(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  keys = _messages.MessageField('ServiceAccountKey', 2, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
-  zone = _messages.StringField(6)
-
-
-class ServiceAccountKey(_messages.Message):
-  r"""ServiceAccountKey contains the key components of a service account key.
-
-  Fields:
-    algorithm: Required. The algorithm of the key. Currently only ES256 keys
-      are supported.
-    expiryTime: Required. The expiration date for the key.
-    id: Required. The ID of the key. This is used to determine which key to
-      verify against.
-    key: Required. The base64 encoded public key to verify against.
-    validStartTime: Required. The start date when the key becomes valid.
-  """
-
-  algorithm = _messages.StringField(1)
-  expiryTime = _messages.StringField(2)
-  id = _messages.StringField(3)
-  key = _messages.StringField(4)
-  validStartTime = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  zone = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2982,11 +3016,13 @@ class ZonalService(_messages.Message):
       ALLOYDB: AlloyDB service, alloydb.googleapis.com.
       VMM: VMM service, gdcvmmanager.googleapis.com.
       BOOKSTORE: Bookstore service, bookstore.googleapis.com.
+      VERTEX: Vertex service, aiplatform.googleapis.com.
     """
     SERVICE_SELECTOR_UNSPECIFIED = 0
     ALLOYDB = 1
     VMM = 2
     BOOKSTORE = 3
+    VERTEX = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the service.
@@ -3047,6 +3083,7 @@ class Zone(_messages.Message):
   Fields:
     certificateAuthorities: Output only. The web CA certificate for the zone.
     createTime: Output only. The time when the zone was created.
+    dnsServers: Output only. The DNS servers for the zone.
     labels: Optional. Labels associated with this resource.
     name: Identifier. The canonical resource name of the zone. E.g.
       organizations/{organization}/locations/{location}/zones/{zone}
@@ -3078,8 +3115,9 @@ class Zone(_messages.Message):
 
   certificateAuthorities = _messages.StringField(1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
+  dnsServers = _messages.MessageField('DNSServer', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
 
 
 class ZoneMetadata(_messages.Message):

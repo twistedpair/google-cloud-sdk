@@ -24,13 +24,6 @@ DOCS_URL = 'https://cloud.google.com/apis/docs/overview'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  LOCATIONS_POLICY = (
-      'locations.policy',
-      'locations/{location}/policy',
-      {},
-      ['location'],
-      True
-  )
   PROJECTS = (
       'projects',
       'projects/{project}',
@@ -43,20 +36,6 @@ class Collections(enum.Enum):
       'projects/{project}/locations/{location}',
       {},
       ['project', 'location'],
-      True
-  )
-  PROJECTS_LOCATIONS_BUILDS = (
-      'projects.locations.builds',
-      'projects/{project}/locations/{location}/builds/{build}',
-      {},
-      ['project', 'location', 'build'],
-      True
-  )
-  PROJECTS_LOCATIONS_CONNECTORS = (
-      'projects.locations.connectors',
-      'projects/{project}/locations/{location}/connectors/{connector}',
-      {},
-      ['project', 'location', 'connector'],
       True
   )
   PROJECTS_LOCATIONS_JOBS = (
@@ -82,28 +61,6 @@ class Collections(enum.Enum):
       ['project', 'location', 'job', 'execution', 'task'],
       True
   )
-  PROJECTS_LOCATIONS_KEYRINGS = (
-      'projects.locations.keyRings',
-      'projects/{project}/locations/{location}/keyRings/{key_ring}',
-      {},
-      ['project', 'location', 'key_ring'],
-      True
-  )
-  PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
-      'projects.locations.keyRings.cryptoKeys',
-      'projects/{project}/locations/{location}/keyRings/{key_ring}/'
-      'cryptoKeys/{crypto_key}',
-      {},
-      ['project', 'location', 'key_ring', 'crypto_key'],
-      True
-  )
-  PROJECTS_LOCATIONS_MESHES = (
-      'projects.locations.meshes',
-      'projects/{project}/locations/{location}/meshes/{mesh}',
-      {},
-      ['project', 'location', 'mesh'],
-      True
-  )
   PROJECTS_LOCATIONS_SERVICES = (
       'projects.locations.services',
       'projects/{project}/locations/{location}/services/{service}',
@@ -124,27 +81,6 @@ class Collections(enum.Enum):
       'projects/{project}/locations/{location}/workerPools/{worker_pool}',
       {},
       ['project', 'location', 'worker_pool'],
-      True
-  )
-  PROJECTS_POLICY = (
-      'projects.policy',
-      'projects/{project}/policy',
-      {},
-      ['project'],
-      True
-  )
-  PROJECTS_SECRETS = (
-      'projects.secrets',
-      'projects/{project}/secrets/{secret}',
-      {},
-      ['project', 'secret'],
-      True
-  )
-  PROJECTS_SECRETS_VERSIONS = (
-      'projects.secrets.versions',
-      'projects/{project}/secrets/{secret}/versions/{version}',
-      {},
-      ['project', 'secret', 'version'],
       True
   )
 

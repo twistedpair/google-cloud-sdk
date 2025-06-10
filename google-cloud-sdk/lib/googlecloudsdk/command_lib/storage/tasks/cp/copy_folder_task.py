@@ -75,8 +75,8 @@ class RenameFolderTask(copy_util.CopyTaskWithExitHandler):
 
     operation = api_client.rename_folder(
         destination_url.bucket_name,
-        source_url.object_name,
-        destination_url.object_name,
+        source_url.resource_name,
+        destination_url.resource_name,
     )
     if not operation.done:
       api_client.wait_for_operation(operation)
@@ -158,7 +158,7 @@ class CopyFolderTask(copy_util.CopyTaskWithExitHandler):
       try:
         api_client.create_folder(
             destination_url.bucket_name,
-            destination_url.object_name,
+            destination_url.resource_name,
             is_recursive=True,
         )
       except api_errors.ConflictError:

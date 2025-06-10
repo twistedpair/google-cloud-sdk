@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2022 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -736,6 +736,30 @@ def AddRolloutResourceArg(parser, api_version='v1'):
       name='rollout',
       resource_spec=spec,
       group_help='The group of arguments defining a Fleet Rollout.',
+      plural=False,
+      required=True,
+      # This hides the location flag as we only allow global scope.
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)
+
+
+def AddRolloutSequenceResourceArg(parser, api_version='v1'):
+  """Add resource arg for projects/{}/locations/{}/rolloutSequences/{}."""
+  # Flags without '--' prefix are automatically positional
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.rolloutSequences',
+      api_version=api_version,
+      resource_name='rolloutSequence',
+      plural_name='rolloutSequences',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_DefaultToGlobalLocationAttributeConfig(),
+      rolloutSequencesId=_BasicAttributeConfig('rollout_sequence'),
+  )
+  concept_parsers.ConceptParser.ForResource(
+      name='rolloutSequence',
+      resource_spec=spec,
+      group_help='The group of arguments defining a Rollout Sequence.',
       plural=False,
       required=True,
       # This hides the location flag as we only allow global scope.

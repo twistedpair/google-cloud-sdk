@@ -357,8 +357,8 @@ class Service(proto.Message):
             settings
         invoker_iam_disabled (bool):
             Optional. Disables IAM permission check for
-            run.routes.invoke for callers of this service. This feature
-            is available by invitation only. For more information, visit
+            run.routes.invoke for callers of this service. For more
+            information, visit
             https://cloud.google.com/run/docs/securing/managing-access#invoker_check.
         default_uri_disabled (bool):
             Optional. Disables public resolution of the
@@ -366,6 +366,8 @@ class Service(proto.Message):
         urls (MutableSequence[str]):
             Output only. All URLs serving traffic for
             this Service.
+        iap_enabled (bool):
+            Optional. IAP settings on the Service.
         custom_audiences (MutableSequence[str]):
             One or more custom audiences that you want
             this service to support. Specify each custom
@@ -410,6 +412,10 @@ class Service(proto.Message):
             Service is serving traffic.
         satisfies_pzs (bool):
             Output only. Reserved for future use.
+        threat_detection_enabled (bool):
+            Output only. True if Cloud Run Threat
+            Detection monitoring is enabled for the parent
+            project of this Service.
         build_config (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BuildConfig):
             Optional. Configuration for building a Cloud
             Run function.
@@ -551,6 +557,10 @@ class Service(proto.Message):
         proto.STRING,
         number=24,
     )
+    iap_enabled: bool = proto.Field(
+        proto.BOOL,
+        number=25,
+    )
     custom_audiences: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=37,
@@ -589,6 +599,10 @@ class Service(proto.Message):
     satisfies_pzs: bool = proto.Field(
         proto.BOOL,
         number=38,
+    )
+    threat_detection_enabled: bool = proto.Field(
+        proto.BOOL,
+        number=40,
     )
     build_config: vendor_settings.BuildConfig = proto.Field(
         proto.MESSAGE,

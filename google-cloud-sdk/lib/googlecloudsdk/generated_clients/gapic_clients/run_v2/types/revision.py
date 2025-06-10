@@ -164,6 +164,9 @@ class Revision(proto.Message):
     configuration.  A Revision references a container image.
     Revisions are only created by updates to its parent Service.
 
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         name (str):
             Output only. The unique name of this
@@ -286,6 +289,11 @@ class Revision(proto.Message):
             settings for the revision.
         node_selector (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.NodeSelector):
             The node selector for the revision.
+        gpu_zonal_redundancy_disabled (bool):
+            Optional. Output only. True if GPU zonal
+            redundancy is disabled on this revision.
+
+            This field is a member of `oneof`_ ``_gpu_zonal_redundancy_disabled``.
         creator (str):
             Output only. Email address of the
             authenticated creator.
@@ -437,6 +445,11 @@ class Revision(proto.Message):
         proto.MESSAGE,
         number=40,
         message=vendor_settings.NodeSelector,
+    )
+    gpu_zonal_redundancy_disabled: bool = proto.Field(
+        proto.BOOL,
+        number=48,
+        optional=True,
     )
     creator: str = proto.Field(
         proto.STRING,

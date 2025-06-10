@@ -554,3 +554,14 @@ def AddEnableGoogleGroupAuthentication(parser):
       If set, the cluster will be configured to use Google Group authentication.
       """,
   )
+
+
+def AddEnableRemoteBackup(parser):
+  parser.add_argument(
+      '--enable-remote-backup',
+      action='store_true',
+      hidden=True,
+      help="""
+      If set, the cluster will be created with remote backup featureenabled.
+      """,
+  )

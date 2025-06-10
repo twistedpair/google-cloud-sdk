@@ -1124,12 +1124,16 @@ def AddRestoreClusterSourceFlags(parser, release_track):
         hidden=True,
     )
 
-  continuous_backup_source_group = group.add_group(
+  pitr_group = group.add_group(
       help='Restore a cluster from a source cluster at a given point in time.'
   )
-  continuous_backup_source_group.add_argument(
-      '--source-cluster',
+  pitr_source_group = pitr_group.add_group(
+      help='Source for a point in time restore operation.',
       required=True,
+      mutex=True,
+  )
+  pitr_source_group.add_argument(
+      '--source-cluster',
       help=(
           'AlloyDB source cluster to restore from. This must either be the'
           ' full cluster name'
@@ -1139,7 +1143,21 @@ def AddRestoreClusterSourceFlags(parser, release_track):
           ' being created.'
       ),
   )
-  continuous_backup_source_group.add_argument(
+  if (
+      release_track == base.ReleaseTrack.ALPHA
+      or release_track == base.ReleaseTrack.BETA
+  ):
+    pitr_source_group.add_argument(
+        '--backupdr-data-source',
+        help=(
+            'Backup DR data source to restore from. This is a resource path of'
+            ' the form'
+            ' projects/myProject/locations/us-central1/backupVaults/myBackupVault/dataSources/myDataSource.'
+        ),
+        # TODO(b/400420101): Remove hidden flag once the feature is ready.
+        hidden=True,
+    )
+  pitr_group.add_argument(
       '--point-in-time',
       type=arg_parsers.Datetime.Parse,
       required=True,
