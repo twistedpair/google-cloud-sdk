@@ -20,9 +20,9 @@ from __future__ import unicode_literals
 
 import copy
 import datetime
+import sys
 
 from cloudsdk.google.protobuf import json_format
-from google.api_core.gapic_v1 import routing_header
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_json import metadata_util as json_metadata_util
 from googlecloudsdk.command_lib.storage import encryption_util
@@ -32,6 +32,16 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.util import crc32c
+
+
+# pylint:disable=g-import-not-at-top
+try:
+  # TODO(b/277356731) Remove version check after gcloud drops Python <= 3.5.
+  if sys.version_info.major == 3 and sys.version_info.minor > 5:
+    from google.api_core.gapic_v1 import routing_header
+except ImportError:
+  pass
+# pylint:enable=g-import-not-at-top
 
 
 GRPC_URL_BUCKET_OFFSET = len('projects/_/buckets/')
