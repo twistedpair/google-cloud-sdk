@@ -180,7 +180,7 @@ def _PrepareBuildConfig(
   if remote_source:
     # add the source uri as a label to the image
     # https://github.com/GoogleCloudPlatform/buildpacks/blob/main/cmd/utils/label/README.md
-    uri = f'gs://{remote_source.bucket}/{remote_source.name}#{remote_source.generation}'
+    uri = sources.GetGsutilUri(remote_source)
     if build_pack is not None:
       envs = build_pack[0].get('envs', [])
       envs.append(f'GOOGLE_LABEL_SOURCE={uri}')  # "google.source"

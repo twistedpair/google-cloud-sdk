@@ -116,19 +116,23 @@ def AddMaxWait(
   )
 
 
-def AddIsPrivate(parser, help_text="Bool indicator for private instance."):
-  parser.add_argument(
+def AddPrivateConfigGroup(parser, help_text="Private instance configuration."):
+  """Add flags for private config."""
+  group = parser.add_group(required=False, help=help_text)
+  group.add_argument(
       "--is-private",
       dest="is_private",
-      action="store_true",
-      required=False,
-      help=help_text,
+      # Disables autogeneration of the inverted --no-is-private flag.
+      action="store_const",
+      const=True,
+      required=True,
+      help="Bool indicator for private instance.",
   )
-
-
-def AddCAPool(parser, help_text="CA Pool path for private instance."):
-  parser.add_argument(
-      "--ca-pool", dest="ca_pool", required=False, help=help_text
+  group.add_argument(
+      "--ca-pool",
+      dest="ca_pool",
+      required=False,
+      help="CA Pool path for private instance.",
   )
 
 

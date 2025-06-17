@@ -2261,6 +2261,9 @@ class AiplatformProjectsLocationsEndpointsListRequest(_messages.Message):
       `labels."a key"`. * `base_model_name` only supports `=`. Some examples:
       * `endpoint=1` * `displayName="myDisplayName"` *
       `labels.myKey="myValue"` * `baseModelName="text-bison"`
+    gdcZone: Optional. Configures the Google Distributed Cloud Edge (GDCE)
+      environment for online prediction. Only set this field when the Endpoint
+      is to be deployed in a GDCE environment.
     pageSize: Optional. The standard list page size.
     pageToken: Optional. The standard list page token. Typically obtained via
       ListEndpointsResponse.next_page_token of the previous
@@ -2271,10 +2274,11 @@ class AiplatformProjectsLocationsEndpointsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  readMask = _messages.StringField(5)
+  gdcZone = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
 
 
 class AiplatformProjectsLocationsEndpointsMutateDeployedModelRequest(_messages.Message):
@@ -26958,6 +26962,13 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       to one of Vertex AI's [pre-built container images for
       prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
       built-containers) in this field.
+    invokeRoutePrefix: Immutable. Invoke route prefix for the custom
+      container. "/*" is the only supported value right now. By setting this
+      field, any non-root route on this model will be accessible with
+      [PredictionService.Invoke] eg: "/invoke/foo/bar". Only one of
+      `predict_route` or `invoke_route_prefix` can be set, and we default to
+      using `predict_route` if this field is not set. If this field is set,
+      the Model can only be deployed to dedicated endpoint.
     livenessProbe: Immutable. Specification for Kubernetes liveness probe.
     ports: Immutable. List of ports to expose from the container. Vertex AI
       sends any prediction requests that it receives to the first port on this
@@ -27004,11 +27015,12 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
   healthProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 6)
   healthRoute = _messages.StringField(7)
   imageUri = _messages.StringField(8)
-  livenessProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 9)
-  ports = _messages.MessageField('GoogleCloudAiplatformV1beta1Port', 10, repeated=True)
-  predictRoute = _messages.StringField(11)
-  sharedMemorySizeMb = _messages.IntegerField(12)
-  startupProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 13)
+  invokeRoutePrefix = _messages.StringField(9)
+  livenessProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 10)
+  ports = _messages.MessageField('GoogleCloudAiplatformV1beta1Port', 11, repeated=True)
+  predictRoute = _messages.StringField(12)
+  sharedMemorySizeMb = _messages.IntegerField(13)
+  startupProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 14)
 
 
 class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringBigQueryTable(_messages.Message):
@@ -32424,6 +32436,8 @@ class GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceRefe
     resourceDescription: Optional. Description of the resource.
     resourceTitle: Optional. Title of the resource.
     resourceUseCase: Optional. Use case (CUJ) of the resource.
+    supportsWorkbench: Optional. For notebook resource, whether the notebook
+      supports Workbench.
     title: Required.
   """
 
@@ -32456,7 +32470,8 @@ class GoogleCloudAiplatformV1beta1PublisherModelCallToActionRegionalResourceRefe
   resourceDescription = _messages.StringField(2)
   resourceTitle = _messages.StringField(3)
   resourceUseCase = _messages.StringField(4)
-  title = _messages.StringField(5)
+  supportsWorkbench = _messages.BooleanField(5)
+  title = _messages.StringField(6)
 
 
 class GoogleCloudAiplatformV1beta1PublisherModelCallToActionViewRestApi(_messages.Message):

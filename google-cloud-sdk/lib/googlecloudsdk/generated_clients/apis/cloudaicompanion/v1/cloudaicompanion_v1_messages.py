@@ -1997,8 +1997,10 @@ class DataSharingWithGoogleSetting(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp.
-    enablePreviewDataSharing: Optional. Whether preview data sharing should be
-      enabled.
+    enableDataSharing: Optional. Whether data sharing should be enabled in GA
+      products.
+    enablePreviewDataSharing: Optional. Whether data sharing should be enabled
+      in Preview products.
     labels: Optional. Labels as key value pairs.
     name: Identifier. Name of the resource. Format:projects/{project}/location
       s/{location}/dataSharingWithGoogleSettings/{dataSharingWithGoogleSetting
@@ -2031,10 +2033,11 @@ class DataSharingWithGoogleSetting(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  enablePreviewDataSharing = _messages.BooleanField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  enableDataSharing = _messages.BooleanField(2)
+  enablePreviewDataSharing = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class DoubleParameterArray(_messages.Message):

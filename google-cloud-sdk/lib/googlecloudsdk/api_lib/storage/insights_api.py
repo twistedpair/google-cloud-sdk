@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+from typing import Sequence, Optional
 
 from apitools.base.py import list_pager
 
@@ -72,61 +73,67 @@ class InsightsApi:
 
   def create_dataset_config(
       self,
-      dataset_config_name,
-      location,
-      destination_project,
-      source_projects_list,
-      organization_number,
-      retention_period,
-      include_buckets_prefix_regex_list=None,
-      exclude_buckets_prefix_regex_list=None,
-      include_buckets_name_list=None,
-      exclude_buckets_name_list=None,
-      include_source_locations=None,
-      exclude_source_locations=None,
-      auto_add_new_buckets=False,
-      identity_type=None,
-      description=None,
+      dataset_config_name: str,
+      location: str,
+      destination_project: str,
+      organization_number: int,
+      retention_period: int,
+      organization_scope: bool = False,
+      source_projects_list: Optional[Sequence[int]] = None,
+      source_folders_list: Optional[Sequence[int]] = None,
+      include_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
+      exclude_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
+      include_buckets_name_list: Optional[Sequence[str]] = None,
+      exclude_buckets_name_list: Optional[Sequence[str]] = None,
+      include_source_locations: Optional[Sequence[str]] = None,
+      exclude_source_locations: Optional[Sequence[str]] = None,
+      auto_add_new_buckets: bool = False,
+      identity_type: str = None,
+      description: str = None,
   ):
     """Creates a dataset config.
 
     Args:
-      dataset_config_name (str): Name for the dataset config being created.
-      location (str): The location where insights data will be stored in a GCS
+      dataset_config_name: Name for the dataset config being created.
+      location: The location where insights data will be stored in a GCS
         managed BigQuery instance.
-      destination_project (str): The project in which the dataset config is
+      destination_project: The project in which the dataset config is
         being created and by extension the insights data will be stored.
-      source_projects_list (list[int]): List of source project numbers. Insights
-        data is to be collected for buckets that belong to these projects.
-      organization_number (int): Organization number of the organization to
-        which all source projects must belong.
-      retention_period (int): No of days for which insights data is to be
+      organization_number: Organization number of the organization to
+        which all source projects / folders must belong.
+      retention_period: No of days for which insights data is to be
         retained in BigQuery instance.
-      include_buckets_prefix_regex_list (list[str]): List of bucket prefix regex
+      organization_scope: If True, Insights data will be collected for
+        all resources in the given organization.
+      source_projects_list: List of source project numbers. Insights
+        data is to be collected for buckets that belong to these projects.
+      source_folders_list: List of source folder numbers. Insights
+        data is to be collected for buckets that belong to these folders.
+      include_buckets_prefix_regex_list: List of bucket prefix regex
         patterns which are to be included for insights processing from the
         source projects. We can either use included or excluded bucket
         parameters.
-      exclude_buckets_prefix_regex_list (list[str]): List of bucket prefix regex
+      exclude_buckets_prefix_regex_list: List of bucket prefix regex
         patterns which are to be excluded from insights processing from the
         source projects. We can either use included or excluded bucket
         parameters.
-      include_buckets_name_list (list[str]): List of bucket names which are to
+      include_buckets_name_list: List of bucket names which are to
         be included for insights processing from the source projects. We can
         either use included or excluded bucket parameters.
-      exclude_buckets_name_list (list[str]): List of bucket names which are to
+      exclude_buckets_name_list: List of bucket names which are to
         be excluded from insights processing from the source projects. We can
         either use included or excluded bucket parameters.
-      include_source_locations (list[str]): List of bucket locations which are
+      include_source_locations: List of bucket locations which are
         to be included for insights processing from the source projects. We can
         either use included or excluded location parameters.
-      exclude_source_locations (list[str]): List of bucket locations which are
+      exclude_source_locations: List of bucket locations which are
         to be excluded from insights processing from the source projects. We can
         either use included or excluded location parameters.
-      auto_add_new_buckets (bool): If True, auto includes any new buckets added
+      auto_add_new_buckets: If True, auto includes any new buckets added
         to source projects that satisfy the include/exclude criterias.
-      identity_type (str): Option for how permissions need to be setup for a
+      identity_type: Option for how permissions need to be setup for a
         given dataset config. Default option is IDENTITY_TYPE_PER_CONFIG.
-      description (str): Human readable description text for the given dataset
+      description: Human readable description text for the given dataset
         config.
 
     Returns:
@@ -144,7 +151,11 @@ class InsightsApi:
 
     source_projects = self.messages.SourceProjects(
         projectNumbers=source_projects_list
-    )
+    ) if source_projects_list else None
+
+    source_folders = self.messages.SourceFolders(
+        folderNumbers=source_folders_list
+    ) if source_folders_list else None
 
     dataset_config = self.messages.DatasetConfig(
         description=description,
@@ -154,6 +165,8 @@ class InsightsApi:
         organizationNumber=organization_number,
         retentionPeriodDays=retention_period,
         sourceProjects=source_projects,
+        sourceFolders=source_folders,
+        organizationScope=organization_scope if organization_scope else None,
     )
 
     # Exclude and Include options are marked as mutex flags,
@@ -267,30 +280,113 @@ class InsightsApi:
     )
 
   def _get_dataset_config_update_mask(
-      self, retention_period=None, description=None
+      self,
+      organization_scope: bool = None,
+      source_projects: Optional[Sequence[int]] = None,
+      source_folders: Optional[Sequence[int]] = None,
+      include_buckets_name_list: Optional[Sequence[str]] = None,
+      include_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
+      exclude_buckets_name_list: Optional[Sequence[str]] = None,
+      exclude_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
+      include_source_locations: Optional[Sequence[str]] = None,
+      exclude_source_locations: Optional[Sequence[str]] = None,
+      auto_add_new_buckets: bool = None,
+      retention_period: int = None,
+      description: str = None,
   ):
     """Returns the update_mask list."""
     update_mask = []
-    if retention_period is not None:
-      update_mask.append('retentionPeriodDays')
-    if description is not None:
-      update_mask.append('description')
+
+    mask_conditions = [
+        ('organizationScope', organization_scope),
+        ('sourceProjects', source_projects is not None),
+        ('sourceFolders', source_folders is not None),
+        (
+            'includeCloudStorageBuckets',
+            include_buckets_name_list is not None
+            or include_buckets_prefix_regex_list is not None,
+        ),
+        (
+            'excludeCloudStorageBuckets',
+            exclude_buckets_name_list is not None
+            or exclude_buckets_prefix_regex_list is not None,
+        ),
+        ('includeCloudStorageLocations', include_source_locations is not None),
+        ('excludeCloudStorageLocations', exclude_source_locations is not None),
+        ('includeNewlyCreatedBuckets', auto_add_new_buckets is not None),
+        ('retentionPeriodDays', retention_period is not None),
+        ('description', description is not None),
+    ]
+
+    for mask, condition in mask_conditions:
+      if condition:
+        update_mask.append(mask)
+
     return update_mask
 
   def update_dataset_config(
       self,
       dataset_config_relative_name,
-      retention_period=None,
-      description=None,
+      organization_scope: bool = None,
+      source_projects_list: Optional[Sequence[int]] = None,
+      source_folders_list: Optional[Sequence[int]] = None,
+      organization_number: Optional[int] = None,
+      include_buckets_name_list: Optional[Sequence[str]] = None,
+      include_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
+      exclude_buckets_name_list: Optional[Sequence[str]] = None,
+      exclude_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
+      include_source_locations: Optional[Sequence[str]] = None,
+      exclude_source_locations: Optional[Sequence[str]] = None,
+      auto_add_new_buckets: bool = None,
+      retention_period: int = None,
+      description: str = None,
   ):
     """Updates the dataset config.
 
     Args:
-      dataset_config_relative_name (str): The relative name of the dataset
+      dataset_config_relative_name: The relative name of the dataset
         config to be modified.
-      retention_period (int): No of days for which insights data is to be
+      organization_scope: If True, Insights data will be collected for
+        all resources in the given organization. If this field is Empty/None,
+        Either the sourceProjects or the sourceFolders must be set to update
+        the scope.
+      source_projects_list: List of source project numbers. Insights
+        data is to be collected for buckets that belong to these projects. If
+        this field is Empty/None, Either the organizationScope will be True or
+        the sourceFolders must be set to update the scope.
+      source_folders_list: List of source folder IDs. Insights
+        data is to be collected for buckets that belong to these organisational
+        folders. If this field is Empty/None, Either the organizationScope will
+        be True or the sourceProjects must be set to update the scope.
+      organization_number: Organization number of the organization to
+        which all source projects / folders must belong. This field is only
+        used when organizationScope is True. Organization number is not
+        updatable.
+      include_buckets_name_list: Optional list of bucket names which
+        are to be included for insights processing from the source projects. Can
+        either use included or excluded bucket parameters.
+      include_buckets_prefix_regex_list: Optional list of bucket
+        prefix regex patterns which are to be included for insights processing
+        from the source projects. Can either use included or excluded bucket
+        parameters.
+      exclude_buckets_name_list: Optional list of bucket names which
+        are to be excluded from insights processing from the source projects.
+        Can either use included or excluded bucket parameters.
+      exclude_buckets_prefix_regex_list: Optional list of bucket
+        prefix regex patterns which are to be excluded from insights processing
+        from the source projects. Can either use included or excluded bucket
+        parameters.
+      include_source_locations: Optional list of bucket locations
+        which are to be included for insights processing from the source
+        projects. Can either use included or excluded location parameters.
+      exclude_source_locations: Optional list of bucket locations
+        which are to be excluded from insights processing from the source
+        projects. Can either use included or excluded location parameters.
+      auto_add_new_buckets: If True, auto includes any new buckets added
+        to source projects that satisfy the include/exclude criterias.
+      retention_period: No of days for which insights data is to be
         retained in BigQuery instance.
-      description (str): Human readable description text for the given dataset
+      description: Human readable description text for the given dataset
         config.
 
     Returns:
@@ -299,7 +395,18 @@ class InsightsApi:
 
     # Only the fields present in the mask will be updated.
     update_mask = self._get_dataset_config_update_mask(
-        retention_period, description
+        organization_scope=organization_scope,
+        source_projects=source_projects_list,
+        source_folders=source_folders_list,
+        include_buckets_name_list=include_buckets_name_list,
+        include_buckets_prefix_regex_list=include_buckets_prefix_regex_list,
+        exclude_buckets_name_list=exclude_buckets_name_list,
+        exclude_buckets_prefix_regex_list=exclude_buckets_prefix_regex_list,
+        include_source_locations=include_source_locations,
+        exclude_source_locations=exclude_source_locations,
+        auto_add_new_buckets=auto_add_new_buckets,
+        retention_period=retention_period,
+        description=description,
     )
 
     if not update_mask:
@@ -309,10 +416,75 @@ class InsightsApi:
           )
       )
 
+    source_projects = self.messages.SourceProjects(
+        projectNumbers=source_projects_list
+    ) if source_projects_list is not None else None
+
+    source_folders = self.messages.SourceFolders(
+        folderNumbers=source_folders_list
+    ) if source_folders_list is not None else None
+
     dataset_config = self.messages.DatasetConfig(
         retentionPeriodDays=retention_period,
         description=description,
+        sourceProjects=source_projects,
+        sourceFolders=source_folders,
+        includeNewlyCreatedBuckets=auto_add_new_buckets,
     )
+
+    if organization_scope:
+      dataset_config.organizationScope = True
+      # TODO: b/418690611 - Remove this once the API supports organizationScope
+      # without organizationNumber.
+      if organization_number is not None:
+        dataset_config.organizationNumber = organization_number
+
+    # Exclude and Include options are marked as mutex flags,
+    # hence can make the below assumption about only one of the options being
+    # available.
+    if exclude_buckets_name_list or exclude_buckets_prefix_regex_list:
+      excluded_storage_buckets = [
+          self.messages.CloudStorageBucket(bucketName=excluded_name)
+          for excluded_name in exclude_buckets_name_list or []
+      ]
+      excluded_storage_buckets += [
+          self.messages.CloudStorageBucket(bucketPrefixRegex=excluded_regex)
+          for excluded_regex in exclude_buckets_prefix_regex_list or []
+      ]
+      dataset_config.excludeCloudStorageBuckets = (
+          self.messages.CloudStorageBuckets(
+              cloudStorageBuckets=excluded_storage_buckets
+          )
+      )
+    elif include_buckets_name_list or include_buckets_prefix_regex_list:
+      included_storage_buckets = [
+          self.messages.CloudStorageBucket(bucketName=included_name)
+          for included_name in include_buckets_name_list or []
+      ]
+      included_storage_buckets += [
+          self.messages.CloudStorageBucket(bucketPrefixRegex=included_regex)
+          for included_regex in include_buckets_prefix_regex_list or []
+      ]
+      dataset_config.includeCloudStorageBuckets = (
+          self.messages.CloudStorageBuckets(
+              cloudStorageBuckets=included_storage_buckets
+          )
+      )
+
+    if exclude_source_locations:
+      dataset_config.excludeCloudStorageLocations = (
+          self.messages.CloudStorageLocations(
+              locations=exclude_source_locations
+          )
+      )
+
+    if include_source_locations:
+      dataset_config.includeCloudStorageLocations = (
+          self.messages.CloudStorageLocations(
+              locations=include_source_locations
+          )
+      )
+
     request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsPatchRequest(
         name=dataset_config_relative_name,
         datasetConfig=dataset_config,

@@ -120,6 +120,10 @@ def GenerateDataDiscoverySpec(args: parser_extensions.Namespace):
     datadiscoveryspec.bigqueryPublishingConfig.tableType = module.GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig.TableTypeValueValuesEnum(
         args.bigquery_publishing_table_type
     )
+  if args.IsKnownAndSpecified('bigquery_publishing_dataset_project'):
+    datadiscoveryspec.bigqueryPublishingConfig.project = (
+        args.bigquery_publishing_dataset_project
+    )
   if args.IsKnownAndSpecified('bigquery_publishing_dataset_location'):
     datadiscoveryspec.bigqueryPublishingConfig.location = (
         args.bigquery_publishing_dataset_location
@@ -244,6 +248,9 @@ def GenerateUpdateMask(args: parser_extensions.Namespace):
       ),
       'bigquery_publishing_dataset_location': (
           'dataDiscoverySpec.bigqueryPublishingConfig.location'
+      ),
+      'bigquery_publishing_dataset_project': (
+          'dataDiscoverySpec.bigqueryPublishingConfig.project'
       ),
       'storage_include_patterns': (
           'dataDiscoverySpec.storageConfig.includePatterns'

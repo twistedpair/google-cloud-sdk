@@ -4668,21 +4668,30 @@ def SourceArg():
   )
 
 
-def AddSourceAndImageFlags(
-    parser,
-    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
-    mutex=True,
-):
-  """Add deploy source flags, an image or a source for build."""
-  SourceAndImageFlags(image=image, mutex=mutex).AddToParser(parser)
+def NoBuildArg():
+  return base.Argument(
+      '--no-build',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=(
+          'When set, the cloud build step will be skipped and the provided'
+          ' will be extracted directly on the base image.'
+      ),
+  )
 
 
 def SourceAndImageFlags(
-    image='us-docker.pkg.dev/cloudrun/container/hello:latest', mutex=True
+    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
+    mutex=True,
+    release_track=base.ReleaseTrack.GA,
 ):
+  """Returns a group of flags for deploy source, an image or source code."""
   group = base.ArgumentGroup(mutex=mutex)
   group.AddArgument(ImageArg(required=False, image=image, mutex=mutex))
   group.AddArgument(SourceArg())
+  if release_track == base.ReleaseTrack.ALPHA:
+    group.AddArgument(NoBuildArg())
   return group
 
 

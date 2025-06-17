@@ -252,6 +252,7 @@ class Event(_messages.Message):
     requested: The grant was requested.
     revoked: The grant was revoked.
     scheduled: The grant has been scheduled to give access.
+    withdrawn: The grant was withdrawn.
   """
 
   activated = _messages.MessageField('Activated', 1)
@@ -265,6 +266,7 @@ class Event(_messages.Message):
   requested = _messages.MessageField('Requested', 9)
   revoked = _messages.MessageField('Revoked', 10)
   scheduled = _messages.MessageField('Scheduled', 11)
+  withdrawn = _messages.MessageField('Withdrawn', 12)
 
 
 class Expired(_messages.Message):
@@ -377,6 +379,9 @@ class Grant(_messages.Message):
       REVOKED: Access was revoked by a user. This is a terminal state.
       ENDED: System took back access as the requested duration was over. This
         is a terminal state.
+      WITHDRAWING: Access is being withdrawn.
+      WITHDRAWN: Grant was withdrawn by the grant owner. This is a terminal
+        state.
     """
     STATE_UNSPECIFIED = 0
     APPROVAL_AWAITED = 1
@@ -389,6 +394,8 @@ class Grant(_messages.Message):
     REVOKING = 8
     REVOKED = 9
     ENDED = 10
+    WITHDRAWING = 11
+    WITHDRAWN = 12
 
   additionalEmailRecipients = _messages.StringField(1, repeated=True)
   auditTrail = _messages.MessageField('AuditTrail', 2)
@@ -975,6 +982,21 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsSearchRequest(_me
   parent = _messages.StringField(5, required=True)
 
 
+class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsWithdrawRequest(_messages.Message):
+  r"""A
+  PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsWithdrawRequest
+  object.
+
+  Fields:
+    name: Required. Name of the grant resource which is being withdrawn.
+    withdrawGrantRequest: A WithdrawGrantRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  withdrawGrantRequest = _messages.MessageField('WithdrawGrantRequest', 2)
+
+
 class PrivilegedaccessmanagerFoldersLocationsEntitlementsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsEntitlementsListRequest object.
 
@@ -1375,6 +1397,20 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsSearchReque
   parent = _messages.StringField(5, required=True)
 
 
+class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsWithdrawRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsWithdra
+  wRequest object.
+
+  Fields:
+    name: Required. Name of the grant resource which is being withdrawn.
+    withdrawGrantRequest: A WithdrawGrantRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  withdrawGrantRequest = _messages.MessageField('WithdrawGrantRequest', 2)
+
+
 class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsListRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerOrganizationsLocationsEntitlementsListRequest
   object.
@@ -1773,6 +1809,21 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsSearchRequest(_m
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsWithdrawRequest(_messages.Message):
+  r"""A
+  PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsWithdrawRequest
+  object.
+
+  Fields:
+    name: Required. Name of the grant resource which is being withdrawn.
+    withdrawGrantRequest: A WithdrawGrantRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  withdrawGrantRequest = _messages.MessageField('WithdrawGrantRequest', 2)
 
 
 class PrivilegedaccessmanagerProjectsLocationsEntitlementsListRequest(_messages.Message):
@@ -2190,6 +2241,14 @@ class Timeline(_messages.Message):
 
 class Unstructured(_messages.Message):
   r"""The requester has to provide a justification in the form of a string."""
+
+
+class WithdrawGrantRequest(_messages.Message):
+  r"""Request message for `WithdrawGrant` method."""
+
+
+class Withdrawn(_messages.Message):
+  r"""An event representing that the grant was withdrawn."""
 
 
 encoding.AddCustomJsonFieldMapping(

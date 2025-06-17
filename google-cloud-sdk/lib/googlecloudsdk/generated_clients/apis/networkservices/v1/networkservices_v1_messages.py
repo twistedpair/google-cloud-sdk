@@ -1873,7 +1873,7 @@ class GatewayRouteView(_messages.Message):
   Fields:
     name: Output only. Identifier. Full path name of the GatewayRouteView
       resource. Format: projects/{project_number}/locations/{location}/gateway
-      s/{gateway_name}/routeViews/{route_view_name}
+      s/{gateway}/routeViews/{route_view}
     routeId: Output only. The resource id for the route.
     routeLocation: Output only. Location where the route exists.
     routeProjectNumber: Output only. Project number where the route exists.
@@ -2770,7 +2770,8 @@ class HttpRouteRequestMirrorPolicy(_messages.Message):
   r"""Specifies the policy on how requests are shadowed to a separate mirrored
   destination service. The proxy does not wait for responses from the shadow
   service. Prior to sending traffic to the shadow service, the host/authority
-  header is suffixed with -shadow.
+  header is suffixed with -shadow. Mirroring is currently not supported for
+  Cloud Run destinations.
 
   Fields:
     destination: The destination the requests will be mirrored to. The weight
@@ -4109,7 +4110,7 @@ class MeshRouteView(_messages.Message):
   Fields:
     name: Output only. Identifier. Full path name of the MeshRouteView
       resource. Format: projects/{project_number}/locations/{location}/meshes/
-      {mesh_name}/routeViews/{route_view_name}
+      {mesh}/routeViews/{route_view}
     routeId: Output only. The resource id for the route.
     routeLocation: Output only. Location where the route exists.
     routeProjectNumber: Output only. Project number where the route exists.
@@ -4147,6 +4148,11 @@ class MulticastConsumerAssociation(_messages.Message):
     network: Required. The resource name of the multicast consumer VPC
       network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
+    placementPolicy: Output only. [Output only] A Compute Engine (placement
+      policy)[https://cloud.google.com/compute/docs/instances/placement-
+      policies-overview] that can be used to place virtual machine (VM)
+      instances as multicast consumers close to the multicast infrastructure
+      created for this domain, on a best effort basis.
     resourceState: Output only. The resource state of the multicast consumer
       association.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
@@ -4202,9 +4208,10 @@ class MulticastConsumerAssociation(_messages.Message):
   multicastDomainActivation = _messages.StringField(4)
   name = _messages.StringField(5)
   network = _messages.StringField(6)
-  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  placementPolicy = _messages.StringField(7)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastDomain(_messages.Message):
@@ -5554,8 +5561,8 @@ class NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest(_messages.Mes
 
   Fields:
     name: Required. Name of the GatewayRouteView resource. Formats: projects/{
-      project_number}/locations/{location}/gateways/{gateway_name}/routeViews/
-      {route_view_name}
+      project_number}/locations/{location}/gateways/{gateway}/routeViews/{rout
+      e_view}
   """
 
   name = _messages.StringField(1, required=True)
@@ -5570,7 +5577,7 @@ class NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest(_messages.Me
       Indicates that this is a continuation of a prior `ListGatewayRouteViews`
       call, and that the system should return the next page of data.
     parent: Required. The Gateway to which a Route is associated. Formats:
-      projects/{project_number}/locations/{location}/gateways/{gateway_name}
+      projects/{project_number}/locations/{location}/gateways/{gateway}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6087,8 +6094,7 @@ class NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest(_messages.Messa
 
   Fields:
     name: Required. Name of the MeshRouteView resource. Format: projects/{proj
-      ect_number}/locations/{location}/meshes/{mesh_name}/routeViews/{route_vi
-      ew_name}
+      ect_number}/locations/{location}/meshes/{mesh}/routeViews/{route_view}
   """
 
   name = _messages.StringField(1, required=True)
@@ -6103,7 +6109,7 @@ class NetworkservicesProjectsLocationsMeshesRouteViewsListRequest(_messages.Mess
       Indicates that this is a continuation of a prior `ListMeshRouteViews`
       call, and that the system should return the next page of data.
     parent: Required. The Mesh to which a Route is associated. Format:
-      projects/{project_number}/locations/{location}/meshes/{mesh_name}
+      projects/{project_number}/locations/{location}/meshes/{mesh}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -8467,6 +8473,8 @@ class ServiceLbPolicy(_messages.Message):
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
     failoverConfig: Optional. Configuration related to health based failover.
+    isolationConfig: Optional. Configuration to provide isolation support for
+      the associated Backend Service.
     labels: Optional. Set of label tags associated with the ServiceLbPolicy
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
@@ -8532,10 +8540,11 @@ class ServiceLbPolicy(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   failoverConfig = _messages.MessageField('ServiceLbPolicyFailoverConfig', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  isolationConfig = _messages.MessageField('ServiceLbPolicyIsolationConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
@@ -8568,6 +8577,53 @@ class ServiceLbPolicyFailoverConfig(_messages.Message):
   """
 
   failoverHealthThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ServiceLbPolicyIsolationConfig(_messages.Message):
+  r"""Configuration to provide isolation support for the associated Backend
+  Service.
+
+  Enums:
+    IsolationGranularityValueValuesEnum: Optional. The isolation granularity
+      of the load balancer.
+    IsolationModeValueValuesEnum: Optional. The isolation mode of the load
+      balancer.
+
+  Fields:
+    isolationGranularity: Optional. The isolation granularity of the load
+      balancer.
+    isolationMode: Optional. The isolation mode of the load balancer.
+  """
+
+  class IsolationGranularityValueValuesEnum(_messages.Enum):
+    r"""Optional. The isolation granularity of the load balancer.
+
+    Values:
+      ISOLATION_GRANULARITY_UNSPECIFIED: No isolation is configured for the
+        backend service. Traffic can overflow based on the load balancing
+        algorithm.
+      REGION: Traffic for this service will be isolated at the cloud region
+        level.
+    """
+    ISOLATION_GRANULARITY_UNSPECIFIED = 0
+    REGION = 1
+
+  class IsolationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The isolation mode of the load balancer.
+
+    Values:
+      ISOLATION_MODE_UNSPECIFIED: No isolation mode is configured for the
+        backend service.
+      NEAREST: Traffic will be sent to the nearest region.
+      STRICT: Traffic will fail if no serving backends are available in the
+        same region as the load balancer.
+    """
+    ISOLATION_MODE_UNSPECIFIED = 0
+    NEAREST = 1
+    STRICT = 2
+
+  isolationGranularity = _messages.EnumField('IsolationGranularityValueValuesEnum', 1)
+  isolationMode = _messages.EnumField('IsolationModeValueValuesEnum', 2)
 
 
 class SetIamPolicyRequest(_messages.Message):

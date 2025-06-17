@@ -690,12 +690,20 @@ class EdgecontainerOrganizationsLocationsOperationsListRequest(_messages.Message
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class EdgecontainerOrganizationsLocationsZonesGetRequest(_messages.Message):
@@ -1099,12 +1107,20 @@ class EdgecontainerProjectsLocationsOperationsListRequest(_messages.Message):
     name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the [ListOperationsResponse.unreachable] field. This can only be `true`
+      when reading across collections e.g. when `parent` is set to
+      `"projects/example/locations/-"`. This field is not by default supported
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
   """
 
   filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class EdgecontainerProjectsLocationsServiceAccountsCreateRequest(_messages.Message):
@@ -1338,17 +1354,14 @@ class EdgecontainerProjectsLocationsZonesSetIamPolicyRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsZonesSetIamPolicyRequest object.
 
   Fields:
-    iamPolicy: A IamPolicy resource to be passed as the request body.
     name: Required. The canonical resource name of the zone.
       projects/{project}/locations/{location}/zones/{zone}
-    requestId: Optional. A unique identifier for this request. Restricted to
-      36 ASCII characters. A random UUID is recommended. This request is only
-      idempotent if `request_id` is provided.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
   """
 
-  iamPolicy = _messages.MessageField('IamPolicy', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  name = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class Empty(_messages.Message):
@@ -1493,9 +1506,11 @@ class IamPolicy(_messages.Message):
 
   Fields:
     bindings: Optional. The policy is a list of bindings.
+    etag: Optional. The etag of the IAM policy.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.StringField(2)
 
 
 class IdentityProvider(_messages.Message):
@@ -1643,10 +1658,15 @@ class ListOperationsResponse(_messages.Message):
     nextPageToken: The standard List next-page token.
     operations: A list of operations that matches the specified filter in the
       request.
+    unreachable: Unordered list. Unreachable resources. Populated when the
+      request sets `ListOperationsRequest.return_partial_success` and reads
+      across collections e.g. when attempting to list all resources across all
+      supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListServiceAccountsResponse(_messages.Message):
@@ -2588,6 +2608,20 @@ class ServiceAccount(_messages.Message):
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
   zone = _messages.StringField(5)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request proto to set the IAM policy for a project in a zone.
+
+  Fields:
+    policy: Required. The IAM policy to be set.
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+  """
+
+  policy = _messages.MessageField('IamPolicy', 1)
+  requestId = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

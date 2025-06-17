@@ -390,7 +390,35 @@ def SetKmsKey(args, workflow, updated_fields):
 
 def AddUserEnvVarsFlags(parser):
   """Adds flags for configuring user-defined environment variables."""
-  userenvvars_group = parser.add_group(mutex=True, hidden=True)
+  userenvvars_group = parser.add_group(
+      mutex=True,
+      hidden=False,
+      help="""\
+        Flags to configure user-defined environment variables for a
+        workflow.
+
+        Keys can't be empty strings and can't start with `GOOGLE`
+        or `WORKFLOWS`. We recommend that environment variable keys consist
+        solely of uppercase letters, digits, and underscores (`_`), and that
+        they don't begin with a digit. Consider prefixing your user-defined
+        environment variables with a unique key to avoid conflicts with other
+        variables.
+
+        If your value contains commas, prefix the mapping with a different
+        delimiter character enclosed between `^` (example 1). Use special
+        characters in your shell with caution as they might not work as
+        intended or need escaping (example 2 escapes a `$` in Bash).
+
+        Example 1: --set-env-vars ^@^KEY1=ONE,VALUE,WITH,COMMAS@KEY2=VALUE2
+
+        Example 2: --set-env-vars ^$^KEY1=VALUE1\\$KEY2=VALUE,WITH,COMMAS,TOO
+
+        A maximum of 20 user-defined environment variables can be defined.
+        Each definition string (`KEY=value`) is limited to 4 KiB.
+        All keys and values are converted to strings.
+      """,
+  )
+
   userenvvars_group.add_argument(
       '--set-env-vars',
       type=arg_parsers.ArgDict(
@@ -401,29 +429,39 @@ def AddUserEnvVarsFlags(parser):
       action=arg_parsers.UpdateAction,
       metavar='KEY=VALUE',
       help="""\
-        Sets customer-defined environment variables used in the new workflow
-        revision.
+        Sets environment variables for the workflow based on a comma-separated
+        list of key-value pairs. Will overwrite a workflow's existing
+        environment variables.
 
-        This flag takes a comma-separated list of key value pairs.
         Example:
-        gcloud workflows deploy ${workflow_name} --set-env-vars foo=bar,hey=hi...
+        gcloud workflows deploy ${workflow_name} --set-env-vars policy=global,retry_count=5
       """,
   )
 
-  map_util.AddMapSetFileFlag(
-      userenvvars_group,
-      'env-vars',
-      'environment variables',
-      key_type=str,
-      value_type=str,
+  userenvvars_group.add_argument(
+      '--env-vars-file',
+      metavar='FILE_PATH',
+      type=map_util.ArgDictFile(key_type=str, value_type=str),
+      help="""\
+        Sets environment variables for the workflow to those stored in a local
+        YAML file at the given path. All existing environment variables are
+        removed before the new environment variables are added.
+
+        Example:
+        gcloud workflows deploy ${workflow_name} --env-vars-file=/path/to/env_vars.yaml
+
+        Inside env_vars.yaml:\n
+        policy: global\n
+        retry_count: 5 # Service converts this to string "5"
+      """,
   )
 
   userenvvars_group.add_argument(
       '--clear-env-vars',
       action='store_true',
       help="""\
-        Clears customer-defined environment variables used in the new workflow
-        revision.
+        Clears all user-defined environment variables previously set for the
+        workflow.
 
         Example:
         gcloud workflows deploy ${workflow_name} --clear-env-vars
@@ -436,12 +474,11 @@ def AddUserEnvVarsFlags(parser):
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgList(element_type=str),
       help="""\
-        Removes customer-defined environment variables used in the new workflow
-        revision.
-        It takes a list of environment variables keys to be removed.
+        Removes user-defined environment variables from a workflow based
+        on a list of environment variable keys to be removed.
 
         Example:
-        gcloud workflows deploy ${workflow_name} --remove-env-vars foo,hey...
+        gcloud workflows deploy ${workflow_name} --remove-env-vars policy,retry_count...
       """,
   )
 
@@ -451,12 +488,11 @@ def AddUserEnvVarsFlags(parser):
       action=arg_parsers.UpdateAction,
       metavar='KEY=VALUE',
       help="""\
-        Updates existing or adds new customer-defined environment variables used
-        in the new workflow revision.
+        Updates existing or adds new user-defined environment variables based
+        on a comma-separated list of key-value pairs.
 
-        This flag takes a comma-separated list of key value pairs.
         Example:
-        gcloud workflows deploy ${workflow_name} --update-env-vars foo=bar,hey=hi
+        gcloud workflows deploy ${workflow_name} --update-env-vars policy=regional,retry_count=2
       """,
   )
 

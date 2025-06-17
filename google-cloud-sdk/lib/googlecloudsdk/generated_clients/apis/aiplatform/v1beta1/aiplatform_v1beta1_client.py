@@ -4418,7 +4418,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.endpoints.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        query_params=['filter', 'gdcZone', 'pageSize', 'pageToken', 'readMask'],
         relative_path='v1beta1/{+parent}/endpoints',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEndpointsListRequest',

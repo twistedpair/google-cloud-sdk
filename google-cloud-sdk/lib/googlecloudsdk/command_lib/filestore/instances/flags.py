@@ -14,10 +14,6 @@
 # limitations under the License.
 """Flags and helpers for the Cloud Filestore instances commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -328,24 +324,60 @@ def AddConnectManagedActiveDirectoryArg(parser):
   )
 
 
-def AddDirectoryServicesArg(parser, api_version):
+def AddConnectLdapArg(parser):
   """Adds a --ldap flag to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+
+  ldap_arg_spec = {
+      'domain': str,
+      'servers': str,
+      'users-ou': str,
+      'groups-ou': str,
+  }
+
+  parser.add_argument(
+      '--ldap',
+      metavar='^:^domain=DOMAIN:servers=SERVER1,SERVER2:users-ou=USERSOU:groups-ou=GROUPSOU',
+      type=arg_parsers.ArgDict(
+          spec=ldap_arg_spec,
+          required_keys=['domain', 'servers'],
+      ),
+      required=False,
+      help=_LDAP_HELP_TEXT,
+      hidden=True,
+  )
+
+
+def AddDisconnectLdapArg(parser):
+  """Adds a --disconnect-ldap flag to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+
+  disconnect_ldap_help = """\
+        Disconnect the instance from LDAP."""
+
+  parser.add_argument(
+      '--disconnect-ldap',
+      action='store_true',
+      required=False,
+      hidden=True,
+      help=disconnect_ldap_help,
+  )
+
+
+def AddDirectoryServicesArg(parser, api_version):
+  """Adds --managed-ad and --ldap flags to the parser.
 
   Args:
     parser: argparse parser.
     api_version: filestore_client api version.
   """
 
-  managed_ad_arg_spec = {
-      'domain': str,
-      'computer': str,
-    }
-  ldap_arg_spec = {
-      'domain': str,
-      'servers': str,
-      'users-ou': str,
-      'groups-ou': str,
-    }
   # Managed AD is not supported in alpha.
   if api_version == filestore_client.ALPHA_API_VERSION:
     return
@@ -357,39 +389,11 @@ def AddDirectoryServicesArg(parser, api_version):
         mutex=True,
     )
 
-    group.add_argument(
-        '--managed-ad',
-        type=arg_parsers.ArgDict(
-            spec=managed_ad_arg_spec, required_keys=['domain', 'computer']
-        ),
-        required=False,
-        help=_MANAGED_AD_HELP_TEXT,
-    )
-
-    group.add_argument(
-        '--ldap',
-        metavar='^:^domain=DOMAIN:servers=SERVER1,SERVER2:users-ou=USERSOU:groups-ou=GROUPSOU',
-        type=arg_parsers.ArgDict(
-            spec=ldap_arg_spec,
-            required_keys=['domain', 'servers'],
-        ),
-        required=False,
-        help=_LDAP_HELP_TEXT,
-        hidden=True,
-    )
+    AddConnectManagedActiveDirectoryArg(group)
+    AddConnectLdapArg(group)
   # LDAP is supported in GA.
   else:
-    parser.add_argument(
-        '--ldap',
-        metavar='^:^domain=DOMAIN:servers=SERVER1,SERVER2:users-ou=USERSOU:groups-ou=GROUPSOU',
-        type=arg_parsers.ArgDict(
-            spec=ldap_arg_spec,
-            required_keys=['domain', 'servers'],
-        ),
-        required=False,
-        help=_LDAP_HELP_TEXT,
-        hidden=True,
-    )
+    AddConnectLdapArg(parser)
 
 
 def AddDisconnectManagedActiveDirectoryArg(parser):
@@ -410,16 +414,24 @@ def AddDisconnectManagedActiveDirectoryArg(parser):
   )
 
 
-def AddManagedActiveDirectoryConnectionArgs(parser):
-  """Adds a --managed-ad flag to the parser.
+def AddDirectoryServicesConnectDisconnectArgs(parser, api_version):
+  """Adds --managed-ad, --disconnect-managed-ad, --ldap, --disconnect-ldap flags to the parser.
 
   Args:
     parser: argparse parser.
+    api_version: filestore_client api version.
   """
 
-  connection_arg_group = parser.add_mutually_exclusive_group()
-  AddConnectManagedActiveDirectoryArg(connection_arg_group)
-  AddDisconnectManagedActiveDirectoryArg(connection_arg_group)
+  connection_arg_group = parser.add_mutually_exclusive_group(
+      hidden=api_version == filestore_client.V1_API_VERSION,
+  )
+  # Managed AD is supported in beta only.
+  if api_version == filestore_client.BETA_API_VERSION:
+    AddConnectManagedActiveDirectoryArg(connection_arg_group)
+    AddDisconnectManagedActiveDirectoryArg(connection_arg_group)
+  # LDAP is supported in both beta and GA.
+  AddConnectLdapArg(connection_arg_group)
+  AddDisconnectLdapArg(connection_arg_group)
 
 
 def AddSourceInstanceArg(parser):
@@ -818,8 +830,6 @@ def AddInstanceUpdateArgs(parser, api_version):
   AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
-  if api_version == filestore_client.BETA_API_VERSION:
-    AddManagedActiveDirectoryConnectionArgs(parser)
   AddFileShareArg(
       parser,
       api_version,
@@ -833,5 +843,6 @@ def AddInstanceUpdateArgs(parser, api_version):
       filestore_client.BETA_API_VERSION,
       filestore_client.V1_API_VERSION,
   ]:
+    AddDirectoryServicesConnectDisconnectArgs(parser, api_version)
     AddPerformanceArg(parser)
     dp_util.AddDeletionProtectionUpdateArgs(parser)

@@ -14,10 +14,6 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud Filestore API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
@@ -70,6 +66,14 @@ class InvalidCapacityError(Error):
 
 class InvalidNameError(Error):
   """Raised when an invalid file share name value is provided."""
+
+
+class InvalidDisconnectManagedADError(Error):
+  """Raised when an invalid disconnect managed AD value is provided."""
+
+
+class InvalidDisconnectLdapError(Error):
+  """Raised when an invalid LDAP value is provided."""
 
 
 class FilestoreClient(object):
@@ -381,6 +385,8 @@ class FilestoreClient(object):
       performance=None,
       managed_ad=None,
       disconnect_managed_ad=None,
+      ldap=None,
+      disconnect_ldap=None,
       clear_nfs_export_options=False,
       deletion_protection_enabled=None,
       deletion_protection_reason=None,
@@ -395,6 +401,8 @@ class FilestoreClient(object):
       performance: The performance configuration for the instance.
       managed_ad: The Managed Active Directory settings of the instance.
       disconnect_managed_ad: Disconnect from Managed Active Directory.
+      ldap: The LDAP configuration of the instance.
+      disconnect_ldap: Disconnect from LDAP.
       clear_nfs_export_options: bool, whether to clear the NFS export options.
       deletion_protection_enabled: bool, whether to enable deletion protection.
       deletion_protection_reason: The reason for enabling deletion protection.
@@ -415,6 +423,8 @@ class FilestoreClient(object):
         performance=performance,
         managed_ad=managed_ad,
         disconnect_managed_ad=disconnect_managed_ad,
+        ldap=ldap,
+        disconnect_ldap=disconnect_ldap,
         clear_nfs_export_options=clear_nfs_export_options,
         deletion_protection_enabled=deletion_protection_enabled,
         deletion_protection_reason=deletion_protection_reason,
@@ -673,6 +683,8 @@ class AlphaFilestoreAdapter(object):
       performance=None,
       managed_ad=None,
       disconnect_managed_ad=None,
+      ldap=None,
+      disconnect_ldap=None,
       clear_nfs_export_options=False,
       deletion_protection_enabled=None,
       deletion_protection_reason=None,
@@ -712,7 +724,22 @@ class AlphaFilestoreAdapter(object):
 
     if managed_ad:
       self.ParseManagedADIntoInstance(instance_config, managed_ad)
+    if ldap:
+      self.ParseLdapIntoInstance(instance_config, ldap)
+    if disconnect_ldap:
+      if not getattr(instance_config.directoryServices, 'ldap', None):
+        raise InvalidDisconnectLdapError(
+            '`--disconnect-ldap` must be used when ldap is connected.'
+        )
+      instance_config.directoryServices = None
     if disconnect_managed_ad:
+      if not getattr(
+          instance_config.directoryServices, 'managedActiveDirectory', None
+      ):
+        raise InvalidDisconnectManagedADError(
+            '`--disconnect-managed-ad` must be used when managed-ad is'
+            ' connected.'
+        )
       instance_config.directoryServices = None
 
     if deletion_protection_enabled is not None:
@@ -836,10 +863,10 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     """
     domain = ldap.get('domain')
     if domain is None:
-      raise InvalidArgumentError('Domain parameter is missing in --ldap.')
+      raise InvalidArgumentError('Domain parameter is missing in `--ldap`.')
     servers = ldap.get('servers')
     if servers is None:
-      raise InvalidArgumentError('Servers parameter is missing in --ldap.')
+      raise InvalidArgumentError('Servers parameter is missing in `--ldap`.')
     servers = servers.split(',')
     usersou = ldap.get('users-ou')
     groupsou = ldap.get('groups-ou')

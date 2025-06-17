@@ -551,6 +551,139 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
       help='Description for dataset config.',
   )
 
+  source_options_group = parser.add_group(
+      mutex=True,
+      hidden=is_update,
+      required=not is_update,
+      help=(
+          # TODO: b/424091769 - Update the help text to include folders and
+          # organization scope.
+          'List of source options currently supported are source projects.'
+      ),
+  )
+  source_options_group.add_argument(
+      '--enable-organization-scope',
+      hidden=True,
+      action='store_true',
+      help=(
+          'If passed, the dataset config will be enabled on the organization.'
+      ),
+  )
+  source_projects_group = source_options_group.add_group(
+      mutex=True,
+      hidden=is_update,
+      help=(
+          'List of source project numbers or the file containing list of'
+          ' project numbers.'
+      ),
+  )
+  source_projects_group.add_argument(
+      '--source-projects',
+      type=arg_parsers.ArgList(element_type=int),
+      metavar='SOURCE_PROJECT_NUMBERS',
+      help='List of source project numbers.',
+  )
+  source_projects_group.add_argument(
+      '--source-projects-file',
+      type=str,
+      metavar='SOURCE_PROJECT_NUMBERS_IN_FILE',
+      help=(
+          'CSV formatted file containing source project numbers, one per line.'
+      ),
+  )
+  source_folders_group = source_options_group.add_group(
+      mutex=True,
+      hidden=True,
+      help=(
+          'List of source folder IDs or the file containing list of folder IDs.'
+      ),
+  )
+  source_folders_group.add_argument(
+      '--source-folders',
+      type=arg_parsers.ArgList(element_type=int),
+      metavar='SOURCE_FOLDER_NUMBERS',
+      help='List of source folder IDs.',
+  )
+  source_folders_group.add_argument(
+      '--source-folders-file',
+      type=str,
+      metavar='SOURCE_FOLDER_NUMBERS_IN_FILE',
+      help=(
+          'CSV formatted file containing source folder IDs, one per line.'
+      ),
+  )
+
+  include_exclude_buckets_group = parser.add_group(
+      mutex=True,
+      hidden=is_update,
+      help=(
+          'Specify the list of buckets to be included or excluded, both a list'
+          ' of bucket names and prefix regexes can be specified for either'
+          ' include or exclude buckets.'
+      ),
+  )
+  include_buckets_group = include_exclude_buckets_group.add_group(
+      help='Specify the list of buckets to be included.',
+  )
+  include_buckets_group.add_argument(
+      '--include-bucket-names',
+      type=arg_parsers.ArgList(),
+      metavar='BUCKETS_NAMES',
+      help='List of bucket names be included.',
+  )
+  include_buckets_group.add_argument(
+      '--include-bucket-prefix-regexes',
+      type=arg_parsers.ArgList(),
+      metavar='BUCKETS_REGEXES',
+      help=(
+          'List of bucket prefix regexes to be included. The dataset config'
+          ' will include all the buckets that match with the prefix regex.'
+          ' Examples of allowed prefix regex patterns can be'
+          ' testbucket```*```, testbucket.```*```foo, testb.+foo```*``` . It'
+          ' should follow syntax specified in google/re2 on GitHub. '
+      ),
+  )
+  exclude_buckets_group = include_exclude_buckets_group.add_group(
+      help='Specify the list of buckets to be excluded.',
+  )
+  exclude_buckets_group.add_argument(
+      '--exclude-bucket-names',
+      type=arg_parsers.ArgList(),
+      metavar='BUCKETS_NAMES',
+      help='List of bucket names to be excluded.',
+  )
+  exclude_buckets_group.add_argument(
+      '--exclude-bucket-prefix-regexes',
+      type=arg_parsers.ArgList(),
+      metavar='BUCKETS_REGEXES',
+      help=(
+          'List of bucket prefix regexes to be excluded. Allowed regex patterns'
+          ' are similar to those for the --include-bucket-prefix-regexes flag.'
+      ),
+  )
+
+  include_exclude_locations_group = parser.add_group(
+      mutex=True,
+      hidden=is_update,
+      help=(
+          'Specify the list of locations for source projects to be included or'
+          ' excluded from [available'
+          ' locations](https://cloud.google.com/storage/docs/locations#available-locations).'
+      ),
+  )
+  include_exclude_locations_group.add_argument(
+      '--include-source-locations',
+      type=arg_parsers.ArgList(),
+      metavar='LIST_OF_SOURCE_LOCATIONS',
+      help='List of locations for projects to be included.',
+  )
+  include_exclude_locations_group.add_argument(
+      '--exclude-source-locations',
+      type=arg_parsers.ArgList(),
+      metavar='LIST_OF_SOURCE_LOCATIONS',
+      help='List of locations for projects to be excluded.',
+  )
+
 
 def add_raw_display_flag(parser):
   parser.add_argument(
@@ -772,8 +905,8 @@ def add_management_hub_filter_flags(parser):
   management_hub_localtion_filter_group.add_argument(
       '--exclude-locations',
       help=(
-          'Comma separated list of [locations]'
-          '(https://cloud.google.com/storage/docs/locations#available-locations)'
+          'Comma separated list of'
+          ' [locations](https://cloud.google.com/storage/docs/locations#available-locations)'
           ' to exclude in Management Hub filter. To clear'
           ' excluded locations, provide flag with empty list. e.g'
           ' `--exclude-locations=""` or `--exclude-locations=` .'
@@ -784,8 +917,8 @@ def add_management_hub_filter_flags(parser):
   management_hub_localtion_filter_group.add_argument(
       '--include-locations',
       help=(
-          'Comma separated list of [locations]'
-          '(https://cloud.google.com/storage/docs/locations#available-locations)'
+          'Comma separated list of'
+          ' [locations](https://cloud.google.com/storage/docs/locations#available-locations)'
           ' to include in management hub filter. To clear included locations,'
           ' provide flag with empty list. e.g `--include-locations=""` or'
           ' `--include-locations=` .'

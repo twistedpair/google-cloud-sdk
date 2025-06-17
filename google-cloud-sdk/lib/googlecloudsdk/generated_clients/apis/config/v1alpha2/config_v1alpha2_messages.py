@@ -436,7 +436,7 @@ class ConfigProjectsLocationsDeploymentsPatchRequest(_messages.Message):
 
   Fields:
     deployment: A Deployment resource to be passed as the request body.
-    name: Resource name of the deployment. Format:
+    name: Identifier. Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -807,6 +807,94 @@ class ConfigProjectsLocationsPreviewsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class ConfigProjectsLocationsPreviewsResourceChangesGetRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsResourceChangesGetRequest object.
+
+  Fields:
+    name: Required. The name of the resource change to retrieve. Format: 'proj
+      ects/{project_id}/locations/{location}/previews/{preview}/resourceChange
+      s/{resource_change}'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsPreviewsResourceChangesListRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsResourceChangesListRequest object.
+
+  Fields:
+    filter: Optional. Lists the resource changes that match the filter
+      expression. A filter expression filters the resource changes listed in
+      the response. The expression must be of the form '{field} {operator}
+      {value}' where operators: '<', '>', '<=', '>=', '!=', '=', ':' are
+      supported (colon ':' represents a HAS operator which is roughly
+      synonymous with equality). {field} can refer to a proto or JSON field,
+      or a synthetic field. Field names can be camelCase or snake_case.
+      Examples: - Filter by name: name = "projects/foo/locations/us-
+      central1/previews/dep/resourceChanges/baz
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. When requesting a page of resource changes,
+      'page_size' specifies number of resource changes to return. If
+      unspecified, at most 500 will be returned. The maximum value is 1000.
+    pageToken: Optional. Token returned by previous call to
+      'ListResourceChanges' which specifies the position in the list from
+      where to continue listing the resource changes.
+    parent: Required. The parent in whose context the ResourceChanges are
+      listed. The parent value is in the format:
+      'projects/{project_id}/locations/{location}/previews/{preview}'.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ConfigProjectsLocationsPreviewsResourceDriftsGetRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsResourceDriftsGetRequest object.
+
+  Fields:
+    name: Required. The name of the resource drift to retrieve. Format: 'proje
+      cts/{project_id}/locations/{location}/previews/{preview}/resourceDrifts/
+      {resource_drift}'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsPreviewsResourceDriftsListRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsResourceDriftsListRequest object.
+
+  Fields:
+    filter: Optional. Lists the resource drifts that match the filter
+      expression. A filter expression filters the resource drifts listed in
+      the response. The expression must be of the form '{field} {operator}
+      {value}' where operators: '<', '>', '<=', '>=', '!=', '=', ':' are
+      supported (colon ':' represents a HAS operator which is roughly
+      synonymous with equality). {field} can refer to a proto or JSON field,
+      or a synthetic field. Field names can be camelCase or snake_case.
+      Examples: - Filter by name: name = "projects/foo/locations/us-
+      central1/previews/dep/resourceDrifts/baz
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. When requesting a page of resource drifts, 'page_size'
+      specifies number of resource drifts to return. If unspecified, at most
+      500 will be returned. The maximum value is 1000.
+    pageToken: Optional. Token returned by previous call to
+      'ListResourceDrifts' which specifies the position in the list from where
+      to continue listing the resource drifts.
+    parent: Required. The parent in whose context the ResourceDrifts are
+      listed. The parent value is in the format:
+      'projects/{project_id}/locations/{location}/previews/{preview}'.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ConfigProjectsLocationsTerraformVersionsGetRequest(_messages.Message):
   r"""A ConfigProjectsLocationsTerraformVersionsGetRequest object.
 
@@ -878,7 +966,7 @@ class Deployment(_messages.Message):
       help client tools identify deployments during automation. See
       https://google.aip.dev/148#annotations for details on format and size
       limitations.
-    LabelsValue: User-defined metadata for the deployment.
+    LabelsValue: Optional. User-defined metadata for the deployment.
 
   Fields:
     annotations: Optional. Arbitrary key-value metadata storage e.g. to help
@@ -910,13 +998,13 @@ class Deployment(_messages.Message):
       attempt to automatically import the resource into the Terraform state
       (for supported resource types) and continue actuation. Not all resource
       types are supported, refer to documentation.
-    labels: User-defined metadata for the deployment.
+    labels: Optional. User-defined metadata for the deployment.
     latestRevision: Output only. Revision name that was most recently applied.
       Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
     lockState: Output only. Current lock state of the deployment.
-    name: Resource name of the deployment. Format:
+    name: Identifier. Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
     quotaValidation: Optional. Input to control quota checks for resources in
       terraform configuration files. There are limited resources on which
@@ -1064,7 +1152,7 @@ class Deployment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-defined metadata for the deployment.
+    r"""Optional. User-defined metadata for the deployment.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1330,6 +1418,40 @@ class ListPreviewsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   previews = _messages.MessageField('Preview', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListResourceChangesResponse(_messages.Message):
+  r"""A response to a 'ListResourceChanges' call. Contains a list of
+  ResourceChanges.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      'ListResourceChanges' method. The value of an empty string means that
+      there are no more resources to return.
+    resourceChanges: List of ResourceChanges.
+    unreachable: Unreachable resources, if any.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceChanges = _messages.MessageField('ResourceChange', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListResourceDriftsResponse(_messages.Message):
+  r"""A response to a 'ListResourceDrifts' call. Contains a list of
+  ResourceDrifts.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      'ListResourceDrifts' method. The value of an empty string means that
+      there are no more resources to return.
+    resourceDrifts: List of ResourceDrifts.
+    unreachable: Unreachable resources, if any.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceDrifts = _messages.MessageField('ResourceDrift', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1991,6 +2113,48 @@ class PreviewResult(_messages.Message):
   jsonSignedUri = _messages.StringField(2)
 
 
+class PropertyChange(_messages.Message):
+  r"""A property change represents a change to a property in the state file.
+
+  Fields:
+    after: Output only. Representations of the object value after the actions.
+    afterSensitivePaths: Output only. The paths of sensitive fields in
+      `after`. Paths are relative to `path`.
+    before: Output only. Representations of the object value before the
+      actions.
+    beforeSensitivePaths: Output only. The paths of sensitive fields in
+      `before`. Paths are relative to `path`.
+    path: Output only. The path of the property change.
+  """
+
+  after = _messages.MessageField('extra_types.JsonValue', 1)
+  afterSensitivePaths = _messages.StringField(2, repeated=True)
+  before = _messages.MessageField('extra_types.JsonValue', 3)
+  beforeSensitivePaths = _messages.StringField(4, repeated=True)
+  path = _messages.StringField(5)
+
+
+class PropertyDrift(_messages.Message):
+  r"""A property drift represents a drift to a property in the state file.
+
+  Fields:
+    after: Output only. Representations of the object value after the actions.
+    afterSensitivePaths: Output only. The paths of sensitive fields in
+      `after`. Paths are relative to `path`.
+    before: Output only. Representations of the object value before the
+      actions.
+    beforeSensitivePaths: Output only. The paths of sensitive fields in
+      `before`. Paths are relative to `path`.
+    path: Output only. The path of the property drift.
+  """
+
+  after = _messages.MessageField('extra_types.JsonValue', 1)
+  afterSensitivePaths = _messages.StringField(2, repeated=True)
+  before = _messages.MessageField('extra_types.JsonValue', 3)
+  beforeSensitivePaths = _messages.StringField(4, repeated=True)
+  path = _messages.StringField(5)
+
+
 class Resource(_messages.Message):
   r"""Resource represents a Google Cloud Platform resource actuated by IM.
   Resources are child resources of Revisions.
@@ -2095,6 +2259,96 @@ class ResourceCAIInfo(_messages.Message):
   """
 
   fullResourceName = _messages.StringField(1)
+
+
+class ResourceChange(_messages.Message):
+  r"""A resource change represents a change to a resource in the state file.
+
+  Enums:
+    IntentValueValuesEnum: Output only. The intent of the resource change.
+
+  Fields:
+    intent: Output only. The intent of the resource change.
+    name: Identifier. The name of the resource change. Format: 'projects/{proj
+      ect_id}/locations/{location}/previews/{preview}/resourceChanges/{resourc
+      e_change}'.
+    propertyChanges: Output only. The property changes of the resource change.
+    terraformInfo: Output only. Terraform info of the resource change.
+  """
+
+  class IntentValueValuesEnum(_messages.Enum):
+    r"""Output only. The intent of the resource change.
+
+    Values:
+      INTENT_UNSPECIFIED: The default value.
+      CREATE: The resource will be created.
+      UPDATE: The resource will be updated.
+      DELETE: The resource will be deleted.
+      RECREATE: The resource will be recreated.
+      UNCHANGED: The resource will be untouched.
+    """
+    INTENT_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+    RECREATE = 4
+    UNCHANGED = 5
+
+  intent = _messages.EnumField('IntentValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  propertyChanges = _messages.MessageField('PropertyChange', 3, repeated=True)
+  terraformInfo = _messages.MessageField('ResourceChangeTerraformInfo', 4)
+
+
+class ResourceChangeTerraformInfo(_messages.Message):
+  r"""Terraform info of a ResourceChange.
+
+  Fields:
+    actions: Output only. TF resource actions.
+    address: Output only. TF resource address that uniquely identifies the
+      resource.
+    provider: Output only. TF resource provider.
+    resourceName: Output only. TF resource name.
+    type: Output only. TF resource type.
+  """
+
+  actions = _messages.StringField(1, repeated=True)
+  address = _messages.StringField(2)
+  provider = _messages.StringField(3)
+  resourceName = _messages.StringField(4)
+  type = _messages.StringField(5)
+
+
+class ResourceDrift(_messages.Message):
+  r"""A resource drift represents a drift to a resource in the state file.
+
+  Fields:
+    name: Identifier. The name of the resource drift. Format: 'projects/{proje
+      ct_id}/locations/{location}/previews/{preview}/resourceDrifts/{resource_
+      drift}'.
+    propertyDrifts: Output only. The property drifts of the resource drift.
+    terraformInfo: Output only. Terraform info of the resource drift.
+  """
+
+  name = _messages.StringField(1)
+  propertyDrifts = _messages.MessageField('PropertyDrift', 2, repeated=True)
+  terraformInfo = _messages.MessageField('ResourceDriftTerraformInfo', 3)
+
+
+class ResourceDriftTerraformInfo(_messages.Message):
+  r"""Terraform info of a ResourceChange.
+
+  Fields:
+    address: Output only. The address of the drifted resource.
+    provider: Output only. The provider of the drifted resource.
+    resourceName: Output only. TF resource name.
+    type: Output only. The type of the drifted resource.
+  """
+
+  address = _messages.StringField(1)
+  provider = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class ResourceTerraformInfo(_messages.Message):

@@ -60,6 +60,10 @@ class PredictionServiceAsyncClient:
     _DEFAULT_ENDPOINT_TEMPLATE = PredictionServiceClient._DEFAULT_ENDPOINT_TEMPLATE
     _DEFAULT_UNIVERSE = PredictionServiceClient._DEFAULT_UNIVERSE
 
+    rag_corpus_path = staticmethod(PredictionServiceClient.rag_corpus_path)
+    parse_rag_corpus_path = staticmethod(PredictionServiceClient.parse_rag_corpus_path)
+    secret_version_path = staticmethod(PredictionServiceClient.secret_version_path)
+    parse_secret_version_path = staticmethod(PredictionServiceClient.parse_secret_version_path)
     common_billing_account_path = staticmethod(PredictionServiceClient.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(PredictionServiceClient.parse_common_billing_account_path)
     common_folder_path = staticmethod(PredictionServiceClient.common_folder_path)
@@ -492,10 +496,11 @@ class PredictionServiceAsyncClient:
                       }
 
                       service ResourceService {
-                         rpc GetResource(GetResourceRequest) returns
-                         (google.api.HttpBody); rpc
-                         UpdateResource(google.api.HttpBody) returns
-                         (google.protobuf.Empty);
+                         rpc GetResource(GetResourceRequest)
+                            returns (google.api.HttpBody);
+
+                         rpc UpdateResource(google.api.HttpBody)
+                            returns (google.protobuf.Empty);
 
                       }
 
@@ -651,10 +656,11 @@ class PredictionServiceAsyncClient:
                       }
 
                       service ResourceService {
-                         rpc GetResource(GetResourceRequest) returns
-                         (google.api.HttpBody); rpc
-                         UpdateResource(google.api.HttpBody) returns
-                         (google.protobuf.Empty);
+                         rpc GetResource(GetResourceRequest)
+                            returns (google.api.HttpBody);
+
+                         rpc UpdateResource(google.api.HttpBody)
+                            returns (google.protobuf.Empty);
 
                       }
 
@@ -2108,10 +2114,11 @@ class PredictionServiceAsyncClient:
                       }
 
                       service ResourceService {
-                         rpc GetResource(GetResourceRequest) returns
-                         (google.api.HttpBody); rpc
-                         UpdateResource(google.api.HttpBody) returns
-                         (google.protobuf.Empty);
+                         rpc GetResource(GetResourceRequest)
+                            returns (google.api.HttpBody);
+
+                         rpc UpdateResource(google.api.HttpBody)
+                            returns (google.protobuf.Empty);
 
                       }
 

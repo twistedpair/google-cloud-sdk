@@ -511,7 +511,6 @@ def AddAllocatedIPRangeOverride(parser):
   parser.add_argument(
       '--allocated-ip-range-override',
       required=False,
-      hidden=True,
       type=str,
       help=(
           'Name of the allocated IP range for the private IP AlloyDB instance,'

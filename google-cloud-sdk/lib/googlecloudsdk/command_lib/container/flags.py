@@ -7436,11 +7436,13 @@ def AddPatchUpdateFlag(parser):
   """Adds the --patch-update flag to parser."""
   help_text = """\
   The patch update to use for the cluster.
+
+  Setting to 'accelerated' automatically upgrades the cluster to the latest patch available within the cluster's current minor version and release channel.
+  Setting to 'default' automatically upgrades the cluster to the default patch upgrade targetversion available within the cluster's current minor version and release channel.
   """
   return parser.add_argument(
       '--patch-update',
       required=False,
-      hidden=True,
       help=help_text,
       type=arg_parsers.ArgList(
           choices=['accelerated', 'default'],
@@ -7534,6 +7536,18 @@ def AddUseIamTokenFlag(parser):
 
   parser.add_argument(
       '--use-iam-token',
+      hidden=True,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddEnableK8sCertsViaDnsFlag(parser):
+  """Adds the --enable-k8s-certs-via-dns flag to parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--enable-k8s-certs-via-dns',
+      default=None,
       hidden=True,
       action='store_true',
       help=help_text,

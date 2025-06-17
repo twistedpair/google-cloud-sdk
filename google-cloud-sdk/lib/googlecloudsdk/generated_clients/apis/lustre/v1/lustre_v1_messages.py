@@ -86,7 +86,7 @@ class Instance(_messages.Message):
 
   Fields:
     capacityGib: Required. The storage capacity of the instance in gibibytes
-      (GiB). Allowed values are from `18000` to `936000`, in increments of
+      (GiB). Allowed values are from `18000` to `954000`, in increments of
       9000.
     createTime: Output only. Timestamp when the instance was created.
     description: Optional. A user-readable description of the instance.
@@ -103,8 +103,8 @@ class Instance(_messages.Message):
     network: Required. Immutable. The full name of the VPC network to which
       the instance is connected. Must be in the format
       `projects/{project_id}/global/networks/{network_name}`.
-    perUnitStorageThroughput: Optional. The throughput of the instance in
-      MB/s/TiB. Valid values are 250, 500, 1000. Default value is 1000.
+    perUnitStorageThroughput: Required. The throughput of the instance in
+      MB/s/TiB. Valid values are 125, 250, 500, 1000.
     state: Output only. The state of the instance.
     updateTime: Output only. Timestamp when the instance was last updated.
   """
@@ -371,7 +371,8 @@ class LustreProjectsLocationsInstancesExportDataRequest(_messages.Message):
   Fields:
     exportDataRequest: A ExportDataRequest resource to be passed as the
       request body.
-    name: Required. The name of the Managed Lustre instance.
+    name: Required. The name of the Managed Lustre instance in the format
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   exportDataRequest = _messages.MessageField('ExportDataRequest', 1)
@@ -395,7 +396,8 @@ class LustreProjectsLocationsInstancesImportDataRequest(_messages.Message):
   Fields:
     importDataRequest: A ImportDataRequest resource to be passed as the
       request body.
-    name: Required. Name of the resource.
+    name: Required. The name of the Managed Lustre instance in the format
+      `projects/{project}/locations/{location}/instances/{instance}`.
   """
 
   importDataRequest = _messages.MessageField('ImportDataRequest', 1)

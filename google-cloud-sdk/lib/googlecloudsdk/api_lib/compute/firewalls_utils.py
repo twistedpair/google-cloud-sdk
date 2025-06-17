@@ -82,7 +82,6 @@ class ActionType(enum.Enum):
 
 
 def AddCommonArgs(parser,
-                  with_resource_manager_tags=False,
                   for_update=False,
                   with_egress_support=False,
                   with_service_account=False):
@@ -96,6 +95,13 @@ def AddCommonArgs(parser,
         help="""\
         The network to which this rule is attached. If omitted, the
         rule is attached to the ``default'' network.
+        """)
+    parser.add_argument(
+        '--resource-manager-tags',
+        type=arg_parsers.ArgDict(),
+        metavar='KEY=VALUE',
+        help="""\
+            A comma-separated list of Resource Manager tags to apply to the firewall.
         """)
 
   ruleset_parser = parser
@@ -262,16 +268,6 @@ def AddCommonArgs(parser,
   # Add egress deny firewall cli support.
   if with_egress_support:
     AddArgsForEgress(parser, ruleset_parser, for_update)
-
-  if with_resource_manager_tags:
-    parser.add_argument(
-        '--resource-manager-tags',
-        type=arg_parsers.ArgDict(),
-        metavar='KEY=VALUE',
-        help="""\
-            A comma-separated list of Resource Manager tags to apply to the firewall.
-        """,
-    )
 
 
 def AddArgsForEgress(parser, ruleset_parser, for_update=False):

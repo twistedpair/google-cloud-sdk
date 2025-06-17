@@ -1468,9 +1468,59 @@ class FirewallEndpointWildfireSettings(_messages.Message):
       WILDFIRE_REGION_UNSPECIFIED: Wildfire region not specified.
       CANADA: Wildfire region Canada. Canada cloud portal:
         ca.wildfire.paloaltonetworks.com
+      UNITED_STATES: Wildfire region United States.
+      JAPAN: Wildfire region Japan. Japan cloud portal:
+        jp.wildfire.paloaltonetworks.com
+      SINGAPORE: Wildfire region Singapore. Singapore cloud portal:
+        sg.wildfire.paloaltonetworks.com
+      UNITED_KINGDOM: Wildfire region United Kingdom. United Kingdom cloud
+        portal: uk.wildfire.paloaltonetworks.com
+      AUSTRALIA: Wildfire region Australia. Australia cloud portal:
+        au.wildfire.paloaltonetworks.com
+      GERMANY: Wildfire region Germany. Germany cloud portal:
+        de.wildfire.paloaltonetworks.com
+      INDIA: Wildfire region India. India cloud portal:
+        in.wildfire.paloaltonetworks.com
+      SWITZERLAND: Wildfire region Switzerland. Switzerland cloud portal:
+        ch.wildfire.paloaltonetworks.com
+      POLAND: Wildfire region Poland. Poland cloud portal:
+        pl.wildfire.paloaltonetworks.com
+      INDONESIA: Wildfire region Indonesia. Indonesia cloud portal:
+        id.wildfire.paloaltonetworks.com
+      TAIWAN: Wildfire region Taiwan. Taiwan cloud portal:
+        tw.wildfire.paloaltonetworks.com
+      FRANCE: Wildfire region France. France cloud portal:
+        fr.wildfire.paloaltonetworks.com
+      QATAR: Wildfire region Qatar. Qatar cloud portal:
+        qatar.wildfire.paloaltonetworks.com
+      SOUTH_KOREA: Wildfire region South Korea. South Korea cloud portal:
+        kr.wildfire.paloaltonetworks.com
+      ISRAEL: Wildfire region Israel. Israel cloud portal:
+        il.wildfire.paloaltonetworks.com
+      SAUDI_ARABIA: Wildfire region Saudi Arabia. Saudi Arabia cloud portal:
+        sa.wildfire.paloaltonetworks.com
+      SPAIN: Wildfire region Spain. Spain cloud portal:
+        es.wildfire.paloaltonetworks.com
     """
     WILDFIRE_REGION_UNSPECIFIED = 0
     CANADA = 1
+    UNITED_STATES = 2
+    JAPAN = 3
+    SINGAPORE = 4
+    UNITED_KINGDOM = 5
+    AUSTRALIA = 6
+    GERMANY = 7
+    INDIA = 8
+    SWITZERLAND = 9
+    POLAND = 10
+    INDONESIA = 11
+    TAIWAN = 12
+    FRANCE = 13
+    QATAR = 14
+    SOUTH_KOREA = 15
+    ISRAEL = 16
+    SAUDI_ARABIA = 17
+    SPAIN = 18
 
   enabled = _messages.BooleanField(1)
   wildfireRealtimeLookupDuration = _messages.StringField(2)
@@ -1544,9 +1594,11 @@ class GatewayAttachment(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
+      DELETE_FAILED: Failed to delete.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
+    DELETE_FAILED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1616,9 +1668,11 @@ class GatewayEndpoint(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
+      DELETE_FAILED: Failed to delete.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
+    DELETE_FAILED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3121,12 +3175,12 @@ class ListPartnerSSERealmsResponse(_messages.Message):
 
 
 class ListSACAttachmentsResponse(_messages.Message):
-  r"""Message for response to listing SACAttachments
+  r"""Response for `ListSACAttachments` method.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    sacAttachments: The list of SACAttachments
+    sacAttachments: The list of SACAttachments.
     unreachable: Locations that could not be reached.
   """
 
@@ -3136,12 +3190,12 @@ class ListSACAttachmentsResponse(_messages.Message):
 
 
 class ListSACRealmsResponse(_messages.Message):
-  r"""Message for response to listing SACRealms
+  r"""Response for `ListSACRealms` method.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    sacRealms: The list of SACRealms
+    sacRealms: The list of SACRealms.
     unreachable: Locations that could not be reached.
   """
 
@@ -7512,7 +7566,8 @@ class NetworksecurityProjectsLocationsSacAttachmentsCreateRequest(_messages.Mess
   r"""A NetworksecurityProjectsLocationsSacAttachmentsCreateRequest object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. The parent, in the form
+      `projects/{project}/locations/{location}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -7525,9 +7580,12 @@ class NetworksecurityProjectsLocationsSacAttachmentsCreateRequest(_messages.Mess
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     sACAttachment: A SACAttachment resource to be passed as the request body.
-    sacAttachmentId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and sac_attachment_id from the
-      method_signature of Create RPC
+    sacAttachmentId: Required. ID of the created attachment. The ID must be
+      1-63 characters long, and comply with RFC1035. Specifically, it must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -7540,7 +7598,9 @@ class NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest(_messages.Mess
   r"""A NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource, in the form
+      `projects/{project}/locations/{location}/sacAttachments/{sac_attachment}
+      `.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -7562,7 +7622,9 @@ class NetworksecurityProjectsLocationsSacAttachmentsGetRequest(_messages.Message
   r"""A NetworksecurityProjectsLocationsSacAttachmentsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource, in the form
+      `projects/{project}/locations/{location}/sacAttachments/{sac_attachment}
+      `.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7572,13 +7634,14 @@ class NetworksecurityProjectsLocationsSacAttachmentsListRequest(_messages.Messag
   r"""A NetworksecurityProjectsLocationsSacAttachmentsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. An expression that filters the list of results.
+    orderBy: Optional. Sort the results by a certain order.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListSACAttachmentsRequest
+    parent: Required. The parent, in the form
+      `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -7592,7 +7655,8 @@ class NetworksecurityProjectsLocationsSacRealmsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSacRealmsCreateRequest object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. The parent, in the form
+      `projects/{project}/locations/global`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -7605,9 +7669,12 @@ class NetworksecurityProjectsLocationsSacRealmsCreateRequest(_messages.Message):
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     sACRealm: A SACRealm resource to be passed as the request body.
-    sacRealmId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and sac_realm_id from the
-      method_signature of Create RPC
+    sacRealmId: Required. ID of the created realm. The ID must be 1-63
+      characters long, and comply with RFC1035. Specifically, it must be 1-63
+      characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -7620,7 +7687,8 @@ class NetworksecurityProjectsLocationsSacRealmsDeleteRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSacRealmsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource, in the form
+      `projects/{project}/locations/global/sacRealms/{sacRealm}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -7642,7 +7710,8 @@ class NetworksecurityProjectsLocationsSacRealmsGetRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSacRealmsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource, in the form
+      `projects/{project}/locations/global/sacRealms/{sacRealm}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7652,13 +7721,14 @@ class NetworksecurityProjectsLocationsSacRealmsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSacRealmsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. An expression that filters the list of results.
+    orderBy: Optional. Sort the results by a certain order.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListSACRealmsRequest
+    parent: Required. The parent, in the form
+      `projects/{project}/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -8640,8 +8710,8 @@ class PartnerSSEEnvironment(_messages.Message):
     LabelsValue: Optional. Labels as key value pair
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    deleteTime: Output only. [Output only] Delete time stamp
+    createTime: Output only. Create time stamp
+    deleteTime: Output only. Delete time stamp
     dnsPeeringZones: Optional. Configured DNS peering zones.
     labels: Optional. Labels as key value pair
     name: Identifier. Name of the Partner SSE Environment in the form of
@@ -8658,10 +8728,9 @@ class PartnerSSEEnvironment(_messages.Message):
       environments with customers, but that is not enforced.
     sseProject: Output only. Google-owned project created for this
       environment.
-    sseProjectNumber: Output only. [Output only] CDEN owned project owning
-      sse_network.
+    sseProjectNumber: Output only. CDEN owned project owning sse_network.
     symantecOptions: Optional. Required iff sse_service is SYMANTEC_CLOUD_SWG.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp
   """
 
   class SecurityServiceValueValuesEnum(_messages.Enum):
@@ -8751,7 +8820,7 @@ class PartnerSSEGateway(_messages.Message):
   r"""Message describing PartnerSSEGateway object
 
   Enums:
-    StateValueValuesEnum: Output only. [Output only] State of the gateway.
+    StateValueValuesEnum: Output only. State of the gateway.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
@@ -8762,55 +8831,52 @@ class PartnerSSEGateway(_messages.Message):
     country: Output only. ISO-3166 alpha 2 country code used for localization.
       Filled from the customer SSEGateway, and only for PartnerSSEGateways
       associated with Symantec today.
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
-    partnerSseEnvironment: Output only. [Output Only] Full URI of the partner
-      environment this PartnerSSEGateway is connected to. Filled from the
-      customer SSEGateway, and only for PartnerSSEGateways associated with
-      Symantec today.
-    partnerSseRealm: Output only. [Output Only] name of PartnerSSERealm owning
-      the PartnerSSEGateway
+    partnerSseEnvironment: Output only. Full URI of the partner environment
+      this PartnerSSEGateway is connected to. Filled from the customer
+      SSEGateway, and only for PartnerSSEGateways associated with Symantec
+      today.
+    partnerSseRealm: Output only. name of PartnerSSERealm owning the
+      PartnerSSEGateway
     partnerSubnetRange: Optional. Subnet range of the partner-owned subnet.
     partnerVpcSubnetRange: Optional. Subnet range of the partner_vpc This
       field is deprecated. Use partner_subnet_range instead.
-    proberSubnetRanges: Output only. [Output only] Subnet ranges for Google-
-      issued probe packets. It's populated only for Prisma Access partners.
-    sseBgpAsn: Output only. [Output Only] ASN of SSE BGP
-    sseBgpIps: Output only. [Output Only] IP of SSE BGP
+    proberSubnetRanges: Output only. Subnet ranges for Google-issued probe
+      packets. It's populated only for Prisma Access partners.
+    sseBgpAsn: Output only. ASN of SSE BGP
+    sseBgpIps: Output only. IP of SSE BGP
     sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
       with this PartnerSSEGateway
-    sseNetwork: Output only. [Output Only] The ID of the network in
-      sse_project containing sse_subnet_range. This is also known as the
-      partnerFacingNetwork. Only filled for PartnerSSEGateways associated with
-      Symantec today.
-    sseProject: Output only. [Output Only] The project owning
-      partner_facing_network. Only filled for PartnerSSEGateways associated
-      with Symantec today.
+    sseNetwork: Output only. The ID of the network in sse_project containing
+      sse_subnet_range. This is also known as the partnerFacingNetwork. Only
+      filled for PartnerSSEGateways associated with Symantec today.
+    sseProject: Output only. The project owning partner_facing_network. Only
+      filled for PartnerSSEGateways associated with Symantec today.
     sseSubnetRange: Optional. Subnet range where SSE GW instances are
       deployed. Default value is set to "100.88.255.0/24". The CIDR suffix
       should be less than or equal to 25.
-    sseTargetIp: Output only. [Output Only] Target IP that belongs to
-      sse_subnet_range where partner should send the traffic to reach the
-      customer networks.
-    sseVpcSubnetRange: Output only. [Output Only] Subnet range of the subnet
-      where partner traffic is routed. This field is deprecated. Use
-      sse_subnet_range instead.
-    sseVpcTargetIp: Output only. [Output Only] This is the IP where the
-      partner traffic should be routed to. This field is deprecated. Use
-      sse_target_ip instead.
-    state: Output only. [Output only] State of the gateway.
+    sseTargetIp: Output only. Target IP that belongs to sse_subnet_range where
+      partner should send the traffic to reach the customer networks.
+    sseVpcSubnetRange: Output only. Subnet range of the subnet where partner
+      traffic is routed. This field is deprecated. Use sse_subnet_range
+      instead.
+    sseVpcTargetIp: Output only. This is the IP where the partner traffic
+      should be routed to. This field is deprecated. Use sse_target_ip
+      instead.
+    state: Output only. State of the gateway.
     symantecOptions: Optional. Required iff Partner is Symantec.
     timezone: Output only. tzinfo identifier used for localization. Filled
       from the customer SSEGateway, and only for PartnerSSEGateways associated
       with Symantec today.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp
     vni: Optional. Virtual Network Identifier to use in NCG. Today the only
       partner that depends on it is Symantec.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] State of the gateway.
+    r"""Output only. State of the gateway.
 
     Values:
       STATE_UNSPECIFIED: No state specified. This should not be used.
@@ -8895,14 +8961,14 @@ class PartnerSSERealm(_messages.Message):
   r"""Message describing PartnerSSERealm object
 
   Enums:
-    StateValueValuesEnum: Output only. [Output Only] State of the realm. It
-      can be either CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
+    StateValueValuesEnum: Output only. State of the realm. It can be either
+      CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
     labels: Labels as key value pairs
     name: name of resource
     pairingKey: Required. value of the key to establish global handshake from
@@ -8913,24 +8979,23 @@ class PartnerSSERealm(_messages.Message):
     partnerVpc: Optional. VPC owned by the partner to be peered with CDEN
       sse_vpc in sse_project This field is deprecated. Use partner_network
       instead.
-    sseNetwork: Output only. [Output only] CDEN-owned network to be peered
-      with partner_network
-    sseProject: Output only. [Output only] CDEN owned project owning sse_vpc.
-      It stores project id in the TTM flow, but project number in the NCCGW
-      flow. This field will be deprecated after the partner migrates from
-      using sse_project to using sse_project_number.
-    sseProjectNumber: Output only. [Output only] CDEN owned project owning
-      sse_vpc
-    sseVpc: Output only. [Output only] CDEN owned VPC to be peered with
-      partner_vpc This field is deprecated. Use sse_network instead.
-    state: Output only. [Output Only] State of the realm. It can be either
-      CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
-    updateTime: Output only. [Output only] Update time stamp
+    sseNetwork: Output only. CDEN-owned network to be peered with
+      partner_network
+    sseProject: Output only. CDEN owned project owning sse_vpc. It stores
+      project id in the TTM flow, but project number in the NCCGW flow. This
+      field will be deprecated after the partner migrates from using
+      sse_project to using sse_project_number.
+    sseProjectNumber: Output only. CDEN owned project owning sse_vpc
+    sseVpc: Output only. CDEN owned VPC to be peered with partner_vpc This
+      field is deprecated. Use sse_network instead.
+    state: Output only. State of the realm. It can be either CUSTOMER_ATTACHED
+      or CUSTOMER_DETACHED.
+    updateTime: Output only. Update time stamp
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output Only] State of the realm. It can be either
-    CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
+    r"""Output only. State of the realm. It can be either CUSTOMER_ATTACHED or
+    CUSTOMER_DETACHED.
 
     Values:
       STATE_UNSPECIFIED: The default value. This value is used if the state is
@@ -9052,47 +9117,41 @@ class Rule(_messages.Message):
 
 
 class SACAttachment(_messages.Message):
-  r"""Configuration for an attachment within a SAC realm.
+  r"""Represents a Secure Access Connect (SAC) attachment resource. A Secure
+  Access Connect attachment enables NCC Gateway to process traffic with an SSE
+  product.
 
   Enums:
-    StateValueValuesEnum: Output only. [Output only] State of the attachment.
+    StateValueValuesEnum: Output only. State of the attachment.
 
   Messages:
     LabelsValue: Optional. Optional list of labels applied to the resource.
 
   Fields:
-    country: Optional. ISO-3166 alpha 2 country code used for localization.
-      Only used for Symantec's API today, and is optional even for gateways
-      connected to Symantec, since Symantec applies a default if we don't
-      specify it. Not case-sensitive, since it will be upper-cased when
-      sending to Symantec API.
-    createTime: Output only. [Output only] Timestamp when the attachment was
-      created.
+    country: Optional. Case-insensitive ISO-3166 alpha-2 country code used for
+      localization. Only valid for Symantec attachments.
+    createTime: Output only. Timestamp when the attachment was created.
     labels: Optional. Optional list of labels applied to the resource.
     name: Identifier. Resource name, in the form
       `projects/{project}/locations/{location}/sacAttachments/{sac_attachment}
       `.
-    nccGateway: Required. Name of the NCC Gateway which connects to the
-      attachment. ID or full URI can be specified. Full URI is stored either
-      way\uff0cin the form
-      `projects/{project}/locations/{location}/spokes/{ncc_gateway}`.
-    sacRealm: Required. Name of the SAC Realm which owns the attachment. The
-      input can be either an ID for a full name. The output will always be the
-      full name using project number instead of project ID. The format is
+    nccGateway: Required. NCC Gateway associated with the attachment. This can
+      be input as an ID or a full resource name. The output always has the
+      form
+      `projects/{project_number}/locations/{location}/spokes/{ncc_gateway}`.
+    sacRealm: Required. SAC Realm which owns the attachment. This can be input
+      as an ID or a full resource name. The output always has the form
       `projects/{project_number}/locations/{location}/sacRealms/{sac_realm}`.
-    state: Output only. [Output only] State of the attachment.
-    symantecOptions: Optional. Required iff the associated realm is of type
-      SYMANTEC_CLOUD_SWG.
-    timeZone: Optional. tzinfo identifier used for localization. Only used for
-      Symantec's API today, and is optional even for gateways connected to
-      Symantec, since Symantec applies a default if we don't specify it. Case
-      sensitive.
-    updateTime: Output only. [Output only] Timestamp when the attachment was
-      last updated.
+    state: Output only. State of the attachment.
+    symantecOptions: Optional. Configuration required for Symantec
+      attachments.
+    timeZone: Optional. Case-sensitive tzinfo identifier used for
+      localization. Only valid for Symantec attachments.
+    updateTime: Output only. Timestamp when the attachment was last updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] State of the attachment.
+    r"""Output only. State of the attachment.
 
     Values:
       STATE_UNSPECIFIED: No state specified. This should not be used.
@@ -9142,16 +9201,14 @@ class SACAttachment(_messages.Message):
 
 
 class SACAttachmentSACAttachmentSymantecOptions(_messages.Message):
-  r"""Fields specific to SSEGWs connecting to Symantec Cloud SWG.
+  r"""Fields specific to attachments associated with Symantec Cloud SWG.
 
   Fields:
-    symantecLocationName: Immutable. Name to be used for when creating a
-      Location on the customer's behalf in Symantec's Location API. Required
-      iff sac_realm uses SYMANTEC_CLOUD_SWG. Not to be confused with GCP
-      locations.
+    symantecLocationName: Immutable. Name to be used when creating a location
+      on the customer's behalf in Symantec's Location API. Not to be confused
+      with Google Cloud locations.
     symantecSite: Immutable. Symantec data center identifier that this
-      Attachment will connect to. Required iff sac_realm uses
-      SYMANTEC_CLOUD_SWG.
+      attachment will connect to.
   """
 
   symantecLocationName = _messages.StringField(1)
@@ -9159,32 +9216,36 @@ class SACAttachmentSACAttachmentSymantecOptions(_messages.Message):
 
 
 class SACRealm(_messages.Message):
-  r"""Message describing SACRealm object
+  r"""Represents a Secure Access Connect (SAC) realm resource. A Secure Access
+  Connect realm establishes a connection between your Google Cloud project and
+  an SSE service.
 
   Enums:
-    SecurityServiceValueValuesEnum: Immutable. SSE service provider
-    StateValueValuesEnum: Output only. [Output only] State of the realm
+    SecurityServiceValueValuesEnum: Immutable. SSE service provider associated
+      with the realm.
+    StateValueValuesEnum: Output only. State of the realm.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Optional list of labels applied to the resource.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Identifier. Resource name. It matches the pattern
-      `projects/{project}/locations/{location}/sacRealms/{sacRealm}`
-    pairingKey: Output only. [Output only] Key to be shared with SSE service
-      provider to establish global handshake
+    createTime: Output only. Timestamp when the realm was created.
+    labels: Optional. Optional list of labels applied to the resource.
+    name: Identifier. Resource name, in the form
+      `projects/{project}/locations/global/sacRealms/{sacRealm}`.
+    pairingKey: Output only. Key to be shared with SSE service provider during
+      pairing.
     partnerEnvironment: Optional. Full URI of environment that this Realm is
       using. Only used in Symantec Realms today.
-    securityService: Immutable. SSE service provider
-    state: Output only. [Output only] State of the realm
-    symantecOptions: Optional. Required only if using SYMANTEC_CLOUD_SWG.
-    updateTime: Output only. [Output only] Update time stamp
+    securityService: Immutable. SSE service provider associated with the
+      realm.
+    state: Output only. State of the realm.
+    symantecOptions: Optional. Configuration required for Symantec realms.
+    updateTime: Output only. Timestamp when the realm was last updated.
   """
 
   class SecurityServiceValueValuesEnum(_messages.Enum):
-    r"""Immutable. SSE service provider
+    r"""Immutable. SSE service provider associated with the realm.
 
     Values:
       SECURITY_SERVICE_UNSPECIFIED: The default value. This value is used if
@@ -9198,19 +9259,16 @@ class SACRealm(_messages.Message):
     SYMANTEC_CLOUD_SWG = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] State of the realm
+    r"""Output only. State of the realm.
 
     Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      PENDING_PARTNER_ATTACHMENT: This realm has never been attached to a
-        partner realm. Used only for Prisma Access.
-      PARTNER_ATTACHED: This realm is currently attached to a partner.
-      PARTNER_DETACHED: This realm was once attached to a partner but has been
-        detached.
-      KEY_EXPIRED: This realm is not attached to a partner realm, and its
-        pairing key has expired and needs key regeneration. Used only for
-        Prisma Access.
+      STATE_UNSPECIFIED: No state specified. This should not be used.
+      PENDING_PARTNER_ATTACHMENT: Has never been attached to a partner. Used
+        only for Prisma Access.
+      PARTNER_ATTACHED: Currently attached to a partner.
+      PARTNER_DETACHED: Was once attached to a partner but has been detached.
+      KEY_EXPIRED: Is not attached to a partner and has an expired pairing
+        key. Used only for Prisma Access.
     """
     STATE_UNSPECIFIED = 0
     PENDING_PARTNER_ATTACHMENT = 1
@@ -9220,7 +9278,7 @@ class SACRealm(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Optional list of labels applied to the resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -9254,12 +9312,13 @@ class SACRealm(_messages.Message):
 
 
 class SACRealmPairingKey(_messages.Message):
-  r"""Key to be shared with SSE service provider to establish global handshake
+  r"""Key to be shared with SSE service provider to establish global
+  handshake.
 
   Fields:
     expireTime: Output only. Timestamp in UTC of when this resource is
-      considered expired.
-    key: Output only. The name of the key. It expires 7 days after creation.
+      considered expired. It expires 7 days after creation.
+    key: Output only. Key value.
   """
 
   expireTime = _messages.StringField(1)
@@ -9267,33 +9326,32 @@ class SACRealmPairingKey(_messages.Message):
 
 
 class SACRealmSACRealmSymantecOptions(_messages.Message):
-  r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
+  r"""Fields specific to realms using Symantec Cloud SWG.
 
   Enums:
-    SymantecConnectionStateValueValuesEnum: Output only. [Output only]
-      Connection status to Symantec API.
+    SymantecConnectionStateValueValuesEnum: Output only. Connection status to
+      Symantec API.
 
   Fields:
-    availableSymantecSites: Output only. Symantec site IDs that the user can
+    availableSymantecSites: Output only. Symantec site IDs which the user can
       choose to connect to.
     secretPath: Optional. API Key used to call Symantec APIs on the user's
-      behalf. Required if using SYMANTEC_CLOUD_SWG. P4SA account needs
+      behalf. Required if using Symantec Cloud SWG. P4SA account needs
       permissions granted to read this secret. A secret ID, secret name, or
-      secret URI can be specified, but it will be parsed and stored as secret
-      URI in the format of "projects/{PROJECT_NUMBER}/secrets/my-secret".
-    symantecConnectionState: Output only. [Output only] Connection status to
-      Symantec API.
+      secret URI can be specified, but it will be parsed and stored as a
+      secret URI in the form `projects/{project_number}/secrets/my-secret`.
+    symantecConnectionState: Output only. Connection status to Symantec API.
   """
 
   class SymantecConnectionStateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] Connection status to Symantec API.
+    r"""Output only. Connection status to Symantec API.
 
     Values:
-      SYMANTEC_CONNECTION_STATE_UNSPECIFIED: The default value. This value is
-        used if the state is omitted.
+      SYMANTEC_CONNECTION_STATE_UNSPECIFIED: No state specified. This should
+        not be used.
       SUCCEEDED: Successfully made a request to Symantec API.
       READ_SECRET_FAILED: Cannot access the API key in the provided
-        secret_path.
+        `secret_path`.
       REQUEST_TO_SYMANTEC_FAILED: Failed to get a successful response from
         Symantec API due to an invalid API key or Symantec API unavailability.
     """
@@ -9314,13 +9372,13 @@ class SSEGatewayReference(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
     partnerSseRealm: Output only. PartnerSSERealm owning the PartnerSSEGateway
       that this SSEGateway intends to connect with
     proberSubnetRanges: Output only. Subnet ranges for Google probe packets.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

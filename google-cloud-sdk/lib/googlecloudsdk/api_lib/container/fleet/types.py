@@ -152,6 +152,20 @@ GkehubProjectsLocationsRolloutSequencesListRequest = Union[
     # ga_messages.GkehubProjectsLocationsRolloutSequencesListRequest,
 ]
 
+GkehubProjectsLocationsRolloutSequencesDeleteRequest = Union[
+    alpha_messages.GkehubProjectsLocationsRolloutSequencesDeleteRequest,
+    # RolloutSequences are not yet available in beta or GA.
+    # beta_messages.GkehubProjectsLocationsRolloutSequencesDeleteRequest,
+    # ga_messages.GkehubProjectsLocationsRolloutSequencesDeleteRequest,
+]
+
+GkehubProjectsLocationsRolloutSequencesPatchRequest = Union[
+    alpha_messages.GkehubProjectsLocationsRolloutSequencesPatchRequest,
+    # RolloutSequences are not yet available in beta or GA.
+    # beta_messages.GkehubProjectsLocationsRolloutSequencesPatchRequest,
+    # ga_messages.GkehubProjectsLocationsRolloutSequencesPatchRequest,
+]
+
 Operation = Union[
     alpha_messages.Operation, beta_messages.Operation, ga_messages.Operation
 ]

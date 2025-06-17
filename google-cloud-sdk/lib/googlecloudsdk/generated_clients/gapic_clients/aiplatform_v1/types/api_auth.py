@@ -51,11 +51,19 @@ class ApiAuth(proto.Message):
                 Required. The SecretManager secret version
                 resource name storing API key. e.g.
                 projects/{project}/secrets/{secret}/versions/{version}
+            api_key_string (str):
+                The API key string.
+
+                Either this or ``api_key_secret_version`` must be set.
         """
 
         api_key_secret_version: str = proto.Field(
             proto.STRING,
             number=1,
+        )
+        api_key_string: str = proto.Field(
+            proto.STRING,
+            number=2,
         )
 
     api_key_config: ApiKeyConfig = proto.Field(

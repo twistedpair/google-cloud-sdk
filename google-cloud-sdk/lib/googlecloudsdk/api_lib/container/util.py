@@ -120,6 +120,7 @@ NC_IMAGE_GC_HIGH_THRESHOLD_PERCENT = 'imageGcHighThresholdPercent'
 NC_IMAGE_GC_LOW_THRESHOLD_PERCENT = 'imageGcLowThresholdPercent'
 NC_IMAGE_MINIMUM_GC_AGE = 'imageMinimumGcAge'
 NC_IMAGE_MAXIMUM_GC_AGE = 'imageMaximumGcAge'
+NC_NODE_SWAP_SIZE_GIB = 'nodeSwapSizeGib'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 NC_CGROUP_MODE = 'cgroupMode'
@@ -818,6 +819,7 @@ def LoadSystemConfigFromYAML(
         NC_TOPOLOGY_MANAGER: dict,
         NC_MEMORY_MANAGER: dict,
         NC_SINGLE_PROCESS_OOMKILL: bool,
+        NC_NODE_SWAP_SIZE_GIB: int,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields
@@ -859,12 +861,9 @@ def LoadSystemConfigFromYAML(
     node_config.kubeletConfig.singleProcessOomKill = kubelet_config_opts.get(
         NC_SINGLE_PROCESS_OOMKILL
     )
-    # node_config.kubeletConfig.topologyManager = kubelet_config_opts.get(
-    #     NC_TOPOLOGY_MANAGER
-    # )
-    # node_config.kubeletConfig.memoryManager = kubelet_config_opts.get(
-    #     NC_MEMORY_MANAGER
-    # )
+    node_config.kubeletConfig.nodeSwapSizeGib = kubelet_config_opts.get(
+        NC_NODE_SWAP_SIZE_GIB
+    )
     # Parse memory manager.
     memory_manager_opts = kubelet_config_opts.get(NC_MEMORY_MANAGER)
     if memory_manager_opts:

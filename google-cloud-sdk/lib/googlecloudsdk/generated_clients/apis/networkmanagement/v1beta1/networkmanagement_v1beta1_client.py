@@ -944,7 +944,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}:queryOrgVpcFlowLogsConfigs',
+        relative_path='v1beta1/{+parent}/vpcFlowLogsConfigs:queryOrgVpcFlowLogsConfigs',
         request_field='',
         request_type_name='NetworkmanagementProjectsLocationsVpcFlowLogsConfigsQueryOrgVpcFlowLogsConfigsRequest',
         response_type_name='QueryOrgVpcFlowLogsConfigsResponse',

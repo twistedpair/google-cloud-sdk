@@ -778,9 +778,18 @@ def GetSSLCredentials(mtls_enabled):
 
   ca_config = context_aware.Config()
   if mtls_enabled and ca_config:
-    log.debug('Using client certificate...')
-    certificate_chain, private_key = (ca_config.client_cert_bytes,
-                                      ca_config.client_key_bytes)
+    if ca_config.config_type == context_aware.ConfigType.ON_DISK_CERTIFICATE:
+      log.debug('Using On Disk Certificate for mTLS...')
+      certificate_chain, private_key = (
+          ca_config.client_cert_bytes,
+          ca_config.client_key_bytes,
+      )
+    else:
+      log.debug(
+          'Not using On Disk Certificate for mTLS, config type: %s',
+          ca_config.config_type,
+      )
+      return None
 
   if ca_certs_file or certificate_chain or private_key:
     if ca_certs_file:

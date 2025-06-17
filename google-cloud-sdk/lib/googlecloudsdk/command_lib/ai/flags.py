@@ -240,6 +240,17 @@ def GetGdceZoneArg():
   )
 
 
+def GetGdcZoneArg():
+  return base.Argument(
+      '--gdc-zone',
+      required=False,
+      default=None,
+      help="""\
+      The name of the GDC zone. If set, the endpoint is for GDCc.
+      """,
+  )
+
+
 def AddPrivateServiceConnectConfig(parser):
   base.Argument(
       '--enable-private-service-connect',

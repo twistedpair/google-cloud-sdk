@@ -99,9 +99,7 @@ def GetConsumerPolicyV2Beta(policy_name):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetConsumerPolicyPermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.GetConsumerPolicyException)
 
 
 # TODO(b/393195807) Remove after the migration is completed.
@@ -132,9 +130,7 @@ def GetConsumerPolicyV2Alpha(policy_name):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetConsumerPolicyPermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.GetConsumerPolicyException)
 
 
 def TestEnabled(name: str, service: str):
@@ -182,7 +178,7 @@ def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):
     view: The view of the effective policy to use. The default view is 'BASIC'.
 
   Raises:
-    exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
+    exceptions.GetEffectiverPolicyException: when getting a
       effective policy fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
@@ -210,9 +206,7 @@ def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetEffectiverPolicyPermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.GetEffectiverPolicyException)
 
 
 # TODO(b/393195807) Remove after the migration is completed.
@@ -269,14 +263,14 @@ def BatchGetService(parent, services):
       "{resource}/{resource_Id}/services/{service}").
 
   Raises:
-    exceptions.BatchGetServicePermissionDeniedException: when getting batch
+    exceptions.BatchGetServiceException: when getting batch
       service state for services in the resource.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    Service state of the given resource.
+    Message.BatchGetServicesResponse: Service state of the given resource.
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageServicesBatchGetRequest(
@@ -291,9 +285,7 @@ def BatchGetService(parent, services):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.BatchGetServicePermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.BatchGetServiceException)
 
 
 def ListCategoryServices(resource, category, page_size=200, limit=sys.maxsize):
@@ -307,14 +299,15 @@ def ListCategoryServices(resource, category, page_size=200, limit=sys.maxsize):
     limit: The max number of services to display.
 
   Raises:
-    exceptions.ListCategoryServicespermissionDeniedException: when listing the
+    exceptions.ListCategoryServicesException: when listing the
     services the parent category includes.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    The services the parent category includes.
+    Message.ListCategoryServicesResponse: The services the parent category
+    includes.
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageCategoriesCategoryServicesListRequest(
@@ -334,9 +327,7 @@ def ListCategoryServices(resource, category, page_size=200, limit=sys.maxsize):
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.ListCategoryServicespermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.ListCategoryServicesException)
 
 
 def UpdateConsumerPolicyV2Alpha(
@@ -388,7 +379,7 @@ def UpdateConsumerPolicyV2Alpha(
     exceptions.ReraiseError(e, exceptions.Error)
 
 
-def ListGroupMembersV2Alpha(
+def ListGroupMembers(
     resource: str,
     service_group: str,
     page_size: int = 50,
@@ -409,9 +400,9 @@ def ListGroupMembersV2Alpha(
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    Group members in the given service group.
+    Message.ListGroupMembersResponse : Group members in the given service group.
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageServicesGroupsMembersListRequest(
@@ -419,7 +410,7 @@ def ListGroupMembersV2Alpha(
   )
 
   try:
-    return list_pager.YieldFromList(
+    response = list_pager.YieldFromList(
         _Lister(client.services_groups_members),
         request,
         limit=limit,
@@ -427,13 +418,16 @@ def ListGroupMembersV2Alpha(
         batch_size=page_size,
         field='memberStates',
     )
+    member_states = []
+    for member_state in response:
+      member_states.append(member_state)
+    return member_states
   except (
+      apitools_exceptions.HttpBadRequestError,
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.ListGroupMembersPermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.ListGroupMembersException)
 
 
 def ListDescendantServices(
@@ -861,13 +855,13 @@ class _Lister:
     return self.service_usage.List(request, global_params=global_params)
 
 
-def ListServicesV2Alpha(
-    project,
-    enabled,
-    page_size,
+def ListServicesV2Beta(
+    project: str,
+    enabled: bool,
+    page_size: int,
     limit=sys.maxsize,
-    folder=None,
-    organization=None,
+    folder: str = None,
+    organization: str = None,
 ):
   """Make API call to list services.
 
@@ -880,7 +874,7 @@ def ListServicesV2Alpha(
     organization: The organization for which to list services.
 
   Raises:
-    exceptions.ListServicesPermissionDeniedException: when listing services
+    exceptions.ListServicesException: when listing services
     fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
@@ -899,7 +893,7 @@ def ListServicesV2Alpha(
   try:
     if enabled:
       policy_name = resource_name + _EFFECTIVE_POLICY
-      effectivepolicy = GetEffectivePolicyV2Alpha(policy_name)
+      effectivepolicy = GetEffectivePolicyV2Beta(policy_name)
 
       for rules in effectivepolicy.enableRules:
         for value in rules.services:
@@ -933,9 +927,7 @@ def ListServicesV2Alpha(
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.EnableServicePermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.ListServicesException)
 
 
 def ListServices(project, enabled, page_size, limit):

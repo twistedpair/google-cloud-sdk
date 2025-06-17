@@ -632,7 +632,7 @@ class AiplatformV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists Annotations belongs to a dataitem This RPC is only available in InternalDatasetService. It is only used for exporting conversation data to CCAI Insights.
+      r"""Lists Annotations belongs to a dataitem.
 
       Args:
         request: (AiplatformProjectsLocationsDatasetsDataItemsAnnotationsListRequest) input message
@@ -1628,7 +1628,7 @@ class AiplatformV1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.endpoints.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        query_params=['filter', 'gdcZone', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
         relative_path='v1/{+parent}/endpoints',
         request_field='',
         request_type_name='AiplatformProjectsLocationsEndpointsListRequest',
@@ -2169,6 +2169,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}:getIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists FeatureGroups in a given project and location.
 
@@ -2220,6 +2247,60 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1FeatureGroup',
         request_type_name='AiplatformProjectsLocationsFeatureGroupsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['permissions'],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -5815,6 +5896,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListCheckpoints(self, request, global_params=None):
+      r"""Lists checkpoints of the specified model version.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsListCheckpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListModelVersionCheckpointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListCheckpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListCheckpoints.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:listCheckpoints',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.models.listCheckpoints',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}:listCheckpoints',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsListCheckpointsRequest',
+        response_type_name='GoogleCloudAiplatformV1ListModelVersionCheckpointsResponse',
+        supports_download=False,
+    )
+
     def ListVersions(self, request, global_params=None):
       r"""Lists versions of the specified model.
 
@@ -7854,7 +7962,7 @@ class AiplatformV1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.reasoningEngines.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='AiplatformProjectsLocationsReasoningEnginesDeleteRequest',
@@ -9967,33 +10075,6 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1CorroborateContentRequest',
         request_type_name='AiplatformProjectsLocationsCorroborateContentRequest',
         response_type_name='GoogleCloudAiplatformV1CorroborateContentResponse',
-        supports_download=False,
-    )
-
-    def EvaluateDataset(self, request, global_params=None):
-      r"""Evaluates a dataset based on a set of given metrics.
-
-      Args:
-        request: (AiplatformProjectsLocationsEvaluateDatasetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('EvaluateDataset')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    EvaluateDataset.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}:evaluateDataset',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.evaluateDataset',
-        ordered_params=['location'],
-        path_params=['location'],
-        query_params=[],
-        relative_path='v1/{+location}:evaluateDataset',
-        request_field='googleCloudAiplatformV1EvaluateDatasetRequest',
-        request_type_name='AiplatformProjectsLocationsEvaluateDatasetRequest',
-        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

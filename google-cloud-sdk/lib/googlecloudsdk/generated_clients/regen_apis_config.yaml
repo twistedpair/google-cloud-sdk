@@ -783,6 +783,9 @@ apis:
       discovery_doc: edgecontainer_v1alpha.json
       enable_mtls: false
       default: true
+      resources:
+        projects.locations.zones:
+          path: projects/{projectsId}/locations/{locationsId}/zones/{zonesId}
   edgenetwork:
     v1:
       discovery_doc: edgenetwork_v1.json

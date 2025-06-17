@@ -266,25 +266,15 @@ class GoogleIamV3betaAccessPolicyRuleOperation(_messages.Message):
       a permission appears in `permissions` _and_ in `excluded_permissions`
       then it will _not_ be subject to the policy effect. The excluded
       permissions can be specified using the same syntax as `permissions`.
-    excludedServiceMethods: Optional. Specifies the service methods that this
-      rule excludes from the set of affected service methods given by
-      `service_methods`. If a service method appears in `service_methods`
-      _and_ in `excluded_service_methods` then it will _not_ be subject to the
-      policy effect.
     permissions: Optional. The permissions that are explicitly affected by
       this rule. Each permission uses the format
       `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
       qualified domain name for the service. Currently supported permissions
       are: * `eventarc.googleapis.com/messageBuses.publish`.
-    serviceMethods: Optional. The service methods that are explicitly affected
-      by this rule. Each service method uses the format
-      `{service_name}.{operation_name}`.
   """
 
   excludedPermissions = _messages.StringField(1, repeated=True)
-  excludedServiceMethods = _messages.StringField(2, repeated=True)
-  permissions = _messages.StringField(3, repeated=True)
-  serviceMethods = _messages.StringField(4, repeated=True)
+  permissions = _messages.StringField(2, repeated=True)
 
 
 class GoogleIamV3betaListAccessPoliciesResponse(_messages.Message):

@@ -121,6 +121,33 @@ class ResourcePromptFallthrough(PromptFallthrough):
     return ''
 
 
+class RegionPromptFallthrough(PromptFallthrough):
+  """Fall through to reading the region from an interactive prompt."""
+
+  def __init__(self):
+    super(RegionPromptFallthrough, self).__init__(
+        'specify the region from an interactive prompt'
+    )
+
+  def _Prompt(self, parsed_args):
+    client = global_methods.GetServerlessClientInstance()
+    all_regions = global_methods.ListRegions(client)
+    idx = console_io.PromptChoice(
+        all_regions,
+        message='Please specify a region:\n',
+        cancel_option=True,
+        allow_freeform=True,
+    )
+    region = all_regions[idx]
+    log.status.Print(
+        'To make this the default region, run '
+        '`gcloud config set run/region {}`.\n'.format(region)
+    )
+    if region:
+      parsed_args.region = region
+    return region
+
+
 class ServicePromptFallthrough(ResourcePromptFallthrough):
 
   def __init__(self):
@@ -341,6 +368,7 @@ def LocationAttributeConfig():
       fallthroughs=[
           deps.ArgFallthrough('--region'),
           deps.PropertyFallthrough(properties.VALUES.run.region),
+          RegionPromptFallthrough(),
       ],
   )
 
@@ -685,6 +713,15 @@ CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     '--cluster',
     GetClusterResourceSpec(),
     'Kubernetes Engine cluster to connect to.',
+    hidden=True,
+    required=False,
+    prefixes=True,
+)
+
+REGION_PRESENTATION = presentation_specs.ResourcePresentationSpec(
+    '--region',
+    GetRegionResourceSpec(),
+    'Cloud region to use.',
     hidden=True,
     required=False,
     prefixes=True,

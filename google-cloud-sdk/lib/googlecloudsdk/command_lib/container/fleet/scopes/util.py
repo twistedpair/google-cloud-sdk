@@ -223,12 +223,14 @@ def IamScopeLevelScopeRoleFromRbac(role):
   """
   if role == 'admin':
     return 'roles/gkehub.scopeAdmin'
-  if role == 'edit':
+  elif role == 'edit':
     return 'roles/gkehub.scopeEditor'
-  if role == 'view':
+  elif role == 'view':
+    return 'roles/gkehub.scopeViewer'
+  elif role:
     return 'roles/gkehub.scopeViewer'
   raise exceptions.Error(
-      'Role is required to be admin, edit, or view.'
+      'Role is required to be admin, edit, view or a custom role.'
   )
 
 
@@ -257,10 +259,13 @@ def IamProjectLevelScopeRoleFromRbac(role):
   if role == 'admin':
     # Admin needs the same project-level permissions as Editor.
     return 'roles/gkehub.scopeEditorProjectLevel'
-  if role == 'edit':
+  elif role == 'edit':
     return 'roles/gkehub.scopeEditorProjectLevel'
-  if role == 'view':
+  elif role == 'view':
     return 'roles/gkehub.scopeViewerProjectLevel'
+  elif role:
+    # Custom role gives minimal editor project-level permissions.
+    return 'roles/gkehub.scopeEditorProjectLevel'
   raise exceptions.Error(
       'Role is required to be admin, edit, or view.'
   )
@@ -287,14 +292,16 @@ def ScopeRbacRoleString(role):
   Raises:
     a core.Error, if the role is not admin, edit, or view
   """
-  if str(encoding.MessageToPyValue(role)['predefinedRole']) == 'ADMIN':
+  if role.customRole:
+    return role.customRole
+  elif str(encoding.MessageToPyValue(role)['predefinedRole']) == 'ADMIN':
     return 'admin'
-  if str(encoding.MessageToPyValue(role)['predefinedRole']) == 'EDIT':
+  elif str(encoding.MessageToPyValue(role)['predefinedRole']) == 'EDIT':
     return 'edit'
-  if str(encoding.MessageToPyValue(role)['predefinedRole']) == 'VIEW':
+  elif str(encoding.MessageToPyValue(role)['predefinedRole']) == 'VIEW':
     return 'view'
   raise exceptions.Error(
-      'Role is required to be admin, edit, or view.'
+      'Role is required to be admin, edit, view or a custom role.'
   )
 
 

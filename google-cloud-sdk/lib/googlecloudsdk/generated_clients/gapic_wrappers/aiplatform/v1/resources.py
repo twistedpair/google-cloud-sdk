@@ -99,13 +99,6 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'modelsId', 'operationsId'],
       True
   )
-  PROJECTS_LOCATIONS_TEMPLATES = (
-      'projects.locations.templates',
-      'projects/{project}/locations/{location}/templates/{template}',
-      {},
-      ['project', 'location', 'template'],
-      True
-  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

@@ -835,6 +835,7 @@ class CreateClusterOptions(object):
       enable_k8s_tokens_via_dns=None,
       enable_legacy_lustre_port=None,
       enable_default_compute_class=None,
+      enable_k8s_certs_via_dns=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1122,6 +1123,7 @@ class CreateClusterOptions(object):
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
     self.enable_default_compute_class = enable_default_compute_class
+    self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
 
 
 class UpdateClusterOptions(object):
@@ -1298,6 +1300,7 @@ class UpdateClusterOptions(object):
       enable_k8s_tokens_via_dns=None,
       enable_legacy_lustre_port=None,
       enable_default_compute_class=None,
+      enable_k8s_certs_via_dns=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1516,6 +1519,7 @@ class UpdateClusterOptions(object):
     self.enable_k8s_tokens_via_dns = enable_k8s_tokens_via_dns
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
     self.enable_default_compute_class = enable_default_compute_class
+    self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
 
 
 class SetMasterAuthOptions(object):
@@ -4994,6 +4998,7 @@ class APIAdapter(object):
         or options.enable_google_cloud_access is not None
         or options.enable_authorized_networks_on_private_endpoint is not None
         or options.enable_k8s_tokens_via_dns is not None
+        or options.enable_k8s_certs_via_dns is not None
     ):
       cp_endpoints_config = self._GetDesiredControlPlaneEndpointsConfig(
           cluster_ref, options
@@ -7265,6 +7270,7 @@ class APIAdapter(object):
     if(
         options.enable_dns_access is not None
         or options.enable_k8s_tokens_via_dns is not None
+        or options.enable_k8s_certs_via_dns is not None
     ):
       cp_endpoints_config.dnsEndpointConfig = self.messages.DNSEndpointConfig()
       if options.enable_dns_access is not None:
@@ -7274,6 +7280,10 @@ class APIAdapter(object):
       if options.enable_k8s_tokens_via_dns is not None:
         cp_endpoints_config.dnsEndpointConfig.enableK8sTokensViaDns = (
             options.enable_k8s_tokens_via_dns
+        )
+      if options.enable_k8s_certs_via_dns is not None:
+        cp_endpoints_config.dnsEndpointConfig.enableK8sCertsViaDns = (
+            options.enable_k8s_certs_via_dns
         )
     # update ipEndpointConfig sub-section
     if (
@@ -7353,6 +7363,11 @@ class APIAdapter(object):
       self._InitDNSEndpointConfigIfRequired(cluster)
       cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.enableK8sTokensViaDns = (
           options.enable_k8s_tokens_via_dns
+      )
+    if options.enable_k8s_certs_via_dns is not None:
+      self._InitDNSEndpointConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.enableK8sCertsViaDns = (
+          options.enable_k8s_certs_via_dns
       )
     if options.enable_ip_access is not None:
       self._InitIPEndpointsConfigIfRequired(cluster)

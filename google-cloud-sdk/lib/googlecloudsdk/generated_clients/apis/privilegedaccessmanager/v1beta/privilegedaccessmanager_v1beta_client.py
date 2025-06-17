@@ -254,6 +254,33 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Withdraw(self, request, global_params=None):
+      r"""`WithdrawGrant` is used to immediately withdraw the grant. This method can be called when the grant is in a non-terminal state.
+
+      Args:
+        request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsWithdrawRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Withdraw')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Withdraw.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/folders/{foldersId}/locations/{locationsId}/entitlements/{entitlementsId}/grants/{grantsId}:withdraw',
+        http_method='POST',
+        method_id='privilegedaccessmanager.folders.locations.entitlements.grants.withdraw',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:withdraw',
+        request_field='withdrawGrantRequest',
+        request_type_name='PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsWithdrawRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class FoldersLocationsEntitlementsService(base_api.BaseApiService):
     """Service class for the folders_locations_entitlements resource."""
 
@@ -817,6 +844,33 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Withdraw(self, request, global_params=None):
+      r"""`WithdrawGrant` is used to immediately withdraw the grant. This method can be called when the grant is in a non-terminal state.
+
+      Args:
+        request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsWithdrawRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Withdraw')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Withdraw.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/entitlements/{entitlementsId}/grants/{grantsId}:withdraw',
+        http_method='POST',
+        method_id='privilegedaccessmanager.organizations.locations.entitlements.grants.withdraw',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:withdraw',
+        request_field='withdrawGrantRequest',
+        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsWithdrawRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsEntitlementsService(base_api.BaseApiService):
     """Service class for the organizations_locations_entitlements resource."""
 
@@ -1377,6 +1431,33 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsSearchRequest',
         response_type_name='SearchGrantsResponse',
+        supports_download=False,
+    )
+
+    def Withdraw(self, request, global_params=None):
+      r"""`WithdrawGrant` is used to immediately withdraw the grant. This method can be called when the grant is in a non-terminal state.
+
+      Args:
+        request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsWithdrawRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Withdraw')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Withdraw.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/entitlements/{entitlementsId}/grants/{grantsId}:withdraw',
+        http_method='POST',
+        method_id='privilegedaccessmanager.projects.locations.entitlements.grants.withdraw',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:withdraw',
+        request_field='withdrawGrantRequest',
+        request_type_name='PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsWithdrawRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

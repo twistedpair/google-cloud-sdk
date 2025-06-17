@@ -59,6 +59,7 @@ from googlecloudsdk.command_lib.run import op_pollers
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.command_lib.run.sourcedeploys import deployer
+from googlecloudsdk.command_lib.run.sourcedeploys import sources
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -818,6 +819,7 @@ class ServerlessOperations(object):
       source_bucket=None,
       kms_key=None,
       iap_enabled=None,
+      skip_build=False,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -867,6 +869,7 @@ class ServerlessOperations(object):
       kms_key: The KMS key to use for the deployment.
       iap_enabled: If true, assign run.invoker access to IAP P4SA, if false,
         remove run.invoker access from IAP P4SA.
+      skip_build: If true, skip the cloud build step.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -890,7 +893,27 @@ class ServerlessOperations(object):
           aborted_message='aborted',
       )
 
-    if build_source is not None:
+    if build_source is not None and skip_build:
+      tracker.StartStage(stages.UPLOAD_SOURCE)
+      tracker.UpdateHeaderMessage('Uploading sources.')
+      source = sources.Upload(
+          build_source,
+          region,
+          service_ref,
+          source_bucket,
+          sources.ArchiveType.TAR,
+      )
+      # TODO(b/423646813): Remove this once zip deploys properly handles the
+      # generation number.
+      source.generation = None
+      source_path = sources.GetGsutilUri(source)
+      config_changes.append(
+          config_changes_mod.SourcesAnnotationChange(
+              updates={build_from_source_container_name: source_path}
+          )
+      )
+      tracker.CompleteStage(stages.UPLOAD_SOURCE)
+    elif build_source is not None:
       new_conn = self._conn_context.GetContextWithRegionOverride(region)
       with new_conn:
         if should_validate_service:
@@ -1150,11 +1173,11 @@ class ServerlessOperations(object):
     except api_exceptions.HttpNotFoundError:
       return None
 
-  def ListWorkerPools(self, namespace_ref):
-    """Returns all worker pools in the namespace."""
+  def ListWorkerPools(self, project_ref):
+    """Returns all worker pools in the project."""
     messages = self.messages_module
     request = messages.RunNamespacesWorkerpoolsListRequest(
-        parent=namespace_ref.RelativeName()
+        parent=project_ref.RelativeName()
     )
     try:
       with metrics.RecordDuration(metric_names.LIST_WORKER_POOLS):
@@ -2171,9 +2194,7 @@ class ServerlessOperations(object):
     function_target = self._GetFunctionTargetFromBuildPack(build_pack)
     source_path = None
     if uploaded_source:
-      source_path = f'gs://{uploaded_source.bucket}/{uploaded_source.name}'
-      if uploaded_source.generation is not None:
-        source_path += f'#{uploaded_source.generation}'
+      source_path = sources.GetGsutilUri(uploaded_source)
     image_uri = build_pack[0].get('image') if build_pack else build_image
     annotations_map = {
         service.RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION: service_account,

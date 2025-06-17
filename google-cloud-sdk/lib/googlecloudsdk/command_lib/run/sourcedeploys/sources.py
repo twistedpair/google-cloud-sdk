@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Sources for Cloud Run Functions."""
+import enum
 import os
 import uuid
 
@@ -29,7 +30,18 @@ from googlecloudsdk.core.util import times
 _GCS_PREFIX = 'gs://'
 
 
-def Upload(source, region, resource_ref, source_bucket=None):
+class ArchiveType(enum.Enum):
+  ZIP = 'Zip'
+  TAR = 'Tar'
+
+
+def Upload(
+    source,
+    region,
+    resource_ref,
+    source_bucket=None,
+    archive_type=ArchiveType.ZIP,
+):
   """Uploads a source to a staging bucket.
 
   Args:
@@ -38,6 +50,7 @@ def Upload(source, region, resource_ref, source_bucket=None):
     region: The region to upload to.
     resource_ref: The Cloud Run service resource reference.
     source_bucket: The source bucket to upload to, if not None.
+    archive_type: The type of archive to upload.
 
   Returns:
     storage_v1_messages.Object, The written GCS object.
@@ -45,7 +58,7 @@ def Upload(source, region, resource_ref, source_bucket=None):
   gcs_client = storage_api.StorageClient()
 
   bucket_name = _GetOrCreateBucket(gcs_client, region, source_bucket)
-  object_name = _GetObject(source, resource_ref)
+  object_name = _GetObject(source, resource_ref, archive_type)
   log.debug(f'Uploading source to {_GCS_PREFIX}{bucket_name}/{object_name}')
 
   object_ref = resources.REGISTRY.Create(
@@ -74,6 +87,21 @@ def GetGcsObject(source: str):
 def IsGcsObject(source: str) -> bool:
   """Returns true if the source is located remotely in a GCS object."""
   return (source or '').startswith(_GCS_PREFIX)
+
+
+def GetGsutilUri(source) -> str:
+  """Returns the gsutil URI of the GCS object.
+
+  Args:
+    source: The storage_v1_messages.Object.
+
+  Returns:
+    The gsutil URI of the format `gs://<bucket>/<object>(#<generation>)`.
+  """
+  source_path = f'gs://{source.bucket}/{source.name}'
+  if source.generation is not None:
+    source_path += f'#{source.generation}'
+  return source_path
 
 
 def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
@@ -105,9 +133,9 @@ def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
   return bucket
 
 
-def _GetObject(source, resource_ref):
+def _GetObject(source, resource_ref, archive_type=ArchiveType.ZIP):
   """Gets the object name for a source to be uploaded."""
-  suffix = '.zip'
+  suffix = '.tar.gz' if archive_type == ArchiveType.TAR else '.zip'
   if source.startswith(_GCS_PREFIX) or os.path.isfile(source):
     _, suffix = os.path.splitext(source)
 

@@ -3776,6 +3776,18 @@ class _SectionStorage(_Section):
         ),
     )
 
+    self.use_gsutil_rsync_delete_unmatched_destination_objects_behavior = self._AddBool(
+        'use_gsutil_rsync_delete_unmatched_destination_objects_behavior',
+        hidden=True,
+        default=False,
+        help_text=(
+            'If True, rsync will preserve unmatched destination objects while'
+            ' using --delete-unmatched-destination-objects flag along with'
+            ' other flags such as --no-clobber, --skip-unsupported and'
+            ' --skip-if-dest-has-newer-mtime just as it would with gsutil.'
+        ),
+    )
+
     self.s3_endpoint_url = self._Add(
         's3_endpoint_url',
         default=None,

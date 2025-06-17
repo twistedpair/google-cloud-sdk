@@ -254,7 +254,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
         method_id='gkerecommender.optimizedManifest',
         ordered_params=[],
         path_params=[],
-        query_params=['acceleratorType', 'kubernetesNamespace', 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo_modelServerVersion', 'targetNtpotMilliseconds'],
+        query_params=['acceleratorType', 'kubernetesNamespace', 'modelAndModelServerInfo_modelName', 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo_modelServerVersion', 'storageConfig_modelBucketUri', 'targetNtpotMilliseconds'],
         relative_path='v1alpha1/optimizedManifest',
         request_field='',
         request_type_name='GkerecommenderOptimizedManifestRequest',

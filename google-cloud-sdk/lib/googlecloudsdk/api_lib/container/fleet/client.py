@@ -1569,6 +1569,18 @@ class FleetClient(object):
         batch_size_attribute='pageSize',
     )
 
+  def UpdateRolloutSequence(
+      self, req: types.GkehubProjectsLocationsRolloutSequencesPatchRequest
+  ):
+    """Updates a RolloutSequence and returns the long-running operation message."""
+    return self.client.projects_locations_rolloutSequences.Patch(req)
+
+  def DeleteRolloutSequence(
+      self, req: types.GkehubProjectsLocationsRolloutSequencesDeleteRequest
+  ):
+    """Deletes a rollout sequence."""
+    return self.client.projects_locations_rolloutSequences.Delete(req)
+
 
 class OperationClient:
   """Client for the GKE Hub API long-running operations."""

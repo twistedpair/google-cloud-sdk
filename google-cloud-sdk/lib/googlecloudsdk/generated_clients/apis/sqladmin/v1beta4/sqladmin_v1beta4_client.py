@@ -1054,6 +1054,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PreCheckMajorVersionUpgrade(self, request, global_params=None):
+      r"""Execute MVU Pre-checks.
+
+      Args:
+        request: (SqlInstancesPreCheckMajorVersionUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PreCheckMajorVersionUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PreCheckMajorVersionUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.preCheckMajorVersionUpgrade',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/preCheckMajorVersionUpgrade',
+        request_field='instancesPreCheckMajorVersionUpgradeRequest',
+        request_type_name='SqlInstancesPreCheckMajorVersionUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def PromoteReplica(self, request, global_params=None):
       r"""Promotes the read replica instance to be an independent Cloud SQL primary instance. Using this operation might cause your instance to restart.
 

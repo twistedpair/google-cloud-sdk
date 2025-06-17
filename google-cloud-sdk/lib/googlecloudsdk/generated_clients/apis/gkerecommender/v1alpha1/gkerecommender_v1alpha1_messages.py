@@ -110,6 +110,7 @@ class GkerecommenderOptimizedManifestRequest(_messages.Message):
     modelAndModelServerInfo_modelName: A string attribute.
     modelAndModelServerInfo_modelServerName: A string attribute.
     modelAndModelServerInfo_modelServerVersion: A string attribute.
+    storageConfig_modelBucketUri: A string attribute.
     targetNtpotMilliseconds: A integer attribute.
   """
 
@@ -118,7 +119,8 @@ class GkerecommenderOptimizedManifestRequest(_messages.Message):
   modelAndModelServerInfo_modelName = _messages.StringField(3)
   modelAndModelServerInfo_modelServerName = _messages.StringField(4)
   modelAndModelServerInfo_modelServerVersion = _messages.StringField(5, default='LATEST')
-  targetNtpotMilliseconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  storageConfig_modelBucketUri = _messages.StringField(6)
+  targetNtpotMilliseconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class K8SManifest(_messages.Message):
@@ -314,3 +316,5 @@ encoding.AddCustomJsonFieldMapping(
     GkerecommenderOptimizedManifestRequest, 'modelAndModelServerInfo_modelServerName', 'modelAndModelServerInfo.modelServerName')
 encoding.AddCustomJsonFieldMapping(
     GkerecommenderOptimizedManifestRequest, 'modelAndModelServerInfo_modelServerVersion', 'modelAndModelServerInfo.modelServerVersion')
+encoding.AddCustomJsonFieldMapping(
+    GkerecommenderOptimizedManifestRequest, 'storageConfig_modelBucketUri', 'storageConfig.modelBucketUri')

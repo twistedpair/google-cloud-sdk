@@ -49,6 +49,14 @@ KUBERNETES_GPU_DRIVER_AUTO_INSTALL_MSG = (
     "version, GKE installs the default GPU driver for your node's GKE version."
 )
 
+KUBERNETES_GPU_DRIVER_DISABLED_NEEDS_MANUAL_INSTALL_MSG = (
+    "By specifying 'gpu-driver-version=disabled' you have chosen to skip "
+    "automatic driver installation. You must manually install a driver after "
+    "the create command. To learn how to manually install the GPU driver, "
+    "refer to: "
+    "https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers"
+)
+
 USERNAME_PASSWORD_ERROR_MSG = (
     "Cannot specify --password with empty --username or --no-enable-basic-auth."
 )

@@ -43,6 +43,8 @@ class ConfigV1alpha2(base_api.BaseApiClient):
     self.projects_locations_deployments_revisions = self.ProjectsLocationsDeploymentsRevisionsService(self)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_previews_resourceChanges = self.ProjectsLocationsPreviewsResourceChangesService(self)
+    self.projects_locations_previews_resourceDrifts = self.ProjectsLocationsPreviewsResourceDriftsService(self)
     self.projects_locations_previews = self.ProjectsLocationsPreviewsService(self)
     self.projects_locations_terraformVersions = self.ProjectsLocationsTerraformVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -706,6 +708,134 @@ class ConfigV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ConfigProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPreviewsResourceChangesService(base_api.BaseApiService):
+    """Service class for the projects_locations_previews_resourceChanges resource."""
+
+    _NAME = 'projects_locations_previews_resourceChanges'
+
+    def __init__(self, client):
+      super(ConfigV1alpha2.ProjectsLocationsPreviewsResourceChangesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a ResourceChange for a given preview.
+
+      Args:
+        request: (ConfigProjectsLocationsPreviewsResourceChangesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceChange) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/previews/{previewsId}/resourceChanges/{resourceChangesId}',
+        http_method='GET',
+        method_id='config.projects.locations.previews.resourceChanges.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsPreviewsResourceChangesGetRequest',
+        response_type_name='ResourceChange',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ResourceChanges for a given preview.
+
+      Args:
+        request: (ConfigProjectsLocationsPreviewsResourceChangesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceChangesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/previews/{previewsId}/resourceChanges',
+        http_method='GET',
+        method_id='config.projects.locations.previews.resourceChanges.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/resourceChanges',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsPreviewsResourceChangesListRequest',
+        response_type_name='ListResourceChangesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPreviewsResourceDriftsService(base_api.BaseApiService):
+    """Service class for the projects_locations_previews_resourceDrifts resource."""
+
+    _NAME = 'projects_locations_previews_resourceDrifts'
+
+    def __init__(self, client):
+      super(ConfigV1alpha2.ProjectsLocationsPreviewsResourceDriftsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a ResourceDrift for a given preview.
+
+      Args:
+        request: (ConfigProjectsLocationsPreviewsResourceDriftsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceDrift) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/previews/{previewsId}/resourceDrifts/{resourceDriftsId}',
+        http_method='GET',
+        method_id='config.projects.locations.previews.resourceDrifts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsPreviewsResourceDriftsGetRequest',
+        response_type_name='ResourceDrift',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List ResourceDrifts for a given preview.
+
+      Args:
+        request: (ConfigProjectsLocationsPreviewsResourceDriftsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceDriftsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/previews/{previewsId}/resourceDrifts',
+        http_method='GET',
+        method_id='config.projects.locations.previews.resourceDrifts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+parent}/resourceDrifts',
+        request_field='',
+        request_type_name='ConfigProjectsLocationsPreviewsResourceDriftsListRequest',
+        response_type_name='ListResourceDriftsResponse',
         supports_download=False,
     )
 

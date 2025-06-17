@@ -164,7 +164,7 @@ def DisplayProposedConfigDeployments(project, configs):
       try:
         api_maybe_enabled = enable_api.IsServiceEnabled(
             project, 'cloudtasks.googleapis.com')
-      except s_exceptions.ListServicesPermissionDeniedException:
+      except s_exceptions.ListServicesException:
         api_maybe_enabled = True  # We can't know, so presume it is enabled
       if api_maybe_enabled:
         # Display this warning with a false positive rate for when the Service

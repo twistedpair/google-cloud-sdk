@@ -526,3 +526,30 @@ STORAGE_POOL_ARG = compute_flags.ResourceArgument(
     plural=False,
     required=False,
     scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS)
+
+
+def AddSourceMachineImageNameArg(parser):
+  # TODO: b/421424530 - switch to compute_flags.ResourceArgument when
+  # disks.insert goes GA. compute_flags.ResourceArgument does not support
+  # the hidden flag.
+  parser.add_argument(
+      '--source-machine-image',
+      help="""\
+        Specifies the URI of the source machine image contiaining the disk to
+        restore. Requires *--source-machine-image-disk-device-name* with the
+        disk to restores device name.
+      """,
+      hidden=True,
+  )
+
+
+def AddSourceMachineImageDiskDeviceNameArg(parser):
+  parser.add_argument(
+      '--source-machine-image-disk-device-name',
+      help="""\
+        Specifies the name of the disk to be restored from the source machine
+        image. Requires *--source-machine-image* with the URI of the source
+        machine image.
+      """,
+      hidden=True,
+  )

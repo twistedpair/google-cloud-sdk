@@ -767,6 +767,22 @@ def AddRolloutSequenceResourceArg(parser, api_version='v1'):
   ).AddToParser(parser)
 
 
+def RolloutSequenceResourceName(args):
+  """Gets a RolloutSequence resource name from a resource argument.
+
+  Assumes the argument is called ROLLOUTSEQUENCE.
+
+  Args:
+    args: arguments provided to a command, including a RolloutSequence resource
+      arg
+
+  Returns:
+    The RolloutSequence resource name (e.g.
+    projects/x/locations/l/rolloutSequences/z)
+  """
+  return args.CONCEPTS.rolloutsequence.Parse().RelativeName()
+
+
 def AddWorkloadIdentityPoolResourceArg(parser, api_version='v1'):
   """Add resource arg for projects/{}/locations/{}/workloadidentitypools/{}."""
   # Flags without '--' prefix are automatically positional

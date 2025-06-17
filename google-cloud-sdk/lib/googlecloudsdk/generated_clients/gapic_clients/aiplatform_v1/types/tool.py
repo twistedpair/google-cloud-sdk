@@ -21,6 +21,8 @@ import proto  # type: ignore
 
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from google.type import latlng_pb2  # type: ignore
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import api_auth as gca_api_auth
+from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import auth
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import openapi
 
 
@@ -28,6 +30,7 @@ __protobuf__ = proto.module(
     package='google.cloud.aiplatform.v1',
     manifest={
         'Tool',
+        'UrlContext',
         'FunctionDeclaration',
         'FunctionCall',
         'FunctionResponse',
@@ -36,7 +39,9 @@ __protobuf__ = proto.module(
         'Retrieval',
         'VertexRagStore',
         'VertexAISearch',
+        'ExternalApi',
         'GoogleSearchRetrieval',
+        'EnterpriseWebSearch',
         'DynamicRetrievalConfig',
         'ToolConfig',
         'FunctionCallingConfig',
@@ -82,11 +87,22 @@ class Tool(proto.Message):
             Optional. GoogleSearchRetrieval tool type.
             Specialized retrieval tool that is powered by
             Google search.
+        enterprise_web_search (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.EnterpriseWebSearch):
+            Optional. Tool to support searching public
+            web data, powered by Vertex AI Search and Sec4
+            compliance.
         code_execution (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Tool.CodeExecution):
             Optional. CodeExecution tool type.
             Enables the model to execute code as part of
-            generation. This field is only used by the
-            Gemini Developer API services.
+            generation.
+        url_context (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.UrlContext):
+            Optional. Tool to support URL context
+            retrieval.
+        computer_use (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Tool.ComputerUse):
+            Optional. Tool to support the model
+            interacting directly with the computer. If
+            enabled, it automatically populates computer-use
+            specific Function Declarations.
     """
 
     class GoogleSearch(proto.Message):
@@ -103,6 +119,32 @@ class Tool(proto.Message):
         and output to this tool.
 
         """
+
+    class ComputerUse(proto.Message):
+        r"""Tool to support computer use.
+
+        Attributes:
+            environment (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Tool.ComputerUse.Environment):
+                Required. The environment being operated.
+        """
+        class Environment(proto.Enum):
+            r"""Represents the environment being operated, such as a web
+            browser.
+
+            Values:
+                ENVIRONMENT_UNSPECIFIED (0):
+                    Defaults to browser.
+                ENVIRONMENT_BROWSER (1):
+                    Operates in a web browser.
+            """
+            ENVIRONMENT_UNSPECIFIED = 0
+            ENVIRONMENT_BROWSER = 1
+
+        environment: 'Tool.ComputerUse.Environment' = proto.Field(
+            proto.ENUM,
+            number=1,
+            enum='Tool.ComputerUse.Environment',
+        )
 
     function_declarations: MutableSequence['FunctionDeclaration'] = proto.RepeatedField(
         proto.MESSAGE,
@@ -124,11 +166,31 @@ class Tool(proto.Message):
         number=3,
         message='GoogleSearchRetrieval',
     )
+    enterprise_web_search: 'EnterpriseWebSearch' = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message='EnterpriseWebSearch',
+    )
     code_execution: CodeExecution = proto.Field(
         proto.MESSAGE,
         number=4,
         message=CodeExecution,
     )
+    url_context: 'UrlContext' = proto.Field(
+        proto.MESSAGE,
+        number=10,
+        message='UrlContext',
+    )
+    computer_use: ComputerUse = proto.Field(
+        proto.MESSAGE,
+        number=11,
+        message=ComputerUse,
+    )
+
+
+class UrlContext(proto.Message):
+    r"""Tool to support URL context.
+    """
 
 
 class FunctionDeclaration(proto.Message):
@@ -173,12 +235,37 @@ class FunctionDeclaration(proto.Message):
             required:
 
              - param1
+        parameters_json_schema (google.protobuf.struct_pb2.Value):
+            Optional. Describes the parameters to the function in JSON
+            Schema format. The schema must describe an object where the
+            properties are the parameters to the function. For example:
+
+            ::
+
+               {
+                 "type": "object",
+                 "properties": {
+                   "name": { "type": "string" },
+                   "age": { "type": "integer" }
+                 },
+                 "additionalProperties": false,
+                 "required": ["name", "age"],
+                 "propertyOrdering": ["name", "age"]
+               }
+
+            This field is mutually exclusive with ``parameters``.
         response (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Schema):
             Optional. Describes the output from this
             function in JSON Schema format. Reflects the
             Open API 3.03 Response Object. The Schema
             defines the type used for the response value of
             the function.
+        response_json_schema (google.protobuf.struct_pb2.Value):
+            Optional. Describes the output from this function in JSON
+            Schema format. The value specified by the schema is the
+            response value of the function.
+
+            This field is mutually exclusive with ``response``.
     """
 
     name: str = proto.Field(
@@ -194,10 +281,20 @@ class FunctionDeclaration(proto.Message):
         number=3,
         message=openapi.Schema,
     )
+    parameters_json_schema: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=struct_pb2.Value,
+    )
     response: openapi.Schema = proto.Field(
         proto.MESSAGE,
         number=4,
         message=openapi.Schema,
+    )
+    response_json_schema: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=struct_pb2.Value,
     )
 
 
@@ -211,9 +308,9 @@ class FunctionCall(proto.Message):
             Required. The name of the function to call. Matches
             [FunctionDeclaration.name].
         args (google.protobuf.struct_pb2.Struct):
-            Optional. Required. The function parameters and values in
-            JSON object format. See [FunctionDeclaration.parameters] for
-            parameter details.
+            Optional. The function parameters and values in JSON object
+            format. See [FunctionDeclaration.parameters] for parameter
+            details.
     """
 
     name: str = proto.Field(
@@ -262,8 +359,9 @@ class ExecutableCode(proto.Message):
     r"""Code generated by the model that is meant to be executed, and the
     result returned to the model.
 
-    Generated when using the [FunctionDeclaration] tool and
-    [FunctionCallingConfig] mode is set to [Mode.CODE].
+    Generated when using the [CodeExecution] tool, in which the code
+    will be automatically executed, and a corresponding
+    [CodeExecutionResult] will also be generated.
 
     Attributes:
         language (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ExecutableCode.Language):
@@ -299,7 +397,8 @@ class ExecutableCode(proto.Message):
 class CodeExecutionResult(proto.Message):
     r"""Result of executing the [ExecutableCode].
 
-    Always follows a ``part`` containing the [ExecutableCode].
+    Only generated when using the [CodeExecution] tool, and always
+    follows a ``part`` containing the [ExecutableCode].
 
     Attributes:
         outcome (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.CodeExecutionResult.Outcome):
@@ -365,6 +464,11 @@ class Retrieval(proto.Message):
             VertexRagDataService.
 
             This field is a member of `oneof`_ ``source``.
+        external_api (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ExternalApi):
+            Use data source powered by external API for
+            grounding.
+
+            This field is a member of `oneof`_ ``source``.
         disable_attribution (bool):
             Optional. Deprecated. This option is no
             longer supported.
@@ -381,6 +485,12 @@ class Retrieval(proto.Message):
         number=4,
         oneof='source',
         message='VertexRagStore',
+    )
+    external_api: 'ExternalApi' = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='source',
+        message='ExternalApi',
     )
     disable_attribution: bool = proto.Field(
         proto.BOOL,
@@ -459,19 +569,197 @@ class VertexRagStore(proto.Message):
 
 
 class VertexAISearch(proto.Message):
-    r"""Retrieve from Vertex AI Search datastore for grounding.
-    See https://cloud.google.com/products/agent-builder
+    r"""Retrieve from Vertex AI Search datastore or engine for
+    grounding. datastore and engine are mutually exclusive. See
+    https://cloud.google.com/products/agent-builder
 
     Attributes:
         datastore (str):
-            Required. Fully-qualified Vertex AI Search data store
+            Optional. Fully-qualified Vertex AI Search data store
             resource ID. Format:
             ``projects/{project}/locations/{location}/collections/{collection}/dataStores/{dataStore}``
+        engine (str):
+            Optional. Fully-qualified Vertex AI Search engine resource
+            ID. Format:
+            ``projects/{project}/locations/{location}/collections/{collection}/engines/{engine}``
+        max_results (int):
+            Optional. Number of search results to return
+            per query. The default value is 10.
+            The maximumm allowed value is 10.
+        filter (str):
+            Optional. Filter strings to be passed to the
+            search API.
+        data_store_specs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.VertexAISearch.DataStoreSpec]):
+            Specifications that define the specific
+            DataStores to be searched, along with
+            configurations for those data stores. This is
+            only considered for Engines with multiple data
+            stores.
+            It should only be set if engine is used.
     """
+
+    class DataStoreSpec(proto.Message):
+        r"""Define data stores within engine to filter on in a search
+        call and configurations for those data stores. For more
+        information, see
+        https://cloud.google.com/generative-ai-app-builder/docs/reference/rpc/google.cloud.discoveryengine.v1#datastorespec
+
+        Attributes:
+            data_store (str):
+                Full resource name of DataStore, such as Format:
+                ``projects/{project}/locations/{location}/collections/{collection}/dataStores/{dataStore}``
+            filter (str):
+                Optional. Filter specification to filter documents in the
+                data store specified by data_store field. For more
+                information on filtering, see
+                `Filtering <https://cloud.google.com/generative-ai-app-builder/docs/filter-search-metadata>`__
+        """
+
+        data_store: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        filter: str = proto.Field(
+            proto.STRING,
+            number=2,
+        )
 
     datastore: str = proto.Field(
         proto.STRING,
         number=1,
+    )
+    engine: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    max_results: int = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=4,
+    )
+    data_store_specs: MutableSequence[DataStoreSpec] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=5,
+        message=DataStoreSpec,
+    )
+
+
+class ExternalApi(proto.Message):
+    r"""Retrieve from data source powered by external API for
+    grounding. The external API is not owned by Google, but need to
+    follow the pre-defined API spec.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        simple_search_params (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ExternalApi.SimpleSearchParams):
+            Parameters for the simple search API.
+
+            This field is a member of `oneof`_ ``params``.
+        elastic_search_params (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ExternalApi.ElasticSearchParams):
+            Parameters for the elastic search API.
+
+            This field is a member of `oneof`_ ``params``.
+        api_spec (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ExternalApi.ApiSpec):
+            The API spec that the external API
+            implements.
+        endpoint (str):
+            The endpoint of the external API. The system
+            will call the API at this endpoint to retrieve
+            the data for grounding. Example:
+            https://acme.com:443/search
+        api_auth (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ApiAuth):
+            The authentication config to access the API. Deprecated.
+            Please use auth_config instead.
+        auth_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.AuthConfig):
+            The authentication config to access the API.
+    """
+    class ApiSpec(proto.Enum):
+        r"""The API spec that the external API implements.
+
+        Values:
+            API_SPEC_UNSPECIFIED (0):
+                Unspecified API spec. This value should not
+                be used.
+            SIMPLE_SEARCH (1):
+                Simple search API spec.
+            ELASTIC_SEARCH (2):
+                Elastic search API spec.
+        """
+        API_SPEC_UNSPECIFIED = 0
+        SIMPLE_SEARCH = 1
+        ELASTIC_SEARCH = 2
+
+    class SimpleSearchParams(proto.Message):
+        r"""The search parameters to use for SIMPLE_SEARCH spec.
+        """
+
+    class ElasticSearchParams(proto.Message):
+        r"""The search parameters to use for the ELASTIC_SEARCH spec.
+
+        Attributes:
+            index (str):
+                The ElasticSearch index to use.
+            search_template (str):
+                The ElasticSearch search template to use.
+            num_hits (int):
+                Optional. Number of hits (chunks) to request.
+
+                When specified, it is passed to Elasticsearch as the
+                ``num_hits`` param.
+        """
+
+        index: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        search_template: str = proto.Field(
+            proto.STRING,
+            number=2,
+        )
+        num_hits: int = proto.Field(
+            proto.INT32,
+            number=6,
+        )
+
+    simple_search_params: SimpleSearchParams = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='params',
+        message=SimpleSearchParams,
+    )
+    elastic_search_params: ElasticSearchParams = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='params',
+        message=ElasticSearchParams,
+    )
+    api_spec: ApiSpec = proto.Field(
+        proto.ENUM,
+        number=1,
+        enum=ApiSpec,
+    )
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    api_auth: gca_api_auth.ApiAuth = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=gca_api_auth.ApiAuth,
+    )
+    auth_config: auth.AuthConfig = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        message=auth.AuthConfig,
     )
 
 
@@ -490,6 +778,13 @@ class GoogleSearchRetrieval(proto.Message):
         number=2,
         message='DynamicRetrievalConfig',
     )
+
+
+class EnterpriseWebSearch(proto.Message):
+    r"""Tool to search public web data, powered by Vertex AI Search
+    and Sec4 compliance.
+
+    """
 
 
 class DynamicRetrievalConfig(proto.Message):
@@ -643,6 +938,8 @@ class RagRetrievalConfig(proto.Message):
             Optional. The number of contexts to retrieve.
         filter (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagRetrievalConfig.Filter):
             Optional. Config for filters.
+        ranking (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagRetrievalConfig.Ranking):
+            Optional. Config for ranking and reranking.
     """
 
     class Filter(proto.Message):
@@ -685,6 +982,78 @@ class RagRetrievalConfig(proto.Message):
             number=2,
         )
 
+    class Ranking(proto.Message):
+        r"""Config for ranking and reranking.
+
+        This message has `oneof`_ fields (mutually exclusive fields).
+        For each oneof, at most one member field can be set at the same time.
+        Setting any member of the oneof automatically clears all other
+        members.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            rank_service (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagRetrievalConfig.Ranking.RankService):
+                Optional. Config for Rank Service.
+
+                This field is a member of `oneof`_ ``ranking_config``.
+            llm_ranker (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagRetrievalConfig.Ranking.LlmRanker):
+                Optional. Config for LlmRanker.
+
+                This field is a member of `oneof`_ ``ranking_config``.
+        """
+
+        class RankService(proto.Message):
+            r"""Config for Rank Service.
+
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+            Attributes:
+                model_name (str):
+                    Optional. The model name of the rank service. Format:
+                    ``semantic-ranker-512@latest``
+
+                    This field is a member of `oneof`_ ``_model_name``.
+            """
+
+            model_name: str = proto.Field(
+                proto.STRING,
+                number=1,
+                optional=True,
+            )
+
+        class LlmRanker(proto.Message):
+            r"""Config for LlmRanker.
+
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+            Attributes:
+                model_name (str):
+                    Optional. The model name used for ranking. See `Supported
+                    models <https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference#supported-models>`__.
+
+                    This field is a member of `oneof`_ ``_model_name``.
+            """
+
+            model_name: str = proto.Field(
+                proto.STRING,
+                number=1,
+                optional=True,
+            )
+
+        rank_service: 'RagRetrievalConfig.Ranking.RankService' = proto.Field(
+            proto.MESSAGE,
+            number=1,
+            oneof='ranking_config',
+            message='RagRetrievalConfig.Ranking.RankService',
+        )
+        llm_ranker: 'RagRetrievalConfig.Ranking.LlmRanker' = proto.Field(
+            proto.MESSAGE,
+            number=3,
+            oneof='ranking_config',
+            message='RagRetrievalConfig.Ranking.LlmRanker',
+        )
+
     top_k: int = proto.Field(
         proto.INT32,
         number=1,
@@ -693,6 +1062,11 @@ class RagRetrievalConfig(proto.Message):
         proto.MESSAGE,
         number=3,
         message=Filter,
+    )
+    ranking: Ranking = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=Ranking,
     )
 
 

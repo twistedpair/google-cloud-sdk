@@ -670,8 +670,30 @@ class ModelarmorProjectsLocationsUpdateFloorSettingRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class MultiLanguageDetection(_messages.Message):
+  r"""Metadata to enable multi language detection via template.
+
+  Fields:
+    enableMultiLanguageDetection: Required. If true, multi language detection
+      will be enabled.
+  """
+
+  enableMultiLanguageDetection = _messages.BooleanField(1)
+
+
 class MultiLanguageDetectionMetadata(_messages.Message):
-  r"""Message for Translation Support."""
+  r"""Message for Enabling Multi Language Detection.
+
+  Fields:
+    enableMultiLanguageDetection: Optional. Enable detection of multi-language
+      prompts and responses.
+    sourceLanguage: Optional. Optional Source language of the user prompt. If
+      multi-language detection is enabled but language is not set in that case
+      we would automatically detect the source language.
+  """
+
+  enableMultiLanguageDetection = _messages.BooleanField(1)
+  sourceLanguage = _messages.StringField(2)
 
 
 class PiAndJailbreakFilterResult(_messages.Message):
@@ -1160,8 +1182,8 @@ class SanitizeModelResponseRequest(_messages.Message):
 
   Fields:
     modelResponseData: Required. Model response data to sanitize.
-    multiLanguageDetectionMetadata: Optional. Metadata related for
-      Translations.
+    multiLanguageDetectionMetadata: Optional. Metadata related for multi
+      language detection.
     userPrompt: Optional. User Prompt associated with Model response.
   """
 
@@ -1184,10 +1206,13 @@ class SanitizeUserPromptRequest(_messages.Message):
   r"""Sanitize User Prompt request.
 
   Fields:
+    multiLanguageDetectionMetadata: Optional. Metadata related to Multi
+      Language Detection.
     userPromptData: Required. User prompt data to sanitize.
   """
 
-  userPromptData = _messages.MessageField('DataItem', 1)
+  multiLanguageDetectionMetadata = _messages.MessageField('MultiLanguageDetectionMetadata', 1)
+  userPromptData = _messages.MessageField('DataItem', 2)
 
 
 class SanitizeUserPromptResponse(_messages.Message):
@@ -1589,6 +1614,7 @@ class TemplateMetadata(_messages.Message):
       failures should be ignored.
     logSanitizeOperations: Optional. If true, log sanitize operations.
     logTemplateOperations: Optional. If true, log template crud operations.
+    multiLanguageDetection: Optional. Metadata for multi language detection.
   """
 
   customLlmResponseSafetyErrorCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1598,6 +1624,7 @@ class TemplateMetadata(_messages.Message):
   ignorePartialInvocationFailures = _messages.BooleanField(5)
   logSanitizeOperations = _messages.BooleanField(6)
   logTemplateOperations = _messages.BooleanField(7)
+  multiLanguageDetection = _messages.MessageField('MultiLanguageDetection', 8)
 
 
 class VirusDetail(_messages.Message):

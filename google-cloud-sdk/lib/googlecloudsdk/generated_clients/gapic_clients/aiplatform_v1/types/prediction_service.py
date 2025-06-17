@@ -56,6 +56,7 @@ __protobuf__ = proto.module(
         'GenerateContentRequest',
         'GenerateContentResponse',
         'ChatCompletionsRequest',
+        'GenerateVideoResponse',
     },
 )
 
@@ -1022,12 +1023,16 @@ class GenerateContentResponse(proto.Message):
                     included from the terminology blocklist.
                 PROHIBITED_CONTENT (4):
                     Candidates blocked due to prohibited content.
+                IMAGE_SAFETY (6):
+                    Candidates blocked due to unsafe image
+                    generation content.
             """
             BLOCKED_REASON_UNSPECIFIED = 0
             SAFETY = 1
             OTHER = 2
             BLOCKLIST = 3
             PROHIBITED_CONTENT = 4
+            IMAGE_SAFETY = 6
 
         block_reason: 'GenerateContentResponse.PromptFeedback.BlockedReason' = proto.Field(
             proto.ENUM,
@@ -1054,9 +1059,15 @@ class GenerateContentResponse(proto.Message):
                 this includes the number of tokens in the cached content.
             candidates_token_count (int):
                 Number of tokens in the response(s).
+            tool_use_prompt_token_count (int):
+                Output only. Number of tokens present in
+                tool-use prompt(s).
+            thoughts_token_count (int):
+                Output only. Number of tokens present in
+                thoughts output.
             total_token_count (int):
-                Total token count for prompt and response
-                candidates.
+                Total token count for prompt, response
+                candidates, and tool-use prompts (if present).
             cached_content_token_count (int):
                 Output only. Number of tokens in the cached
                 part in the input (the cached content).
@@ -1069,7 +1080,29 @@ class GenerateContentResponse(proto.Message):
             candidates_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ModalityTokenCount]):
                 Output only. List of modalities that were
                 returned in the response.
+            tool_use_prompt_tokens_details (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ModalityTokenCount]):
+                Output only. List of modalities that were
+                processed for tool-use request inputs.
+            traffic_type (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerateContentResponse.UsageMetadata.TrafficType):
+                Output only. Traffic type. This shows whether
+                a request consumes Pay-As-You-Go or Provisioned
+                Throughput quota.
         """
+        class TrafficType(proto.Enum):
+            r"""Request traffic type. Indicates whether the request consumes
+            Pay-As-You-Go or Provisioned Throughput quota.
+
+            Values:
+                TRAFFIC_TYPE_UNSPECIFIED (0):
+                    Unspecified request traffic type.
+                ON_DEMAND (1):
+                    Type for Pay-As-You-Go traffic.
+                PROVISIONED_THROUGHPUT (2):
+                    Type for Provisioned Throughput traffic.
+            """
+            TRAFFIC_TYPE_UNSPECIFIED = 0
+            ON_DEMAND = 1
+            PROVISIONED_THROUGHPUT = 2
 
         prompt_token_count: int = proto.Field(
             proto.INT32,
@@ -1078,6 +1111,14 @@ class GenerateContentResponse(proto.Message):
         candidates_token_count: int = proto.Field(
             proto.INT32,
             number=2,
+        )
+        tool_use_prompt_token_count: int = proto.Field(
+            proto.INT32,
+            number=13,
+        )
+        thoughts_token_count: int = proto.Field(
+            proto.INT32,
+            number=14,
         )
         total_token_count: int = proto.Field(
             proto.INT32,
@@ -1101,6 +1142,16 @@ class GenerateContentResponse(proto.Message):
             proto.MESSAGE,
             number=11,
             message=content.ModalityTokenCount,
+        )
+        tool_use_prompt_tokens_details: MutableSequence[content.ModalityTokenCount] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=12,
+            message=content.ModalityTokenCount,
+        )
+        traffic_type: 'GenerateContentResponse.UsageMetadata.TrafficType' = proto.Field(
+            proto.ENUM,
+            number=8,
+            enum='GenerateContentResponse.UsageMetadata.TrafficType',
         )
 
     candidates: MutableSequence[content.Candidate] = proto.RepeatedField(
@@ -1154,6 +1205,88 @@ class ChatCompletionsRequest(proto.Message):
         proto.MESSAGE,
         number=2,
         message=httpbody_pb2.HttpBody,
+    )
+
+
+class GenerateVideoResponse(proto.Message):
+    r"""Generate video response.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        generated_samples (MutableSequence[str]):
+            The cloud storage uris of the generated
+            videos.
+        rai_media_filtered_count (int):
+            Returns if any videos were filtered due to
+            RAI policies.
+
+            This field is a member of `oneof`_ ``_rai_media_filtered_count``.
+        rai_media_filtered_reasons (MutableSequence[str]):
+            Returns rai failure reasons if any.
+        videos (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerateVideoResponse.Video]):
+            List of video bytes or Cloud Storage URIs of
+            the generated videos.
+    """
+
+    class Video(proto.Message):
+        r"""A generated video.
+
+        This message has `oneof`_ fields (mutually exclusive fields).
+        For each oneof, at most one member field can be set at the same time.
+        Setting any member of the oneof automatically clears all other
+        members.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            gcs_uri (str):
+                Cloud Storage URI where the generated video
+                is written.
+
+                This field is a member of `oneof`_ ``data``.
+            bytes_base64_encoded (str):
+                Base64 encoded bytes string representing the
+                video.
+
+                This field is a member of `oneof`_ ``data``.
+            mime_type (str):
+                The MIME type of the content of the video.
+                - video/mp4
+        """
+
+        gcs_uri: str = proto.Field(
+            proto.STRING,
+            number=1,
+            oneof='data',
+        )
+        bytes_base64_encoded: str = proto.Field(
+            proto.STRING,
+            number=2,
+            oneof='data',
+        )
+        mime_type: str = proto.Field(
+            proto.STRING,
+            number=3,
+        )
+
+    generated_samples: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=1,
+    )
+    rai_media_filtered_count: int = proto.Field(
+        proto.INT32,
+        number=2,
+        optional=True,
+    )
+    rai_media_filtered_reasons: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
+    )
+    videos: MutableSequence[Video] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=4,
+        message=Video,
     )
 
 

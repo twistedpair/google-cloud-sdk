@@ -24,9 +24,9 @@ from googlecloudsdk.api_lib.container.fleet import client as hub_client
 from googlecloudsdk.api_lib.container.fleet import util as hub_util
 from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.api_lib.run import worker_pool
 from googlecloudsdk.api_lib.runtime_config import util
 from googlecloudsdk.api_lib.util import apis
-
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -69,10 +69,13 @@ def ListLocations(client):
     A list of location resources.
   """
   project_resource_relname = util.ProjectPath(
-      properties.VALUES.core.project.Get(required=True))
+      properties.VALUES.core.project.Get(required=True)
+  )
   return client.projects_locations.List(
       client.MESSAGES_MODULE.RunProjectsLocationsListRequest(
-          name=project_resource_relname, pageSize=100)).locations
+          name=project_resource_relname, pageSize=100
+      )
+  ).locations
 
 
 def ListServices(client, region=_ALL_REGIONS, field_selector=None):
@@ -92,7 +95,8 @@ def ListServices(client, region=_ALL_REGIONS, field_selector=None):
   locations = resources.REGISTRY.Parse(
       region,
       params={'projectsId': project},
-      collection='run.projects.locations')
+      collection='run.projects.locations',
+  )
   request = client.MESSAGES_MODULE.RunProjectsLocationsServicesListRequest(
       parent=locations.RelativeName(), fieldSelector=field_selector
   )
@@ -100,9 +104,12 @@ def ListServices(client, region=_ALL_REGIONS, field_selector=None):
 
   # Log the regions that did not respond.
   if response.unreachable:
-    log.warning('The following Cloud Run regions did not respond: {}. '
-                'List results may be incomplete.'.format(', '.join(
-                    sorted(response.unreachable))))
+    log.warning(
+        'The following Cloud Run regions did not respond: {}. '
+        'List results may be incomplete.'.format(
+            ', '.join(sorted(response.unreachable))
+        )
+    )
 
   return [
       service.Service(item, client.MESSAGES_MODULE) for item in response.items
@@ -126,16 +133,51 @@ def ListJobs(client, namespace):
     List of googlecloudsdk.api_lib.run import job.Job objects.
   """
   request = client.MESSAGES_MODULE.RunNamespacesJobsListRequest(
-      parent=namespace.RelativeName())
+      parent=namespace.RelativeName()
+  )
   response = client.namespaces_jobs.List(request)
 
   # Log the regions that did not respond.
   if response.unreachable:
-    log.warning('The following Cloud Run regions did not respond: {}. '
-                'List results may be incomplete.'.format(', '.join(
-                    sorted(response.unreachable))))
+    log.warning(
+        'The following Cloud Run regions did not respond: {}. '
+        'List results may be incomplete.'.format(
+            ', '.join(sorted(response.unreachable))
+        )
+    )
 
   return [job.Job(item, client.MESSAGES_MODULE) for item in response.items]
+
+
+def ListWorkerPools(client, project):
+  """Get the global list of worker pools for a OnePlatform project.
+
+  Args:
+    client: (base_api.BaseApiClient), instance of a client to use for the list
+      request.
+    project: project to list worker pools in
+
+  Returns:
+    List of googlecloudsdk.api_lib.run import worker_pool.WorkerPool objects.
+  """
+  request = client.MESSAGES_MODULE.RunNamespacesWorkerpoolsListRequest(
+      parent=project.RelativeName()
+  )
+  response = client.namespaces_workerpools.List(request)
+
+  # Log the regions that did not respond.
+  if response.unreachable:
+    log.warning(
+        'The following Cloud Run regions did not respond: {}. '
+        'List results may be incomplete.'.format(
+            ', '.join(sorted(response.unreachable))
+        )
+    )
+
+  return [
+      worker_pool.WorkerPool(item, client.MESSAGES_MODULE)
+      for item in response.items
+  ]
 
 
 def ListClusters(location=None, project=None):
@@ -149,7 +191,8 @@ def ListClusters(location=None, project=None):
       property.
 
   Returns:
-    List of googlecloudsdk.generated_clients.apis.container.CONTAINER_API_VERSION
+    List of
+    googlecloudsdk.generated_clients.apis.container.CONTAINER_API_VERSION
     import container_CONTAINER_API_VERSION_messages.Cluster objects
   """
   container_api = container_api_adapter.NewAPIAdapter(CONTAINER_API_VERSION)
@@ -158,9 +201,12 @@ def ListClusters(location=None, project=None):
 
   response = container_api.ListClusters(project, location)
   if response.missingZones:
-    log.warning('The following cluster locations did not respond: {}. '
-                'List results may be incomplete.'.format(', '.join(
-                    response.missingZones)))
+    log.warning(
+        'The following cluster locations did not respond: {}. '
+        'List results may be incomplete.'.format(
+            ', '.join(response.missingZones)
+        )
+    )
 
   def _SortKey(cluster):
     return (cluster.zone, cluster.name)
@@ -170,9 +216,15 @@ def ListClusters(location=None, project=None):
   crfa_cluster_names = ListCloudRunForAnthosClusters(project)
 
   return [
-      c for c in clusters if (c.name in crfa_cluster_names or
-                              (c.addonsConfig.cloudRunConfig and
-                               not c.addonsConfig.cloudRunConfig.disabled))
+      c
+      for c in clusters
+      if (
+          c.name in crfa_cluster_names
+          or (
+              c.addonsConfig.cloudRunConfig
+              and not c.addonsConfig.cloudRunConfig.disabled
+          )
+      )
   ]
 
 
@@ -187,9 +239,11 @@ def ListVerifiedDomains(client):
     List of client.MESSAGES_MODULE.AuthorizedDomain objects
   """
   project_resource_relname = util.ProjectPath(
-      properties.VALUES.core.project.Get(required=True))
+      properties.VALUES.core.project.Get(required=True)
+  )
   request = client.MESSAGES_MODULE.RunProjectsAuthorizeddomainsListRequest(
-      parent=project_resource_relname)
+      parent=project_resource_relname
+  )
   response = client.projects_authorizeddomains.List(request)
   return response.domains
 
@@ -208,11 +262,9 @@ def GetClusterRef(cluster, project=None):
     project = properties.VALUES.core.project.Get(required=True)
   return resources.REGISTRY.Parse(
       cluster.name,
-      params={
-          'projectId': project,
-          'zone': cluster.zone
-      },
-      collection='container.projects.zones.clusters')
+      params={'projectId': project, 'zone': cluster.zone},
+      collection='container.projects.zones.clusters',
+  )
 
 
 def MultiTenantClustersForProject(project_id, cluster_location):
@@ -253,8 +305,10 @@ def ListCloudRunForAnthosClusters(project):
     List of Cluster string names
   """
 
-  crfa_spec = 'projects/%s/locations/global/features/%s' % (project,
-                                                            CLOUDRUN_FEATURE)
+  crfa_spec = 'projects/%s/locations/global/features/%s' % (
+      project,
+      CLOUDRUN_FEATURE,
+  )
   try:
     f = hub_client.HubClient().GetFeature(crfa_spec)
   except api_exceptions.HttpError:

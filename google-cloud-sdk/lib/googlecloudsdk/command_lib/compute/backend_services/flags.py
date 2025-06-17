@@ -531,9 +531,10 @@ def AddEnableCdn(parser):
       action=arg_parsers.StoreTrueFalseAction,
       help="""\
       Enable or disable Cloud CDN for the backend service. Only available for
-      backend services with --load-balancing-scheme=EXTERNAL that use a
-      --protocol of HTTP, HTTPS, HTTP2 or H2C. Cloud CDN caches HTTP responses
-      at the edge of Google's network. Cloud CDN is disabled by default.
+      backend services with --load-balancing-scheme=EXTERNAL or EXTERNAL_MANAGED
+      that use a --protocol of HTTP, HTTPS, HTTP2 or H2C. Cloud CDN caches HTTP
+      responses at the edge of Google's network. Cloud CDN is disabled by
+      default.
       """,
   )
 

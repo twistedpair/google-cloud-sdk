@@ -70,6 +70,18 @@ mtls-ca-pools:
     Each CA pool must be in the format
     projects/``PROJECT_ID''/locations/``LOCATION''/caPools/``CA_POOL''.
 
+allow-broker-downscale-on-cluster-upscale:
+  api_field: cluster.updateOptions.allowBrokerDownscaleOnClusterUpscale
+  arg_name: allow-broker-downscale-on-cluster-upscale
+  action: store_true
+  help_text: |
+    If enabled, allows an update operation that increases the total vCPU and/or
+    memory allocation of the cluster to significantly decrease the per-broker
+    vCPU and/or memory allocation. This can result in reduced performance and
+    availability. By default, the update operation will fail if an upscale
+    request results in a vCPU or memory allocation for the brokers that is
+    smaller than 90% of the current broker size.
+
 ssl-principal-mapping-rules:
   api_field: cluster.tlsConfig.sslPrincipalMappingRules
   arg_name: ssl-principal-mapping-rules
@@ -356,3 +368,18 @@ acl-entry-host:
   default: '*'
   help_text: |
     The host. Must be set to "```*```" for Managed Service for Apache Kafka.
+
+full-view:
+  api_field: view
+  arg_name: full-view
+  action: store_true
+  default: null
+  help_text: |
+    Whether full cluster view is returned. If provided, the cluster view will include
+    everything, including data fetched from the Kafka cluster source of truth. If not provided, the
+    API will default to the basic view that only includes the basic metadata of the cluster.
+  choices:
+  - arg_value: true
+    enum_value: CLUSTER_VIEW_FULL
+  - arg_value: false
+    enum_value: CLUSTER_VIEW_BASIC

@@ -1376,6 +1376,7 @@ class ForwardInfo(_messages.Message):
       ANOTHER_PROJECT: Forwarded to a VPC network in another project.
       NCC_HUB: Forwarded to an NCC Hub.
       ROUTER_APPLIANCE: Forwarded to a router appliance.
+      SECURE_WEB_PROXY_GATEWAY: Forwarded to a Secure Web Proxy Gateway.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -1387,6 +1388,7 @@ class ForwardInfo(_messages.Message):
     ANOTHER_PROJECT = 7
     NCC_HUB = 8
     ROUTER_APPLIANCE = 9
+    SECURE_WEB_PROXY_GATEWAY = 10
 
   ipAddress = _messages.StringField(1)
   resourceUri = _messages.StringField(2)
@@ -3046,6 +3048,7 @@ class RouteInfo(_messages.Message):
       NEXT_HOP_NCC_HUB: Next hop is an NCC hub. This scenario only happens
         when the user doesn't have permissions to the project where the next
         hop resource is located.
+      SECURE_WEB_PROXY_GATEWAY: Next hop is Secure Web Proxy Gateway.
     """
     NEXT_HOP_TYPE_UNSPECIFIED = 0
     NEXT_HOP_IP = 1
@@ -3060,6 +3063,7 @@ class RouteInfo(_messages.Message):
     NEXT_HOP_ILB = 10
     NEXT_HOP_ROUTER_APPLIANCE = 11
     NEXT_HOP_NCC_HUB = 12
+    SECURE_WEB_PROXY_GATEWAY = 13
 
   class RouteScopeValueValuesEnum(_messages.Enum):
     r"""Indicates where route is applicable. Deprecated, routes with NCC_HUB

@@ -5,6 +5,70 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 527.0.0 (2025-06-17)
+
+### Breaking Changes
+
+*   **(GKE Hub)** Removed Policy Controller API enablement in
+  `gcloud beta|alpha container fleet|hub config-management` commands. To use
+  Policy Controller, please refer to
+  [`gcloud container fleet policycontroller`](https://cloud.google.com/sdk/gcloud/reference/container/fleet/policycontroller).
+
+
+### AlloyDB
+
+* Added flag `--allocated-ip-range-override` to create a Private Services Access instance with a preferred IP range to the following commands in the GA track:
+  * `gcloud alloydb instances create`
+  * `gcloud alloydb instances create-secondary`
+
+### Cloud DNS
+
+* Added GA support for creating forwarding zones with IPv6 and an FQDN forwarding target.
+
+### Cloud Data Fusion
+
+* Promoted `--tags` flag of `gcloud data-fusion instances create`.
+
+### Cloud Dataplex
+
+* Added `bigquery-publishing-dataset-project` field to `gcloud dataplex datascans create data-discovery` and `gcloud dataplex datascans update data-discovery` commands.
+
+### Cloud Workflows
+
+* Added environment variable flags to `gcloud workflows deploy` to support
+setting, updating, removing, and clearing user-defined environment variables.
+
+### Compute Engine
+
+*   Promoted `--resource-manager-tags` flag for
+    `gcloud compute firewall-rules create` to GA.
+*   Promoted `--igmp-query` flag in `--network-interface` of `gcloud compute instances bulk create` to beta.
+*   Promoted `--igmp-query` flag in `--network-interface` of `gcloud compute instances create` to beta.
+*   Promoted `--igmp-query` flag in `gcloud compute instances network-interfaces update` to beta.
+*   Promoted `--resource-manager-tags` flag for `gcloud compute routes create`
+    to GA.
+
+### GKE Hub
+
+* Added a `--custom-role` flag to `gcloud container fleet scopes add-app-operator-binding` in beta.
+* Updated `gcloud container fleet scopes remove-app-operator-binding` and `gcloud container fleet scopes list-app-operator-bindings` to handle custom roles in beta.
+
+### Gemini
+
+*   Added a new flag `--enable-data-sharing` when creating or updating a DataSharingWithGoogleSetting.
+
+### Kubernetes Engine
+
+* Added `--patch-update` flag to `gcloud container clusters create/update` to allow enabling accelerated upgrades.
+
+### Security Command Center
+
+*   Added `--organization` and `--location` argument flags to `gcloud scc postures list` to list all the scc postures at organization level.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 526.0.1 (2025-06-10)
 
 ### Breaking Changes

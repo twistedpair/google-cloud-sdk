@@ -22,7 +22,7 @@ from googlecloudsdk.calliope import base
 
 def AddTypeFlag(parser):
   """Adds a --type flag to the given parser."""
-  help_text = """Type can be MYSQL, ORACLE, POSTGRESQL, GOOGLE-CLOUD-STORAGE or BIGQUERY"""
+  help_text = """Type can be MYSQL, ORACLE, POSTGRESQL, SQLSERVER, SALESFORCE, GOOGLE-CLOUD-STORAGE or BIGQUERY"""
 
   parser.add_argument('--type', help=help_text, required=True)
 

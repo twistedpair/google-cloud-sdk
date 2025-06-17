@@ -73,7 +73,7 @@ class InstancesClient(object):
     private_config = None
     if is_private:
       private_config = self.messages.PrivateConfig(
-          caPool=ca_pool, isPrivate=is_private
+          isPrivate=is_private, caPool=ca_pool
       )
     workforce_identity_federation_config = None
     if enable_workforce_identity_federation:

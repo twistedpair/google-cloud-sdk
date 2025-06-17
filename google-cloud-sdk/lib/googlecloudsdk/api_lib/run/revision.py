@@ -47,6 +47,10 @@ BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME = (
 GPU_ZONAL_REDUNDANCY_DISABLED_ANNOTATION = (
     'run.googleapis.com/gpu-zonal-redundancy-disabled'
 )
+# gcloud-disable-gdu-domain
+SOURCES_ANNOTATION = (
+    'run.googleapis.com/sources'
+)
 # If true, overflow scaling capabilities are enabled for this revision.
 OVERFLOW_SCALING_ANNOTATION = 'run.googleapis.com/overflow-scaling'
 

@@ -470,6 +470,69 @@ class BaseImagesAnnotationChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class SourcesAnnotationChange(TemplateConfigChanger):
+  """Represents the user intent to update the 'sources' template annotation.
+
+  The value of the annotation is a string representation of a json map of
+  container_name -> GCS objects. E.g.: '{"foo":"gs://my-bucket/my-object"}'.
+
+  Attributes:
+    updates: {container:url} map of values that need to be added/updated
+    deletes: List of containers whose source needs to be deleted.
+  """
+
+  updates: dict[str, str] = dataclasses.field(default_factory=dict)
+  deletes: list[str] = dataclasses.field(default_factory=list)
+
+  def _mergeSources(
+      self,
+      resource: revision.Revision,
+      existing_sources: dict[str, str],
+      updates: dict[str, str],
+      deletes: list[str],
+  ):
+    if deletes:
+      for container in deletes:
+        if container in existing_sources:
+          del existing_sources[container]
+    if updates:
+      for container, url in updates.items():
+        existing_sources[container] = url
+    return self._constructSources(resource, existing_sources)
+
+  def _constructSources(
+      self, resource: revision.Revision, urls: dict[str, str]
+  ):
+    containers = frozenset(
+        [x or '' for x in resource.template.containers.keys()]
+    )
+    return json.dumps(
+        {x: y for x, y in urls.items() if x in containers},
+        separators=(',', ':'),
+    )
+
+  def Adjust(self, resource: revision.Revision):
+    """Updates the revision to use zip deploys."""
+
+    annotations = resource.template.annotations
+    existing_value = annotations.get(revision.SOURCES_ANNOTATION, '')
+
+    if existing_value:
+      existing_sources = json.loads(existing_value)
+      new_value = self._mergeSources(
+          resource, existing_sources, self.updates, self.deletes
+      )
+    else:
+      new_value = self._constructSources(resource, self.updates)
+
+    if new_value and new_value != '{}':
+      resource.template.annotations[revision.SOURCES_ANNOTATION] = new_value
+    elif revision.SOURCES_ANNOTATION in annotations:
+      del resource.template.annotations[revision.SOURCES_ANNOTATION]
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class IngressContainerBaseImagesAnnotationChange(BaseImagesAnnotationChange):
   """Represents the user intent to update the 'base-images' template annotation.
 

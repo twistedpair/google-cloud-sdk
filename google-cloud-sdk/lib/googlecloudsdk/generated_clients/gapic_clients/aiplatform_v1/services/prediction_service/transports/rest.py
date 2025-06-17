@@ -515,12 +515,15 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 
                       // The raw HTTP body is bound to this field.
                       google.api.HttpBody http_body = 2;
+
                     }
 
                     service ResourceService {
-                      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);
-                      rpc UpdateResource(google.api.HttpBody) returns
-                      (google.protobuf.Empty);
+                      rpc GetResource(GetResourceRequest)
+                        returns (google.api.HttpBody);
+                      rpc UpdateResource(google.api.HttpBody)
+                        returns (google.protobuf.Empty);
+
                     }
 
                 Example with streaming methods:
@@ -532,6 +535,7 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                         returns (stream google.api.HttpBody);
                       rpc UpdateCalendar(stream google.api.HttpBody)
                         returns (stream google.api.HttpBody);
+
                     }
 
                 Use of this type only changes how the request and
@@ -543,6 +547,11 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
             http_options: List[Dict[str, str]] = [{
                 'method': 'post',
                 'uri': '/v1/{endpoint=projects/*/locations/*/endpoints/*}/chat/completions',
+                'body': 'http_body',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=endpoints/*}/chat/completions',
                 'body': 'http_body',
             },
             ]
@@ -892,6 +901,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                 'uri': '/v1/{endpoint=projects/*/locations/*/publishers/*/models/*}:fetchPredictOperation',
                 'body': '*',
             },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=endpoints/*}:fetchPredictOperation',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=publishers/*/models/*}:fetchPredictOperation',
+                'body': '*',
+            },
             ]
             request, metadata = self._interceptor.pre_fetch_predict_operation(request, metadata)
             pb_request = prediction_service.FetchPredictOperationRequest.pb(request)
@@ -1185,6 +1204,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                 'uri': '/v1/{endpoint=projects/*/locations/*/publishers/*/models/*}:predictLongRunning',
                 'body': '*',
             },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=endpoints/*}:predictLongRunning',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=publishers/*/models/*}:predictLongRunning',
+                'body': '*',
+            },
             ]
             request, metadata = self._interceptor.pre_predict_long_running(request, metadata)
             pb_request = prediction_service.PredictLongRunningRequest.pb(request)
@@ -1284,12 +1313,15 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 
                       // The raw HTTP body is bound to this field.
                       google.api.HttpBody http_body = 2;
+
                     }
 
                     service ResourceService {
-                      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);
-                      rpc UpdateResource(google.api.HttpBody) returns
-                      (google.protobuf.Empty);
+                      rpc GetResource(GetResourceRequest)
+                        returns (google.api.HttpBody);
+                      rpc UpdateResource(google.api.HttpBody)
+                        returns (google.protobuf.Empty);
+
                     }
 
                 Example with streaming methods:
@@ -1301,6 +1333,7 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                         returns (stream google.api.HttpBody);
                       rpc UpdateCalendar(stream google.api.HttpBody)
                         returns (stream google.api.HttpBody);
+
                     }
 
                 Use of this type only changes how the request and
@@ -1660,12 +1693,15 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 
                       // The raw HTTP body is bound to this field.
                       google.api.HttpBody http_body = 2;
+
                     }
 
                     service ResourceService {
-                      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);
-                      rpc UpdateResource(google.api.HttpBody) returns
-                      (google.protobuf.Empty);
+                      rpc GetResource(GetResourceRequest)
+                        returns (google.api.HttpBody);
+                      rpc UpdateResource(google.api.HttpBody)
+                        returns (google.protobuf.Empty);
+
                     }
 
                 Example with streaming methods:
@@ -1677,6 +1713,7 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                         returns (stream google.api.HttpBody);
                       rpc UpdateCalendar(stream google.api.HttpBody)
                         returns (stream google.api.HttpBody);
+
                     }
 
                 Use of this type only changes how the request and

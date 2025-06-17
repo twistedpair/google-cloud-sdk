@@ -671,6 +671,105 @@ class AuthzPolicyTarget(_messages.Message):
   resources = _messages.StringField(2, repeated=True)
 
 
+class BackendAuthenticationConfig(_messages.Message):
+  r"""BackendAuthenticationConfig message groups the TrustConfig together with
+  other settings that control how the load balancer authenticates, and
+  expresses its identity to, the backend: * `trustConfig` is the attached
+  TrustConfig. * `wellKnownRoots` indicates whether the load balance should
+  trust backend server certificates that are issued by public certificate
+  authorities, in addition to certificates trusted by the TrustConfig. *
+  `clientCertificate` is a client certificate that the load balancer uses to
+  express its identity to the backend, if the connection to the backend uses
+  mTLS. You can attach the BackendAuthenticationConfig to the load balancer's
+  BackendService directly determining how that BackendService negotiates TLS.
+
+  Enums:
+    WellKnownRootsValueValuesEnum: Well known roots to use for server
+      certificate validation.
+
+  Messages:
+    LabelsValue: Set of label tags associated with the resource.
+
+  Fields:
+    clientCertificate: Optional. A reference to a
+      certificatemanager.googleapis.com.Certificate resource. This is a
+      relative resource path following the form
+      "projects/{project}/locations/{location}/certificates/{certificate}".
+      Used by a BackendService to negotiate mTLS when the backend connection
+      uses TLS and the backend requests a client certificate. Must have a
+      CLIENT_AUTH scope.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    etag: Output only. Etag of the resource.
+    labels: Set of label tags associated with the resource.
+    name: Required. Name of the BackendAuthenticationConfig resource. It
+      matches the pattern `projects/*/locations/{location}/backendAuthenticati
+      onConfigs/{backend_authentication_config}`
+    trustConfig: Optional. A reference to a TrustConfig resource from the
+      certificatemanager.googleapis.com namespace. This is a relative resource
+      path following the form
+      "projects/{project}/locations/{location}/trustConfigs/{trust_config}". A
+      BackendService uses the chain of trust represented by this TrustConfig,
+      if specified, to validate the server certificates presented by the
+      backend. Required unless wellKnownRoots is set to PUBLIC_ROOTS.
+    updateTime: Output only. The timestamp when the resource was updated.
+    wellKnownRoots: Well known roots to use for server certificate validation.
+  """
+
+  class WellKnownRootsValueValuesEnum(_messages.Enum):
+    r"""Well known roots to use for server certificate validation.
+
+    Values:
+      WELL_KNOWN_ROOTS_UNSPECIFIED: Equivalent to NONE.
+      NONE: The BackendService will only validate server certificates against
+        roots specified in TrustConfig.
+      PUBLIC_ROOTS: The BackendService uses a set of well-known public roots,
+        in addition to any roots specified in the trustConfig field, when
+        validating the server certificates presented by the backend.
+        Validation with these roots is only considered when the
+        TlsSettings.sni field in the BackendService is set. The well-known
+        roots are a set of root CAs managed by Google. CAs in this set can be
+        added or removed without notice.
+    """
+    WELL_KNOWN_ROOTS_UNSPECIFIED = 0
+    NONE = 1
+    PUBLIC_ROOTS = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Set of label tags associated with the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientCertificate = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  trustConfig = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  wellKnownRoots = _messages.EnumField('WellKnownRootsValueValuesEnum', 9)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -2136,6 +2235,24 @@ class ListAuthzPoliciesResponse(_messages.Message):
   """
 
   authzPolicies = _messages.MessageField('AuthzPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackendAuthenticationConfigsResponse(_messages.Message):
+  r"""Response returned by the ListBackendAuthenticationConfigs method.
+
+  Fields:
+    backendAuthenticationConfigs: List of BackendAuthenticationConfig
+      resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  backendAuthenticationConfigs = _messages.MessageField('BackendAuthenticationConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -4306,6 +4423,103 @@ class NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest(_me
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsCreateRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsCreateRequest
+  object.
+
+  Fields:
+    backendAuthenticationConfig: A BackendAuthenticationConfig resource to be
+      passed as the request body.
+    backendAuthenticationConfigId: Required. Short name of the
+      BackendAuthenticationConfig resource to be created. This value should be
+      1-63 characters long, containing only letters, numbers, hyphens, and
+      underscores, and should not start with a number. E.g. "backend-auth-
+      config".
+    parent: Required. The parent resource of the BackendAuthenticationConfig.
+      Must be in the format `projects/*/locations/{location}`.
+  """
+
+  backendAuthenticationConfig = _messages.MessageField('BackendAuthenticationConfig', 1)
+  backendAuthenticationConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsDeleteRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag.
+    name: Required. A name of the BackendAuthenticationConfig to delete. Must
+      be in the format
+      `projects/*/locations/{location}/backendAuthenticationConfigs/*`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsBackendAuthenticationConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the BackendAuthenticationConfig to get. Must be
+      in the format
+      `projects/*/locations/{location}/backendAuthenticationConfigs/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsListRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of BackendAuthenticationConfigs to return per
+      call.
+    pageToken: The value returned by the last
+      `ListBackendAuthenticationConfigsResponse` Indicates that this is a
+      continuation of a prior `ListBackendAuthenticationConfigs` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the
+      BackendAuthenticationConfigs should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsPatchRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsPatchRequest
+  object.
+
+  Fields:
+    backendAuthenticationConfig: A BackendAuthenticationConfig resource to be
+      passed as the request body.
+    name: Required. Name of the BackendAuthenticationConfig resource. It
+      matches the pattern `projects/*/locations/{location}/backendAuthenticati
+      onConfigs/{backend_authentication_config}`
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the BackendAuthenticationConfig resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  backendAuthenticationConfig = _messages.MessageField('BackendAuthenticationConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest(_messages.Message):

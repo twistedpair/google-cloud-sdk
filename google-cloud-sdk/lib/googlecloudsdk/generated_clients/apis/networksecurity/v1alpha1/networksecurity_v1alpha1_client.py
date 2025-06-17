@@ -4926,7 +4926,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single SACAttachment.
+      r"""Deletes the specified attachment.
 
       Args:
         request: (NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest) input message
@@ -4953,7 +4953,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single SACAttachment.
+      r"""Returns the specified attachment.
 
       Args:
         request: (NetworksecurityProjectsLocationsSacAttachmentsGetRequest) input message
@@ -5044,7 +5044,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single SACRealm.
+      r"""Deletes the specified realm.
 
       Args:
         request: (NetworksecurityProjectsLocationsSacRealmsDeleteRequest) input message
@@ -5071,7 +5071,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single SACRealm.
+      r"""Returns the specified realm.
 
       Args:
         request: (NetworksecurityProjectsLocationsSacRealmsGetRequest) input message

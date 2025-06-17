@@ -50,6 +50,8 @@ class Type(proto.Enum):
             OpenAPI array type
         OBJECT (6):
             OpenAPI object type
+        NULL (7):
+            Null type
     """
     TYPE_UNSPECIFIED = 0
     STRING = 1
@@ -58,6 +60,7 @@ class Type(proto.Enum):
     BOOLEAN = 4
     ARRAY = 5
     OBJECT = 6
+    NULL = 7
 
 
 class Schema(proto.Message):
@@ -138,6 +141,27 @@ class Schema(proto.Message):
             Optional. The value should be validated
             against any (one or more) of the subschemas in
             the list.
+        additional_properties (google.protobuf.struct_pb2.Value):
+            Optional. Can either be a boolean or an
+            object; controls the presence of additional
+            properties.
+        ref (str):
+            Optional. Allows indirect references between schema nodes.
+            The value should be a valid reference to a child of the root
+            ``defs``.
+
+            For example, the following schema defines a reference to a
+            schema node named "Pet":
+
+            type: object properties: pet: ref: #/defs/Pet defs: Pet:
+            type: object properties: name: type: string
+
+            The value of the "pet" property is a reference to the schema
+            node named "Pet". See details in
+            https://json-schema.org/understanding-json-schema/structuring
+        defs (MutableMapping[str, googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Schema]):
+            Optional. A map of definitions for use by ``ref`` Only
+            allowed at the root of the schema.
     """
 
     type_: 'Type' = proto.Field(
@@ -233,6 +257,21 @@ class Schema(proto.Message):
     any_of: MutableSequence['Schema'] = proto.RepeatedField(
         proto.MESSAGE,
         number=11,
+        message='Schema',
+    )
+    additional_properties: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=26,
+        message=struct_pb2.Value,
+    )
+    ref: str = proto.Field(
+        proto.STRING,
+        number=27,
+    )
+    defs: MutableMapping[str, 'Schema'] = proto.MapField(
+        proto.STRING,
+        proto.MESSAGE,
+        number=28,
         message='Schema',
     )
 
