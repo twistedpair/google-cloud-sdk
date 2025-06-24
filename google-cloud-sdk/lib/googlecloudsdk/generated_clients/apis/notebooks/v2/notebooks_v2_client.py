@@ -190,7 +190,7 @@ class NotebooksV2(base_api.BaseApiClient):
     )
 
     def GetConfig(self, request, global_params=None):
-      r"""Gets general backend configurations that might also affect the frontend. Location is required by CCFE. Although we could bypass it to send location- less request directly to the backend job, we would need CPE (go/cloud-cpe). Having the location might also be useful depending on the query.
+      r"""Returns various configuration parameters.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesGetConfigRequest) input message

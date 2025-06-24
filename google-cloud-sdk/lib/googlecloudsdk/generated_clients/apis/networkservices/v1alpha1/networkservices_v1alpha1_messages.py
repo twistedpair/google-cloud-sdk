@@ -1377,8 +1377,8 @@ class ExtensionChain(_messages.Message):
     extensions: Required. A set of extensions to execute for the matching
       request. At least one extension is required. Up to 3 extensions can be
       defined for each extension chain for `LbTrafficExtension` resource.
-      `LbRouteExtension` chains are limited to 1 extension per extension
-      chain.
+      `LbRouteExtension` and `LbEdgeExtension` chains are limited to 1
+      extension per extension chain.
     matchCondition: Required. Conditions under which this chain is invoked for
       a request.
     name: Required. The name for this extension chain. The name is logged as
@@ -1510,12 +1510,15 @@ class ExtensionChainExtension(_messages.Message):
       `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or `//net
       workservices.googleapis.com/projects/{project}/locations/{location}/wasm
       Plugins/{wasmPlugin}`. Plugin extensions are currently supported for the
-      `LbTrafficExtension` and the `LbRouteExtension` resources.
+      `LbTrafficExtension`, the `LbRouteExtension`, and the `LbEdgeExtension`
+      resources.
     supportedEvents: Optional. A set of events during request or response
-      processing for which this extension is called. This field is required
-      for the `LbTrafficExtension` resource. It is optional for the
-      `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
-      assumed as supported.
+      processing for which this extension is called. For the
+      `LbTrafficExtension` resource, this field is required. For the
+      `LbRouteExtension` resource, this field is optional. If unspecified,
+      `REQUEST_HEADERS` event is assumed as supported. For the
+      `LbEdgeExtension` resource, this field is required and must only contain
+      `REQUEST_HEADERS` event.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between `10`-`10000` milliseconds.
       Required for callout extensions. This field is not supported for plugin
@@ -1902,7 +1905,7 @@ class GatewayRouteView(_messages.Message):
   Fields:
     name: Output only. Identifier. Full path name of the GatewayRouteView
       resource. Format: projects/{project_number}/locations/{location}/gateway
-      s/{gateway_name}/routeViews/{route_view_name}
+      s/{gateway}/routeViews/{route_view}
     routeId: Output only. The resource id for the route.
     routeLocation: Output only. Location where the route exists.
     routeProjectNumber: Output only. Project number where the route exists.
@@ -2883,7 +2886,8 @@ class HttpRouteRequestMirrorPolicy(_messages.Message):
   r"""Specifies the policy on how requests are shadowed to a separate mirrored
   destination service. The proxy does not wait for responses from the shadow
   service. Prior to sending traffic to the shadow service, the host/authority
-  header is suffixed with -shadow.
+  header is suffixed with -shadow. Mirroring is currently not supported for
+  Cloud Run destinations.
 
   Fields:
     destination: The destination the requests will be mirrored to. The weight
@@ -3110,11 +3114,9 @@ class LbEdgeExtension(_messages.Message):
   the request headers.
 
   Enums:
-    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
-      forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: `EXTERNAL_MANAGED`. For more
-      information, refer to [Backend services
-      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+    LoadBalancingSchemeValueValuesEnum: Required. All forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `EXTERNAL_MANAGED`.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `LbEdgeExtension`
@@ -3139,11 +3141,9 @@ class LbEdgeExtension(_messages.Message):
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
-    loadBalancingScheme: Required. All backend services and forwarding rules
-      referenced by this extension must share the same load balancing scheme.
-      Supported values: `EXTERNAL_MANAGED`. For more information, refer to
-      [Backend services overview](https://cloud.google.com/load-
-      balancing/docs/backend-service).
+    loadBalancingScheme: Required. All forwarding rules referenced by this
+      extension must share the same load balancing scheme. Supported values:
+      `EXTERNAL_MANAGED`.
     name: Required. Identifier. Name of the `LbEdgeExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbEdgeExtensi
       ons/{lb_edge_extension}`.
@@ -3151,10 +3151,8 @@ class LbEdgeExtension(_messages.Message):
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Required. All backend services and forwarding rules referenced by this
-    extension must share the same load balancing scheme. Supported values:
-    `EXTERNAL_MANAGED`. For more information, refer to [Backend services
-    overview](https://cloud.google.com/load-balancing/docs/backend-service).
+    r"""Required. All forwarding rules referenced by this extension must share
+    the same load balancing scheme. Supported values: `EXTERNAL_MANAGED`.
 
     Values:
       LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
@@ -4628,7 +4626,7 @@ class MeshRouteView(_messages.Message):
   Fields:
     name: Output only. Identifier. Full path name of the MeshRouteView
       resource. Format: projects/{project_number}/locations/{location}/meshes/
-      {mesh_name}/routeViews/{route_view_name}
+      {mesh}/routeViews/{route_view}
     routeId: Output only. The resource id for the route.
     routeLocation: Output only. Location where the route exists.
     routeProjectNumber: Output only. Project number where the route exists.
@@ -4749,6 +4747,11 @@ class MulticastConsumerAssociation(_messages.Message):
     network: Required. The resource name of the multicast consumer VPC
       network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
+    placementPolicy: Output only. [Output only] A Compute Engine (placement
+      policy)[https://cloud.google.com/compute/docs/instances/placement-
+      policies-overview] that can be used to place virtual machine (VM)
+      instances as multicast consumers close to the multicast infrastructure
+      created for this domain, on a best effort basis.
     resourceState: Output only. The resource state of the multicast consumer
       association.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
@@ -4804,9 +4807,10 @@ class MulticastConsumerAssociation(_messages.Message):
   multicastDomainActivation = _messages.StringField(4)
   name = _messages.StringField(5)
   network = _messages.StringField(6)
-  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  placementPolicy = _messages.StringField(7)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastDomain(_messages.Message):
@@ -6319,8 +6323,8 @@ class NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest(_messages.Mes
 
   Fields:
     name: Required. Name of the GatewayRouteView resource. Formats: projects/{
-      project_number}/locations/{location}/gateways/{gateway_name}/routeViews/
-      {route_view_name}
+      project_number}/locations/{location}/gateways/{gateway}/routeViews/{rout
+      e_view}
   """
 
   name = _messages.StringField(1, required=True)
@@ -6335,7 +6339,7 @@ class NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest(_messages.Me
       Indicates that this is a continuation of a prior `ListGatewayRouteViews`
       call, and that the system should return the next page of data.
     parent: Required. The Gateway to which a Route is associated. Formats:
-      projects/{project_number}/locations/{location}/gateways/{gateway_name}
+      projects/{project_number}/locations/{location}/gateways/{gateway}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -7203,8 +7207,7 @@ class NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest(_messages.Messa
 
   Fields:
     name: Required. Name of the MeshRouteView resource. Format: projects/{proj
-      ect_number}/locations/{location}/meshes/{mesh_name}/routeViews/{route_vi
-      ew_name}
+      ect_number}/locations/{location}/meshes/{mesh}/routeViews/{route_view}
   """
 
   name = _messages.StringField(1, required=True)
@@ -7219,7 +7222,7 @@ class NetworkservicesProjectsLocationsMeshesRouteViewsListRequest(_messages.Mess
       Indicates that this is a continuation of a prior `ListMeshRouteViews`
       call, and that the system should return the next page of data.
     parent: Required. The Mesh to which a Route is associated. Format:
-      projects/{project_number}/locations/{location}/meshes/{mesh_name}
+      projects/{project_number}/locations/{location}/meshes/{mesh}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

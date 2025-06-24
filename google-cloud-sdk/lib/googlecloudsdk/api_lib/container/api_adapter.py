@@ -1629,6 +1629,7 @@ class CreateNodePoolOptions(object):
       enable_nested_virtualization=None,
       performance_monitoring_unit=None,
       sole_tenant_node_affinity_file=None,
+      sole_tenant_min_node_cpus=None,
       host_maintenance_interval=None,
       opportunistic_maintenance=None,
       enable_insecure_kubelet_readonly_port=None,
@@ -1723,6 +1724,7 @@ class CreateNodePoolOptions(object):
     self.additional_node_network = additional_node_network
     self.additional_pod_network = additional_pod_network
     self.sole_tenant_node_affinity_file = sole_tenant_node_affinity_file
+    self.sole_tenant_min_node_cpus = sole_tenant_min_node_cpus
     self.host_maintenance_interval = host_maintenance_interval
     self.opportunistic_maintenance = opportunistic_maintenance
     self.enable_insecure_kubelet_readonly_port = (
@@ -5921,6 +5923,12 @@ class APIAdapter(object):
           util.LoadSoleTenantConfigFromNodeAffinityYaml(
               options.sole_tenant_node_affinity_file, self.messages
           )
+      )
+    if options.sole_tenant_min_node_cpus is not None:
+      if node_config.soleTenantConfig is None:
+        node_config.soleTenantConfig = self.messages.SoleTenantConfig()
+      node_config.soleTenantConfig.minNodeCpus = (
+          options.sole_tenant_min_node_cpus
       )
 
     if options.secondary_boot_disks is not None:

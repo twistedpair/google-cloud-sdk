@@ -1446,8 +1446,8 @@ class ExtensionChain(_messages.Message):
     extensions: Required. A set of extensions to execute for the matching
       request. At least one extension is required. Up to 3 extensions can be
       defined for each extension chain for `LbTrafficExtension` resource.
-      `LbRouteExtension` chains are limited to 1 extension per extension
-      chain.
+      `LbRouteExtension` and `LbEdgeExtension` chains are limited to 1
+      extension per extension chain.
     matchCondition: Required. Conditions under which this chain is invoked for
       a request.
     name: Required. The name for this extension chain. The name is logged as
@@ -1541,12 +1541,15 @@ class ExtensionChainExtension(_messages.Message):
       `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or `//net
       workservices.googleapis.com/projects/{project}/locations/{location}/wasm
       Plugins/{wasmPlugin}`. Plugin extensions are currently supported for the
-      `LbTrafficExtension` and the `LbRouteExtension` resources.
+      `LbTrafficExtension`, the `LbRouteExtension`, and the `LbEdgeExtension`
+      resources.
     supportedEvents: Optional. A set of events during request or response
-      processing for which this extension is called. This field is required
-      for the `LbTrafficExtension` resource. It is optional for the
-      `LbRouteExtension` resource. If unspecified `REQUEST_HEADERS` event is
-      assumed as supported.
+      processing for which this extension is called. For the
+      `LbTrafficExtension` resource, this field is required. For the
+      `LbRouteExtension` resource, this field is optional. If unspecified,
+      `REQUEST_HEADERS` event is assumed as supported. For the
+      `LbEdgeExtension` resource, this field is required and must only contain
+      `REQUEST_HEADERS` event.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between `10`-`10000` milliseconds.
       Required for callout extensions. This field is not supported for plugin

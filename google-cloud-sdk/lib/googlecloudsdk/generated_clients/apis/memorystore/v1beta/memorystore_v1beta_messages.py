@@ -91,6 +91,7 @@ class Backup(_messages.Message):
     backupFiles: Output only. List of backup files of the backup.
     backupType: Output only. Type of the backup.
     createTime: Output only. The time when the backup was created.
+    encryptionInfo: Output only. Encryption information of the backup.
     engineVersion: Output only. valkey-7.5/valkey-8.0, etc.
     expireTime: Output only. The time when the backup will expire.
     instance: Output only. Instance resource path of this backup.
@@ -155,17 +156,18 @@ class Backup(_messages.Message):
   backupFiles = _messages.MessageField('BackupFile', 1, repeated=True)
   backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
-  engineVersion = _messages.StringField(4)
-  expireTime = _messages.StringField(5)
-  instance = _messages.StringField(6)
-  instanceUid = _messages.StringField(7)
-  name = _messages.StringField(8)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
-  replicaCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  totalSizeBytes = _messages.IntegerField(13)
-  uid = _messages.StringField(14)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 4)
+  engineVersion = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  instance = _messages.StringField(7)
+  instanceUid = _messages.StringField(8)
+  name = _messages.StringField(9)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 10)
+  replicaCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  totalSizeBytes = _messages.IntegerField(14)
+  uid = _messages.StringField(15)
 
 
 class BackupCollection(_messages.Message):
@@ -341,6 +343,72 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionInfo(_messages.Message):
+  r"""EncryptionInfo describes the encryption information of a cluster.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Output only. Type of encryption.
+    KmsKeyPrimaryStateValueValuesEnum: Output only. The state of the primary
+      version of the KMS key perceived by the system. This field is not
+      populated in backups.
+
+  Fields:
+    encryptionType: Output only. Type of encryption.
+    kmsKeyPrimaryState: Output only. The state of the primary version of the
+      KMS key perceived by the system. This field is not populated in backups.
+    kmsKeyVersions: Output only. KMS key versions that are being used to
+      protect the data at-rest.
+    lastUpdateTime: Output only. The most recent time when the encryption info
+      was updated.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of encryption.
+
+    Values:
+      TYPE_UNSPECIFIED: Encryption type not specified. Defaults to
+        GOOGLE_DEFAULT_ENCRYPTION.
+      GOOGLE_DEFAULT_ENCRYPTION: The data is encrypted at rest with a key that
+        is fully managed by Google. No key version will be populated. This is
+        the default state.
+      CUSTOMER_MANAGED_ENCRYPTION: The data is encrypted at rest with a key
+        that is managed by the customer. KMS key versions will be populated.
+    """
+    TYPE_UNSPECIFIED = 0
+    GOOGLE_DEFAULT_ENCRYPTION = 1
+    CUSTOMER_MANAGED_ENCRYPTION = 2
+
+  class KmsKeyPrimaryStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the primary version of the KMS key perceived
+    by the system. This field is not populated in backups.
+
+    Values:
+      KMS_KEY_STATE_UNSPECIFIED: The default value. This value is unused.
+      ENABLED: The KMS key is enabled and correctly configured.
+      PERMISSION_DENIED: Permission denied on the KMS key.
+      DISABLED: The KMS key is disabled.
+      DESTROYED: The KMS key is destroyed.
+      DESTROY_SCHEDULED: The KMS key is scheduled to be destroyed.
+      EKM_KEY_UNREACHABLE_DETECTED: The EKM key is unreachable.
+      BILLING_DISABLED: Billing is disabled for the project.
+      UNKNOWN_FAILURE: All other unknown failures.
+    """
+    KMS_KEY_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    PERMISSION_DENIED = 2
+    DISABLED = 3
+    DESTROYED = 4
+    DESTROY_SCHEDULED = 5
+    EKM_KEY_UNREACHABLE_DETECTED = 6
+    BILLING_DISABLED = 7
+    UNKNOWN_FAILURE = 8
+
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
+  kmsKeyPrimaryState = _messages.EnumField('KmsKeyPrimaryStateValueValuesEnum', 2)
+  kmsKeyVersions = _messages.StringField(3, repeated=True)
+  lastUpdateTime = _messages.StringField(4)
+
+
 class ExportBackupRequest(_messages.Message):
   r"""Request for [ExportBackup].
 
@@ -413,6 +481,8 @@ class Instance(_messages.Message):
     discoveryEndpoints: Output only. Deprecated: Use the
       endpoints.connections.psc_auto_connection or
       endpoints.connections.psc_connection values instead.
+    encryptionInfo: Output only. Encryption information of the data at rest of
+      the cluster.
     endpoints: Optional. Endpoints for the instance.
     engineConfigs: Optional. User-provided engine configurations for the
       instance.
@@ -421,6 +491,8 @@ class Instance(_messages.Message):
       buckets. The Cloud Storage buckets need to be the same region as the
       instances. Read permission is required to import from the provided Cloud
       Storage Objects.
+    kmsKey: Optional. The KMS key used to encrypt the at-rest data of the
+      cluster.
     labels: Optional. Labels to represent user-provided metadata.
     maintenancePolicy: Optional. The maintenance policy for the instance. If
       not provided, the maintenance event will be performed based on
@@ -444,6 +516,8 @@ class Instance(_messages.Message):
     replicaCount: Optional. Number of replica nodes per shard. If omitted the
       default is 0 replicas.
     shardCount: Optional. Number of shards for the instance.
+    simulateMaintenanceEvent: Optional. Input only. Simulate a maintenance
+      event.
     state: Output only. Current state of the instance.
     stateInfo: Output only. Additional information about the state of the
       instance.
@@ -583,30 +657,33 @@ class Instance(_messages.Message):
   crossInstanceReplicationConfig = _messages.MessageField('CrossInstanceReplicationConfig', 6)
   deletionProtectionEnabled = _messages.BooleanField(7)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 8, repeated=True)
-  endpoints = _messages.MessageField('InstanceEndpoint', 9, repeated=True)
-  engineConfigs = _messages.MessageField('EngineConfigsValue', 10)
-  engineVersion = _messages.StringField(11)
-  gcsSource = _messages.MessageField('GcsBackupSource', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 14)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 15)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 16)
-  mode = _messages.EnumField('ModeValueValuesEnum', 17)
-  name = _messages.StringField(18)
-  nodeConfig = _messages.MessageField('NodeConfig', 19)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 20)
-  ondemandMaintenance = _messages.BooleanField(21)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 22)
-  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 23, repeated=True)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 24, repeated=True)
-  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  stateInfo = _messages.MessageField('StateInfo', 28)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 29)
-  uid = _messages.StringField(30)
-  updateTime = _messages.StringField(31)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 32)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
+  endpoints = _messages.MessageField('InstanceEndpoint', 10, repeated=True)
+  engineConfigs = _messages.MessageField('EngineConfigsValue', 11)
+  engineVersion = _messages.StringField(12)
+  gcsSource = _messages.MessageField('GcsBackupSource', 13)
+  kmsKey = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 16)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 18)
+  mode = _messages.EnumField('ModeValueValuesEnum', 19)
+  name = _messages.StringField(20)
+  nodeConfig = _messages.MessageField('NodeConfig', 21)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 22)
+  ondemandMaintenance = _messages.BooleanField(23)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 24)
+  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 25, repeated=True)
+  pscAutoConnections = _messages.MessageField('PscAutoConnection', 26, repeated=True)
+  replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  stateInfo = _messages.MessageField('StateInfo', 31)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
+  uid = _messages.StringField(33)
+  updateTime = _messages.StringField(34)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 35)
 
 
 class InstanceEndpoint(_messages.Message):

@@ -724,7 +724,7 @@ class _BaseInstances(object):
           sql_messages,
           instance,
           final_backup_enabled=args.final_backup,
-          final_backup_ttl_days=args.final_backup_ttl_days,
+          final_backup_retention_days=args.final_backup_retention_days,
       )
       if final_backup_configuration:
         cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)
@@ -901,7 +901,7 @@ class _BaseInstances(object):
           sql_messages,
           instance,
           final_backup_enabled=args.final_backup,
-          final_backup_ttl_days=args.final_backup_ttl_days,
+          final_backup_retention_days=args.final_backup_retention_days,
       )
       if final_backup_configuration:
         cls.AddFinalBackupConfigToSettings(settings, final_backup_configuration)

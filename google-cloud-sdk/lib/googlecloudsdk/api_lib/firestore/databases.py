@@ -52,6 +52,7 @@ def CreateDatabase(
     delete_protection_state,
     pitr_state,
     cmek_config,
+    tags=None,
 ):
   """Performs a Firestore Admin v1 Database Creation.
 
@@ -63,12 +64,25 @@ def CreateDatabase(
     database_edition: the database edition, an Enum.
     delete_protection_state: the value for deleteProtectionState, an Enum.
     pitr_state: the value for PitrState, an Enum.
-    cmek_config: the CMEK config used to encrypt the database, an object
+    cmek_config: the CMEK config used to encrypt the database, an object.
+    tags: the tags to attach to the database, a key-value dictionary, or None.
 
   Returns:
     an Operation.
   """
   messages = api_utils.GetMessages()
+
+  tags_value = None
+  if tags:
+    tags_value = messages.GoogleFirestoreAdminV1Database.TagsValue(
+        additionalProperties=[
+            messages.GoogleFirestoreAdminV1Database.TagsValue.AdditionalProperty(
+                key=key, value=value
+            )
+            for key, value in tags.items()
+        ],
+    )
+
   return _GetDatabaseService().Create(
       messages.FirestoreProjectsDatabasesCreateRequest(
           parent='projects/{}'.format(project),
@@ -80,6 +94,7 @@ def CreateDatabase(
               deleteProtectionState=delete_protection_state,
               pointInTimeRecoveryEnablement=pitr_state,
               cmekConfig=cmek_config,
+              tags=tags_value,
           ),
       )
   )

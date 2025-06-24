@@ -761,8 +761,7 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_idle_group.add_argument(
         '--max-idle',
         type=arg_parsers.Duration(),
-        # TODO: b/368979261 - Hide this flag when --delete-max-idle is GA.
-        # hidden=True,
+        hidden=True,
         help="""\
           The duration after the last job completes to autto-delete the
           cluster, such as "2h" or "1d".
@@ -783,8 +782,7 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_group.add_argument(
         '--max-age',
         type=arg_parsers.Duration(),
-        # TODO: b/368979261 - Hide this flag when --delete-max-age is GA.
-        # hidden=True,
+        hidden=True,
         help="""\
           The lifespan of the cluster, with auto-deletion upon completion,
           such as "2h" or "1d".
@@ -795,8 +793,7 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_group.add_argument(
         '--expiration-time',
         type=arg_parsers.Datetime.Parse,
-        # TODO: b/368979261 - Hide this flag when --delete-expiration-time is GA
-        # hidden=True,
+        hidden=True,
         help="""\
           The time when the cluster will be auto-deleted, such as
           "2017-08-29T18:52:51.142Z." See $ gcloud topic datetimes for
@@ -826,18 +823,13 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     parser.add_argument(
         '--stop-max-idle',
         type=arg_parsers.Duration(),
-        # TODO: b/368979261 - Unhide scheduled stop flags after release.
-        hidden=True,
         help="""\
           The duration after the last job completes to auto-stop the cluster,
           such as "2h" or "1d".
           See $ gcloud topic datetimes for information on duration formats.
           """,
     )
-    auto_stop_group = parser.add_mutually_exclusive_group(
-        # TODO: b/368979261 - Unhide scheduled stop flags after release.
-        hidden=True,
-    )
+    auto_stop_group = parser.add_mutually_exclusive_group()
     auto_stop_group.add_argument(
         '--stop-max-age',
         type=arg_parsers.Duration(),

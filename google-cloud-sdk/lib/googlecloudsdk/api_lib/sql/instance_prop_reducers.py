@@ -778,7 +778,7 @@ def FinalBackupConfiguration(
     sql_messages,
     instance=None,
     final_backup_enabled=None,
-    final_backup_ttl_days=None,
+    final_backup_retention_days=None,
 ):
   """Generates the Final Backup configuration for the instance.
 
@@ -787,29 +787,28 @@ def FinalBackupConfiguration(
     instance: sql_messages.DatabaseInstance, the original instance, if the
       previous state is needed.
     final_backup_enabled: boolean, True if final backup should be enabled.
-    final_backup_ttl_days: int, how many days to retain the final backup.
+    final_backup_retention_days: int, how many days to retain the final backup.
 
   Returns:
     sql_messages.FinalBackupConfiguration object, or None
 
   Raises:
-    ToolException: Bad combination of arguments.
+    sql_exceptions.ArgumentError: Bad combination of arguments.
   """
   should_generate_config = any([
       final_backup_enabled is not None,
-      final_backup_ttl_days is not None,
+      final_backup_retention_days is not None,
   ])
 
   if not should_generate_config:
     return None
 
   # final_backup_enabled is explicitly set to False.
-  # final_backup_ttl_days should not be set using gcloud.
+  # final_backup_retention_days should not be set using gcloud.
   if final_backup_enabled is not None and not final_backup_enabled:
-    if final_backup_ttl_days is not None:
+    if final_backup_retention_days is not None:
       raise sql_exceptions.ArgumentError(
-          'Argument --final-backup-ttl-days should not be set when final'
-          ' backup is disabled.'
+          'You cannot set final-backup-retention-days while final-backup field is disabled.'
       )
 
   if not instance or not instance.settings.finalBackupConfig:
@@ -820,13 +819,13 @@ def FinalBackupConfiguration(
   # Generate new final backup config based on the gcloud arguments.
   if final_backup_enabled is not None:
     final_backup_config.enabled = final_backup_enabled
-  if final_backup_ttl_days is not None:
-    final_backup_config.ttlDays = final_backup_ttl_days
-    # Final backup enabled set to true if ttl days specified.
+  if final_backup_retention_days is not None:
+    final_backup_config.retentionDays = final_backup_retention_days
+    # Final backup enabled set to true if retention days specified.
     final_backup_config.enabled = True
 
-  # final_backup_enabled is set to False, we need to cleanup the ttl days.
+  # final_backup_enabled is set to False, we need to cleanup the retention days.
   if final_backup_enabled is not None and not final_backup_enabled:
-    final_backup_config.ttlDays = None
+    final_backup_config.retentionDays = None
 
   return final_backup_config

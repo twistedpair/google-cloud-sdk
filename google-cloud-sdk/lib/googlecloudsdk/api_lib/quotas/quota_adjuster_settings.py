@@ -34,7 +34,7 @@ def _GetClientInstance(release_track, no_http=False):
 
 
 def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
-  """Retrieve the QuotaAdjusterSettings for a project.
+  """Retrieve the QuotaAdjusterSettings for a project, folder, or organization.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
@@ -43,24 +43,41 @@ def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
   Returns:
     The requested QuotaAdjusterSettings.
   """
-  consumer = message_util.CreateProjectConsumer(args.project)
+  consumer = message_util.CreateConsumer(
+      args.project, args.folder, args.organization
+  )
   client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = _CONSUMER_LOCATION_RESOURCE % (consumer) + '/quotaAdjusterSettings'
 
   if args.project:
-    request = (
-        messages.CloudquotasProjectsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
-            name=name
-        )
+    request = messages.CloudquotasProjectsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
+        name=name
     )
     return client.projects_locations_quotaAdjusterSettings.GetQuotaAdjusterSettings(
+        request
+    )
+  if args.folder:
+    request = messages.CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
+        name=name
+    )
+    return (
+        client.folders_locations_quotaAdjusterSettings.GetQuotaAdjusterSettings(
+            request
+        )
+    )
+
+  if args.organization:
+    request = messages.CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
+        name=name
+    )
+    return client.organizations_locations_quotaAdjusterSettings.GetQuotaAdjusterSettings(
         request
     )
 
 
 def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
-  """Updates the QuotaAdjusterSettings of a project.
+  """Updates the QuotaAdjusterSettings of a project, folder, or organization.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
@@ -69,26 +86,51 @@ def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
   Returns:
     The updated QuotaAdjusterSettings.
   """
-  consumer = message_util.CreateProjectConsumer(args.project)
+  consumer = message_util.CreateConsumer(
+      args.project, args.folder, args.organization
+  )
   client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = _CONSUMER_LOCATION_RESOURCE % (consumer) + '/quotaAdjusterSettings'
-
+  if args.enablement == 'inherited':
+    inherited = True
+    enablement = None
+  else:
+    inherited = False
+    enablement = messages.QuotaAdjusterSettings.EnablementValueValuesEnum(
+        args.enablement.upper()
+    )
   quota_adjuster_settings = messages.QuotaAdjusterSettings(
       name=name,
-      enablement=messages.QuotaAdjusterSettings.EnablementValueValuesEnum(
-          args.enablement.upper()
-      ),
+      enablement=enablement,
+      inherited=inherited,
   )
 
   if args.project:
-    request = (
-        messages.CloudquotasProjectsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
-            name=name,
-            quotaAdjusterSettings=quota_adjuster_settings,
-            validateOnly=args.validate_only,
-        )
+    request = messages.CloudquotasProjectsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
+        name=name,
+        quotaAdjusterSettings=quota_adjuster_settings,
+        validateOnly=args.validate_only,
     )
     return client.projects_locations_quotaAdjusterSettings.UpdateQuotaAdjusterSettings(
+        request
+    )
+  if args.folder:
+    request = messages.CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
+        name=name,
+        quotaAdjusterSettings=quota_adjuster_settings,
+        validateOnly=args.validate_only,
+    )
+    return client.folders_locations_quotaAdjusterSettings.UpdateQuotaAdjusterSettings(
+        request
+    )
+
+  if args.organization:
+    request = messages.CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
+        name=name,
+        quotaAdjusterSettings=quota_adjuster_settings,
+        validateOnly=args.validate_only,
+    )
+    return client.organizations_locations_quotaAdjusterSettings.UpdateQuotaAdjusterSettings(
         request
     )

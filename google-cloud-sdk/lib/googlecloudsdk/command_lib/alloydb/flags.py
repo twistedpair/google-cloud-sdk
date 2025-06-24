@@ -668,6 +668,10 @@ def AddMachineType(parser, required=False):
       'c4a-highmem-48-lssd',
       'c4a-highmem-64-lssd',
       'c4a-highmem-72-lssd',
+      'z3-highmem-14-standardlssd',
+      'z3-highmem-22-standardlssd',
+      'z3-highmem-44-standardlssd',
+      'z3-highmem-88-standardlssd',
   ]
   parser.add_argument(
       '--machine-type',
@@ -1721,18 +1725,23 @@ def AddDatabaseVersion(parser, alloydb_messages, release_track):
   )
 
 
-def AddVersion(parser, alloydb_messages):
+def AddVersion(parser, alloydb_messages, release_track):
   """Adds Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
+    release_track: The command version being used - GA/BETA/ALPHA.
   """
   choices = [
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_15,
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_16,
   ]
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    choices.append(
+        alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_17
+    )
   parser.add_argument(
       '--version',
       required=True,

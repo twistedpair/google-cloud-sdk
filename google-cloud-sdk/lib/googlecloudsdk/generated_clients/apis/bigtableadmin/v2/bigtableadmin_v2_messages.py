@@ -1584,6 +1584,23 @@ class BigtableadminProjectsInstancesTablesSchemaBundlesDeleteRequest(_messages.M
   name = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesTablesSchemaBundlesGetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest object.
 
@@ -1621,6 +1638,9 @@ class BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest(_messages.Me
   r"""A BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest object.
 
   Fields:
+    ignoreWarnings: Optional. If set, ignore the safety checks when updating
+      the Schema Bundle. The safety checks are: - The new Schema Bundle is
+      backwards compatible with the existing Schema Bundle.
     name: Identifier. The unique name identifying this schema bundle. Values
       are of the form `projects/{project}/instances/{instance}/tables/{table}/
       schemaBundles/{schema_bundle}`
@@ -1628,9 +1648,45 @@ class BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest(_messages.Me
     updateMask: Optional. The list of fields to update.
   """
 
-  name = _messages.StringField(1, required=True)
-  schemaBundle = _messages.MessageField('SchemaBundle', 2)
-  updateMask = _messages.StringField(3)
+  ignoreWarnings = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  schemaBundle = _messages.MessageField('SchemaBundle', 3)
+  updateMask = _messages.StringField(4)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesSetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSchemaBundlesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigtableadminProjectsInstancesTablesSchemaBundlesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  BigtableadminProjectsInstancesTablesSchemaBundlesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigtableadminProjectsInstancesTablesSetIamPolicyRequest(_messages.Message):

@@ -1120,6 +1120,8 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     securityPostureConfig: Optional. Security Posture configuration for this
       cluster.
     state: Output only. The current state of the cluster.
+    systemComponentsConfig: Optional. Kubernetes configurationss for auto-
+      installed components on the cluster.
     tags: Optional. Input only. Tag keys and values directly bound to this
       resource. The tag key must be specified in the format `/,` where the tag
       namespace is the ID of the organization or name of the project that the
@@ -1245,10 +1247,11 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   reconciling = _messages.BooleanField(18)
   securityPostureConfig = _messages.MessageField('GoogleCloudGkemulticloudV1SecurityPostureConfig', 19)
   state = _messages.EnumField('StateValueValuesEnum', 20)
-  tags = _messages.MessageField('TagsValue', 21)
-  uid = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 24)
+  systemComponentsConfig = _messages.MessageField('GoogleCloudGkemulticloudV1SystemComponentsConfig', 21)
+  tags = _messages.MessageField('TagsValue', 22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 25)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
@@ -3346,6 +3349,19 @@ class GoogleCloudGkemulticloudV1KubernetesSecret(_messages.Message):
   namespace = _messages.StringField(2)
 
 
+class GoogleCloudGkemulticloudV1Label(_messages.Message):
+  r"""Label defines the additional fields for labels for pods created by auto-
+  installed components.
+
+  Fields:
+    key: This is the key of the label.
+    value: This is the value of the label.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class GoogleCloudGkemulticloudV1ListAttachedClustersResponse(_messages.Message):
   r"""Response message for `AttachedClusters.ListAttachedClusters` method.
 
@@ -3695,6 +3711,70 @@ class GoogleCloudGkemulticloudV1SurgeSettings(_messages.Message):
 
   maxSurge = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxUnavailable = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudGkemulticloudV1SystemComponentsConfig(_messages.Message):
+  r"""SystemComponentsConfig defines the fields for customizing configurations
+  for auto-installed components.
+
+  Fields:
+    labels: Sets custom labels for pods created by auto-installed components.
+    tolerations: Sets custom tolerations for pods created by auto-installed
+      components.
+  """
+
+  labels = _messages.MessageField('GoogleCloudGkemulticloudV1Label', 1, repeated=True)
+  tolerations = _messages.MessageField('GoogleCloudGkemulticloudV1Toleration', 2, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1Toleration(_messages.Message):
+  r"""Toleration defines the fields for tolerations for pods created by auto-
+  installed components.
+
+  Enums:
+    EffectValueValuesEnum: Effect indicates the taint effect to match e.g.
+      'NoSchedule'
+    KeyOperatorValueValuesEnum: KeyOperator represents a key's relationship to
+      the value e.g. 'Exist'.
+
+  Fields:
+    effect: Effect indicates the taint effect to match e.g. 'NoSchedule'
+    key: Key is the taint key that the toleration applies to.
+    keyOperator: KeyOperator represents a key's relationship to the value e.g.
+      'Exist'.
+    value: Value is the taint value that the toleration applies to.
+  """
+
+  class EffectValueValuesEnum(_messages.Enum):
+    r"""Effect indicates the taint effect to match e.g. 'NoSchedule'
+
+    Values:
+      EFFECT_UNSPECIFIED: Effect is not specified.
+      EFFECT_NO_SCHEDULE: Effect maps to 'NoSchedule'.
+      EFFECT_PREFER_NO_SCHEDULE: Effect maps to 'PreferNoSchedule'.
+      EFFECT_NO_EXECUTE: Effect maps to 'NoExecute'.
+    """
+    EFFECT_UNSPECIFIED = 0
+    EFFECT_NO_SCHEDULE = 1
+    EFFECT_PREFER_NO_SCHEDULE = 2
+    EFFECT_NO_EXECUTE = 3
+
+  class KeyOperatorValueValuesEnum(_messages.Enum):
+    r"""KeyOperator represents a key's relationship to the value e.g. 'Exist'.
+
+    Values:
+      KEY_OPERATOR_UNSPECIFIED: Operator is not specified.
+      KEY_OPERATOR_EQUAL: Operator maps to 'Equal'.
+      KEY_OPERATOR_EXISTS: Operator maps to 'Exists'.
+    """
+    KEY_OPERATOR_UNSPECIFIED = 0
+    KEY_OPERATOR_EQUAL = 1
+    KEY_OPERATOR_EXISTS = 2
+
+  effect = _messages.EnumField('EffectValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  keyOperator = _messages.EnumField('KeyOperatorValueValuesEnum', 3)
+  value = _messages.StringField(4)
 
 
 class GoogleCloudGkemulticloudV1UpdateSettings(_messages.Message):

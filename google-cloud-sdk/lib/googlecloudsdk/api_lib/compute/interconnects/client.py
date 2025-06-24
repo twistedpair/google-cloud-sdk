@@ -258,6 +258,7 @@ class Interconnect(object):
       macsec=None,
       aai_enabled=None,
       application_aware_interconnect=None,
+      cleared_fields=None,
   ):
     """Patch an interconnect."""
     requests = [
@@ -278,6 +279,7 @@ class Interconnect(object):
         )
     ]
     if not only_generate_request:
-      resources = self._compute_client.MakeRequests(requests)
+      with self._client.IncludeFields(cleared_fields):
+        resources = self._compute_client.MakeRequests(requests)
       return resources[0]
     return requests

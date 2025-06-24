@@ -388,21 +388,7 @@ def AddFinalBackup(parser):
   )
 
 
-def AddFinalbackupTtlDays(parser):
-  help_text = (
-      'Specifies number of days to retain final backup. The valid range is'
-      ' between 1 and 365. Default value is 30 days.'
-  )
-  parser.add_argument(
-      '--final-backup-ttl-days',
-      type=arg_parsers.BoundedInt(1, 365, unlimited=False),
-      required=False,
-      hidden=True,
-      help=help_text,
-  )
-
-
-def AddFinalbackupRetentionDays(parser):
+def AddFinalbackupRetentionDays(parser, hidden=False):
   help_text = (
       'Specifies number of days to retain final backup. The valid range is'
       ' between 1 and 365. Default value is 30 days.'
@@ -411,6 +397,7 @@ def AddFinalbackupRetentionDays(parser):
       '--final-backup-retention-days',
       type=arg_parsers.BoundedInt(1, 365, unlimited=False),
       required=False,
+      hidden=hidden,
       help=help_text,
   )
 

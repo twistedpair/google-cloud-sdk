@@ -25,6 +25,20 @@ deactivated:
     If set, no further changes may be made to this backup plan and no further backups may be created
     for this plan. Backup deletion is still allowed.
 
+backup_plan_tags:
+  arg_name: tags
+  api_field: backupPlan.tags.additionalProperties
+  hidden: true
+  metavar: KEY=VALUE
+  help_text: |
+    List of tag KEY=VALUE pairs to add.
+  type:
+    arg_dict:
+      flatten: true
+      spec:
+      - api_field: key
+      - api_field: value
+
 backup_delete_lock_days:
   arg_name: backup-delete-lock-days
   api_field: backupPlan.retentionPolicy.backupDeleteLockDays
@@ -252,6 +266,20 @@ restore_plan_description:
   api_field: restorePlan.description
   help_text: |
     The description of the restore plan.
+
+restore_plan_tags:
+  arg_name: tags
+  api_field: restorePlan.tags.additionalProperties
+  hidden: true
+  metavar: KEY=VALUE
+  help_text: |
+    List of tag KEY=VALUE pairs to add.
+  type:
+    arg_dict:
+      flatten: true
+      spec:
+      - api_field: key
+      - api_field: value
 
 restore_channel_description:
   arg_name: description

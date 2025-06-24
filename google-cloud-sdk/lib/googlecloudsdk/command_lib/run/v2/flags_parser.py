@@ -14,6 +14,7 @@
 # limitations under the License.
 """Parsers given command arguments for the Cloud Run V2 command surface into configuration changes."""
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run.v2 import config_changes
@@ -351,7 +352,9 @@ def _GetContainerConfigurationChanges(
   return changes
 
 
-def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
+def _GetTemplateConfigurationChanges(
+    args, release_track, non_ingress_type=False
+):
   """Returns a list of changes shared by multiple resources, based on the flags set."""
   changes = []
   # Revision name suffix
@@ -430,7 +433,9 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   if flags.HasSecretsChanges(args):
     changes.extend(_GetSecretsChanges(args, non_ingress_type=non_ingress_type))
   if flags.FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
-    changes.append(config_changes.AddVolumeChange(args.add_volume))
+    changes.append(
+        config_changes.AddVolumeChange(args.add_volume, release_track)
+    )
   if (
       flags.FlagIsExplicitlySet(args, 'add_volume_mount')
       and args.add_volume_mount
@@ -501,8 +506,14 @@ def _HasWorkerPoolScalingChanges(args):
   return flags.HasChanges(args, scaling_flags)
 
 
-def _GetWorkerPoolScalingChange(args):
+def _GetWorkerPoolScalingChange(args, release_track):
   """Return the changes for engine-level scaling for Worker Pools for the given args."""
+  # Catch the case where user sets scaling mode to auto for BETA.
+  if release_track == base.ReleaseTrack.BETA:
+    if args.scaling and args.scaling.auto_scaling:
+      raise exceptions.ConfigurationError(
+          'Automatic scaling is not supported in BETA.'
+      )
   return config_changes.WorkerPoolScalingChange(
       min_instance_count=args.min
       if 'min' in args and args.min is not None
@@ -565,7 +576,7 @@ def _GetInstanceSplitChanges(args):
     return config_changes.InstanceSplitChange(to_revisions=args.to_revisions)
 
 
-def GetWorkerPoolConfigurationChanges(args):
+def GetWorkerPoolConfigurationChanges(args, release_track):
   """Returns a list of changes to the worker pool config, based on the flags set."""
   changes = []
   # Description
@@ -578,10 +589,14 @@ def GetWorkerPoolConfigurationChanges(args):
   if _HasBinaryAuthorizationChanges(args):
     changes.extend(_GetBinaryAuthorizationChanges(args))
   # Template changes
-  changes.extend(_GetTemplateConfigurationChanges(args, non_ingress_type=True))
+  changes.extend(
+      _GetTemplateConfigurationChanges(
+          args, release_track, non_ingress_type=True
+      )
+  )
   # Worker pool scaling
   if _HasWorkerPoolScalingChanges(args):
-    changes.append(_GetWorkerPoolScalingChange(args))
+    changes.append(_GetWorkerPoolScalingChange(args, release_track))
   if flags.HasInstanceSplitChanges(args):
     changes.append(_GetInstanceSplitChanges(args))
   if 'no_promote' in args and args.no_promote:

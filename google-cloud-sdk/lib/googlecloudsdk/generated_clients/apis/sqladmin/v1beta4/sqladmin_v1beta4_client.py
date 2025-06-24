@@ -819,6 +819,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExecuteSql(self, request, global_params=None):
+      r"""Runs a SQL statement in a database that's inside of a Cloud SQL instance.
+
+      Args:
+        request: (SqlInstancesExecuteSqlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SqlInstancesExecuteSqlResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteSql')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteSql.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.executeSql',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/executeSql',
+        request_field='executeSqlPayload',
+        request_type_name='SqlInstancesExecuteSqlRequest',
+        response_type_name='SqlInstancesExecuteSqlResponse',
+        supports_download=False,
+    )
+
     def Export(self, request, global_params=None):
       r"""Exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL dump or CSV file.
 

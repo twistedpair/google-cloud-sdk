@@ -213,7 +213,7 @@ def create_pr(
 
 def get_file_modifiers(
     files_data: Mapping[str, str], first: bool = False
-) -> str:
+) -> Mapping[str, str]:
   """Returns the first (creators) or last modifiers for the given files.
 
   By default, it returns the last modifiers.
@@ -224,13 +224,8 @@ def get_file_modifiers(
       returns the last modifiers for the files.
 
   Returns:
-    A string containing the modifiers for the given files. Format:
-    file_path1: last_modifier_emailAddr1
-    file_path2: last_modifier_emailAddr2
-    ...
-    file_pathn: last_modifier_emailAddrn
-
-    If there's an error, returns an empty string.
+    A dictionary of file path and the modifiers for the given files. If the
+    command fails, an empty dictionary is returned. ["file_path" : "modifier"]
   """
   file_modifiers = {}
   base_cmd = [
@@ -244,7 +239,7 @@ def get_file_modifiers(
       # If successful, cmd_output: <email_address> followed by \n
       file_modifiers[file_path] = run_subprocess.GetOutputLines(
           cmd, timeout_sec=const.TF_CMD_TIMEOUT, strip_output=True
-      )
-    return '\n'.join(f'{fp}: {ea}' for fp, ea in file_modifiers.items())
+      )[0]  # first line of the output is the email address.
+    return file_modifiers
   except subprocess.CalledProcessError:
-    return ''
+    return {}

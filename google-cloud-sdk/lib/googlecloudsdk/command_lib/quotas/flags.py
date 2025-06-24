@@ -97,7 +97,7 @@ def Enablement():
       '--enablement',
       required=True,
       help='Enablement state of the QuotaAdjusterSettings.',
-      choices=['enabled', 'disabled'],
+      choices=['enabled', 'disabled', 'inherited'],
   )
 
 

@@ -529,7 +529,9 @@ can be range from 7-183. Default is 31.
   )
 
 
-def AddVolumeHybridReplicationParametersArg(parser, messages, hidden=False):
+def AddVolumeHybridReplicationParametersArg(
+    parser, messages, release_track=calliope_base.ReleaseTrack.GA, hidden=False
+):
   """Adds the --hybrid-replication-parameters arg to the arg parser."""
   hybrid_replication_parameters_arg_spec = {
       'replication': str,
@@ -541,17 +543,25 @@ def AddVolumeHybridReplicationParametersArg(parser, messages, hidden=False):
       ),
       'cluster-location': str,
       'description': str,
-      'replication-schedule': (
-          messages.HybridReplicationParameters.ReplicationScheduleValueValuesEnum
-      ),
-      'hybrid-replication-type': (
-          messages.HybridReplicationParameters.HybridReplicationTypeValueValuesEnum
-      ),
-      'large-volume-constituent-count': int,
       'labels': arg_parsers.ArgList(
           min_length=1, element_type=str, custom_delim_char='#'
       ),
   }
+  # TODO(b/425281073): Remove this check once the bidirectional snapmirror
+  # is AGA.
+  if release_track in [
+      calliope_base.ReleaseTrack.BETA, calliope_base.ReleaseTrack.ALPHA,
+  ]:
+    hybrid_replication_parameters_arg_spec['replication-schedule'] = (
+        messages.HybridReplicationParameters.ReplicationScheduleValueValuesEnum
+    )
+    hybrid_replication_parameters_arg_spec['hybrid-replication-type'] = (
+        messages.HybridReplicationParameters.HybridReplicationTypeValueValuesEnum
+    )
+    hybrid_replication_parameters_arg_spec[
+        'large-volume-constituent-count'
+    ] = int
+
   hybrid_replication_parameters_help = """\
   Hybrid Replication Parameters contains hybrid replication parameters on a volume.
 
@@ -580,6 +590,49 @@ def AddVolumeHybridReplicationParametersArg(parser, messages, hidden=False):
       '--hybrid-replication-parameters',
       type=arg_parsers.ArgDict(spec=hybrid_replication_parameters_arg_spec),
       help=hybrid_replication_parameters_help,
+      hidden=hidden,
+  )
+
+
+def AddVolumeCacheParametersArg(parser, hidden=False):
+  """Adds the --cache-parameters arg to the arg parser."""
+  cache_parameters_arg_spec = {
+      'peer-volume-name': str,
+      'peer-cluster-name': str,
+      'peer-svm-name': str,
+      'peer-ip-addresses': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'
+      ),
+      'enable-global-file-lock': arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      'cache-config': arg_parsers.ArgList(
+          max_length=3, element_type=arg_parsers.ArgDict(),
+          custom_delim_char='#'
+      ),
+  }
+  cache_parameters_help = """\
+  Cache Parameters contains cache parameters of a volume.
+
+      Cache Parameters will have the following format
+      `--cache-parameters=peer-volume-name=PEER_VOLUME_NAME,
+        peer-cluster-name=PEER_CLUSTER_NAME,
+        peer-svm-name=PEER_SVM_NAME,
+        peer-ip-addresses=[PEER-IP-ADDRESS1#PEER-IP-ADDRESS2#...],
+        enable-global-file-lock=ENABLE_GLOBAL_FILE_LOCK,
+        cache-config=CACHE_CONFIG`
+
+      *peer-volume-name*::: Name of the user's local source volume
+      *peer-cluster-name*::: Name of the user's local source cluster
+      *peer-svm-name*::: Name of the user's local source vserver svm
+      *peer-ip-addresses*::: Hashtag-separated(#) list of IP addresses
+      *enable-global-file-lock*::: If true, enable global file lock
+      *cache-config*::: Cache-config as a hashtag-separated(#) list of key-value pairs
+  """
+  parser.add_argument(
+      '--cache-parameters',
+      type=arg_parsers.ArgDict(spec=cache_parameters_arg_spec),
+      help=cache_parameters_help,
       hidden=hidden,
   )
 
@@ -641,7 +694,12 @@ def AddVolumeCreateArgs(parser, release_track):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
-  AddVolumeHybridReplicationParametersArg(parser, messages)
+  AddVolumeHybridReplicationParametersArg(parser, messages, release_track)
+  if (
+      release_track == calliope_base.ReleaseTrack.BETA
+      or release_track == calliope_base.ReleaseTrack.ALPHA
+  ):
+    AddVolumeCacheParametersArg(parser, hidden=True)
   labels_util.AddCreateLabelsFlags(parser)
 
 

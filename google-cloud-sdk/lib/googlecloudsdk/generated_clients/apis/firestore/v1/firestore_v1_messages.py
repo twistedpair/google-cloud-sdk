@@ -1014,6 +1014,21 @@ class FirestoreProjectsDatabasesBulkDeleteDocumentsRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class FirestoreProjectsDatabasesCloneRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesCloneRequest object.
+
+  Fields:
+    googleFirestoreAdminV1CloneDatabaseRequest: A
+      GoogleFirestoreAdminV1CloneDatabaseRequest resource to be passed as the
+      request body.
+    parent: Required. The project to clone the database in. Format is
+      `projects/{project_id}`.
+  """
+
+  googleFirestoreAdminV1CloneDatabaseRequest = _messages.MessageField('GoogleFirestoreAdminV1CloneDatabaseRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest object.
 
@@ -2008,6 +2023,114 @@ class GoogleFirestoreAdminV1BulkDeleteDocumentsRequest(_messages.Message):
   namespaceIds = _messages.StringField(2, repeated=True)
 
 
+class GoogleFirestoreAdminV1CloneDatabaseMetadata(_messages.Message):
+  r"""Metadata for the long-running operation from the CloneDatabase request.
+
+  Enums:
+    OperationStateValueValuesEnum: The operation state of the clone.
+
+  Fields:
+    database: The name of the database being cloned to.
+    endTime: The time the clone finished, unset for ongoing clones.
+    operationState: The operation state of the clone.
+    pitrSnapshot: The snapshot from which this database was cloned.
+    progressPercentage: How far along the clone is as an estimated percentage
+      of remaining time.
+    startTime: The time the clone was started.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""The operation state of the clone.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  database = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 3)
+  pitrSnapshot = _messages.MessageField('GoogleFirestoreAdminV1PitrSnapshot', 4)
+  progressPercentage = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
+  startTime = _messages.StringField(6)
+
+
+class GoogleFirestoreAdminV1CloneDatabaseRequest(_messages.Message):
+  r"""The request message for FirestoreAdmin.CloneDatabase.
+
+  Messages:
+    TagsValue: Optional. Immutable. Tags to be bound to the cloned database.
+      The tags should be provided in the format of `tagKeys/{tag_key_id} ->
+      tagValues/{tag_value_id}`.
+
+  Fields:
+    databaseId: Required. The ID to use for the database, which will become
+      the final component of the database's resource name. This database ID
+      must not be associated with an existing database. This value should be
+      4-63 characters. Valid characters are /a-z-/ with first character a
+      letter and the last a letter or a number. Must not be UUID-like
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database ID is
+      also valid.
+    encryptionConfig: Optional. Encryption configuration for the cloned
+      database. If this field is not specified, the cloned database will use
+      the same encryption configuration as the source database, namely
+      use_source_encryption.
+    pitrSnapshot: Required. Specification of the PITR data to clone from. The
+      source database must exist. The cloned database will be created in the
+      same location as the source database.
+    tags: Optional. Immutable. Tags to be bound to the cloned database. The
+      tags should be provided in the format of `tagKeys/{tag_key_id} ->
+      tagValues/{tag_value_id}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Immutable. Tags to be bound to the cloned database. The tags
+    should be provided in the format of `tagKeys/{tag_key_id} ->
+    tagValues/{tag_value_id}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  databaseId = _messages.StringField(1)
+  encryptionConfig = _messages.MessageField('GoogleFirestoreAdminV1EncryptionConfig', 2)
+  pitrSnapshot = _messages.MessageField('GoogleFirestoreAdminV1PitrSnapshot', 3)
+  tags = _messages.MessageField('TagsValue', 4)
+
+
 class GoogleFirestoreAdminV1CmekConfig(_messages.Message):
   r"""The CMEK (Customer Managed Encryption Key) configuration for a Firestore
   database. If not present, the database is secured by the default Google
@@ -2985,6 +3108,26 @@ class GoogleFirestoreAdminV1ListUserCredsResponse(_messages.Message):
 
 class GoogleFirestoreAdminV1LocationMetadata(_messages.Message):
   r"""The metadata message for google.cloud.location.Location.metadata."""
+
+
+class GoogleFirestoreAdminV1PitrSnapshot(_messages.Message):
+  r"""A consistent snapshot of a database at a specific point in time. A PITR
+  (Point-in-time recovery) snapshot with previous versions of a database's
+  data is available for every minute up to the associated database's data
+  retention period. If the PITR feature is enabled, the retention period is 7
+  days; otherwise, it is one hour.
+
+  Fields:
+    database: Required. The name of the database that this was a snapshot of.
+      Format: `projects/{project}/databases/{database}`.
+    databaseUid: Output only. Public UUID of the database the snapshot was
+      associated with.
+    snapshotTime: Required. Snapshot time of the database.
+  """
+
+  database = _messages.StringField(1)
+  databaseUid = _messages.BytesField(2)
+  snapshotTime = _messages.StringField(3)
 
 
 class GoogleFirestoreAdminV1Progress(_messages.Message):

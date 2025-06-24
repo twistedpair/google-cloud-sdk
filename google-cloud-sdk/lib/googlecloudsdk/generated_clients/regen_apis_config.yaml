@@ -1142,10 +1142,19 @@ apis:
     v1:
       discovery_doc: memorystore_v1.json
       default: true
+      resources:
+        projects.locations.keyRings.cryptoKeys:
+          path: projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}
     v1alpha:
       discovery_doc: memorystore_v1alpha.json
+      resources:
+        projects.locations.keyRings.cryptoKeys:
+          path: projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}
     v1beta:
       discovery_doc: memorystore_v1beta.json
+      resources:
+        projects.locations.keyRings.cryptoKeys:
+          path: projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}
   metastore:
     v1alpha:
       discovery_doc: metastore_v1alpha.json

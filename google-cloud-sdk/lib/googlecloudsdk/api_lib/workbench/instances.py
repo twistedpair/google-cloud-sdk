@@ -223,6 +223,7 @@ def GetDataDisk(args, messages):
       or args.IsSpecified('data_disk_type')
       or args.IsSpecified('data_disk_encryption')
       or args.IsSpecified('data_disk_kms_key')
+      or args.IsSpecified('data_disk_resource_policies')
   ):
     return []
 
@@ -230,6 +231,7 @@ def GetDataDisk(args, messages):
   data_disk_encryption_enum = None
   data_disk_type_enum = None
   kms_key = None
+  resource_policies = []
   if args.IsSpecified('data_disk_type'):
     data_disk_type_enum = arg_utils.ChoiceEnumMapper(
         arg_name='data-disk-type',
@@ -244,12 +246,15 @@ def GetDataDisk(args, messages):
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.data_disk_encryption))
   if args.IsSpecified('data_disk_kms_key'):
     kms_key = args.CONCEPTS.data_disk_kms_key.Parse().RelativeName()
+  if args.IsSpecified('data_disk_resource_policies'):
+    resource_policies = args.data_disk_resource_policies
   return [
       data_disk_message(
           diskType=data_disk_type_enum,
           diskEncryption=data_disk_encryption_enum,
           diskSizeGb=args.data_disk_size,
           kmsKey=kms_key,
+          resourcePolicies=resource_policies,
       )
   ]
 

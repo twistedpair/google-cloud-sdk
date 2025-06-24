@@ -441,8 +441,10 @@ def AddDeployFromComposeArgument(parser):
       type=str,
       nargs='?',
       default=None,
-      help='The compose yaml file to deploy from a Compose '
-      'directory to Cloud Run.',
+      help=(
+          'The compose yaml file to deploy from a Compose '
+          'directory to Cloud Run.'
+      ),
   )
 
 
@@ -1088,6 +1090,17 @@ _SUPPORTED_STARTUP_PROBE_KEYS = (
     'tcpSocket.port',
 )
 
+_SUPPORTED_READINESS_PROBE_KEYS = (
+    'timeoutSeconds',
+    'periodSeconds',
+    'failureThreshold',
+    'successThreshold',
+    'httpGet.port',
+    'httpGet.path',
+    'grpc.port',
+    'grpc.service',
+)
+
 
 def _ProbeFlag(probe_type, supported_keys):
   """Create a flag for the given probe type.
@@ -1099,6 +1112,7 @@ def _ProbeFlag(probe_type, supported_keys):
   Returns:
     A flag.
   """
+
   def _LimitKeys(key):
     if key not in supported_keys:
       raise serverless_exceptions.ArgumentError(
@@ -1139,6 +1153,11 @@ def StartupProbeFlag():
 def LivenessProbeFlag():
   """Create the --liveness-probe flag."""
   return _ProbeFlag('liveness', _SUPPORTED_LIVENESS_PROBE_KEYS)
+
+
+def ReadinessProbeFlag():
+  """Create the --readiness-probe flag."""
+  return _ProbeFlag('readiness', _SUPPORTED_READINESS_PROBE_KEYS)
 
 
 def _ConcurrencyValue(value):
@@ -1660,17 +1679,30 @@ def AddMaxUnavailableFlag(parser, resource_kind='service'):
   )
 
 
-def AddScalingFlag(parser):
+def AddScalingFlag(
+    parser, release_track=base.ReleaseTrack.BETA, resource_kind='service'
+):
   """Add scaling flag."""
+  # For worker pools in BETA, we only support manual scaling with a fixed
+  # instance count.
+  help_text = (
+      'The scaling mode to use for this resource. Flag value should be a'
+      ' positive integer to configure manual scaling with the given integer as'
+      ' a fixed instance count.'
+  )
+  # For worker pools in ALPHA and services, we support both manual and automatic
+  # scaling.
+  if resource_kind == 'service' or release_track == base.ReleaseTrack.ALPHA:
+    help_text = (
+        'The scaling mode to use for this resource. Flag value could be'
+        ' either "auto" for automatic scaling, or a positive integer to'
+        ' configure manual scaling with the given integer as a fixed instance'
+        ' count.'
+    )
   parser.add_argument(
       '--scaling',
       type=ScalingValue,
-      help=(
-          'The scaling mode to use for this resource. Flag value could be'
-          ' either "auto" for automatic scaling, or a positive integer to'
-          ' configure manual scaling with the given integer as a fixed instance'
-          ' count.'
-      ),
+      help=help_text,
   )
 
 
@@ -2977,6 +3009,13 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
       )
     else:
       changes.append(config_changes.LivenessProbeChanges(clear=True))
+  if FlagIsExplicitlySet(args, 'readiness_probe'):
+    if args.readiness_probe:
+      changes.append(
+          config_changes.ReadinessProbeChanges(settings=args.readiness_probe)
+      )
+    else:
+      changes.append(config_changes.ReadinessProbeChanges(clear=True))
   if 'service_account' in args and args.service_account:
     changes.append(
         config_changes.ServiceAccountChanges(
@@ -3246,6 +3285,20 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
     else:
       changes.append(
           config_changes.LivenessProbeChanges(
+              clear=True, container_name=container_name
+          )
+      )
+  if FlagIsExplicitlySet(container_args, 'readiness_probe'):
+    if container_args.readiness_probe:
+      changes.append(
+          config_changes.ReadinessProbeChanges(
+              settings=container_args.liveness_probe,
+              container_name=container_name,
+          )
+      )
+    else:
+      changes.append(
+          config_changes.ReadinessProbeChanges(
               clear=True, container_name=container_name
           )
       )
@@ -4791,12 +4844,11 @@ def AddDryRunFlag(parser):
 def AddDebugFlag(parser):
   """Add --debug or -d flag."""
   parser.add_argument(
-      '-d', '--debug',
+      '-d',
+      '--debug',
       action='store_true',
       default=False,
-      help=(
-          'If set to true, enables debug mode'
-      ),
+      help='If set to true, enables debug mode',
   )
 
 

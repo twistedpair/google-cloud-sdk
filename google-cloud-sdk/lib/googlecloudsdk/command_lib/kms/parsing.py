@@ -26,6 +26,7 @@ def ReadAutokeyConfigFromConfigFile(file_path):
   """Fetches the AutokeyConfig from the config file."""
   try:
     parsed_yaml = yaml.load_path(file_path)
+    etag = parsed_yaml['etag'] if 'etag' in parsed_yaml else ''
   except yaml.Error as error:
     raise exceptions.Error('unable to load kubeconfig for {0}: {1}'.format(
         file_path, error))
@@ -33,4 +34,4 @@ def ReadAutokeyConfigFromConfigFile(file_path):
     raise exceptions.Error('AutokeyConfig file must contain a name.')
   if 'keyProject' not in parsed_yaml:
     raise exceptions.Error('AutokeyConfig file must contain a keyProject.')
-  return parsed_yaml['name'], parsed_yaml['keyProject']
+  return parsed_yaml['name'], parsed_yaml['keyProject'], etag

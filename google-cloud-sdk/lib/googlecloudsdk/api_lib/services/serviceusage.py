@@ -183,7 +183,7 @@ def GetEffectivePolicyV2Beta(name: str, view: str = 'BASIC'):
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    mesage.EffectivePolicy: The effective policy
+    message.EffectivePolicy: The effective policy
   """
   client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
@@ -469,9 +469,52 @@ def ListDescendantServices(
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.ListDescendantServicesPermissionDeniedException
+    exceptions.ReraiseError(e, exceptions.ListDescendantServicesException)
+
+
+def ListExpandedMembers(resource: str, service_group: str, page_size: int = 50):
+  """Make API call to list expanded members of a specific service group.
+
+  Args:
+    resource: The target resource in the format:
+      '{resource_type}/{resource_name}'.
+    service_group: Service group, for example,
+      'services/compute.googleapis.com/groups/dependencies'.
+    page_size: The page size to list. The default page_size is 50.
+
+  Raises:
+    exceptions.ListExpandedMembersException: when listing
+      expanded members fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Message. ExpandedMember.serviceName : Service names of the expanded members
+    of the service group.
+  """
+  client = _GetClientInstance(_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGroupsExpandedMembersListRequest(
+      parent='{}/{}'.format(resource, service_group)
+  )
+
+  try:
+    response = list_pager.YieldFromList(
+        _Lister(client.services_groups_expandedMembers),
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='members',
     )
+    service_names = []
+    for member in response:
+      service_names.append(member.serviceName)
+    return service_names
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.ListExpandedMembersException)
 
 
 def ListAncestorGroups(resource: str, service: str, page_size=50):

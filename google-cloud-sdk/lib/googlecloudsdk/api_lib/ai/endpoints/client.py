@@ -34,7 +34,9 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import requests
 from six.moves import http_client
 
-GDC_GGS_MODEL_IDS = frozenset({'gemini-2.0-flash', 'multimodalembedding@001'})
+GDC_GGS_MODEL_IDS = frozenset(
+    {'gemini-2.0-flash-001', 'multimodalembedding@001'}
+)
 
 
 def _ParseModel(model_id, location_id):
@@ -290,10 +292,12 @@ class EndpointsClient(object):
     )
     return self.client.projects_locations_endpoints.Get(req)
 
-  def List(self, location_ref, filter_str=None):
+  def List(self, location_ref, filter_str=None, gdc_zone=None):
     """Lists endpoints in the project."""
     req = self.messages.AiplatformProjectsLocationsEndpointsListRequest(
-        parent=location_ref.RelativeName(), filter=filter_str
+        parent=location_ref.RelativeName(),
+        filter=filter_str,
+        gdcZone=gdc_zone,
     )
     return list_pager.YieldFromList(
         self.client.projects_locations_endpoints,

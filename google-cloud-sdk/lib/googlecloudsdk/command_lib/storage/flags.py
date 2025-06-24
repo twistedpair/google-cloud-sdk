@@ -551,19 +551,21 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
       help='Description for dataset config.',
   )
 
+  # TODO: b/424351797 - Provide custom error message if mutual exclusivity is
+  # violated.
   source_options_group = parser.add_group(
       mutex=True,
-      hidden=is_update,
       required=not is_update,
       help=(
-          # TODO: b/424091769 - Update the help text to include folders and
-          # organization scope.
-          'List of source options currently supported are source projects.'
+          'List of source options either source projects or source folders '
+          'or enable organization scope. Refer '
+          '[Dataset Configuration Properties](https://cloud.google.com/storage'
+          '/docs/insights/datasets#dataset-config) '
+          'for more details.'
       ),
   )
   source_options_group.add_argument(
       '--enable-organization-scope',
-      hidden=True,
       action='store_true',
       help=(
           'If passed, the dataset config will be enabled on the organization.'
@@ -571,7 +573,6 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
   )
   source_projects_group = source_options_group.add_group(
       mutex=True,
-      hidden=is_update,
       help=(
           'List of source project numbers or the file containing list of'
           ' project numbers.'
@@ -593,7 +594,6 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
   )
   source_folders_group = source_options_group.add_group(
       mutex=True,
-      hidden=True,
       help=(
           'List of source folder IDs or the file containing list of folder IDs.'
       ),
@@ -615,7 +615,6 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
 
   include_exclude_buckets_group = parser.add_group(
       mutex=True,
-      hidden=is_update,
       help=(
           'Specify the list of buckets to be included or excluded, both a list'
           ' of bucket names and prefix regexes can be specified for either'
@@ -664,7 +663,6 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
 
   include_exclude_locations_group = parser.add_group(
       mutex=True,
-      hidden=is_update,
       help=(
           'Specify the list of locations for source projects to be included or'
           ' excluded from [available'
@@ -1241,22 +1239,24 @@ def add_batch_jobs_flags(parser):
   transformation.add_argument(
       '--put-metadata',
       help=(
-          'Sets object metadata. To set how content should be displayed, '
-          'specify the the key-value pair `Content-Disposition={VALUE}.` '
-          'To set how content is encoded (e.g. "gzip"), specify the key-value '
-          "pair `Content-Encoding={VALUE}`. To set content's language (e.g. "
-          '"en" signifies "English"), specify the key-value pair '
-          '`Content-Language={VALUE}`. To set the type of data contained in '
-          'the object (e.g. "text/html"), specify the key-value pair '
-          '`Content-Type={VALUE}`. To set how caches should handle requests '
-          'and responses, specify the key-value pair `Cache-Control={VALUE}`. '
-          'To set custom time for Cloud Storage objects in RFC 3339 format, '
-          'specify the key-value pair `Custom-Time={VALUE}`. To set custom '
-          'metadata on objects, specify key-value pairs `{CUSTOM-KEY}:{VALUE}`.'
-          ' Note that all predefined keys are case-insensitive. '
-          'Multiple key-value pairs can be specified by separating them with '
-          'commas. For example, '
-          '`--put-metadata=Content-Disposition=inline,Content-Encoding=gzip`'
+          'Sets object metadata. To set how content should be displayed,'
+          ' specify the the key-value pair `Content-Disposition={VALUE}.` To'
+          ' set how content is encoded (e.g. "gzip"), specify the key-value'
+          " pair `Content-Encoding={VALUE}`. To set content's language (e.g."
+          ' "en" signifies "English"), specify the key-value pair'
+          ' `Content-Language={VALUE}`. To set the type of data contained in'
+          ' the object (e.g. "text/html"), specify the key-value pair'
+          ' `Content-Type={VALUE}`. To set how caches should handle requests'
+          ' and responses, specify the key-value pair `Cache-Control={VALUE}`.'
+          ' To set custom time for Cloud Storage objects in RFC 3339 format,'
+          ' specify the key-value pair `Custom-Time={VALUE}`. To set custom'
+          ' metadata on objects, specify key-value pairs'
+          ' `{CUSTOM-KEY}:{VALUE}`. Note that all predefined keys (e.g.'
+          ' Content-Disposition) are case-insensitive. Any other key that is'
+          ' not specified above will be treated as a custom key. Multiple'
+          ' key-value pairs can be specified by separating them with commas.'
+          ' For example,'
+          ' `--put-metadata=Content-Disposition=inline,Content-Encoding=gzip`'
       ),
       type=arg_parsers.ArgDict(min_length=1),
       default={},

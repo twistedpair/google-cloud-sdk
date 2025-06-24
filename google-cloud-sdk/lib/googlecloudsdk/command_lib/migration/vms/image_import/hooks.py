@@ -14,6 +14,7 @@
 # limitations under the License.
 """Argument processors for disk/machine image import surface arguments."""
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.migration.vms import hooks
 
 
@@ -28,9 +29,7 @@ def GetDataDiskImageImportTransform(value):
     An empty DataDiskImageImport message.
   """
   del value
-  return hooks.GetMessageClass(
-      'DataDiskImageImport'
-  )()
+  return hooks.GetMessageClass('DataDiskImageImport')()
 
 
 # Argument Processors
@@ -59,7 +58,14 @@ def FixCreateDiskImageImportRequest(ref, args, req):
   Returns:
     The modified request message.
   """
-  if not (args.generalize or args.license_type or args.boot_conversion):
+  if not (
+      args.generalize
+      or args.license_type
+      or args.boot_conversion
+      or args.adaptation_modifiers
+      or args.suppress_package_installation_failure
+      or args.rootfs_uuid
+  ):
     req.imageImport.diskImageTargetDefaults.osAdaptationParameters = None
 
   if not args.image_name:
@@ -69,15 +75,40 @@ def FixCreateDiskImageImportRequest(ref, args, req):
     req.imageImport.diskImageTargetDefaults.encryption = (
         hooks.GetEncryptionTransform(
             req.imageImport.diskImageTargetDefaults.encryption
-            )
         )
+    )
     req.imageImport.diskImageTargetDefaults.encryption.kmsKey = args.kms_key
 
-    req.imageImport.encryption = (
-        hooks.GetEncryptionTransform(req.imageImport.encryption)
-        )
+    req.imageImport.encryption = hooks.GetEncryptionTransform(
+        req.imageImport.encryption
+    )
     req.imageImport.encryption.kmsKey = args.kms_key
-
+  adaptation_modifiers = []
+  if args.adaptation_modifiers:
+    if not req.imageImport.diskImageTargetDefaults.osAdaptationParameters:
+      req.imageImport.diskImageTargetDefaults.osAdaptationParameters = (
+          hooks.GetMessageClass('ImageImportOsAdaptationParameters')()
+      )
+    adaptation_modifiers = ProcessAdaptationModifiers(args.adaptation_modifiers)
+    req.imageImport.diskImageTargetDefaults.osAdaptationParameters.adaptationModifiers = ProcessAdaptationModifiers(
+        args.adaptation_modifiers
+    )
+  if args.suppress_package_installation_failure:
+    adaptation_modifiers.append(
+        hooks.GetMessageClass('AdaptationModifier')(
+            name='suppress-package-installation-failure'
+        )
+    )
+  if args.rootfs_uuid:
+    adaptation_modifiers.append(
+        hooks.GetMessageClass('AdaptationModifier')(
+            name='rootfs-uuid', value=args.rootfs_uuid
+        )
+    )
+  if adaptation_modifiers:
+    req.imageImport.diskImageTargetDefaults.osAdaptationParameters.adaptationModifiers = (
+        adaptation_modifiers
+    )
   hooks.FixTargetDetailsCommonFields(
       ref, args, req.imageImport.diskImageTargetDefaults
   )
@@ -101,7 +132,14 @@ def FixCreateMachineImageImportRequest(ref, args, req):
   if not args.machine_image_name:
     req.imageImport.machineImageTargetDefaults.machineImageName = ref.Name()
 
-  if not args.generalize and not args.license_type and not args.boot_conversion:
+  if (
+      not args.generalize
+      and not args.license_type
+      and not args.boot_conversion
+      and not args.adaptation_modifiers
+      and not args.suppress_package_installation_failure
+      and not args.rootfs_uuid
+  ):
     req.imageImport.machineImageTargetDefaults.osAdaptationParameters = None
 
   if (
@@ -115,17 +153,83 @@ def FixCreateMachineImageImportRequest(ref, args, req):
     req.imageImport.machineImageTargetDefaults.encryption = (
         hooks.GetEncryptionTransform(
             req.imageImport.machineImageTargetDefaults.encryption
-            )
         )
+    )
     req.imageImport.machineImageTargetDefaults.encryption.kmsKey = args.kms_key
 
-    req.imageImport.encryption = (
-        hooks.GetEncryptionTransform(req.imageImport.encryption)
-        )
+    req.imageImport.encryption = hooks.GetEncryptionTransform(
+        req.imageImport.encryption
+    )
     req.imageImport.encryption.kmsKey = args.kms_key
-
+  adaptation_modifiers = []
+  if args.adaptation_modifiers:
+    if not req.imageImport.machineImageTargetDefaults.osAdaptationParameters:
+      req.imageImport.machineImageTargetDefaults.osAdaptationParameters = (
+          hooks.GetMessageClass('ImageImportOsAdaptationParameters')()
+      )
+    adaptation_modifiers = ProcessAdaptationModifiers(args.adaptation_modifiers)
+  if args.suppress_package_installation_failure:
+    adaptation_modifiers.append(
+        hooks.GetMessageClass('AdaptationModifier')(
+            name='suppress-package-installation-failure'
+        )
+    )
+  if args.rootfs_uuid:
+    adaptation_modifiers.append(
+        hooks.GetMessageClass('AdaptationModifier')(
+            name='rootfs-uuid', value=args.rootfs_uuid
+        )
+    )
+  if adaptation_modifiers:
+    req.imageImport.machineImageTargetDefaults.osAdaptationParameters.adaptationModifiers = (
+        adaptation_modifiers
+    )
   hooks.FixTargetDetailsCommonFields(
       ref, args, req.imageImport.machineImageTargetDefaults
   )
 
   return req
+
+
+# convert the gcloud flags to the api format#
+# i.e. --adaptation-modifiers=flag1,flag2=value2
+# will be converted to:
+# [AdaptationModifier{'name': 'flag1'},
+# AdaptationModifier{'name': 'flag2', 'value': 'value2'}]
+def ProcessAdaptationModifiers(adaptation_modifiers):
+  """Processes the adaptation modifiers to match the API format.
+
+  Args:
+    adaptation_modifiers: A string or a list of strings representing the
+      adaptation flags.
+
+  Returns:
+    A list of dictionaries, where each dictionary represents a key-value
+    pair with 'key' and 'value' fields.
+  """
+  if not adaptation_modifiers:
+    return []
+
+  if isinstance(adaptation_modifiers, str):
+    flags_list = adaptation_modifiers.split(',')
+  elif isinstance(adaptation_modifiers, list):
+    flags_list = adaptation_modifiers
+  else:
+    raise arg_parsers.ArgumentTypeError(
+        'adaptation-modifiers must be a string or a list of strings.'
+    )
+  result = []
+  for flag in flags_list:
+    if not flag:
+      continue
+    if '=' not in flag:
+      adaptation_flag_message = hooks.GetMessageClass('AdaptationModifier')(
+          name=flag.strip()
+      )
+    else:
+      key, value = flag.split('=', 1)
+      adaptation_flag_message = hooks.GetMessageClass('AdaptationModifier')(
+          name=key.strip(), value=value.strip()
+      )
+    result.append(adaptation_flag_message)
+  return result

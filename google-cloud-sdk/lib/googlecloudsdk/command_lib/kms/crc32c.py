@@ -45,4 +45,8 @@ def Crc32cMatches(data, data_crc32c):
   Returns:
     True iff both checksums match.
   """
-  return Crc32c(data) == data_crc32c
+  return (
+      Crc32c(data) == data_crc32c
+      if data is not None
+      else Crc32c(b'') == data_crc32c
+  )

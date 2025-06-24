@@ -6777,6 +6777,26 @@ def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
   )
 
 
+def AddSoleTenantMinNodeCpusFlag(parser, hidden=True):
+  """Adds --sole-tenant-min-node-cpus flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  parser.add_argument(
+      '--sole-tenant-min-node-cpus',
+      type=int,
+      hidden=hidden,
+      help="""\
+      A integer value that specifies the minimum number of vCPUs that each sole
+      tenantnode must have to use CPU overcommit. If not specified, the CPU
+      overcommit feature is disabled.
+      """,
+  )
+
+
 def AddSecondaryBootDisksArgs(
     parser,
     hidden=False,

@@ -1107,6 +1107,25 @@ class LivenessProbeChanges(ContainerConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class ReadinessProbeChanges(ContainerConfigChanger):
+  """Represents the user intent to update readiness probe settings.
+
+  Attributes:
+    settings: values to set in the probe.
+    clear: If true, clear the readiness probe.
+  """
+
+  settings: dict[str, str] = dataclasses.field(default_factory=dict)
+  clear: bool = False
+
+  def AdjustContainer(self, container, messages_mod):
+    if self.clear:
+      container.readinessProbe = None
+      return
+    container.readinessProbe = _MakeProbe(messages_mod, self.settings)
+
+
+@dataclasses.dataclass(frozen=True)
 class CloudSQLChanges(TemplateConfigChanger):
   """Represents the intent to update the Cloug SQL instances.
 

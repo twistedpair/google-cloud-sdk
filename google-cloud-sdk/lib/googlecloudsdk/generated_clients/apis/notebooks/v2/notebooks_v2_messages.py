@@ -687,6 +687,8 @@ class Instance(_messages.Message):
     enableDeletionProtection: Optional. If true, deletion protection will be
       enabled for this Workbench Instance. If false, deletion protection will
       be disabled for this Workbench Instance.
+    enableManagedEuc: Optional. Flag to enable managed end user credentials
+      for the instance.
     enableThirdPartyIdentity: Optional. Flag that specifies that a notebook
       can be accessed with third party identity provider.
     gceSetup: Optional. Compute Engine setup for the notebook. Uses notebook-
@@ -821,21 +823,22 @@ class Instance(_messages.Message):
   creator = _messages.StringField(2)
   disableProxyAccess = _messages.BooleanField(3)
   enableDeletionProtection = _messages.BooleanField(4)
-  enableThirdPartyIdentity = _messages.BooleanField(5)
-  gceSetup = _messages.MessageField('GceSetup', 6)
-  healthInfo = _messages.MessageField('HealthInfoValue', 7)
-  healthState = _messages.EnumField('HealthStateValueValuesEnum', 8)
-  id = _messages.StringField(9)
-  instanceOwners = _messages.StringField(10, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  proxyUri = _messages.StringField(13)
-  satisfiesPzi = _messages.BooleanField(14)
-  satisfiesPzs = _messages.BooleanField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  thirdPartyProxyUrl = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 19, repeated=True)
+  enableManagedEuc = _messages.BooleanField(5)
+  enableThirdPartyIdentity = _messages.BooleanField(6)
+  gceSetup = _messages.MessageField('GceSetup', 7)
+  healthInfo = _messages.MessageField('HealthInfoValue', 8)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 9)
+  id = _messages.StringField(10)
+  instanceOwners = _messages.StringField(11, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  proxyUri = _messages.StringField(14)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  thirdPartyProxyUrl = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 20, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):

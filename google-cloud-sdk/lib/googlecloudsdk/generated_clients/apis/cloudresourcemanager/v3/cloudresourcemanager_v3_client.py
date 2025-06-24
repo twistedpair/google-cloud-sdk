@@ -809,29 +809,29 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Update(self, request, global_params=None):
-      r"""Updates tag bindings directly attached to a GCP resource.
+    def Patch(self, request, global_params=None):
+      r"""Updates tag bindings directly attached to a GCP resource. Update_mask can be kept empty or "*".
 
       Args:
-        request: (TagBindingCollection) input message
+        request: (CloudresourcemanagerLocationsTagBindingCollectionsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('Update')
+      config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Update.method_config = lambda: base_api.ApiMethodInfo(
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v3/locations/{locationsId}/tagBindingCollections/{tagBindingCollectionsId}',
-        http_method='PUT',
-        method_id='cloudresourcemanager.locations.tagBindingCollections.update',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.locations.tagBindingCollections.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['updateMask'],
         relative_path='v3/{+name}',
-        request_field='<request>',
-        request_type_name='TagBindingCollection',
+        request_field='tagBindingCollection',
+        request_type_name='CloudresourcemanagerLocationsTagBindingCollectionsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

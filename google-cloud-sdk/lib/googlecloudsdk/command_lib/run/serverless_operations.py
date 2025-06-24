@@ -813,6 +813,7 @@ class ServerlessOperations(object):
       build_service_account=None,
       build_from_source_container_name='',
       build_worker_pool=None,
+      build_machine_type=None,
       build_env_vars=None,
       enable_automatic_updates=False,
       is_verbose=False,
@@ -861,6 +862,8 @@ class ServerlessOperations(object):
         is build from source. This could be empty string.
       build_worker_pool:  The name of the Cloud Build custom worker pool that
         should be used to build the function.
+      build_machine_type: The machine type from Cloud Build default pool to use
+        for the build.
       build_env_vars: Dictionary of build env vars to send to submit build.
       enable_automatic_updates: If true, opt-in automatic build image updates.
         If false, opt-out automatic build image updates.
@@ -942,6 +945,7 @@ class ServerlessOperations(object):
             base_image,
             build_service_account,
             build_worker_pool,
+            build_machine_type,
             build_env_vars,
             enable_automatic_updates,
             source_bucket,

@@ -343,13 +343,18 @@ def _IsComposerMajorOnlyVersionUpgradeCompatible(parsed_curr, parsed_cand):
     )
   else:
     major_version_cand = semver.SemVer(parsed_cand.composer_ver).major
-  # TODO(b/331195978): update to less or equal
-  # when support for upgrades from C2 to C3 will be available.
-  return UpgradeValidator(major_version_curr == major_version_cand, None)
+
+  # Allow major version upgrades only between Composer 2 and Composer 3.
+  return UpgradeValidator(
+      major_version_curr == major_version_cand
+      or (major_version_curr == 2 and major_version_cand == 3),
+      None,
+  )
 
 
-def _ValidateCandidateImageVersionId(current_image_version_id,
-                                     candidate_image_version_id):
+def _ValidateCandidateImageVersionId(
+    current_image_version_id, candidate_image_version_id
+):
   """Determines if candidate version is a valid upgrade from current version.
 
   Args:
@@ -442,12 +447,20 @@ def _IsVersionUpgradeCompatible(cur_version, candidate_version,
                          req_version=candidate_version)
     return UpgradeValidator(False, error_message)
 
-  if curr_semantic_version.major != cand_semantic_version.major:
-    error_message = ('Upgrades between different {}\'s major versions are not'
-                     ' supported. Current major version {}, requested major '
-                     'version {}.').format(image_version_part,
-                                           curr_semantic_version.major,
-                                           cand_semantic_version.major)
+  # Allow only version upgrades only between Composer 2 and Composer 3.
+  if (
+      (curr_semantic_version.major != 2 or cand_semantic_version.major != 3)
+      and curr_semantic_version.major != cand_semantic_version.major
+  ):
+    error_message = (
+        "Upgrades between different {}'s major versions are not"
+        ' supported. Current major version {}, requested major '
+        'version {}.'
+    ).format(
+        image_version_part,
+        curr_semantic_version.major,
+        cand_semantic_version.major,
+    )
     return UpgradeValidator(False, error_message)
 
   return UpgradeValidator(True, None)

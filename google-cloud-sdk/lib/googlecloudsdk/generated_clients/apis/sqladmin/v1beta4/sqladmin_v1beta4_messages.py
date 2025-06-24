@@ -257,8 +257,6 @@ class Backup(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -313,15 +311,14 @@ class Backup(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this backup.
@@ -402,6 +399,8 @@ class BackupConfiguration(_messages.Message):
     enabled: Whether this configuration is enabled.
     kind: This is always `sql#backupConfiguration`.
     location: Location of the backup
+    managementConfig: Output only. Configurations for Backup and DR Service
+      managed instances.
     pointInTimeRecoveryEnabled: Whether point in time recovery is enabled.
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
@@ -457,11 +456,12 @@ class BackupConfiguration(_messages.Message):
   enabled = _messages.BooleanField(4)
   kind = _messages.StringField(5)
   location = _messages.StringField(6)
-  pointInTimeRecoveryEnabled = _messages.BooleanField(7)
-  replicationLogArchivingEnabled = _messages.BooleanField(8)
-  startTime = _messages.StringField(9)
-  transactionLogRetentionDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  transactionalLogStorageState = _messages.EnumField('TransactionalLogStorageStateValueValuesEnum', 11)
+  managementConfig = _messages.MessageField('ManagementConfig', 7)
+  pointInTimeRecoveryEnabled = _messages.BooleanField(8)
+  replicationLogArchivingEnabled = _messages.BooleanField(9)
+  startTime = _messages.StringField(10)
+  transactionLogRetentionDays = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  transactionalLogStorageState = _messages.EnumField('TransactionalLogStorageStateValueValuesEnum', 12)
 
 
 class BackupContext(_messages.Message):
@@ -672,8 +672,6 @@ class BackupRun(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -728,15 +726,14 @@ class BackupRun(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of this run.
@@ -881,6 +878,18 @@ class CloneContext(_messages.Message):
   preferredSecondaryZone = _messages.StringField(8)
   preferredZone = _messages.StringField(9)
   sourceInstanceDeletionTime = _messages.StringField(10)
+
+
+class Column(_messages.Message):
+  r"""Contains the name and datatype of a column.
+
+  Fields:
+    name: Name of the column.
+    type: Datatype of the column.
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.StringField(2)
 
 
 class ConnectPoolNodeConfig(_messages.Message):
@@ -1046,8 +1055,6 @@ class ConnectSettings(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1102,15 +1109,14 @@ class ConnectSettings(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   class ServerCaModeValueValuesEnum(_messages.Enum):
     r"""Specify what type of CA is used for the server certificate.
@@ -1266,8 +1272,6 @@ class DatabaseInstance(_messages.Message):
       `EXTERNAL`: A database server that is not managed by Google. This
       property is read-only; use the `tier` property in the `settings` object
       to determine the database type.
-    clearNetwork: Clears private network settings when the instance is
-      restored.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     createTime: Output only. The time when the instance was created in [RFC
@@ -1466,8 +1470,6 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1522,15 +1524,14 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1601,8 +1602,6 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1657,15 +1656,14 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1794,59 +1792,58 @@ class DatabaseInstance(_messages.Message):
 
   availableMaintenanceVersions = _messages.StringField(1, repeated=True)
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 2)
-  clearNetwork = _messages.BooleanField(3)
-  connectionName = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  currentDiskSize = _messages.IntegerField(6)
-  databaseInstalledVersion = _messages.StringField(7)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 8)
-  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 9)
-  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 10)
-  dnsName = _messages.StringField(11)
-  dnsNames = _messages.MessageField('DnsNameMapping', 12, repeated=True)
-  etag = _messages.StringField(13)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 14)
-  gceZone = _messages.StringField(15)
-  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 16)
-  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(17)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 18)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 19)
-  ipAddresses = _messages.MessageField('IpMapping', 20, repeated=True)
-  ipv6Address = _messages.StringField(21)
-  kind = _messages.StringField(22)
-  maintenanceVersion = _messages.StringField(23)
-  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(24)
-  masterInstanceName = _messages.StringField(25)
-  maxDiskSize = _messages.IntegerField(26)
-  name = _messages.StringField(27)
-  nodeCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  nodes = _messages.MessageField('PoolNodeConfig', 29, repeated=True)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 30)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 31)
-  primaryDnsName = _messages.StringField(32)
-  project = _messages.StringField(33)
-  pscServiceAttachmentLink = _messages.StringField(34)
-  region = _messages.StringField(35)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 36)
-  replicaNames = _messages.StringField(37, repeated=True)
-  replicationCluster = _messages.MessageField('ReplicationCluster', 38)
-  rootPassword = _messages.StringField(39)
-  satisfiesPzi = _messages.BooleanField(40)
-  satisfiesPzs = _messages.BooleanField(41)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 42)
-  secondaryGceZone = _messages.StringField(43)
-  selfLink = _messages.StringField(44)
-  serverCaCert = _messages.MessageField('SslCert', 45)
-  serviceAccountEmailAddress = _messages.StringField(46)
-  settings = _messages.MessageField('Settings', 47)
-  sourceInstanceNames = _messages.StringField(48, repeated=True)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 49)
-  state = _messages.EnumField('StateValueValuesEnum', 50)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 51, repeated=True)
-  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(52)
-  tags = _messages.MessageField('TagsValue', 53)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 54, repeated=True)
-  writeEndpoint = _messages.StringField(55)
+  connectionName = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  currentDiskSize = _messages.IntegerField(5)
+  databaseInstalledVersion = _messages.StringField(6)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 8)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 9)
+  dnsName = _messages.StringField(10)
+  dnsNames = _messages.MessageField('DnsNameMapping', 11, repeated=True)
+  etag = _messages.StringField(12)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 13)
+  gceZone = _messages.StringField(14)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 15)
+  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(16)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 17)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 18)
+  ipAddresses = _messages.MessageField('IpMapping', 19, repeated=True)
+  ipv6Address = _messages.StringField(20)
+  kind = _messages.StringField(21)
+  maintenanceVersion = _messages.StringField(22)
+  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(23)
+  masterInstanceName = _messages.StringField(24)
+  maxDiskSize = _messages.IntegerField(25)
+  name = _messages.StringField(26)
+  nodeCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  nodes = _messages.MessageField('PoolNodeConfig', 28, repeated=True)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 29)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 30)
+  primaryDnsName = _messages.StringField(31)
+  project = _messages.StringField(32)
+  pscServiceAttachmentLink = _messages.StringField(33)
+  region = _messages.StringField(34)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 35)
+  replicaNames = _messages.StringField(36, repeated=True)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 37)
+  rootPassword = _messages.StringField(38)
+  satisfiesPzi = _messages.BooleanField(39)
+  satisfiesPzs = _messages.BooleanField(40)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 41)
+  secondaryGceZone = _messages.StringField(42)
+  selfLink = _messages.StringField(43)
+  serverCaCert = _messages.MessageField('SslCert', 44)
+  serviceAccountEmailAddress = _messages.StringField(45)
+  settings = _messages.MessageField('Settings', 46)
+  sourceInstanceNames = _messages.StringField(47, repeated=True)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 48)
+  state = _messages.EnumField('StateValueValuesEnum', 49)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 50, repeated=True)
+  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(51)
+  tags = _messages.MessageField('TagsValue', 52)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 53, repeated=True)
+  writeEndpoint = _messages.StringField(54)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -2051,6 +2048,54 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class ExecuteSqlPayload(_messages.Message):
+  r"""The payload for the request to run the SQL query.
+
+  Enums:
+    OutputFormatValueValuesEnum: Optional. The requested format of the SQL
+      response.
+
+  Fields:
+    accessToken: Optional. The access token required for iam user
+      authentication.
+    autoIamAuthn: Optional. When auto_iam_authn is true, the API uses the API
+      caller's identity from the request for database authentication. The API
+      caller must be an IAM user in the database. The username field is
+      ignored.
+    database: Optional. Name of the database against which query will be
+      executed.
+    outputFormat: Optional. The requested format of the SQL response.
+    password: Optional. The database native user's password.
+    rowLimit: Optional. The upper bound on the number of rows returned.
+    secretPath: Optional. The resource ID of a secret in secret manager which
+      contains the database native user's password. Expected format -
+      projects/{project}/secrets/{secret}/versions/{version}.
+    sqlStatement: Required. SQL query to run on the database.
+    user: Optional. The name of the user in the Cloud SQL instance.
+  """
+
+  class OutputFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The requested format of the SQL response.
+
+    Values:
+      OUTPUT_FORMAT_UNSPECIFIED: Output format is not specified. This is the
+        default value.
+      JSON: Output format would be in JSON format.
+    """
+    OUTPUT_FORMAT_UNSPECIFIED = 0
+    JSON = 1
+
+  accessToken = _messages.StringField(1)
+  autoIamAuthn = _messages.BooleanField(2)
+  database = _messages.StringField(3)
+  outputFormat = _messages.EnumField('OutputFormatValueValuesEnum', 4)
+  password = _messages.StringField(5)
+  rowLimit = _messages.IntegerField(6)
+  secretPath = _messages.StringField(7)
+  sqlStatement = _messages.StringField(8)
+  user = _messages.StringField(9)
 
 
 class ExportContext(_messages.Message):
@@ -2328,13 +2373,13 @@ class FinalBackupConfig(_messages.Message):
 
   Fields:
     enabled: Whether the final backup is enabled for the instance.
-    ttlDays: The number of days to retain the final backup after the instance
-      deletion. The final backup will be purged at (time_of_instance_deletion
-      + ttl_days).
+    retentionDays: The number of days to retain the final backup after the
+      instance deletion. The final backup will be purged at
+      (time_of_instance_deletion + retention_days).
   """
 
   enabled = _messages.BooleanField(1)
-  ttlDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  retentionDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Flag(_messages.Message):
@@ -2447,8 +2492,6 @@ class Flag(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -2503,15 +2546,14 @@ class Flag(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   class FlagScopeValueValuesEnum(_messages.Enum):
     r"""Scope of flag.
@@ -3406,6 +3448,29 @@ class MaintenanceWindow(_messages.Message):
   updateTrack = _messages.EnumField('UpdateTrackValueValuesEnum', 4)
 
 
+class ManagementConfig(_messages.Message):
+  r"""Configurations for Backup and DR Service managed instances.
+
+  Fields:
+    backupdrTransactionLogRetentionDays: The number of days of transaction
+      logs we retain for backups of instances managed by Backup and DR
+      Service.
+  """
+
+  backupdrTransactionLogRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class Metadata(_messages.Message):
+  r"""The additional metadata information regarding the execution of the sql
+  statement.
+
+  Fields:
+    sqlStatementExecutionTime: The time taken to execute the sql statement.
+  """
+
+  sqlStatementExecutionTime = _messages.StringField(1)
+
+
 class MySqlReplicaConfiguration(_messages.Message):
   r"""Read-replica configuration specific to MySQL databases.
 
@@ -3912,8 +3977,7 @@ class PointInTimeRestoreContext(_messages.Message):
       cloned instance in the allocated range. This range must comply with [RFC
       1035](https://tools.ietf.org/html/rfc1035) standards. Specifically, the
       name must be 1-63 characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use. http://go/speckle-
-      subnet-picker-clone
+      [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use.
     databaseNames: Optional. (SQL Server only) Clone only the specified
       databases from the source instance. If you don't specify any databases,
       then Cloud SQL clones all databases for the instance.
@@ -3932,6 +3996,9 @@ class PointInTimeRestoreContext(_messages.Message):
     privateNetwork: Optional. The resource link for the VPC network from which
       the Cloud SQL instance is accessible for private IP. For example,
       `/projects/myProject/global/networks/default`.
+    sourceInstanceDeletionTime: The timestamp used to identify the time when
+      the source instance is deleted. If this instance is deleted, then you
+      must set the timestamp.
     targetInstance: Target instance name.
   """
 
@@ -3942,7 +4009,8 @@ class PointInTimeRestoreContext(_messages.Message):
   preferredSecondaryZone = _messages.StringField(5)
   preferredZone = _messages.StringField(6)
   privateNetwork = _messages.StringField(7)
-  targetInstance = _messages.StringField(8)
+  sourceInstanceDeletionTime = _messages.StringField(8)
+  targetInstance = _messages.StringField(9)
 
 
 class PoolNodeConfig(_messages.Message):
@@ -4080,8 +4148,6 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
       POSTGRES_17: The database version is PostgreSQL 17.
-      POSTGRES_18: The database version is AGBALA. The database version is
-        PostgreSQL 18.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -4136,15 +4202,14 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
     POSTGRES_15 = 38
     POSTGRES_16 = 39
     POSTGRES_17 = 40
-    POSTGRES_18 = 41
-    SQLSERVER_2019_STANDARD = 42
-    SQLSERVER_2019_ENTERPRISE = 43
-    SQLSERVER_2019_EXPRESS = 44
-    SQLSERVER_2019_WEB = 45
-    SQLSERVER_2022_STANDARD = 46
-    SQLSERVER_2022_ENTERPRISE = 47
-    SQLSERVER_2022_EXPRESS = 48
-    SQLSERVER_2022_WEB = 49
+    SQLSERVER_2019_STANDARD = 41
+    SQLSERVER_2019_ENTERPRISE = 42
+    SQLSERVER_2019_EXPRESS = 43
+    SQLSERVER_2019_WEB = 44
+    SQLSERVER_2022_STANDARD = 45
+    SQLSERVER_2022_ENTERPRISE = 46
+    SQLSERVER_2022_EXPRESS = 47
+    SQLSERVER_2022_WEB = 48
 
   kind = _messages.StringField(1)
   preCheckResponse = _messages.MessageField('PreCheckResponse', 2, repeated=True)
@@ -4236,6 +4301,23 @@ class PscConfig(_messages.Message):
   networkAttachmentUri = _messages.StringField(2)
   pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 3, repeated=True)
   pscEnabled = _messages.BooleanField(4)
+
+
+class QueryResult(_messages.Message):
+  r"""QueryResult contains the result of a SQL query.
+
+  Fields:
+    columns: List of columns included in the result. This also includes the
+      data type of the column.
+    message: Message related to SQL query result.
+    partialResult: Set to true if partial result of SQL query returned.
+    rows: Rows returned by the SQL statement.
+  """
+
+  columns = _messages.MessageField('Column', 1, repeated=True)
+  message = _messages.StringField(2)
+  partialResult = _messages.BooleanField(3)
+  rows = _messages.MessageField('Row', 4, repeated=True)
 
 
 class ReadPoolAutoScaleConfig(_messages.Message):
@@ -4392,6 +4474,16 @@ class RotateServerCertificateContext(_messages.Message):
 
   kind = _messages.StringField(1)
   nextVersion = _messages.StringField(2)
+
+
+class Row(_messages.Message):
+  r"""Contains the values for a row.
+
+  Fields:
+    values: The values for the row.
+  """
+
+  values = _messages.MessageField('Value', 1, repeated=True)
 
 
 class SelectedObjects(_messages.Message):
@@ -4758,13 +4850,38 @@ class SqlActiveDirectoryConfig(_messages.Message):
   r"""Active Directory configuration, relevant only for Cloud SQL for SQL
   Server.
 
+  Enums:
+    ModeValueValuesEnum: Optional. The mode of the Active Directory
+      configuration.
+
   Fields:
+    adminCredentialSecretName: Optional. The secret manager key storing the
+      administrator credential. (e.g., projects/{project}/secrets/{secret}).
+    dnsServers: Optional. Domain controller IPv4 addresses used to bootstrap
+      Active Directory.
     domain: The name of the domain (e.g., mydomain.com).
     kind: This is always sql#activeDirectoryConfig.
+    mode: Optional. The mode of the Active Directory configuration.
   """
 
-  domain = _messages.StringField(1)
-  kind = _messages.StringField(2)
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of the Active Directory configuration.
+
+    Values:
+      ACTIVE_DIRECTORY_MODE_UNSPECIFIED: Unspecified mode.
+      MANAGED_ACTIVE_DIRECTORY: Managed Active Directory mode. This is the
+        fallback option to maintain backward compatibility.
+      SELF_MANAGED_ACTIVE_DIRECTORY: Self-managed Active Directory mode.
+    """
+    ACTIVE_DIRECTORY_MODE_UNSPECIFIED = 0
+    MANAGED_ACTIVE_DIRECTORY = 1
+    SELF_MANAGED_ACTIVE_DIRECTORY = 2
+
+  adminCredentialSecretName = _messages.StringField(1)
+  dnsServers = _messages.StringField(2, repeated=True)
+  domain = _messages.StringField(3)
+  kind = _messages.StringField(4)
+  mode = _messages.EnumField('ModeValueValuesEnum', 5)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):
@@ -5370,6 +5487,47 @@ class SqlInstancesDemoteRequest(_messages.Message):
   instance = _messages.StringField(1, required=True)
   instancesDemoteRequest = _messages.MessageField('InstancesDemoteRequest', 2)
   project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesExecuteSqlRequest(_messages.Message):
+  r"""A SqlInstancesExecuteSqlRequest object.
+
+  Fields:
+    executeSqlPayload: A ExecuteSqlPayload resource to be passed as the
+      request body.
+    instance: Required. Database instance ID. This does not include the
+      project ID.
+    project: Required. Project ID of the project that contains the instance.
+  """
+
+  executeSqlPayload = _messages.MessageField('ExecuteSqlPayload', 1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesExecuteSqlResponse(_messages.Message):
+  r"""Execute a SQL statement response.
+
+  Fields:
+    columns: List of columns included in the result. This also includes the
+      data type of the column.
+    formattedRows: If output format was set to JSON, then this field will
+      contain the response in JSON format.
+    message: Message related to SQL query result.
+    metadata: The additional metadata information regarding the execution of
+      the sql statement.
+    partialResult: Set to true if partial result of SQL query returned.
+    results: The list of results after executing all the SQL statements.
+    rows: Rows returned by the SQL statement.
+  """
+
+  columns = _messages.MessageField('Column', 1, repeated=True)
+  formattedRows = _messages.StringField(2)
+  message = _messages.StringField(3)
+  metadata = _messages.MessageField('Metadata', 4)
+  partialResult = _messages.BooleanField(5)
+  results = _messages.MessageField('QueryResult', 6, repeated=True)
+  rows = _messages.MessageField('Row', 7, repeated=True)
 
 
 class SqlInstancesExportRequest(_messages.Message):
@@ -6645,6 +6803,8 @@ class User(_messages.Message):
 
   Enums:
     DualPasswordTypeValueValuesEnum: Dual password status for the user.
+    IamStatusValueValuesEnum: Indicates if user is active for IAM
+      Authentication.
     TypeValueValuesEnum: The user type. It determines the method to
       authenticate the user during login. The default is the database's built-
       in user type.
@@ -6660,6 +6820,7 @@ class User(_messages.Message):
       PostgreSQL or SQL Server instance, it's optional.
     iamEmail: The full email for an IAM user. For normal database users, this
       will not be filled. Only applicable to MySQL database users.
+    iamStatus: Indicates if user is active for IAM Authentication.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID. Can be omitted for *update* because it is already specified
       on the URL.
@@ -6691,6 +6852,20 @@ class User(_messages.Message):
     NO_DUAL_PASSWORD = 2
     DUAL_PASSWORD = 3
 
+  class IamStatusValueValuesEnum(_messages.Enum):
+    r"""Indicates if user is active for IAM Authentication.
+
+    Values:
+      IAM_STATUS_UNSPECIFIED: The default value for users that are not of type
+        CLOUD_IAM_GROUP. Only CLOUD_IAM_GROUP users will be inactive/active.
+        Will not display any value in UI.
+      INACTIVE: User is not available for IAM Authentication.
+      ACTIVE: User is available for IAM Authentication.
+    """
+    IAM_STATUS_UNSPECIFIED = 0
+    INACTIVE = 1
+    ACTIVE = 2
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""The user type. It determines the method to authenticate the user
     during login. The default is the database's built-in user type.
@@ -6716,14 +6891,15 @@ class User(_messages.Message):
   etag = _messages.StringField(2)
   host = _messages.StringField(3)
   iamEmail = _messages.StringField(4)
-  instance = _messages.StringField(5)
-  kind = _messages.StringField(6)
-  name = _messages.StringField(7)
-  password = _messages.StringField(8)
-  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 9)
-  project = _messages.StringField(10)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  iamStatus = _messages.EnumField('IamStatusValueValuesEnum', 5)
+  instance = _messages.StringField(6)
+  kind = _messages.StringField(7)
+  name = _messages.StringField(8)
+  password = _messages.StringField(9)
+  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 10)
+  project = _messages.StringField(11)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class UserPasswordValidationPolicy(_messages.Message):
@@ -6760,6 +6936,18 @@ class UsersListResponse(_messages.Message):
   items = _messages.MessageField('User', 1, repeated=True)
   kind = _messages.StringField(2)
   nextPageToken = _messages.StringField(3)
+
+
+class Value(_messages.Message):
+  r"""The cell value of the table.
+
+  Fields:
+    nullValue: If cell value is null, then this flag will be set to true.
+    value: The cell value represented in string format.
+  """
+
+  nullValue = _messages.BooleanField(1)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

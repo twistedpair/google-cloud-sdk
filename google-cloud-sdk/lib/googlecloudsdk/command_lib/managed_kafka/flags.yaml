@@ -68,12 +68,21 @@ mtls-ca-pools:
     in the cluster for use with mTLS. A maximum of 10 CA pools can be specified.
     CA pools can be in a different project and region than the cluster.
     Each CA pool must be in the format
-    projects/``PROJECT_ID''/locations/``LOCATION''/caPools/``CA_POOL''.
+    projects/``PROJECT_ID''/locations/``LOCATION''/caPools/``CA_POOL''. Clear the CA pools
+    using the `--clear-mtls-ca-pools` flag.
+
+clear-mtls-ca-pools:
+  arg_name: clear-mtls-ca-pools
+  action: store_true
+  help_text: |
+    Remove all the CA pools from the cluster. This will remove all root certificates
+    from the truststore of each broker in the cluster.
 
 allow-broker-downscale-on-cluster-upscale:
   api_field: cluster.updateOptions.allowBrokerDownscaleOnClusterUpscale
   arg_name: allow-broker-downscale-on-cluster-upscale
   action: store_true
+  default: null
   help_text: |
     If enabled, allows an update operation that increases the total vCPU and/or
     memory allocation of the cluster to significantly decrease the per-broker

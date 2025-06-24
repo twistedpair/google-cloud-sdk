@@ -453,3 +453,70 @@ def AddResourceAsyncFlag(parser):
   in progress to complete."""
   concepts.ResourceParameterAttributeConfig(name='async', help_text=help_text)
   base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddResourcePeerClusterNameArg(parser, required=True):
+  """Adds the Peer Cluster Name (--peer-cluster-name) arg to the given parser.
+
+  Args:
+    parser: Argparse parser.
+    required: Required to establish both cluster and svm peering.
+  """
+  parser.add_argument(
+      '--peer-cluster-name',
+      type=str,
+      required=required,
+      help="""Name of the destination cluster to be peered
+        with the source cluster.""",
+  )
+
+
+def AddResourcePeerSvmNameArg(parser, required=True):
+  """Adds the Peer SVM Name (--peer-svm-name) arg to the given parser.
+
+  Args:
+    parser: Argparse parser.
+    required: Required to establish both cluster and svm peering.
+  """
+  parser.add_argument(
+      '--peer-svm-name',
+      type=str,
+      required=required,
+      help="""Name of the local source vserver svm to be peered
+        with the destination cluster.""",
+  )
+
+
+def AddResourcePeerVolumeNameArg(parser, required=True):
+  """Adds the Peer Volume Name (--peer-volume-name) arg to the given parser.
+
+  Args:
+    parser: Argparse parser.
+    required: Required to establish both cluster and svm peering.
+  """
+  parser.add_argument(
+      '--peer-volume-name',
+      type=str,
+      required=required,
+      help="""Name of the source volume to be peered
+       with the destination volume.""",
+  )
+
+
+def AddResourcePeerIpAddressesArg(parser):
+  """Adds the Peer IP Addresses (--peer-ip-addresses) arg to the given parser.
+
+  Args:
+    parser: Argparse parser.
+
+  Not required for svm peering.
+  """
+  parser.add_argument(
+      '--peer-ip-addresses',
+      type=arg_parsers.ArgList(min_length=1, element_type=str),
+      metavar='PEER_IP_ADDRESS',
+      help=(
+          'List of ip addresses to be used for peering. This is required for'
+          ' cluster peering, not required for svm peering.'
+      ),
+  )

@@ -1238,6 +1238,33 @@ class FirestoreV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Clone(self, request, global_params=None):
+      r"""Creates a new database by cloning an existing one. The new database must be in the same cloud region or multi-region location as the existing database. This behaves similar to FirestoreAdmin.CreateDatabase except instead of creating a new empty database, a new database is created with the database type, index configuration, and documents from an existing database. The long-running operation can be used to track the progress of the clone, with the Operation's metadata field type being the CloneDatabaseMetadata. The response type is the Database if the clone was successful. The new database is not readable or writeable until the LRO has completed.
+
+      Args:
+        request: (FirestoreProjectsDatabasesCloneRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Clone')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Clone.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases:clone',
+        http_method='POST',
+        method_id='firestore.projects.databases.clone',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/databases:clone',
+        request_field='googleFirestoreAdminV1CloneDatabaseRequest',
+        request_type_name='FirestoreProjectsDatabasesCloneRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Create a database.
 

@@ -637,6 +637,26 @@ class CloudresourcemanagerLocationsTagBindingCollectionsGetRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
+class CloudresourcemanagerLocationsTagBindingCollectionsPatchRequest(_messages.Message):
+  r"""A CloudresourcemanagerLocationsTagBindingCollectionsPatchRequest object.
+
+  Fields:
+    name: Identifier. The name of the TagBindingCollection, following the
+      convention: `locations/{location}/tagBindingCollections/{encoded-full-
+      resource-name}` where the encoded-full-resource-name is the UTF-8
+      encoded name of the GCP resource the TagBindings are bound to. "location
+      s/global/tagBindingCollections/%2f%2fcloudresourcemanager.googleapis.com
+      %2fprojects%2f123"
+    tagBindingCollection: A TagBindingCollection resource to be passed as the
+      request body.
+    updateMask: Optional. An update mask to selectively update fields.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tagBindingCollection = _messages.MessageField('TagBindingCollection', 2)
+  updateMask = _messages.StringField(3)
+
+
 class CloudresourcemanagerOperationsGetRequest(_messages.Message):
   r"""A CloudresourcemanagerOperationsGetRequest object.
 

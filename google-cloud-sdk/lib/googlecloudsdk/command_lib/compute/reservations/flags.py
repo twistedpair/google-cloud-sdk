@@ -384,9 +384,8 @@ def GetAcceleratorType(required=True):
 def GetEnableEmergentMaintenanceFlag():
   """--emergent-maintenance flag."""
   help_text = """\
-  The emergent maintenance flag for the reservation, which enrolls all the
-  underlying vms, hosts and SB infrastructure to receive emergent maintenance
-  notifications in advance.
+  Enables the reservation to receive notifications when urgent maintenance
+  for a GPU VM starts after the VM encounters a host error.
   """
   return base.Argument(
       '--enable-emergent-maintenance',

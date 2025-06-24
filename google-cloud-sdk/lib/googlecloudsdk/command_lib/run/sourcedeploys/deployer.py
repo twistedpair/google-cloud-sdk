@@ -55,6 +55,7 @@ def CreateImage(
     base_image=None,
     service_account=None,
     build_worker_pool=None,
+    build_machine_type=None,
     build_env_vars=None,
     enable_automatic_updates=False,
     source_bucket=None,
@@ -92,6 +93,7 @@ def CreateImage(
       resource_ref,
       service_account,
       build_worker_pool,
+      build_machine_type,
       build_env_vars,
       enable_automatic_updates,
   )
@@ -335,6 +337,7 @@ def _PrepareSubmitBuildRequest(
     resource_ref,
     service_account,
     build_worker_pool,
+    build_machine_type,
     build_env_vars,
     enable_automatic_updates,
 ):
@@ -381,6 +384,7 @@ def _PrepareSubmitBuildRequest(
             tags=tags,
             serviceAccount=service_account,
             workerPool=build_worker_pool,
+            machineType=build_machine_type,
         ),
     )
 
@@ -395,6 +399,7 @@ def _PrepareSubmitBuildRequest(
           tags=tags,
           serviceAccount=service_account,
           workerPool=build_worker_pool,
+          machineType=build_machine_type,
       ),
   )
 

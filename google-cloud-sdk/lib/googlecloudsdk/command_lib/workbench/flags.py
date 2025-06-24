@@ -391,6 +391,16 @@ def AddCreateInstanceFlags(parser):
       'kms-location': '--data-disk-encryption-key-location',
       'kms-project': '--data-disk-encryption-key-project',
   }
+  data_group.add_argument(
+      '--data-disk-resource-policies',
+      help=(
+          'Resource policies to apply to the data disk. Format:'
+          ' `projects/{project}/regions/{region}/resourcePolicies/{policy}`.'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='RESOURCE_POLICIES',
+      hidden=True,
+  )
   kms_resource_args.AddKmsKeyResourceArg(
       parser=data_group,
       resource='data_disk',

@@ -25,6 +25,13 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.generated_clients.apis.netapp.v1beta1 import netapp_v1beta1_messages
+
+
+EstablishVolumePeeringRequest = (
+    netapp_v1beta1_messages.EstablishVolumePeeringRequest
+)
+Volume = netapp_v1beta1_messages.Volume
 
 
 class VolumesClient(object):
@@ -138,6 +145,7 @@ class VolumesClient(object):
       multiple_endpoints=None,
       tiering_policy=None,
       hybrid_replication_parameters=None,
+      cache_parameters=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config."""
@@ -164,6 +172,7 @@ class VolumesClient(object):
         multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy,
         hybrid_replication_parameters=hybrid_replication_parameters,
+        cache_parameters=cache_parameters,
         labels=labels,
     )
 
@@ -302,6 +311,63 @@ class VolumesClient(object):
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
         update_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
+    return self.WaitForOperation(operation_ref)
+
+  def ParseEstablishVolumePeeringRequestConfig(
+      self,
+      peer_cluster_name: str,
+      peer_svm_name: str,
+      peer_volume_name: str,
+      peer_ip_addresses=None,
+  ) -> EstablishVolumePeeringRequest:
+    """Parses the command line arguments for EstablishPeering into a config.
+
+    Args:
+      peer_cluster_name: The name of the peer cluster.
+      peer_svm_name: The name of the peer SVM.
+      peer_volume_name: The name of the peer volume.
+      peer_ip_addresses: The list of peer IP addresses.
+
+    Returns:
+      An EstablishVolumePeeringRequest message.
+    """
+    return self.messages.EstablishVolumePeeringRequest(
+        peerClusterName=peer_cluster_name,
+        peerSvmName=peer_svm_name,
+        peerVolumeName=peer_volume_name,
+        peerIpAddresses=peer_ip_addresses if peer_ip_addresses else [],
+    )
+
+  def EstablishPeering(
+      self,
+      volume_ref: Volume,
+      establish_volume_peering_request_config: EstablishVolumePeeringRequest,
+      async_: bool,
+  ):
+    """Establish peering between GCNV volume and an onprem ONTAP volume.
+
+    Args:
+      volume_ref: The reference to the volume.
+      establish_volume_peering_request_config: The config for the peering
+        request.
+      async_: If true, the call will return immediately, otherwise wait for
+        operation to complete.
+
+    Returns:
+      An EstablishVolumePeering operation.
+    """
+    request = self.messages.NetappProjectsLocationsVolumesEstablishPeeringRequest(
+        name=volume_ref.RelativeName(),
+        establishVolumePeeringRequest=establish_volume_peering_request_config,
+    )
+    establish_peering_op = (
+        self.client.projects_locations_volumes.EstablishPeering(request)
+    )
+    if async_:
+      return establish_peering_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        establish_peering_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -447,6 +513,7 @@ class VolumesAdapter(object):
       multiple_endpoints=None,
       tiering_policy=None,
       hybrid_replication_parameters=None,
+      cache_parameters=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
@@ -475,6 +542,7 @@ class VolumesAdapter(object):
       tiering_policy: the tiering policy for the volume.
       hybrid_replication_parameters: the hybrid replication parameters for the
         volume.
+      cache_parameters: the cache parameters for the volume.
       labels: the parsed labels value.
 
     Returns:
@@ -516,8 +584,10 @@ class VolumesAdapter(object):
       self.ParseTieringPolicy(volume, tiering_policy)
     if hybrid_replication_parameters is not None:
       self.ParseHybridReplicationParameters(
-          volume, hybrid_replication_parameters
+          volume, hybrid_replication_parameters, self.release_track
       )
+    if cache_parameters is not None:
+      self.ParseCacheParameters(volume, cache_parameters)
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -645,7 +715,10 @@ class VolumesAdapter(object):
     volume.tieringPolicy = tiering_policy_message
 
   def ParseHybridReplicationParameters(
-      self, volume, hybrid_replication_parameters
+      self,
+      volume,
+      hybrid_replication_parameters,
+      release_track=base.ReleaseTrack.GA,
   ):
     """Parses Hybrid Replication Parameters for Volume into a config.
 
@@ -653,6 +726,7 @@ class VolumesAdapter(object):
       volume: The Cloud NetApp Volume message object.
       hybrid_replication_parameters: The hybrid replication params message
         object.
+      release_track: The release track of the command.
 
     Returns:
       Volume message populated with Hybrid Replication Parameters
@@ -693,16 +767,70 @@ class VolumesAdapter(object):
             )
         ]
     )
-    hybrid_replication_parameters_message.replicationSchedule = (
-        hybrid_replication_parameters.get('replication-schedule')
-    )
-    hybrid_replication_parameters_message.hybridReplicationType = (
-        hybrid_replication_parameters.get('hybrid-replication-type')
-    )
-    hybrid_replication_parameters_message.largeVolumeConstituentCount = (
-        hybrid_replication_parameters.get('large-volume-constituent-count')
-    )
+    # TODO(b/425281073): Remove this check once the bidirectional snapmirror
+    # is AGA.
+    if (
+        release_track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]
+    ):
+      hybrid_replication_parameters_message.replicationSchedule = (
+          hybrid_replication_parameters.get('replication-schedule')
+      )
+      hybrid_replication_parameters_message.hybridReplicationType = (
+          hybrid_replication_parameters.get('hybrid-replication-type')
+      )
+      hybrid_replication_parameters_message.largeVolumeConstituentCount = (
+          hybrid_replication_parameters.get('large-volume-constituent-count')
+      )
+
     volume.hybridReplicationParameters = hybrid_replication_parameters_message
+
+  def ParseCacheParameters(
+      self, volume, cache_parameters
+  ):
+    """Parses Cache Parameters for Volume into a config.
+
+    Args:
+      volume: The Cloud NetApp Volume message object.
+      cache_parameters: The cache params message object.
+
+    Returns:
+      Volume message populated with Cache Parameters
+    """
+    cache_parameters_message = self.messages.CacheParameters()
+    cache_parameters_message.peerVolumeName = (
+        cache_parameters.get('peer-volume-name')
+    )
+    cache_parameters_message.peerClusterName = (
+        cache_parameters.get('peer-cluster-name')
+    )
+    cache_parameters_message.peerSvmName = (
+        cache_parameters.get('peer-svm-name')
+    )
+    for ip_address in cache_parameters.get(
+        'peer-ip-addresses', []
+    ):
+      cache_parameters_message.peerIpAddresses.append(ip_address)
+    cache_parameters_message.enableGlobalFileLock = (
+        cache_parameters.get('enable-global-file-lock')
+    )
+    cache_config_message = self.messages.CacheConfig()
+    for config in cache_parameters.get(
+        'cache-config', []
+    ):
+      if 'atime-scrub-enabled' in config:
+        cache_config_message.atimeScrubEnabled = (
+            config['atime-scrub-enabled'].lower() == 'true'
+        )
+      if 'atime-scrub-minutes' in config:
+        cache_config_message.atimeScrubMinutes = (
+            int(config['atime-scrub-minutes'])
+        )
+      if 'cifs-change-notify-enabled' in config:
+        cache_config_message.cifsChangeNotifyEnabled = (
+            config['cifs-change-notify-enabled'].lower() == 'true'
+        )
+    cache_parameters_message.cacheConfig = cache_config_message
+    volume.cacheParameters = cache_parameters_message
 
 
 class BetaVolumesAdapter(VolumesAdapter):

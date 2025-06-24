@@ -109,3 +109,23 @@ boot_conversion:
       image from using the existing boot option to another.
       The size of the boot disk might be increased to allow the conversion.
       Currently only support BIOS_TO_EFI.
+
+adaptation_modifiers:
+  arg_name: adaptation-modifiers
+  processor: googlecloudsdk.command_lib.migration.vms.image_import.hooks:ProcessAdaptationModifiers
+  required: false
+  help_text: |
+    A map of flags to pass to the OS adaptation process.
+    The actual value depends on the modifier and can also be empty.
+    e.g. --adaptation-modifiers=flag1=value1,flag2
+
+suppress_package_installation_failure:
+  arg_name: suppress-package-installation-failure
+  type: bool
+  help_text: |
+    If true, suppress package installation failure and continue with a warning.
+
+rootfs_uuid:
+  arg_name: rootfs-uuid
+  help_text: |
+    Identifies the file system to adapt.

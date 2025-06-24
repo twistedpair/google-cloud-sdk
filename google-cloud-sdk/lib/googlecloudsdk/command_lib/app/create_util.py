@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -115,7 +114,6 @@ def CreateApp(
     suppress_warning=False,
     service_account=None,
     ssl_policy=None,
-    release_track=base.ReleaseTrack.GA,
 ):
   """Create an App Engine app in the given region.
 
@@ -130,7 +128,6 @@ def CreateApp(
     service_account: The app level service account for the App Engine app.
     ssl_policy: str, the app-level SSL policy to update for this App Engine app.
       Can be default or modern.
-    release_track: The release track of the command.
 
   Raises:
     AppAlreadyExistsError if app already exists
@@ -166,11 +163,7 @@ def CreateApp(
     # TODO: b/388712720 - Cleanup warning once backend experiments are cleaned
     log.warning(DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING)
 
-    if (
-        release_track == base.ReleaseTrack.ALPHA
-        or release_track == base.ReleaseTrack.BETA
-    ):
-      log.status.Print('NOTE: ' + TRY_CLOUD_RUN_NUDGE_MSG)
+    log.status.Print('NOTE: ' + TRY_CLOUD_RUN_NUDGE_MSG)
   try:
     api_client.CreateApp(
         region, service_account=service_account, ssl_policy=ssl_policy_enum
@@ -189,7 +182,6 @@ def CreateAppInteractively(
     extra_warning='',
     service_account=None,
     ssl_policy=None,
-    release_track=base.ReleaseTrack.GA,
 ):
   """Interactively choose a region and create an App Engine app.
 
@@ -216,7 +208,6 @@ def CreateAppInteractively(
     service_account: The app level service account for the App Engine app.
     ssl_policy: str, the app-level SSL policy to update for this App Engine app.
       Can be default or modern.
-    release_track: The release track of the command.
 
   Raises:
     AppAlreadyExistsError if app already exists
@@ -226,11 +217,7 @@ def CreateAppInteractively(
   # TODO: b/388712720 - Cleanup warning once backend experiments are cleaned
   log.warning(DEFAULT_MAX_INSTANCES_FORWARD_CHANGE_WARNING)
 
-  if (
-      release_track == base.ReleaseTrack.ALPHA
-      or release_track == base.ReleaseTrack.BETA
-  ):
-    log.status.Print('NOTE: ' + TRY_CLOUD_RUN_NUDGE_MSG)
+  log.status.Print('NOTE: ' + TRY_CLOUD_RUN_NUDGE_MSG)
   regions = regions or sorted(set(api_client.ListRegions()), key=str)
   if extra_warning:
     log.warning(extra_warning)

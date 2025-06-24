@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from enum import Enum
-
 from argcomplete.completers import FilesCompleter
 from cloudsdk.google.protobuf import descriptor_pb2
 from googlecloudsdk.api_lib.spanner import databases
@@ -882,14 +880,18 @@ def DatabaseRole():
       '--database-role',
       required=False,
       completer=DatabaseRoleCompleter,
-      help='Cloud Spanner database role to assume for this request.')
+      help='Cloud Spanner database role to assume for this request.',
+  )
 
 
 def GetSpannerMigrationSourceFlag():
   return base.Argument(
       '--source',
       required=True,
-      help='Flag for specifying source database (e.g., PostgreSQL, MySQL, DynamoDB).'
+      help=(
+          'Flag for specifying source database (e.g., PostgreSQL, MySQL,'
+          ' DynamoDB).'
+      ),
   )
 
 
@@ -900,43 +902,57 @@ def GetSpannerMigrationPrefixFlag():
 def GetSpannerMigrationSourceProfileFlag():
   return base.Argument(
       '--source-profile',
-      help='Flag for specifying connection profile for source database (e.g.,'
-      ' "file=<path>,format=dump").')
+      help=(
+          'Flag for specifying connection profile for source database (e.g.,'
+          ' "file=<path>,format=dump").'
+      ),
+  )
 
 
 def GetSpannerMigrationTargetFlag():
   return base.Argument(
       '--target',
-      help='Specifies the target database, defaults to Spanner '
-      '(accepted values: Spanner) (default "Spanner").')
+      help=(
+          'Specifies the target database, defaults to Spanner '
+          '(accepted values: Spanner) (default "Spanner").'
+      ),
+  )
 
 
 def GetSpannerMigrationTargetProfileFlag():
   return base.Argument(
       '--target-profile',
       required=True,
-      help='Flag for specifying connection profile for target database '
-      '(e.g., "dialect=postgresql)".')
+      help=(
+          'Flag for specifying connection profile for target database '
+          '(e.g., "dialect=postgresql)".'
+      ),
+  )
 
 
 def GetSpannerMigrationSessionFlag():
   return base.Argument(
       '--session',
       required=True,
-      help='Specifies the file that you restore session state from.')
+      help='Specifies the file that you restore session state from.',
+  )
 
 
 def GetSpannerMigrationSkipForeignKeysFlag():
   return base.Argument(
       '--skip-foreign-keys',
       action='store_true',
-      help='Skip creating foreign keys after data migration is complete.')
+      help='Skip creating foreign keys after data migration is complete.',
+  )
 
 
 def GetSpannerMigrationWriteLimitFlag():
   return base.Argument(
       '--write-limit',
-      help='Number of parallel writers to Cloud Spanner during bulk data migrations (default 40).'
+      help=(
+          'Number of parallel writers to Cloud Spanner during bulk data'
+          ' migrations (default 40).'
+      ),
   )
 
 
@@ -1082,3 +1098,145 @@ def CsvLineDelimiter(req, text='Line delimiter for CSV files.'):
   return base.Argument(
       '--csv-line-delimiter', required=req, help=text)
 
+
+# Spanner CLI flags
+def GetSpannerCliHostFlag():
+  return base.Argument(
+      '--host',
+      default='localhost',
+      help='Host on which Spanner server is located.',
+  )
+
+
+def GetSpannerCliPortFlag():
+  return base.Argument(
+      '--port',
+      default=None,
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=65535),
+      help='Port number that gcloud uses to connect to Spanner.',
+  )
+
+
+def GetSpannerCliIdleTransactionTimeoutFlag():
+  return base.Argument(
+      '--idle-transaction-timeout',
+      type=int,
+      default=60,
+      help=(
+          'Set the idle transaction timeout. The default timeout is 60 seconds.'
+      ),
+  )
+
+
+def GetSpannerCliSkipColumnNamesFlag():
+  return base.Argument(
+      '--skip-column-names',
+      action='store_true',
+      help='Do not show column names in output.',
+  )
+
+
+def GetSpannerCliSkipSystemCommandFlag():
+  return base.Argument(
+      '--skip-system-command',
+      action='store_true',
+      help='Do not allow system command.',
+  )
+
+
+def GetSpannerCliPromptFlag():
+  return base.Argument(
+      '--prompt',
+      default='spanner-cli> ',
+      help='Set the prompt to the specified format.',
+  )
+
+
+def GetSpannerCliDelimiterFlag():
+  return base.Argument(
+      '--delimiter',
+      default=';',
+      help='Set the statement delimiter.',
+  )
+
+
+def GetSpannerCliTableFlag():
+  return base.Argument(
+      '--table',
+      action='store_true',
+      help='Show output in table format.',
+  )
+
+
+def GetSpannerCliHtmlFlag():
+  return base.Argument(
+      '--html',
+      action='store_true',
+      help='Show output in HTML format.',
+  )
+
+
+def GetSpannerCliXmlFlag():
+  return base.Argument(
+      '--xml',
+      action='store_true',
+      help='Show output in XML format.',
+  )
+
+
+def GetSpannerCliExecuteFlag():
+  return base.Argument(
+      '--execute',
+      default='',
+      help='Execute the statement and then exits.',
+  )
+
+
+def GetSpannerCliDatabaseRoleFlag():
+  return base.Argument(
+      '--database-role',
+      default='',
+      help='Database role user used to access the database.',
+  )
+
+
+def GetSpannerCliSourceFlag():
+  return base.Argument(
+      '--source',
+      default='',
+      help='Execute the statement from a file and then exits.',
+  )
+
+
+def GetSpannerCliTeeFlag():
+  return base.Argument(
+      '--tee',
+      default='',
+      help='Append a copy of the output to a named file.',
+  )
+
+
+def GetSpannerCliInitCommandFlag():
+  return base.Argument(
+      '--init-command',
+      default='',
+      help='SQL statement to execute after startup.',
+  )
+
+
+def GetSpannerCliInitCommandAddFlag():
+  return base.Argument(
+      '--init-command-add',
+      default='',
+      help='Additional SQL statement to execute after startup.',
+  )
+
+
+def GetSpannerCliSystemCommandFlag():
+  return base.Argument(
+      '--system-command',
+      default='ON',
+      type=lambda x: x.upper(),
+      choices=['ON', 'OFF'],
+      help='Enable or disable system commands. Default: ON',
+  )

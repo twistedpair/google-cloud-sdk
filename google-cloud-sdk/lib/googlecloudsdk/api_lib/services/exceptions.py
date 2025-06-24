@@ -125,8 +125,12 @@ class TestEnabledException(Error):
   """Exception for test enabled."""
 
 
-class ListDescendantServicesPermissionDeniedException(Error):
-  """Permission denied exception for list descendant services."""
+class ListDescendantServicesException(Error):
+  """Exception for list descendant services."""
+
+
+class ListExpandedMembersException(Error):
+  """Exception for list expanded members."""
 
 
 class ListAncestorGroupsPermissionDeniedException(Error):

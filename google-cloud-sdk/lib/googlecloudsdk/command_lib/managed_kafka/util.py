@@ -20,6 +20,7 @@ from apitools.base.py import encoding
 from googlecloudsdk import core
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
 
 # Retrieve all message type for conversions from gcloud primitives to
 # apitool types.
@@ -72,6 +73,16 @@ def PrepareUpdateWithCaPools(_, args, request):
   Returns:
     The updated request with the CA pool.
   """
+
+  # If the user is clearing the CA pools, we need to add the update mask.
+  # This flag is guarded by a mutex and will not conflict with the ca pool flag.
+  if args.clear_mtls_ca_pools:
+    request.updateMask = AppendUpdateMask(
+        request.updateMask, "tlsConfig.trustConfig.casConfigs"
+    )
+    return request
+
+  # If the there are no CA pools to update, return the request as is.
   if not args.mtls_ca_pools:
     return request
 
@@ -471,3 +482,7 @@ def ParseCompatibility(compatibility) -> str:
     return "FULL_TRANSITIVE"
   else:
     return "NONE"
+
+
+def ParseProject(project_id=None):
+  return project_id or properties.VALUES.core.project.Get(required=True)

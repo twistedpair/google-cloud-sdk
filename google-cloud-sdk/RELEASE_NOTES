@@ -5,6 +5,68 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 528.0.0 (2025-06-24)
+
+### AI
+
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+
+### AlloyDB
+
+* Added support for z3 machine-types.
+* Added support for upgrading AlloyDB clusters to PostgreSQL 17 using `gcloud alloydb clusters upgrade` in the alpha and beta tracks.
+
+### Cloud Managed Kafka
+
+* Changed `--project` flag to be optional in the following commands:
+  - `gcloud managed-kafka schema-registries describe`.
+  - `gcloud managed-kafka schema-registries update`.
+  - `gcloud managed-kafka schema-registries subject describe`.
+  - `gcloud managed-kafka schema-registries subject update`.
+* Changed `--schema_registry` to `--schema-registry` for subject commands.
+
+### Cloud NetApp
+
+* Add new `gcloud CLI` command `establish-peering` for Cache Volumes.
+* Restricted `external replication` related parameters to the alpha and beta release tracks as feature is in private preview.
+
+### Cloud Run
+
+* Promoted `--max` flag for `gcloud run deploy` and `gcloud run {services,multi-region-services} update` from alpha to beta.
+* Promoted `gcloud run worker-pools` and `gcloud run worker-pools revisions` from alpha to beta.
+
+### Cloud Spanner
+
+* `spanner-cli` binary published as a new Cloud SDK component.
+* `spanner-cli` may be installed with `gcloud components install spanner-cli`.
+* `spanner-cli` starts an interactive shell for spanner.
+
+### Compute Engine
+
+*   Promoted `--append-licenses`, `--remove-licenses` and `--replace-license` flags of `gcloud compute disks update` to beta and GA.
+* Added `--enable_emergent_maintenance` flag to `gcloud compute reservations update`.
+
+### Metastore
+
+* Promoted `--tags` flag of `gcloud metastore service and federation create`.
+
+### Migrate to Virtual Machines
+
+* Add `--adaptation-modifiers` flag to support os adaptation modifiers.
+* Add `--suppress-package-installation-failure` flag to support skipping package installation failure during adaptation.
+* Add `--rootfs-uuid` flag to support multiple operating systems found in adaptation.
+
+### Network Security
+
+* Added `--purpose` flag to `gcloud alpha/beta network-security org-address-groups create/update` commands.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 527.0.0 (2025-06-17)
 
 ### Breaking Changes
