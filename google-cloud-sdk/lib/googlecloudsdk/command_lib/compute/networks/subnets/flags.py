@@ -46,6 +46,19 @@ DEFAULT_LIST_FORMAT_WITH_IPV6_FIELD = """\
       externalIpv6Prefix
     )"""
 
+DEFAULT_LIST_FORMAT_WITH_UTILIZATION_FIELD = """\
+    table(
+      name,
+      region.basename(),
+      network.basename(),
+      ipCidrRange:label=RANGE,
+      stackType,
+      ipv6AccessType,
+      internalIpv6Prefix,
+      externalIpv6Prefix,
+      utilizationDetails
+    )"""
+
 
 class SubnetworksCompleter(compute_completers.ListCommandCompleter):
 

@@ -359,25 +359,35 @@ def ParseUpdateOptionsBase(args, locations):
       autoprovisioning_scopes=args.autoprovisioning_scopes,
       autoprovisioning_locations=args.autoprovisioning_locations,
       autoprovisioning_max_surge_upgrade=getattr(
-          args, 'autoprovisioning_max_surge_upgrade', None),
+          args, 'autoprovisioning_max_surge_upgrade', None
+      ),
       autoprovisioning_max_unavailable_upgrade=getattr(
-          args, 'autoprovisioning_max_unavailable_upgrade', None),
+          args, 'autoprovisioning_max_unavailable_upgrade', None
+      ),
       enable_autoprovisioning_surge_upgrade=getattr(
-          args, 'enable_autoprovisioning_surge_upgrade', None),
+          args, 'enable_autoprovisioning_surge_upgrade', None
+      ),
       enable_autoprovisioning_blue_green_upgrade=getattr(
-          args, 'enable_autoprovisioning_blue_green_upgrade', None),
+          args, 'enable_autoprovisioning_blue_green_upgrade', None
+      ),
       autoprovisioning_standard_rollout_policy=getattr(
-          args, 'autoprovisioning_standard_rollout_policy', None),
+          args, 'autoprovisioning_standard_rollout_policy', None
+      ),
       autoprovisioning_node_pool_soak_duration=getattr(
-          args, 'autoprovisioning_node_pool_soak_duration', None),
+          args, 'autoprovisioning_node_pool_soak_duration', None
+      ),
       enable_autoprovisioning_autorepair=getattr(
-          args, 'enable_autoprovisioning_autorepair', None),
+          args, 'enable_autoprovisioning_autorepair', None
+      ),
       enable_autoprovisioning_autoupgrade=getattr(
-          args, 'enable_autoprovisioning_autoupgrade', None),
+          args, 'enable_autoprovisioning_autoupgrade', None
+      ),
       autoprovisioning_min_cpu_platform=getattr(
-          args, 'autoprovisioning_min_cpu_platform', None),
-      autoprovisioning_image_type=getattr(args, 'autoprovisioning_image_type',
-                                          None),
+          args, 'autoprovisioning_min_cpu_platform', None
+      ),
+      autoprovisioning_image_type=getattr(
+          args, 'autoprovisioning_image_type', None
+      ),
       min_cpu=args.min_cpu,
       max_cpu=args.max_cpu,
       min_memory=args.min_memory,
@@ -387,11 +397,19 @@ def ParseUpdateOptionsBase(args, locations):
       logging_variant=args.logging_variant,
       in_transit_encryption=getattr(args, 'in_transit_encryption', None),
       autoprovisioning_resource_manager_tags=(
-          args.autoprovisioning_resource_manager_tags),
+          args.autoprovisioning_resource_manager_tags
+      ),
       service_account_verification_keys=(
-          args.service_account_verification_keys),
+          args.service_account_verification_keys
+      ),
       service_account_signing_keys=args.service_account_signing_keys,
-      )
+      boot_disk_provisioned_iops=getattr(
+          args, 'boot_disk_provisioned_iops', None
+      ),
+      boot_disk_provisioned_throughput=getattr(
+          args, 'boot_disk_provisioned_throughput', None
+      ),
+  )
 
   if (args.disable_addons and
       api_adapter.GCEPDCSIDRIVER in args.disable_addons):

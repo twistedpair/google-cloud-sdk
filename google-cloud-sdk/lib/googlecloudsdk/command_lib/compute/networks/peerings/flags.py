@@ -105,7 +105,8 @@ def AddUpdateStrategy(parser):
         UPDATE_STRATEGY must be one of:
 
         INDEPENDENT
-            Either network admin may update or delete the peering connection.
+            Updates and deletes to the peering connection can be performed by
+            either network admin.
 
         CONSENSUS
             Updates and deletes to the peering connection must be agreed upon by

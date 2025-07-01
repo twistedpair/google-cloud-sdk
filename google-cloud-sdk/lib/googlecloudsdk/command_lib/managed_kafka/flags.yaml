@@ -67,6 +67,9 @@ mtls-ca-pools:
     The root certificates of these CA pools will be installed in the truststore of each broker
     in the cluster for use with mTLS. A maximum of 10 CA pools can be specified.
     CA pools can be in a different project and region than the cluster.
+    This command overwrites the entire set of pools currently configured on the cluster.
+    If you want to add a new pool to an existing configuration, you must provide the full list of
+    both the old and new CA pools in the command.
     Each CA pool must be in the format
     projects/``PROJECT_ID''/locations/``LOCATION''/caPools/``CA_POOL''. Clear the CA pools
     using the `--clear-mtls-ca-pools` flag.

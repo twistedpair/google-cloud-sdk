@@ -353,6 +353,63 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EVALUATIONITEMS = (
+      'projects.locations.evaluationItems',
+      'projects/{projectsId}/locations/{locationsId}/evaluationItems/'
+      '{evaluationItemsId}',
+      {},
+      ['projectsId', 'locationsId', 'evaluationItemsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVALUATIONITEMS_OPERATIONS = (
+      'projects.locations.evaluationItems.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationItems/'
+              '{evaluationItemsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVALUATIONRUNS = (
+      'projects.locations.evaluationRuns',
+      'projects/{projectsId}/locations/{locationsId}/evaluationRuns/'
+      '{evaluationRunsId}',
+      {},
+      ['projectsId', 'locationsId', 'evaluationRunsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVALUATIONRUNS_OPERATIONS = (
+      'projects.locations.evaluationRuns.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationRuns/'
+              '{evaluationRunsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVALUATIONSETS = (
+      'projects.locations.evaluationSets',
+      'projects/{projectsId}/locations/{locationsId}/evaluationSets/'
+      '{evaluationSetsId}',
+      {},
+      ['projectsId', 'locationsId', 'evaluationSetsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVALUATIONSETS_OPERATIONS = (
+      'projects.locations.evaluationSets.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationSets/'
+              '{evaluationSetsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EVALUATIONTASKS = (
       'projects.locations.evaluationTasks',
       'projects/{projectsId}/locations/{locationsId}/evaluationTasks/'
@@ -1181,10 +1238,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_REASONINGENGINES_MEMORIES = (
       'projects.locations.reasoningEngines.memories',
-      'projects/{projectsId}/locations/{locationsId}/reasoningEngines/'
-      '{reasoningEnginesId}/memories/{memoriesId}',
-      {},
-      ['projectsId', 'locationsId', 'reasoningEnginesId', 'memoriesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REASONINGENGINES_MEMORIES_OPERATIONS = (
@@ -1520,6 +1580,16 @@ class Collections(enum.Enum):
       {
           '':
               'reasoningEngines/{reasoningEnginesId}',
+      },
+      ['name'],
+      True
+  )
+  REASONINGENGINES_MEMORIES = (
+      'reasoningEngines.memories',
+      '{+name}',
+      {
+          '':
+              'reasoningEngines/{reasoningEnginesId}/memories/{memoriesId}',
       },
       ['name'],
       True

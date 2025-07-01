@@ -167,6 +167,7 @@ class FloorSetting(_messages.Message):
     enableFloorSettingEnforcement: Optional. Floor Settings enforcement
       status.
     filterConfig: Required. ModelArmor filter configuration.
+    floorSettingMetadata: Optional. Metadata for FloorSetting
     name: Identifier. The resource name.
     updateTime: Output only. [Output only] Update timestamp
   """
@@ -174,8 +175,13 @@ class FloorSetting(_messages.Message):
   createTime = _messages.StringField(1)
   enableFloorSettingEnforcement = _messages.BooleanField(2)
   filterConfig = _messages.MessageField('FilterConfig', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  floorSettingMetadata = _messages.MessageField('FloorSettingMetadata', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class FloorSettingMetadata(_messages.Message):
+  r"""message describing FloorSetting Metadata"""
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1597,6 +1603,10 @@ class Template(_messages.Message):
 class TemplateMetadata(_messages.Message):
   r"""Message describing TemplateMetadata
 
+  Enums:
+    EnforcementTypeValueValuesEnum: Optional. Enforcement type for Model Armor
+      filters.
+
   Fields:
     customLlmResponseSafetyErrorCode: Optional. Indicates the custom error
       code set by the user to be returned to the end user if the LLM response
@@ -1610,6 +1620,7 @@ class TemplateMetadata(_messages.Message):
     customPromptSafetyErrorMessage: Optional. Indicates the custom error
       message set by the user to be returned to the end user if the prompt
       trips Model Armor filters.
+    enforcementType: Optional. Enforcement type for Model Armor filters.
     ignorePartialInvocationFailures: Optional. If true, partial detector
       failures should be ignored.
     logSanitizeOperations: Optional. If true, log sanitize operations.
@@ -1617,14 +1628,29 @@ class TemplateMetadata(_messages.Message):
     multiLanguageDetection: Optional. Metadata for multi language detection.
   """
 
+  class EnforcementTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Enforcement type for Model Armor filters.
+
+    Values:
+      ENFORCEMENT_TYPE_UNSPECIFIED: Default value. Same as INSPECT_AND_BLOCK.
+      INSPECT_ONLY: Model Armor filters will run in inspect only mode. No
+        action will be taken on the request.
+      INSPECT_AND_BLOCK: Model Armor filters will run in inspect and block
+        mode. Requests that trip Model Armor filters will be blocked.
+    """
+    ENFORCEMENT_TYPE_UNSPECIFIED = 0
+    INSPECT_ONLY = 1
+    INSPECT_AND_BLOCK = 2
+
   customLlmResponseSafetyErrorCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   customLlmResponseSafetyErrorMessage = _messages.StringField(2)
   customPromptSafetyErrorCode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   customPromptSafetyErrorMessage = _messages.StringField(4)
-  ignorePartialInvocationFailures = _messages.BooleanField(5)
-  logSanitizeOperations = _messages.BooleanField(6)
-  logTemplateOperations = _messages.BooleanField(7)
-  multiLanguageDetection = _messages.MessageField('MultiLanguageDetection', 8)
+  enforcementType = _messages.EnumField('EnforcementTypeValueValuesEnum', 5)
+  ignorePartialInvocationFailures = _messages.BooleanField(6)
+  logSanitizeOperations = _messages.BooleanField(7)
+  logTemplateOperations = _messages.BooleanField(8)
+  multiLanguageDetection = _messages.MessageField('MultiLanguageDetection', 9)
 
 
 class VirusDetail(_messages.Message):

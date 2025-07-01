@@ -1243,7 +1243,7 @@ class CloudVmCluster(_messages.Message):
     gcpOracleZone: Output only. Google Cloud Platform location where Oracle
       Exadata is hosted. It is same as Google Cloud Platform Oracle zone of
       Exadata infrastructure.
-    identityConnector: Optional. The identity connector details which will
+    identityConnector: Output only. The identity connector details which will
       allow OCI to securely access the resources in the customer project.
     labels: Optional. Labels or tags associated with the VM Cluster.
     name: Identifier. The name of the VM Cluster resource with the format:
@@ -1841,6 +1841,8 @@ class ExadbVmCluster(_messages.Message):
       ExadbVmCluster.
 
   Fields:
+    createTime: Output only. The date and time when the ExadbVmCluster was
+      created.
     displayName: Required. The display name for the ExadbVmCluster. The name
       does not have to be unique within your project. The name must be 1-255
       characters long and can only contain alphanumeric characters.
@@ -1877,11 +1879,12 @@ class ExadbVmCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  displayName = _messages.StringField(1)
-  gcpOracleZone = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  properties = _messages.MessageField('ExadbVmClusterProperties', 5)
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gcpOracleZone = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  properties = _messages.MessageField('ExadbVmClusterProperties', 6)
 
 
 class ExadbVmClusterProperties(_messages.Message):
@@ -1890,6 +1893,8 @@ class ExadbVmClusterProperties(_messages.Message):
   Enums:
     LicenseTypeValueValuesEnum: Required. The license type of the
       ExadbVmCluster.
+    StateValueValuesEnum: Output only. The state of the
+      ExascaleDbStorageVault.
 
   Fields:
     backupOdbSubnet: Required. The name of the backup OdbSubnet associated
@@ -1907,6 +1912,7 @@ class ExadbVmClusterProperties(_messages.Message):
       vault.
     gridImageId: Required. Grid setup will be done using the grid image id.
     licenseType: Required. The license type of the ExadbVmCluster.
+    memorySizeGb: Optional. The memory allocated in GBs.
     nodeCount: Required. The number of nodes in the ExadbVmCluster.
     odbNetwork: Optional. The name of the OdbNetwork associated with the
       ExadbVmCluster. Format:
@@ -1917,8 +1923,10 @@ class ExadbVmClusterProperties(_messages.Message):
       ExadbVmCluster for IP allocation. Format: projects/{project}/locations/{
       location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
     sshPublicKeys: Required. The SSH public keys for the ExadbVmCluster.
+    state: Output only. The state of the ExascaleDbStorageVault.
     storageVaultProperties: Optional. The properties of the storage vault
       associated with the ExadbVmCluster.
+    timeZone: Optional. The time zone of the ExadbVmCluster.
     totalEcpuCount: Required. The total number of ECPUs available (enabled +
       reserved) for an exadata vm cluster on exascale infrastructure.
     vmFileSystemStorage: Required. The memory allocated in GBs.
@@ -1936,6 +1944,29 @@ class ExadbVmClusterProperties(_messages.Message):
     LISCENSE_INCLUDED = 1
     BRING_YOUR_OWN_LICENSE = 2
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the ExascaleDbStorageVault.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the ExascaleDbStorageVault is
+        unspecified.
+      PROVISIONING: The ExadbVmCluster is being provisioned.
+      AVAILABLE: The ExadbVmCluster is available.
+      UPDATING: The ExadbVmCluster is being updated.
+      TERMINATING: The ExadbVmCluster is being deleted.
+      TERMINATED: The ExadbVmCluster has been deleted.
+      FAILED: The ExadbVmCluster has failed.
+      MAINTENANCE_IN_PROGRESS: The ExadbVmCluster is in maintenance mode.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    AVAILABLE = 2
+    UPDATING = 3
+    TERMINATING = 4
+    TERMINATED = 5
+    FAILED = 6
+    MAINTENANCE_IN_PROGRESS = 7
+
   backupOdbSubnet = _messages.StringField(1)
   clusterName = _messages.StringField(2)
   dataCollectionOptions = _messages.MessageField('ExadbVmClusterPropertiesDataCollectionOptions', 3)
@@ -1943,13 +1974,16 @@ class ExadbVmClusterProperties(_messages.Message):
   exascaleDbStorageVaultId = _messages.StringField(5)
   gridImageId = _messages.StringField(6)
   licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 7)
-  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  odbNetwork = _messages.StringField(9)
-  odbSubnet = _messages.StringField(10)
-  sshPublicKeys = _messages.StringField(11, repeated=True)
-  storageVaultProperties = _messages.MessageField('StorageVaultProperties', 12)
-  totalEcpuCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 14)
+  memorySizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  odbNetwork = _messages.StringField(10)
+  odbSubnet = _messages.StringField(11)
+  sshPublicKeys = _messages.StringField(12, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  storageVaultProperties = _messages.MessageField('StorageVaultProperties', 14)
+  timeZone = _messages.MessageField('TimeZone', 15)
+  totalEcpuCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 17)
 
 
 class ExadbVmClusterPropertiesDataCollectionOptions(_messages.Message):
@@ -2030,8 +2064,8 @@ class ExascaleDbStorageVaultProperties(_messages.Message):
 
   Fields:
     description: Optional. The description of the ExascaleDbStorageVault.
-    exascaleDbStorageDetails: Optional. VM cluster storage missing in API
-      spec.
+    exascaleDbStorageDetails: Optional. The storage details of the
+      ExascaleDbStorageVault.
     ocid: Output only. The OCID for the ExascaleDbStorageVault.
     state: Output only. The state of the ExascaleDbStorageVault.
     timeZone: Optional. The time zone of the ExascaleDbStorageVault.
@@ -2132,14 +2166,38 @@ class IdentityConnector(_messages.Message):
   r"""The identity connector details which will allow OCI to securely access
   the resources in the customer project.
 
+  Enums:
+    ConnectionStateValueValuesEnum: Output only. The connection state of the
+      identity connector.
+
   Fields:
-    serviceAgentEmail: Required. A google managed service account on which
+    connectionState: Output only. The connection state of the identity
+      connector.
+    serviceAgentEmail: Output only. A google managed service account on which
       customers can grant roles to access resources in the customer project.
       Example: `p176944527254-55-75119d87fd8f@gcp-sa-
       oci.iam.gserviceaccount.com`
   """
 
-  serviceAgentEmail = _messages.StringField(1)
+  class ConnectionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The connection state of the identity connector.
+
+    Values:
+      CONNECTION_STATE_UNSPECIFIED: Default unspecified value.
+      CONNECTED: The identity pool connection is connected.
+      PARTIALLY_CONNECTED: The identity pool connection is partially
+        connected.
+      DISCONNECTED: The identity pool connection is disconnected.
+      UNKNOWN: The identity pool connection is in an unknown state.
+    """
+    CONNECTION_STATE_UNSPECIFIED = 0
+    CONNECTED = 1
+    PARTIALLY_CONNECTED = 2
+    DISCONNECTED = 3
+    UNKNOWN = 4
+
+  connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 1)
+  serviceAgentEmail = _messages.StringField(2)
 
 
 class ListAutonomousDatabaseBackupsResponse(_messages.Message):
@@ -3798,8 +3856,9 @@ class OracledatabaseProjectsLocationsGiVersionsMinorVersionsListRequest(_message
 
   Fields:
     filter: Optional. An expression for filtering the results of the request.
-      Only shapeFamily is supported in this format:
-      `shape_family="{shapeFamily}" AND version="{version}"`.
+      Only shapeFamily and gcp_oracle_zone_id are supported in this format:
+      `shape_family="{shapeFamily}" AND
+      gcp_oracle_zone_id="{gcp_oracle_zone_id}"`.
     pageSize: Optional. The maximum number of items to return. If unspecified,
       a maximum of 50 System Versions will be returned. The maximum value is
       1000; values above 1000 will be reset to 1000.

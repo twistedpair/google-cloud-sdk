@@ -944,7 +944,7 @@ class EndpointsClient(object):
       deployed_model = self.messages.GoogleCloudAiplatformV1beta1DeployedModel(
           dedicatedResources=dedicated,
           displayName=display_name,
-          gdcGgsModel=model,
+          gdcConnectedModel=model,
       )
     else:
       model_ref = _ParseModel(model, region)

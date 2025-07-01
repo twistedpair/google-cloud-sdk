@@ -570,12 +570,13 @@ def AddSubnetLength(parser):
       """)
 
 
-def AddGeneveVni(parser):
+def AddGeneveVni(parser, required=True):
   """Adds geneve vni flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--geneve-vni',
       metavar='GENEVE_HEADER',
       type=int,
+      required=required,
       help="""A VNI identier for Geneve header, as defined in
       https://datatracker.ietf.org/doc/html/rfc8926, used for L2 forwarding.""",
   )

@@ -884,7 +884,7 @@ def MutexEnvVarsFlags(release_track=base.ReleaseTrack.GA):
       key_type=env_vars_util.EnvVarKeyType,
       value_type=env_vars_util.EnvVarValueType,
   )
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
     group.AddArgument(
         base.Argument(
             '--env-vars-file',
@@ -893,13 +893,19 @@ def MutexEnvVarsFlags(release_track=base.ReleaseTrack.GA):
                 key_type=env_vars_util.EnvVarKeyType,
                 value_type=env_vars_util.EnvVarValueType,
             ),
-            help="""Path to a local YAML file with definitions for all environment
+            help="""Path to a local YAML or ENV file with definitions for all environment
               variables. All existing environment variables will be removed before
               the new environment variables are added. Example YAML content:
 
                 ```
                 KEY_1: "value1"
                 KEY_2: "value 2"
+                ```
+                Example ENV content:
+
+                ```
+                KEY_1="value1"
+                KEY_2="value 2"
                 ```
               """,
         )

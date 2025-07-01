@@ -3208,6 +3208,47 @@ Type of the node VM boot disk. For version 1.24 and later, defaults to pd-balanc
   )
 
 
+def AddBootDiskConfigFlags(parser):
+  """Adds flags to configure the boot disk to the given parser."""
+  group = parser.add_group(help='Configure boot disk options.', hidden=True)
+  AddBootDiskProvisionedIopsFlag(group)
+  AddBootDiskProvisionedThroughputFlag(group)
+
+
+def AddBootDiskProvisionedIopsFlag(parser):
+  """Adds a --boot-disk-provisioned-iops flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = """\
+Configure the Provisioned IOPS for the node pool boot disks. Only valid for hyperdisk-balanced boot disks.
+"""
+  parser.add_argument(
+      '--boot-disk-provisioned-iops',
+      type=int,
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddBootDiskProvisionedThroughputFlag(parser):
+  """Adds a --boot-disk-provisioned-throughput flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = """\
+Configure the Provisioned Throughput for the node pool boot disks. Only valid for hyperdisk-throughput boot disks.
+"""
+  parser.add_argument(
+      '--boot-disk-provisioned-throughput',
+      type=int,
+      help=help_text,
+      hidden=True,
+  )
+
+
 def AddIpAliasCoreFlag(parser):
   parser.add_argument(
       '--enable-ip-alias',
@@ -6278,6 +6319,42 @@ $ {command} --clear-fleet-project
         help=unset_text,
         default=None,
         action='store_true',
+    )
+
+
+def AddMembershipTypeFlags(parser, is_update=False):
+  """Adds --membership-type  and --unset-membership-type flag to the parser."""
+  membership_type_text = """
+Specify a membership type for the cluster's fleet membership.
+Example:
+$ {command} --memebership-type=LIGHTWEIGHT
+"""
+
+  unset_membership_type_text = """
+Set the membership type for the cluster's fleet membership to empty.
+Example:
+$ {command} --unset-membership-type
+"""
+  parser.add_argument(
+      '--membership-type',
+      help=membership_type_text,
+      required=False,
+      choices={
+          'LIGHTWEIGHT': """\
+              Fleet membership representing this cluster will be lightweight.
+              """,
+      },
+      default=None,
+      hidden=True,
+  )
+
+  if is_update:
+    parser.add_argument(
+        '--unset-membership-type',
+        help=unset_membership_type_text,
+        default=None,
+        action='store_true',
+        hidden=True,
     )
 
 

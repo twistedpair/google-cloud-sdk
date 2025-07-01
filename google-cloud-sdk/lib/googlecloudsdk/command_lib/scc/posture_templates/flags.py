@@ -20,9 +20,36 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import base
 
-PARENT_FLAG = base.Argument(
-    "PARENT",
-    help="""Parent of Cloud Security Command Center posture templates. Formatted as organizations/<organizationID>/locations/<location>""",
-)
+def AddParentOrFlagsGroup(parser):
+  """Adds a mutually exclusive group that accepts either positional parent or --organization + --location."""
+  group = parser.add_mutually_exclusive_group(required=True)
+
+  # Positional parent argument
+  group.add_argument(
+      "PARENT",
+      help=(
+          "Parent of Cloud Security Command Center posture templates."
+          " Formatted as organizations/<organizationID>/locations/<location>."
+      ),
+      nargs="?",
+  )
+
+  # Flag-based subgroup
+  flags_group = group.add_argument_group(
+      help="Specify organization and location using flags.",
+  )
+  flags_group.add_argument(
+      "--organization",
+      help="The organization ID (e.g., 123) that contains the resource.",
+      required=True,
+  )
+  flags_group.add_argument(
+      "--location",
+      help=(
+          "When data residency controls are enabled, this attribute specifies"
+          " the location in which the resource is located and applicable."
+      ),
+      required=True,
+  )
+  return parser

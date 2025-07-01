@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.firestore import api_utils
 
 
@@ -148,6 +149,7 @@ def RestoreDatabase(
     source_backup,
     destination_database,
     encryption_config,
+    tags=None,
 ):
   """Restores a Firestore database from a backup.
 
@@ -157,15 +159,30 @@ def RestoreDatabase(
     destination_database: the database to restore to, a string.
     encryption_config: the encryption config to use for the restored database,
       an optional object.
+    tags: the tags to attach to the database, a key-value dictionary.
 
   Returns:
     an Operation.
   """
   messages = api_utils.GetMessages()
+  tags_value = None
+  if tags:
+    additional_properties = [
+        messages.GoogleFirestoreAdminV1RestoreDatabaseRequest.TagsValue.AdditionalProperty(
+            key=key, value=value
+        )
+        for key, value in tags.items()
+    ]
+    tags_value = (
+        messages.GoogleFirestoreAdminV1RestoreDatabaseRequest.TagsValue(
+            additionalProperties=additional_properties
+        )
+    )
   restore_request = messages.GoogleFirestoreAdminV1RestoreDatabaseRequest(
       backup=source_backup,
       databaseId=destination_database,
       encryptionConfig=encryption_config,
+      tags=tags_value,
   )
 
   return _GetDatabaseService().Restore(

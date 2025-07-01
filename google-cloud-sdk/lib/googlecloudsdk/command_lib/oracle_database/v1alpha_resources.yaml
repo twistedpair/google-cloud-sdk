@@ -53,7 +53,7 @@ projects_locations_cloud_exadata_infrastructures:
     parameter_name: cloudExadataInfrastructuresId
     attribute_name: cloud_exadata_infrastructure
     help: The cloudExadataInfrastructure id of the {resource} resource.
-  disable_auto_completers: false
+  disable_auto_completers: true
 projects_locations_cloud_vm_clusters:
   name: cloudVmCluster
   plural_name: cloudVmClusters
@@ -65,7 +65,30 @@ projects_locations_cloud_vm_clusters:
     parameter_name: cloudVmClustersId
     attribute_name: cloud_vm_cluster
     help: The cloudVmCluster id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
+projects_locations_cloud_vm_clusters_or_exadb_vm_clusters:
+  name: cloudVmClusterOrExadbVmCluster
+  plural_name: cloudVmClustersOrExadbVmClusters
+  resources:
+  - name: cloudVmCluster
+    plural_name: cloudVmClusters
+    collection: oracledatabase.projects.locations.cloudVmClusters
+    attributes:
+    - *project
+    - *location
+    - *cloudVmCluster
+    disable_auto_completers: true
+  - name: exadbVmCluster
+    plural_name: exadbVmClusters
+    collection: oracledatabase.projects.locations.exadbVmClusters
+    attributes:
+    - *project
+    - *location
+    - &exadbVmCluster
+      parameter_name: exadbVmClustersId
+      attribute_name: exadb_vm_cluster
+      help: The exadbVmCluster id of the {resource} resource.
+    disable_auto_completers: true
 projects_locations_entitlements:
   name: entitlement
   plural_name: entitlements

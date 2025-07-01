@@ -73,9 +73,7 @@ def AddDiskArgsForBulk(parser):
   )
 
 
-def ValidateBulkDiskFlags(
-    args, enable_source_snapshot_csek=False, enable_image_csek=False
-):
+def ValidateBulkDiskFlags(args):
   """Validates the values of all disk-related flags."""
   for disk in args.disk or []:
     if 'name' not in disk:
@@ -89,8 +87,7 @@ def ValidateBulkDiskFlags(
   instances_flags.ValidateCreateDiskFlags(
       args,
       enable_snapshots=True,
-      enable_source_snapshot_csek=enable_source_snapshot_csek,
-      enable_image_csek=enable_image_csek,
+      enable_image_csek=True,
   )
 
 
@@ -275,10 +272,6 @@ def AddBulkCreateArgs(
 
 def AddBulkCreateNetworkingArgs(
     parser,
-    support_no_address=False,
-    support_network_queue_count=False,
-    support_per_interface_stack_type=False,
-    support_ipv6_only=False,
     support_igmp_query=False,
 ):
   """Adds Networking Args for Bulk Create Command."""
@@ -324,39 +317,30 @@ def AddBulkCreateNetworkingArgs(
       the interface. ``NIC_TYPE'' must be one of: `GVNIC`, `VIRTIO_NET`.
   """
 
-  if support_no_address:
-    multiple_network_interface_cards_spec['no-address'] = None
-    network_interface_help += """
-      *no-address*::: If specified the interface will have no external IP.
-      If not specified instances will get ephemeral IPs.
-      """
-
-  if support_network_queue_count:
-    multiple_network_interface_cards_spec['queue-count'] = int
-    network_interface_help += """
-      *queue-count*::: Specifies the networking queue count for this interface.
-      Both Rx and Tx queues will be set to this number. If it's not specified, a
-      default queue count will be assigned. See
-      https://cloud.google.com/compute/docs/network-bandwidth#rx-tx for
-      more details.
+  multiple_network_interface_cards_spec['no-address'] = None
+  network_interface_help += """
+    *no-address*::: If specified the interface will have no external IP.
+    If not specified instances will get ephemeral IPs.
     """
 
-  if support_per_interface_stack_type:
-    multiple_network_interface_cards_spec['stack-type'] = (
-        instances_flags.ValidateNetworkInterfaceStackType
-        if support_ipv6_only
-        else instances_flags.ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported
-    )
-    stack_types = (
-        '`IPV4_ONLY`, `IPV4_IPV6`, `IPV6_ONLY`'
-        if support_ipv6_only
-        else '`IPV4_ONLY`, `IPV4_IPV6`'
-    )
-    network_interface_help += f"""
-      *stack-type*::: Specifies whether IPv6 is enabled on the interface.
-      ``STACK_TYPE'' must be one of: {stack_types}.
-      The default value is `IPV4_ONLY`.
-    """
+  multiple_network_interface_cards_spec['queue-count'] = int
+  network_interface_help += """
+    *queue-count*::: Specifies the networking queue count for this interface.
+    Both Rx and Tx queues will be set to this number. If it's not specified, a
+    default queue count will be assigned. See
+    https://cloud.google.com/compute/docs/network-bandwidth#rx-tx for
+    more details.
+  """
+
+  multiple_network_interface_cards_spec['stack-type'] = (
+      instances_flags.ValidateNetworkInterfaceStackType
+  )
+  stack_types = '`IPV4_ONLY`, `IPV4_IPV6`, `IPV6_ONLY`'
+  network_interface_help += f"""
+    *stack-type*::: Specifies whether IPv6 is enabled on the interface.
+    ``STACK_TYPE'' must be one of: {stack_types}.
+    The default value is `IPV4_ONLY`.
+  """
 
   if support_igmp_query:
     multiple_network_interface_cards_spec['igmp-query'] = (
@@ -383,30 +367,14 @@ def AddBulkCreateNetworkingArgs(
 def AddCommonBulkInsertArgs(
     parser,
     release_track,
-    deprecate_maintenance_policy=False,
-    support_min_node_cpu=False,
-    support_erase_vss=False,
-    snapshot_csek=False,
-    image_csek=False,
     support_display_device=False,
-    support_local_ssd_size=False,
     support_numa_node_count=False,
-    support_visible_core_count=False,
-    support_max_run_duration=False,
-    support_enable_target_shape=False,
     add_zone_region_flags=True,
-    support_confidential_compute_type=False,
-    support_confidential_compute_type_tdx=False,
     support_snp_svsm=False,
-    support_no_address_in_networking=False,
     support_max_count_per_zone=False,
-    support_network_queue_count=False,
-    support_performance_monitoring_unit=False,
     support_custom_hostnames=False,
     support_specific_then_x_affinity=False,
-    support_ipv6_only=False,
     support_watchdog_timer=False,
-    support_per_interface_stack_type=False,
     support_igmp_query=False,
     support_graceful_shutdown=False,
     support_flex_start=False,
@@ -418,17 +386,14 @@ def AddCommonBulkInsertArgs(
       parser,
       enable_kms=True,
       enable_snapshots=True,
-      source_snapshot_csek=snapshot_csek,
-      image_csek=image_csek,
+      image_csek=True,
       include_name=False,
       support_boot=True,
   )
   instances_flags.AddCanIpForwardArgs(parser)
   instances_flags.AddAcceleratorArgs(parser)
   instances_flags.AddMachineTypeArgs(parser)
-  instances_flags.AddMaintenancePolicyArgs(
-      parser, deprecate=deprecate_maintenance_policy
-  )
+  instances_flags.AddMaintenancePolicyArgs(parser, deprecate=True)
   instances_flags.AddNoRestartOnFailureArgs(parser)
   instances_flags.AddPreemptibleVmArgs(parser)
   instances_flags.AddProvisioningModelVmArgs(
@@ -460,10 +425,6 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddNetworkTierArgs(parser, instance=True)
   AddBulkCreateNetworkingArgs(
       parser,
-      support_no_address_in_networking,
-      support_network_queue_count=support_network_queue_count,
-      support_per_interface_stack_type=support_per_interface_stack_type,
-      support_ipv6_only=support_ipv6_only,
       support_igmp_query=support_igmp_query,
   )
 
@@ -488,15 +449,13 @@ def AddCommonBulkInsertArgs(
 
   maintenance_flags.AddResourcePoliciesArgs(parser, 'added to', 'instance')
 
-  if support_min_node_cpu:
-    instances_flags.AddMinNodeCpuArg(parser)
+  instances_flags.AddMinNodeCpuArg(parser)
 
   instances_flags.AddLocationHintArg(parser)
 
-  if support_erase_vss:
-    compute_flags.AddEraseVssSignature(
-        parser, 'source snapshots or source machine image'
-    )
+  compute_flags.AddEraseVssSignature(
+      parser, 'source snapshots or source machine image'
+  )
 
   labels_util.AddCreateLabelsFlags(parser)
 
@@ -509,29 +468,23 @@ def AddCommonBulkInsertArgs(
       'multi(instances:format="table(name,zone.basename())")'
   )
 
-  if support_visible_core_count:
-    instances_flags.AddVisibleCoreCountArgs(parser)
+  instances_flags.AddVisibleCoreCountArgs(parser)
 
-  if support_local_ssd_size:
-    instances_flags.AddLocalSsdArgsWithSize(parser)
-  else:
-    instances_flags.AddLocalSsdArgs(parser)
+  instances_flags.AddLocalSsdArgsWithSize(parser)
 
-  if support_max_run_duration:
-    instances_flags.AddMaxRunDurationVmArgs(parser)
-    instances_flags.AddDiscardLocalSsdVmArgs(parser)
+  instances_flags.AddMaxRunDurationVmArgs(parser)
+  instances_flags.AddDiscardLocalSsdVmArgs(parser)
 
-  if support_enable_target_shape:
-    AddDistributionTargetShapeArgs(parser)
+  AddDistributionTargetShapeArgs(parser)
 
-  instances_flags.AddStackTypeArgs(parser, support_ipv6_only)
+  instances_flags.AddStackTypeArgs(parser, support_ipv6_only=True)
   instances_flags.AddMinCpuPlatformArgs(parser, release_track)
   instances_flags.AddPublicDnsArgs(parser, instance=True)
   instances_flags.AddConfidentialComputeArgs(
       parser,
-      support_confidential_compute_type,
-      support_confidential_compute_type_tdx,
-      support_snp_svsm,
+      support_confidential_compute_type=True,
+      support_confidential_compute_type_tdx=True,
+      support_snp_svsm=support_snp_svsm,
   )
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
   AddBulkCreateArgs(
@@ -541,8 +494,7 @@ def AddCommonBulkInsertArgs(
       support_custom_hostnames,
   )
 
-  if support_performance_monitoring_unit:
-    instances_flags.AddPerformanceMonitoringUnitArgs(parser)
+  instances_flags.AddPerformanceMonitoringUnitArgs(parser)
   if support_watchdog_timer:
     instances_flags.AddWatchdogTimerArg(parser)
   instances_flags.AddTurboModeArgs(parser)
@@ -643,27 +595,18 @@ def ValidateNaturalCount(count):
 
 def ValidateBulkInsertArgs(
     args,
-    support_enable_target_shape,
-    support_source_snapshot_csek,
-    support_image_csek,
-    support_max_run_duration,
     support_max_count_per_zone,
     support_custom_hostnames,
 ):
   """Validates all bulk and instance args."""
   ValidateBulkCreateArgs(args)
-  if support_enable_target_shape:
-    ValidateBulkTargetShapeArgs(args)
+  ValidateBulkTargetShapeArgs(args)
   ValidateLocationPolicyArgs(args)
   if support_max_count_per_zone:
     ValidateMaxCountPerZoneArgs(args)
   if support_custom_hostnames:
     ValidateCustomHostnames(args)
-  ValidateBulkDiskFlags(
-      args,
-      enable_source_snapshot_csek=support_source_snapshot_csek,
-      enable_image_csek=support_image_csek,
-  )
+  ValidateBulkDiskFlags(args)
   instances_flags.ValidateImageFlags(args)
   instances_flags.ValidateLocalSsdFlags(args)
   instances_flags.ValidateNicFlags(args)
@@ -673,5 +616,5 @@ def ValidateBulkInsertArgs(
   instances_flags.ValidateReservationAffinityGroup(args)
   instances_flags.ValidateNetworkPerformanceConfigsArgs(args)
   instances_flags.ValidateInstanceScheduling(
-      args, support_max_run_duration=support_max_run_duration
+      args, support_max_run_duration=True
   )

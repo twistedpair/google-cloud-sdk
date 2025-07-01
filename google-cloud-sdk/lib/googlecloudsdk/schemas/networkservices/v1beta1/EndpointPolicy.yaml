@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - endpointMatcher
-- name
 - type
 additionalProperties: false
 properties:
@@ -29,16 +28,12 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  authentication:
-    description: '[Deprecated] Use serverTlsPolicy and clientTlsPolicy instead.'
-    type: string
   authorizationPolicy:
     description: |-
       This field specifies the URL of AuthorizationPolicy resource that applies
       authorization policies to the inbound traffic at the matched endpoints.
       Refer to Authorization. If this field is not specified, authorization is
-      disabled(no authz checks) for this endpoint. Applicable only when
-      EndpointPolicyType is SIDECAR_PROXY.
+      disabled(no authz checks) for this endpoint.
     type: string
   clientTlsPolicy:
     description: |-
@@ -64,8 +59,15 @@ properties:
     $ref: LabelsValue.yaml
   name:
     description: |-
-      Name of the EndpointPolicy resource. It matches pattern
-      `projects/*/locations/global/endpointPolicies/`.
+      Identifier. Name of the EndpointPolicy resource. It matches pattern
+      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}` .
+    type: string
+  securityPolicy:
+    description: |-
+      A URL referring to a SecurityPolicy resource. SecurityPolicy is used to
+      enforce rate limiting policy on the inbound traffic at the identified
+      backends. If this field is not set, rate limiting is disabled for this
+      endpoint.
     type: string
   serverTlsPolicy:
     description: |-

@@ -66,10 +66,20 @@ def ValidateAutoscalingMetricSpecs(specs):
                   constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())
           ])))
 
-    if value <= 0 or value > 100:
+    if key == 'request-counts-per-minute':
+      if value <= 0:
+        raise exceptions.InvalidArgumentException(
+            '--autoscaling-metric-specs',
+            'Metric target for request-counts-per-minute must be a positive'
+            ' value.',
+        )
+    elif value <= 0 or value > 100:
       raise exceptions.InvalidArgumentException(
           '--autoscaling-metric-specs',
-          'Metric target value %s is not between 0 and 100.' % value)
+          'Metric target value {} for {} is not between 0 and 100.'.format(
+              value, key
+          ),
+      )
 
 
 def ValidateSharedResourceArgs(shared_resources_ref=None,

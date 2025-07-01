@@ -1159,7 +1159,7 @@ URI string. Only HTTPS protocol is supported. The host can be either a static IP
 addressable from the VPC specified by the network config, or an internal DNS
 hostname of the service resolvable via Cloud DNS. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com'
 
 *http_endpoint_message_binding_template*::: The CEL expression used to construct
 a new HTTP request to be sent to the final destination. It can be optionally
@@ -1259,7 +1259,7 @@ expression:
 
 For example:
 
-      $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',http_endpoint_message_binding_template='{"headers": {"new-header-key": "new-header-value"}}',network_attachment=example-network-attachment
+      $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',http_endpoint_message_binding_template='{"headers": headers.merge({"new-header-key": "new-header-value"}),"body": "new-body"}'
 
 *workflow*::: The destination Workflow ID. For example:
 
@@ -1283,7 +1283,7 @@ Note: When `http_endpoint_uri` is set, `project` can't be set.
 *location*::: The location of the destination resource. If `location` is not set,
 then the location of the pipeline is used. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=location=us-east1,workflow=my-workflow,network_attachment=example-network-attachment
+    $ gcloud eventarc pipelines create example-pipeline --destinations=location=us-east1,workflow=my-workflow
 
 Note: When `http_endpoint_uri` is set, `location` can't be set.
 
@@ -1292,7 +1292,7 @@ the consumer VPC. For example:
 
     $ gcloud eventarc pipelines create example-pipeline --destinations=network_attachment=my-network-attachment,http_endpoint_uri='https://example.com'
 
-Note: A network attachment must be specified for a pipeline when `http_endpoint_uri` is set.
+Note: `network_attachment` can only be set when `http_endpoint_uri` is set as well.
 
 *google_oidc_authentication_service_account*::: The service account email used
 to generate the OIDC token. The token can be used to invoke Cloud Run and Cloud
@@ -1302,13 +1302,13 @@ permission on the service account. For more information, see
 [Service accounts overview](https://cloud.google.com/iam/docs/understanding-service-accounts).
 For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,google_oidc_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',google_oidc_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com
 
 *google_oidc_authentication_audience*::: The audience claim which identifies the
 recipient that the JWT is intended for. If unspecified, the destination URI will
 be used. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,google_oidc_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com,google_oidc_authentication_audience='https://example.com'
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',google_oidc_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com,google_oidc_authentication_audience='https://example.com'
 
 Note: `google_oidc_authentication_audience` can only be set if
 `google_oidc_authentication_service_account` is set.
@@ -1321,13 +1321,13 @@ account. For more information, see
 [Service accounts overview](https://cloud.google.com/iam/docs/understanding-service-accounts).
 For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,oauth_token_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',oauth_token_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com
 
 *oauth_token_authentication_scope*::: The scope used to generate the OAuth token.
   If unspecified, "https://www.googleapis.com/auth/cloud-platform" will be used.
   For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,oauth_token_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com,oauth_token_authentication_scope=https://www.googleapis.com/auth/cloud-platform
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',oauth_token_authentication_service_account=example-service-account@example-project.gserviceaccount.iam.com,oauth_token_authentication_scope=https://www.googleapis.com/auth/cloud-platform
 
 Note: At most one of `google_oidc_authentication_service_account` or
 `oauth_token_authentication_service_account` can be set; and
@@ -1337,19 +1337,19 @@ Note: At most one of `google_oidc_authentication_service_account` or
 *output_payload_format_json*::: Indicates that the output payload format is JSON.
 For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,output_payload_format_json= --input-payload-format-json=
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',output_payload_format_json= --input-payload-format-json=
 
 Note: JSON schemas are not supported. Any value specified by this key is ignored.
 
 *output_payload_format_avro_schema_definition*::: The schema definition of the
 Avro output payload format. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,output_payload_format_avro_schema_definition='{"type": "record", "name": "my_record", "fields": [{"name": "field1", "type": "string"}]}' --input-payload-format-avro-schema-definition='{"type": "record", "name": "my_record", "fields": [{"name": "field1", "type": "string"}]}'
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',output_payload_format_avro_schema_definition='{"type": "record", "name": "my_record", "fields": [{"name": "field1", "type": "string"}]}' --input-payload-format-avro-schema-definition='{"type": "record", "name": "my_record", "fields": [{"name": "field1", "type": "string"}]}'
 
 *output_payload_format_protobuf_schema_definition*::: The schema definition of
 the Protobuf output payload format. For example:
 
-    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',network_attachment=example-network-attachment,output_payload_format_protobuf_schema_definition='syntax = "proto3"; message Location { string home_address = 1; }' --input-payload-format-protobuf-schema-definition='syntax = "proto3"; message Location { string home_address = 1; }'
+    $ gcloud eventarc pipelines create example-pipeline --destinations=http_endpoint_uri='https://example.com',output_payload_format_protobuf_schema_definition='syntax = "proto3"; message Location { string home_address = 1; }' --input-payload-format-protobuf-schema-definition='syntax = "proto3"; message Location { string home_address = 1; }'
 
 Note: If none of the `input_payload_format_json`,
 `input_payload_format_avro_schema_definition`, or

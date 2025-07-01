@@ -286,12 +286,14 @@ class Instance(_messages.Message):
   r"""A Looker instance.
 
   Enums:
+    ClassTypeValueValuesEnum: Optional. Storage class of the instance.
     PlatformEditionValueValuesEnum: Platform edition.
     StateValueValuesEnum: Output only. The state of the instance.
     TierValueValuesEnum: Optional. Tier
 
   Fields:
     adminSettings: Looker Instance Admin settings.
+    classType: Optional. Storage class of the instance.
     consumerNetwork: Network name in the consumer project. Format:
       `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
@@ -340,6 +342,18 @@ class Instance(_messages.Message):
     userMetadata: Optional. User metadata.
   """
 
+  class ClassTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Storage class of the instance.
+
+    Values:
+      CLASS_TYPE_UNSPECIFIED: Unspecified storage class.
+      R1: Filestore.
+      P1: PD SSD.
+    """
+    CLASS_TYPE_UNSPECIFIED = 0
+    R1 = 1
+    P1 = 2
+
   class PlatformEditionValueValuesEnum(_messages.Enum):
     r"""Platform edition.
 
@@ -353,6 +367,9 @@ class Instance(_messages.Message):
       LOOKER_CORE_NONPROD_STANDARD_ANNUAL: Nonprod Subscription Standard.
       LOOKER_CORE_NONPROD_ENTERPRISE_ANNUAL: Nonprod Subscription Enterprise.
       LOOKER_CORE_NONPROD_EMBED_ANNUAL: Nonprod Subscription Embed.
+      LOOKER_CORE_TRIAL_STANDARD: Trial Standard.
+      LOOKER_CORE_TRIAL_ENTERPRISE: Trial Enterprise.
+      LOOKER_CORE_TRIAL_EMBED: Trial Embed.
     """
     PLATFORM_EDITION_UNSPECIFIED = 0
     LOOKER_CORE_TRIAL = 1
@@ -363,6 +380,9 @@ class Instance(_messages.Message):
     LOOKER_CORE_NONPROD_STANDARD_ANNUAL = 6
     LOOKER_CORE_NONPROD_ENTERPRISE_ANNUAL = 7
     LOOKER_CORE_NONPROD_EMBED_ANNUAL = 8
+    LOOKER_CORE_TRIAL_STANDARD = 9
+    LOOKER_CORE_TRIAL_ENTERPRISE = 10
+    LOOKER_CORE_TRIAL_EMBED = 11
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the instance.
@@ -407,37 +427,38 @@ class Instance(_messages.Message):
     XL = 5
 
   adminSettings = _messages.MessageField('AdminSettings', 1)
-  consumerNetwork = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  customDomain = _messages.MessageField('CustomDomain', 4)
-  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 5)
-  egressPublicIp = _messages.StringField(6)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
-  fipsEnabled = _messages.BooleanField(8)
-  geminiAiConfig = _messages.MessageField('GeminiAiConfig', 9)
-  geminiEnabled = _messages.BooleanField(10)
-  ingressPrivateIp = _messages.StringField(11)
-  ingressPublicIp = _messages.StringField(12)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 13)
-  linkedLspProjectNumber = _messages.IntegerField(14)
-  lookerUri = _messages.StringField(15)
-  lookerVersion = _messages.StringField(16)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
-  name = _messages.StringField(19)
-  oauthConfig = _messages.MessageField('OAuthConfig', 20)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 21)
-  privateIpEnabled = _messages.BooleanField(22)
-  pscConfig = _messages.MessageField('PscConfig', 23)
-  pscEnabled = _messages.BooleanField(24)
-  publicIpEnabled = _messages.BooleanField(25)
-  reservedRange = _messages.StringField(26)
-  satisfiesPzi = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  tier = _messages.EnumField('TierValueValuesEnum', 30)
-  updateTime = _messages.StringField(31)
-  userMetadata = _messages.MessageField('UserMetadata', 32)
+  classType = _messages.EnumField('ClassTypeValueValuesEnum', 2)
+  consumerNetwork = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  customDomain = _messages.MessageField('CustomDomain', 5)
+  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 6)
+  egressPublicIp = _messages.StringField(7)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
+  fipsEnabled = _messages.BooleanField(9)
+  geminiAiConfig = _messages.MessageField('GeminiAiConfig', 10)
+  geminiEnabled = _messages.BooleanField(11)
+  ingressPrivateIp = _messages.StringField(12)
+  ingressPublicIp = _messages.StringField(13)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 14)
+  linkedLspProjectNumber = _messages.IntegerField(15)
+  lookerUri = _messages.StringField(16)
+  lookerVersion = _messages.StringField(17)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 19)
+  name = _messages.StringField(20)
+  oauthConfig = _messages.MessageField('OAuthConfig', 21)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 22)
+  privateIpEnabled = _messages.BooleanField(23)
+  pscConfig = _messages.MessageField('PscConfig', 24)
+  pscEnabled = _messages.BooleanField(25)
+  publicIpEnabled = _messages.BooleanField(26)
+  reservedRange = _messages.StringField(27)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  tier = _messages.EnumField('TierValueValuesEnum', 31)
+  updateTime = _messages.StringField(32)
+  userMetadata = _messages.MessageField('UserMetadata', 33)
 
 
 class InstanceBackup(_messages.Message):
@@ -1330,8 +1351,10 @@ class ServiceAttachment(_messages.Message):
 
   Fields:
     connectionStatus: Output only. Connection status.
-    localFqdn: Required. Fully qualified domain name that will be used in the
+    localFqdn: Optional. Fully qualified domain name that will be used in the
       private DNS record created for the service attachment.
+    localFqdns: Optional. List of fully qualified domain names that will be
+      used in the private DNS record created for the service attachment.
     targetServiceAttachmentUri: Required. URI of the service attachment to
       connect to. Format: projects/{project}/regions/{region}/serviceAttachmen
       ts/{service_attachment}
@@ -1361,7 +1384,8 @@ class ServiceAttachment(_messages.Message):
 
   connectionStatus = _messages.EnumField('ConnectionStatusValueValuesEnum', 1)
   localFqdn = _messages.StringField(2)
-  targetServiceAttachmentUri = _messages.StringField(3)
+  localFqdns = _messages.StringField(3, repeated=True)
+  targetServiceAttachmentUri = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

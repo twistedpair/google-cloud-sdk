@@ -878,7 +878,8 @@ class ServerlessOperations(object):
       service.Service, the service as returned by the server on the POST/PUT
        request to create/update the service.
     """
-    should_validate_service = build_source is not None and release_track in [
+    requires_build = build_source is not None and not skip_build
+    should_validate_service = requires_build and release_track in [
         base.ReleaseTrack.ALPHA,
         base.ReleaseTrack.BETA,
     ]
@@ -888,7 +889,8 @@ class ServerlessOperations(object):
           stages.ServiceStages(
               allow_unauthenticated is not None,
               include_validate_service=should_validate_service,
-              include_build=build_source is not None,
+              include_upload_source=build_source is not None,
+              include_build=requires_build,
               include_create_repo=repo_to_create is not None,
               include_iap=iap_enabled is not None,
           ),
@@ -898,7 +900,6 @@ class ServerlessOperations(object):
 
     if build_source is not None and skip_build:
       tracker.StartStage(stages.UPLOAD_SOURCE)
-      tracker.UpdateHeaderMessage('Uploading sources.')
       source = sources.Upload(
           build_source,
           region,
@@ -916,7 +917,7 @@ class ServerlessOperations(object):
           )
       )
       tracker.CompleteStage(stages.UPLOAD_SOURCE)
-    elif build_source is not None:
+    elif requires_build:
       new_conn = self._conn_context.GetContextWithRegionOverride(region)
       with new_conn:
         if should_validate_service:

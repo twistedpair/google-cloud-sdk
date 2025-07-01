@@ -44,7 +44,8 @@ def UpdateRequestWithConditionFromFile(ref, args, request):
     condition_message = messages.Expr(
         description=args.condition_from_file.get('description'),
         title=args.condition_from_file.get('title'),
-        expression=args.condition_from_file.get('expression'))
+        expression=args.condition_from_file.get('expression'),
+    )
     request.condition = condition_message
   return request
 
@@ -54,7 +55,8 @@ def _ConditionFileFormatException(filename):
       'condition-from-file',
       '{filename} must be a path to a YAML or JSON file containing the '
       'condition. `expression` and `title` are required keys. `description` is '
-      'optional.'.format(filename=filename))
+      'optional.'.format(filename=filename),
+  )
 
 
 def ParseConditionFromFile(condition_from_file):
@@ -62,36 +64,51 @@ def ParseConditionFromFile(condition_from_file):
 
   condition = arg_parsers.FileContents()(condition_from_file)
   condition_dict = iam_util.ParseYamlOrJsonCondition(
-      condition, _ConditionFileFormatException(condition_from_file))
+      condition, _ConditionFileFormatException(condition_from_file)
+  )
   return condition_dict
 
 
 def EnableIamAccountConfirmation(response, args):
   del response
-  if args.command_path[len(args.command_path) -
-                       3:] == [u'iam', u'service-accounts', u'enable']:
-    log.status.Print('Enabled service account [{}].'.format(
-        args.service_account))
+  if args.command_path[len(args.command_path) - 3 :] == [
+      'iam',
+      'service-accounts',
+      'enable',
+  ]:
+    log.status.Print(
+        'Enabled service account [{}].'.format(args.service_account)
+    )
 
 
 def DisableIamAccountConfirmation(response, args):
   del response
-  if args.command_path[len(args.command_path) -
-                       3:] == [u'iam', u'service-accounts', u'disable']:
-    log.status.Print('Disabled service account [{}].'.format(
-        args.service_account))
+  if args.command_path[len(args.command_path) - 3 :] == [
+      'iam',
+      'service-accounts',
+      'disable',
+  ]:
+    log.status.Print(
+        'Disabled service account [{}].'.format(args.service_account)
+    )
 
 
 def EnableIamKeyConfirmation(response, args):
   del response  # Unused.
-  log.status.Print('Enabled key [{0}] for service account [{1}].'.format(
-      args.iam_key, args.iam_account))
+  log.status.Print(
+      'Enabled key [{0}] for service account [{1}].'.format(
+          args.iam_key, args.iam_account
+      )
+  )
 
 
 def DisableIamKeyConfirmation(response, args):
   del response  # Unused.
-  log.status.Print('Disabled key [{0}] for service account [{1}].'.format(
-      args.iam_key, args.iam_account))
+  log.status.Print(
+      'Disabled key [{0}] for service account [{1}].'.format(
+          args.iam_key, args.iam_account
+      )
+  )
 
 
 def SetServiceAccountResource(ref, unused_args, request):
@@ -109,7 +126,8 @@ def ValidateUpdateFieldMask(ref, unused_args, request):
   if not request.patchServiceAccountRequest.updateMask:
     update_fields = ['--display-name', '--description']
     raise gcloud_exceptions.OneOfArgumentsRequiredException(
-        update_fields, 'Specify at least one field to update.')
+        update_fields, 'Specify at least one field to update.'
+    )
   return request
 
 
@@ -119,8 +137,9 @@ def UseMaxRequestedPolicyVersion(api_field):
   def Process(ref, args, request):
     del ref, args  # Unused.
 
-    arg_utils.SetFieldInMessage(request, api_field,
-                                iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
+    arg_utils.SetFieldInMessage(
+        request, api_field, iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
+    )
     return request
 
   return Process
@@ -173,17 +192,18 @@ def GeneratePublicKeyDataFromFile(path):
   except arg_parsers.ArgumentTypeError as e:
     raise gcloud_exceptions.InvalidArgumentException(
         'public_key_file',
-        '{}. Please double check your input and try again.'.format(e))
+        '{}. Please double check your input and try again.'.format(e),
+    )
   return public_key_data.encode('utf-8')
 
 
-def AddCreateExtraAttributesConfigToRequest(ref, args, request):
-  """Add ExtraAttributesOAuth2Client fields to create workforcePoolProvider requests."""
+def AddCreateExtraAndExtendedAttributesConfigToRequest(ref, args, request):
+  """Add ExtraAttributesOAuth2Client and ExtendedAttributesOAuth2Client fields to create workforcePoolProvider requests."""
 
   del ref
   messages = apis.GetMessagesModule('iam', 'v1')
   SetExtraAttributesOauth2ClientFields(request, args, messages)
-
+  SetExtendedAttributesOauth2ClientFields(request, args, messages)
   return request
 
 
@@ -253,6 +273,44 @@ def SetExtraAttributesOauth2ClientFields(request, args, messages):
         request,
         'workforcePoolProvider.extraAttributesOauth2Client.queryParameters.filter',
         args.extra_attributes_filter,
+    )
+
+
+def SetExtendedAttributesOauth2ClientFields(request, args, messages):
+  """Set ExtendedAttributesOauth2Client fields in the request."""
+  if args.extended_attributes_type is not None:
+    response_type = (
+        messages.GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client.AttributesTypeValueValuesEnum
+    )
+    if 'azure-ad-groups-id' in args.extended_attributes_type:
+      arg_utils.SetFieldInMessage(
+          request,
+          'workforcePoolProvider.extendedAttributesOauth2Client.attributesType',
+          response_type.AZURE_AD_GROUPS_ID,
+      )
+  if args.extended_attributes_client_id is not None:
+    arg_utils.SetFieldInMessage(
+        request,
+        'workforcePoolProvider.extendedAttributesOauth2Client.clientId',
+        args.extended_attributes_client_id,
+    )
+  if args.extended_attributes_client_secret_value is not None:
+    arg_utils.SetFieldInMessage(
+        request,
+        'workforcePoolProvider.extendedAttributesOauth2Client.clientSecret.value.plainText',
+        args.extended_attributes_client_secret_value,
+    )
+  if args.extended_attributes_issuer_uri is not None:
+    arg_utils.SetFieldInMessage(
+        request,
+        'workforcePoolProvider.extendedAttributesOauth2Client.issuerUri',
+        args.extended_attributes_issuer_uri,
+    )
+  if args.extended_attributes_filter is not None:
+    arg_utils.SetFieldInMessage(
+        request,
+        'workforcePoolProvider.extendedAttributesOauth2Client.queryParameters.filter',
+        args.extended_attributes_filter,
     )
 
 

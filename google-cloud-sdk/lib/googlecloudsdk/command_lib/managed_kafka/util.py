@@ -486,3 +486,8 @@ def ParseCompatibility(compatibility) -> str:
 
 def ParseProject(project_id=None):
   return project_id or properties.VALUES.core.project.Get(required=True)
+
+
+HTTP_ERROR_FORMAT = (
+    "ResponseError: code={status_code}, message={status_message}"
+)

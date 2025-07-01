@@ -842,7 +842,7 @@ def _SplitOnDelim(arg_value, delim):
   return arg_value.split(delim)[:-1]
 
 
-def _ContainsValidJson(str_value):
+def _ContainsValidJSON(str_value):
   """Checks whether the string contains balanced json."""
   closing_brackets = {'}': '{', ']': '['}
   opening_brackets = set(closing_brackets.values())
@@ -865,7 +865,7 @@ def _ContainsValidJson(str_value):
   return not current_brackets
 
 
-def _RejoinJsonStrs(json_list, delim, arg_value):
+def _RejoinJSONStrs(json_list, delim, arg_value):
   """Rejoins json substrings that are part of the same json strings.
 
   For example:
@@ -893,7 +893,7 @@ def _RejoinJsonStrs(json_list, delim, arg_value):
     else:
       current_substr += delim + token
 
-    if _ContainsValidJson(current_substr):
+    if _ContainsValidJSON(current_substr):
       result.append(current_substr)
       current_substr = None
 
@@ -950,7 +950,7 @@ def _TokenizeQuotedList(arg_value, delim=',', includes_json=False):
   if not includes_json or delim != ',':
     return str_list
 
-  return _RejoinJsonStrs(str_list, delim, arg_value)
+  return _RejoinJSONStrs(str_list, delim, arg_value)
 
 
 def _ConcatList(existing_values, new_values):
@@ -1052,6 +1052,63 @@ def ArgRequiredInUniverse(
   if properties.IsDefaultUniverse():
     return default_universe
   return non_default_universe
+
+
+def _CheckIfJSONFileFormat(arg_value):
+  return re.match(r'^\S*\.(yaml|json)$', arg_value)
+
+
+def _LoadFile(arg_value):
+  return FileContents()(arg_value)
+
+
+def _LoadJSON(arg_value):
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import yaml
+  # pylint: enable=g-import-not-at-top
+
+  return yaml.load(arg_value)
+
+
+class ArgJSON(usage_text.ArgTypeUsage, ArgType):
+  """Parses inline JSON or from a file.
+
+  This is best for recursive values like struct fields
+  of when any value can be passed. ArgObject is better
+  for you want a specific format from the user.
+  ArgObjet helps validate if the user provided value
+  is valid and generates help text with examples.
+  """
+
+  @property
+  def hidden(self):
+    return False
+
+  def GetUsageMetavar(self, is_custom_metavar, metavar):
+    del is_custom_metavar  # unused
+    return metavar
+
+  def GetUsageExample(self, shorthand):
+    del shorthand  # unused
+    return '{...}'
+
+  def GetUsageHelpText(self, field_name, required, flag_name=None):
+    del field_name, required, flag_name  # unused
+    return None
+
+  def __call__(self, arg_value):
+    if not isinstance(arg_value, str):
+      raise ValueError(
+          'ArgJSON can only convert string values. Received {}.'.format(
+              arg_value))
+
+    if _CheckIfJSONFileFormat(arg_value):
+      # If it looks like a file, parse as a file
+      user_input = _LoadFile(arg_value)
+    else:
+      user_input = arg_value
+
+    return _LoadJSON(user_input)
 
 
 class ArgList(usage_text.ArgTypeUsage, ArgType):
@@ -1646,7 +1703,10 @@ class ArgObject(ArgDict):
     # stringifying json at each level
     return self._Map(arg_value, self._StringifyValues)
 
-  def _CheckIfJsonObject(self, arg_value):
+  def _CheckIfFileFormat(self, arg_value):
+    return self.enable_file_upload and _CheckIfJSONFileFormat(arg_value)
+
+  def _CheckIfJSONObject(self, arg_value):
     """Checks if arg_value can be loaded into a json object."""
     # pylint: disable=g-import-not-at-top
     from googlecloudsdk.core import yaml
@@ -1658,9 +1718,7 @@ class ArgObject(ArgDict):
       else:
         json_dict = parsed_json
 
-      if isinstance(json_dict, str) and self.enable_file_upload:
-        return re.match(self._file_path_pattern, arg_value)
-      elif not isinstance(json_dict, dict):
+      if not isinstance(json_dict, dict):
         # Only return true for arg_values that parse into key-value pairs.
         return False
       elif all(val is None for val in json_dict.values()):
@@ -1671,7 +1729,7 @@ class ArgObject(ArgDict):
     except yaml.YAMLParseError:
       return False
 
-  def _LoadJsonOrFile(self, arg_value):
+  def _LoadJSON(self, arg_value):
     """Loads json string or file into a dictionary.
 
     Args:
@@ -1681,15 +1739,8 @@ class ArgObject(ArgDict):
       Dictionary [str: str] where the value is a json string or other String
         value
     """
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.core import yaml
-    # pylint: enable=g-import-not-at-top
-
-    if re.match(self._file_path_pattern, arg_value) and self.enable_file_upload:
-      arg_value = FileContents()(arg_value)
-
     if self._keyed_values or self.repeated:
-      json_value = yaml.load(arg_value)
+      json_value = _LoadJSON(arg_value)
     else:
       json_value = arg_value
 
@@ -1702,7 +1753,7 @@ class ArgObject(ArgDict):
     else:
       super(ArgObject, self)._CheckRequiredKeys(arg_dict)
 
-  def _ParseAndValidateJson(self, arg_value):
+  def _ParseAndValidateJSON(self, arg_value):
     result = self._Map(arg_value, self._ValidateKeyValue)
 
     if self.required_keys:
@@ -1734,7 +1785,7 @@ class ArgObject(ArgDict):
     empty_obj_shorthand = ''
     return arg_value == empty_obj_shorthand or (
         self._ContainsArgDict(arg_value)
-        and not self._CheckIfJsonObject(arg_value)
+        and not self._CheckIfJSONObject(arg_value)
     )
 
   def __call__(self, arg_value):
@@ -1743,14 +1794,18 @@ class ArgObject(ArgDict):
           'ArgObject can only convert string values. Received {}.'.format(
               arg_value))
 
-    if self._CheckIfArgDictFormat(arg_value):
+    if self._CheckIfFileFormat(arg_value):
+      file_content = _LoadFile(arg_value)
+      json_dict = self._LoadJSON(file_content)
+      value = self._ParseAndValidateJSON(json_dict)
+    elif self._CheckIfArgDictFormat(arg_value):
       # If value contains arg_dict syntax and does not easily parse into a
       # json object, we assume it is an arg_dict.
       value = self._ParseArgDict(arg_value)
     else:
       # parse everything else as json / yaml
-      json_dict = self._LoadJsonOrFile(arg_value)
-      value = self._ParseAndValidateJson(json_dict)
+      json_dict = self._LoadJSON(arg_value)
+      value = self._ParseAndValidateJSON(json_dict)
 
     if self.repeated and not isinstance(value, list):
       value = [value]
@@ -2506,7 +2561,7 @@ class YAMLFileContents(object):
       raise ArgumentTypeError('Validator must be callable')
     self.validator = validator
 
-  def _AssertJsonLike(self, yaml_data):
+  def _AssertJSONLike(self, yaml_data):
     # pylint: disable=g-import-not-at-top
     from googlecloudsdk.core import yaml
     # pylint: enable=g-import-not-at-top
@@ -2574,7 +2629,7 @@ class YAMLFileContents(object):
     # pylint: enable=g-import-not-at-top
     try:
       yaml_data = self._LoadSingleYamlDocument(name)
-      self._AssertJsonLike(yaml_data)
+      self._AssertJSONLike(yaml_data)
       if self.validator:
         if not self.validator(yaml_data):
           raise ValueError('Invalid YAML/JSON content [{}]'.format(yaml_data))

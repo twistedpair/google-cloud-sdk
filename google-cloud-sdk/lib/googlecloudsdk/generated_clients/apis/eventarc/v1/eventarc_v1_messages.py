@@ -401,7 +401,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Enrollment(_messages.Message):
   r"""An enrollment represents a subscription for messages on a particular
   message bus. It defines a matching criteria for messages on the bus and the
@@ -1987,6 +1986,7 @@ class GKE(_messages.Message):
 
 class GoogleApiSource(_messages.Message):
   r"""A GoogleApiSource represents a subscription of 1P events from a
+
   MessageBus.
 
   Messages:
@@ -2013,6 +2013,11 @@ class GoogleApiSource(_messages.Message):
       GoogleApiSource.
     name: Identifier. Resource name of the form projects/{project}/locations/{
       location}/googleApiSources/{google_api_source}
+    organizationSubscription: Optional. Config to enable subscribing to events
+      from all projects in the GoogleApiSource's org.
+    projectSubscriptions: Optional. Config to enable subscribing to all events
+      from a list of projects. All the projects must be in the same org as the
+      GoogleApiSource.
     uid: Output only. Server assigned unique identifier for the channel. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
@@ -2077,8 +2082,12 @@ class GoogleApiSource(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   loggingConfig = _messages.MessageField('LoggingConfig', 8)
   name = _messages.StringField(9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  organizationSubscription = _messages.MessageField(
+      'OrganizationSubscription', 10
+  )
+  projectSubscriptions = _messages.MessageField('ProjectSubscriptions', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleChannelConfig(_messages.Message):
@@ -3266,6 +3275,16 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class OrganizationSubscription(_messages.Message):
+  r"""Config to enabled subscribing to events from other projects in the org.
+
+  Fields:
+    enabled: Required. Enable org level subscription.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class Pipeline(_messages.Message):
   r"""A representation of the Pipeline resource.
 
@@ -3466,6 +3485,20 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ProjectSubscriptions(_messages.Message):
+  r"""Config to enable subscribing to all events from a list of projects.
+
+  Fields:
+    list: Required. A list of projects to receive events from. All the
+      projects must be in the same org. The listed projects should have the
+      format project/{identifier} where identifier can be either the project
+      id for project number. A single list may contain both formats. At most
+      100 projects can be listed.
+  """
+
+  list = _messages.StringField(1, repeated=True)
 
 
 class Provider(_messages.Message):

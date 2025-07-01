@@ -2051,29 +2051,29 @@ class Empty(_messages.Message):
 
 
 class ExecuteSqlPayload(_messages.Message):
-  r"""The payload for the request to run the SQL query.
+  r"""The request payload used to execute a SQL statement.
 
   Enums:
     OutputFormatValueValuesEnum: Optional. The requested format of the SQL
       response.
 
   Fields:
-    accessToken: Optional. The access token required for iam user
+    accessToken: Optional. The access token required for IAM user
       authentication.
-    autoIamAuthn: Optional. When auto_iam_authn is true, the API uses the API
-      caller's identity from the request for database authentication. The API
-      caller must be an IAM user in the database. The username field is
-      ignored.
-    database: Optional. Name of the database against which query will be
+    autoIamAuthn: Optional. When set to true, the API caller identity
+      associated with the request is used for database authentication. The API
+      caller must be an IAM user in the database.
+    database: Optional. Name of the database on which the statement will be
       executed.
     outputFormat: Optional. The requested format of the SQL response.
-    password: Optional. The database native user's password.
-    rowLimit: Optional. The upper bound on the number of rows returned.
+    password: Optional. The database user's password.
+    rowLimit: Optional. The maximum number of rows returned per SQL statement.
     secretPath: Optional. The resource ID of a secret in secret manager which
-      contains the database native user's password. Expected format -
+      contains the database user's password. Expected format -
       projects/{project}/secrets/{secret}/versions/{version}.
-    sqlStatement: Required. SQL query to run on the database.
-    user: Optional. The name of the user in the Cloud SQL instance.
+    sqlStatement: Required. SQL statement to run on the database. It can be a
+      single statement or a sequence of statements separated by semicolons.
+    user: Optional. The name of an existing database user.
   """
 
   class OutputFormatValueValuesEnum(_messages.Enum):
@@ -4304,13 +4304,14 @@ class PscConfig(_messages.Message):
 
 
 class QueryResult(_messages.Message):
-  r"""QueryResult contains the result of a SQL query.
+  r"""QueryResult contains the result of executing a single SQL statement.
 
   Fields:
     columns: List of columns included in the result. This also includes the
       data type of the column.
-    message: Message related to SQL query result.
-    partialResult: Set to true if partial result of SQL query returned.
+    message: Message related to the SQL execution result.
+    partialResult: Set to true if a partial result of the SQL execution is
+      returned.
     rows: Rows returned by the SQL statement.
   """
 
@@ -4536,6 +4537,8 @@ class Settings(_messages.Message):
       each label is a single key value pair.
 
   Fields:
+    acceleratedReplicaMode: Optional. Configuration to depict if the replica
+      is accelerated.
     activationPolicy: The activation policy specifies when the instance is
       activated; it is applicable only when the instance state is RUNNABLE.
       Valid values: * `ALWAYS`: The instance is on, and remains so even in the
@@ -4799,51 +4802,52 @@ class Settings(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
-  activeDirectoryConfig = _messages.MessageField('SqlActiveDirectoryConfig', 2)
-  advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 3)
-  authorizedGaeApplications = _messages.StringField(4, repeated=True)
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 5)
-  backupConfiguration = _messages.MessageField('BackupConfiguration', 6)
-  collation = _messages.StringField(7)
-  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 8)
-  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 9)
-  crashSafeReplicationEnabled = _messages.BooleanField(10)
-  dataCacheConfig = _messages.MessageField('DataCacheConfig', 11)
-  dataDiskProvisionedIops = _messages.IntegerField(12)
-  dataDiskProvisionedThroughput = _messages.IntegerField(13)
-  dataDiskSizeGb = _messages.IntegerField(14)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 15)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 16, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(17)
-  dbAlignedAtomicWritesConfig = _messages.MessageField('DbAlignedAtomicWritesConfig', 18)
-  deletionProtectionEnabled = _messages.BooleanField(19)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 20, repeated=True)
-  edition = _messages.EnumField('EditionValueValuesEnum', 21)
-  enableDataplexIntegration = _messages.BooleanField(22)
-  enableGoogleMlIntegration = _messages.BooleanField(23)
-  finalBackupConfig = _messages.MessageField('FinalBackupConfig', 24)
-  insightsConfig = _messages.MessageField('InsightsConfig', 25)
-  instanceVersion = _messages.StringField(26)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 27)
-  kind = _messages.StringField(28)
-  locationPreference = _messages.MessageField('LocationPreference', 29)
-  maintenanceVersion = _messages.StringField(30)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 31)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 32)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 33)
-  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 34)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(35)
-  replicationLagMaxSeconds = _messages.IntegerField(36, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 37)
-  retainBackupsOnDelete = _messages.BooleanField(38)
-  settingsVersion = _messages.IntegerField(39)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 40)
-  storageAutoResize = _messages.BooleanField(41)
-  storageAutoResizeLimit = _messages.IntegerField(42)
-  tier = _messages.StringField(43)
-  timeZone = _messages.StringField(44)
-  userLabels = _messages.MessageField('UserLabelsValue', 45)
+  acceleratedReplicaMode = _messages.BooleanField(1)
+  activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 2)
+  activeDirectoryConfig = _messages.MessageField('SqlActiveDirectoryConfig', 3)
+  advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 4)
+  authorizedGaeApplications = _messages.StringField(5, repeated=True)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 6)
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 7)
+  collation = _messages.StringField(8)
+  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 9)
+  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 10)
+  crashSafeReplicationEnabled = _messages.BooleanField(11)
+  dataCacheConfig = _messages.MessageField('DataCacheConfig', 12)
+  dataDiskProvisionedIops = _messages.IntegerField(13)
+  dataDiskProvisionedThroughput = _messages.IntegerField(14)
+  dataDiskSizeGb = _messages.IntegerField(15)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 16)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 17, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(18)
+  dbAlignedAtomicWritesConfig = _messages.MessageField('DbAlignedAtomicWritesConfig', 19)
+  deletionProtectionEnabled = _messages.BooleanField(20)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 21, repeated=True)
+  edition = _messages.EnumField('EditionValueValuesEnum', 22)
+  enableDataplexIntegration = _messages.BooleanField(23)
+  enableGoogleMlIntegration = _messages.BooleanField(24)
+  finalBackupConfig = _messages.MessageField('FinalBackupConfig', 25)
+  insightsConfig = _messages.MessageField('InsightsConfig', 26)
+  instanceVersion = _messages.StringField(27)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 28)
+  kind = _messages.StringField(29)
+  locationPreference = _messages.MessageField('LocationPreference', 30)
+  maintenanceVersion = _messages.StringField(31)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 32)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 33)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 34)
+  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 35)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(36)
+  replicationLagMaxSeconds = _messages.IntegerField(37, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 38)
+  retainBackupsOnDelete = _messages.BooleanField(39)
+  settingsVersion = _messages.IntegerField(40)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 41)
+  storageAutoResize = _messages.BooleanField(42)
+  storageAutoResizeLimit = _messages.IntegerField(43)
+  tier = _messages.StringField(44)
+  timeZone = _messages.StringField(45)
+  userLabels = _messages.MessageField('UserLabelsValue', 46)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -4862,6 +4866,8 @@ class SqlActiveDirectoryConfig(_messages.Message):
     domain: The name of the domain (e.g., mydomain.com).
     kind: This is always sql#activeDirectoryConfig.
     mode: Optional. The mode of the Active Directory configuration.
+    organizationalUnit: Optional. The organizational unit distinguished name.
+      This is the full hierarchical path to the organizational unit.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -4882,6 +4888,7 @@ class SqlActiveDirectoryConfig(_messages.Message):
   domain = _messages.StringField(3)
   kind = _messages.StringField(4)
   mode = _messages.EnumField('ModeValueValuesEnum', 5)
+  organizationalUnit = _messages.StringField(6)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):
@@ -5260,6 +5267,9 @@ class SqlExternalSyncSettingError(_messages.Message):
         on the source instance.
       PSC_ONLY_INSTANCE_WITH_NO_NETWORK_ATTACHMENT_URI: PSC only destination
         instance does not have a network attachment URI.
+      SELECTED_OBJECTS_REFERENCE_UNSELECTED_OBJECTS: Selected objects
+        reference unselected objects. Based on their object type (foreign key
+        constraint or view), selected objects will fail during migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -5316,6 +5326,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_TABLES_WITH_REPLICA_IDENTITY = 52
     SELECTED_OBJECTS_NOT_EXIST_ON_SOURCE = 53
     PSC_ONLY_INSTANCE_WITH_NO_NETWORK_ATTACHMENT_URI = 54
+    SELECTED_OBJECTS_REFERENCE_UNSELECTED_OBJECTS = 55
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -5439,8 +5450,8 @@ class SqlInstancesDeleteRequest(_messages.Message):
     project: Project ID of the project that contains the instance to be
       deleted.
     retainBackups: Flag to opt-in for keep all visible backups after deleting
-      the instance. Currently, this only applies to the backups, the PITR GCS
-      bucket is not retained yet. By default, it is turned off.
+      the instance. Currently, this only applies to the backups, the PITR
+      Cloud Storage bucket is not retained yet. By default, it is turned off.
     retainBackupsExpiryTime: Expiration timestamp in UTC.
     retainBackupsTtlDays: Retention period in days.
     skipFinalBackup: Deprecated field, please use enable_final_backup.
@@ -5509,16 +5520,16 @@ class SqlInstancesExecuteSqlResponse(_messages.Message):
   r"""Execute a SQL statement response.
 
   Fields:
-    columns: List of columns included in the result. This also includes the
-      data type of the column.
+    columns: Deprecated field. Use results.columns instead.
     formattedRows: If output format was set to JSON, then this field will
       contain the response in JSON format.
-    message: Message related to SQL query result.
+    message: Message related to the SQL execution result.
     metadata: The additional metadata information regarding the execution of
-      the sql statement.
-    partialResult: Set to true if partial result of SQL query returned.
+      the SQL statement.
+    partialResult: Set to true if a partial result of the SQL execution is
+      returned.
     results: The list of results after executing all the SQL statements.
-    rows: Rows returned by the SQL statement.
+    rows: Deprecated field. Use results.rows instead.
   """
 
   columns = _messages.MessageField('Column', 1, repeated=True)

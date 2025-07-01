@@ -28,7 +28,7 @@ def MakePublicAdvertisedPrefixesArg():
       global_collection='compute.publicAdvertisedPrefixes')
 
 
-def AddCreatePapArgsToParser(parser):
+def AddCreatePapArgsToParser(parser, include_ipv6_access_type=False):
   """Adds public advertised prefixes create related flags to parser."""
 
   parser.add_argument(
@@ -40,19 +40,29 @@ def AddCreatePapArgsToParser(parser):
   )
   parser.add_argument(
       '--dns-verification-ip',
-      required=True,
       help=(
           'IP address to use for verification. It must be within the IP range'
           ' specified in --range.'
       ),
   )
   parser.add_argument(
-      '--description', help='Description of this public advertised prefix.')
+      '--description', help='Description of this public advertised prefix.'
+  )
   choices = ['GLOBAL', 'REGIONAL']
   parser.add_argument(
       '--pdp-scope',
       choices=choices,
-      help='Specifies how child public delegated prefix will be scoped.')
+      help='Specifies how child public delegated prefix will be scoped.',
+  )
+  ipv6_access_type_choices = ['internal', 'external']
+  if include_ipv6_access_type:
+    base.ChoiceArgument(
+        '--ipv6-access-type',
+        choices=ipv6_access_type_choices,
+        help_str=(
+            'Specifies the IPv6 access type of the public advertised prefix.'
+        ),
+    ).AddToParser(parser)
 
 
 def AddUpdatePapArgsToParser(parser):

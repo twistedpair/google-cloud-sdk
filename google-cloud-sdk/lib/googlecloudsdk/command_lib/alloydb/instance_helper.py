@@ -871,6 +871,7 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
   existing_instance = (
       alloydb_client.projects_locations_clusters_instances.Get(req)
   )
+  has_existing_config = existing_instance.connectionPoolConfig is not None
 
   if enable_connection_pooling is not None:
     config.enable = enable_connection_pooling
@@ -881,41 +882,65 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
 
   if pool_mode is not None:
     config.poolMode = _ParsePoolMode(alloydb_messages, pool_mode)
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.poolMode is not None
+  ):
     config.poolMode = existing_instance.connectionPoolConfig.poolMode
   if min_pool_size is not None:
     config.minPoolSize = min_pool_size
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.minPoolSize is not None
+  ):
     config.minPoolSize = existing_instance.connectionPoolConfig.minPoolSize
   if default_pool_size is not None:
     config.defaultPoolSize = default_pool_size
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.defaultPoolSize is not None
+  ):
     config.defaultPoolSize = (
         existing_instance.connectionPoolConfig.defaultPoolSize
     )
   if max_client_conn is not None:
     config.maxClientConn = max_client_conn
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.maxClientConn is not None
+  ):
     config.maxClientConn = existing_instance.connectionPoolConfig.maxClientConn
   if server_idle_timeout is not None:
     config.serverIdleTimeout = server_idle_timeout
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.serverIdleTimeout is not None
+  ):
     config.serverIdleTimeout = (
         existing_instance.connectionPoolConfig.serverIdleTimeout
     )
   if query_wait_timeout is not None:
     config.queryWaitTimeout = query_wait_timeout
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.queryWaitTimeout is not None
+  ):
     config.queryWaitTimeout = (
         existing_instance.connectionPoolConfig.queryWaitTimeout
     )
   if stats_users is not None:
     config.statsUsers = stats_users
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.statsUsers is not None
+  ):
     config.statsUsers = existing_instance.connectionPoolConfig.statsUsers
   if ignore_startup_parameters is not None:
     config.ignoreStartupParameters = ignore_startup_parameters
-  else:
+  elif (
+      has_existing_config and
+      existing_instance.connectionPoolConfig.ignoreStartupParameters is not None
+  ):
     config.ignoreStartupParameters = (
         existing_instance.connectionPoolConfig.ignoreStartupParameters
     )

@@ -1462,14 +1462,20 @@ class GenerateOfflineCredentialResponse(_messages.Message):
 
 
 class GenerateServiceAccountKeyRequest(_messages.Message):
-  r"""Request proto for GenerateServiceAccountKey API."""
+  r"""Request proto for GenerateServiceAccountKey API.
+
+  Fields:
+    caCertPath: Optional. The CA cert path.
+  """
+
+  caCertPath = _messages.StringField(1)
 
 
 class GenerateServiceAccountKeyResponse(_messages.Message):
   r"""Response proto for GenerateServiceAccountKey API.
 
   Fields:
-    ca_cert: Output only. The CA cert.
+    ca_cert_path: Output only. The CA cert path.
     format_version: Output only. The format version.
     name: Output only. The name of service identity.
     private_key: Output only. The private key.
@@ -1479,7 +1485,7 @@ class GenerateServiceAccountKeyResponse(_messages.Message):
     type: The credential type.
   """
 
-  ca_cert = _messages.StringField(1)
+  ca_cert_path = _messages.StringField(1)
   format_version = _messages.StringField(2)
   name = _messages.StringField(3)
   private_key = _messages.StringField(4)
@@ -2297,16 +2303,29 @@ class OIDCProviderConfig(_messages.Message):
   Fields:
     clientId: Required. The client id of the identity provider.
     clientSecret: Optional. The client secret of the identity provider.
+    cloudConsoleRedirectUri: Optional. CloudConsoleRedirectURI is the URI to
+      redirect users going through the OAuth flow using cloud console.
+    enableAccessToken: Optional. Flag that denotes if the access-token should
+      be included in the request as part of the bearer token by `gcloud anthos
+      auth login` and `kubectl oidc login`. Defaults to false.
+    extraParams: Optional. Comma-separated list of key-value pairs that will
+      be query-encoded and sent with the authentication endpoint request.
     issuerUri: Required. The issuer uri of the identity provider.
+    kubectlRedirectUri: Optional. KubectlRedirectURI is the URI to redirect
+      users authenticating to an OIDC provider with the kubectl plugin.
     scopes: Required. The scopes of the identity provider.
     userClaim: Optional. The user claim of the identity provider.
   """
 
   clientId = _messages.StringField(1)
   clientSecret = _messages.StringField(2)
-  issuerUri = _messages.StringField(3)
-  scopes = _messages.StringField(4)
-  userClaim = _messages.StringField(5)
+  cloudConsoleRedirectUri = _messages.StringField(3)
+  enableAccessToken = _messages.BooleanField(4)
+  extraParams = _messages.StringField(5)
+  issuerUri = _messages.StringField(6)
+  kubectlRedirectUri = _messages.StringField(7)
+  scopes = _messages.StringField(8)
+  userClaim = _messages.StringField(9)
 
 
 class Operation(_messages.Message):

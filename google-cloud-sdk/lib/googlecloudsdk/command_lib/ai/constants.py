@@ -195,11 +195,15 @@ TENSORBOARD_TIME_SERIES_COLLECTION = 'aiplatform.projects.locations.tensorboards
 
 MODEL_MONITORING_JOBS_COLLECTION = 'aiplatform.projects.locations.modelDeploymentMonitoringJobs'
 
+# gcloud-disable-gdu-domain
 OP_AUTOSCALING_METRIC_NAME_MAPPER = {
-    'cpu-usage':
-        'aiplatform.googleapis.com/prediction/online/cpu/utilization',
-    'gpu-duty-cycle':
-        'aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle',
+    'cpu-usage': 'aiplatform.googleapis.com/prediction/online/cpu/utilization',
+    'gpu-duty-cycle': (
+        'aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle'
+    ),
+    'request-counts-per-minute': (
+        'aiplatform.googleapis.com/prediction/online/request_count'
+    ),
 }
 
 MODEL_MONITORING_JOB_CREATION_DISPLAY_MESSAGE = """\

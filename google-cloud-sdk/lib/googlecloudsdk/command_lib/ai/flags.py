@@ -524,16 +524,19 @@ def GetAutoscalingMetricSpecsArg():
       type=arg_parsers.ArgDict(key_type=str, value_type=int),
       action=arg_parsers.UpdateAction,
       help="""\
-Metric specifications that overrides a resource utilization metric's target
-value. At most one entry is allowed per metric.
+Metric specifications that control autoscaling behavior. At most one entry is
+allowed per metric.
 
 *METRIC-NAME*::: Resource metric name. Choices are {}.
 
-*TARGET*::: Target resource utilization in percentage (1% - 100%) for the
-given metric. If the value is set to 60, the target resource utilization is 60%.
+*TARGET*::: Target value for the given metric. For `cpu-usage` and
+`gpu-duty-cycle`, the target is the target resource utilization in percentage
+(1% - 100%). For `request-counts-per-minute`, the target is the number of
+requests per minute per replica.
 
-For example:
-`--autoscaling-metric-specs=cpu-usage=70`
+For example, to set target CPU usage to 70% and target requests to 600 per
+minute per replica:
+`--autoscaling-metric-specs=cpu-usage=70,request-counts-per-minute=600`
 """.format(
           ', '.join([
               "'{}'".format(c)

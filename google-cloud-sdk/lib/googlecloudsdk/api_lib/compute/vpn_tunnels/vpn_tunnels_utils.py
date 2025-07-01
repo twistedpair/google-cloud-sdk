@@ -314,16 +314,39 @@ class VpnTunnelHelper(object):
     return self._resources.Parse(
         operation.selfLink, collection='compute.regionOperations')
 
-  def List(self, project, filter_expr):
+  def List(self, project, filter_expr, regions=None):
     """Yields a VPN tunnel resource from the list of VPN tunnels.
 
     Sends an AggregatedList request to obtain the list of VPN tunnels and
     yields the next VPN tunnel in this list.
 
+    Sends a List request to obtain the list of VPN tunnels in the specified
+    regions and yields the next VPN tunnel in this list.
+
     Args:
       project: String representing the project to use for the request.
       filter_expr: The expression used to filter the results.
+      regions: List of regions to list VPN tunnels from. If not specified,
+        aggregated list is used.
     """
+    if regions:
+      for region in regions:
+        next_page_token = None
+        while True:
+          request = self._messages.ComputeVpnTunnelsListRequest(
+              project=project,
+              region=region,
+              filter=filter_expr,
+              pageToken=next_page_token,
+              returnPartialSuccess=True,
+          )
+          response = self._service.List(request)
+          next_page_token = response.nextPageToken
+          for vpn_tunnel in response.items:
+            yield vpn_tunnel
+          if not next_page_token:
+            break
+      return
     next_page_token = None
     while True:
       request = self._messages.ComputeVpnTunnelsAggregatedListRequest(

@@ -328,6 +328,10 @@ ANONYMOUS_AUTHENTICATION_MODE_NOT_SUPPORTED = """\
 Anonymous authentication mode '{mode}' is not supported.
 """
 
+MEMBERSHIP_TYPE_NOT_SUPPORTED = """\
+Fleet membership type '{type}' is not supported.
+"""
+
 DEFAULT_MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -784,6 +788,7 @@ class CreateClusterOptions(object):
       managed_config=None,
       fleet_project=None,
       enable_fleet=None,
+      membership_type=None,
       gateway_api=None,
       logging_variant=None,
       enable_multi_networking=None,
@@ -836,6 +841,8 @@ class CreateClusterOptions(object):
       enable_legacy_lustre_port=None,
       enable_default_compute_class=None,
       enable_k8s_certs_via_dns=None,
+      boot_disk_provisioned_iops=None,
+      boot_disk_provisioned_throughput=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1057,6 +1064,7 @@ class CreateClusterOptions(object):
     self.managed_config = managed_config
     self.fleet_project = fleet_project
     self.enable_fleet = enable_fleet
+    self.membership_type = membership_type
     self.gateway_api = gateway_api
     self.logging_variant = logging_variant
     self.enable_multi_networking = enable_multi_networking
@@ -1124,6 +1132,8 @@ class CreateClusterOptions(object):
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
     self.enable_default_compute_class = enable_default_compute_class
     self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
+    self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
+    self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
 
 
 class UpdateClusterOptions(object):
@@ -1251,6 +1261,8 @@ class UpdateClusterOptions(object):
       removed_additional_pod_ipv4_ranges=None,
       fleet_project=None,
       enable_fleet=None,
+      membership_type=None,
+      unset_membership_type=None,
       clear_fleet_project=None,
       enable_security_posture=None,
       network_performance_config=None,
@@ -1301,6 +1313,8 @@ class UpdateClusterOptions(object):
       enable_legacy_lustre_port=None,
       enable_default_compute_class=None,
       enable_k8s_certs_via_dns=None,
+      boot_disk_provisioned_iops=None,
+      boot_disk_provisioned_throughput=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1448,6 +1462,8 @@ class UpdateClusterOptions(object):
     self.removed_additional_pod_ipv4_ranges = removed_additional_pod_ipv4_ranges
     self.fleet_project = fleet_project
     self.enable_fleet = enable_fleet
+    self.membership_type = membership_type
+    self.unset_membership_type = unset_membership_type
     self.clear_fleet_project = clear_fleet_project
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
@@ -1520,6 +1536,8 @@ class UpdateClusterOptions(object):
     self.enable_legacy_lustre_port = enable_legacy_lustre_port
     self.enable_default_compute_class = enable_default_compute_class
     self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
+    self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
+    self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
 
 
 class SetMasterAuthOptions(object):
@@ -1638,6 +1656,8 @@ class CreateNodePoolOptions(object):
       secondary_boot_disks=None,
       storage_pools=None,
       local_ssd_encryption_mode=None,
+      boot_disk_provisioned_iops=None,
+      boot_disk_provisioned_throughput=None,
       data_cache_count=None,
   ):
     self.machine_type = machine_type
@@ -1735,6 +1755,8 @@ class CreateNodePoolOptions(object):
     self.secondary_boot_disks = secondary_boot_disks
     self.storage_pools = storage_pools
     self.local_ssd_encryption_mode = local_ssd_encryption_mode
+    self.provisioned_iops = boot_disk_provisioned_iops
+    self.provisioned_throughput = boot_disk_provisioned_throughput
 
 
 class UpdateNodePoolOptions(object):
@@ -1788,6 +1810,8 @@ class UpdateNodePoolOptions(object):
       max_run_duration=None,
       flex_start=None,
       storage_pools=None,
+      boot_disk_provisioned_iops=None,
+      boot_disk_provisioned_throughput=None,
   ):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -1840,6 +1864,8 @@ class UpdateNodePoolOptions(object):
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port
     )
+    self.provisioned_iops = boot_disk_provisioned_iops
+    self.provisioned_throughput = boot_disk_provisioned_throughput
 
   def IsAutoscalingUpdate(self):
     return (
@@ -1894,6 +1920,8 @@ class UpdateNodePoolOptions(object):
         or self.max_run_duration is not None
         or self.flex_start is not None
         or self.storage_pools is not None
+        or self.provisioned_iops is not None
+        or self.provisioned_throughput is not None
     )
 
 
@@ -2803,11 +2831,17 @@ class APIAdapter(object):
       if cluster.fleet is None:
         cluster.fleet = self.messages.Fleet()
       cluster.fleet.project = cluster_ref.projectId
+      if options.membership_type is not None:
+        cluster.fleet = _GetFleetMembershipType(options,
+                                                self.messages, cluster.fleet)
 
     if options.fleet_project:
       if cluster.fleet is None:
         cluster.fleet = self.messages.Fleet()
       cluster.fleet.project = options.fleet_project
+      if options.membership_type is not None:
+        cluster.fleet = _GetFleetMembershipType(options,
+                                                self.messages, cluster.fleet)
 
     if options.logging_variant is not None:
       if cluster.nodePoolDefaults is None:
@@ -3132,6 +3166,11 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.node_source_image:
       raise util.Error('cannot specify node source image in container v1 api')
+    if (
+        options.boot_disk_provisioned_iops
+        or options.boot_disk_provisioned_throughput
+    ):
+      node_config.bootDisk = self.ParseBootDiskConfig(options)
 
     NodeIdentityOptionsToNodeConfig(options, node_config)
 
@@ -3211,6 +3250,14 @@ class APIAdapter(object):
       node_config.flexStart = options.flex_start
 
     return node_config
+
+  def ParseBootDiskConfig(self, options):
+    boot_disk_config = self.messages.BootDisk()
+    if options.provisioned_iops:
+      boot_disk_config.provisionedIops = options.provisioned_iops
+    if options.provisioned_throughput:
+      boot_disk_config.provisionedThroughput = options.provisioned_throughput
+    return boot_disk_config
 
   def ParseAdvancedMachineFeatures(self, options, node_config):
     """Parses advanced machine feature node config options."""
@@ -4196,7 +4243,6 @@ class APIAdapter(object):
 
   def UpdateClusterCommon(self, cluster_ref, options):
     """Returns an UpdateCluster operation."""
-
     update = None
     if not options.version:
       options.version = '-'
@@ -4718,15 +4764,36 @@ class APIAdapter(object):
               enabled=options.enable_cost_allocation
           )
       )
-
+    membership_types = {
+        'LIGHTWEIGHT': (
+            self.messages.Fleet.MembershipTypeValueValuesEnum.LIGHTWEIGHT
+        ),
+        'MEMBERSHIP_TYPE_UNSPECIFIED': (
+            self.messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED
+        ),
+    }
     if options.enable_fleet:
       update = self.messages.ClusterUpdate(
-          desiredFleet=self.messages.Fleet(project=cluster_ref.projectId)
+          desiredFleet=self.messages.Fleet(
+              project=cluster_ref.projectId,
+              membershipType=membership_types.get(options.membership_type, None)
+          )
       )
 
     if options.fleet_project:
       update = self.messages.ClusterUpdate(
-          desiredFleet=self.messages.Fleet(project=options.fleet_project)
+          desiredFleet=self.messages.Fleet(
+              project=options.fleet_project,
+              membershipType=membership_types.get(options.membership_type, None)
+          )
+      )
+
+    if options.unset_membership_type:
+      fleet_project = options.fleet_project or cluster_ref.projectId
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet
+          (membershipType=None,
+           project=fleet_project),
       )
 
     if options.enable_k8s_beta_apis is not None:
@@ -5679,6 +5746,8 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.image_type:
       node_config.imageType = options.image_type
+    if options.provisioned_iops or options.provisioned_throughput:
+      node_config.bootDisk = self.ParseBootDiskConfig(options)
 
     self.ParseAdvancedMachineFeatures(options, node_config)
 
@@ -6349,10 +6418,25 @@ class APIAdapter(object):
         options.machine_type is not None
         or options.disk_type is not None
         or options.disk_size_gb is not None
+        or options.provisioned_iops is not None
+        or options.provisioned_throughput is not None
     ):
       update_request.machineType = options.machine_type
       update_request.diskType = options.disk_type
       update_request.diskSizeGb = options.disk_size_gb
+      # This is nested because iops/throughput are grouped with disk type/size.
+      # In the future they will all modify the BootDisk message.
+      if (
+          options.provisioned_iops is not None
+          or options.provisioned_throughput is not None
+      ):
+        boot_disk_cfg = self.messages.BootDisk()
+        if options.provisioned_iops is not None:
+          boot_disk_cfg.provisionedIops = options.provisioned_iops
+        if options.provisioned_throughput is not None:
+          boot_disk_cfg.provisionedThroughput = options.provisioned_throughput
+        update_request.bootDisk = boot_disk_cfg
+
     elif options.enable_queued_provisioning is not None:
       update_request.queuedProvisioning = self.messages.QueuedProvisioning()
       update_request.queuedProvisioning.enabled = (
@@ -9752,6 +9836,27 @@ def _GetAnonymousAuthenticationConfig(options, messages):
       )
     config.mode = modes[options.anonymous_authentication_config]
   return config
+
+
+def _GetFleetMembershipType(options, messages, fleet):
+  """Configures the Fleet MembershipType from options and fleet."""
+  if options.membership_type is not None:
+    types = {
+        'LIGHTWEIGHT': (
+            messages.Fleet.MembershipTypeValueValuesEnum.LIGHTWEIGHT
+        ),
+        'MEMBERSHIP_TYPE_UNSPECIFIED': (
+            messages.Fleet.MembershipTypeValueValuesEnum.MEMBERSHIP_TYPE_UNSPECIFIED
+        ),
+    }
+    if options.membership_type not in types:
+      raise util.Error(
+          MEMBERSHIP_TYPE_NOT_SUPPORTED.format(
+              type=options.membership_type
+          )
+      )
+    fleet.membershipType = types[options.membership_type]
+  return fleet
 
 
 def _GetEnterpriseConfig(options, messages):

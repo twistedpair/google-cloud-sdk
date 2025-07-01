@@ -39,6 +39,7 @@ __protobuf__ = proto.module(
         'RagFileChunkingConfig',
         'RagFileTransformationConfig',
         'RagFileParsingConfig',
+        'RagFileMetadataConfig',
         'UploadRagFileConfig',
         'ImportRagFilesConfig',
         'RagManagedDbConfig',
@@ -774,6 +775,9 @@ class RagFile(proto.Message):
             last updated.
         file_status (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.FileStatus):
             Output only. State of the RagFile.
+        user_metadata (str):
+            Output only. The metadata for metadata search. The
+            user_metadata Needs to be in JSON format.
     """
     class RagFileType(proto.Enum):
         r"""The type of the RagFile.
@@ -861,6 +865,10 @@ class RagFile(proto.Message):
         proto.MESSAGE,
         number=13,
         message='FileStatus',
+    )
+    user_metadata: str = proto.Field(
+        proto.STRING,
+        number=15,
     )
 
 
@@ -1133,6 +1141,103 @@ class RagFileParsingConfig(proto.Message):
     )
 
 
+class RagFileMetadataConfig(proto.Message):
+    r"""Metadata config for RagFile.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        gcs_metadata_schema_source (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GcsSource):
+            Google Cloud Storage location. Supports importing individual
+            files as well as entire Google Cloud Storage directories.
+            Sample formats:
+
+            -  ``gs://bucket_name/my_directory/object_name/metadata_schema.json``
+            -  ``gs://bucket_name/my_directory`` If the user provides a
+               directory, the metadata schema will be read from the
+               files that ends with "metadata_schema.json" in the
+               directory.
+
+            This field is a member of `oneof`_ ``metadata_schema_source``.
+        google_drive_metadata_schema_source (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GoogleDriveSource):
+            Google Drive location. Supports importing individual files
+            as well as Google Drive folders. If the user provides a
+            folder, the metadata schema will be read from the files that
+            ends with "metadata_schema.json" in the directory.
+
+            This field is a member of `oneof`_ ``metadata_schema_source``.
+        inline_metadata_schema_source (str):
+            Inline metadata schema source. Must be a JSON
+            string.
+
+            This field is a member of `oneof`_ ``metadata_schema_source``.
+        gcs_metadata_source (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GcsSource):
+            Google Cloud Storage location. Supports importing individual
+            files as well as entire Google Cloud Storage directories.
+            Sample formats:
+
+            -  ``gs://bucket_name/my_directory/object_name/metadata.json``
+            -  ``gs://bucket_name/my_directory`` If the user provides a
+               directory, the metadata will be read from the files that
+               ends with "metadata.json" in the directory.
+
+            This field is a member of `oneof`_ ``metadata_source``.
+        google_drive_metadata_source (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GoogleDriveSource):
+            Google Drive location. Supports importing
+            individual files as well as Google Drive
+            folders. If the user provides a directory, the
+            metadata will be read from the files that ends
+            with "metadata.json" in the directory.
+
+            This field is a member of `oneof`_ ``metadata_source``.
+        inline_metadata_source (str):
+            Inline metadata source. Must be a JSON
+            string.
+
+            This field is a member of `oneof`_ ``metadata_source``.
+    """
+
+    gcs_metadata_schema_source: io.GcsSource = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        oneof='metadata_schema_source',
+        message=io.GcsSource,
+    )
+    google_drive_metadata_schema_source: io.GoogleDriveSource = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        oneof='metadata_schema_source',
+        message=io.GoogleDriveSource,
+    )
+    inline_metadata_schema_source: str = proto.Field(
+        proto.STRING,
+        number=3,
+        oneof='metadata_schema_source',
+    )
+    gcs_metadata_source: io.GcsSource = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='metadata_source',
+        message=io.GcsSource,
+    )
+    google_drive_metadata_source: io.GoogleDriveSource = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='metadata_source',
+        message=io.GoogleDriveSource,
+    )
+    inline_metadata_source: str = proto.Field(
+        proto.STRING,
+        number=6,
+        oneof='metadata_source',
+    )
+
+
 class UploadRagFileConfig(proto.Message):
     r"""Config for uploading RagFile.
 
@@ -1143,6 +1248,15 @@ class UploadRagFileConfig(proto.Message):
         rag_file_transformation_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagFileTransformationConfig):
             Specifies the transformation config for
             RagFiles.
+        rag_file_metadata_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagFileMetadataConfig):
+            Specifies the metadata config for RagFiles.
+            Including paths for metadata schema and
+            metadata. Alteratively, inline metadata schema
+            and metadata can be provided.
+        rag_file_parsing_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagFileParsingConfig):
+            Optional. Specifies the parsing config for
+            RagFiles. RAG will use the default parser if
+            this field is not set.
     """
 
     rag_file_chunking_config: 'RagFileChunkingConfig' = proto.Field(
@@ -1154,6 +1268,16 @@ class UploadRagFileConfig(proto.Message):
         proto.MESSAGE,
         number=3,
         message='RagFileTransformationConfig',
+    )
+    rag_file_metadata_config: 'RagFileMetadataConfig' = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message='RagFileMetadataConfig',
+    )
+    rag_file_parsing_config: 'RagFileParsingConfig' = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message='RagFileParsingConfig',
     )
 
 
@@ -1238,6 +1362,10 @@ class ImportRagFilesConfig(proto.Message):
             Optional. Specifies the parsing config for
             RagFiles. RAG will use the default parser if
             this field is not set.
+        rag_file_metadata_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagFileMetadataConfig):
+            Specifies the metadata config for RagFiles.
+            Including paths for metadata schema and
+            metadata.
         max_embedding_requests_per_min (int):
             Optional. The max number of queries per
             minute that this job is allowed to make to the
@@ -1335,6 +1463,11 @@ class ImportRagFilesConfig(proto.Message):
         number=8,
         message='RagFileParsingConfig',
     )
+    rag_file_metadata_config: 'RagFileMetadataConfig' = proto.Field(
+        proto.MESSAGE,
+        number=17,
+        message='RagFileMetadataConfig',
+    )
     max_embedding_requests_per_min: int = proto.Field(
         proto.INT32,
         number=5,
@@ -1366,8 +1499,17 @@ class RagManagedDbConfig(proto.Message):
             chosen.
 
             This field is a member of `oneof`_ ``tier``.
+        scaled (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagManagedDbConfig.Scaled):
+            Sets the RagManagedDb to the Scaled tier.
+
+            This field is a member of `oneof`_ ``tier``.
         basic (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagManagedDbConfig.Basic):
             Sets the RagManagedDb to the Basic tier.
+
+            This field is a member of `oneof`_ ``tier``.
+        unprovisioned (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RagManagedDbConfig.Unprovisioned):
+            Sets the RagManagedDb to the Unprovisioned
+            tier.
 
             This field is a member of `oneof`_ ``tier``.
     """
@@ -1377,7 +1519,12 @@ class RagManagedDbConfig(proto.Message):
         with autoscaling functionality. It is suitable for customers
         with large amounts of data or performance sensitive workloads.
 
-        NOTE: This is the default tier if not explicitly chosen.
+        """
+
+    class Scaled(proto.Message):
+        r"""Scaled tier offers production grade performance along with
+        autoscaling functionality. It is suitable for customers with
+        large amounts of data or performance sensitive workloads.
 
         """
 
@@ -1390,6 +1537,19 @@ class RagManagedDbConfig(proto.Message):
         -  Latency insensitive workload.
         -  Only using RAG Engine with external vector DBs.
 
+        NOTE: This is the default tier if not explicitly chosen.
+
+        """
+
+    class Unprovisioned(proto.Message):
+        r"""Disables the RAG Engine service and deletes all your data
+        held within this service. This will halt the billing of the
+        service.
+
+        NOTE: Once deleted the data cannot be recovered. To start using
+        RAG Engine again, you will need to update the tier by calling
+        the UpdateRagEngineConfig API.
+
         """
 
     enterprise: Enterprise = proto.Field(
@@ -1398,11 +1558,23 @@ class RagManagedDbConfig(proto.Message):
         oneof='tier',
         message=Enterprise,
     )
+    scaled: Scaled = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='tier',
+        message=Scaled,
+    )
     basic: Basic = proto.Field(
         proto.MESSAGE,
         number=2,
         oneof='tier',
         message=Basic,
+    )
+    unprovisioned: Unprovisioned = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        oneof='tier',
+        message=Unprovisioned,
     )
 
 

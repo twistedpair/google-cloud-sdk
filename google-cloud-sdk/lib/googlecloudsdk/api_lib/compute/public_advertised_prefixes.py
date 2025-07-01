@@ -37,22 +37,28 @@ class PublicAdvertisedPrefixesClient(object):
              ip_cidr_range,
              dns_verification_ip,
              description,
-             pdp_scope):
+             pdp_scope,
+             ipv6_access_type):
     """Creates a public advertised prefix."""
 
     if pdp_scope:
       public_advertised_prefix = self.messages.PublicAdvertisedPrefix(
           name=pap_ref.Name(),
           ipCidrRange=ip_cidr_range,
-          dnsVerificationIp=dns_verification_ip,
           description=description,
           pdpScope=pdp_scope)
     else:
       public_advertised_prefix = self.messages.PublicAdvertisedPrefix(
           name=pap_ref.Name(),
           ipCidrRange=ip_cidr_range,
-          dnsVerificationIp=dns_verification_ip,
           description=description)
+
+    if dns_verification_ip is not None:
+      public_advertised_prefix.dnsVerificationIp = dns_verification_ip
+
+    if ipv6_access_type is not None:
+      public_advertised_prefix.ipv6AccessType = ipv6_access_type
+
     request = self.messages.ComputePublicAdvertisedPrefixesInsertRequest(
         publicAdvertisedPrefix=public_advertised_prefix,
         project=pap_ref.project)

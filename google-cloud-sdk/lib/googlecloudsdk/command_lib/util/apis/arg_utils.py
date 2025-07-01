@@ -25,6 +25,7 @@ import re
 
 from apitools.base.protorpclite import messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import util as format_util
@@ -153,6 +154,13 @@ def GetFieldValueFromMessage(message, field_path):
   return message
 
 
+def EncodeToMessage(field_type, value):
+  if value is not None:
+    return encoding.PyValueToMessage(field_type, value)
+  else:
+    return None
+
+
 def SetFieldInMessage(message, field_path, value):
   """Sets the given field in the message object.
 
@@ -173,11 +181,11 @@ def SetFieldInMessage(message, field_path, value):
     message = sub_message[0] if is_repeated else sub_message
   field_type = _GetField(message, fields[-1]).type
   if isinstance(value, dict):
-    value = encoding.PyValueToMessage(field_type, value)
+    value = EncodeToMessage(field_type, value)
   if isinstance(value, list):
     for i, item in enumerate(value):
       if isinstance(field_type, type) and not isinstance(item, field_type):
-        value[i] = encoding.PyValueToMessage(field_type, item)
+        value[i] = EncodeToMessage(field_type, item)
   setattr(message, fields[-1], value)
 
 
@@ -228,6 +236,8 @@ class FieldType(enum.Enum):
   MAP = 'map'
   MESSAGE = 'message'
   FIELD = 'field'
+  JSON = 'json'
+  JSON_VALUE = 'json_value'
 
 
 ADDITIONAL_PROPS = 'additionalProperties'
@@ -240,6 +250,10 @@ def _GetAdditionalPropsField(field):
     return GetFieldFromMessage(field.type, ADDITIONAL_PROPS)
   except UnknownFieldError:
     return None
+
+
+def _IsJSONValueType(field):
+  return field.type == extra_types.JsonValue
 
 
 def GetFieldType(field):
@@ -263,10 +277,17 @@ def GetFieldType(field):
   is_map = (additional_props_field and
             isinstance(additional_props_field, messages.MessageField) and
             additional_props_field.repeated)
+  value_field = (GetFieldFromMessage(additional_props_field.type, 'value')
+                 if is_map else None)
 
-  if is_map:
+  if value_field and _IsJSONValueType(value_field):
+    return FieldType.JSON
+  elif is_map:
     return FieldType.MAP
-  return FieldType.MESSAGE
+  elif _IsJSONValueType(field):
+    return FieldType.JSON_VALUE
+  else:
+    return FieldType.MESSAGE
 
 
 DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,
@@ -295,6 +316,17 @@ class FileType(object):
     """Generates an argparse type function to use to parse the argument."""
 
   def Action(self):
+    """The argparse action to use for this argument."""
+    return 'store'
+
+
+class ArgJSONType(object):
+  """An interface for custom type generators for JSON (struct type)."""
+
+  def GenerateType(self, field):
+    """Generates an argparse type function to use to parse the argument."""
+
+  def Action(self, unused_repeated):
     """The argparse action to use for this argument."""
     return 'store'
 
@@ -415,7 +447,7 @@ def GenerateFlagType(field, attributes, fix_bools=True):
 
   append_action = 'append'
   repeated = (field and field.repeated) and attributes.repeated is not False  # repeated as None should default to True, so pylint: disable=g-bool-id-comparison
-  if isinstance(flag_type, ArgObjectType):
+  if isinstance(flag_type, ArgObjectType) or isinstance(flag_type, ArgJSONType):
     if action:
       raise ArgumentGenerationError(
           field.name,

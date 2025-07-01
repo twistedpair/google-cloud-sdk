@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.resource import resource_property
 
 PIPELINE_UPDATE_MASK = '*,labels'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
@@ -105,6 +106,25 @@ BACKOFF_CHOICES_SHORT = ['LINEAR', 'EXPONENTIAL']
 TARGETS_FIELD = 'targets'
 SCHEDULE_FIELD = 'schedule'
 TIME_ZONE_FIELD = 'timeZone'
+STRATEGY_FIELD = 'strategy'
+STANDARD_FIELD = 'standard'
+CANARY_FIELD = 'canary'
+CANARY_DEPLOYMENT_FIELD = 'canaryDeployment'
+CUSTOM_CANARY_DEPLOYMENT_FIELD = 'customCanaryDeployment'
+PHASE_CONFIGS_FIELD = 'phaseConfigs'
+VERIFY_CONFIG_FIELD = 'verifyConfig'
+PREDEPLOY_FIELD = 'predeploy'
+POSTDEPLOY_FIELD = 'postdeploy'
+ANALYSIS_FIELD = 'analysis'
+CUSTOM_CHECKS_FIELD = 'customChecks'
+GOOGLE_CLOUD_FIELD = 'googleCloud'
+ALERT_POLICY_CHECKS_FIELD = 'alertPolicyChecks'
+TASKS_FIELD = 'tasks'
+CONFIG_TASK_FIELD = 'config'
+CONTAINERS_TASK_FIELD = 'containersTask'
+CONTAINERS_FIELD = 'containers'
+ENV_FIELD = 'env'
+LABELS_FIELD = 'labels'
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -287,6 +307,8 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         )
         for stage in stages:
           SetDeployParametersForPipelineStage(messages, resource_ref, stage)
+          SetMapFieldsForPipelineStage(messages, stage)
+
       if field == SELECTOR_FIELD and kind == AUTOMATION_KIND:
         SetAutomationSelector(messages, resource, value)
         continue
@@ -328,6 +350,130 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
   )
 
   resource_dict[kind].append(resource)
+
+
+def SetMapFieldsForPipelineStage(messages, stage):
+  """Sets any map fields on a pipeline stage.
+
+  This includes environment variables defined on a Task and labels defined on an
+  Analysis Alert Policy Check.
+
+  Args:
+   messages: module containing the definitions of messages for Cloud Deploy.
+   stage: Cloud Deploy Stage message.
+  """
+  stage_strategy = stage.get(STRATEGY_FIELD)
+  if not stage_strategy:
+    return
+
+  if STANDARD_FIELD in stage_strategy:
+    SetMapFieldsOnStrategy(messages, stage_strategy.get(STANDARD_FIELD))
+
+  elif CANARY_FIELD in stage_strategy:
+    # Canary deployment
+    if stage_strategy.get(CANARY_FIELD).get(CANARY_DEPLOYMENT_FIELD):
+      SetMapFieldsOnStrategy(
+          messages,
+          stage_strategy.get(CANARY_FIELD).get(CANARY_DEPLOYMENT_FIELD),
+      )
+    # Custom canary deployment
+    else:
+      for phase_config in (
+          stage_strategy.get(CANARY_FIELD)
+          .get(CUSTOM_CANARY_DEPLOYMENT_FIELD)
+          .get(PHASE_CONFIGS_FIELD)
+      ):
+        SetMapFieldsOnStrategy(messages, phase_config)
+
+
+def SetMapFieldsOnStrategy(messages, strategy):
+  """Sets any map fields on a strategy or phase config.
+
+  Args:
+   messages: module containing the definitions of messages for Cloud Deploy.
+   strategy: Cloud Deploy Strategy or PhaseConfig message.
+  """
+  if strategy.get(VERIFY_CONFIG_FIELD):
+    for task in strategy.get(VERIFY_CONFIG_FIELD).get(TASKS_FIELD):
+      SetEnvForTask(messages, task)
+
+  if strategy.get(PREDEPLOY_FIELD) and strategy.get(PREDEPLOY_FIELD).get(
+      TASKS_FIELD
+  ):
+    for task in strategy.get(PREDEPLOY_FIELD).get(TASKS_FIELD):
+      SetEnvForTask(messages, task)
+
+  if strategy.get(POSTDEPLOY_FIELD) and strategy.get(POSTDEPLOY_FIELD).get(
+      TASKS_FIELD
+  ):
+    for task in strategy.get(POSTDEPLOY_FIELD).get(TASKS_FIELD):
+      SetEnvForTask(messages, task)
+
+  if strategy.get(ANALYSIS_FIELD):
+    if strategy.get(ANALYSIS_FIELD).get(CUSTOM_CHECKS_FIELD):
+      for custom_check in strategy.get(ANALYSIS_FIELD).get(CUSTOM_CHECKS_FIELD):
+        SetEnvForTask(messages, custom_check.get('task'))
+    if strategy.get(ANALYSIS_FIELD).get(GOOGLE_CLOUD_FIELD):
+      for alert_policy_check in (
+          strategy.get(ANALYSIS_FIELD)
+          .get(GOOGLE_CLOUD_FIELD)
+          .get(ALERT_POLICY_CHECKS_FIELD)
+      ):
+        SetLabelsForAlertPolicyCheck(messages, alert_policy_check)
+
+
+def SetEnvForTask(messages, task):
+  """Sets environment variables for a Task.
+
+  Args:
+   messages: module containing the definitions of messages for Cloud Deploy.
+   task: Cloud Deploy Task message.
+  """
+
+  # For each task type (ConfigTask or ContainersTask), turn the provided string
+  # map into an EnvValue message.
+  if task.get(CONFIG_TASK_FIELD):
+    config_task = task.get(CONFIG_TASK_FIELD)
+    config_task_message = getattr(messages, 'ConfigTask')
+    env_message = config_task_message.EnvValue
+    env_dict = env_message()
+    for key, value in config_task.get(ENV_FIELD).items():
+      env_dict.additionalProperties.append(
+          env_message.AdditionalProperty(key=key, value=value)
+      )
+    config_task[ENV_FIELD] = env_dict
+  elif task.get(CONTAINERS_TASK_FIELD):
+    containers_task = task.get(CONTAINERS_TASK_FIELD)
+    for container in containers_task.get(CONTAINERS_FIELD):
+      container_message = getattr(messages, 'Container')
+      env_message = container_message.EnvValue
+      env_dict = env_message()
+      for key, value in container.get(ENV_FIELD).items():
+        env_dict.additionalProperties.append(
+            env_message.AdditionalProperty(key=key, value=value)
+        )
+      container[ENV_FIELD] = env_dict
+
+
+def SetLabelsForAlertPolicyCheck(messages, alert_policy_check):
+  """Sets labels defined on an Analysis Google Cloud Alert Policy Check.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    alert_policy_check: Cloud Deploy Alert Policy Check message for an Analysis
+    with Google Cloud.
+  """
+  if alert_policy_check is None:
+    return
+  labels_message = getattr(messages, 'AlertPolicyCheck').LabelsValue
+  labels_dict = labels_message()
+  for key, value in alert_policy_check.get(LABELS_FIELD).items():
+    labels_dict.additionalProperties.append(
+        labels_message.AdditionalProperty(
+            key=resource_property.ConvertToSnakeCase(key), value=value
+        )
+    )
+  alert_policy_check[LABELS_FIELD] = labels_dict
 
 
 def SetPolicyRules(messages, policy, rules):

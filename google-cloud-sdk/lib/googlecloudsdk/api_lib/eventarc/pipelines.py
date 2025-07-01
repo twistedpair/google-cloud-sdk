@@ -23,14 +23,7 @@ from googlecloudsdk.api_lib.eventarc import base
 from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-
-NO_NA_FOR_NON_HTTP_ENDPOINTS_WARNING = """\
-Specifying a network attachment when creating a pipeline for an Eventarc message
-bus, Pub/Sub topic, or Workflows destination is a pre-GA feature only. An error
-will result when support for this is removed.
-"""
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -340,24 +333,21 @@ class PipelineClientV1(base.EventarcClientBase):
 
   def _BuildDestinationNetworkConfig(self, pipeline_ref, destination):
     if destination.get('http_endpoint_uri') is not None:
+      # Network attachments are optional for HTTP endpoints.
       if destination.get('network_attachment') is None:
-        raise InvalidDestinationsArgumentError('network_attachment must be set')
+        return None
 
       return self._messages.GoogleCloudEventarcV1PipelineDestinationNetworkConfig(
           networkAttachment=f'projects/{pipeline_ref.projectsId}/regions/{pipeline_ref.locationsId}/networkAttachments/{destination.get("network_attachment")}',
       )
 
-    # Workflows, Pub/Sub topic and Message Bus destinations do not require a
+    # Workflows, Pub/Sub topic and Message Bus destinations cannot have a
     # network attachment.
-    if destination.get('network_attachment') is None:
-      return None
-
-    # TODO(b/410045292): Remove once network attachments are not supported.
-    # Network attachments are optional for non-HTTP destinations
-    log.warning(NO_NA_FOR_NON_HTTP_ENDPOINTS_WARNING)
-    return self._messages.GoogleCloudEventarcV1PipelineDestinationNetworkConfig(
-        networkAttachment=f'projects/{pipeline_ref.projectsId}/regions/{pipeline_ref.locationsId}/networkAttachments/{destination.get("network_attachment")}',
-    )
+    if destination.get('network_attachment') is not None:
+      raise InvalidDestinationsArgumentError(
+          'network_attachment must not be set'
+      )
+    return None
 
   def _BuildDestinationAuthenticationConfig(self, destination):
     google_oidc = self._BuildDestinationAuthenticationGoogleOidc(destination)

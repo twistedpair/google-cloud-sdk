@@ -83,6 +83,7 @@ def ServiceStages(
     include_iam_policy_set=False,
     include_route=True,
     include_validate_service=False,
+    include_upload_source=False,
     include_build=False,
     include_create_repo=False,
     include_create_revision=True,
@@ -94,8 +95,9 @@ def ServiceStages(
     stages.append(_CreateRepoStage())
   if include_validate_service:
     stages.append(_ValidateServiceStage())
-  if include_build:
+  if include_upload_source:
     stages.append(_UploadSourceStage())
+  if include_build:
     stages.append(_BuildContainerStage())
   if include_create_revision:
     stages.append(

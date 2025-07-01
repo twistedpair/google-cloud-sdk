@@ -1074,12 +1074,16 @@ class GenerateContentResponse(proto.Message):
                     included from the terminology blocklist.
                 PROHIBITED_CONTENT (4):
                     Candidates blocked due to prohibited content.
+                IMAGE_SAFETY (6):
+                    Candidates blocked due to unsafe image
+                    generation content.
             """
             BLOCKED_REASON_UNSPECIFIED = 0
             SAFETY = 1
             OTHER = 2
             BLOCKLIST = 3
             PROHIBITED_CONTENT = 4
+            IMAGE_SAFETY = 6
 
         block_reason: 'GenerateContentResponse.PromptFeedback.BlockedReason' = proto.Field(
             proto.ENUM,

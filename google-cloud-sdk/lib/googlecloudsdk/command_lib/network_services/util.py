@@ -23,27 +23,7 @@ from googlecloudsdk.api_lib import network_services as ns_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import multitype
-from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import yaml_data
-from googlecloudsdk.core import properties
-
-
-def ConstructServiceBindingServiceNameFromArgs(unused_ref, args, request):
-  """Constructs ServiceBinding service name from args."""
-  sd_service_name = (
-      'projects/'
-      + properties.VALUES.core.project.Get()
-      + '/locations/'
-      + args.service_directory_region
-      + '/namespaces/'
-      + args.service_directory_namespace
-      + '/services/'
-      + args.service_directory_service
-  )
-  arg_utils.SetFieldInMessage(
-      request, 'serviceBinding.service', sd_service_name
-  )
-  return request
 
 
 def AutoCapacityDrainHook(api_version='v1'):

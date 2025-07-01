@@ -2736,6 +2736,8 @@ class DatamigrationProjectsLocationsPrivateConnectionsCreateRequest(_messages.Me
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     skipValidation: Optional. If set to true, will skip validations.
+    validateOnly: Optional. For PSC Interface only - get the tenant project
+      before creating the resource.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2743,6 +2745,7 @@ class DatamigrationProjectsLocationsPrivateConnectionsCreateRequest(_messages.Me
   privateConnectionId = _messages.StringField(3)
   requestId = _messages.StringField(4)
   skipValidation = _messages.BooleanField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Message):
@@ -5277,6 +5280,7 @@ class PrivateConnection(_messages.Message):
       containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
       "mass": "1.3kg", "count": "3" }`.
     name: The name of the resource.
+    pscInterfaceConfig: PSC Interface configuration.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The state of the private connection.
@@ -5339,11 +5343,12 @@ class PrivateConnection(_messages.Message):
   error = _messages.MessageField('Status', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  satisfiesPzi = _messages.BooleanField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 10)
+  pscInterfaceConfig = _messages.MessageField('PscInterfaceConfig', 6)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 11)
 
 
 class PrivateConnectivity(_messages.Message):
@@ -5379,6 +5384,19 @@ class PromoteMigrationJobRequest(_messages.Message):
   """
 
   objectsFilter = _messages.MessageField('MigrationJobObjectsConfig', 1)
+
+
+class PscInterfaceConfig(_messages.Message):
+  r"""The PSC Interface configuration is used to create PSC Interface between
+  DMS's internal VPC and the consumer's PSC.
+
+  Fields:
+    networkAttachment: Required. Fully qualified name of the Network
+      Attachment that DMS will connect to. Format:
+      `projects/{{project}}/regions/{{region}}/networkAttachments/{{name}}`
+  """
+
+  networkAttachment = _messages.StringField(1)
 
 
 class RestartMigrationJobRequest(_messages.Message):

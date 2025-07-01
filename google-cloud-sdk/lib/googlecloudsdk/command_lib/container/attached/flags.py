@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2022 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -256,3 +256,82 @@ When this hidden flag is set, the cluster admin check will be skipped.
 
 def GetSkipClusterAdminCheck(args):
   return getattr(args, 'skip_cluster_admin_check', None)
+
+
+def AddSystemComponentLabels(parser):
+  """Adds --system-component-labels flag to parser.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  help_text = """\
+Kubernetes labels to be applied to system component pods.
+"""
+  parser.add_argument(
+      '--system-component-labels',
+      help=help_text,
+      type=arg_parsers.ArgDict(),
+      metavar='LABEL',
+  )
+
+
+def GetSystemComponentLabels(args):
+  return getattr(args, 'system_component_labels', None)
+
+
+def AddSystemComponentTolerations(parser):
+  """Adds --system-component-tolerations flag to parser.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  help_text = """\
+Kubernetes tolerations to be applied to system component pods.
+"""
+  parser.add_argument(
+      '--system-component-tolerations',
+      type=arg_parsers.ArgList(),
+      help=help_text,
+      metavar='TOLERATION',
+  )
+
+
+def GetSystemComponentTolerations(args):
+  tolerations = getattr(args, 'system_component_tolerations', None)
+  if tolerations:
+    tol = [ParseSystemComponentToleration(t) for t in tolerations]
+    return tol
+  return None
+
+
+def ParseSystemComponentToleration(toleration):
+  """Parses a system component toleration string.
+
+  Args:
+    toleration: The toleration string to parse.
+
+  Returns:
+    A list of (key, value, operator, effect).
+  """
+  parts = toleration.split(':')
+  if len(parts) != 3:
+    raise ValueError(
+        'System component toleration must be in the format of'
+        ' key=value:operator:effect, key:operator:effect, or :operator:effect,'
+        ' got %s' % toleration
+    )
+  if not parts[0]:
+    return ['', '', parts[1], parts[2]]
+  key_value = parts[0].split('=')
+  if not key_value:
+    return ['', '', parts[1], parts[2]]
+  elif len(key_value) == 1:
+    return [key_value[0], '', parts[1], parts[2]]
+  elif len(key_value) == 2:
+    return [key_value[0], key_value[1], parts[1], parts[2]]
+  else:
+    raise ValueError(
+        'System component toleration must be in the format of'
+        ' key=value:operator:effect, key:operator:effect, or :operator:effect,'
+        ' got %s' % toleration
+    )

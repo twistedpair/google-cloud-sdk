@@ -892,7 +892,7 @@ class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
-      now. b) Valid to should be no more than 20 years in the future. 4) Up to
+      now. b) Valid to should be no more than 25 years in the future. 4) Up to
       3 IdP signing keys are allowed in the metadata xml. When updating the
       provider's metadata xml, at least one non-expired signing key must
       overlap with the existing metadata. This requirement is skipped if there
@@ -3906,10 +3906,10 @@ class InlineCertificateIssuanceConfig(_messages.Message):
     lifetime: Optional. Lifetime of the workload certificates issued by the CA
       pool. Must be between 24 hours and 30 days. If not specified, this will
       be defaulted to 24 hours.
-    rotationWindowPercentage: Optional. Rotation window percentage indicating
-      when certificate rotation should be initiated based on remaining
-      lifetime. Must be between 50 and 80. If not specified, this will be
-      defaulted to 50.
+    rotationWindowPercentage: Optional. Rotation window percentage, the
+      percentage of remaining lifetime after which certificate rotation is
+      initiated. Must be between 50 and 80. If no value is specified, rotation
+      window percentage is defaulted to 50.
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
@@ -5145,7 +5145,7 @@ class Saml(_messages.Message):
       following constraints: * Must contain an IdP Entity ID. * Must contain
       at least one non-expired signing certificate. * For each signing
       certificate, the expiration must be: * From no more than 7 days in the
-      future. * To no more than 20 years in the future. * Up to three IdP
+      future. * To no more than 25 years in the future. * Up to three IdP
       signing keys are allowed. When updating the provider's metadata XML, at
       least one non-expired signing key must overlap with the existing
       metadata. This requirement is skipped if there are no non-expired
@@ -6032,6 +6032,17 @@ class WorkforcePoolProvider(_messages.Message):
       Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workload pool provider will
       be permanently purged and cannot be recovered.
+    extendedAttributesOauth2Client: Optional. The configuration for OAuth 2.0
+      client used to get the extended group memberships for user identities.
+      Only the `AZURE_AD_GROUPS_ID` attribute type is supported. Extended
+      groups supports a subset of Google Cloud services. When the user
+      accesses these services, extended group memberships override the mapped
+      `google.groups` attribute. Extended group memberships cannot be used in
+      attribute mapping or attribute condition expressions. To keep extended
+      group memberships up to date, extended groups are retrieved when the
+      user signs in and at regular intervals during the user's active session.
+      Each user identity in the workforce identity pool must map to a
+      specific, unique Microsoft Entra ID user.
     extraAttributesOauth2Client: Optional. The configuration for OAuth 2.0
       client used to get the additional user attributes. This should be used
       when users can't get the desired claims in authentication credentials.
@@ -6135,11 +6146,12 @@ class WorkforcePoolProvider(_messages.Message):
   disabled = _messages.BooleanField(5)
   displayName = _messages.StringField(6)
   expireTime = _messages.StringField(7)
-  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 8)
-  name = _messages.StringField(9)
-  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 10)
-  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  extendedAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 8)
+  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 9)
+  name = _messages.StringField(10)
+  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 11)
+  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class WorkforcePoolProviderKey(_messages.Message):
@@ -6317,18 +6329,19 @@ class WorkloadIdentityPool(_messages.Message):
     Values:
       MODE_UNSPECIFIED: State unspecified. New pools should not use this mode.
         Pools with an unspecified mode will operate as if they are in
-        FEDERATION_ONLY mode.
-      FEDERATION_ONLY: FEDERATION_ONLY mode pools can only be used for
-        federating external workload identities into Google Cloud. Unless
-        otherwise noted, no structure or format constraints are applied to
-        workload identities in a FEDERATION_ONLY mode pool, and you may not
+        federation-only mode.
+      FEDERATION_ONLY: Federation-only mode. Federation-only pools can only be
+        used for federating external workload identities into Google Cloud.
+        Unless otherwise noted, no structure or format constraints are applied
+        to workload identities in a federation-only pool, and you cannot
         create any resources within the pool besides providers.
-      TRUST_DOMAIN: TRUST_DOMAIN mode pools can be used to assign identities
-        to Google Cloud workloads. All identities within a TRUST_DOMAIN mode
-        pool must consist of a single namespace and individual workload
-        identifier. The subject identifier for all identities must conform to
-        the following format: `ns//sa/` WorkloadIdentityPoolProviders cannot
-        be created within TRUST_DOMAIN mode pools.
+      TRUST_DOMAIN: Trust-domain mode. Trust-domain pools can be used to
+        assign identities to Google Cloud workloads. All identities within a
+        trust-domain pool must consist of a single namespace and individual
+        workload identifier. The subject identifier for all identities must
+        conform to the following format: `ns//sa/`
+        WorkloadIdentityPoolProviders cannot be created within trust-domain
+        pools.
     """
     MODE_UNSPECIFIED = 0
     FEDERATION_ONLY = 1

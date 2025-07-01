@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - endpointMatcher
-- name
 - type
 additionalProperties: false
 properties:
@@ -34,8 +33,7 @@ properties:
       This field specifies the URL of AuthorizationPolicy resource that applies
       authorization policies to the inbound traffic at the matched endpoints.
       Refer to Authorization. If this field is not specified, authorization is
-      disabled(no authz checks) for this endpoint. Applicable only when
-      EndpointPolicyType is SIDECAR_PROXY.
+      disabled(no authz checks) for this endpoint.
     type: string
   clientTlsPolicy:
     description: |-
@@ -66,7 +64,7 @@ properties:
     $ref: LabelsValue.yaml
   name:
     description: |-
-      Name of the EndpointPolicy resource. It matches pattern
+      Identifier. Name of the EndpointPolicy resource. It matches pattern
       `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}` .
     type: string
   securityPolicy:

@@ -67,7 +67,7 @@ def Upload(
       object=object_name,
   )
   return staging_bucket_util.Upload(
-      source, object_ref, gcs_client, ignore_file=None
+      source, object_ref, gcs_client, ignore_file=None, hide_logs=True
   )
 
 

@@ -56,7 +56,7 @@ definitions:
     # of the argument and returns the converted parsed value.
     - $ref: "#/definitions/python_hook"
     # Support for arg_parsers.arg_list
-    - enum: [arg_list, arg_object, file_type]
+    - enum: [arg_list, arg_object, arg_json, file_type]
 
   choices:
     # A list of valid choices for an argument.

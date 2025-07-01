@@ -14,10 +14,6 @@
 # limitations under the License.
 """Facilities for getting a list of Cloud resources."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import itertools
 
 from googlecloudsdk.api_lib.compute import constants
@@ -29,6 +25,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_projector
@@ -800,7 +797,7 @@ def ParseRegionalFlags(args, resources, message=None):
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 
-def ParseMultiScopeFlags(args, resources, message=None):
+def ParseMultiScopeFlags(args, resources, message=None, default_scope_set=None):
   """Make Frontend suitable for MultiScopeLister argument namespace.
 
   Generated client-side filter is stored to args.filter.
@@ -809,6 +806,7 @@ def ParseMultiScopeFlags(args, resources, message=None):
     args: The argument namespace of MultiScopeLister.
     resources: resources.Registry, The resource registry
     message: The response resource proto message for the request.
+    default_scope_set: Default scope set to use.
 
   Returns:
     Frontend initialized with information from MultiScopeLister argument
@@ -826,7 +824,8 @@ def ParseMultiScopeFlags(args, resources, message=None):
         args, resources, message=message)
   elif args.filter and 'region' in args.filter:
     scope_set = _TranslateRegionsFilters(args, resources)
-  elif getattr(args, 'global', None):
+  elif (getattr(args, 'global', None) or
+        default_scope_set is compute_scope.ScopeEnum.GLOBAL):
     scope_set = GlobalScope([
         resources.Parse(
             properties.VALUES.core.project.GetOrFail(),
@@ -1103,9 +1102,11 @@ class MultiScopeLister(object):
       entire operation.
     image_zone_flag: Returns the images rolled out to the specific zone. This is
       used for images.list API
-    instance_view_flag: control the retruned view of the instance,
+    instance_view_flag: control the returned view of the instance,
       either default view or full view of instance/instanceProperities.
       this is used for instances.List/instanceTemplates.List API
+    subnetwork_views_flag: control the returned views of the subnetwork.
+      this is used for subnetworks.List API
   """
 
   def __init__(
@@ -1119,6 +1120,7 @@ class MultiScopeLister(object):
       return_partial_success=True,
       image_zone_flag=None,
       instance_view_flag=None,
+      subnetwork_views_flag=None,
   ):
     self.client = client
     self.zonal_service = zonal_service
@@ -1129,6 +1131,7 @@ class MultiScopeLister(object):
     self.return_partial_success = return_partial_success
     self.image_zone_flag = image_zone_flag
     self.instance_view_flag = instance_view_flag
+    self.subnetwork_views_flag = subnetwork_views_flag
 
   def __deepcopy__(self, memodict=None):
     return self  # MultiScopeLister is immutable
@@ -1234,6 +1237,12 @@ class MultiScopeLister(object):
       for request in requests:
         if request[1] == 'List':
           request[2].view = self.instance_view_flag
+
+    if self.subnetwork_views_flag is not None:
+      for request in requests:
+        if request[1] == 'List':
+          request[2].views = self.subnetwork_views_flag
+
     errors = []
     for item in request_helper.ListJson(
         requests=requests,

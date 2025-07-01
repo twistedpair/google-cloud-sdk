@@ -45,7 +45,9 @@ def MakeRegionalPublicDelegatedPrefixesArg():
   )
 
 
-def AddCreatePdpArgsToParser(parser):
+def AddCreatePdpArgsToParser(
+    parser, include_internal_subnetwork_creation_mode=False
+):
   """Adds flags for public delegated prefixes create command."""
   parent_prefix_args = parser.add_mutually_exclusive_group(required=True)
   parent_prefix_args.add_argument(
@@ -82,13 +84,16 @@ def AddCreatePdpArgsToParser(parser):
           'migrated.'
       ),
   )
+  mode_choices = [
+      'delegation',
+      'external-ipv6-forwarding-rule-creation',
+      'external-ipv6-subnetwork-creation',
+  ]
+  if include_internal_subnetwork_creation_mode:
+    mode_choices.append('internal-ipv6-subnetwork-creation')
   base.ChoiceArgument(
       '--mode',
-      choices=[
-          'delegation',
-          'external-ipv6-forwarding-rule-creation',
-          'external-ipv6-subnetwork-creation',
-      ],
+      choices=mode_choices,
       help_str='Specifies the mode of this IPv6 PDP.',
   ).AddToParser(parser)
   parser.add_argument(
@@ -107,7 +112,9 @@ def _AddCommonSubPrefixArgs(parser, verb):
   )
 
 
-def AddCreateSubPrefixArgs(parser):
+def AddCreateSubPrefixArgs(
+    parser, include_internal_subnetwork_creation_mode=False
+):
   """Adds flags for delegate sub prefixes create command."""
   _AddCommonSubPrefixArgs(parser, 'create')
   parser.add_argument(
@@ -136,13 +143,16 @@ def AddCreateSubPrefixArgs(parser):
           'resources in the delegatee project. Default is false.'
       ),
   )
+  mode_choices = [
+      'delegation',
+      'external-ipv6-forwarding-rule-creation',
+      'external-ipv6-subnetwork-creation',
+  ]
+  if include_internal_subnetwork_creation_mode:
+    mode_choices.append('internal-ipv6-subnetwork-creation')
   base.ChoiceArgument(
       '--mode',
-      choices=[
-          'delegation',
-          'external-ipv6-forwarding-rule-creation',
-          'external-ipv6-subnetwork-creation',
-      ],
+      choices=mode_choices,
       help_str='Specifies the mode of this IPv6 PDP.',
   ).AddToParser(parser)
   parser.add_argument(

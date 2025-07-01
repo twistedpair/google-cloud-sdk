@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2022 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ class _AttachedClientBase(client.ClientBase):
         'proxyConfig': self._ProxyConfig(args),
         'securityPostureConfig': self._SecurityPosture(args),
         'tags': self._TagBindings(args, cluster_type),
+        'systemComponentsConfig': self._SystemComponentsConfig(args),
     }
     return (
         self._messages.GoogleCloudGkemulticloudV1AttachedCluster(**kwargs)
@@ -106,6 +107,65 @@ class _AttachedClientBase(client.ClientBase):
         self._messages.GoogleCloudGkemulticloudV1AttachedClustersAuthorization(
             **kwargs
         )
+    )
+
+  def _SystemComponentsConfig(self, args):
+    labels = attached_flags.GetSystemComponentLabels(args)
+    tolerations = attached_flags.GetSystemComponentTolerations(args)
+    if not labels and not tolerations:
+      return None
+    kwargs = {}
+    if tolerations:
+      kwargs['tolerations'] = [
+          self._messages.GoogleCloudGkemulticloudV1Toleration(
+              key=t[0],
+              value=t[1],
+              keyOperator=self._ConvertTolerationOperator(t[2]),
+              effect=self._ConvertTolerationEffect(t[3]),
+          )
+          for t in tolerations
+      ]
+    if labels:
+      kwargs['labels'] = [
+          self._messages.GoogleCloudGkemulticloudV1Label(
+              key=key,
+              value=labels[key],
+          )
+          for key in labels
+      ]
+    return self._messages.GoogleCloudGkemulticloudV1SystemComponentsConfig(
+        **kwargs
+    )
+
+  def _ConvertTolerationOperator(self, operator):
+    if operator.lower() == 'exists':
+      return self._messages.GoogleCloudGkemulticloudV1Toleration.KeyOperatorValueValuesEnum(
+          'KEY_OPERATOR_EXISTS'
+      )
+    if operator.lower() == 'equal':
+      return self._messages.GoogleCloudGkemulticloudV1Toleration.KeyOperatorValueValuesEnum(
+          'KEY_OPERATOR_EQUAL'
+      )
+    return self._messages.GoogleCloudGkemulticloudV1Toleration.KeyOperatorValueValuesEnum(
+        'KEY_OPERATOR_UNSPECIFIED'
+    )
+
+  def _ConvertTolerationEffect(self, effect):
+    standardized_effect = effect.lower()
+    if standardized_effect == 'noschedule':
+      return self._messages.GoogleCloudGkemulticloudV1Toleration.EffectValueValuesEnum(
+          'EFFECT_NO_SCHEDULE'
+      )
+    if standardized_effect == 'noexecute':
+      return self._messages.GoogleCloudGkemulticloudV1Toleration.EffectValueValuesEnum(
+          'EFFECT_NO_EXECUTE'
+      )
+    if standardized_effect == 'prefernoschedule':
+      return self._messages.GoogleCloudGkemulticloudV1Toleration.EffectValueValuesEnum(
+          'EFFECT_PREFER_NO_SCHEDULE'
+      )
+    return self._messages.GoogleCloudGkemulticloudV1Toleration.EffectValueValuesEnum(
+        'EFFECT_UNSPECIFIED'
     )
 
 

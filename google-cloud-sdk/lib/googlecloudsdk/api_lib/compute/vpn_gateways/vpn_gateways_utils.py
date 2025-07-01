@@ -185,16 +185,38 @@ class VpnGatewayHelper(object):
     return self._resources.Parse(
         operation.selfLink, collection='compute.regionOperations')
 
-  def List(self, project, filter_expr):
+  def List(self, project, filter_expr, regions=None):
     """Yields a VPN Gateway resource from the list of VPN Gateways.
 
     Sends an AggregatedList request to obtain the list of VPN Gateways and
     yields the next VPN Gateway in this list.
 
+    Sends a List request to obtain the list of VPN Gateways in the specified
+    regions and yields the next VPN Gateway in this list.
+
     Args:
       project: String representing the project to use for the request.
       filter_expr: The expression used to filter the results.
+      regions: List of regions to use for the request.
     """
+    if regions:
+      for region in regions:
+        next_page_token = None
+        while True:
+          request = self._messages.ComputeVpnGatewaysListRequest(
+              project=project,
+              region=region,
+              filter=filter_expr,
+              pageToken=next_page_token,
+              returnPartialSuccess=True,
+          )
+          response = self._service.List(request)
+          next_page_token = response.nextPageToken
+          for vpn_gateway in response.items:
+            yield vpn_gateway
+          if not next_page_token:
+            break
+      return
     next_page_token = None
     while True:
       request = self._messages.ComputeVpnGatewaysAggregatedListRequest(

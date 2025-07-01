@@ -5,6 +5,145 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 529.0.0 (2025-07-01)
+
+### Breaking Changes
+
+*   **(Cloud Datastore Emulator)** Removed support for running the Datastore emulator
+*   **(Cloud Datastore Emulator)** (`gcloud beta emulators datastore start`) in environment with Java versions
+*   **(Cloud Datastore Emulator)** prior to 21. Users can upgrade to Java 21 or above to continue using the latest
+*   **(Cloud Datastore Emulator)** Datastore emulator. Alternatively, users can use previous `gcloud` CLI
+*   **(Cloud Datastore Emulator)** versions to continue using the Datastore emulator with
+*   **(Cloud Datastore Emulator)** Java 11 support.
+*   **(Cloud Firestore Emulator)** Removed support for running the Firestore emulator
+*   **(Cloud Firestore Emulator)** (`gcloud beta emulators firestore start`) in environment with Java versions
+*   **(Cloud Firestore Emulator)** prior to 21. Users can upgrade to Java 21 or above to continue using the latest
+*   **(Cloud Firestore Emulator)** Firestore emulator. Alternatively, users can use previous `gcloud` CLI
+*   **(Cloud Firestore Emulator)** versions to continue using the previous Firestore emulator with
+*   **(Cloud Firestore Emulator)** Java 11 support.
+*   **(Compute Engine)** Demoted `--igmp-query` flag in `--network-interface` of `gcloud compute instances bulk create` to alpha.
+*   **(Eventarc)** Removed option for `--destinations` to set `network_attachment` when `http_endpoint_uri` is not set.
+*   **(Network Services)** Removed `--service-directory-namespace`, `--service-directory-region`, and `--service-directory-service` flags in `gcloud network-services service-bindings create`.
+
+
+### AI
+
+* Added support for the `request-counts-per-minute` autoscaling metric to
+`gcloud ai endpoints deploy-model` and `gcloud ai deployment-resource-pools
+create`.
+
+### AlloyDB
+
+* Fix being able to enable managed connection pooling for the first time when
+calling `gcloud alloydb instances update` without having to specify all managed
+connection pooling related flags.
+
+### Anthos Multi-Cloud
+
+* Added `--system-component-tolerations` flag to `gcloud container attached clusters register` to customize Kubernetes tolerations for system components.
+* Added `--system-component-labels` flag to `gcloud container attached clusters register` to customize Kubernetes labels for system components.
+
+### App Engine
+
+* Fixed open source issue <https://issuetracker.google.com/issues/329705717> for python appengine SDK.
+
+### BigQuery
+
+* Added new flag `--external_catalog_table_options` in `bq mk -t` and `bq update -t` to create and update tables with external catalog options.
+
+### Cloud Backup DR
+
+* Fixed `backup-vault create` command to return the created resource.
+* Modified `backups list` command to use basic view by default.
+
+### Cloud Managed Kafka
+
+* Fixed an error where the mode or compatibility being unset would causes the command to fail.
+* Made the output of the commands more readable.
+* Add informative text to the "subject describe" command to inform if the mode/compatibility was inherited from the schema registry.
+
+### Cloud Memorystore
+
+* Promote `gcloud redis clusters create` CMEK related commands to GA track.
+* Promote `gcloud memorystore instances create` CMEK related commands to GA track.
+
+### Cloud Run
+
+* Promoted `--no-default-url` flag to GA for `gcloud run services` command groups.
+* Promoted .env support for `--env-vars-file` flag for `gcloud run deploy` from alpha to beta.
+* Added .env support for `--env-vars-file` flag for `gcloud run jobs deploy`.
+
+### Cloud Services
+
+* Promoted `gcloud services groups list-expanded-members` to beta.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.35.
+
+### Compute Engine
+
+* Promoted `--append-licenses`, `--remove-licenses` and `--replace-license` flags of `gcloud compute disks update` to beta and GA.
+* Added `--enable_emergent_maintenance` flag to `gcloud compute reservations update`.
+* Fixed issue where `gcloud compute vpn-gateways list --regions {region}` call aggregated list instead of regional list.
+* Fixed issue where `gcloud compute vpn-tunnels list --regions {region}` call aggregated list instead of regional list.
+* Promoted `--resource-manager-tags` flag for `gcloud compute networks create` to GA.
+* Promoted `--resource-manager-tags` flag for `gcloud compute networks subnets create` to GA.
+* Promoted `--resource-manager-tags` flag for `gcloudc compute routers create` to beta.
+*   Fixed an issue where exceptions in `gcloud compute instances bulk create`
+    with `--format` flag were not logged.
+
+### Eventarc
+
+* Removed requirement for `--destinations` to set `network_attachment` when `http_endpoint_uri` is set.
+
+### Kubernetes Engine
+
+*   Additional kubectl versions:
+    * kubectl.1.27 (1.27.16)
+    * kubectl.1.28 (1.28.15
+    * kubectl.1.29 (1.29.14)
+    * kubectl.1.30 (1.30.14)
+    * kubectl.1.31 (1.31.10)
+    * kubectl.1.32 (1.32.6)
+    * kubectl.1.33 (1.33.2)
+* Added `--additional-ip-ranges` and `--remove-additional-ip-ranges` flags to `gcloud container clusters update` to allow multiple subnets in a cluster.
+
+### Looker
+
+* Added `core-trial-standard`, `core-trial-enterprise`, and `core-trial-embed` options to `--edition` flag of `gcloud looker instances create`.
+
+### Network Services
+
+*   Added `--update-strategy` flag in `gcloud compute networks peerings create` and `gcloud compute networks peerings update` commands.
+*   Added a new command `gcloud compute networks peerings request-delete`.
+*   Support "export" and "import" surfaces for Service Binding resource.
+*   Support "update" surface for Service Binding resource.
+
+### Policy Simulator
+
+* Promoted `gcloud policy-intelligence simulate` to GA.
+
+### Security Command Center
+
+*   Added `--organization` and `--location` argument flags to `gcloud scc posture-deployments list` to list scc's posture deployments for organization level.
+* Added `vm-manager`, `ec2-vulnerability-assessment`, `gce-vulnerability-assessment`, `azure-vulnerability-assessment`, and `notebook-security-scanner` services to the `SUPPORTED_SERVICES` list.
+*   Added `--organization` and `--location` argument flags to `gcloud scc posture-templates list` to list Cloud Security Command Center posture templates for an organization.
+
+### Service Extensions
+
+* Promoted the following Service Extensions Plugins command groups to GA:
+  * `gcloud service-extensions wasm-plugins`
+  * `gcloud service-extensions wasm-plugin-versions`
+
+### Workbench
+
+* Added `gcloud beta workbench instances` command group for pre-GA features.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 528.0.0 (2025-06-24)
 
 ### AI

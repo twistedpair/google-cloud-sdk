@@ -302,6 +302,9 @@ class Instance(_messages.Message):
       LOOKER_CORE_NONPROD_STANDARD_ANNUAL: Nonprod Subscription Standard.
       LOOKER_CORE_NONPROD_ENTERPRISE_ANNUAL: Nonprod Subscription Enterprise.
       LOOKER_CORE_NONPROD_EMBED_ANNUAL: Nonprod Subscription Embed.
+      LOOKER_CORE_TRIAL_STANDARD: Trial Standard.
+      LOOKER_CORE_TRIAL_ENTERPRISE: Trial Enterprise.
+      LOOKER_CORE_TRIAL_EMBED: Trial Embed.
     """
     PLATFORM_EDITION_UNSPECIFIED = 0
     LOOKER_CORE_TRIAL = 1
@@ -312,6 +315,9 @@ class Instance(_messages.Message):
     LOOKER_CORE_NONPROD_STANDARD_ANNUAL = 6
     LOOKER_CORE_NONPROD_ENTERPRISE_ANNUAL = 7
     LOOKER_CORE_NONPROD_EMBED_ANNUAL = 8
+    LOOKER_CORE_TRIAL_STANDARD = 9
+    LOOKER_CORE_TRIAL_ENTERPRISE = 10
+    LOOKER_CORE_TRIAL_EMBED = 11
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the instance.
@@ -1053,8 +1059,10 @@ class ServiceAttachment(_messages.Message):
 
   Fields:
     connectionStatus: Output only. Connection status.
-    localFqdn: Required. Fully qualified domain name that will be used in the
+    localFqdn: Optional. Fully qualified domain name that will be used in the
       private DNS record created for the service attachment.
+    localFqdns: Optional. List of fully qualified domain names that will be
+      used in the private DNS record created for the service attachment.
     targetServiceAttachmentUri: Required. URI of the service attachment to
       connect to. Format: projects/{project}/regions/{region}/serviceAttachmen
       ts/{service_attachment}
@@ -1084,7 +1092,8 @@ class ServiceAttachment(_messages.Message):
 
   connectionStatus = _messages.EnumField('ConnectionStatusValueValuesEnum', 1)
   localFqdn = _messages.StringField(2)
-  targetServiceAttachmentUri = _messages.StringField(3)
+  localFqdns = _messages.StringField(3, repeated=True)
+  targetServiceAttachmentUri = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

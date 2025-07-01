@@ -68,9 +68,12 @@ def AddClearableExtraAttributesOAuth2Client():
   return [clearable_extra_attributes_group]
 
 
-def AddExtraAttributesOAuth2Client():
-  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client Attributes for the create-oidc command."""
-  return [ExtraAttributesOAuth2ClientAttributesGroup()]
+def AddExtraAndExtendedAttributesOAuth2Client():
+  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client and ExtendedAttributesOAuth2Client Attributes for the create-oidc command."""
+  return [
+      ExtraAttributesOAuth2ClientAttributesGroup(),
+      ExtendedAttributesOAuth2ClientAttributesGroup(),
+  ]
 
 
 def ExtraAttributesOAuth2ClientAttributesGroup(required=True):
@@ -156,8 +159,8 @@ def ExtraAttributesOAuth2ClientAttributesGroup(required=True):
           ' are converted to `$search` query parameters. Additional `$filter`'
           ' query parameters cannot be added using this field. \n\n*'
           ' `AZURE_AD_GROUPS_MAIL`: `mailEnabled` and `securityEnabled` filters'
-          ' are applied. \n* `AZURE_AD_GROUPS_ID`: `securityEnabled` filter'
-          ' is applied.'
+          ' are applied. \n* `AZURE_AD_GROUPS_ID`: `securityEnabled` filter is'
+          ' applied.'
       ),
   )
 
@@ -171,3 +174,113 @@ def ExtraAttributesOAuth2ClientAttributesGroup(required=True):
   create_extra_attributes_group.AddArgument(extra_attributes_filter_arg)
 
   return create_extra_attributes_group
+
+
+def ExtendedAttributesOAuth2ClientAttributesGroup(required=True):
+  """Creates an ArgumentGroup for ExtendedAttributesOAuth2Client Attributes."""
+  extended_attributes_client_id_arg = base.Argument(
+      '--extended-attributes-client-id',
+      dest='extended_attributes_client_id',
+      type=str,
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_CLIENT_ID',
+      help=(
+          'The OAuth 2.0 client ID for retrieving extended attributes from the'
+          ' identity provider. Required to get extended group memberships for'
+          ' a subset of Google Cloud products.'
+      ),
+      # TODO: b/427486786 - Unhide for launch.
+      hidden=True,
+  )
+  extended_attributes_client_secret_value_arg = base.Argument(
+      '--extended-attributes-client-secret-value',
+      dest='extended_attributes_client_secret_value',
+      type=str,
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_CLIENT_SECRET_VALUE',
+      help=(
+          'The OAuth 2.0 client secret for retrieving extended attributes from'
+          ' the identity provider. Required to get extended group memberships'
+          ' for a subset of Google Cloud products.'
+      ),
+      # TODO: b/427486786 - Unhide for launch.
+      hidden=True,
+  )
+  extended_attributes_issuer_uri_arg = base.Argument(
+      '--extended-attributes-issuer-uri',
+      dest='extended_attributes_issuer_uri',
+      type=str,
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_ISSUER_URI',
+      help=(
+          "OIDC identity provider's issuer URI. Must be a valid URI using"
+          ' the `https` scheme. Required to get the OIDC discovery'
+          ' document.'
+      ),
+      # TODO: b/427486786 - Unhide for launch.
+      hidden=True,
+  )
+  # Adding this flag as a ArgList to hide `AZURE_AD_GROUPS_DISPLAY_NAME` from
+  # the end user. Currently there is no other way to hide new enum choices.
+  # These flags will move back to enum types once feature is ready for launch
+  extended_attributes_type_arg = base.Argument(
+      '--extended-attributes-type',
+      dest='extended_attributes_type',
+      type=arg_parsers.ArgList(
+          choices=[
+              'azure-ad-groups-id',
+          ],
+          visible_choices=['azure-ad-groups-id'],
+          max_length=1,
+          min_length=1,
+      ),
+      required=required,
+      metavar='EXTRA_ATTRIBUTES_TYPE',
+      help=(
+          'Represents the identity provider and type of claims that should'
+          ' be fetched. Only `azure-ad-groups-id` is supported.'
+      ),
+      # TODO: b/427486786 - Unhide for launch.
+      hidden=True,
+  )
+  extended_attributes_filter_arg = base.Argument(
+      '--extended-attributes-filter',
+      dest='extended_attributes_filter',
+      type=str,
+      required=False,
+      metavar='EXTRA_ATTRIBUTES_FILTER',
+      help=(
+          'The filter used to request specific records from the IdP. By'
+          ' default, all of the groups that are associated with a user are'
+          ' fetched. For Microsoft Entra ID, you can add `$search` query'
+          ' parameters using [Keyword Query Language]'
+          ' (https://learn.microsoft.com/en-us/sharepoint/dev/general-development/keyword-query-language-kql-syntax-reference).'
+          ' To learn more about `$search` querying in Microsoft Entra ID, see'
+          ' [Use the `$search` query parameter]'
+          ' (https://learn.microsoft.com/en-us/graph/search-query-parameter).'
+          ' \n\nAdditionally, Workforce Identity Federation automatically adds'
+          ' the following [`$filter` query parameters]'
+          ' (https://learn.microsoft.com/en-us/graph/filter-query-parameter),'
+          ' based on the value of `attributes_type`. Values passed to `filter`'
+          ' are converted to `$search` query parameters. Additional `$filter`'
+          ' query parameters cannot be added using this field. \n\n*'
+          ' `AZURE_AD_GROUPS_ID`: `securityEnabled` filter is applied.'
+      ),
+      # TODO: b/427486786 - Unhide for launch.
+      hidden=True,
+  )
+  # TODO: b/427486786 - Unhide for launch
+  create_extended_attributes_group = base.ArgumentGroup(hidden=True)
+  create_extended_attributes_group.AddArgument(
+      extended_attributes_client_id_arg
+  )
+  create_extended_attributes_group.AddArgument(
+      extended_attributes_client_secret_value_arg
+  )
+  create_extended_attributes_group.AddArgument(
+      extended_attributes_issuer_uri_arg
+  )
+  create_extended_attributes_group.AddArgument(extended_attributes_type_arg)
+  create_extended_attributes_group.AddArgument(extended_attributes_filter_arg)
+
+  return create_extended_attributes_group

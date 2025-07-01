@@ -58,8 +58,7 @@ def _check_zone_prefix(region, zone):
 
 
 def _exec_and_return_stdout(command):
-  """Returns standard output from executing gcloud command."""
-  command = execution_utils.ArgsForGcloud() + command
+  """Returns standard output from executing a command."""
   out = io.StringIO()
   execution_utils.Exec(
       command,
@@ -67,6 +66,24 @@ def _exec_and_return_stdout(command):
       out_func=out.write,
   )
   return out.getvalue().strip()
+
+
+def _exec_gcloud_and_return_stdout(command_args):
+  """Returns standard output from executing gcloud command."""
+  command = execution_utils.ArgsForGcloud() + command_args
+  return _exec_and_return_stdout(command)
+
+
+def _get_zone():
+  """Gets the zone of the VM from the Metadata service."""
+  command = execution_utils.ArgsForExecutableTool(
+      'curl',
+      '--silent',
+      'http://metadata.google.internal/computeMetadata/v1/instance/zone',
+      '-H',
+      'Metadata-Flavor: Google',
+  )
+  return _exec_and_return_stdout(command).rsplit('/', 1)[-1]
 
 
 def _log_running_check(check_name):
@@ -205,7 +222,7 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
         # gcloud-disable-gdu-domain
     ) + _get_ips('directpath-pa.googleapis.com', 'Traffic Director')
     firewall_response = json.loads(
-        _exec_and_return_stdout(
+        _exec_gcloud_and_return_stdout(
             ['compute', 'firewall-rules', 'list', '--format=json']
         )
     )
@@ -273,12 +290,12 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
       return (
           f'Found bucket "{self._bucket_resource}" is in a dual-region. Ensure '
           f'VM "{socket.gethostname()}" is in one of the regions covered by '
-          f'the dual-region by looking up the dual-region '
+          'the dual-region by looking up the dual-region '
           f'{_get_region_string_or_not_found(self._bucket_resource.location)} '
-          f'in the following table: '
-          f'https://cloud.google.com/storage/docs/locations#predefined '
+          'in the following table: '
+          'https://cloud.google.com/storage/docs/locations#predefined '
           f'VM zone {_get_region_string_or_not_found(self._vm_zone)} should '
-          f'start with one of the regions covered by the dual-region '
+          'start with one of the regions covered by the dual-region '
           f'{_get_region_string_or_not_found(self._bucket_resource.location)}.'
       )
     # For other region types, the substring check is sufficient.
@@ -295,7 +312,7 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     """Checks if VM has a service account."""
     if not self._vm_zone:
       return 'Found no VM zone and, therefore, could not check service account.'
-    service_accounts = _exec_and_return_stdout([
+    service_accounts = _exec_gcloud_and_return_stdout([
         'compute',
         'instances',
         'describe',
@@ -337,13 +354,7 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
       self._clean_up()
       return
 
-    self._vm_zone = _exec_and_return_stdout([
-        'compute',
-        'instances',
-        'list',
-        '--filter=name:{}'.format(socket.gethostname()),
-        '--format=table[csv,no-heading](zone)',
-    ])
+    self._vm_zone = _get_zone()
 
     for check, name, description in [
         (

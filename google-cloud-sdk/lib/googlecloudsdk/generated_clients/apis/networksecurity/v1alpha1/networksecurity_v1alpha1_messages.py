@@ -505,14 +505,22 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
   r"""Describes the properties of a single source.
 
   Fields:
-    ipBlocks: Optional. A list of IPs or CIDRs to match against the source IP
-      of a request. Limited to 5 ip_blocks.
+    ipBlocks: Optional. A list of IP addresses or IP address ranges to match
+      against the source IP address of the request. Limited to 5 ip_blocks.
+    principals: Optional. A list of identities derived from the client's
+      certificate. This field will not match on a request unless frontend
+      mutual TLS is enabled for the forwarding rule or Gateway and the client
+      certificate has been successfully validated by mTLS. Each identity is a
+      string whose value is matched against a list of URI SANs, DNS Name SANs,
+      or the common name in the client's certificate. A match happens when any
+      principal matches with the rule. Limited to 5 principals.
     resources: Optional. A list of resources to match against the resource of
       the source VM of a request. Limited to 5 resources.
   """
 
   ipBlocks = _messages.MessageField('AuthzPolicyAuthzRuleIpBlock', 1, repeated=True)
-  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 2, repeated=True)
+  principals = _messages.MessageField('AuthzPolicyAuthzRulePrincipal', 2, repeated=True)
+  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 3, repeated=True)
 
 
 class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):
@@ -537,6 +545,58 @@ class AuthzPolicyAuthzRuleIpBlock(_messages.Message):
 
   length = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   prefix = _messages.StringField(2)
+
+
+class AuthzPolicyAuthzRulePrincipal(_messages.Message):
+  r"""Describes the properties of a principal to be matched against.
+
+  Enums:
+    PrincipalSelectorValueValuesEnum: Optional. An enum to decide what
+      principal value the principal rule will match against. If not specified,
+      the PrincipalSelector is CLIENT_CERT_URI_SAN.
+
+  Fields:
+    principal: Required. A non-empty string whose value is matched against the
+      principal value based on the principal_selector. Only exact match can be
+      applied for CLIENT_CERT_URI_SAN, CLIENT_CERT_DNS_NAME_SAN,
+      CLIENT_CERT_COMMON_NAME selectors.
+    principalSelector: Optional. An enum to decide what principal value the
+      principal rule will match against. If not specified, the
+      PrincipalSelector is CLIENT_CERT_URI_SAN.
+  """
+
+  class PrincipalSelectorValueValuesEnum(_messages.Enum):
+    r"""Optional. An enum to decide what principal value the principal rule
+    will match against. If not specified, the PrincipalSelector is
+    CLIENT_CERT_URI_SAN.
+
+    Values:
+      PRINCIPAL_SELECTOR_UNSPECIFIED: Unspecified principal selector. It will
+        be treated as CLIENT_CERT_URI_SAN by default.
+      CLIENT_CERT_URI_SAN: The principal rule is matched against a list of URI
+        SANs in the validated client's certificate. A match happens when there
+        is any exact URI SAN value match. This is the default principal
+        selector.
+      CLIENT_CERT_DNS_NAME_SAN: The principal rule is matched against a list
+        of DNS Name SANs in the validated client's certificate. A match
+        happens when there is any exact DNS Name SAN value match.
+      CLIENT_CERT_COMMON_NAME: The principal rule is matched against the
+        common name in the client's certificate. Authorization against
+        multiple common names in the client certificate is not supported.
+        Requests with multiple common names in the client certificate will be
+        rejected if CLIENT_CERT_COMMON_NAME is set as the principal selector.
+        A match happens when there is an exact common name value match. This
+        is only applicable for Application Load Balancers except for classic
+        Global External Application load balancer. CLIENT_CERT_COMMON_NAME is
+        not supported for INTERNAL_SELF_MANAGED load balancing scheme.
+    """
+    PRINCIPAL_SELECTOR_UNSPECIFIED = 0
+    CLIENT_CERT_URI_SAN = 1
+    CLIENT_CERT_DNS_NAME_SAN = 2
+    CLIENT_CERT_COMMON_NAME = 3
+
+  principal = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 1)
+  principalSelector = _messages.EnumField('PrincipalSelectorValueValuesEnum', 2)
 
 
 class AuthzPolicyAuthzRuleRequestResource(_messages.Message):

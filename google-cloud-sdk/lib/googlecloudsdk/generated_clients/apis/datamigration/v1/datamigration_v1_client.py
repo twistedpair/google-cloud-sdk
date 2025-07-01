@@ -1677,7 +1677,7 @@ class DatamigrationV1(base_api.BaseApiClient):
         method_id='datamigration.projects.locations.privateConnections.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['privateConnectionId', 'requestId', 'skipValidation'],
+        query_params=['privateConnectionId', 'requestId', 'skipValidation', 'validateOnly'],
         relative_path='v1/{+parent}/privateConnections',
         request_field='privateConnection',
         request_type_name='DatamigrationProjectsLocationsPrivateConnectionsCreateRequest',

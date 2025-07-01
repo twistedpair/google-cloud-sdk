@@ -384,7 +384,7 @@ class IamV3beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a policy binding and returns a long-running operation. Callers will need the IAM permissions on the policy and target in the binding to update, and the IAM permission to remove the existing policy from the binding. Target is immutable and cannot be updated. Once the binding is updated, the new policy is applied to the target.
+      r"""Updates a policy binding and returns a long-running operation. Callers will need the IAM permissions on the policy and target in the binding to update. Target and policy are immutable and cannot be updated.
 
       Args:
         request: (IamFoldersLocationsPolicyBindingsPatchRequest) input message
@@ -785,7 +785,7 @@ class IamV3beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a policy binding and returns a long-running operation. Callers will need the IAM permissions on the policy and target in the binding to update, and the IAM permission to remove the existing policy from the binding. Target is immutable and cannot be updated. Once the binding is updated, the new policy is applied to the target.
+      r"""Updates a policy binding and returns a long-running operation. Callers will need the IAM permissions on the policy and target in the binding to update. Target and policy are immutable and cannot be updated.
 
       Args:
         request: (IamOrganizationsLocationsPolicyBindingsPatchRequest) input message
@@ -1358,7 +1358,7 @@ class IamV3beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a policy binding and returns a long-running operation. Callers will need the IAM permissions on the policy and target in the binding to update, and the IAM permission to remove the existing policy from the binding. Target is immutable and cannot be updated. Once the binding is updated, the new policy is applied to the target.
+      r"""Updates a policy binding and returns a long-running operation. Callers will need the IAM permissions on the policy and target in the binding to update. Target and policy are immutable and cannot be updated.
 
       Args:
         request: (IamProjectsLocationsPolicyBindingsPatchRequest) input message

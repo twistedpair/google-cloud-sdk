@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import collections
 
 from googlecloudsdk.api_lib.backupdr import util
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.backupdr import util as command_util
 
 # TODO: b/416214401 - Add type annotations.
@@ -174,7 +175,8 @@ class BackupPlansClient(util.BackupDrClientBase):
       The updated Backup Plan.
 
     Raises:
-      ValueError: If the backup rules are invalid.
+      InvalidArgumentException: If the backup rules are invalid.
+      ValueError: If the backup plan is not found.
     """
     if current_backup_plan is None:
       raise ValueError('Could not find the backup plan.')
@@ -199,9 +201,10 @@ class BackupPlansClient(util.BackupDrClientBase):
           rule_id for rule_id, count in rule_ids.items() if count > 1
       ]
       if duplicate_rule_ids:
-        raise ValueError(
-            f'Rules {duplicate_rule_ids} found in more than one '
-            '--backup-rule flag.'
+        raise exceptions.InvalidArgumentException(
+            'rule-id',
+            f'Rules {duplicate_rule_ids} found in more than one'
+            ' --backup-rule flag.',
         )
       not_found_rule_ids = list(set([
           rule['rule-id']
@@ -209,8 +212,11 @@ class BackupPlansClient(util.BackupDrClientBase):
           if rule['rule-id'] not in current_rule_ids
       ]))
       if not_found_rule_ids:
-        raise ValueError(
+        raise exceptions.InvalidArgumentException(
+            'rule-id',
             f'Rules {not_found_rule_ids} not found in the backup plan.'
+            ' The --backup-rule flag can only be used to modify existing'
+            ' rules.',
         )
       update_rule_ids = [rule['rule-id'] for rule in update_backup_rules]
       updated_backup_plan.backupRules = [
@@ -234,8 +240,9 @@ class BackupPlansClient(util.BackupDrClientBase):
           if rule_id not in current_rule_ids
       ]))
       if not_found_rule_ids:
-        raise ValueError(
-            f'Rules {not_found_rule_ids} not found in the backup plan.'
+        raise exceptions.InvalidArgumentException(
+            'rule-id',
+            f'Rules {not_found_rule_ids} not found in the backup plan.',
         )
       updated_backup_plan.backupRules = [
           rule for rule in updated_backup_plan.backupRules
