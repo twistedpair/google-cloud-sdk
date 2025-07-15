@@ -5105,9 +5105,10 @@ class GoogleCloudDialogflowCxV3EnvironmentVersionConfig(_messages.Message):
   r"""Configuration for the version.
 
   Fields:
-    version: Required. Both flow and playbook versions are supported. Format
+    version: Required. Flow, playbook and tool versions are supported. Format
       for flow version: projects//locations//agents//flows//versions/. Format
       for playbook version: projects//locations//agents//playbooks//versions/.
+      Format for tool version: projects//locations//agents//tools//versions/.
   """
 
   version = _messages.StringField(1)
@@ -5366,6 +5367,7 @@ class GoogleCloudDialogflowCxV3Fulfillment(_messages.Message):
       to generate a text response. If LLM generation fails, the defined
       responses in the fulfillment will be respected. This flag is only useful
       for fulfillments associated with no-match event handlers.
+    generators: A list of Generators to be called during this fulfillment.
     messages: The list of rich message responses to present to the user.
     returnPartialResponses: Whether Dialogflow should return currently queued
       fulfillment response messages in streaming APIs. If a webhook is
@@ -5387,11 +5389,12 @@ class GoogleCloudDialogflowCxV3Fulfillment(_messages.Message):
   advancedSettings = _messages.MessageField('GoogleCloudDialogflowCxV3AdvancedSettings', 1)
   conditionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCases', 2, repeated=True)
   enableGenerativeFallback = _messages.BooleanField(3)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 4, repeated=True)
-  returnPartialResponses = _messages.BooleanField(5)
-  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentSetParameterAction', 6, repeated=True)
-  tag = _messages.StringField(7)
-  webhook = _messages.StringField(8)
+  generators = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentGeneratorSettings', 4, repeated=True)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 5, repeated=True)
+  returnPartialResponses = _messages.BooleanField(6)
+  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentSetParameterAction', 7, repeated=True)
+  tag = _messages.StringField(8)
+  webhook = _messages.StringField(9)
 
 
 class GoogleCloudDialogflowCxV3FulfillmentConditionalCases(_messages.Message):
@@ -5431,6 +5434,70 @@ class GoogleCloudDialogflowCxV3FulfillmentConditionalCasesCaseCaseContent(_messa
 
   additionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCases', 1)
   message = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 2)
+
+
+class GoogleCloudDialogflowCxV3FulfillmentGeneratorSettings(_messages.Message):
+  r"""Generator settings used by the LLM to generate a text response.
+
+  Messages:
+    InputParametersValue: Map from placeholder parameter in the Generator to
+      corresponding session parameters. By default, Dialogflow uses the
+      session parameter with the same name to fill in the generator template.
+      e.g. If there is a placeholder parameter `city` in the Generator,
+      Dialogflow default to fill in the `$city` with `$session.params.city`.
+      However, you may choose to fill `$city` with
+      `$session.params.desination-city`. - Map key: parameter ID - Map value:
+      session parameter name
+
+  Fields:
+    generator: Required. The generator to call. Format:
+      `projects//locations//agents//generators/`.
+    inputParameters: Map from placeholder parameter in the Generator to
+      corresponding session parameters. By default, Dialogflow uses the
+      session parameter with the same name to fill in the generator template.
+      e.g. If there is a placeholder parameter `city` in the Generator,
+      Dialogflow default to fill in the `$city` with `$session.params.city`.
+      However, you may choose to fill `$city` with
+      `$session.params.desination-city`. - Map key: parameter ID - Map value:
+      session parameter name
+    outputParameter: Required. Output parameter which should contain the
+      generator response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputParametersValue(_messages.Message):
+    r"""Map from placeholder parameter in the Generator to corresponding
+    session parameters. By default, Dialogflow uses the session parameter with
+    the same name to fill in the generator template. e.g. If there is a
+    placeholder parameter `city` in the Generator, Dialogflow default to fill
+    in the `$city` with `$session.params.city`. However, you may choose to
+    fill `$city` with `$session.params.desination-city`. - Map key: parameter
+    ID - Map value: session parameter name
+
+    Messages:
+      AdditionalProperty: An additional property for a InputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  generator = _messages.StringField(1)
+  inputParameters = _messages.MessageField('InputParametersValue', 2)
+  outputParameter = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowCxV3FulfillmentSetParameterAction(_messages.Message):
@@ -5624,7 +5691,7 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
     Values:
       AUDIO_ENCODING_UNSPECIFIED: Not specified.
       AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-endian
-        samples (Linear PCM).
+        samples (Linear PCM). LINT: LEGACY_NAMES
       AUDIO_ENCODING_FLAC: [`FLAC`](https://xiph.org/flac/documentation.html)
         (Free Lossless Audio Codec) is the recommended encoding because it is
         lossless (therefore recognition is not compromised) and requires only
@@ -7997,9 +8064,10 @@ class GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig(_messages.Message):
   r"""Configuration for the version.
 
   Fields:
-    version: Required. Both flow and playbook versions are supported. Format
+    version: Required. Flow, playbook and tool versions are supported. Format
       for flow version: projects//locations//agents//flows//versions/. Format
       for playbook version: projects//locations//agents//playbooks//versions/.
+      Format for tool version: projects//locations//agents//tools//versions/.
   """
 
   version = _messages.StringField(1)
@@ -8258,6 +8326,7 @@ class GoogleCloudDialogflowCxV3beta1Fulfillment(_messages.Message):
       to generate a text response. If LLM generation fails, the defined
       responses in the fulfillment will be respected. This flag is only useful
       for fulfillments associated with no-match event handlers.
+    generators: A list of Generators to be called during this fulfillment.
     messages: The list of rich message responses to present to the user.
     returnPartialResponses: Whether Dialogflow should return currently queued
       fulfillment response messages in streaming APIs. If a webhook is
@@ -8279,11 +8348,12 @@ class GoogleCloudDialogflowCxV3beta1Fulfillment(_messages.Message):
   advancedSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AdvancedSettings', 1)
   conditionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases', 2, repeated=True)
   enableGenerativeFallback = _messages.BooleanField(3)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 4, repeated=True)
-  returnPartialResponses = _messages.BooleanField(5)
-  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction', 6, repeated=True)
-  tag = _messages.StringField(7)
-  webhook = _messages.StringField(8)
+  generators = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentGeneratorSettings', 4, repeated=True)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 5, repeated=True)
+  returnPartialResponses = _messages.BooleanField(6)
+  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction', 7, repeated=True)
+  tag = _messages.StringField(8)
+  webhook = _messages.StringField(9)
 
 
 class GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases(_messages.Message):
@@ -8323,6 +8393,70 @@ class GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCasesCaseCaseContent(_
 
   additionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases', 1)
   message = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1FulfillmentGeneratorSettings(_messages.Message):
+  r"""Generator settings used by the LLM to generate a text response.
+
+  Messages:
+    InputParametersValue: Map from placeholder parameter in the Generator to
+      corresponding session parameters. By default, Dialogflow uses the
+      session parameter with the same name to fill in the generator template.
+      e.g. If there is a placeholder parameter `city` in the Generator,
+      Dialogflow default to fill in the `$city` with `$session.params.city`.
+      However, you may choose to fill `$city` with
+      `$session.params.desination-city`. - Map key: parameter ID - Map value:
+      session parameter name
+
+  Fields:
+    generator: Required. The generator to call. Format:
+      `projects//locations//agents//generators/`.
+    inputParameters: Map from placeholder parameter in the Generator to
+      corresponding session parameters. By default, Dialogflow uses the
+      session parameter with the same name to fill in the generator template.
+      e.g. If there is a placeholder parameter `city` in the Generator,
+      Dialogflow default to fill in the `$city` with `$session.params.city`.
+      However, you may choose to fill `$city` with
+      `$session.params.desination-city`. - Map key: parameter ID - Map value:
+      session parameter name
+    outputParameter: Required. Output parameter which should contain the
+      generator response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputParametersValue(_messages.Message):
+    r"""Map from placeholder parameter in the Generator to corresponding
+    session parameters. By default, Dialogflow uses the session parameter with
+    the same name to fill in the generator template. e.g. If there is a
+    placeholder parameter `city` in the Generator, Dialogflow default to fill
+    in the `$city` with `$session.params.city`. However, you may choose to
+    fill `$city` with `$session.params.desination-city`. - Map key: parameter
+    ID - Map value: session parameter name
+
+    Messages:
+      AdditionalProperty: An additional property for a InputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  generator = _messages.StringField(1)
+  inputParameters = _messages.MessageField('InputParametersValue', 2)
+  outputParameter = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction(_messages.Message):
@@ -8516,7 +8650,7 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
     Values:
       AUDIO_ENCODING_UNSPECIFIED: Not specified.
       AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-endian
-        samples (Linear PCM).
+        samples (Linear PCM). LINT: LEGACY_NAMES
       AUDIO_ENCODING_FLAC: [`FLAC`](https://xiph.org/flac/documentation.html)
         (Free Lossless Audio Codec) is the recommended encoding because it is
         lossless (therefore recognition is not compromised) and requires only
@@ -11919,8 +12053,8 @@ class GoogleCloudDialogflowV2ConversationTelephonyConnectionInfo(_messages.Messa
     extraMimeContents: Output only. The mime content from the initial SIP
       INVITE.
     sdp: Optional. SDP of the call. It's initially the SDP answer to the
-      endpoint, but maybe later updated for the purpose of making the link
-      active, etc.
+      incoming call, but maybe later updated for the purpose of making the
+      link active, etc.
     sipHeaders: Output only. The SIP headers from the initial SIP INVITE.
   """
 
@@ -12029,6 +12163,7 @@ class GoogleCloudDialogflowV2CreateConversationModelOperationMetadata(_messages.
       `projects//conversationModels/`
     createTime: Timestamp when the request to create conversation model is
       submitted. The time is measured on server side.
+    doneTime: The time when the operation finished.
     state: State of CreateConversationModel operation.
   """
 
@@ -12056,7 +12191,8 @@ class GoogleCloudDialogflowV2CreateConversationModelOperationMetadata(_messages.
 
   conversationModel = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  doneTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class GoogleCloudDialogflowV2CustomPronunciationParams(_messages.Message):
@@ -12105,10 +12241,12 @@ class GoogleCloudDialogflowV2DeleteConversationModelOperationMetadata(_messages.
       `projects//conversationModels/`
     createTime: Timestamp when delete conversation model request was created.
       The time is measured on server side.
+    doneTime: The time when the operation finished.
   """
 
   conversationModel = _messages.StringField(1)
   createTime = _messages.StringField(2)
+  doneTime = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2DeployConversationModelOperationMetadata(_messages.Message):
@@ -12119,10 +12257,12 @@ class GoogleCloudDialogflowV2DeployConversationModelOperationMetadata(_messages.
       `projects//conversationModels/`
     createTime: Timestamp when request to deploy conversation model was
       submitted. The time is measured on server side.
+    doneTime: The time when the operation finished.
   """
 
   conversationModel = _messages.StringField(1)
   createTime = _messages.StringField(2)
+  doneTime = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2DeployConversationModelRequest(_messages.Message):
@@ -13406,8 +13546,9 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_m
 
   Fields:
     baselineModelVersion: Version of current baseline model. It will be
-      ignored if model is set. Valid versions are: Article Suggestion baseline
-      model: - 0.9 - 1.0 (default) Summarization baseline model: - 1.0
+      ignored if model is set. Valid versions are: - Article Suggestion
+      baseline model: - 0.9 - 1.0 (default) - Summarization baseline model: -
+      1.0
     model: Conversation model resource name. Format:
       `projects//conversationModels/`.
   """
@@ -15253,6 +15394,7 @@ class GoogleCloudDialogflowV2KnowledgeOperationMetadata(_messages.Message):
     StateValueValuesEnum: Output only. The current state of this operation.
 
   Fields:
+    doneTime: The time when the operation finished.
     exportOperationMetadata: Metadata for the Export Data Operation such as
       the destination of export.
     knowledgeBase: The name of the knowledge base interacted with during the
@@ -15274,9 +15416,10 @@ class GoogleCloudDialogflowV2KnowledgeOperationMetadata(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  exportOperationMetadata = _messages.MessageField('GoogleCloudDialogflowV2ExportOperationMetadata', 1)
-  knowledgeBase = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  doneTime = _messages.StringField(1)
+  exportOperationMetadata = _messages.MessageField('GoogleCloudDialogflowV2ExportOperationMetadata', 2)
+  knowledgeBase = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class GoogleCloudDialogflowV2ListAnswerRecordsResponse(_messages.Message):
@@ -17831,10 +17974,10 @@ class GoogleCloudDialogflowV2ToolCall(_messages.Message):
     InputParametersValue: Optional. The action's input parameters.
 
   Fields:
-    action: Required. The name of the tool's action associated with this call.
+    action: Optional. The name of the tool's action associated with this call.
     createTime: Output only. Create time of the tool call.
     inputParameters: Optional. The action's input parameters.
-    tool: Required. The tool associated with this call. Format:
+    tool: Optional. The tool associated with this call. Format:
       `projects//locations//tools/`.
   """
 
@@ -17873,13 +18016,13 @@ class GoogleCloudDialogflowV2ToolCallResult(_messages.Message):
   r"""The result of calling a tool's action.
 
   Fields:
-    action: Required. The name of the tool's action associated with this call.
+    action: Optional. The name of the tool's action associated with this call.
     content: Only populated if the response content is utf-8 encoded.
     createTime: Output only. Create time of the tool call result.
     error: The tool call's error.
     rawContent: Only populated if the response content is not utf-8 encoded.
       (by definition byte fields are base64 encoded).
-    tool: Required. The tool associated with this call. Format:
+    tool: Optional. The tool associated with this call. Format:
       `projects//locations//tools/`.
   """
 
@@ -17913,10 +18056,12 @@ class GoogleCloudDialogflowV2UndeployConversationModelOperationMetadata(_message
       `projects//conversationModels/`
     createTime: Timestamp when the request to undeploy conversation model was
       submitted. The time is measured on server side.
+    doneTime: The time when the operation finished.
   """
 
   conversationModel = _messages.StringField(1)
   createTime = _messages.StringField(2)
+  doneTime = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2UndeployConversationModelRequest(_messages.Message):
@@ -20268,6 +20413,7 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
       operation.
 
   Fields:
+    doneTime: The time when the operation finished.
     exportOperationMetadata: Metadata for the Export Data Operation such as
       the destination of export.
     knowledgeBase: The name of the knowledge base interacted with during the
@@ -20289,9 +20435,10 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  exportOperationMetadata = _messages.MessageField('GoogleCloudDialogflowV2beta1ExportOperationMetadata', 1)
-  knowledgeBase = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  doneTime = _messages.StringField(1)
+  exportOperationMetadata = _messages.MessageField('GoogleCloudDialogflowV2beta1ExportOperationMetadata', 2)
+  knowledgeBase = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class GoogleCloudDialogflowV2beta1Message(_messages.Message):
@@ -21304,10 +21451,10 @@ class GoogleCloudDialogflowV2beta1ToolCall(_messages.Message):
     InputParametersValue: Optional. The action's input parameters.
 
   Fields:
-    action: Required. The name of the tool's action associated with this call.
+    action: Optional. The name of the tool's action associated with this call.
     createTime: Output only. Create time of the tool call.
     inputParameters: Optional. The action's input parameters.
-    tool: Required. The tool associated with this call. Format:
+    tool: Optional. The tool associated with this call. Format:
       `projects//locations//tools/`.
   """
 
@@ -21346,13 +21493,13 @@ class GoogleCloudDialogflowV2beta1ToolCallResult(_messages.Message):
   r"""The result of calling a tool's action.
 
   Fields:
-    action: Required. The name of the tool's action associated with this call.
+    action: Optional. The name of the tool's action associated with this call.
     content: Only populated if the response content is utf-8 encoded.
     createTime: Output only. Create time of the tool call result.
     error: The tool call's error.
     rawContent: Only populated if the response content is not utf-8 encoded.
       (by definition byte fields are base64 encoded).
-    tool: Required. The tool associated with this call. Format:
+    tool: Optional. The tool associated with this call. Format:
       `projects//locations//tools/`.
   """
 

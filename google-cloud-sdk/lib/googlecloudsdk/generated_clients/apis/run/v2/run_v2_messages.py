@@ -1226,6 +1226,14 @@ class GoogleCloudRunV2Job(_messages.Message):
       `cloud.googleapis.com`, `serving.knative.dev`, or
       `autoscaling.knative.dev` namespaces, and they will be rejected. All
       system labels in v1 now have a corresponding field in v2 Job.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this job. For example the following are valid inputs: *
+      {"tagKeys/333" : "tagValues/444", "tagKeys/123" : "tagValues/456"} *
+      {"123/environment" : "production", "345/abc" : "xyz"} Note: * Invalid
+      combinations of ID & namespaced format is not supported. For instance:
+      {"123/environment" : "tagValues/444"} is invalid. * Inconsistent format
+      is not supported. For instance: {"tagKeys/333" : "tagValues/444",
+      "123/env" : "prod"} is invalid.
 
   Fields:
     annotations: Unstructured key value map that may be set by external tools
@@ -1307,6 +1315,14 @@ class GoogleCloudRunV2Job(_messages.Message):
       execution. The Job will become ready when the execution is successfully
       started. The sum of job name and token length must be fewer than 63
       characters.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this job. For example the following are valid inputs: * {"tagKeys/333" :
+      "tagValues/444", "tagKeys/123" : "tagValues/456"} * {"123/environment" :
+      "production", "345/abc" : "xyz"} Note: * Invalid combinations of ID &
+      namespaced format is not supported. For instance: {"123/environment" :
+      "tagValues/444"} is invalid. * Inconsistent format is not supported. For
+      instance: {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
+      invalid.
     template: Required. The template used to create executions for this Job.
     terminalCondition: Output only. The Condition of this Job, containing its
       readiness status, and detailed error information in case it did not
@@ -1433,6 +1449,37 @@ class GoogleCloudRunV2Job(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this job. For example the following are valid inputs: * {"tagKeys/333" :
+    "tagValues/444", "tagKeys/123" : "tagValues/456"} * {"123/environment" :
+    "production", "345/abc" : "xyz"} Note: * Invalid combinations of ID &
+    namespaced format is not supported. For instance: {"123/environment" :
+    "tagValues/444"} is invalid. * Inconsistent format is not supported. For
+    instance: {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
+    invalid.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
   client = _messages.StringField(3)
@@ -1455,10 +1502,11 @@ class GoogleCloudRunV2Job(_messages.Message):
   runExecutionToken = _messages.StringField(20)
   satisfiesPzs = _messages.BooleanField(21)
   startExecutionToken = _messages.StringField(22)
-  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 23)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
+  tags = _messages.MessageField('TagsValue', 23)
+  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 24)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
 
 
 class GoogleCloudRunV2ListExecutionsResponse(_messages.Message):
@@ -1548,6 +1596,19 @@ class GoogleCloudRunV2Metadata(_messages.Message):
   """
 
   metadata = _messages.StringField(1)
+
+
+class GoogleCloudRunV2MultiRegionSettings(_messages.Message):
+  r"""Settings for multi-region deployment.
+
+  Fields:
+    multiRegionId: Optional. System-generated unique id for the multi-region
+      Service.
+    regions: Required. List of regions to deploy to, including primary region.
+  """
+
+  multiRegionId = _messages.StringField(1)
+  regions = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudRunV2NFSVolumeSource(_messages.Message):
@@ -2329,6 +2390,14 @@ class GoogleCloudRunV2Service(_messages.Message):
       `cloud.googleapis.com`, `serving.knative.dev`, or
       `autoscaling.knative.dev` namespaces, and they will be rejected. All
       system labels in v1 now have a corresponding field in v2 Service.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this service. For example the following are valid inputs: *
+      {"tagKeys/333" : "tagValues/444", "tagKeys/123" : "tagValues/456"} *
+      {"123/environment" : "production", "345/abc" : "xyz"} Note: * Invalid
+      combinations of ID & namespaced format is not supported. For instance:
+      {"123/environment" : "tagValues/444"} is invalid. * Inconsistent format
+      is not supported. For instance: {"tagKeys/333" : "tagValues/444",
+      "123/env" : "prod"} is invalid.
 
   Fields:
     annotations: Optional. Unstructured key value map that may be set by
@@ -2405,6 +2474,7 @@ class GoogleCloudRunV2Service(_messages.Message):
       whether the resource uses preview features. For example, if ALPHA is
       provided as input, but only BETA and GA-level features are used, this
       field will be BETA on output.
+    multiRegionSettings: Optional. Settings for multi-region deployment.
     name: The fully qualified name of this Service. In CreateServiceRequest,
       this field is ignored, and instead composed from
       CreateServiceRequest.parent and CreateServiceRequest.service_id. Format:
@@ -2435,6 +2505,14 @@ class GoogleCloudRunV2Service(_messages.Message):
       `terminal_condition` and `conditions`.
     satisfiesPzs: Output only. Reserved for future use.
     scaling: Optional. Specifies service-level scaling settings
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this service. For example the following are valid inputs: *
+      {"tagKeys/333" : "tagValues/444", "tagKeys/123" : "tagValues/456"} *
+      {"123/environment" : "production", "345/abc" : "xyz"} Note: * Invalid
+      combinations of ID & namespaced format is not supported. For instance:
+      {"123/environment" : "tagValues/444"} is invalid. * Inconsistent format
+      is not supported. For instance: {"tagKeys/333" : "tagValues/444",
+      "123/env" : "prod"} is invalid.
     template: Required. The template used to create revisions for this
       Service.
     terminalCondition: Output only. The Condition of this Service, containing
@@ -2592,6 +2670,37 @@ class GoogleCloudRunV2Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this service. For example the following are valid inputs: * {"tagKeys/333"
+    : "tagValues/444", "tagKeys/123" : "tagValues/456"} * {"123/environment" :
+    "production", "345/abc" : "xyz"} Note: * Invalid combinations of ID &
+    namespaced format is not supported. For instance: {"123/environment" :
+    "tagValues/444"} is invalid. * Inconsistent format is not supported. For
+    instance: {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
+    invalid.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
   buildConfig = _messages.MessageField('GoogleCloudRunV2BuildConfig', 3)
@@ -2615,20 +2724,22 @@ class GoogleCloudRunV2Service(_messages.Message):
   latestCreatedRevision = _messages.StringField(21)
   latestReadyRevision = _messages.StringField(22)
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 23)
-  name = _messages.StringField(24)
-  observedGeneration = _messages.IntegerField(25)
-  reconciling = _messages.BooleanField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 28)
-  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 29)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 30)
-  threatDetectionEnabled = _messages.BooleanField(31)
-  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 32, repeated=True)
-  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 33, repeated=True)
-  uid = _messages.StringField(34)
-  updateTime = _messages.StringField(35)
-  uri = _messages.StringField(36)
-  urls = _messages.StringField(37, repeated=True)
+  multiRegionSettings = _messages.MessageField('GoogleCloudRunV2MultiRegionSettings', 24)
+  name = _messages.StringField(25)
+  observedGeneration = _messages.IntegerField(26)
+  reconciling = _messages.BooleanField(27)
+  satisfiesPzs = _messages.BooleanField(28)
+  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 29)
+  tags = _messages.MessageField('TagsValue', 30)
+  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 31)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 32)
+  threatDetectionEnabled = _messages.BooleanField(33)
+  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 34, repeated=True)
+  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 35, repeated=True)
+  uid = _messages.StringField(36)
+  updateTime = _messages.StringField(37)
+  uri = _messages.StringField(38)
+  urls = _messages.StringField(39, repeated=True)
 
 
 class GoogleCloudRunV2ServiceMesh(_messages.Message):
@@ -3004,6 +3115,8 @@ class GoogleCloudRunV2TaskTemplate(_messages.Message):
       https://cloud.google.com/run/docs/securing/using-cmek
     executionEnvironment: Optional. The execution environment being used to
       host this Task.
+    gpuZonalRedundancyDisabled: Optional. True if GPU zonal redundancy is
+      disabled on this task template.
     maxRetries: Number of retries allowed per Task, before marking this Task
       failed. Defaults to 3.
     nodeSelector: Optional. The node selector for the task template.
@@ -3037,12 +3150,13 @@ class GoogleCloudRunV2TaskTemplate(_messages.Message):
   containers = _messages.MessageField('GoogleCloudRunV2Container', 1, repeated=True)
   encryptionKey = _messages.StringField(2)
   executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 3)
-  maxRetries = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 5)
-  serviceAccount = _messages.StringField(6)
-  timeout = _messages.StringField(7)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 8, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 9)
+  gpuZonalRedundancyDisabled = _messages.BooleanField(4)
+  maxRetries = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 6)
+  serviceAccount = _messages.StringField(7)
+  timeout = _messages.StringField(8)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 9, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 10)
 
 
 class GoogleCloudRunV2TrafficTarget(_messages.Message):
@@ -3340,7 +3454,7 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
       CreateWorkerPoolRequest, this field is ignored, and instead composed
       from CreateWorkerPoolRequest.parent and
       CreateWorkerPoolRequest.worker_id. Format:
-      projects/{project}/locations/{location}/workerPools/{worker_id}
+      `projects/{project}/locations/{location}/workerPools/{worker_id}`
     observedGeneration: Output only. The generation of this WorkerPool
       currently serving traffic. See comments in `reconciling` for additional
       information on reconciliation process in Cloud Run. Please note that
@@ -3577,6 +3691,8 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
     encryptionKeyShutdownDuration: Optional. If
       encryption_key_revocation_action is SHUTDOWN, the duration before
       shutting down all instances. The minimum increment is 1 hour.
+    gpuZonalRedundancyDisabled: Optional. True if GPU zonal redundancy is
+      disabled on this worker pool.
     labels: Optional. Unstructured key value map that can be used to organize
       and categorize objects. User-provided labels are shared with Google's
       billing system, so they can be used to filter, or break down billing
@@ -3688,13 +3804,14 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
   encryptionKey = _messages.StringField(3)
   encryptionKeyRevocationAction = _messages.EnumField('EncryptionKeyRevocationActionValueValuesEnum', 4)
   encryptionKeyShutdownDuration = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 7)
-  revision = _messages.StringField(8)
-  serviceAccount = _messages.StringField(9)
-  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 10)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 11, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 12)
+  gpuZonalRedundancyDisabled = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 8)
+  revision = _messages.StringField(9)
+  serviceAccount = _messages.StringField(10)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 11)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 12, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 13)
 
 
 class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
@@ -4378,6 +4495,7 @@ class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    results: Declaration of results for this build step.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
     secretEnv: A list of environment variables which are encrypted using a
@@ -4443,13 +4561,14 @@ class GoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 11)
-  script = _messages.StringField(12)
-  secretEnv = _messages.StringField(13, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  timeout = _messages.StringField(15)
-  timing = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 16)
-  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 17, repeated=True)
-  waitFor = _messages.StringField(18, repeated=True)
+  results = _messages.MessageField('GoogleDevtoolsCloudbuildV1StepResult', 12, repeated=True)
+  script = _messages.StringField(13)
+  secretEnv = _messages.StringField(14, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  timeout = _messages.StringField(16)
+  timing = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 17)
+  volumes = _messages.MessageField('GoogleDevtoolsCloudbuildV1Volume', 18, repeated=True)
+  waitFor = _messages.StringField(19, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
@@ -5031,6 +5150,8 @@ class GoogleDevtoolsCloudbuildV1Source(_messages.Message):
   r"""Location of the source in a supported storage service.
 
   Fields:
+    buildConfigFileName: Path, from the source root, to the build
+      configuration file (i.e. cloudbuild.yaml).
     connectedRepository: Optional. If provided, get the source from this 2nd-
       gen Google Cloud Build repository resource.
     developerConnectConfig: If provided, get the source from this Developer
@@ -5046,12 +5167,13 @@ class GoogleDevtoolsCloudbuildV1Source(_messages.Message):
       builders/tree/master/gcs-fetcher).
   """
 
-  connectedRepository = _messages.MessageField('GoogleDevtoolsCloudbuildV1ConnectedRepository', 1)
-  developerConnectConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1DeveloperConnectConfig', 2)
-  gitSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1GitSource', 3)
-  repoSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1RepoSource', 4)
-  storageSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1StorageSource', 5)
-  storageSourceManifest = _messages.MessageField('GoogleDevtoolsCloudbuildV1StorageSourceManifest', 6)
+  buildConfigFileName = _messages.StringField(1)
+  connectedRepository = _messages.MessageField('GoogleDevtoolsCloudbuildV1ConnectedRepository', 2)
+  developerConnectConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1DeveloperConnectConfig', 3)
+  gitSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1GitSource', 4)
+  repoSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1RepoSource', 5)
+  storageSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1StorageSource', 6)
+  storageSourceManifest = _messages.MessageField('GoogleDevtoolsCloudbuildV1StorageSourceManifest', 7)
 
 
 class GoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Message):
@@ -5126,6 +5248,21 @@ class GoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Message):
   resolvedRepoSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1RepoSource', 4)
   resolvedStorageSource = _messages.MessageField('GoogleDevtoolsCloudbuildV1StorageSource', 5)
   resolvedStorageSourceManifest = _messages.MessageField('GoogleDevtoolsCloudbuildV1StorageSourceManifest', 6)
+
+
+class GoogleDevtoolsCloudbuildV1StepResult(_messages.Message):
+  r"""StepResult is the declaration of a result for a build step.
+
+  Fields:
+    attestationContent: Optional. The content of the attestation to be
+      generated.
+    attestationType: Optional. The type of attestation to be generated.
+    name: Required. The name of the result.
+  """
+
+  attestationContent = _messages.StringField(1)
+  attestationType = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class GoogleDevtoolsCloudbuildV1StorageSource(_messages.Message):
@@ -6469,16 +6606,16 @@ class RunProjectsLocationsWorkerPoolsCreateRequest(_messages.Message):
     googleCloudRunV2WorkerPool: A GoogleCloudRunV2WorkerPool resource to be
       passed as the request body.
     parent: Required. The location and project in which this worker pool
-      should be created. Format: projects/{project}/locations/{location},
-      where {project} can be project id or number. Only lowercase characters,
-      digits, and hyphens.
+      should be created. Format: `projects/{project}/locations/{location}`,
+      where `{project}` can be project id or number. Only lowercase
+      characters, digits, and hyphens.
     validateOnly: Optional. Indicates that the request should be validated and
       default values populated, without persisting the request or creating any
       resources.
     workerPoolId: Required. The unique identifier for the WorkerPool. It must
       begin with letter, and cannot end with hyphen; must contain fewer than
       50 characters. The name of the worker pool becomes
-      {parent}/workerPools/{worker_pool_id}.
+      `{parent}/workerPools/{worker_pool_id}`.
   """
 
   googleCloudRunV2WorkerPool = _messages.MessageField('GoogleCloudRunV2WorkerPool', 1)
@@ -6494,8 +6631,8 @@ class RunProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
     etag: A system-generated fingerprint for this version of the resource. May
       be used to detect modification conflict during updates.
     name: Required. The full name of the WorkerPool. Format:
-      projects/{project}/locations/{location}/workerPools/{worker_pool}, where
-      {project} can be project id or number.
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`,
+      where `{project}` can be project id or number.
     validateOnly: Optional. Indicates that the request should be validated
       without actually deleting any resources.
   """
@@ -6536,8 +6673,8 @@ class RunProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The full name of the WorkerPool. Format:
-      projects/{project}/locations/{location}/workerPools/{worker_pool}, where
-      {project} can be project id or number.
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`,
+      where `{project}` can be project id or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6552,8 +6689,8 @@ class RunProjectsLocationsWorkerPoolsListRequest(_messages.Message):
       All other parameters must match.
     parent: Required. The location and project to list resources on. Location
       must be a valid Google Cloud region, and cannot be the "-" wildcard.
-      Format: projects/{project}/locations/{location}, where {project} can be
-      project id or number.
+      Format: `projects/{project}/locations/{location}`, where `{project}` can
+      be project id or number.
     showDeleted: If true, returns deleted (but unexpired) resources along with
       active ones.
   """
@@ -6585,7 +6722,7 @@ class RunProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
       CreateWorkerPoolRequest, this field is ignored, and instead composed
       from CreateWorkerPoolRequest.parent and
       CreateWorkerPoolRequest.worker_id. Format:
-      projects/{project}/locations/{location}/workerPools/{worker_id}
+      `projects/{project}/locations/{location}/workerPools/{worker_id}`
     updateMask: Optional. The list of fields to be updated.
     validateOnly: Optional. Indicates that the request should be validated and
       default values populated, without persisting the request or updating any

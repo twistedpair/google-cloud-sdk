@@ -6,7 +6,6 @@ project:
     parameter_name: projectsId
     attribute_name: project
     help: The project name.
-    property: core/project
 
 location:
   name: location
@@ -16,8 +15,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: The global location name.
-    property: edge_container/location
+    help: The location name.
   disable_auto_completers: false
 
 operation:
@@ -34,6 +32,7 @@ operation:
 zonalService:
   name: Zonal Service
   collection: edgecontainer.projects.locations.zonalServices
+  request_id_field: enableZonalServiceRequest.zonalServiceId
   attributes:
   - *project
   - *location

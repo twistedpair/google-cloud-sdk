@@ -139,9 +139,12 @@ OPERATION_NAME_ARG = base.Argument(
 
 LOCATION_FLAG = base.Argument(
     '--location',
-    required=False,
+    required=arg_parsers.ArgRequiredInUniverse(
+        default_universe=False, non_default_universe=True
+    ),
     help='The Cloud Composer location (e.g., us-central1).',
-    action=actions.StoreProperty(properties.VALUES.composer.location))
+    action=actions.StoreProperty(properties.VALUES.composer.location),
+)
 
 _ENV_VAR_NAME_ERROR = (
     'Only upper and lowercase letters, digits, and underscores are allowed. '

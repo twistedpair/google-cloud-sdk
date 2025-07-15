@@ -803,8 +803,8 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
       {resource_type}/{resource_id}/contacts/{contact_id}
     notificationCategorySubscriptions: Required. The categories of
       notifications that the contact will receive communications for.
-    validateTime: The last time the validation_state was updated, either
-      manually or automatically. A contact is considered stale if its
+    validateTime: Output only. The last time the validation_state was updated,
+      either manually or automatically. A contact is considered stale if its
       validation state was updated more than 1 year ago.
     validationState: Output only. The validity of the contact. A contact is
       considered valid if it is the correct recipient for notifications for a

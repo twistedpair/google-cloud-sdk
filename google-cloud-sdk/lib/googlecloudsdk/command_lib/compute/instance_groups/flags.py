@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import enum
 import textwrap
+from typing import List
+
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
@@ -350,7 +352,8 @@ _LIST_INSTANCES_FORMAT_ALPHA = """\
               version.name:label=VERSION_NAME,
               lastAttempt.errors.errors.map().format(
                 "Error {0}: {1}", code, message).list(separator=", ")
-                :label=LAST_ERROR
+                :label=LAST_ERROR,
+              scheduling.terminationTimestamp:label=TERMINATION_TIMESTAMP
         )"""
 
 _RELEASE_TRACK_TO_LIST_INSTANCES_FORMAT = {
@@ -358,6 +361,80 @@ _RELEASE_TRACK_TO_LIST_INSTANCES_FORMAT = {
     base.ReleaseTrack.BETA: _LIST_INSTANCES_FORMAT_BETA,
     base.ReleaseTrack.ALPHA: _LIST_INSTANCES_FORMAT_ALPHA,
 }
+
+_LIST_INSTANCES_STATIC_FIELDS_ALPHA = [
+    'NAME',
+    'ZONE',
+    'STATUS',
+    'HEALTH_STATE',
+    'ACTION',
+    'PRESERVED_STATE',
+    'INSTANCE_TEMPLATE',
+    'VERSION_NAME',
+    'LAST_ERROR'
+]
+
+# TODO(b/426414503): Add base fields for beta and ga.
+_RELEASE_TRACK_TO_LIST_INSTANCES_BASE_STATIC_FIELDS = {
+    base.ReleaseTrack.ALPHA: _LIST_INSTANCES_STATIC_FIELDS_ALPHA,
+}
+
+
+class DynamicField:
+  """Represents dynamic fields in list managed instances output."""
+
+  TERMINATION_TIMESTAMP = 'TERMINATION_TIMESTAMP'
+
+  @classmethod
+  def GetManagedInstanceDynamicFields(
+      cls, instance, release_track=base.ReleaseTrack.ALPHA
+  ) -> List[str]:
+    """Returns dynamic fields for a managed instance based on its properties.
+
+    Args:
+      instance: Managed instance.
+      release_track: Release track.
+    Returns:
+      List of dynamic fields.
+    """
+    dynamic_fields = []
+    if release_track == base.ReleaseTrack.GA:
+      return dynamic_fields
+
+    if release_track == base.ReleaseTrack.BETA:
+      return dynamic_fields
+
+    if cls._HasTerminationTimestamp(instance):
+      dynamic_fields.append(cls.TERMINATION_TIMESTAMP)
+    return dynamic_fields
+
+  @classmethod
+  def _HasTerminationTimestamp(cls, instance):
+    return hasattr(instance, 'scheduling') and hasattr(
+        instance.scheduling, 'terminationTimestamp'
+    )
+
+
+def _GetIgmDynamicFields(
+    managed_instances, release_track=base.ReleaseTrack.ALPHA
+) -> List[str]:
+  """Returns dynamic fields for a list of managed instances.
+
+  Dynamic fields are determined based on the properties of the instances
+  and the release track.
+
+  Args:
+    managed_instances: List of managed instances.
+    release_track: Release track.
+  Returns:
+    List of dynamic fields.
+  """
+  dynamic_fields = set()
+  for instance in managed_instances:
+    dynamic_fields.update(DynamicField.GetManagedInstanceDynamicFields(
+        instance, release_track
+    ))
+  return list(dynamic_fields)
 
 
 def _TransformPreservedState(instance):
@@ -382,6 +459,31 @@ def _TransformPreservedState(instance):
   if preserved_state_value.endswith(','):
     preserved_state_value = preserved_state_value[:-1]
   return preserved_state_value
+
+
+def GetListInstancesOutputWithDynamicFields(
+    managed_instances, release_track=base.ReleaseTrack.ALPHA
+) -> str:
+  """Builds an output format string with dynamic fields (if they are present).
+
+  The output format is a projection `(field1,field2)` which is then
+  applied to the default `table(...)` format.
+
+  Args:
+      managed_instances: List of managed instances.
+      release_track: Release track.
+
+  Returns:
+      The complete output format.
+  """
+  static_fields = _RELEASE_TRACK_TO_LIST_INSTANCES_BASE_STATIC_FIELDS[
+      release_track
+  ]
+
+  dynamic_fields = _GetIgmDynamicFields(managed_instances, release_track)
+  complete_fields = static_fields + dynamic_fields
+  complete_format = '(%s)' % ','.join(complete_fields)
+  return complete_format
 
 
 def AddListInstancesOutputFormat(parser, release_track=base.ReleaseTrack.GA):

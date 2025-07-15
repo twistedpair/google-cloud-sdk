@@ -1328,9 +1328,6 @@ class Release(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
-    VariantsValue: Optional. variants represents the variants of the
-      `ResourceBundle` in this release. key in the map represents the name of
-      the variant.
 
   Fields:
     createTime: Output only. Time `Release` was created.
@@ -1342,9 +1339,6 @@ class Release(_messages.Message):
       ions/location}/resourceBundles/{resource_bundle}/release/a-z{0,62}`.
     publishTime: Output only. Time the `Release` was published.
     updateTime: Output only. Time `Release` was last updated.
-    variants: Optional. variants represents the variants of the
-      `ResourceBundle` in this release. key in the map represents the name of
-      the variant.
     version: Required. version of the `Release`. This must be v...
   """
 
@@ -1385,31 +1379,6 @@ class Release(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class VariantsValue(_messages.Message):
-    r"""Optional. variants represents the variants of the `ResourceBundle` in
-    this release. key in the map represents the name of the variant.
-
-    Messages:
-      AdditionalProperty: An additional property for a VariantsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type VariantsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a VariantsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Variant attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Variant', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   info = _messages.MessageField('ReleaseInfo', 2)
   labels = _messages.MessageField('LabelsValue', 3)
@@ -1417,8 +1386,7 @@ class Release(_messages.Message):
   name = _messages.StringField(5)
   publishTime = _messages.StringField(6)
   updateTime = _messages.StringField(7)
-  variants = _messages.MessageField('VariantsValue', 8)
-  version = _messages.StringField(9)
+  version = _messages.StringField(8)
 
 
 class ReleaseInfo(_messages.Message):
@@ -1899,8 +1867,8 @@ class Variant(_messages.Message):
     name: Identifier. Name follows format of projects/{project}/locations/{loc
       ation}/resourceBundles/{resource_bundle}/releases/{release}/variants/{va
       riant}
-    resources: Required. Unordered list. resources contain the kubernetes
-      manifests (YAMLs) for this variant.
+    resources: Required. Input only. Unordered list. resources contain the
+      kubernetes manifests (YAMLs) for this variant.
     updateTime: Output only. [Output only] Update time stamp
   """
 

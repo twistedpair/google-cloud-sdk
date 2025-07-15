@@ -203,8 +203,8 @@ class DataplexOrganizationsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DataplexOrganizationsLocationsOperationsListOperationsRequest(_messages.Message):
-  r"""A DataplexOrganizationsLocationsOperationsListOperationsRequest object.
+class DataplexOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -3941,7 +3941,9 @@ class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
       must either be organizations/ or projects/. If it is unspecified, it
       defaults to the organization where the project provided in name is
       located.
-    semanticSearch: Optional. Internal only.
+    semanticSearch: Optional. Specifies whether the search should understand
+      the meaning and intent behind the query, rather than just matching
+      keywords.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4379,10 +4381,9 @@ class GoogleCloudDataplexV1AspectTypeMetadataTemplate(_messages.Message):
     recordFields: Optional. Field definition. You must specify it if the type
       is record. It defines the nested fields.
     type: Required. The datatype of this field. The following values are
-      supported:Primitive types: string integer boolean double datetime. Must
-      be of the format RFC3339 UTC "Zulu" (Examples: "2014-10-02T15:01:23Z"
-      and "2014-10-02T15:01:23.045123456Z").Complex types: enum array map
-      record
+      supported:Primitive types: string int bool double datetime. Must be of
+      the format RFC3339 UTC "Zulu" (Examples: "2014-10-02T15:01:23Z" and
+      "2014-10-02T15:01:23.045123456Z").Complex types: enum array map record
     typeId: Optional. You can use type id if this definition of the field
       needs to be reused later. The type id must be unique across the entire
       template. You can only specify it if the field type is record.
@@ -5759,9 +5760,8 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
     description: Optional. Description of the rule. The maximum length is
       1,024 characters.
     dimension: Required. The dimension a rule belongs to. Results are also
-      aggregated at the dimension level. Supported dimensions are
-      "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
-      "FRESHNESS", "VOLUME"
+      aggregated at the dimension level. Custom dimension name is supported
+      with all uppercase letters and maximum length of 30 characters.
     ignoreNull: Optional. Rows with null values will automatically fail a
       rule, unless ignore_null is true. In that case, such null rows are
       trivially considered passing.This field is only valid for the following
@@ -6214,7 +6214,7 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   (https://cloud.google.com/dataplex/docs/data-profiling-overview). Data
   discovery: scans data in Cloud Storage buckets to extract and then catalog
   metadata. For more information, see Discover and catalog Cloud Storage data
-  (https://cloud.google.com/bigquery/docs/automatic-discovery).
+  (https://cloud.google.com/bigquery/docs/automatic-discovery). LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the DataScan.
@@ -6783,7 +6783,9 @@ class GoogleCloudDataplexV1DataSource(_messages.Message):
       r}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{ent
       ity_id}.
     resource: Immutable. The service-qualified full resource name of the cloud
-      resource for a DataScan job to scan against. The field could be:
+      resource for a DataScan job to scan against. The field could eitherbe:
+      Cloud Storage bucket for DataDiscoveryScan Format:
+      //storage.googleapis.com/projects/PROJECT_ID/buckets/BUCKET_ID or
       BigQuery table of type "TABLE" for DataProfileScan/DataQualityScan
       Format: //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_I
       D/tables/TABLE_ID

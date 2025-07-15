@@ -125,6 +125,8 @@ CONTAINERS_TASK_FIELD = 'containersTask'
 CONTAINERS_FIELD = 'containers'
 ENV_FIELD = 'env'
 LABELS_FIELD = 'labels'
+DEPLOY_FIELD = 'deploy'
+RENDER_FIELD = 'render'
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -286,6 +288,9 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         continue
       if field == 'customTarget' and kind == TARGET_KIND_V1BETA1:
         SetCustomTarget(resource, value, project, region)
+        continue
+      if field == TASKS_FIELD and kind == CUSTOM_TARGET_TYPE_KIND:
+        SetCustomTargetTasks(messages, resource, value)
         continue
       if field == 'associatedEntities' and kind == TARGET_KIND_V1BETA1:
         SetAssociatedEntities(messages, resource, resource_ref, value)
@@ -1071,6 +1076,27 @@ def SetCustomTarget(target, custom_target, project, region):
       custom_target_type_resource_ref.RelativeName()
   )
   target.customTarget = custom_target
+
+
+def SetCustomTargetTasks(messages, custom_target_type, tasks):
+  """Sets the tasks field of cloud deploy custom target type message.
+
+  This is handled specially because we allow providing either the ID or name for
+  the custom target type referenced. When the ID is provided we need to
+  construct the name.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    custom_target_type: custom target type resource.
+    tasks: googlecloudsdk.generated_clients.apis.clouddeploy.CustomTargetTasks
+      message.
+  """
+  # Set any env variables defined on CustomTargetTasks.
+  if tasks.get(DEPLOY_FIELD):
+    SetEnvForTask(messages, tasks.get(DEPLOY_FIELD))
+  if tasks.get(RENDER_FIELD):
+    SetEnvForTask(messages, tasks.get(RENDER_FIELD))
+  custom_target_type.tasks = tasks
 
 
 def SetAutomationSelector(messages, automation, selectors):

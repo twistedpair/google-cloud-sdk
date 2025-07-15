@@ -2582,13 +2582,13 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
   r"""Defines properties that can be part of the entity type.
 
   Enums:
-    GroundingConfigValueValuesEnum: Grounding config of the entity type.
+    MethodValueValuesEnum: Specifies how the entity's value is obtained.
     OccurrenceTypeValueValuesEnum: Occurrence type limits the number of
       instances an entity type appears in the document.
 
   Fields:
     displayName: User defined name for the property.
-    groundingConfig: Grounding config of the entity type.
+    method: Specifies how the entity's value is obtained.
     name: The name of the property. Follows the same guidelines as the
       EntityType name.
     occurrenceType: Occurrence type limits the number of instances an entity
@@ -2597,20 +2597,19 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
       subject to the same conventions as the `Entity.base_types` field.
   """
 
-  class GroundingConfigValueValuesEnum(_messages.Enum):
-    r"""Grounding config of the entity type.
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Specifies how the entity's value is obtained.
 
     Values:
-      GROUNDING_CONFIG_UNSPECIFIED: Unspecified grounding config. It defaults
-        to `STRICT` grounding.
-      STRICT: Strict grounding.
-      RELAXED: Relaxed grounding.
-      NO_GROUNDING: Allow no grounding.
+      METHOD_UNSPECIFIED: Unspecified method. It defaults to `EXTRACT`.
+      EXTRACT: The entity's value is directly extracted as-is from the
+        document text.
+      DERIVE: The entity's value is derived through inference and is not
+        necessarily an exact text extraction from the document.
     """
-    GROUNDING_CONFIG_UNSPECIFIED = 0
-    STRICT = 1
-    RELAXED = 2
-    NO_GROUNDING = 3
+    METHOD_UNSPECIFIED = 0
+    EXTRACT = 1
+    DERIVE = 2
 
   class OccurrenceTypeValueValuesEnum(_messages.Enum):
     r"""Occurrence type limits the number of instances an entity type appears
@@ -2632,7 +2631,7 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
     REQUIRED_MULTIPLE = 4
 
   displayName = _messages.StringField(1)
-  groundingConfig = _messages.EnumField('GroundingConfigValueValuesEnum', 2)
+  method = _messages.EnumField('MethodValueValuesEnum', 2)
   name = _messages.StringField(3)
   occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 4)
   valueType = _messages.StringField(5)
@@ -5093,10 +5092,10 @@ class GoogleTypeMoney(_messages.Message):
 
 
 class GoogleTypePostalAddress(_messages.Message):
-  r"""Represents a postal address (for example, for postal delivery or
-  payments addresses). Given a postal address, a postal service can deliver
-  items to a premise, P.O. box or similar. It is not intended to model
-  geographical locations (roads, towns, mountains). In typical usage, an
+  r"""Represents a postal address, such as for postal delivery or payments
+  addresses. With a postal address, a postal service can deliver items to a
+  premise, P.O. box, or similar. A postal address is not intended to model
+  geographical locations like roads, towns, or mountains. In typical usage, an
   address would be created by user input or from importing existing data,
   depending on the type of process. Advice on address input or editing: - Use
   an internationalization-ready address widget such as

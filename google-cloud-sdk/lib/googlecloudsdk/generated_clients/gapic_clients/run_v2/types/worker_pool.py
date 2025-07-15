@@ -47,18 +47,18 @@ class CreateWorkerPoolRequest(proto.Message):
 
     Attributes:
         parent (str):
-            Required. The location and project in which
-            this worker pool should be created. Format:
-            projects/{project}/locations/{location}, where
-            {project} can be project id or number. Only
-            lowercase characters, digits, and hyphens.
+            Required. The location and project in which this worker pool
+            should be created. Format:
+            ``projects/{project}/locations/{location}``, where
+            ``{project}`` can be project id or number. Only lowercase
+            characters, digits, and hyphens.
         worker_pool (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.WorkerPool):
             Required. The WorkerPool instance to create.
         worker_pool_id (str):
             Required. The unique identifier for the WorkerPool. It must
             begin with letter, and cannot end with hyphen; must contain
             fewer than 50 characters. The name of the worker pool
-            becomes {parent}/workerPools/{worker_pool_id}.
+            becomes ``{parent}/workerPools/{worker_pool_id}``.
         validate_only (bool):
             Optional. Indicates that the request should
             be validated and default values populated,
@@ -148,11 +148,11 @@ class ListWorkerPoolsRequest(proto.Message):
 
     Attributes:
         parent (str):
-            Required. The location and project to list
-            resources on. Location must be a valid Google
-            Cloud region, and cannot be the "-" wildcard.
-            Format: projects/{project}/locations/{location},
-            where {project} can be project id or number.
+            Required. The location and project to list resources on.
+            Location must be a valid Google Cloud region, and cannot be
+            the "-" wildcard. Format:
+            ``projects/{project}/locations/{location}``, where
+            ``{project}`` can be project id or number.
         page_size (int):
             Maximum number of WorkerPools to return in
             this call.
@@ -215,8 +215,8 @@ class GetWorkerPoolRequest(proto.Message):
     Attributes:
         name (str):
             Required. The full name of the WorkerPool. Format:
-            projects/{project}/locations/{location}/workerPools/{worker_pool},
-            where {project} can be project id or number.
+            ``projects/{project}/locations/{location}/workerPools/{worker_pool}``,
+            where ``{project}`` can be project id or number.
     """
 
     name: str = proto.Field(
@@ -231,8 +231,8 @@ class DeleteWorkerPoolRequest(proto.Message):
     Attributes:
         name (str):
             Required. The full name of the WorkerPool. Format:
-            projects/{project}/locations/{location}/workerPools/{worker_pool},
-            where {project} can be project id or number.
+            ``projects/{project}/locations/{location}/workerPools/{worker_pool}``,
+            where ``{project}`` can be project id or number.
         validate_only (bool):
             Optional. Indicates that the request should
             be validated without actually deleting any
@@ -273,7 +273,7 @@ class WorkerPool(proto.Message):
             CreateWorkerPoolRequest.worker_id.
 
             Format:
-            projects/{project}/locations/{location}/workerPools/{worker_id}
+            ``projects/{project}/locations/{location}/workerPools/{worker_id}``
         description (str):
             User-provided description of the WorkerPool.
             This field currently has a 512-character limit.
@@ -297,23 +297,22 @@ class WorkerPool(proto.Message):
             https://cloud.google.com/resource-manager/docs/creating-managing-labels
             or https://cloud.google.com/run/docs/configuring/labels.
 
-            .. raw:: html
-
-                <p>Cloud Run API v2 does not support labels with  `run.googleapis.com`,
-                `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
-                namespaces, and they will be rejected. All system labels in v1 now have a
-                corresponding field in v2 WorkerPool.
+            Cloud Run API v2 does not support labels with
+            ``run.googleapis.com``, ``cloud.googleapis.com``,
+            ``serving.knative.dev``, or ``autoscaling.knative.dev``
+            namespaces, and they will be rejected. All system labels in
+            v1 now have a corresponding field in v2 WorkerPool.
         annotations (MutableMapping[str, str]):
             Optional. Unstructured key value map that may be set by
             external tools to store and arbitrary metadata. They are not
             queryable and should be preserved when modifying objects.
 
-            .. raw:: html
-
-                <p>Cloud Run API v2 does not support annotations with `run.googleapis.com`,
-                `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
-                namespaces, and they will be rejected in new resources. All system
-                annotations in v1 now have a corresponding field in v2 WorkerPool.
+            Cloud Run API v2 does not support annotations with
+            ``run.googleapis.com``, ``cloud.googleapis.com``,
+            ``serving.knative.dev``, or ``autoscaling.knative.dev``
+            namespaces, and they will be rejected in new resources. All
+            system annotations in v1 now have a corresponding field in
+            v2 WorkerPool.
 
             .. raw:: html
 
@@ -350,11 +349,9 @@ class WorkerPool(proto.Message):
             that stage. On read (or output), describes whether the
             resource uses preview features.
 
-            .. raw:: html
-
-                <p>
-                 For example, if ALPHA is provided as input, but only BETA and GA-level
-                 features are used, this field will be BETA on output.
+            For example, if ALPHA is provided as input, but only BETA
+            and GA-level features are used, this field will be BETA on
+            output.
         binary_authorization (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.BinaryAuthorization):
             Optional. Settings for the Binary
             Authorization feature.

@@ -218,25 +218,30 @@ def _GetSharedFlags(resource_params):
   resource_names = set()
   flags = collections.defaultdict(list)
   for arg in resource_params:
-    if arg.name in resource_names:
+    # Presentation name is used to register the resource arg ie
+    # arg.CONCEPTS.presentation_name.Parse() retrieves and parses CLI input.
+    arg_name = arg.presentation_name
+    if arg_name in resource_names:
       # If we found a duplicate resource arg, make sure it has same attributes.
+      # If it has different attributes, current resource arg will override
+      # previous one.
       if (
-          arg.name in resource_names
+          arg_name in resource_names
           and not _DoesDupResourceArgHaveSameAttributes(arg, resource_params)
       ):
         raise util.InvalidSchemaError(
             'More than one resource argument has the name [{}] with different '
             'attributes. Remove the duplicate resource declarations.'.format(
-                arg.name
+                arg_name
             )
         )
     else:
-      resource_names.add(arg.name)
+      resource_names.add(arg_name)
 
     # iterate thorugh attributes flags
     for flag_name in arg.attribute_to_flag_map.values():
       if flag_name not in arg.ignored_flags:
-        flags[flag_name].append(arg.name)
+        flags[flag_name].append(arg_name)
 
   # Shared attributes: attribute entries with more than 1 resource args.
   return {

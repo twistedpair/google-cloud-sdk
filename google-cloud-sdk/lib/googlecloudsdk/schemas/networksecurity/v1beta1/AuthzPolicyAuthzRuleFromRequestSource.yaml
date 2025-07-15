@@ -27,15 +27,27 @@ properties:
       type: string
   ipBlocks:
     description: |-
-      A list of IPs or CIDRs to match against the source IP of a request.
-      Limited to 5 ip_blocks.
+      A list of IP addresses or IP address ranges to match against the source IP
+      address of the request. Limited to 5 ip_blocks.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleIpBlock.yaml
+  principals:
+    description: |-
+      A list of identities derived from the client's certificate. This field
+      will not match on a request unless frontend mutual TLS is enabled for
+      the forwarding rule or Gateway and the client certificate has been
+      successfully validated by mTLS. Each identity is a string whose value
+      is matched against a list of URI SANs, DNS Name SANs, or the common
+      name in the client's certificate. A match happens when any principal
+      matches with the rule. Limited to 5 principals.
+    type: array
+    items:
+      $ref: AuthzPolicyAuthzRulePrincipal.yaml
   resources:
     description: |-
-      A list of resources to match against the resource of the source VM of
-      a request. Limited to 5 resources.
+      A list of resources to match against the resource of the source VM
+      of a request. Limited to 5 resources.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleRequestResource.yaml

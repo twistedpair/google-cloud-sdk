@@ -227,7 +227,9 @@ class VolumesClient(object):
             restoreDestinationPath=restore_destination_path,
         ),
     )
-    if self.release_track == base.ReleaseTrack.ALPHA:
+    # TODO(b/409505431): Remove this check once the restore backup files
+    # is GA.
+    if self.release_track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]:
       restore_op = self.client.projects_locations_volumes.Restore(request)
       if async_:
         return restore_op
@@ -769,9 +771,7 @@ class VolumesAdapter(object):
     )
     # TODO(b/425281073): Remove this check once the bidirectional snapmirror
     # is AGA.
-    if (
-        release_track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]
-    ):
+    if release_track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]:
       hybrid_replication_parameters_message.replicationSchedule = (
           hybrid_replication_parameters.get('replication-schedule')
       )
@@ -784,9 +784,7 @@ class VolumesAdapter(object):
 
     volume.hybridReplicationParameters = hybrid_replication_parameters_message
 
-  def ParseCacheParameters(
-      self, volume, cache_parameters
-  ):
+  def ParseCacheParameters(self, volume, cache_parameters):
     """Parses Cache Parameters for Volume into a config.
 
     Args:
@@ -797,33 +795,27 @@ class VolumesAdapter(object):
       Volume message populated with Cache Parameters
     """
     cache_parameters_message = self.messages.CacheParameters()
-    cache_parameters_message.peerVolumeName = (
-        cache_parameters.get('peer-volume-name')
+    cache_parameters_message.peerVolumeName = cache_parameters.get(
+        'peer-volume-name'
     )
-    cache_parameters_message.peerClusterName = (
-        cache_parameters.get('peer-cluster-name')
+    cache_parameters_message.peerClusterName = cache_parameters.get(
+        'peer-cluster-name'
     )
-    cache_parameters_message.peerSvmName = (
-        cache_parameters.get('peer-svm-name')
-    )
-    for ip_address in cache_parameters.get(
-        'peer-ip-addresses', []
-    ):
+    cache_parameters_message.peerSvmName = cache_parameters.get('peer-svm-name')
+    for ip_address in cache_parameters.get('peer-ip-addresses', []):
       cache_parameters_message.peerIpAddresses.append(ip_address)
-    cache_parameters_message.enableGlobalFileLock = (
-        cache_parameters.get('enable-global-file-lock')
+    cache_parameters_message.enableGlobalFileLock = cache_parameters.get(
+        'enable-global-file-lock'
     )
     cache_config_message = self.messages.CacheConfig()
-    for config in cache_parameters.get(
-        'cache-config', []
-    ):
+    for config in cache_parameters.get('cache-config', []):
       if 'atime-scrub-enabled' in config:
         cache_config_message.atimeScrubEnabled = (
             config['atime-scrub-enabled'].lower() == 'true'
         )
       if 'atime-scrub-minutes' in config:
-        cache_config_message.atimeScrubMinutes = (
-            int(config['atime-scrub-minutes'])
+        cache_config_message.atimeScrubMinutes = int(
+            config['atime-scrub-minutes']
         )
       if 'cifs-change-notify-enabled' in config:
         cache_config_message.cifsChangeNotifyEnabled = (

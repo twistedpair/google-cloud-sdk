@@ -15,7 +15,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: The global location name.
+    help: The location name.
   disable_auto_completers: false
 
 operation:

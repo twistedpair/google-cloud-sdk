@@ -41,6 +41,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CUSTOMRANGES = (
+      'projects.locations.customRanges',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/customRanges/'
+              '{customRangesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DISCOVEREDRANGES = (
+      'projects.locations.discoveredRanges',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'discoveredRanges/{discoveredRangesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_IPAMADMINSCOPES = (
+      'projects.locations.ipamAdminScopes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ipamAdminScopes/'
+              '{ipamAdminScopesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -48,6 +81,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REALMS = (
+      'projects.locations.realms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/realms/'
+              '{realmsId}',
       },
       ['name'],
       True

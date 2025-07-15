@@ -1083,7 +1083,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def Submit(self, request, global_params=None):
-      r"""Submit a provisiong configuration for a given project.
+      r"""Submit a provisioning configuration for a given project.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest) input message

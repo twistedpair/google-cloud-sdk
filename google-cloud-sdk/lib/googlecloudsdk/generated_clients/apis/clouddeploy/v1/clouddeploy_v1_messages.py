@@ -2803,6 +2803,20 @@ class CustomTargetSkaffoldActions(_messages.Message):
   renderAction = _messages.StringField(3)
 
 
+class CustomTargetTasks(_messages.Message):
+  r"""CustomTargetTasks represents the `CustomTargetType` configuration using
+  tasks.
+
+  Fields:
+    deploy: Required. The task responsible for deploy operations.
+    render: Optional. The task responsible for render operations. If not
+      provided then Cloud Deploy will perform its default rendering operation.
+  """
+
+  deploy = _messages.MessageField('Task', 1)
+  render = _messages.MessageField('Task', 2)
+
+
 class CustomTargetType(_messages.Message):
   r"""A `CustomTargetType` resource in the Cloud Deploy API. A
   `CustomTargetType` defines a type of custom target that can be referenced in
@@ -2849,6 +2863,8 @@ class CustomTargetType(_messages.Message):
       ject}/locations/{location}/customTargetTypes/{customTargetType}`. The
       `customTargetType` component must match
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
+    tasks: Optional. Configures render and deploy for the `CustomTargetType`
+      using tasks.
     uid: Output only. Unique identifier of the `CustomTargetType`.
     updateTime: Output only. Most recent time at which the `CustomTargetType`
       was updated.
@@ -2921,8 +2937,9 @@ class CustomTargetType(_messages.Message):
   etag = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  tasks = _messages.MessageField('CustomTargetTasks', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class CustomTargetTypeNotificationEvent(_messages.Message):
@@ -4157,6 +4174,27 @@ class KubernetesConfig(_messages.Message):
   cloudServiceMesh = _messages.MessageField('CloudServiceMesh', 1)
   gatewayServiceMesh = _messages.MessageField('GatewayServiceMesh', 2)
   serviceNetworking = _messages.MessageField('ServiceNetworking', 3)
+
+
+class KubernetesRenderMetadata(_messages.Message):
+  r"""KubernetesRenderMetadata contains Kubernetes information associated with
+  a `Release` render.
+
+  Fields:
+    canaryDeployment: Output only. Name of the canary version of the
+      Kubernetes Deployment that will be applied to the GKE cluster. Only set
+      if a canary deployment strategy was configured.
+    deployment: Output only. Name of the Kubernetes Deployment that will be
+      applied to the GKE cluster. Only set if a single Deployment was provided
+      in the rendered manifest.
+    kubernetesNamespace: Output only. Namespace the Kubernetes resources will
+      be applied to in the GKE cluster. Only set if applying resources to a
+      single namespace.
+  """
+
+  canaryDeployment = _messages.StringField(1)
+  deployment = _messages.StringField(2)
+  kubernetesNamespace = _messages.StringField(3)
 
 
 class ListAutomationRunsResponse(_messages.Message):
@@ -5481,12 +5519,15 @@ class RenderMetadata(_messages.Message):
     custom: Output only. Custom metadata provided by user-defined render
       operation.
     gke: Output only. Metadata associated with rendering for a GKE Target.
+    kubernetes: Output only. Metadata associated with rendering for a
+      Kubernetes cluster (GKE or GKE Enterprise target).
   """
 
   anthos = _messages.MessageField('AnthosRenderMetadata', 1)
   cloudRun = _messages.MessageField('CloudRunRenderMetadata', 2)
   custom = _messages.MessageField('CustomMetadata', 3)
   gke = _messages.MessageField('GkeRenderMetadata', 4)
+  kubernetes = _messages.MessageField('KubernetesRenderMetadata', 5)
 
 
 class RepairPhase(_messages.Message):

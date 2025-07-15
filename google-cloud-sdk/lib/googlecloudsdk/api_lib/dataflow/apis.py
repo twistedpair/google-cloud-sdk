@@ -440,8 +440,6 @@ class Templates:
                                      'java17-template-launcher-base:latest')
   FLEX_TEMPLATE_JAVA21_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                      'java21-template-launcher-base:latest')
-  FLEX_TEMPLATE_JAVA8_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
-                                    'java8-template-launcher-base:latest')
   FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                       'python3-template-launcher-base:latest')
   FLEX_TEMPLATE_GO_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
@@ -940,7 +938,11 @@ class Templates:
     elif flex_template_base_image == 'JAVA21':
       return Templates.FLEX_TEMPLATE_JAVA21_BASE_IMAGE
     elif flex_template_base_image == 'JAVA8':
-      return Templates.FLEX_TEMPLATE_JAVA8_BASE_IMAGE
+      log.warning(
+          'JAVA8 is deprecated and redirected to JAVA11. This option '
+          'will be removed in a future release'
+      )
+      return Templates.FLEX_TEMPLATE_JAVA11_BASE_IMAGE
     elif flex_template_base_image == 'PYTHON3':
       return Templates.FLEX_TEMPLATE_PYTHON3_BASE_IMAGE
     elif flex_template_base_image == 'GO':

@@ -102,6 +102,22 @@ class AccountConnector(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class AppHubService(_messages.Message):
+  r"""AppHubService represents the App Hub Service.
+
+  Fields:
+    apphubService: Required. Output only. Immutable. The name of the App Hub
+      Service. Format: `projects/{project}/locations/{location}/applications/{
+      application}/services/{service}`.
+    criticality: Output only. The criticality of the App Hub Service.
+    environment: Output only. The environment of the App Hub Service.
+  """
+
+  apphubService = _messages.StringField(1)
+  criticality = _messages.StringField(2)
+  environment = _messages.StringField(3)
+
+
 class AppHubWorkload(_messages.Message):
   r"""AppHubWorkload represents the App Hub Workload.
 
@@ -1566,6 +1582,17 @@ class GoogleArtifactRegistry(_messages.Message):
   projectId = _messages.StringField(2)
 
 
+class GoogleCloudRun(_messages.Message):
+  r"""GoogleCloudRun represents the Cloud Run runtime.
+
+  Fields:
+    serviceUri: Required. Immutable. The name of the Cloud Run service.
+      Format: `projects/{project}/locations/{location}/services/{service}`.
+  """
+
+  serviceUri = _messages.StringField(1)
+
+
 class HttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
@@ -2258,8 +2285,10 @@ class RuntimeConfig(_messages.Message):
     StateValueValuesEnum: Output only. The state of the Runtime.
 
   Fields:
+    appHubService: Output only. App Hub Service.
     appHubWorkload: Output only. App Hub Workload.
     gkeWorkload: Output only. Google Kubernetes Engine runtime.
+    googleCloudRun: Output only. Cloud Run runtime.
     state: Output only. The state of the Runtime.
     uri: Required. Immutable. The URI of the runtime configuration. For GKE,
       this is the cluster name. For Cloud Run, this is the service name.
@@ -2278,10 +2307,12 @@ class RuntimeConfig(_messages.Message):
     LINKED = 1
     UNLINKED = 2
 
-  appHubWorkload = _messages.MessageField('AppHubWorkload', 1)
-  gkeWorkload = _messages.MessageField('GKEWorkload', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  uri = _messages.StringField(4)
+  appHubService = _messages.MessageField('AppHubService', 1)
+  appHubWorkload = _messages.MessageField('AppHubWorkload', 2)
+  gkeWorkload = _messages.MessageField('GKEWorkload', 3)
+  googleCloudRun = _messages.MessageField('GoogleCloudRun', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  uri = _messages.StringField(6)
 
 
 class ServiceDirectoryConfig(_messages.Message):

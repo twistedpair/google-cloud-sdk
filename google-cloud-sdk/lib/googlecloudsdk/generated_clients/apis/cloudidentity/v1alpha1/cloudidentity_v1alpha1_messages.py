@@ -2289,7 +2289,7 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value. (Beta) Google Groups can be
+      an empty value. Google Groups can be
       [locked](https://support.google.com/a?p=locked-groups). To lock a group,
       add a label with a key of `cloudidentity.googleapis.com/groups.locked`
       and an empty value. Doing so locks the group. To unlock the group,
@@ -2314,7 +2314,7 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value. (Beta) Google Groups can be
+      an empty value. Google Groups can be
       [locked](https://support.google.com/a?p=locked-groups). To lock a group,
       add a label with a key of `cloudidentity.googleapis.com/groups.locked`
       and an empty value. Doing so locks the group. To unlock the group,
@@ -2345,7 +2345,7 @@ class Group(_messages.Message):
     removed once added.** Dynamic groups have a label with a key of
     `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for
     Cloud Search have a label with a key of `system/groups/external` and an
-    empty value. (Beta) Google Groups can be
+    empty value. Google Groups can be
     [locked](https://support.google.com/a?p=locked-groups). To lock a group,
     add a label with a key of `cloudidentity.googleapis.com/groups.locked` and
     an empty value. Doing so locks the group. To unlock the group, remove this

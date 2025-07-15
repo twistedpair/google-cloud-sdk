@@ -457,6 +457,7 @@ class ConnectionProfilesClient(object):
         port=args.port,
         username=args.username,
         password=args.password,
+        database=args.database,
         ssl=ssl_config,
         cloudSqlId=args.GetValue(self._InstanceArgName()),
         alloydbClusterId=alloydb_cluster,
@@ -484,6 +485,9 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('host'):
       connection_profile.postgresql.host = args.host
       update_fields.append('postgresql.host')
+    if args.IsSpecified('database'):
+      connection_profile.postgresql.database = args.database
+      update_fields.append('postgresql.database')
     if args.IsSpecified('port'):
       connection_profile.postgresql.port = args.port
       update_fields.append('postgresql.port')

@@ -2599,9 +2599,12 @@ class SourceHierarchyDatasets(_messages.Message):
 
   Fields:
     datasetTemplate: The dataset template to use for dynamic dataset creation.
+    projectId: Optional. The project id of the BigQuery dataset. If not
+      specified, the project will be inferred from the stream resource.
   """
 
   datasetTemplate = _messages.MessageField('DatasetTemplate', 1)
+  projectId = _messages.StringField(2)
 
 
 class SourceObjectIdentifier(_messages.Message):

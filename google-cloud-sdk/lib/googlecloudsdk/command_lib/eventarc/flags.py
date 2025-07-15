@@ -1140,6 +1140,34 @@ def AddLoggingConfigArg(parser, help_text):
   )
 
 
+def AddWideScopeSubscriptionArg(parser, with_clear=True):
+  """Adds an argument for the wide scope subscription of the resource."""
+  group = parser.add_mutually_exclusive_group(required=False, hidden=True)
+
+  group.add_argument(
+      '--project-subscriptions',
+      type=arg_parsers.ArgList(min_length=1, element_type=str),
+      metavar='GAS_PROJECT_SUBSCRIPTION',
+      required=False,
+      help='The project subscriptions for the resource.',
+  )
+
+  group.add_argument(
+      '--organization-subscription',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=False,
+      help='The organization subscription for the resource.',
+  )
+
+  if with_clear:
+    group.add_argument(
+        '--clear-project-subscriptions',
+        action='store_true',
+        required=False,
+        help='Clear the project subscriptions for the resource.',
+    )
+
+
 def AddPipelineDestinationsArg(parser, required=False):
   """Adds an argument for the pipeline's HTTP endpoint destination."""
   help_text = """

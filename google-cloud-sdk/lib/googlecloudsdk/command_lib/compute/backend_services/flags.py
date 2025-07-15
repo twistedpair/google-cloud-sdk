@@ -1293,6 +1293,7 @@ def AddBackendServiceTlsSettings(
       default=None,
       help=help_text,
   )
+
   if add_clear_argument:
     group.add_argument(
         '--no-tls-settings',

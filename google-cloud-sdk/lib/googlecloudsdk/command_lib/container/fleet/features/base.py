@@ -33,6 +33,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
+import six
 
 
 class FeatureCommand(hub_base.HubCommand):
@@ -127,31 +128,6 @@ class EnableCommand(EnableCommandMixin, calliope_base.CreateCommand):
     return self.Enable(self.messages.Feature())
 
 
-class DisableCommand(FeatureCommand, calliope_base.DeleteCommand):
-  """Base class for the command that disables a Feature."""
-
-  @staticmethod
-  def Args(parser):
-    parser.add_argument(
-        '--force',
-        action='store_true',
-        help='Disable this feature, even if it is currently in use. '
-        'Force disablement may result in unexpected behavior.')
-
-  def Run(self, args):
-    return self.Disable(args.force)
-
-  def Disable(self, force):
-    try:
-      op = self.hubclient.DeleteFeature(self.FeatureResourceName(), force=force)
-    except apitools_exceptions.HttpNotFoundError:
-      return  # Already disabled.
-    message = 'Waiting for Feature {} to be deleted'.format(
-        self.feature.display_name)
-    self.WaitForHubOp(
-        self.hubclient.resourceless_waiter, op, message=message, warnings=False)
-
-
 class DescribeCommand(FeatureCommand, calliope_base.DescribeCommand):
   """Base class for the command that describes the status of a Feature."""
 
@@ -182,6 +158,69 @@ class UpdateCommand(UpdateCommandMixin, calliope_base.UpdateCommand):
   Because Features updates are often bespoke actions, there is no default
   `Run` override like some of the other classes.
   """
+
+
+class DisableCommand(UpdateCommandMixin, calliope_base.DeleteCommand):
+  """Base class for the command that disables an entire or parts of a Feature.
+  """
+
+  support_fleet_default = False
+
+  @classmethod
+  def Args(cls, parser):
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help='Disable this feature, even if it is currently in use. '
+        'Force disablement may result in unexpected behavior.')
+    if cls.support_fleet_default:
+      cls.fleet_default_member_config_flag(parser)
+
+  @staticmethod
+  def fleet_default_member_config_flag(parser):
+    parser.add_argument(
+        '--fleet-default-member-config',
+        # Note that this flag should actually follow
+        # yaqs/eng/q/4400496223010684928, but many
+        # feature surfaces have already adopted store_true.
+        action='store_true',
+        help=(
+            'Disable the [fleet-default membership configuration]('
+            'https://cloud.google.com/kubernetes-engine/fleet-management/docs/manage-features).'
+            ' Does not change existing membership configurations.'
+        ),
+    )
+
+  def Run(self, args):
+    if self.support_fleet_default and args.fleet_default_member_config:
+      self.clear_fleet_default()
+    else:
+      self.Disable(args.force)
+
+  def Disable(self, force):
+    try:
+      op = self.hubclient.DeleteFeature(self.FeatureResourceName(), force=force)
+    except apitools_exceptions.HttpNotFoundError:
+      return  # Already disabled.
+    message = 'Waiting for Feature {} to be deleted'.format(
+        self.feature.display_name)
+    self.WaitForHubOp(
+        self.hubclient.resourceless_waiter, op, message=message, warnings=False)
+
+  def clear_fleet_default(self):
+    mask = ['fleet_default_member_config']
+    # Feature cannot be empty on update, which would be the case without the
+    # placeholder name field when we try to clear the fleet default config.
+    # The placeholder name field must not be in the mask, lest we actually
+    # change the feature name.
+    # TODO(b/302390572): Replace with better solution if found.
+    patch = self.messages.Feature(name='placeholder')
+    try:
+      return self.Update(mask, patch)
+    except exceptions.Error as e:
+      # Do not error or log if feature does not exist.
+      if six.text_type(e) != six.text_type(self.FeatureNotEnabledError()):
+        raise e
 
 
 def ParseMembership(args,

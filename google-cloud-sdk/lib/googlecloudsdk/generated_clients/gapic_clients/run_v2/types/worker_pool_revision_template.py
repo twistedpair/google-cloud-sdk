@@ -36,6 +36,9 @@ class WorkerPoolRevisionTemplate(proto.Message):
     r"""WorkerPoolRevisionTemplate describes the data a worker pool
     revision should have when created from a template.
 
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         revision (str):
             Optional. The unique name for the revision.
@@ -51,28 +54,26 @@ class WorkerPoolRevisionTemplate(proto.Message):
             https://cloud.google.com/resource-manager/docs/creating-managing-labels
             or https://cloud.google.com/run/docs/configuring/labels.
 
-            .. raw:: html
-
-                <p>Cloud Run API v2 does not support labels with `run.googleapis.com`,
-                `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
-                namespaces, and they will be rejected. All system labels in v1 now have a
-                corresponding field in v2 WorkerPoolRevisionTemplate.
+            Cloud Run API v2 does not support labels with
+            ``run.googleapis.com``, ``cloud.googleapis.com``,
+            ``serving.knative.dev``, or ``autoscaling.knative.dev``
+            namespaces, and they will be rejected. All system labels in
+            v1 now have a corresponding field in v2
+            WorkerPoolRevisionTemplate.
         annotations (MutableMapping[str, str]):
             Optional. Unstructured key value map that may be set by
             external tools to store and arbitrary metadata. They are not
             queryable and should be preserved when modifying objects.
 
-            .. raw:: html
+            Cloud Run API v2 does not support annotations with
+            ``run.googleapis.com``, ``cloud.googleapis.com``,
+            ``serving.knative.dev``, or ``autoscaling.knative.dev``
+            namespaces, and they will be rejected. All system
+            annotations in v1 now have a corresponding field in v2
+            WorkerPoolRevisionTemplate.
 
-                <p>Cloud Run API v2 does not support annotations with `run.googleapis.com`,
-                `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
-                namespaces, and they will be rejected. All system annotations in v1 now
-                have a corresponding field in v2 WorkerPoolRevisionTemplate.
-
-            .. raw:: html
-
-                <p>This field follows Kubernetes annotations' namespacing, limits, and
-                rules.
+            This field follows Kubernetes annotations' namespacing,
+            limits, and rules.
         vpc_access (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.VpcAccess):
             Optional. VPC Access configuration to use for
             this Revision. For more information, visit
@@ -108,6 +109,11 @@ class WorkerPoolRevisionTemplate(proto.Message):
         node_selector (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.NodeSelector):
             Optional. The node selector for the revision
             template.
+        gpu_zonal_redundancy_disabled (bool):
+            Optional. True if GPU zonal redundancy is
+            disabled on this worker pool.
+
+            This field is a member of `oneof`_ ``_gpu_zonal_redundancy_disabled``.
     """
 
     revision: str = proto.Field(
@@ -166,6 +172,11 @@ class WorkerPoolRevisionTemplate(proto.Message):
         proto.MESSAGE,
         number=13,
         message=vendor_settings.NodeSelector,
+    )
+    gpu_zonal_redundancy_disabled: bool = proto.Field(
+        proto.BOOL,
+        number=16,
+        optional=True,
     )
 
 

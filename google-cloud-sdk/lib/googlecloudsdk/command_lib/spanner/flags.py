@@ -14,10 +14,6 @@
 # limitations under the License.
 """Provides common arguments for the Spanner command surface."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from argcomplete.completers import FilesCompleter
 from cloudsdk.google.protobuf import descriptor_pb2
 from googlecloudsdk.api_lib.spanner import databases
@@ -290,6 +286,40 @@ def Nodes(required=False, text='Number of nodes for the instance.'):
       required=required,
       type=int,
       help=text,
+  )
+
+
+def AddTags(parser):
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as either',
+      'ID: `<tag-key-id>=<tag-value-id>` or\n',
+      'Namespaced name: `<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `tagKeys/123=tagValues/223`\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  parser.add_argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      hidden=True,
+      help='\n'.join(help_parts),
+  )
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name, None)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(
+      additionalProperties=[
+          tags_message.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(tags.items())
+      ]
   )
 
 

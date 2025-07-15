@@ -1146,12 +1146,12 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
 
   Enums:
     ChallengeValueValuesEnum: Output only. Challenge information for
-      SCORE_AND_CHALLENGE and INVISIBLE keys
+      POLICY_BASED_CHALLENGE and INVISIBLE keys
     ReasonsValueListEntryValuesEnum:
 
   Fields:
-    challenge: Output only. Challenge information for SCORE_AND_CHALLENGE and
-      INVISIBLE keys
+    challenge: Output only. Challenge information for POLICY_BASED_CHALLENGE
+      and INVISIBLE keys
     extendedVerdictReasons: Output only. Extended verdict reasons to be used
       for experimentation only. The set of possible reasons is subject to
       change.
@@ -1164,7 +1164,7 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
   """
 
   class ChallengeValueValuesEnum(_messages.Enum):
-    r"""Output only. Challenge information for SCORE_AND_CHALLENGE and
+    r"""Output only. Challenge information for POLICY_BASED_CHALLENGE and
     INVISIBLE keys
 
     Values:
@@ -1778,8 +1778,7 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
       SESSION_TOKEN: Use reCAPTCHA session-tokens to protect the whole user
         session on the site's domain.
       ACTION_TOKEN: Use reCAPTCHA action-tokens to protect user actions.
-      EXPRESS: Use reCAPTCHA WAF express protection to protect any content
-        other than web pages, like APIs and IoT devices.
+      EXPRESS: Deprecated: Use `express_settings` instead.
     """
     WAF_FEATURE_UNSPECIFIED = 0
     CHALLENGE_PAGE = 1
@@ -1813,8 +1812,8 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   Enums:
     ChallengeSecurityPreferenceValueValuesEnum: Optional. Settings for the
       frequency and difficulty at which this key triggers captcha challenges.
-      This should only be specified for IntegrationTypes CHECKBOX and
-      INVISIBLE and SCORE_AND_CHALLENGE.
+      This should only be specified for `IntegrationType` CHECKBOX, INVISIBLE
+      or POLICY_BASED_CHALLENGE.
     IntegrationTypeValueValuesEnum: Required. Describes how this key is
       integrated with the website.
 
@@ -1830,10 +1829,9 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
       query or fragment. Examples: 'example.com' or 'subdomain.example.com'
     challengeSecurityPreference: Optional. Settings for the frequency and
       difficulty at which this key triggers captcha challenges. This should
-      only be specified for IntegrationTypes CHECKBOX and INVISIBLE and
-      SCORE_AND_CHALLENGE.
-    challengeSettings: Optional. Challenge settings for SCORE_AND_CHALLENGE
-      keys.
+      only be specified for `IntegrationType` CHECKBOX, INVISIBLE or
+      POLICY_BASED_CHALLENGE.
+    challengeSettings: Optional. Challenge settings.
     integrationType: Required. Describes how this key is integrated with the
       website.
   """
@@ -1841,7 +1839,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   class ChallengeSecurityPreferenceValueValuesEnum(_messages.Enum):
     r"""Optional. Settings for the frequency and difficulty at which this key
     triggers captcha challenges. This should only be specified for
-    IntegrationTypes CHECKBOX and INVISIBLE and SCORE_AND_CHALLENGE.
+    `IntegrationType` CHECKBOX, INVISIBLE or POLICY_BASED_CHALLENGE.
 
     Values:
       CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED: Default type that indicates
@@ -1871,12 +1869,15 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
         captcha challenges after risk analysis.
       SCORE_AND_CHALLENGE: Displays a visual challenge or not depending on the
         user risk analysis score.
+      POLICY_BASED_CHALLENGE: Displays a visual challenge or not depending on
+        the user risk analysis score.
     """
     INTEGRATION_TYPE_UNSPECIFIED = 0
     SCORE = 1
     CHECKBOX = 2
     INVISIBLE = 3
     SCORE_AND_CHALLENGE = 4
+    POLICY_BASED_CHALLENGE = 5
 
   allowAllDomains = _messages.BooleanField(1)
   allowAmpTraffic = _messages.BooleanField(2)
@@ -1898,24 +1899,22 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings(_messages.Mes
 
 
 class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(_messages.Message):
-  r"""Settings for SCORE_AND_CHALLENGE keys to control when a challenge is
+  r"""Settings for POLICY_BASED_CHALLENGE keys to control when a challenge is
   triggered.
 
   Messages:
-    ActionSettingsValue: Optional. The action to score threshold map used for
-      SCORE_AND_CHALLENGE keys. The action name should be the same as the
-      action name passed in a execute (see
-      https://cloud.google.com/recaptcha/docs/actions-website). Action names
-      are case sensitive. There is a maximum of 100 action settings. An action
-      name has a maximum length of 100.
+    ActionSettingsValue: Optional. The action to score threshold map. The
+      action name should be the same as the action name passed in the `data-
+      action` attribute (see https://cloud.google.com/recaptcha/docs/actions-
+      website). Action names are case-insensitive. There is a maximum of 100
+      action settings. An action name has a maximum length of 100.
 
   Fields:
-    actionSettings: Optional. The action to score threshold map used for
-      SCORE_AND_CHALLENGE keys. The action name should be the same as the
-      action name passed in a execute (see
-      https://cloud.google.com/recaptcha/docs/actions-website). Action names
-      are case sensitive. There is a maximum of 100 action settings. An action
-      name has a maximum length of 100.
+    actionSettings: Optional. The action to score threshold map. The action
+      name should be the same as the action name passed in the `data-action`
+      attribute (see https://cloud.google.com/recaptcha/docs/actions-website).
+      Action names are case-insensitive. There is a maximum of 100 action
+      settings. An action name has a maximum length of 100.
     defaultSettings: Required. Defines when a challenge is triggered (unless
       the default threshold is overridden for the given action, see
       `action_settings`).
@@ -1923,12 +1922,11 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(_messages.
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ActionSettingsValue(_messages.Message):
-    r"""Optional. The action to score threshold map used for
-    SCORE_AND_CHALLENGE keys. The action name should be the same as the action
-    name passed in a execute (see
+    r"""Optional. The action to score threshold map. The action name should be
+    the same as the action name passed in the `data-action` attribute (see
     https://cloud.google.com/recaptcha/docs/actions-website). Action names are
-    case sensitive. There is a maximum of 100 action settings. An action name
-    has a maximum length of 100.
+    case-insensitive. There is a maximum of 100 action settings. An action
+    name has a maximum length of 100.
 
     Messages:
       AdditionalProperty: An additional property for a ActionSettingsValue

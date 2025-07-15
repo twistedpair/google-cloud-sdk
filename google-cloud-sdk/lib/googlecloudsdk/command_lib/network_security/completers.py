@@ -94,7 +94,6 @@ class GlobalBackendAuthenticationConfigsCompleter(
         collection=(
             'networksecurity.projects.locations.backendAuthenticationConfigs'
         ),
-        api_version='v1alpha1',
         list_command=(
             'network-security backend-authentication-configs list'
             ' --location=global --uri'
@@ -113,7 +112,6 @@ class RegionBackendAuthenticationConfigsCompleter(
         collection=(
             'networksecurity.projects.locations.backendAuthenticationConfigs'
         ),
-        api_version='v1alpha1',
         list_command=(
             'network-security backend-authentication-configs list'
             ' --filter=region:* --uri'

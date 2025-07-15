@@ -694,12 +694,8 @@ def AddExtensionConstraintsFlags(parser):
           'from the certificate request into the signed certificate.'
       ),
       type=arg_parsers.ArgList(
-          choices=known_extensions,
-          visible_choices=[
-              ext
-              for ext in known_extensions.keys()
-              if ext not in _HIDDEN_KNOWN_EXTENSIONS
-          ],
+          choices=known_extensions.keys(),
+          hidden_choices=_HIDDEN_KNOWN_EXTENSIONS,
       ),
       metavar='KNOWN_EXTENSIONS',
   ).AddToParser(copy_group)
@@ -791,12 +787,8 @@ def AddExtensionConstraintsFlagsForUpdate(parser):
           'from the certificate request into the signed certificate.'
       ),
       type=arg_parsers.ArgList(
-          choices=known_extensions,
-          visible_choices=[
-              ext
-              for ext in known_extensions.keys()
-              if ext not in _HIDDEN_KNOWN_EXTENSIONS
-          ],
+          choices=known_extensions.keys(),
+          hidden_choices=_HIDDEN_KNOWN_EXTENSIONS,
       ),
       metavar='KNOWN_EXTENSIONS',
   ).AddToParser(known_group)

@@ -61,8 +61,8 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
       an event add-on is triggered.
 
   Fields:
-    calendarNotificationTrigger: An endpoint that triggers when there is a new
-      event for a previously configured calendar subscription.
+    calendarNotificationTrigger: An endpoint that triggers when an event is
+      created or updated for a Calendar that the user is subscribed to.
     conferenceSolution: Defines conference solutions provided by this add-on.
       Third-party conferencing add-ons can only be built in [Apps
       Script](https://developers.google.com/apps-script/reference/conference-

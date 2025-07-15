@@ -763,9 +763,12 @@ class DataformProjectsLocationsRepositoriesDeleteRequest(_messages.Message):
   r"""A DataformProjectsLocationsRepositoriesDeleteRequest object.
 
   Fields:
-    force: Optional. If set to true, any child resources of this repository
-      will also be deleted. (Otherwise, the request will only succeed if the
-      repository has no child resources.)
+    force: Optional. If set to true, child resources of this repository
+      (compilation results and workflow invocations) will also be deleted.
+      Otherwise, the request will only succeed if the repository has no child
+      resources. **Note:** *This flag doesn't support deletion of workspaces,
+      release configs or workflow configs. If any of such resources exists in
+      the repository, the request will fail.*.
     name: Required. The repository's name.
   """
 
@@ -1834,6 +1837,21 @@ class GitRemoteSettings(_messages.Message):
   url = _messages.StringField(5)
 
 
+class IamPolicyOverrideView(_messages.Message):
+  r"""Contains metadata about the IAM policy override for a given Dataform
+  resource. If is_active is true, this the policy encoded in iam_policy_name
+  is the source of truth for this resource. Will be provided in internal ESV2
+  views for: Workspaces, Repositories, Folders, TeamFolders.
+
+  Fields:
+    iamPolicyName: The IAM policy name for the resource.
+    isActive: Whether the IAM policy encoded in this view is active.
+  """
+
+  iamPolicyName = _messages.MessageField('PolicyName', 1)
+  isActive = _messages.BooleanField(2)
+
+
 class IncrementalLoadMode(_messages.Message):
   r"""Load definition for incremental load modes
 
@@ -2346,6 +2364,31 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class PolicyName(_messages.Message):
+  r"""An internal name for an IAM policy, based on the resource to which the
+  policy applies. Not to be confused with a resource's external full resource
+  name. For more information on this distinction, see go/iam-full-resource-
+  names.
+
+  Fields:
+    id: Identifies an instance of the type. ID format varies by type. The ID
+      format is defined in the IAM .service file that defines the type, either
+      in path_mapping or in a comment.
+    region: For Cloud IAM: The location of the Policy. Must be empty or
+      "global" for Policies owned by global IAM. Must name a region from
+      prodspec/cloud-iam-cloudspec for Regional IAM Policies, see go/iam-
+      faq#where-is-iam-currently-deployed. For Local IAM: This field should be
+      set to "local".
+    type: Resource type. Types are defined in IAM's .service files. Valid
+      values for type might be 'storage_buckets', 'compute_instances',
+      'resourcemanager_customers', 'billing_accounts', etc.
+  """
+
+  id = _messages.StringField(1)
+  region = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class PullGitCommitsRequest(_messages.Message):

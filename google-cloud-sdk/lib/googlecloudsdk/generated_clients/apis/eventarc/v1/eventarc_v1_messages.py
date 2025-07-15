@@ -401,6 +401,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class Enrollment(_messages.Message):
   r"""An enrollment represents a subscription for messages on a particular
   message bus. It defines a matching criteria for messages on the bus and the
@@ -1986,7 +1987,6 @@ class GKE(_messages.Message):
 
 class GoogleApiSource(_messages.Message):
   r"""A GoogleApiSource represents a subscription of 1P events from a
-
   MessageBus.
 
   Messages:
@@ -2082,9 +2082,7 @@ class GoogleApiSource(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   loggingConfig = _messages.MessageField('LoggingConfig', 8)
   name = _messages.StringField(9)
-  organizationSubscription = _messages.MessageField(
-      'OrganizationSubscription', 10
-  )
+  organizationSubscription = _messages.MessageField('OrganizationSubscription', 10)
   projectSubscriptions = _messages.MessageField('ProjectSubscriptions', 11)
   uid = _messages.StringField(12)
   updateTime = _messages.StringField(13)
@@ -3332,6 +3330,8 @@ class Pipeline(_messages.Message):
       the location of the project and must be in
       `projects/{project}/locations/{location}/pipelines/{pipeline}` format.
     retryPolicy: Optional. The retry policy to use in the pipeline.
+    satisfiesPzs: Output only. Whether or not this Pipeline satisfies the
+      requirements of physical zone separation
     uid: Output only. Server-assigned unique identifier for the Pipeline. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
@@ -3405,8 +3405,9 @@ class Pipeline(_messages.Message):
   mediations = _messages.MessageField('GoogleCloudEventarcV1PipelineMediation', 10, repeated=True)
   name = _messages.StringField(11)
   retryPolicy = _messages.MessageField('GoogleCloudEventarcV1PipelineRetryPolicy', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  satisfiesPzs = _messages.BooleanField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class Policy(_messages.Message):

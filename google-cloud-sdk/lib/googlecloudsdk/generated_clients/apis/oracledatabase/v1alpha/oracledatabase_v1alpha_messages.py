@@ -477,6 +477,11 @@ class AutonomousDatabaseProperties(_messages.Message):
     dbWorkload: Required. The workload type of the Autonomous Database.
     disasterRecoveryRoleChangedTime: Output only. The date and time the
       Disaster Recovery role was changed for the standby Autonomous Database.
+    encryptionKey: Optional. The encryption key used to encrypt the Autonomous
+      Database. Updating this field will add a new entry in the
+      `encryption_key_history_entries` field with the former version.
+    encryptionKeyHistoryEntries: Output only. The history of the encryption
+      keys used to encrypt the Autonomous Database.
     failedDataRecoveryDuration: Output only. This field indicates the number
       of seconds of data loss during a Data Guard failover.
     isAutoScalingEnabled: Optional. This field indicates if auto scaling is
@@ -538,6 +543,9 @@ class AutonomousDatabaseProperties(_messages.Message):
       scheduled operations of the Autonomous Database.
     secretId: Optional. The ID of the Oracle Cloud Infrastructure vault
       secret.
+    serviceAgentEmail: Output only. An Oracle-managed Google Cloud service
+      account on which customers can grant roles to access resources in the
+      customer project.
     sqlWebDeveloperUrl: Output only. The SQL Web Developer URL for the
       Autonomous Database.
     state: Output only. The current lifecycle state of the Autonomous
@@ -836,43 +844,46 @@ class AutonomousDatabaseProperties(_messages.Message):
   dbVersion = _messages.StringField(21)
   dbWorkload = _messages.EnumField('DbWorkloadValueValuesEnum', 22)
   disasterRecoveryRoleChangedTime = _messages.StringField(23)
-  failedDataRecoveryDuration = _messages.StringField(24)
-  isAutoScalingEnabled = _messages.BooleanField(25)
-  isLocalDataGuardEnabled = _messages.BooleanField(26)
-  isStorageAutoScalingEnabled = _messages.BooleanField(27)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 28)
-  lifecycleDetails = _messages.StringField(29)
-  localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 31)
-  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 32)
-  maintenanceBeginTime = _messages.StringField(33)
-  maintenanceEndTime = _messages.StringField(34)
-  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 35)
-  memoryPerOracleComputeUnitGbs = _messages.IntegerField(36, variant=_messages.Variant.INT32)
-  memoryTableGbs = _messages.IntegerField(37, variant=_messages.Variant.INT32)
-  mtlsConnectionRequired = _messages.BooleanField(38)
-  nCharacterSet = _messages.StringField(39)
-  nextLongTermBackupTime = _messages.StringField(40)
-  ociUrl = _messages.StringField(41)
-  ocid = _messages.StringField(42)
-  openMode = _messages.EnumField('OpenModeValueValuesEnum', 43)
-  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 44)
-  peerDbIds = _messages.StringField(45, repeated=True)
-  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 46)
-  privateEndpoint = _messages.StringField(47)
-  privateEndpointIp = _messages.StringField(48)
-  privateEndpointLabel = _messages.StringField(49)
-  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 50)
-  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 51)
-  role = _messages.EnumField('RoleValueValuesEnum', 52)
-  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 53, repeated=True)
-  secretId = _messages.StringField(54)
-  sqlWebDeveloperUrl = _messages.StringField(55)
-  state = _messages.EnumField('StateValueValuesEnum', 56)
-  supportedCloneRegions = _messages.StringField(57, repeated=True)
-  totalAutoBackupStorageSizeGbs = _messages.FloatField(58, variant=_messages.Variant.FLOAT)
-  usedDataStorageSizeTbs = _messages.IntegerField(59, variant=_messages.Variant.INT32)
-  vaultId = _messages.StringField(60)
+  encryptionKey = _messages.MessageField('EncryptionKey', 24)
+  encryptionKeyHistoryEntries = _messages.MessageField('EncryptionKeyHistoryEntry', 25, repeated=True)
+  failedDataRecoveryDuration = _messages.StringField(26)
+  isAutoScalingEnabled = _messages.BooleanField(27)
+  isLocalDataGuardEnabled = _messages.BooleanField(28)
+  isStorageAutoScalingEnabled = _messages.BooleanField(29)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 30)
+  lifecycleDetails = _messages.StringField(31)
+  localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 33)
+  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 34)
+  maintenanceBeginTime = _messages.StringField(35)
+  maintenanceEndTime = _messages.StringField(36)
+  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 37)
+  memoryPerOracleComputeUnitGbs = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  memoryTableGbs = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  mtlsConnectionRequired = _messages.BooleanField(40)
+  nCharacterSet = _messages.StringField(41)
+  nextLongTermBackupTime = _messages.StringField(42)
+  ociUrl = _messages.StringField(43)
+  ocid = _messages.StringField(44)
+  openMode = _messages.EnumField('OpenModeValueValuesEnum', 45)
+  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 46)
+  peerDbIds = _messages.StringField(47, repeated=True)
+  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 48)
+  privateEndpoint = _messages.StringField(49)
+  privateEndpointIp = _messages.StringField(50)
+  privateEndpointLabel = _messages.StringField(51)
+  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 52)
+  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 53)
+  role = _messages.EnumField('RoleValueValuesEnum', 54)
+  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 55, repeated=True)
+  secretId = _messages.StringField(56)
+  serviceAgentEmail = _messages.StringField(57)
+  sqlWebDeveloperUrl = _messages.StringField(58)
+  state = _messages.EnumField('StateValueValuesEnum', 59)
+  supportedCloneRegions = _messages.StringField(60, repeated=True)
+  totalAutoBackupStorageSizeGbs = _messages.FloatField(61, variant=_messages.Variant.FLOAT)
+  usedDataStorageSizeTbs = _messages.IntegerField(62, variant=_messages.Variant.INT32)
+  vaultId = _messages.StringField(63)
 
 
 class AutonomousDatabaseStandbySummary(_messages.Message):
@@ -1481,6 +1492,24 @@ class DataCollectionOptions(_messages.Message):
   incidentLogsEnabled = _messages.BooleanField(3)
 
 
+class DataCollectionOptionsCommon(_messages.Message):
+  r"""Data collection options for diagnostics. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/datatypes/DataCollectionOptions
+
+  Fields:
+    isDiagnosticsEventsEnabled: Optional. Indicates whether to enable data
+      collection for diagnostics.
+    isHealthMonitoringEnabled: Optional. Indicates whether to enable health
+      monitoring.
+    isIncidentLogsEnabled: Optional. Indicates whether to enable incident logs
+      and trace collection.
+  """
+
+  isDiagnosticsEventsEnabled = _messages.BooleanField(1)
+  isHealthMonitoringEnabled = _messages.BooleanField(2)
+  isIncidentLogsEnabled = _messages.BooleanField(3)
+
+
 class DatabaseConnectionStringProfile(_messages.Message):
   r"""The connection string profile to allow clients to group.
   https://docs.oracle.com/en-
@@ -1791,6 +1820,52 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionKey(_messages.Message):
+  r"""The encryption key used to encrypt the Autonomous Database.
+
+  Enums:
+    ProviderValueValuesEnum: Optional. The provider of the encryption key.
+
+  Fields:
+    kmsKey: Optional. The KMS key used to encrypt the Autonomous Database.
+      This field is required if the provider is GOOGLE_MANAGED. The name of
+      the KMS key resource in the following format: `projects/{project}/locati
+      ons/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
+    provider: Optional. The provider of the encryption key.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Optional. The provider of the encryption key.
+
+    Values:
+      PROVIDER_UNSPECIFIED: Default unspecified value.
+      GOOGLE_MANAGED: Google Managed KMS key, if selected, please provide the
+        KMS key name.
+      ORACLE_MANAGED: Oracle Managed.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GOOGLE_MANAGED = 1
+    ORACLE_MANAGED = 2
+
+  kmsKey = _messages.StringField(1)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 2)
+
+
+class EncryptionKeyHistoryEntry(_messages.Message):
+  r"""The history of the encryption keys used to encrypt the Autonomous
+  Database.
+
+  Fields:
+    activationTime: Output only. The date and time when the encryption key was
+      activated on the Autonomous Database..
+    encryptionKey: Output only. The encryption key used to encrypt the
+      Autonomous Database.
+  """
+
+  activationTime = _messages.StringField(1)
+  encryptionKey = _messages.MessageField('EncryptionKey', 2)
+
+
 class Entitlement(_messages.Message):
   r"""Details of the Entitlement resource.
 
@@ -1841,18 +1916,33 @@ class ExadbVmCluster(_messages.Message):
       ExadbVmCluster.
 
   Fields:
-    createTime: Output only. The date and time when the ExadbVmCluster was
+    backupOdbSubnet: Required. The name of the backup OdbSubnet associated
+      with the ExadbVmCluster. Format: projects/{project}/locations/{location}
+      /odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    createTime: Output only. The date and time that the ExadbVmCluster was
       created.
     displayName: Required. The display name for the ExadbVmCluster. The name
       does not have to be unique within your project. The name must be 1-255
       characters long and can only contain alphanumeric characters.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the ExadbVmCluster.
     gcpOracleZone: Optional. Google Cloud Platform location where Oracle Exadb
       vm cluster is hosted. Example: us-east4-b-r1, us-central1-a.
     labels: Optional. The labels or tags associated with the ExadbVmCluster.
     name: Identifier. The name of the ExadbVmCluster resource in the following
       format:
       projects/{project}/locations/{region}/exadbVmClusters/{exadb_vm_cluster}
+    odbNetwork: Optional. The name of the OdbNetwork associated with the
+      ExadbVmCluster. Format:
+      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
+      optional but if specified, this should match the parent ODBNetwork of
+      the OdbSubnet.
+    odbSubnet: Required. The name of the OdbSubnet associated with the
+      ExadbVmCluster for IP allocation. Format: projects/{project}/locations/{
+      location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
     properties: Optional. The properties of the ExadbVmCluster.
+    storageVaultProperties: Optional. The properties of the storage vault
+      associated with the ExadbVmCluster.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1879,27 +1969,31 @@ class ExadbVmCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  gcpOracleZone = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  properties = _messages.MessageField('ExadbVmClusterProperties', 6)
+  backupOdbSubnet = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  entitlementId = _messages.StringField(4)
+  gcpOracleZone = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  odbNetwork = _messages.StringField(8)
+  odbSubnet = _messages.StringField(9)
+  properties = _messages.MessageField('ExadbVmClusterProperties', 10)
+  storageVaultProperties = _messages.MessageField('StorageVaultProperties', 11)
 
 
 class ExadbVmClusterProperties(_messages.Message):
   r"""The properties of an ExadbVmCluster.
 
   Enums:
-    LicenseTypeValueValuesEnum: Required. The license type of the
+    LicenseModelValueValuesEnum: Required. The license type of the
       ExadbVmCluster.
-    StateValueValuesEnum: Output only. The state of the
-      ExascaleDbStorageVault.
+    LifecycleStateValueValuesEnum: Output only. State of the cluster.
+    ShapeAttributeValueValuesEnum: Required. The shape attribute of the VM
+      cluster. The type of Exascale storage used for Exadata VM cluster. The
+      default is SMART_STORAGE which supports Oracle Database 23ai and later
 
   Fields:
-    backupOdbSubnet: Required. The name of the backup OdbSubnet associated
-      with the ExadbVmCluster. Format: projects/{project}/locations/{location}
-      /odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
     clusterName: Required. The cluster name for Exascale vm cluster. The
       cluster name must begin with an alphabetic character and may contain
       hyphens(-) but can not contain underscores(_). It should be not more
@@ -1910,55 +2004,55 @@ class ExadbVmClusterProperties(_messages.Message):
       cluster on exascale infrastructure.
     exascaleDbStorageVaultId: Optional. The OCID for exadata database storage
       vault.
-    gridImageId: Required. Grid setup will be done using the grid image id.
-    licenseType: Required. The license type of the ExadbVmCluster.
-    memorySizeGb: Optional. The memory allocated in GBs.
-    nodeCount: Required. The number of nodes in the ExadbVmCluster.
-    odbNetwork: Optional. The name of the OdbNetwork associated with the
-      ExadbVmCluster. Format:
-      projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
-      optional but if specified, this should match the parent ODBNetwork of
-      the client_subnet_id and backup_subnet_id.
-    odbSubnet: Required. The name of the OdbSubnet associated with the
-      ExadbVmCluster for IP allocation. Format: projects/{project}/locations/{
-      location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    gridImageId: Required. Grid Infrastructure Version.
+    hostname: Output only. The hostname of the ExadbVmCluster.
+    hostnamePrefix: Optional. Prefix for VM cluster host names.
+    licenseModel: Required. The license type of the ExadbVmCluster.
+    lifecycleState: Output only. State of the cluster.
+    memorySizeGb: Output only. Memory per VM (GB) (Read-only): Shows the
+      amount of memory allocated to each VM. Memory is calculated based on
+      2.75 GB per Total ECPUs.
+    nodeCount: Required. The number of nodes/VMs in the ExadbVmCluster.
+    ociUri: Output only. Deep link to the OCI console to view this resource.
+    scanListenerPortTcp: Optional. SCAN listener port - TCP
+    shapeAttribute: Required. The shape attribute of the VM cluster. The type
+      of Exascale storage used for Exadata VM cluster. The default is
+      SMART_STORAGE which supports Oracle Database 23ai and later
     sshPublicKeys: Required. The SSH public keys for the ExadbVmCluster.
-    state: Output only. The state of the ExascaleDbStorageVault.
-    storageVaultProperties: Optional. The properties of the storage vault
-      associated with the ExadbVmCluster.
     timeZone: Optional. The time zone of the ExadbVmCluster.
     totalEcpuCount: Required. The total number of ECPUs available (enabled +
       reserved) for an exadata vm cluster on exascale infrastructure.
-    vmFileSystemStorage: Required. The memory allocated in GBs.
+    vmFileSystemStorage: Required. Total storage details for the
+      ExadbVmCluster.
   """
 
-  class LicenseTypeValueValuesEnum(_messages.Enum):
+  class LicenseModelValueValuesEnum(_messages.Enum):
     r"""Required. The license type of the ExadbVmCluster.
 
     Values:
-      LICENSE_TYPE_UNSPECIFIED: Unspecified.
-      LISCENSE_INCLUDED: Default islicense included.
+      LICENSE_MODEL_UNSPECIFIED: Unspecified.
+      LICENSE_INCLUDED: Default is license included.
       BRING_YOUR_OWN_LICENSE: Bring your own license.
     """
-    LICENSE_TYPE_UNSPECIFIED = 0
-    LISCENSE_INCLUDED = 1
+    LICENSE_MODEL_UNSPECIFIED = 0
+    LICENSE_INCLUDED = 1
     BRING_YOUR_OWN_LICENSE = 2
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the ExascaleDbStorageVault.
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the cluster.
 
     Values:
-      STATE_UNSPECIFIED: The state of the ExascaleDbStorageVault is
-        unspecified.
-      PROVISIONING: The ExadbVmCluster is being provisioned.
-      AVAILABLE: The ExadbVmCluster is available.
-      UPDATING: The ExadbVmCluster is being updated.
-      TERMINATING: The ExadbVmCluster is being deleted.
-      TERMINATED: The ExadbVmCluster has been deleted.
-      FAILED: The ExadbVmCluster has failed.
-      MAINTENANCE_IN_PROGRESS: The ExadbVmCluster is in maintenance mode.
+      EXADB_VM_CLUSTER_LIFECYCLE_STATE_UNSPECIFIED: Default unspecified value.
+      PROVISIONING: Indicates that the resource is in provisioning state.
+      AVAILABLE: Indicates that the resource is in available state.
+      UPDATING: Indicates that the resource is in updating state.
+      TERMINATING: Indicates that the resource is in terminating state.
+      TERMINATED: Indicates that the resource is in terminated state.
+      FAILED: Indicates that the resource is in failed state.
+      MAINTENANCE_IN_PROGRESS: Indicates that the resource is in maintenance
+        in progress state.
     """
-    STATE_UNSPECIFIED = 0
+    EXADB_VM_CLUSTER_LIFECYCLE_STATE_UNSPECIFIED = 0
     PROVISIONING = 1
     AVAILABLE = 2
     UPDATING = 3
@@ -1967,51 +2061,49 @@ class ExadbVmClusterProperties(_messages.Message):
     FAILED = 6
     MAINTENANCE_IN_PROGRESS = 7
 
-  backupOdbSubnet = _messages.StringField(1)
-  clusterName = _messages.StringField(2)
-  dataCollectionOptions = _messages.MessageField('ExadbVmClusterPropertiesDataCollectionOptions', 3)
-  enabledEcpuCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  exascaleDbStorageVaultId = _messages.StringField(5)
-  gridImageId = _messages.StringField(6)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 7)
-  memorySizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  odbNetwork = _messages.StringField(10)
-  odbSubnet = _messages.StringField(11)
-  sshPublicKeys = _messages.StringField(12, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  storageVaultProperties = _messages.MessageField('StorageVaultProperties', 14)
-  timeZone = _messages.MessageField('TimeZone', 15)
-  totalEcpuCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 17)
+  class ShapeAttributeValueValuesEnum(_messages.Enum):
+    r"""Required. The shape attribute of the VM cluster. The type of Exascale
+    storage used for Exadata VM cluster. The default is SMART_STORAGE which
+    supports Oracle Database 23ai and later
 
+    Values:
+      SHAPE_ATTRIBUTE_UNSPECIFIED: Default unspecified value.
+      SMART_STORAGE: Indicates that the resource is in smart storage.
+      BLOCK_STORAGE: Indicates that the resource is in block storage.
+    """
+    SHAPE_ATTRIBUTE_UNSPECIFIED = 0
+    SMART_STORAGE = 1
+    BLOCK_STORAGE = 2
 
-class ExadbVmClusterPropertiesDataCollectionOptions(_messages.Message):
-  r"""Data collection options for diagnostics.
-
-  Fields:
-    diagnosticsEventsEnabled: Optional. Indicates whether to enable data
-      collection for diagnostics.
-    healthMonitoringEnabled: Optional. Indicates whether to enable health
-      monitoring.
-    incidentLogsEnabled: Optional. Indicates whether to enable incident logs
-      and trace collection.
-  """
-
-  diagnosticsEventsEnabled = _messages.BooleanField(1)
-  healthMonitoringEnabled = _messages.BooleanField(2)
-  incidentLogsEnabled = _messages.BooleanField(3)
+  clusterName = _messages.StringField(1)
+  dataCollectionOptions = _messages.MessageField('DataCollectionOptionsCommon', 2)
+  enabledEcpuCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  exascaleDbStorageVaultId = _messages.StringField(4)
+  gridImageId = _messages.StringField(5)
+  hostname = _messages.StringField(6)
+  hostnamePrefix = _messages.StringField(7)
+  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 8)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 9)
+  memorySizeGb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  ociUri = _messages.StringField(12)
+  scanListenerPortTcp = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  shapeAttribute = _messages.EnumField('ShapeAttributeValueValuesEnum', 14)
+  sshPublicKeys = _messages.StringField(15, repeated=True)
+  timeZone = _messages.MessageField('TimeZone', 16)
+  totalEcpuCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  vmFileSystemStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 18)
 
 
 class ExadbVmClusterStorageDetails(_messages.Message):
   r"""The storage allocation for the exadbvmcluster, in gigabytes (GB).
 
   Fields:
-    totalSizeGbs: Optional. The storage allocation for the exadbvmcluster, in
-      gigabytes (GB).
+    totalSizeInGbs: Optional. The storage allocation for the exadbvmcluster,
+      in gigabytes (GB).
   """
 
-  totalSizeGbs = _messages.IntegerField(1)
+  totalSizeInGbs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class ExascaleDbStorageDetails(_messages.Message):
@@ -2039,6 +2131,8 @@ class ExascaleDbStorageVault(_messages.Message):
     displayName: Required. The display name for the ExascaleDbStorageVault.
       The name does not have to be unique within your project. The name must
       be 1-255 characters long and can only contain alphanumeric characters.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the ExascaleDbStorageVault.
     gcpOracleZone: Required. The zone where Oracle ExascaleDbStorageVault is
       hosted. It is an isolated area within a location, designed for single
       point of failure. Example: us-east4-b-r1, us-central1-a.
@@ -2050,9 +2144,10 @@ class ExascaleDbStorageVault(_messages.Message):
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  gcpOracleZone = _messages.StringField(3)
-  name = _messages.StringField(4)
-  properties = _messages.MessageField('ExascaleDbStorageVaultProperties', 5)
+  entitlementId = _messages.StringField(3)
+  gcpOracleZone = _messages.StringField(4)
+  name = _messages.StringField(5)
+  properties = _messages.MessageField('ExascaleDbStorageVaultProperties', 6)
 
 
 class ExascaleDbStorageVaultProperties(_messages.Message):
@@ -2063,9 +2158,12 @@ class ExascaleDbStorageVaultProperties(_messages.Message):
       ExascaleDbStorageVault.
 
   Fields:
+    additionalFlashCachePercent: Optional. The size of additional flash cache
+      in percentage of high capacity database storage.
     description: Optional. The description of the ExascaleDbStorageVault.
     exascaleDbStorageDetails: Optional. The storage details of the
       ExascaleDbStorageVault.
+    ociUri: Output only. Deep link to the OCI console to view this resource.
     ocid: Output only. The OCID for the ExascaleDbStorageVault.
     state: Output only. The state of the ExascaleDbStorageVault.
     timeZone: Optional. The time zone of the ExascaleDbStorageVault.
@@ -2094,12 +2192,14 @@ class ExascaleDbStorageVaultProperties(_messages.Message):
     TERMINATED = 5
     FAILED = 6
 
-  description = _messages.StringField(1)
-  exascaleDbStorageDetails = _messages.MessageField('ExascaleDbStorageDetails', 2)
-  ocid = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  timeZone = _messages.MessageField('TimeZone', 5)
-  vmClusterIds = _messages.StringField(6, repeated=True)
+  additionalFlashCachePercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  description = _messages.StringField(2)
+  exascaleDbStorageDetails = _messages.MessageField('ExascaleDbStorageDetails', 3)
+  ociUri = _messages.StringField(4)
+  ocid = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  timeZone = _messages.MessageField('TimeZone', 7)
+  vmClusterIds = _messages.StringField(8, repeated=True)
 
 
 class GenerateAutonomousDatabaseWalletRequest(_messages.Message):
@@ -3153,6 +3253,35 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesListRequest(_messages.Me
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesPatchRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesPatchRequest object.
+
+  Fields:
+    autonomousDatabase: A AutonomousDatabase resource to be passed as the
+      request body.
+    name: Identifier. The name of the Autonomous Database resource in the
+      following format: projects/{project}/locations/{region}/autonomousDataba
+      ses/{autonomous_database}
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Exadata resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  autonomousDatabase = _messages.MessageField('AutonomousDatabase', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest(_messages.Message):
@@ -4338,14 +4467,15 @@ class StorageVaultProperties(_messages.Message):
   r"""The storage vault properties for the ExadbVmCluster.
 
   Fields:
-    additionalFlashCachePercent: Optional. The size of additional flash cache
-      in percentage of high capacity database storage.
+    additionalFlashCacheInPercent: Optional. The size of additional flash
+      cache in percentage of high capacity database storage.
     displayName: Optional. The name of the exadata database storage vault. The
       display name does not have to be unique.
-    highCapacityDatabaseStorage: Optional. The storage capacity per VM.
+    highCapacityDatabaseStorage: Required. Total Capacity of the Exadata
+      Database Storage Vault.
   """
 
-  additionalFlashCachePercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  additionalFlashCacheInPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   displayName = _messages.StringField(2)
   highCapacityDatabaseStorage = _messages.MessageField('ExadbVmClusterStorageDetails', 3)
 

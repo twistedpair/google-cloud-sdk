@@ -1029,6 +1029,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListSelected(self, request, global_params=None):
+      r"""Lists Memberships matching a given cluster selector.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListSelectedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSelectedMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListSelected')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListSelected.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships:listSelected',
+        http_method='POST',
+        method_id='gkehub.projects.locations.memberships.listSelected',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/memberships:listSelected',
+        request_field='clusterSelector',
+        request_type_name='GkehubProjectsLocationsMembershipsListSelectedRequest',
+        response_type_name='ListSelectedMembershipsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing Membership.
 

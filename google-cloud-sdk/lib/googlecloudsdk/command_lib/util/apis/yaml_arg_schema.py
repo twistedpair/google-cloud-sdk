@@ -1121,7 +1121,9 @@ class YAMLResourceArgument(YAMLConceptArgument):
         **{attribute.parameter_name: attribute for attribute in attributes})
 
   @property
-  def _presentation_name(self):
+  def presentation_name(self):
+    # To get the correct casing (how it should appear on the command line)
+    # use GetPresentationFlagName
     if self.flag_name_override:
       return self.flag_name_override
     else:
@@ -1134,7 +1136,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # positional vs non-positional or skipped flags. However, it is sufficient
     # for the purposes of determining if a flag is specified.
     return self._GeneratePresentationSpec(
-        False, resource_util.FlagNameFormat(self._presentation_name),
+        False, resource_util.FlagNameFormat(self.presentation_name),
         None, {}, None
     ).attribute_to_args_map
 
@@ -1209,7 +1211,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
         group_help=group_help,
         prefixes=False,
         required=is_required,
-        flag_name_overrides={**ignored_flag_map, **(flag_name_override or {})},
+        flag_name_overrides={**(flag_name_override or {}), **ignored_flag_map},
         plural=self.repeated)
 
   def GenerateResourceArg(
@@ -1257,13 +1259,13 @@ class YAMLResourceArgument(YAMLConceptArgument):
         self._resource_spec,
         namespace,
         self._attribute_to_flag_dest_map,
-        self._presentation_name,
+        self.presentation_name,
         self.clearable)
     if not anchor_specified and not group_required:
       return None
 
     result = arg_utils.GetFromNamespace(
-        namespace.CONCEPTS, self._presentation_name)
+        namespace.CONCEPTS, self.presentation_name)
 
     return result and result.Parse()
 
@@ -1275,7 +1277,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
         self._resource_spec,
         namespace,
         self._attribute_to_flag_dest_map,
-        self._presentation_name,
+        self.presentation_name,
         self.clearable)
 
   def GetPresentationFlagName(self, resource_collection, is_list_method):
@@ -1295,8 +1297,8 @@ class YAMLResourceArgument(YAMLConceptArgument):
     anchor_arg_is_flag = not self.IsPositional(
         resource_collection, is_list_method)
     return (
-        '--' + self._presentation_name
-        if anchor_arg_is_flag else self._presentation_name)
+        '--' + self.presentation_name
+        if anchor_arg_is_flag else self.presentation_name)
 
   def _GenerateUpdateFlags(
       self, resource_collection, is_list_method, shared_resource_flags=None):
@@ -1405,7 +1407,9 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     return _GetAttributeNames(self._resource_spec)
 
   @property
-  def _presentation_name(self):
+  def presentation_name(self):
+    # To get the correct casing (how it should appear on the command line)
+    # use GetPresentationFlagName
     if self.flag_name_override:
       return self.flag_name_override
     else:
@@ -1418,7 +1422,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     # positional vs non-positional or skipped flags. However, it is sufficient
     # for the purposes of determining if a flag is specified.
     return self._GeneratePresentationSpec(
-        False, resource_util.FlagNameFormat(self._presentation_name),
+        False, resource_util.FlagNameFormat(self.presentation_name),
         None, {}, None
     ).attribute_to_args_map
 
@@ -1536,13 +1540,13 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         self._resource_spec,
         namespace,
         self._attribute_to_flag_dest_map,
-        self._presentation_name,
+        self.presentation_name,
         self.clearable)
     if not is_anchor_specified and not group_required:
       return None
 
     result = arg_utils.GetFromNamespace(
-        namespace.CONCEPTS, self._presentation_name)
+        namespace.CONCEPTS, self.presentation_name)
 
     parsed_result = result and result.Parse()
     return parsed_result and parsed_result.result
@@ -1552,7 +1556,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
       return False
     return _IsAnchorSpecified(
         self._resource_spec, namespace,
-        self._attribute_to_flag_dest_map, self._presentation_name,
+        self._attribute_to_flag_dest_map, self.presentation_name,
         self.clearable)
 
   def GetPresentationFlagName(self, resource_collection, is_list_method):
@@ -1572,8 +1576,8 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     anchor_arg_is_flag = not self.IsPositional(
         resource_collection, is_list_method)
     return (
-        '--' + self._presentation_name
-        if anchor_arg_is_flag else self._presentation_name)
+        '--' + self.presentation_name
+        if anchor_arg_is_flag else self.presentation_name)
 
   def _GenerateUpdateFlags(
       self, resource_collection, is_list_method, shared_resource_flags=None):

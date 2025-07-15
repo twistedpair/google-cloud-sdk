@@ -2531,127 +2531,6 @@ def _GetServiceScalingChanges(args):
   return result
 
 
-def _GetWorkerScalingChanges(args):
-  """Return the changes for service-level scaling for Worker resources for the given args."""
-  result = []
-  # TODO(b/322180968): Once Worker API is ready, replace Service related
-  # references.
-  if 'min_instances' in args and args.min_instances is not None:
-    scale_value = args.min_instances
-    if scale_value.restore_default or scale_value.instance_count == 0:
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MIN_SCALE_ANNOTATION
-          )
-      )
-    else:
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MIN_SCALE_ANNOTATION,
-              str(scale_value.instance_count),
-          )
-      )
-  if 'max_instances' in args and args.max_instances is not None:
-    if (
-        'scaling' in args
-        and args.scaling is not None
-        and not args.scaling.auto_scaling
-    ):
-      # TODO(b/373873152): this validation should expand to service min instance
-      # once we enforce the use of manual instance count for manual scaling.
-      raise serverless_exceptions.ConfigurationError(
-          'Cannot set max instances when scaling mode is manual.'
-      )
-    scale_value = args.max_instances
-    if scale_value.restore_default:
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MAX_SCALE_ANNOTATION
-          )
-      )
-    else:
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MAX_SCALE_ANNOTATION,
-              str(scale_value.instance_count),
-          )
-      )
-  if 'max_surge' in args and args.max_surge is not None:
-    max_surge_value = args.max_surge
-    if max_surge_value.restore_default or max_surge_value.surge_percent == 0:
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MAX_SURGE_ANNOTATION
-          )
-      )
-    else:
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MAX_SURGE_ANNOTATION,
-              str(max_surge_value.surge_percent),
-          )
-      )
-  if 'max_unavailable' in args and args.max_unavailable is not None:
-    max_unav_val = args.max_unavailable
-    if max_unav_val.restore_default or max_unav_val.unavailable_percent == 0:
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION
-          )
-      )
-    else:
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION,
-              str(max_unav_val.unavailable_percent),
-          )
-      )
-  if 'scaling' in args and args.scaling is not None:
-    scaling_val = args.scaling
-    # Automatic scaling mode
-    if scaling_val.auto_scaling:
-      # Remove manual instance count annotation
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.MANUAL_INSTANCE_COUNT_ANNOTATION
-          )
-      )
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_SCALING_MODE_ANNOTATION,
-              _SCALING_MODE_AUTOMATIC,
-          )
-      )
-    # Manual scaling mode with flag value as an instance count.
-    else:
-      # Remove service min annotation
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MIN_SCALE_ANNOTATION
-          )
-      )
-      # Remove service max annotation
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MAX_SCALE_ANNOTATION
-          )
-      )
-      # Add scaling mode 'manual' and manual instance count annotation
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_SCALING_MODE_ANNOTATION,
-              _SCALING_MODE_MANUAL,
-          )
-      )
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.MANUAL_INSTANCE_COUNT_ANNOTATION,
-              str(scaling_val.instance_count),
-          )
-      )
-  return result
-
-
 def _IsVolumeMountKey(key):
   """Returns True if the key refers to a volume mount."""
   return key.startswith('/')
@@ -2832,26 +2711,6 @@ def _GetTrafficChanges(args):
       update_tags,
       remove_tags,
       clear_other_tags,
-  )
-
-
-# TODO(b/322180968): Once Worker API is added, use InstanceSplit message.
-def _GetInstanceSplitChanges(args):
-  """Returns a changes for instance split based on the flags."""
-  if args.to_latest:
-    # Mutually exclusive flag with to-revisions
-    new_percentages = {traffic.LATEST_REVISION_KEY: 100}
-  elif args.to_revisions:
-    new_percentages = args.to_revisions
-  else:
-    new_percentages = {}
-
-  return config_changes.TrafficChanges(
-      new_percentages,
-      False,  # by_tag
-      {},  # update_tags
-      [],  # remove_tags
-      False,  # clear_other_tags
   )
 
 
@@ -3235,6 +3094,8 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
             base_image=None
         )
     )
+  if FlagIsExplicitlySet(args, 'preset'):
+    changes.append(config_changes.PresetChange(type=args.preset))
 
   return changes
 
@@ -3561,73 +3422,6 @@ def GetExecutionOverridesChangesForValidation(args):
                 container_name=container_name,
             )
         )
-  return changes
-
-
-# TODO(b/322180968): There exist a few configurations that are "locked" while
-# calling Services API for Workers.
-# This method could be cleaned up once experiment launch is over.
-def GetWorkerConfigurationChanges(
-    args, release_track=base.ReleaseTrack.ALPHA, for_update=False
-):
-  """Returns a list of changes to the worker config, based on the flags set."""
-  changes = []
-  # For private preview, Worker is CR Service configured in specific way.
-  # This "locked" configuration could just happen once when created,
-  # but unnecessary for following updates.
-  if not for_update:
-    # ingress = none
-    changes.append(
-        config_changes.SetAnnotationChange(service.INGRESS_ANNOTATION, 'none')
-    )
-    # cpu is always on
-    changes.append(config_changes.CpuThrottlingChange(throttling=False))
-    # healthcheck disabled by default
-    changes.append(config_changes.HealthCheckChange(health_check=False))
-    # disable default url
-    changes.append(config_changes.DefaultUrlChange(default_url=False))
-    changes.append(config_changes.SandboxChange('gen2'))
-    # when not provided, max_surge defaults to 20%
-    if not FlagIsExplicitlySet(args, 'max_surge'):
-      changes.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MAX_SURGE_ANNOTATION,
-              '20',
-          )
-      )
-
-  changes.extend(_GetConfigurationChanges(args, release_track=release_track))
-  changes.extend(_GetWorkerScalingChanges(args))
-  if HasInstanceSplitChanges(args):
-    changes.append(_GetInstanceSplitChanges(args))
-  if 'no_promote' in args and args.no_promote:
-    changes.append(config_changes.NoPromoteChange())
-  if 'update_annotations' in args and args.update_annotations:
-    for key, value in args.update_annotations.items():
-      changes.append(config_changes.SetAnnotationChange(key, value))
-  if 'revision_suffix' in args and args.revision_suffix:
-    changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
-  if 'gpu_type' in args and args.gpu_type:
-    changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
-
-  _PrependClientNameAndVersionChange(args, changes)
-
-  if FlagIsExplicitlySet(args, 'depends_on'):
-    changes.append(
-        config_changes.ContainerDependenciesChange({'': args.depends_on})
-    )
-
-  if FlagIsExplicitlySet(args, 'containers'):
-    dependency_changes = {
-        container_name: container_args.depends_on
-        for container_name, container_args in args.containers.items()
-        if container_args.IsSpecified('depends_on')
-    }
-    if dependency_changes:
-      changes.append(
-          config_changes.ContainerDependenciesChange(dependency_changes)
-      )
-
   return changes
 
 
@@ -5024,4 +4818,13 @@ def ShouldRetryNoZonalRedundancy(args, error_message):
       ),
       default=True,
       cancel_on_no=True,
+  )
+
+
+def AddPresetFlag(parser):
+  """Specify a preset to be used for the deployment."""
+  parser.add_argument(
+      '--preset',
+      help='Specifies a preset to be used for the deployment.',
+      hidden=True,
   )

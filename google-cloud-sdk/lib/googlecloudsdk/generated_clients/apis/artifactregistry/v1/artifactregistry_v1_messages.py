@@ -3096,6 +3096,9 @@ class RemoteRepositoryConfig(_messages.Message):
       to avoid making a HEAD/GET request to validate a remote repo and any
       supplied upstream credentials.
     dockerRepository: Specific settings for a Docker remote repository.
+    enableIngestionAttestation: Optional. option to generate a signed
+      ingestion attestation for externally pulled files in remote
+      repositories.
     goRepository: Specific settings for a Go remote repository.
     mavenRepository: Specific settings for a Maven remote repository.
     npmRepository: Specific settings for an Npm remote repository.
@@ -3125,14 +3128,15 @@ class RemoteRepositoryConfig(_messages.Message):
   description = _messages.StringField(4)
   disableUpstreamValidation = _messages.BooleanField(5)
   dockerRepository = _messages.MessageField('DockerRepository', 6)
-  goRepository = _messages.MessageField('GoRepository', 7)
-  mavenRepository = _messages.MessageField('MavenRepository', 8)
-  npmRepository = _messages.MessageField('NpmRepository', 9)
-  pythonRepository = _messages.MessageField('PythonRepository', 10)
-  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 11)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 12)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 13)
-  yumRepository = _messages.MessageField('YumRepository', 14)
+  enableIngestionAttestation = _messages.BooleanField(7)
+  goRepository = _messages.MessageField('GoRepository', 8)
+  mavenRepository = _messages.MessageField('MavenRepository', 9)
+  npmRepository = _messages.MessageField('NpmRepository', 10)
+  pythonRepository = _messages.MessageField('PythonRepository', 11)
+  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 12)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 13)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 14)
+  yumRepository = _messages.MessageField('YumRepository', 15)
 
 
 class Repository(_messages.Message):

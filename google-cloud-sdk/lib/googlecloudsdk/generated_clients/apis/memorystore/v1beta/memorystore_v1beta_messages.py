@@ -516,6 +516,8 @@ class Instance(_messages.Message):
     replicaCount: Optional. Number of replica nodes per shard. If omitted the
       default is 0 replicas.
     shardCount: Optional. Number of shards for the instance.
+    simulateMaintenanceEvent: Optional. Input only. Simulate a maintenance
+      event.
     state: Output only. Current state of the instance.
     stateInfo: Output only. Additional information about the state of the
       instance.
@@ -675,12 +677,13 @@ class Instance(_messages.Message):
   pscAutoConnections = _messages.MessageField('PscAutoConnection', 26, repeated=True)
   replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
   shardCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  stateInfo = _messages.MessageField('StateInfo', 30)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 31)
-  uid = _messages.StringField(32)
-  updateTime = _messages.StringField(33)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 34)
+  simulateMaintenanceEvent = _messages.BooleanField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  stateInfo = _messages.MessageField('StateInfo', 31)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
+  uid = _messages.StringField(33)
+  updateTime = _messages.StringField(34)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 35)
 
 
 class InstanceEndpoint(_messages.Message):

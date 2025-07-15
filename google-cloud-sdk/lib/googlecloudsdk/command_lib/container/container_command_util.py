@@ -310,7 +310,7 @@ def CheckReleaseChannel(args):
   if release_channel is None:
     return
 
-  if release_channel and release_channel[0].lower() == 'extended':
+  if release_channel.lower() == 'extended':
     log.status.Print(
         'Note: For GKE Standard edition, pay-per-use costs apply when your '
         'cluster is enrolled in the Extended release channel and your '
@@ -403,6 +403,7 @@ def ParseUpdateOptionsBase(args, locations):
           args.service_account_verification_keys
       ),
       service_account_signing_keys=args.service_account_signing_keys,
+      control_plane_disk_encryption_key=args.control_plane_disk_encryption_key,
       boot_disk_provisioned_iops=getattr(
           args, 'boot_disk_provisioned_iops', None
       ),

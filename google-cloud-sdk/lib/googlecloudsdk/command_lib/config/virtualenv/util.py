@@ -33,10 +33,12 @@ MODULES = [
     'pyopenssl==24.2.1',
     'google_crc32c',
     'certifi',
-    'https://github.com/googleapis/enterprise-certificate-proxy/releases/download/v0.3.2/cryptography-42.0.7-{}.whl'
-    .format('cp39-abi3-macosx_10_12_universal2'
-            if platform.processor() == 'arm'
-            else 'cp37-abi3-macosx_10_12_x86_64'),
+    'https://github.com/googleapis/enterprise-certificate-proxy/releases/download/v0.3.6/cryptography-42.0.7-{}.whl'
+    .format(
+        'cp39-abi3-macosx_10_12_universal2'
+        if platform.processor() == 'arm'
+        else 'cp37-abi3-macosx_10_12_x86_64'
+    ),
     'setuptools',
 ]
 

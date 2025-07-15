@@ -117,7 +117,8 @@ class AppengineAppsAuthorizedCertificatesCreateRequest(_messages.Message):
   Fields:
     authorizedCertificate: A AuthorizedCertificate resource to be passed as
       the request body.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
   """
 
   authorizedCertificate = _messages.MessageField('AuthorizedCertificate', 1)
@@ -128,7 +129,7 @@ class AppengineAppsAuthorizedCertificatesDeleteRequest(_messages.Message):
   r"""A AppengineAppsAuthorizedCertificatesDeleteRequest object.
 
   Fields:
-    name: Name of the resource to delete. Example:
+    name: Required. Name of the resource to delete. Example:
       apps/myapp/authorizedCertificates/12345.
   """
 
@@ -143,7 +144,7 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
       response.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/authorizedCertificates/12345.
     view: Controls the set of fields returned in the GET response.
   """
@@ -174,7 +175,8 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
     view: Controls the set of fields returned in the LIST response.
   """
 
@@ -202,7 +204,7 @@ class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
   Fields:
     authorizedCertificate: A AuthorizedCertificate resource to be passed as
       the request body.
-    name: Name of the resource to update. Example:
+    name: Required. Name of the resource to update. Example:
       apps/myapp/authorizedCertificates/12345.
     updateMask: Standard field mask for the set of fields to be updated.
       Updates are only supported on the certificate_raw_data and display_name
@@ -220,7 +222,8 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -240,7 +243,8 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
     domainMapping: A DomainMapping resource to be passed as the request body.
     overrideStrategy: Whether the domain creation should override any existing
       mappings for this domain. By default, overrides are rejected.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
   """
 
   class OverrideStrategyValueValuesEnum(_messages.Enum):
@@ -271,7 +275,7 @@ class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
   r"""A AppengineAppsDomainMappingsDeleteRequest object.
 
   Fields:
-    name: Name of the resource to delete. Example:
+    name: Required. Name of the resource to delete. Example:
       apps/myapp/domainMappings/example.com.
   """
 
@@ -282,7 +286,7 @@ class AppengineAppsDomainMappingsGetRequest(_messages.Message):
   r"""A AppengineAppsDomainMappingsGetRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/domainMappings/example.com.
   """
 
@@ -295,7 +299,8 @@ class AppengineAppsDomainMappingsListRequest(_messages.Message):
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -308,7 +313,7 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    name: Name of the resource to update. Example:
+    name: Required. Name of the resource to update. Example:
       apps/myapp/domainMappings/example.com.
     updateMask: Required. Standard field mask for the set of fields to be
       updated.
@@ -410,7 +415,8 @@ class AppengineAppsGetRequest(_messages.Message):
 
   Fields:
     includeExtraData: Optional. Options to include extra data
-    name: Name of the Application resource to get. Example: apps/myapp.
+    name: Required. Name of the Application resource to get. Example:
+      apps/myapp.
   """
 
   class IncludeExtraDataValueValuesEnum(_messages.Enum):
@@ -523,7 +529,8 @@ class AppengineAppsPatchRequest(_messages.Message):
 
   Fields:
     application: A Application resource to be passed as the request body.
-    name: Name of the Application resource to update. Example: apps/myapp.
+    name: Required. Name of the Application resource to update. Example:
+      apps/myapp.
     updateMask: Required. Standard field mask for the set of fields to be
       updated.
   """
@@ -537,7 +544,7 @@ class AppengineAppsRepairRequest(_messages.Message):
   r"""A AppengineAppsRepairRequest object.
 
   Fields:
-    name: Name of the application to repair. Example: apps/myapp
+    name: Required. Name of the application to repair. Example: apps/myapp
     repairApplicationRequest: A RepairApplicationRequest resource to be passed
       as the request body.
   """
@@ -550,7 +557,7 @@ class AppengineAppsServicesDeleteRequest(_messages.Message):
   r"""A AppengineAppsServicesDeleteRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
@@ -565,7 +572,7 @@ class AppengineAppsServicesGetRequest(_messages.Message):
 
   Fields:
     includeExtraData: Optional. Options to include extra data
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
@@ -593,7 +600,8 @@ class AppengineAppsServicesListRequest(_messages.Message):
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -661,7 +669,7 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
       flexible environment. For examples, see Migrating and Splitting Traffic
       (https://cloud.google.com/appengine/docs/admin-api/migrating-splitting-
       traffic).
-    name: Name of the resource to update. Example:
+    name: Required. Name of the resource to update. Example:
       apps/myapp/services/default.
     service: A Service resource to be passed as the request body.
     updateMask: Required. Standard field mask for the set of fields to be
@@ -678,8 +686,8 @@ class AppengineAppsServicesVersionsCreateRequest(_messages.Message):
   r"""A AppengineAppsServicesVersionsCreateRequest object.
 
   Fields:
-    parent: Name of the parent resource to create this version under. Example:
-      apps/myapp/services/default.
+    parent: Required. Name of the parent resource to create this version
+      under. Example: apps/myapp/services/default.
     version: A Version resource to be passed as the request body.
   """
 
@@ -691,7 +699,7 @@ class AppengineAppsServicesVersionsDeleteRequest(_messages.Message):
   r"""A AppengineAppsServicesVersionsDeleteRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default/versions/v1.
   """
 
@@ -708,7 +716,7 @@ class AppengineAppsServicesVersionsGetRequest(_messages.Message):
 
   Fields:
     includeExtraData: Optional. Options to include extra data
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default/versions/v1.
     view: Controls the set of fields returned in the Get response.
   """
@@ -751,7 +759,7 @@ class AppengineAppsServicesVersionsInstancesDebugRequest(_messages.Message):
   Fields:
     debugInstanceRequest: A DebugInstanceRequest resource to be passed as the
       request body.
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default/versions/v1/instances/instance-1.
   """
 
@@ -763,7 +771,7 @@ class AppengineAppsServicesVersionsInstancesDeleteRequest(_messages.Message):
   r"""A AppengineAppsServicesVersionsInstancesDeleteRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default/versions/v1/instances/instance-1.
   """
 
@@ -774,7 +782,7 @@ class AppengineAppsServicesVersionsInstancesGetRequest(_messages.Message):
   r"""A AppengineAppsServicesVersionsInstancesGetRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default/versions/v1/instances/instance-1.
   """
 
@@ -787,7 +795,7 @@ class AppengineAppsServicesVersionsInstancesListRequest(_messages.Message):
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Version resource. Example:
+    parent: Required. Name of the parent Version resource. Example:
       apps/myapp/services/default/versions/v1.
   """
 
@@ -806,7 +814,7 @@ class AppengineAppsServicesVersionsListRequest(_messages.Message):
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Service resource. Example:
+    parent: Required. Name of the parent Service resource. Example:
       apps/myapp/services/default.
     view: Controls the set of fields returned in the List response.
   """
@@ -834,7 +842,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   r"""A AppengineAppsServicesVersionsPatchRequest object.
 
   Fields:
-    name: Name of the resource to update. Example:
+    name: Required. Name of the resource to update. Example:
       apps/myapp/services/default/versions/1.
     updateMask: Standard field mask for the set of fields to be updated.
     version: A Version resource to be passed as the request body.
@@ -845,6 +853,120 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class AppengineProjectsLocationsApplicationsAuthorizedCertificatesCreateRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsAuthorizedCertificatesCreateRequest
+  object.
+
+  Fields:
+    authorizedCertificate: A AuthorizedCertificate resource to be passed as
+      the request body.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+  """
+
+  authorizedCertificate = _messages.MessageField('AuthorizedCertificate', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AppengineProjectsLocationsApplicationsAuthorizedCertificatesDeleteRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsAuthorizedCertificatesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource to delete. Example:
+      apps/myapp/authorizedCertificates/12345.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsApplicationsAuthorizedCertificatesGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsAuthorizedCertificatesGetRequest
+  object.
+
+  Enums:
+    ViewValueValuesEnum: Controls the set of fields returned in the GET
+      response.
+
+  Fields:
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/authorizedCertificates/12345.
+    view: Controls the set of fields returned in the GET response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Controls the set of fields returned in the GET response.
+
+    Values:
+      BASIC_CERTIFICATE: Basic certificate information, including applicable
+        domains and expiration date.
+      FULL_CERTIFICATE: The information from BASIC_CERTIFICATE, plus detailed
+        information on the domain mappings that have this certificate mapped.
+    """
+    BASIC_CERTIFICATE = 0
+    FULL_CERTIFICATE = 1
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class AppengineProjectsLocationsApplicationsAuthorizedCertificatesListRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsAuthorizedCertificatesListRequest
+  object.
+
+  Enums:
+    ViewValueValuesEnum: Controls the set of fields returned in the LIST
+      response.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+    view: Controls the set of fields returned in the LIST response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Controls the set of fields returned in the LIST response.
+
+    Values:
+      BASIC_CERTIFICATE: Basic certificate information, including applicable
+        domains and expiration date.
+      FULL_CERTIFICATE: The information from BASIC_CERTIFICATE, plus detailed
+        information on the domain mappings that have this certificate mapped.
+    """
+    BASIC_CERTIFICATE = 0
+    FULL_CERTIFICATE = 1
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class AppengineProjectsLocationsApplicationsAuthorizedCertificatesPatchRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsAuthorizedCertificatesPatchRequest
+  object.
+
+  Fields:
+    authorizedCertificate: A AuthorizedCertificate resource to be passed as
+      the request body.
+    name: Required. Name of the resource to update. Example:
+      apps/myapp/authorizedCertificates/12345.
+    updateMask: Standard field mask for the set of fields to be updated.
+      Updates are only supported on the certificate_raw_data and display_name
+      fields.
+  """
+
+  authorizedCertificate = _messages.MessageField('AuthorizedCertificate', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest
   object.
@@ -852,7 +974,8 @@ class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messag
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    parent: Name of the parent Application resource. Example: apps/myapp.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -860,11 +983,52 @@ class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messag
   parent = _messages.StringField(3, required=True)
 
 
+class AppengineProjectsLocationsApplicationsDomainMappingsCreateRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsDomainMappingsCreateRequest
+  object.
+
+  Enums:
+    OverrideStrategyValueValuesEnum: Whether the domain creation should
+      override any existing mappings for this domain. By default, overrides
+      are rejected.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    overrideStrategy: Whether the domain creation should override any existing
+      mappings for this domain. By default, overrides are rejected.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+  """
+
+  class OverrideStrategyValueValuesEnum(_messages.Enum):
+    r"""Whether the domain creation should override any existing mappings for
+    this domain. By default, overrides are rejected.
+
+    Values:
+      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: Strategy unspecified. Defaults to
+        STRICT.
+      STRICT: Overrides not allowed. If a mapping already exists for the
+        specified domain, the request will return an ALREADY_EXISTS (409).
+      OVERRIDE: Overrides allowed. If a mapping already exists for the
+        specified domain, the request will overwrite it. Note that this might
+        stop another Google product from serving. For example, if the domain
+        is mapped to another App Engine application, that app will no longer
+        serve from that domain.
+    """
+    UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY = 0
+    STRICT = 1
+    OVERRIDE = 2
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  overrideStrategy = _messages.EnumField('OverrideStrategyValueValuesEnum', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AppengineProjectsLocationsApplicationsDomainMappingsGetRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsDomainMappingsGetRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/domainMappings/example.com.
   """
 
@@ -876,7 +1040,8 @@ class AppengineProjectsLocationsApplicationsPatchRequest(_messages.Message):
 
   Fields:
     application: A Application resource to be passed as the request body.
-    name: Name of the Application resource to update. Example: apps/myapp.
+    name: Required. Name of the Application resource to update. Example:
+      apps/myapp.
     updateMask: Required. Standard field mask for the set of fields to be
       updated.
   """
@@ -890,7 +1055,7 @@ class AppengineProjectsLocationsApplicationsServicesDeleteRequest(_messages.Mess
   r"""A AppengineProjectsLocationsApplicationsServicesDeleteRequest object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default.
   """
 
@@ -961,7 +1126,7 @@ class AppengineProjectsLocationsApplicationsServicesPatchRequest(_messages.Messa
       flexible environment. For examples, see Migrating and Splitting Traffic
       (https://cloud.google.com/appengine/docs/admin-api/migrating-splitting-
       traffic).
-    name: Name of the resource to update. Example:
+    name: Required. Name of the resource to update. Example:
       apps/myapp/services/default.
     service: A Service resource to be passed as the request body.
     updateMask: Required. Standard field mask for the set of fields to be
@@ -979,7 +1144,7 @@ class AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest(_messa
   object.
 
   Fields:
-    name: Name of the resource requested. Example:
+    name: Required. Name of the resource requested. Example:
       apps/myapp/services/default/versions/v1.
   """
 
@@ -991,7 +1156,7 @@ class AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest(_messag
   object.
 
   Fields:
-    name: Name of the resource to update. Example:
+    name: Required. Name of the resource to update. Example:
       apps/myapp/services/default/versions/1.
     updateMask: Standard field mask for the set of fields to be updated.
     version: A Version resource to be passed as the request body.
@@ -1112,8 +1277,7 @@ class Application(_messages.Message):
       is also where all of the application's end user content is
       stored.Defaults to us-central.View the list of supported locations
       (https://cloud.google.com/appengine/docs/locations).
-    name: Output only. Full path to the Application resource in the API.
-      Example: apps/myapp.@OutputOnly
+    name: A string attribute.
     serviceAccount: The service account associated with the application. This
       is the app-level default identity. If no identity provided during create
       version, Admin API will fallback to this one.

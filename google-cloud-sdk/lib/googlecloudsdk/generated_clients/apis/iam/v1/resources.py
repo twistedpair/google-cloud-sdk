@@ -126,6 +126,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS_WORKFORCEPOOLS_PROVIDERS_SCIMTENANTS_TOKENS = (
+      'locations.workforcePools.providers.scimTenants.tokens',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
+              'providers/{providersId}/scimTenants/{scimTenantsId}/tokens/'
+              '{tokensId}',
+      },
+      ['name'],
+      True
+  )
   LOCATIONS_WORKFORCEPOOLS_SUBJECTS = (
       'locations.workforcePools.subjects',
       'locations/{locationsId}/workforcePools/{workforcePoolsId}/subjects/'

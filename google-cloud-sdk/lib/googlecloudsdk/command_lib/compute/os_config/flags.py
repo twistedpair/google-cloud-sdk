@@ -87,6 +87,7 @@ def ValidateZone(value, flag_name):
     exceptions.Error: if value is an invalid zone
   """
   ValidateFlagNotEmpty(value, flag_name)
+  value = value.removeprefix('u-')
   parts = value.split('-')
   if len(parts) == 3 and all(p.isalnum() for p in parts):
     return

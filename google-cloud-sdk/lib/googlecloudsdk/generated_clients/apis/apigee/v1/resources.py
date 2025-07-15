@@ -89,10 +89,13 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONS_APIS_KEYVALUEMAPS = (
       'organizations.apis.keyvaluemaps',
-      'organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/'
-      '{keyvaluemapsId}',
-      {},
-      ['organizationsId', 'apisId', 'keyvaluemapsId'],
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/'
+              '{keyvaluemapsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_APIS_KEYVALUEMAPS_ENTRIES = (
@@ -395,10 +398,13 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONS_ENVIRONMENTS_KEYVALUEMAPS = (
       'organizations.environments.keyvaluemaps',
-      'organizations/{organizationsId}/environments/{environmentsId}/'
-      'keyvaluemaps/{keyvaluemapsId}',
-      {},
-      ['organizationsId', 'environmentsId', 'keyvaluemapsId'],
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'keyvaluemaps/{keyvaluemapsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_ENVIRONMENTS_KEYVALUEMAPS_ENTRIES = (
@@ -598,9 +604,12 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONS_KEYVALUEMAPS = (
       'organizations.keyvaluemaps',
-      'organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}',
-      {},
-      ['organizationsId', 'keyvaluemapsId'],
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_KEYVALUEMAPS_ENTRIES = (
@@ -641,17 +650,6 @@ class Collections(enum.Enum):
       {
           '':
               'organizations/{organizationsId}/reports/{reportsId}',
-      },
-      ['name'],
-      True
-  )
-  ORGANIZATIONS_SECURITYFEEDBACK = (
-      'organizations.securityFeedback',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/securityFeedback/'
-              '{securityFeedbackId}',
       },
       ['name'],
       True

@@ -23,7 +23,13 @@ from googlecloudsdk.api_lib.eventarc import base
 from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+
+NO_NA_FOR_HTTP_ENDPOINTS_WARNING = """\
+Specifying a network attachment for a pipeline with an HTTP endpoint is not GA
+and the pipeline will be limited to pre-GA features.
+"""
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -333,13 +339,13 @@ class PipelineClientV1(base.EventarcClientBase):
 
   def _BuildDestinationNetworkConfig(self, pipeline_ref, destination):
     if destination.get('http_endpoint_uri') is not None:
-      # Network attachments are optional for HTTP endpoints.
-      if destination.get('network_attachment') is None:
-        return None
-
-      return self._messages.GoogleCloudEventarcV1PipelineDestinationNetworkConfig(
-          networkAttachment=f'projects/{pipeline_ref.projectsId}/regions/{pipeline_ref.locationsId}/networkAttachments/{destination.get("network_attachment")}',
-      )
+      # Network attachments are optional for HTTP destinations.
+      if destination.get('network_attachment') is not None:
+        log.warning(NO_NA_FOR_HTTP_ENDPOINTS_WARNING)
+        return self._messages.GoogleCloudEventarcV1PipelineDestinationNetworkConfig(
+            networkAttachment=f'projects/{pipeline_ref.projectsId}/regions/{pipeline_ref.locationsId}/networkAttachments/{destination.get("network_attachment")}',
+        )
+      return None
 
     # Workflows, Pub/Sub topic and Message Bus destinations cannot have a
     # network attachment.

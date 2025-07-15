@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2023 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,18 +72,9 @@ def CreateDatabase(
     an Operation.
   """
   messages = api_utils.GetMessages()
-
-  tags_value = None
-  if tags:
-    tags_value = messages.GoogleFirestoreAdminV1Database.TagsValue(
-        additionalProperties=[
-            messages.GoogleFirestoreAdminV1Database.TagsValue.AdditionalProperty(
-                key=key, value=value
-            )
-            for key, value in tags.items()
-        ],
-    )
-
+  tags_value = api_utils.ParseTagsForTagsValue(
+      tags, messages.GoogleFirestoreAdminV1Database.TagsValue
+  )
   return _GetDatabaseService().Create(
       messages.FirestoreProjectsDatabasesCreateRequest(
           parent='projects/{}'.format(project),
@@ -165,19 +156,9 @@ def RestoreDatabase(
     an Operation.
   """
   messages = api_utils.GetMessages()
-  tags_value = None
-  if tags:
-    additional_properties = [
-        messages.GoogleFirestoreAdminV1RestoreDatabaseRequest.TagsValue.AdditionalProperty(
-            key=key, value=value
-        )
-        for key, value in tags.items()
-    ]
-    tags_value = (
-        messages.GoogleFirestoreAdminV1RestoreDatabaseRequest.TagsValue(
-            additionalProperties=additional_properties
-        )
-    )
+  tags_value = api_utils.ParseTagsForTagsValue(
+      tags, messages.GoogleFirestoreAdminV1RestoreDatabaseRequest.TagsValue
+  )
   restore_request = messages.GoogleFirestoreAdminV1RestoreDatabaseRequest(
       backup=source_backup,
       databaseId=destination_database,
@@ -189,5 +170,49 @@ def RestoreDatabase(
       messages.FirestoreProjectsDatabasesRestoreRequest(
           parent='projects/{}'.format(project),
           googleFirestoreAdminV1RestoreDatabaseRequest=restore_request,
+      )
+  )
+
+
+def CloneDatabase(
+    project,
+    source_database,
+    snapshot_time,
+    destination_database,
+    encryption_config,
+    tags=None,
+):
+  """Clones one Firestore database from another.
+
+  Args:
+    project: the project ID containing the source database, a string.
+    source_database: the resource name of the database to clone, a string.
+    snapshot_time: the timestamp at which to clone, a DateTime.
+    destination_database: the database to clone to, a string.
+    encryption_config: the encryption config to use for the cloned database, an
+      optional object.
+    tags: the tags to attach to the database, a key-value dictionary, or None.
+
+  Returns:
+    an Operation.
+  """
+  messages = api_utils.GetMessages()
+  tags_value = api_utils.ParseTagsForTagsValue(
+      tags, messages.GoogleFirestoreAdminV1CloneDatabaseRequest.TagsValue
+  )
+  clone_request = messages.GoogleFirestoreAdminV1CloneDatabaseRequest(
+      pitrSnapshot=messages.GoogleFirestoreAdminV1PitrSnapshot(
+          database=source_database,
+          snapshotTime=snapshot_time,
+      ),
+      databaseId=destination_database,
+      encryptionConfig=encryption_config,
+      tags=tags_value,
+  )
+
+  return _GetDatabaseService().Clone(
+      messages.FirestoreProjectsDatabasesCloneRequest(
+          parent='projects/{}'.format(project),
+          googleFirestoreAdminV1CloneDatabaseRequest=clone_request,
       )
   )

@@ -69,5 +69,7 @@ def GetApiFromTrack(track):
   """Returns api version based on the track."""
   if track == base.ReleaseTrack.ALPHA:
     return 'v1alpha'
+  elif track == base.ReleaseTrack.BETA:
+    return 'v1beta'
   elif track == base.ReleaseTrack.GA:
     return 'v1'

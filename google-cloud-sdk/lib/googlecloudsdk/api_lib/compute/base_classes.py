@@ -843,4 +843,4 @@ def SupportNetworkConnectivityTest():
 
 def SupportIAP():
   """Outputs whether IAP is supported."""
-  return IsDefaultUniverse()
+  return True

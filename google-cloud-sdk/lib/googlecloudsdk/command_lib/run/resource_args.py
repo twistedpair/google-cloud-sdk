@@ -154,12 +154,6 @@ class ServicePromptFallthrough(ResourcePromptFallthrough):
     super(ServicePromptFallthrough, self).__init__('service')
 
 
-class WorkerPromptFallthrough(ResourcePromptFallthrough):
-
-  def __init__(self):
-    super(WorkerPromptFallthrough, self).__init__('worker')
-
-
 class WorkerPoolPromptFallthrough(ResourcePromptFallthrough):
 
   def __init__(self):
@@ -251,19 +245,6 @@ def ServiceAttributeConfig(prompt=False):
   return concepts.ResourceParameterAttributeConfig(
       name='service',
       help_text='Service for the {resource}.',
-      fallthroughs=fallthroughs,
-  )
-
-
-def WorkerAttributeConfig(prompt=False):
-  """Attribute config with fallthrough prompt only if requested."""
-  if prompt:
-    fallthroughs = [WorkerPromptFallthrough()]
-  else:
-    fallthroughs = []
-  return concepts.ResourceParameterAttributeConfig(
-      name='worker',
-      help_text='Worker for the {resource}.',
       fallthroughs=fallthroughs,
   )
 
@@ -633,18 +614,6 @@ def GetV1WorkerPoolResourceSpec(prompt=False):
       namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       workerpoolsId=WorkerPoolAttributeConfig(prompt),
       resource_name='WorkerPool',
-      api_version='v1',
-  )
-
-
-# TODO(b/322180968): Once Worker API is ready, replace Service related
-# references.
-def GetWorkerResourceSpec(prompt=False):
-  return concepts.ResourceSpec(
-      'run.namespaces.services',
-      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      servicesId=WorkerAttributeConfig(prompt),
-      resource_name='worker',
       api_version='v1',
   )
 

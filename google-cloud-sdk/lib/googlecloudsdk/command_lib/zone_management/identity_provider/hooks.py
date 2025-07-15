@@ -35,7 +35,7 @@ def AddOidcConfigToRequest(ref, args, req):
     exceptions.InvalidArgumentException: If file cannot be read or is not a
     valid json/yaml.
   """
-  file_path = args.idp_file
+  file_path = args.config
   try:
     with open(file_path, "r") as f:
       content = f.read()
@@ -46,14 +46,14 @@ def AddOidcConfigToRequest(ref, args, req):
           idp = yaml.load(content)
         except yaml.YAMLParseError as e:
           raise exceptions.InvalidArgumentException(
-              "idp-file",
+              "config",
               f"Error parsing file {file_path}. Please provide a valid json or"
               f" yaml file. Error: {e}",
           ) from e
       req.createIdentityProviderRequest.identityProvider = idp
   except FileNotFoundError as e:
     raise exceptions.InvalidArgumentException(
-        "idp-file", f"File not found: {file_path}"
+        "config", f"File not found: {file_path}"
     ) from e
   req.createIdentityProviderRequest.identityProvider.name = ref.RelativeName()
   return req

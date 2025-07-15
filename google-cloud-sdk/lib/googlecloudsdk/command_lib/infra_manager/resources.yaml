@@ -119,3 +119,17 @@ resource_change:
     attribute_name: resource_change
     help: resource change TBD
   disable_auto_completers: false
+resource_drift:
+  name: resourceDrift
+  plural_name: resourceDrifts
+  collection: config.projects.locations.previews.resourceDrifts
+  request_id_field: resourceDriftId
+  attributes:
+  - *project
+  - *location
+  - *preview
+  - &resource_drift
+    parameter_name: resourceDriftsId
+    attribute_name: resource_drift
+    help: resource drift TBD
+  disable_auto_completers: false

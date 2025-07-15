@@ -26,6 +26,14 @@ accelerator_type:
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   default: 'v2-8'
 
+image:
+  arg_name: image
+  required: false
+  help_text: |
+    Specifies the full URI of the machine image to use for creating the TPU VM's boot disk.
+    If specified, this will override the boot image that would normally be used by the
+    specified `--runtime-version`.
+
 description:
   api_field: node.description
   arg_name: description

@@ -805,6 +805,9 @@ class Interconnect(_messages.Message):
   Enums:
     InterconnectTypeValueValuesEnum: Optional. Type of interconnect, which
       takes only the value 'DEDICATED' for now.
+    RemotePeeringNetworkTypeValueValuesEnum: Optional. The remote peering
+      network type of the interconnect. It is required when peering separation
+      is enabled.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -821,6 +824,8 @@ class Interconnect(_messages.Message):
     name: Required. The canonical resource name of the interconnect.
     physicalPorts: Output only. Physical ports (e.g., TenGigE0/0/0/1) that
       form the interconnect.
+    remotePeeringNetworkType: Optional. The remote peering network type of the
+      interconnect. It is required when peering separation is enabled.
     updateTime: Output only. The time when the subnet was last updated.
     uuid: Output only. Unique identifier for the link.
   """
@@ -835,6 +840,21 @@ class Interconnect(_messages.Message):
     """
     INTERCONNECT_TYPE_UNSPECIFIED = 0
     DEDICATED = 1
+
+  class RemotePeeringNetworkTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The remote peering network type of the interconnect. It is
+    required when peering separation is enabled.
+
+    Values:
+      REMOTE_PEERING_NETWORK_TYPE_UNSPECIFIED: Unspecified.
+      REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNAL: Customer's trusted
+        internal network.
+      REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNET: Customer's untrust
+        network that has internet access.
+    """
+    REMOTE_PEERING_NETWORK_TYPE_UNSPECIFIED = 0
+    REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNAL = 1
+    REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNET = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -867,14 +887,18 @@ class Interconnect(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   physicalPorts = _messages.StringField(7, repeated=True)
-  updateTime = _messages.StringField(8)
-  uuid = _messages.StringField(9)
+  remotePeeringNetworkType = _messages.EnumField('RemotePeeringNetworkTypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  uuid = _messages.StringField(10)
 
 
 class InterconnectAttachment(_messages.Message):
   r"""Message describing InterconnectAttachment object
 
   Enums:
+    PeeringTypeValueValuesEnum: Optional. The remote peering network type of
+      the underlying interconnect. It is required when peering separation is
+      enabled.
     StateValueValuesEnum: Output only. Current stage of the resource to the
       device by config push.
 
@@ -898,12 +922,29 @@ class InterconnectAttachment(_messages.Message):
     network: Optional. The canonical Network name in the form of
       `projects/{project}/locations/{location}/zones/{zone}/networks/{network}
       `.
+    peeringType: Optional. The remote peering network type of the underlying
+      interconnect. It is required when peering separation is enabled.
     state: Output only. Current stage of the resource to the device by config
       push.
     updateTime: Output only. The time when the interconnect attachment was
       last updated.
     vlanId: Required. VLAN id provided by user. Must be site-wise unique.
   """
+
+  class PeeringTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The remote peering network type of the underlying
+    interconnect. It is required when peering separation is enabled.
+
+    Values:
+      REMOTE_PEERING_NETWORK_TYPE_UNSPECIFIED: Unspecified.
+      REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNAL: Customer's trusted
+        internal network.
+      REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNET: Customer's untrust
+        network that has internet access.
+    """
+    REMOTE_PEERING_NETWORK_TYPE_UNSPECIFIED = 0
+    REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNAL = 1
+    REMOTE_PEERING_NETWORK_TYPE_CUSTOMER_INTERNET = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current stage of the resource to the device by config
@@ -955,9 +996,10 @@ class InterconnectAttachment(_messages.Message):
   mtu = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   name = _messages.StringField(6)
   network = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  peeringType = _messages.EnumField('PeeringTypeValueValuesEnum', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  vlanId = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class InterconnectDiagnostics(_messages.Message):

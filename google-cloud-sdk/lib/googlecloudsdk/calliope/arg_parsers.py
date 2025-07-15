@@ -1134,7 +1134,7 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
                max_length=None,
                choices=None,
                custom_delim_char=None,
-               visible_choices=None,
+               hidden_choices=None,
                includes_json=False):
     """Initialize an ArgList.
 
@@ -1145,8 +1145,8 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
       choices: [element_type], a list of valid possibilities for elements. If
         None, then no constraints are imposed.
       custom_delim_char: char, A customized delimiter character.
-      visible_choices: [element_type], a list of valid possibilities for
-        elements to be shown to the user. If None, defaults to choices.
+      hidden_choices: [element_type], a subset of choices that should be hidden
+        from documentation.
       includes_json: bool, whether the list contains any json
 
     Returns:
@@ -1157,10 +1157,9 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
     """
     self.element_type = element_type
     self.choices = choices
-    self.visible_choices = (
-        visible_choices if visible_choices is not None else choices)
+    self.hidden_choices = hidden_choices or []
 
-    if self.visible_choices:
+    if choices:
 
       def ChoiceType(raw_value):
         if element_type:
@@ -1171,7 +1170,7 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
           raise ArgumentTypeError('{value} must be one of [{choices}]'.format(
               value=typed_value,
               choices=', '.join(
-                  [six.text_type(choice) for choice in self.visible_choices])))
+                  [str(c) for c in choices if c not in self.hidden_choices])))
         return typed_value
 
       self.element_type = ChoiceType

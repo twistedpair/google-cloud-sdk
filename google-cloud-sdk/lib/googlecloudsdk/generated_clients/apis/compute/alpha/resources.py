@@ -965,6 +965,14 @@ class Collections(enum.Enum):
       ['project', 'zone', 'queuedResource'],
       True
   )
+  ZONEVMEXTENSIONPOLICIES = (
+      'zoneVmExtensionPolicies',
+      'projects/{project}/zones/{zone}/vmExtensionPolicies/'
+      '{zoneVmExtensionPolicy}',
+      {},
+      ['project', 'zone', 'zoneVmExtensionPolicy'],
+      True
+  )
   ZONES = (
       'zones',
       'projects/{project}/zones/{zone}',

@@ -542,6 +542,21 @@ def ParseBootDiskConfigurations(api_version='v2'):
   return Process
 
 
+def SetImage(api_version='v2alpha1'):
+  """Request hook for setting the source machine image."""
+
+  def Process(unused_ref, args, request):
+    """Sets the source machine image in the request if provided."""
+    if args.IsSpecified('image'):
+      tpu_messages = GetMessagesModule(version=api_version)
+      if not request.node.bootDiskConfig:
+        request.node.bootDiskConfig = tpu_messages.BootDiskConfig()
+      request.node.bootDiskConfig.sourceImage = args.image
+    return request
+
+  return Process
+
+
 def ProjectIdToProjectNumber(project_id):
   """Returns the Cloud project number associated with the `project_id`."""
   crm_message_module = apis.GetMessagesModule('cloudresourcemanager', 'v1')

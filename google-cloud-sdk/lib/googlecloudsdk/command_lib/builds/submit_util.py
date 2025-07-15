@@ -412,12 +412,12 @@ def SetSource(
         )
     except api_exceptions.HttpForbiddenError:
       raise BucketForbiddenError(
-          'The user is forbidden from accessing the bucket [{}]. Please check '
-          "your organization's policy or if the user has the "
-          '"serviceusage.services.use" permission. Giving the user Owner, '
-          'Editor, or Viewer roles may also fix this issue. Alternatively, use '
-          'the --no-source option and access your source code via a different '
-          'method.'.format(gcs_source_staging_dir.bucket)
+          'The user is forbidden from accessing the bucket [{}]. Please check'
+          " your organization's policy or if the user has the"
+          ' "serviceusage.services.use" permission. Giving the user a role with'
+          ' this permission such as Service Usage Admin may fix this issue.'
+          ' Alternatively, use the --no-source option and access your source'
+          ' code via a different method.'.format(gcs_source_staging_dir.bucket)
       )
     except storage_api.BucketInWrongProjectError:
       # If we're using the default bucket but it already exists in a different

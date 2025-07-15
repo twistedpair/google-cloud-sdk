@@ -361,5 +361,5 @@ reservation:
     However, a full name is required if the reservation is not in the default project.
 
     Full reservation name format is:
-
-    projects/<project>/reservations/<reservation-name>.
+    projects/<project>/locations/<location>/reservations/<reservation-name>,
+    projects/<project>/zones/<zone>/reservations/<reservation-name>.

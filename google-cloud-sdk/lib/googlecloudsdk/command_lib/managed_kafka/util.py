@@ -17,9 +17,11 @@
 import re
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk import core
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 # Retrieve all message type for conversions from gcloud primitives to
@@ -27,6 +29,10 @@ from googlecloudsdk.core import properties
 _MESSAGE = apis.GetMessagesModule("managedkafka", "v1")
 SASL_PORT = "9092"
 MTLS_PORT = "9192"
+CONTEXTS_RESOURCE_PATH = "/contexts/"
+SUBJECTS_RESOURCE_PATH = "/subjects/"
+SUBJECTS_MODE_RESOURCE_PATH = "/mode/"
+SUBJECTS_CONFIG_RESOURCE_PATH = "/config/"
 
 
 def ValidateCPU(cpu):
@@ -486,6 +492,113 @@ def ParseCompatibility(compatibility) -> str:
 
 def ParseProject(project_id=None):
   return project_id or properties.VALUES.core.project.Get(required=True)
+
+
+def DeleteSubjectMode(subject, subject_run_resource, context):
+  """Called when the user runs gcloud managed-kafka schema-registries subject delete ...
+
+  Args:
+    subject: The subject of the attribute to delete.
+    subject_run_resource: The subject resource path.
+    context: The context of the schema registry if provided.
+
+  Returns:
+    The updated subject with its mode deleted.
+  """
+
+  message = apis.GetMessagesModule("managedkafka", "v1")
+  client = apis.GetClientInstance("managedkafka", "v1")
+
+  schema_registry_resource = subject_run_resource
+
+  schema_registry_resource = (
+      f"{schema_registry_resource}{SUBJECTS_MODE_RESOURCE_PATH}{subject}"
+  )
+
+  # Check if context is provided.
+  if context:
+    log.status.Print("Deleting subject mode for [%s]." % subject)
+    request = message.ManagedkafkaProjectsLocationsSchemaRegistriesContextsModeDeleteRequest(
+        name=schema_registry_resource
+    )
+    try:
+      client.projects_locations_schemaRegistries_contexts_mode.Delete(
+          request=request
+      )
+      log.UpdatedResource(subject, details="mode. It is now unset.")
+    except apitools_exceptions.HttpNotFoundError as e:
+      api_error = exceptions.HttpException(e, HTTP_ERROR_FORMAT)
+      log.status.Print(api_error.message)
+      if "Resource not found" in api_error.message:
+        raise exceptions.HttpException(
+            e, error_format="Subject {} not found.".format(subject)
+        )
+  else:
+    log.status.Print("Deleting subject mode for [%s]." % subject)
+    request = (
+        message.ManagedkafkaProjectsLocationsSchemaRegistriesModeDeleteRequest(
+            name=schema_registry_resource
+        )
+    )
+    try:
+      client.projects_locations_schemaRegistries_mode.Delete(request=request)
+      log.UpdatedResource(subject, details="mode. It is now unset.")
+    except apitools_exceptions.HttpNotFoundError as e:
+      api_error = exceptions.HttpException(e, HTTP_ERROR_FORMAT)
+      log.status.Print(api_error.message)
+      if "Resource not found" in api_error.message:
+        raise exceptions.HttpException(
+            e, error_format="Subject {} not found.".format(subject)
+        )
+
+
+def DeleteSubjectConfig(subject, schema_registry_resource, context):
+  """Called when the user runs gcloud managed-kafka schema-registries subject delete ...
+
+  Args:
+    subject: The subject of the attribute to delete.
+    schema_registry_resource: The schema registry resource path.
+    context: The context of the schema registry if provided.
+
+  Returns:
+    The updated subject with its config deleted.
+  """
+  message = apis.GetMessagesModule("managedkafka", "v1")
+  client = apis.GetClientInstance("managedkafka", "v1")
+  name = f"{schema_registry_resource}{SUBJECTS_CONFIG_RESOURCE_PATH}{subject}"
+  # Check if context is provided.
+  if context:
+    log.status.Print("Deleting subject config for [%s]." % subject)
+    request = message.ManagedkafkaProjectsLocationsSchemaRegistriesContextsConfigDeleteRequest(
+        name=name
+    )
+    try:
+      client.projects_locations_schemaRegistries_contexts_config.Delete(
+          request=request
+      )
+      log.UpdatedResource(subject, details="config. It is now unset.")
+    except apitools_exceptions.HttpNotFoundError as e:
+      api_error = exceptions.HttpException(e, HTTP_ERROR_FORMAT)
+      log.status.Print(api_error.message)
+      if "Resource not found" in api_error.message:
+        raise exceptions.HttpException(
+            e, error_format="Subject {} not found.".format(subject)
+        )
+  else:
+    log.status.Print("Deleting subject config for [%s]." % subject)
+    request = message.ManagedkafkaProjectsLocationsSchemaRegistriesConfigDeleteRequest(
+        name=name
+    )
+    try:
+      client.projects_locations_schemaRegistries_config.Delete(request=request)
+      log.UpdatedResource(subject, details="config. It is now unset.")
+    except apitools_exceptions.HttpNotFoundError as e:
+      api_error = exceptions.HttpException(e, HTTP_ERROR_FORMAT)
+      log.status.Print(api_error.message)
+      if "Resource not found" in api_error.message:
+        raise exceptions.HttpException(
+            e, error_format="Subject {} not found.".format(subject)
+        )
 
 
 HTTP_ERROR_FORMAT = (

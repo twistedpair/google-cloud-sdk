@@ -311,9 +311,6 @@ def AddReleaseChannelFlag(
     parser, is_update=False, autopilot=False, hidden=False
 ):
   """Adds a --release-channel flag to the given parser."""
-  choices = ['rapid', 'regular', 'stable', 'extended']
-  visible_choices = ['rapid', 'regular', 'extended', 'stable']
-
   short_text = """\
 Release channel a cluster is subscribed to.
 
@@ -336,55 +333,43 @@ exclusions](https://cloud.google.com/kubernetes-engine/docs/concepts/maintenance
 
 """
 
-  help_text += """\
-CHANNEL must be one of:
+  choices = {
+      'rapid': """\
+'rapid' channel is offered on an early access basis for customers
+who want to test new releases.
 
-`rapid`
-
-   'rapid' channel is offered on an early access basis for customers
-   who want to test new releases.
-
-   WARNING: Versions available in the 'rapid' channel may be subject
-   to unresolved issues with no known workaround and are not subject
-   to any SLAs.
-
-`regular`
-
-   Clusters subscribed to 'regular' receive versions that are
-   considered GA quality. 'regular' is intended for production users
-   who want to take advantage of new features.
-
-`extended`
-
-   Clusters subscribed to 'extended' can remain on a minor version for 24 months
-   from when the minor version is made available in the Regular channel.
-
-`stable`
-
-   Clusters subscribed to 'stable' receive versions that are known to
-   be stable and reliable in production.
-"""
+WARNING: Versions available in the 'rapid' channel may be subject
+to unresolved issues with no known workaround and are not subject
+to any SLAs.
+""",
+      'regular': """\
+Clusters subscribed to 'regular' receive versions that are
+considered GA quality. 'regular' is intended for production users
+who want to take advantage of new features.
+""",
+      'extended': """\
+Clusters subscribed to 'extended' can remain on a minor version for 24 months
+from when the minor version is made available in the Regular channel.
+""",
+      'stable': """\
+Clusters subscribed to 'stable' receive versions that are known to
+be stable and reliable in production.
+""",
+  }
 
   if not autopilot:
-    choices.append('None')
-    visible_choices.append('None')
-    help_text += """\
-
-`None`
-
-   Use 'None' to opt-out of any release channel.
-"""
+    choices.update({
+        'None': """\
+Use 'None' to opt-out of any release channel.
+""",
+    })
 
   return parser.add_argument(
       '--release-channel',
       metavar='CHANNEL',
+      choices=choices,
       help=help_text,
       hidden=hidden,
-      type=arg_parsers.ArgList(
-          choices=choices,
-          visible_choices=visible_choices,
-          max_length=1,
-      ),
   )
 
 
@@ -3266,6 +3251,10 @@ recommended; use the default VPC-native cluster type instead. For instructions,
 see
 https://cloud.google.com/kubernetes-engine/docs/how-to/routes-based-cluster
 
+Note: For IPv6-only clusters, these flags are a no-op as IP Aliases do not
+apply, and any specified IP address ranges for Pods and Services will be
+ignored.
+
 You can't specify both --enable-ip-alias and --no-enable-ip-alias.
 If you omit both --enable-ip-alias and --no-enable-ip-alias,
 the default is a VPC-native cluster.
@@ -3740,7 +3729,6 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
           api_adapter.APPLICATIONMANAGER,
           api_adapter.STATEFULHA,
           api_adapter.HIGHSCALECHECKPOINTING,
-          api_adapter.LUSTRECSIDRIVER,
       ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
@@ -4474,19 +4462,25 @@ def AddPrivateIpv6GoogleAccessTypeFlag(api_version, parser, hidden=False):
   ).choice_arg.AddToParser(parser)
 
 
-def AddStackTypeFlag(parser, hidden=False):
+def AddStackTypeFlag(
+    parser, release_track: base.ReleaseTrack = None, hidden=False
+):
   """Adds --stack-type flag to the given parser.
 
   Args:
     parser: A given parser.
+    release_track: The release track of command.
     hidden: If true, suppress help text for added options.
   """
-  help_text = 'IP stack type of the node VMs.'
+  help_text = 'IP stack type of the cluster nodes.'
+  choices_args = ['ipv4', 'ipv4-ipv6']
+  if release_track == base.ReleaseTrack.ALPHA:
+    choices_args.append('ipv6')
   parser.add_argument(
       '--stack-type',
       hidden=hidden,
       help=help_text,
-      choices=['ipv4', 'ipv4-ipv6'],
+      choices=choices_args,
   )
 
 
@@ -5387,6 +5381,7 @@ imageMinimumGcAge                   | interval (e.g., '100s', '1m'. The value mu
 imageMaximumGcAge                   | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
 allowedUnsafeSysctls                | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
 singleProcessOomKill                | true or false
+maxParallelImagePulls               | integer (The value must be between [2, 5].)
 
 List of supported keys in memoryManager in 'kubeletConfig'.
 KEY                                        | VALUE
@@ -5414,6 +5409,7 @@ net.core.somaxconn                                 | Must be between [128, 21474
 net.ipv4.tcp_rmem                                  | Any positive integer tuple
 net.ipv4.tcp_wmem                                  | Any positive integer tuple
 net.ipv4.tcp_tw_reuse                              | Must be {0, 1, 2}
+net.ipv4.tcp_max_orphans                           | Must be between [16384, 262144]
 net.netfilter.nf_conntrack_max                     | Must be between [65536, 4194304]
 net.netfilter.nf_conntrack_buckets                 | Must be between [65536, 524288]. Recommend setting: nf_conntrack_max = nf_conntrack_buckets * 4
 net.netfilter.nf_conntrack_tcp_timeout_close_wait  | Must be between [60, 3600]
@@ -5423,7 +5419,22 @@ net.netfilter.nf_conntrack_acct                    | Must be {0, 1}
 kernel.shmmni                                      | Must be between [4096, 32768]
 kernel.shmmax                                      | Must be between [0, 18446744073692774399]
 kernel.shmall                                      | Must be between [0, 18446744073692774399]
+fs.aio-max-nr                                      | Must be between [65536, 4194304]
+fs.file-max                                        | Must be between [104857, 67108864]
+fs.inotify.max_user_instances                      | Must be between [8192, 1048576]
+fs.inotify.max_user_watches                        | Must be between [8192, 1048576]
+fs.nr_open                                         | Must be between [1048576, 2147483584]
+vm.dirty_background_ratio                          | Must be between [1, 100]
+vm.dirty_expire_centisecs                          | Must be between [0, 6000]
+vm.dirty_ratio                                     | Must be between [1, 100]
+vm.dirty_writeback_centisecs                       | Must be between [0, 1000]
 vm.max_map_count                                   | Must be between [65536, 2147483647]
+vm.overcommit_memory                               | Must be one of {0, 1, 2}
+vm.overcommit_ratio                                | Must be between [0, 100]
+vm.vfs_cache_pressure                              | Must be between [0, 100]
+vm.swappiness                                      | Must be between [0, 200]
+vm.watermark_scale_factor                          | Must be between [10, 3000]
+vm.min_free_kbytes                                 | Must be between [67584, 1048576]
 
 List of supported hugepage size in 'hugepageConfig'.
 
@@ -5443,6 +5454,22 @@ Supported values for 'cgroupMode' under 'linuxConfig'.
 * `CGROUP_MODE_V1`: Use cgroupv1 on the node pool.
 * `CGROUP_MODE_V2`: Use cgroupv2 on the node pool.
 * `CGROUP_MODE_UNSPECIFIED`: Use the default GKE cgroup configuration.
+
+Supported values for 'transparentHugepageEnabled' under 'linuxConfig' which controls transparent hugepage support for anonymous memory.
+
+* `TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS`: Transparent hugepage is enabled system wide.
+* `TRANSPARENT_HUGEPAGE_ENABLED_MADVISE`: Transparent hugepage is enabled inside MADV_HUGEPAGE regions. This is the default kernel configuration.
+* `TRANSPARENT_HUGEPAGE_ENABLED_NEVER`: Transparent hugepage is disabled.
+* `TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED`: Default value. GKE will not modify the kernel configuration.
+
+Supported values for 'transparentHugepageDefrag' under 'linuxConfig' which defines the transparent hugepage defrag configuration on the node.
+
+* `TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS`: It means that an application requesting THP will stall on allocation failure and directly reclaim pages and compact memory in an effort to allocate a THP immediately.
+* `TRANSPARENT_HUGEPAGE_DEFRAG_DEFER`: It means that an application will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future. It is the responsibility of khugepaged to then install the THP pages later.
+* `TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE`: It means that an application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
+* `TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE`: It means that an application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
+* `TRANSPARENT_HUGEPAGE_DEFRAG_NEVER`: It means that an application will never enter direct reclaim or compaction.
+* `TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED`: Default value. GKE will not modify the kernel configuration.
 
 Note, updating the system configuration of an existing node pool requires recreation of the nodes which which might cause a disruption.
 """,
@@ -6327,7 +6354,7 @@ def AddMembershipTypeFlags(parser, is_update=False):
   membership_type_text = """
 Specify a membership type for the cluster's fleet membership.
 Example:
-$ {command} --memebership-type=LIGHTWEIGHT
+$ {command} --membership-type=LIGHTWEIGHT
 """
 
   unset_membership_type_text = """
@@ -6854,7 +6881,7 @@ def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
   )
 
 
-def AddSoleTenantMinNodeCpusFlag(parser, hidden=True):
+def AddSoleTenantMinNodeCpusFlag(parser, hidden=False):
   """Adds --sole-tenant-min-node-cpus flag to the given parser.
 
   Args:
@@ -6868,7 +6895,7 @@ def AddSoleTenantMinNodeCpusFlag(parser, hidden=True):
       hidden=hidden,
       help="""\
       A integer value that specifies the minimum number of vCPUs that each sole
-      tenantnode must have to use CPU overcommit. If not specified, the CPU
+      tenant node must have to use CPU overcommit. If not specified, the CPU
       overcommit feature is disabled.
       """,
   )
@@ -6923,7 +6950,7 @@ def AddEnableBackupRestoreFlag(parser):
   )
 
 
-def AddEnableLustreCSIDriverFlag(parser, hidden=True):
+def AddEnableLustreCSIDriverFlag(parser, hidden=False):
   """Adds --enable-lustre-csi-driver flag to the given parser.
 
   Args:
@@ -7076,14 +7103,13 @@ the Autopilot conversion during or after workload migration.
 
 
 def AddSecretManagerEnableFlagGroup(
-    parser: parser_arguments.ArgumentInterceptor,
-    release_track: base.ReleaseTrack = None,
+    parser: parser_arguments.ArgumentInterceptor, hidden=False
 ) -> None:
   """Adds --enable-secret-manager, --enable-secret-manager-rotation, and --secret-manager-rotation-interval flags to the given parser.
 
   Args:
     parser: A given parser.
-    release_track: Release track of the command.
+    hidden: whether the flags are hidden.
   """
   secret_manager_group = parser.add_group(
       mutex=False,
@@ -7105,32 +7131,32 @@ def AddSecretManagerEnableFlagGroup(
       help=help_text,
       hidden=False,
   )
-  if release_track != base.ReleaseTrack.GA:
-    help_text = textwrap.dedent("""\
-        Enables the rotation of secrets in the Secret Manager CSI driver
-        provider component.
 
-        To disable in an existing cluster, explicitly set flag to
-        --no-enable-secret-manager-rotation
-    """)
-    secret_manager_group.add_argument(
-        '--enable-secret-manager-rotation',
-        action='store_true',
-        default=None,
-        help=help_text,
-        hidden=False,
-    )
+  help_text = textwrap.dedent("""\
+      Enables the rotation of secrets in the Secret Manager CSI driver
+      provider component.
 
-    help_text = textwrap.dedent("""\
-        Set the rotation period for secrets in the Secret Manager CSI driver
-        provider component.
-    """)
-    secret_manager_group.add_argument(
-        '--secret-manager-rotation-interval',
-        default=None,
-        help=help_text,
-        hidden=False,
-    )
+      To disable in an existing cluster, explicitly set flag to
+      --no-enable-secret-manager-rotation
+  """)
+  secret_manager_group.add_argument(
+      '--enable-secret-manager-rotation',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+  help_text = textwrap.dedent("""\
+      Set the rotation period for secrets in the Secret Manager CSI driver
+      provider component.
+  """)
+  secret_manager_group.add_argument(
+      '--secret-manager-rotation-interval',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
 
 
 def AddComplianceFlags(parser, hidden=True):
@@ -7150,8 +7176,6 @@ def AddComplianceFlags(parser, hidden=True):
       ' disabled.'
   )
 
-  # TODO(b/336593802) This help link needs to be updated to include the actual
-  # string values that the user should pass.
   standards_help = """\
         Comma-delimited list of standards to be enabled. See
         https://cloud.google.com/kubernetes-engine/fleet-management/docs/about-compliance-dashboard#how-compliance-works
@@ -7529,6 +7553,23 @@ def AddServiceAccountVerificationKeysFlag(parser):
   )
 
 
+def AddControlPlaneDiskEncryptionKeyFlag(parser):
+  help_text = """\
+        The Cloud KMS symmetric encryption cryptoKey that will be used to
+        encrypt the control plane disks.
+    """
+
+  parser.add_argument(
+      '--control-plane-disk-encryption-key',
+      default=None,
+      help=help_text,
+      required=False,
+      hidden=True,
+      type=str,
+      metavar='KEY',
+  )
+
+
 def AddPatchUpdateFlag(parser):
   """Adds the --patch-update flag to parser."""
   help_text = """\
@@ -7565,7 +7606,7 @@ def AddAutoIpamFlag(parser, hidden=False, is_update=False):
         action='store_const',
         const=True,
         help="""\
-            Disable Auto IP Address Management (Auto IPAM) feature for the cluster.
+            Disable the Auto IP Address Management (Auto IPAM) feature for the cluster.
             """,
         hidden=hidden,
     )
@@ -7574,7 +7615,7 @@ def AddAutoIpamFlag(parser, hidden=False, is_update=False):
         action='store_const',
         const=True,
         help="""\
-            Enable Auto IP Address Management (Auto IPAM) feature for the cluster.
+            Enable the Auto IP Address Management (Auto IPAM) feature for the cluster.
             """,
         hidden=hidden,
     )
@@ -7584,7 +7625,7 @@ def AddAutoIpamFlag(parser, hidden=False, is_update=False):
         action='store_const',
         const=True,
         help="""\
-            Enable Auto IP Address Management (Auto IPAM) feature for the cluster.
+            Enable the Auto IP Address Management (Auto IPAM) feature for the cluster.
             """,
         hidden=hidden,
     )
@@ -7602,7 +7643,7 @@ def AddEnableK8sTokensViaDnsFlag(parser):
   )
 
 
-def AddEnableLegacyLustrePortFlag(parser, hidden=True):
+def AddEnableLegacyLustrePortFlag(parser, hidden=False):
   """Adds the --enable-legacy-lustre-port flag to parser.
 
   Args:
@@ -7610,7 +7651,8 @@ def AddEnableLegacyLustrePortFlag(parser, hidden=True):
     hidden: Indicates that the flags are hidden.
   """
   help_text = """\
-  If set to true, the Lustre CSI driver will install Lustre kernel modules using port 6988.
+  Allow the Lustre CSI driver to initialize LNet (the virtual network layer for Lustre kernel module) using port 6988.
+  This flag is required to workaround a port conflict with the gke-metadata-server on GKE nodes.
   """
   parser.add_argument(
       '--enable-legacy-lustre-port',
@@ -7647,5 +7689,20 @@ def AddEnableK8sCertsViaDnsFlag(parser):
       default=None,
       hidden=True,
       action='store_true',
+      help=help_text,
+  )
+
+
+def AddNetworkTierFlag(parser):
+  """Adds the --network-tier flag to parser."""
+  help_text = """\
+  Set the network tier for the cluster, possible values are premium, standard and default.
+  If use default, cluster will use project default network tier.
+  """
+  parser.add_argument(
+      '--network-tier',
+      default=None,
+      hidden=True,
+      choices=['premium', 'standard', 'network-default'],
       help=help_text,
   )

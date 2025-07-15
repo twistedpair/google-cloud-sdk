@@ -27,12 +27,31 @@ from googlecloudsdk.core.util import files
 # instead of via the `--command` flag at the gcloud run deploy
 # command.
 ENTRYPOINT_FEATURE_KEYS: Sequence[str] = ['entrypoint', 'entrypoint.shell']
-
+PYTHON_RUNTIMES_WITH_PROCFILE_ENTRYPOINT: Sequence[str] = [
+    'python',
+    'python37',
+    'python38',
+    'python39',
+    'python310',
+]
+RUBY_RUNTIMES_WITH_PROCFILE_ENTRYPOINT: Sequence[str] = [
+    'ruby',
+    'ruby25',
+    'ruby26',
+    'ruby27',
+    'ruby30',
+]
+RUNTIMES_WITH_PROCFILE_ENTRYPOINT: Sequence[str] = (
+    PYTHON_RUNTIMES_WITH_PROCFILE_ENTRYPOINT
+    + RUBY_RUNTIMES_WITH_PROCFILE_ENTRYPOINT
+)
 _FLATTEN_EXCLUDE_KEYS: Sequence[str] = ['env_variables', 'envVariables']
 
 
 def generate_output_flags(flags: Sequence[str], value: str) -> Sequence[str]:
   """Generate output flags by given list of flag names and value."""
+  if flags[0] == '--service-account' and value.endswith('"'):
+    value = value[1:-1]
   return [f'{flag}={value}' for flag in flags]
 
 

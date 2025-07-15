@@ -1196,8 +1196,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.apikeys = self._Add(
         'apikeys', command='gcloud services api-keys', hidden=True
     )
-    self.appconfigmanager = self._Add(
-        'appconfigmanager', command='gcloud app-config-manager', hidden=True)
     self.appengine = self._Add('appengine', command='gcloud app')
     self.apphub = self._Add('apphub', command='gcloud apphub')
     self.artifactregistry = self._Add(

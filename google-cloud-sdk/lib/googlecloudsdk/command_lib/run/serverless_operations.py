@@ -900,17 +900,23 @@ class ServerlessOperations(object):
 
     if build_source is not None and skip_build:
       tracker.StartStage(stages.UPLOAD_SOURCE)
-      source = sources.Upload(
-          build_source,
-          region,
-          service_ref,
-          source_bucket,
-          sources.ArchiveType.TAR,
-      )
-      # TODO(b/423646813): Remove this once zip deploys properly handles the
-      # generation number.
-      source.generation = None
-      source_path = sources.GetGsutilUri(source)
+      if sources.IsGcsObject(build_source):
+        tracker.UpdateHeaderMessage(
+            'Using the source from the specified bucket.'
+        )
+        source_path = build_source
+      else:
+        source = sources.Upload(
+            build_source,
+            region,
+            service_ref,
+            source_bucket,
+            sources.ArchiveType.TAR,
+        )
+        # TODO(b/423646813): Remove this once zip deploys properly handles the
+        # generation number.
+        source.generation = None
+        source_path = sources.GetGsutilUri(source)
       config_changes.append(
           config_changes_mod.SourcesAnnotationChange(
               updates={build_from_source_container_name: source_path}
@@ -1350,135 +1356,6 @@ class ServerlessOperations(object):
       raise serverless_exceptions.DeploymentFailedError(error_msg)
     except api_exceptions.HttpError as e:
       exceptions.reraise(e)
-
-  # TODO(b/322180968): Once Worker API is ready, factor out worker related
-  # operations wired up to the API in a separate file.
-  def GetWorker(self, worker_ref):
-    return self.GetService(worker_ref)
-
-  def ReleaseWorker(
-      self,
-      worker_ref,
-      config_changes,
-      release_track,
-      tracker=None,
-      asyn=False,
-      for_replace=False,
-      prefetch=False,
-      build_image=None,
-      build_pack=None,
-      build_source=None,
-      repo_to_create=None,
-      already_activated_services=False,
-      dry_run=False,
-      generate_name=False,
-  ):
-    """Stubbed method for worker deploy surface.
-
-    Args:
-      worker_ref: Resource, the worker to release.
-      config_changes: list, objects that implement Adjust().
-      release_track: ReleaseTrack, the release track of a command calling this.
-      tracker: StagedProgressTracker, to report on the progress of releasing.
-      asyn: bool, if True, return without waiting for the service to be updated.
-      for_replace: bool, If the change is for a replacing the service from a
-        YAML specification.
-      prefetch: the service, pre-fetched for ReleaseService. `False` indicates
-        the caller did not perform a prefetch; `None` indicates a nonexistent
-        service.
-      build_image: The build image reference to the build.
-      build_pack: The build pack reference to the build.
-      build_source: The build source reference to the build.
-      repo_to_create: Optional
-        googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
-        repository to be created.
-      already_activated_services: bool. If true, skip activation prompts for
-        services
-      dry_run: bool. If true, only validate the configuration.
-      generate_name: bool. If true, create a revision name, otherwise add nonce.
-
-    For private preview Worker is still Service underneath.
-
-    Returns:
-      service.Service, the service as returned by the server on the POST/PUT
-       request to create/update the service.
-    """
-    return self.ReleaseService(
-        worker_ref,
-        config_changes,
-        release_track,
-        tracker=tracker,
-        asyn=asyn,
-        for_replace=for_replace,
-        prefetch=prefetch,
-        build_image=build_image,
-        build_pack=build_pack,
-        build_source=build_source,
-        repo_to_create=repo_to_create,
-        already_activated_services=already_activated_services,
-        dry_run=dry_run,
-        generate_name=generate_name,
-    )
-
-  # TODO(b/322180968): Once Worker API is ready, replace Service related
-  # references.
-  def ListWorkers(self, namespace_ref):
-    """Returns all workers in the project/location specified."""
-    return self.ListServices(namespace_ref)
-
-  def DeleteWorker(self, worker_ref):
-    """Delete the provided Worker.
-
-    Args:
-      worker_ref: Resource, a reference to the Worker to delete
-
-    Raises:
-      WorkerNotFoundError: if provided worker is not found.
-    """
-    messages = self.messages_module
-    worker_name = worker_ref.RelativeName()
-    worker_delete_request = messages.RunNamespacesServicesDeleteRequest(
-        name=worker_name,
-    )
-
-    try:
-      with metrics.RecordDuration(metric_names.DELETE_SERVICE):
-        self._client.namespaces_services.Delete(worker_delete_request)
-    except api_exceptions.HttpNotFoundError:
-      raise serverless_exceptions.WorkerNotFoundError(
-          'Worker [{}] could not be found.'.format(worker_ref.servicesId)
-      )
-
-  def UpdateInstanceSplit(
-      self, worker_ref, config_changes, tracker, asyn, is_verbose
-  ):
-    return self.UpdateTraffic(
-        worker_ref, config_changes, tracker, asyn, is_verbose
-    )
-
-  def GetWorkerRevision(self, revision_ref):
-    return self.GetRevision(revision_ref)
-
-  def ListWorkerRevisions(
-      self, namespace_ref, worker_name, limit=None, page_size=100
-  ):
-    """List all worker revisions for the given worker.
-
-    Revision list gets sorted by worker name and creation timestamp.
-
-    Args:
-      namespace_ref: Resource, namespace to list worker revisions in
-      worker_name: str, The Worker for which to list revisions.
-      limit: Optional[int], max number of revisions to list.
-      page_size: Optional[int], number of revisions to fetch at a time
-
-    Returns:
-      Revisions for the given surface
-    """
-    return self.ListRevisions(namespace_ref, worker_name, limit, page_size)
-
-  def DeleteWorkerRevision(self, revision_ref):
-    return self.DeleteRevision(revision_ref)
 
   def ListExecutions(
       self, namespace_ref, label_selector='', limit=None, page_size=100

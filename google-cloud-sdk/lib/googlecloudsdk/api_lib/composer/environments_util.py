@@ -775,7 +775,7 @@ def Delete(environment_ref, release_track=base.ReleaseTrack.GA):
           name=environment_ref.RelativeName()))
 
 
-def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.BETA):
+def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.RestartWebServer method.
 
   Args:

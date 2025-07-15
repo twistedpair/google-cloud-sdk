@@ -1161,6 +1161,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a template revision.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesCatalogsTemplatesRevisionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/catalogs/{catalogsId}/templates/{templatesId}/revisions',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.catalogs.templates.revisions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['catalogTemplateRevisionId'],
+        relative_path='v1alpha/{+parent}/revisions',
+        request_field='catalogTemplateRevision',
+        request_type_name='DesigncenterProjectsLocationsSpacesCatalogsTemplatesRevisionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a template revision.
 
@@ -1252,6 +1279,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Adds a template to a catalog.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesCatalogsTemplatesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CatalogTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/catalogs/{catalogsId}/templates',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.catalogs.templates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['catalogTemplateId'],
+        relative_path='v1alpha/{+parent}/templates',
+        request_field='catalogTemplate',
+        request_type_name='DesigncenterProjectsLocationsSpacesCatalogsTemplatesCreateRequest',
+        response_type_name='CatalogTemplate',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a catalog template.
 
@@ -1330,6 +1384,33 @@ class DesigncenterV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='DesigncenterProjectsLocationsSpacesCatalogsTemplatesListRequest',
         response_type_name='ListCatalogTemplatesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a catalog template resource.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesCatalogsTemplatesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CatalogTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/catalogs/{catalogsId}/templates/{templatesId}',
+        http_method='PATCH',
+        method_id='designcenter.projects.locations.spaces.catalogs.templates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='catalogTemplate',
+        request_type_name='DesigncenterProjectsLocationsSpacesCatalogsTemplatesPatchRequest',
+        response_type_name='CatalogTemplate',
         supports_download=False,
     )
 

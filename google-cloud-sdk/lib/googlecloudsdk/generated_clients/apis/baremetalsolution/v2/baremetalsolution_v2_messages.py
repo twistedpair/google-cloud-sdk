@@ -1342,7 +1342,7 @@ class InstanceConfig(_messages.Message):
       InstanceConfig.multivlan_config is false.
     hyperthreading: Whether the instance should be provisioned with
       Hyperthreading enabled.
-    id: A transient unique identifier to idenfity an instance within an
+    id: A transient unique identifier to identify an instance within an
       ProvisioningConfig request.
     instanceType: Instance type. [Available
       types](https://cloud.google.com/bare-metal/docs/bms-

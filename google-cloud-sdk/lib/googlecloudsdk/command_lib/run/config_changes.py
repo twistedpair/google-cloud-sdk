@@ -1598,24 +1598,6 @@ class NoTrafficChange(NonTemplateConfigChanger):
     return resource
 
 
-# TODO(b/322180968): Once worker specific intance split API/message is ready,
-# switch from service traffic to worker instance split reference.
-class NoPromoteChange(NonTemplateConfigChanger):
-  """Represents the user intent to block instance assignment for a new worker revision."""
-
-  def Adjust(self, resource):
-    """Removes LATEST from the workers instance assignments."""
-    if not resource.generation:
-      raise exceptions.ConfigurationError(
-          '--no-promote not supported when creating a new worker.'
-      )
-
-    resource.spec_traffic.ZeroLatestTraffic(
-        resource.status.latestReadyRevisionName
-    )
-    return resource
-
-
 @dataclasses.dataclass(frozen=True)
 class TrafficChanges(NonTemplateConfigChanger):
   """Represents the user intent to change a service's traffic assignments.
@@ -2271,4 +2253,34 @@ class SetServiceMeshChange(TemplateConfigChanger):
         if '/' in self.mesh_name
         else f'projects/{self.project}/locations/global/meshes/{self.mesh_name}'
     )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class PresetChange(TemplateConfigChanger):
+  """Sets the preset annotation on the service template.
+
+  Attributes:
+    type: The type of preset to use.
+    config: The config to use for the preset.
+    flatten: Whether to flatten the preset values into the service template.
+  """
+
+  type: str
+  config: Mapping[str, str] = dataclasses.field(default_factory=dict)
+  flatten: bool = True
+
+  def Adjust(self, resource):
+    # TODO(b/412784660): Add support for multiple presets and merge existing
+    # presets.
+    if service.PRESETS_ANNOTATION in resource.annotations:
+      presets = json.loads(resource.annotations[service.PRESETS_ANNOTATION])
+    else:
+      presets = []
+    presets.append({
+        'type': self.type,
+        'config': self.config,
+        'flatten': self.flatten,
+    })
+    resource.annotations[service.PRESETS_ANNOTATION] = json.dumps(presets)
     return resource

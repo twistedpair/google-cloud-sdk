@@ -20167,6 +20167,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Allows customers to perform maintenance on a reservation subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationSubBlocks.performMaintenance',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/performMaintenance',
+        request_field='',
+        request_type_name='ComputeReservationSubBlocksPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ReservationsService(base_api.BaseApiService):
     """Service class for the reservations resource."""
 

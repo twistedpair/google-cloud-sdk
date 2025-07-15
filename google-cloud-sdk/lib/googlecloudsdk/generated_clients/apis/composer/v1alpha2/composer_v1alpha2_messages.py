@@ -112,6 +112,9 @@ class CheckUpgradeResponse(_messages.Message):
 
   Fields:
     buildLogUri: Output only. Url for a docker build log of an upgraded image.
+    configConflicts: Output only. Contains information about environment
+      configuration that is incompatible with the new image version, except
+      for pypi modules conflicts.
     containsPypiModulesConflict: Output only. Whether build has succeeded or
       failed on modules conflicts.
     imageVersion: Composer image for which the build was happening.
@@ -163,10 +166,11 @@ class CheckUpgradeResponse(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   buildLogUri = _messages.StringField(1)
-  containsPypiModulesConflict = _messages.EnumField('ContainsPypiModulesConflictValueValuesEnum', 2)
-  imageVersion = _messages.StringField(3)
-  pypiConflictBuildLogExtract = _messages.StringField(4)
-  pypiDependencies = _messages.MessageField('PypiDependenciesValue', 5)
+  configConflicts = _messages.MessageField('ConfigConflict', 2, repeated=True)
+  containsPypiModulesConflict = _messages.EnumField('ContainsPypiModulesConflictValueValuesEnum', 3)
+  imageVersion = _messages.StringField(4)
+  pypiConflictBuildLogExtract = _messages.StringField(5)
+  pypiDependencies = _messages.MessageField('PypiDependenciesValue', 6)
 
 
 class CidrBlock(_messages.Message):
@@ -988,6 +992,34 @@ class ComposerWorkloadStatus(_messages.Message):
   detailedStatusMessage = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   statusMessage = _messages.StringField(3)
+
+
+class ConfigConflict(_messages.Message):
+  r"""Environment configuration conflict.
+
+  Enums:
+    TypeValueValuesEnum: Conflict type. It can be blocking or non-blocking.
+
+  Fields:
+    message: Conflict message.
+    type: Conflict type. It can be blocking or non-blocking.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Conflict type. It can be blocking or non-blocking.
+
+    Values:
+      CONFLICT_TYPE_UNSPECIFIED: Conflict type is unknown.
+      BLOCKING: Conflict is blocking, the upgrade would fail.
+      NON_BLOCKING: Conflict is non-blocking. The upgrade would succeed, but
+        the environment configuration would be changed.
+    """
+    CONFLICT_TYPE_UNSPECIFIED = 0
+    BLOCKING = 1
+    NON_BLOCKING = 2
+
+  message = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Dag(_messages.Message):

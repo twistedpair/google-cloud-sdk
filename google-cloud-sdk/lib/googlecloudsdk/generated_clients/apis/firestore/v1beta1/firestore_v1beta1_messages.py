@@ -1426,12 +1426,80 @@ class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
   startTime = _messages.StringField(8)
 
 
+class GoogleFirestoreAdminV1CloneDatabaseMetadata(_messages.Message):
+  r"""Metadata for the long-running operation from the CloneDatabase request.
+
+  Enums:
+    OperationStateValueValuesEnum: The operation state of the clone.
+
+  Fields:
+    database: The name of the database being cloned to.
+    endTime: The time the clone finished, unset for ongoing clones.
+    operationState: The operation state of the clone.
+    pitrSnapshot: The snapshot from which this database was cloned.
+    progressPercentage: How far along the clone is as an estimated percentage
+      of remaining time.
+    startTime: The time the clone was started.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""The operation state of the clone.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  database = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 3)
+  pitrSnapshot = _messages.MessageField('GoogleFirestoreAdminV1PitrSnapshot', 4)
+  progressPercentage = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
+  startTime = _messages.StringField(6)
+
+
 class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
   r"""Metadata related to the create database operation."""
 
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
   r"""Metadata related to the delete database operation."""
+
+
+class GoogleFirestoreAdminV1PitrSnapshot(_messages.Message):
+  r"""A consistent snapshot of a database at a specific point in time. A PITR
+  (Point-in-time recovery) snapshot with previous versions of a database's
+  data is available for every minute up to the associated database's data
+  retention period. If the PITR feature is enabled, the retention period is 7
+  days; otherwise, it is one hour.
+
+  Fields:
+    database: Required. The name of the database that this was a snapshot of.
+      Format: `projects/{project}/databases/{database}`.
+    databaseUid: Output only. Public UUID of the database the snapshot was
+      associated with.
+    snapshotTime: Required. Snapshot time of the database.
+  """
+
+  database = _messages.StringField(1)
+  databaseUid = _messages.BytesField(2)
+  snapshotTime = _messages.StringField(3)
 
 
 class GoogleFirestoreAdminV1Progress(_messages.Message):

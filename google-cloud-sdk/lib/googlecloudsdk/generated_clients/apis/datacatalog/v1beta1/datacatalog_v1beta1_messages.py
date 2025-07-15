@@ -1487,8 +1487,9 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
   Fields:
     databaseViewSpec: Spec what applies to tables that are actually views. Not
       set for "real" tables.
-    dataplexTable: Output only. Fields specific to a Dataplex table and
-      present only in the Dataplex table entries.
+    dataplexTable: Output only. Fields specific to a Dataplex Universal
+      Catalog table and present only in the Dataplex Universal Catalog table
+      entries.
     type: Type of this table.
   """
 
@@ -1539,12 +1540,12 @@ class GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec(_messages.Messag
 
 
 class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
-  r"""External table registered by Dataplex. Dataplex publishes data
-  discovered from an asset into multiple other systems (BigQuery, DPMS) in
-  form of tables. We call them "external tables". External tables are also
-  synced into the Data Catalog. This message contains pointers to those
-  external tables (fully qualified name, resource name et cetera) within the
-  Data Catalog.
+  r"""External table registered by Dataplex Universal Catalog. Dataplex
+  Universal Catalog publishes data discovered from an asset into multiple
+  other systems (BigQuery, DPMS) in form of tables. We call them "external
+  tables". External tables are also synced into the Data Catalog. This message
+  contains pointers to those external tables (fully qualified name, resource
+  name et cetera) within the Data Catalog.
 
   Enums:
     SystemValueValuesEnum: Service in which the external table is registered.
@@ -1565,7 +1566,7 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
-      DATAPLEX: Dataplex.
+      DATAPLEX: Dataplex Universal Catalog.
       CLOUD_SPANNER: Cloud Spanner
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
@@ -1590,27 +1591,27 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1DataplexFilesetSpec(_messages.Message):
-  r"""Entry specyfication for a Dataplex fileset.
+  r"""Entry specification for a Dataplex Universal Catalog fileset.
 
   Fields:
-    dataplexSpec: Common Dataplex fields.
+    dataplexSpec: Common Dataplex Universal Catalog fields.
   """
 
   dataplexSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataplexSpec', 1)
 
 
 class GoogleCloudDatacatalogV1DataplexSpec(_messages.Message):
-  r"""Common Dataplex fields.
+  r"""Common Dataplex Universal Catalog fields.
 
   Fields:
-    asset: Fully qualified resource name of an asset in Dataplex, to which the
-      underlying data source (Cloud Storage bucket or BigQuery dataset) of the
-      entity is attached.
+    asset: Fully qualified resource name of an asset in Dataplex Universal
+      Catalog, to which the underlying data source (Cloud Storage bucket or
+      BigQuery dataset) of the entity is attached.
     compressionFormat: Compression format of the data, e.g., zip, gzip etc.
     dataFormat: Format of the data.
     projectId: Project ID of the underlying Cloud Storage or BigQuery data.
-      Note that this may not be the same project as the correspondingly
-      Dataplex lake / zone / asset.
+      Note that this may not be the same project as the corresponding Dataplex
+      Universal Catalog lake / zone / asset.
   """
 
   asset = _messages.StringField(1)
@@ -1620,13 +1621,13 @@ class GoogleCloudDatacatalogV1DataplexSpec(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1DataplexTableSpec(_messages.Message):
-  r"""Entry specification for a Dataplex table.
+  r"""Entry specification for a Dataplex Universal Catalog table.
 
   Fields:
-    dataplexSpec: Common Dataplex fields.
-    externalTables: List of external tables registered by Dataplex in other
-      systems based on the same underlying data. External tables allow to
-      query this data in those systems.
+    dataplexSpec: Common Dataplex Universal Catalog fields.
+    externalTables: List of external tables registered by Dataplex Universal
+      Catalog in other systems based on the same underlying data. External
+      tables allow to query this data in those systems.
     userManaged: Indicates if the table schema is managed by the user or not.
   """
 
@@ -1780,7 +1781,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
-      DATAPLEX: Dataplex.
+      DATAPLEX: Dataplex Universal Catalog.
       CLOUD_SPANNER: Cloud Spanner
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
@@ -1817,8 +1818,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       DATA_SOURCE_CONNECTION: Connection to a data source. For example, a
         BigQuery connection.
       ROUTINE: Routine, for example, a BigQuery routine.
-      LAKE: A Dataplex lake.
-      ZONE: A Dataplex zone.
+      LAKE: A Dataplex Universal Catalog lake.
+      ZONE: A Dataplex Universal Catalog zone.
       SERVICE: A service, for example, a Dataproc Metastore service.
       DATABASE_SCHEMA: Schema within a relational database.
       DASHBOARD: A Dashboard, for example from Looker.
@@ -1957,8 +1958,8 @@ class GoogleCloudDatacatalogV1FilesetSpec(_messages.Message):
   'FILESET' type.
 
   Fields:
-    dataplexFileset: Fields specific to a Dataplex fileset and present only in
-      the Dataplex fileset entries.
+    dataplexFileset: Fields specific to a Dataplex Universal Catalog fileset
+      and present only in the Dataplex Universal Catalog fileset entries.
   """
 
   dataplexFileset = _messages.MessageField('GoogleCloudDatacatalogV1DataplexFilesetSpec', 1)
@@ -2457,14 +2458,15 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
 
     Values:
       DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
-        tags are only visible and editable in DataCatalog.
-      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
-        Visible in both services. Editable in DataCatalog, read-only in
-        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
-        in favor of organization or project wide TagTemplate migration opt-in.
+        tags are only visible and editable in Data Catalog.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex Universal
+        Catalog service. Visible in both services. Editable in Data Catalog,
+        read-only in Dataplex Universal Catalog. Deprecated: Individual
+        TagTemplate migration is deprecated in favor of organization or
+        project wide TagTemplate migration opt-in.
       TRANSFERRED: TagTemplate and its tags are auto-copied to Dataplex
-        service. Visible in both services. Editable in Dataplex, read-only in
-        DataCatalog.
+        Universal Catalog service. Visible in both services. Editable in
+        Dataplex Universal Catalog, read-only in Data Catalog.
     """
     DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
     MIGRATED = 1
@@ -3665,10 +3667,11 @@ class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
     Values:
       DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
         tags are only visible and editable in DataCatalog.
-      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
-        Visible in both services. Editable in DataCatalog, read-only in
-        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
-        in favor of organization or project wide TagTemplate migration opt-in.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex Universal
+        Catalog service. Visible in both services. Editable in Data Catalog,
+        read-only in Dataplex Universal Catalog. Deprecated: Individual
+        TagTemplate migration is deprecated in favor of organization or
+        project wide TagTemplate migration opt-in.
     """
     DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
     MIGRATED = 1
@@ -3804,7 +3807,7 @@ class GoogleCloudDatacatalogV1beta1TaxonomyService(_messages.Message):
 
     Values:
       MANAGING_SYSTEM_UNSPECIFIED: Default value
-      MANAGING_SYSTEM_DATAPLEX: Dataplex.
+      MANAGING_SYSTEM_DATAPLEX: Dataplex Universal Catalog.
       MANAGING_SYSTEM_OTHER: Other
     """
     MANAGING_SYSTEM_UNSPECIFIED = 0

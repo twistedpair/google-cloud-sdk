@@ -391,18 +391,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'appconfigmanager': {
-        'v1alpha':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.appconfigmanager.v1alpha',
-                    client_classpath='appconfigmanager_v1alpha_client.AppconfigmanagerV1alpha',
-                    base_url='https://appconfigmanager.googleapis.com/',
-                    messages_modulepath='appconfigmanager_v1alpha_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
     'appengine': {
         'v1':
             APIDef(
@@ -1388,6 +1376,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'configdelivery': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.configdelivery.v1',
+                    client_classpath='configdelivery_v1_client.ConfigdeliveryV1',
+                    base_url='https://configdelivery.googleapis.com/',
+                    messages_modulepath='configdelivery_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(

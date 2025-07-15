@@ -1756,6 +1756,22 @@ def AddIgnoreErrors(parser: parser_arguments.ArgumentInterceptor):
   )
 
 
+def AddIgnoreErrorsAdminCluster(parser: parser_arguments.ArgumentInterceptor):
+  """Adds a flag for ignore_errors field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      help=(
+          'If set, the unenrollment of a VMware admin cluster resource will'
+          ' succeed even if errors occur during deletion.'
+      ),
+      action='store_true',
+  )
+
+
 def _AddVmwareControlPlaneV2Config(
     vmware_network_config_group, for_update=False
 ):

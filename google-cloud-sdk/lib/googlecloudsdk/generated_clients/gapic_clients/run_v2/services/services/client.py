@@ -191,6 +191,17 @@ class ServicesClient(metaclass=ServicesClientMeta):
         return m.groupdict() if m else {}
 
     @staticmethod
+    def build_worker_pool_path(project: str,location: str,worker_pool: str,) -> str:
+        """Returns a fully-qualified build_worker_pool string."""
+        return "projects/{project}/locations/{location}/workerPools/{worker_pool}".format(project=project, location=location, worker_pool=worker_pool, )
+
+    @staticmethod
+    def parse_build_worker_pool_path(path: str) -> Dict[str,str]:
+        """Parses a build_worker_pool path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/workerPools/(?P<worker_pool>.+?)$", path)
+        return m.groupdict() if m else {}
+
+    @staticmethod
     def connector_path(project: str,location: str,connector: str,) -> str:
         """Returns a fully-qualified connector string."""
         return "projects/{project}/locations/{location}/connectors/{connector}".format(project=project, location=location, connector=connector, )
@@ -276,17 +287,6 @@ class ServicesClient(metaclass=ServicesClientMeta):
     def parse_service_path(path: str) -> Dict[str,str]:
         """Parses a service path into its component segments."""
         m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/services/(?P<service>.+?)$", path)
-        return m.groupdict() if m else {}
-
-    @staticmethod
-    def worker_pool_path(project: str,location: str,worker_pool: str,) -> str:
-        """Returns a fully-qualified worker_pool string."""
-        return "projects/{project}/locations/{location}/workerPools/{worker_pool}".format(project=project, location=location, worker_pool=worker_pool, )
-
-    @staticmethod
-    def parse_worker_pool_path(path: str) -> Dict[str,str]:
-        """Parses a worker_pool path into its component segments."""
-        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/workerPools/(?P<worker_pool>.+?)$", path)
         return m.groupdict() if m else {}
 
     @staticmethod

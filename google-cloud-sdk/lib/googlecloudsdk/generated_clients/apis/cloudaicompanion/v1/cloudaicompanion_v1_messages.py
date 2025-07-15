@@ -2260,19 +2260,37 @@ class Expr(_messages.Message):
 class GeminiGcpEnablementSetting(_messages.Message):
   r"""Message describing GeminiGcpEnablementSetting object
 
+  Enums:
+    WebGroundingTypeValueValuesEnum: Optional. Web grounding type.
+
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
     createTime: Output only. [Output only] Create time stamp.
     disableWebGrounding: Optional. Whether web grounding should be disabled.
+      DEPRECATED: Use web_grounding_type instead.
     enableCustomerDataSharing: Optional. Whether customer data sharing should
       be enabled.
     labels: Optional. Labels as key value pairs.
     name: Identifier. Name of the resource. Format:projects/{project}/location
       s/{location}/geminiGcpEnablementSettings/{geminiGcpEnablementSetting}
     updateTime: Output only. [Output only] Update time stamp.
+    webGroundingType: Optional. Web grounding type.
   """
+
+  class WebGroundingTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Web grounding type.
+
+    Values:
+      WEB_GROUNDING_TYPE_UNSPECIFIED: Unspecified grounding.
+      GROUNDING_WITH_GOOGLE_SEARCH: Grounding with Google Search.
+      WEB_GROUNDING_FOR_ENTERPRISE: Grounding with Google Search for
+        Enterprise.
+    """
+    WEB_GROUNDING_TYPE_UNSPECIFIED = 0
+    GROUNDING_WITH_GOOGLE_SEARCH = 1
+    WEB_GROUNDING_FOR_ENTERPRISE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2304,6 +2322,7 @@ class GeminiGcpEnablementSetting(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+  webGroundingType = _messages.EnumField('WebGroundingTypeValueValuesEnum', 7)
 
 
 class IntParameterArray(_messages.Message):
@@ -3244,12 +3263,17 @@ class Repository(_messages.Message):
   Fields:
     branchPattern: Required. The Git branch pattern used for indexing in RE2
       syntax. See https://github.com/google/re2/wiki/syntax for syntax.
+    connectionConfig: Output only. Configuration details of the connection
+      associated with this repository.
+    repositoryUri: Output only. The clone URI of the Git repository.
     resource: Required. The DeveloperConnect repository full resource name,
       relative resource name or resource URL to be indexed.
   """
 
   branchPattern = _messages.StringField(1)
-  resource = _messages.StringField(2)
+  connectionConfig = _messages.StringField(2)
+  repositoryUri = _messages.StringField(3)
+  resource = _messages.StringField(4)
 
 
 class RepositoryGroup(_messages.Message):

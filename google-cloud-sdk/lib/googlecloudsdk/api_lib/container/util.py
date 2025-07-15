@@ -121,9 +121,12 @@ NC_IMAGE_GC_LOW_THRESHOLD_PERCENT = 'imageGcLowThresholdPercent'
 NC_IMAGE_MINIMUM_GC_AGE = 'imageMinimumGcAge'
 NC_IMAGE_MAXIMUM_GC_AGE = 'imageMaximumGcAge'
 NC_NODE_SWAP_SIZE_GIB = 'nodeSwapSizeGib'
+NC_MAX_PARALLEL_IMAGE_PULLS = 'maxParallelImagePulls'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 NC_CGROUP_MODE = 'cgroupMode'
+NC_TRANSPARENT_HUGEPAGE_ENABLED = 'transparentHugepageEnabled'
+NC_TRANSPARENT_HUGEPAGE_DEFRAG = 'transparentHugepageDefrag'
 NC_HUGEPAGE = 'hugepageConfig'
 NC_HUGEPAGE_2M = 'hugepage_size2m'
 NC_HUGEPAGE_1G = 'hugepage_size1g'
@@ -820,6 +823,7 @@ def LoadSystemConfigFromYAML(
         NC_MEMORY_MANAGER: dict,
         NC_SINGLE_PROCESS_OOMKILL: bool,
         NC_NODE_SWAP_SIZE_GIB: int,
+        NC_MAX_PARALLEL_IMAGE_PULLS: int,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields
@@ -863,6 +867,9 @@ def LoadSystemConfigFromYAML(
     )
     node_config.kubeletConfig.nodeSwapSizeGib = kubelet_config_opts.get(
         NC_NODE_SWAP_SIZE_GIB
+    )
+    node_config.kubeletConfig.maxParallelImagePulls = kubelet_config_opts.get(
+        NC_MAX_PARALLEL_IMAGE_PULLS
     )
     # Parse memory manager.
     memory_manager_opts = kubelet_config_opts.get(NC_MEMORY_MANAGER)
@@ -912,6 +919,8 @@ def LoadSystemConfigFromYAML(
             NC_SYSCTL: dict,
             NC_CGROUP_MODE: str,
             NC_HUGEPAGE: dict,
+            NC_TRANSPARENT_HUGEPAGE_ENABLED: str,
+            NC_TRANSPARENT_HUGEPAGE_DEFRAG: str,
         },
     )
     node_config.linuxNodeConfig = messages.LinuxNodeConfig()
@@ -960,6 +969,85 @@ def LoadSystemConfigFromYAML(
       node_config.linuxNodeConfig.cgroupMode = cgroup_mode_mapping[
           cgroup_mode_opts
       ]
+
+    transparent_hugepage_enabled_opts = linux_config_opts.get(
+        NC_TRANSPARENT_HUGEPAGE_ENABLED
+    )
+    if transparent_hugepage_enabled_opts:
+      transparent_hugepage_enabled_mapping = {
+          'TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED': (
+              messages.LinuxNodeConfig.TransparentHugepageEnabledValueValuesEnum.TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED
+          ),
+          'TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS': (
+              messages.LinuxNodeConfig.TransparentHugepageEnabledValueValuesEnum.TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS
+          ),
+          'TRANSPARENT_HUGEPAGE_ENABLED_MADVISE': (
+              messages.LinuxNodeConfig.TransparentHugepageEnabledValueValuesEnum.TRANSPARENT_HUGEPAGE_ENABLED_MADVISE
+          ),
+          'TRANSPARENT_HUGEPAGE_ENABLED_NEVER': (
+              messages.LinuxNodeConfig.TransparentHugepageEnabledValueValuesEnum.TRANSPARENT_HUGEPAGE_ENABLED_NEVER
+          ),
+      }
+      if (
+          transparent_hugepage_enabled_opts
+          not in transparent_hugepage_enabled_mapping
+      ):
+        raise NodeConfigError(
+            'transparent hugepage enabled "{0}" is not supported, the supported'
+            ' options are TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS,'
+            ' TRANSPARENT_HUGEPAGE_ENABLED_MADVISE,'
+            ' TRANSPARENT_HUGEPAGE_ENABLED_NEVER,'
+            ' TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED'.format(
+                transparent_hugepage_enabled_opts
+            )
+        )
+      node_config.linuxNodeConfig.transparentHugepageEnabled = (
+          transparent_hugepage_enabled_mapping[
+              transparent_hugepage_enabled_opts
+          ]
+      )
+    transparent_hugepage_defrag_opts = linux_config_opts.get(
+        NC_TRANSPARENT_HUGEPAGE_DEFRAG
+    )
+    if transparent_hugepage_defrag_opts:
+      transparent_hugepage_defrag_mapping = {
+          'TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED': (
+              messages.LinuxNodeConfig.TransparentHugepageDefragValueValuesEnum.TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED
+          ),
+          'TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS': (
+              messages.LinuxNodeConfig.TransparentHugepageDefragValueValuesEnum.TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS
+          ),
+          'TRANSPARENT_HUGEPAGE_DEFRAG_DEFER': (
+              messages.LinuxNodeConfig.TransparentHugepageDefragValueValuesEnum.TRANSPARENT_HUGEPAGE_DEFRAG_DEFER
+          ),
+          'TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE': (
+              messages.LinuxNodeConfig.TransparentHugepageDefragValueValuesEnum.TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE
+          ),
+          'TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE': (
+              messages.LinuxNodeConfig.TransparentHugepageDefragValueValuesEnum.TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE
+          ),
+          'TRANSPARENT_HUGEPAGE_DEFRAG_NEVER': (
+              messages.LinuxNodeConfig.TransparentHugepageDefragValueValuesEnum.TRANSPARENT_HUGEPAGE_DEFRAG_NEVER
+          ),
+      }
+      if (
+          transparent_hugepage_defrag_opts
+          not in transparent_hugepage_defrag_mapping
+      ):
+        raise NodeConfigError(
+            'transparent hugepage defrag "{0}" is not supported, the supported'
+            ' options are TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS,'
+            ' TRANSPARENT_HUGEPAGE_DEFRAG_DEFER,'
+            ' TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE,'
+            ' TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE,'
+            ' TRANSPARENT_HUGEPAGE_DEFRAG_NEVER,'
+            ' TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED'.format(
+                transparent_hugepage_defrag_opts
+            )
+        )
+      node_config.linuxNodeConfig.transparentHugepageDefrag = (
+          transparent_hugepage_defrag_mapping[transparent_hugepage_defrag_opts]
+      )
     # Parse hugepages.
     hugepage_opts = linux_config_opts.get(NC_HUGEPAGE)
     if hugepage_opts:

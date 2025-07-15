@@ -1709,12 +1709,17 @@ class Repository(_messages.Message):
   Fields:
     branchPattern: Required. The Git branch pattern used for indexing in RE2
       syntax. See https://github.com/google/re2/wiki/syntax for syntax.
+    connectionConfig: Output only. Configuration details of the connection
+      associated with this repository.
+    repositoryUri: Output only. The clone URI of the Git repository.
     resource: Required. The DeveloperConnect repository full resource name,
       relative resource name or resource URL to be indexed.
   """
 
   branchPattern = _messages.StringField(1)
-  resource = _messages.StringField(2)
+  connectionConfig = _messages.StringField(2)
+  repositoryUri = _messages.StringField(3)
+  resource = _messages.StringField(4)
 
 
 class RepositoryGroup(_messages.Message):

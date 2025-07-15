@@ -448,6 +448,8 @@ class ClusterStatus(_messages.Message):
       FAILED: The Rollout failed for the cluster.
       SUCCEEDED: The Rollout succeeded for the cluster.
       PAUSED: The Rollout is paused for the cluster.
+      REMOVED: The cluster was removed from the Rollout.
+      INELIGIBLE: The cluster is ineligible for the Rollout.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -455,6 +457,8 @@ class ClusterStatus(_messages.Message):
     FAILED = 3
     SUCCEEDED = 4
     PAUSED = 5
+    REMOVED = 6
+    INELIGIBLE = 7
 
   lastUpdateTime = _messages.StringField(1)
   membership = _messages.StringField(2)
@@ -1673,7 +1677,7 @@ class ConfigManagementDeploymentOverride(_messages.Message):
     deploymentName: Required. The name of the deployment resource to be
       overridden.
     deploymentNamespace: Required. The namespace of the deployment resource to
-      be overridden..
+      be overridden.
   """
 
   containers = _messages.MessageField('ConfigManagementContainerOverride', 1, repeated=True)
@@ -3812,6 +3816,33 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class GkehubProjectsLocationsMembershipsListSelectedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListSelectedRequest object.
+
+  Fields:
+    clusterSelector: A ClusterSelector resource to be passed as the request
+      body.
+    orderBy: Optional. One or more fields to compare and use to sort the
+      output. See https://google.aip.dev/132#ordering.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListMembershipsWithSelector` which specifies the position in the list
+      from where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Memberships
+      will be listed. Specified in the format
+      `projects/[project_id]/locations/[location]`.
+      `projects/[project_id]/locations/-` list memberships in all the regions.
+  """
+
+  clusterSelector = _messages.MessageField('ClusterSelector', 1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsPatchRequest object.
 
@@ -5693,6 +5724,23 @@ class ListScopesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   scopes = _messages.MessageField('Scope', 2, repeated=True)
+
+
+class ListSelectedMembershipsResponse(_messages.Message):
+  r"""List of Memberships matching the given cluster selector.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListMembershipsWithSelector` method. The value of an empty string means
+      that there are no more resources to return.
+    resources: The list of selected Memberships.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('Membership', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -8441,6 +8489,7 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -8450,6 +8499,7 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   implementation = _messages.EnumField('ImplementationValueValuesEnum', 2)
@@ -8516,6 +8566,7 @@ class ServiceMeshControlPlaneRevision(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -8525,6 +8576,7 @@ class ServiceMeshControlPlaneRevision(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the control plane revision.
@@ -8578,6 +8630,7 @@ class ServiceMeshDataPlaneManagement(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -8587,6 +8640,7 @@ class ServiceMeshDataPlaneManagement(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -8850,10 +8904,13 @@ class ServiceMeshMembershipSpec(_messages.Message):
         cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
+      MANAGEMENT_NOT_INSTALLED: Google should remove any managed Service Mesh
+        components from this cluster and deprovision any resources.
     """
     MANAGEMENT_UNSPECIFIED = 0
     MANAGEMENT_AUTOMATIC = 1
     MANAGEMENT_MANUAL = 2
+    MANAGEMENT_NOT_INSTALLED = 3
 
   configApi = _messages.EnumField('ConfigApiValueValuesEnum', 1)
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 2)
@@ -8941,6 +8998,7 @@ class ServiceMeshMeshConnectivity(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -8950,6 +9008,7 @@ class ServiceMeshMeshConnectivity(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -9250,10 +9309,12 @@ class VersionUpgrade(_messages.Message):
       TYPE_UNSPECIFIED: Default value.
       TYPE_CONTROL_PLANE: Control plane upgrade.
       TYPE_NODE_POOL: Node pool upgrade.
+      TYPE_CONFIG_SYNC: Config Sync upgrade.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_CONTROL_PLANE = 1
     TYPE_NODE_POOL = 2
+    TYPE_CONFIG_SYNC = 3
 
   desiredVersion = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -9326,24 +9387,24 @@ class WorkloadIdentityFeatureState(_messages.Message):
 
   Messages:
     NamespaceStateDetailsValue: The state of the IAM namespaces for the fleet.
-    NamespaceStatesValue: Deprecated, will erase after code is changed to use
-      the new field.
+    NamespaceStatesValue: Deprecated, this field will be erased after code is
+      changed to use the new field.
     WorkloadIdentityPoolStateDetailsValue: The state of the Workload Identity
       Pools for the fleet.
-    WorkloadIdentityPoolStatesValue: Deprecated, will erase after code is
-      changed to use the new field.
+    WorkloadIdentityPoolStatesValue: Deprecated, this field will be erased
+      after code is changed to use the new field.
 
   Fields:
     namespaceStateDetails: The state of the IAM namespaces for the fleet.
-    namespaceStates: Deprecated, will erase after code is changed to use the
-      new field.
+    namespaceStates: Deprecated, this field will be erased after code is
+      changed to use the new field.
     scopeTenancyWorkloadIdentityPool: The full name of the scope-tenancy pool
       for the fleet.
     workloadIdentityPool: The full name of the svc.id.goog pool for the fleet.
     workloadIdentityPoolStateDetails: The state of the Workload Identity Pools
       for the fleet.
-    workloadIdentityPoolStates: Deprecated, will erase after code is changed
-      to use the new field.
+    workloadIdentityPoolStates: Deprecated, this field will be erased after
+      code is changed to use the new field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -9374,7 +9435,8 @@ class WorkloadIdentityFeatureState(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NamespaceStatesValue(_messages.Message):
-    r"""Deprecated, will erase after code is changed to use the new field.
+    r"""Deprecated, this field will be erased after code is changed to use the
+    new field.
 
     Messages:
       AdditionalProperty: An additional property for a NamespaceStatesValue
@@ -9442,7 +9504,8 @@ class WorkloadIdentityFeatureState(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class WorkloadIdentityPoolStatesValue(_messages.Message):
-    r"""Deprecated, will erase after code is changed to use the new field.
+    r"""Deprecated, this field will be erased after code is changed to use the
+    new field.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -9529,25 +9592,25 @@ class WorkloadIdentityMembershipState(_messages.Message):
   feature.
 
   Enums:
-    StateValueValuesEnum: Output only. Deprecated, will erase after code is
-      changed to use the new field.
+    StateValueValuesEnum: Output only. Deprecated, this field will be erased
+      after code is changed to use the new field.
 
   Messages:
     IdentityProviderStateDetailsValue: The state of the Identity Providers
       corresponding to the membership.
 
   Fields:
-    description: Deprecated, will erase after code is changed to use the new
-      field.
+    description: Deprecated, this field will be erased after code is changed
+      to use the new field.
     identityProviderStateDetails: The state of the Identity Providers
       corresponding to the membership.
-    state: Output only. Deprecated, will erase after code is changed to use
-      the new field.
+    state: Output only. Deprecated, this field will be erased after code is
+      changed to use the new field.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Deprecated, will erase after code is changed to use the
-    new field.
+    r"""Output only. Deprecated, this field will be erased after code is
+    changed to use the new field.
 
     Values:
       IDENTITY_PROVIDER_STATE_UNSPECIFIED: Unknown state.

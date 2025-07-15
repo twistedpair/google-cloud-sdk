@@ -593,26 +593,11 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
   else:
     name = '--private-connection'
 
-  vpc_peering_config_parser = parser.add_group(required=True)
-
-  vpc_peering_config_parser.add_argument(
-      '--subnet',
-      help="""A free subnet for peering. (CIDR of /29).""",
-      required=True,
-  )
-
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
           name,
           GetPrivateConnectionResourceSpec(),
           'The private connection {}.'.format(verb),
-          required=True,
-      ),
-      presentation_specs.ResourcePresentationSpec(
-          '--vpc',
-          GetVpcResourceSpec(),
-          'Resource name of the private connection.',
-          group=vpc_peering_config_parser,
           required=True,
       ),
   ]

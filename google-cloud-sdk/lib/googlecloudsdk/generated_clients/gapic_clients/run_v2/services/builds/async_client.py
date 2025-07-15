@@ -52,8 +52,8 @@ class BuildsAsyncClient:
     _DEFAULT_ENDPOINT_TEMPLATE = BuildsClient._DEFAULT_ENDPOINT_TEMPLATE
     _DEFAULT_UNIVERSE = BuildsClient._DEFAULT_UNIVERSE
 
-    worker_pool_path = staticmethod(BuildsClient.worker_pool_path)
-    parse_worker_pool_path = staticmethod(BuildsClient.parse_worker_pool_path)
+    build_worker_pool_path = staticmethod(BuildsClient.build_worker_pool_path)
+    parse_build_worker_pool_path = staticmethod(BuildsClient.parse_build_worker_pool_path)
     common_billing_account_path = staticmethod(BuildsClient.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(BuildsClient.parse_common_billing_account_path)
     common_folder_path = staticmethod(BuildsClient.common_folder_path)

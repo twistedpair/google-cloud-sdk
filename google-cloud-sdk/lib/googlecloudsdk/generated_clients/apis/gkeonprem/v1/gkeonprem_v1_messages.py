@@ -2544,11 +2544,13 @@ class EnrollBareMetalClusterRequest(_messages.Message):
       Otherwise, it must match the object name of the bare metal cluster
       custom resource. It is not modifiable outside / beyond the enrollment
       operation.
+    localNamespace: Optional. The namespace of the cluster.
   """
 
   adminClusterMembership = _messages.StringField(1)
   bareMetalClusterId = _messages.StringField(2)
   localName = _messages.StringField(3)
+  localNamespace = _messages.StringField(4)
 
 
 class EnrollBareMetalNodePoolRequest(_messages.Message):
@@ -4299,6 +4301,13 @@ class GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest(_messages.Mes
     etag: The current etag of the VMware admin cluster. If an etag is provided
       and does not match the current etag of the cluster, deletion will be
       blocked and an ABORTED error will be returned.
+    ignoreErrors: Optional. If set to true, the unenrollment of a vmware admin
+      cluster resource will succeed even if errors occur during unenrollment.
+      This parameter can be used when you want to unenroll admin cluster
+      resource and the on-prem admin cluster is disconnected / unreachable.
+      WARNING: Using this parameter when your admin cluster still exists may
+      result in a deleted GCP admin cluster but existing resourcelink in on-
+      prem admin cluster and membership.
     name: Required. Name of the VMware admin cluster to be unenrolled. Format:
       "projects/{project}/locations/{location}/vmwareAdminClusters/{cluster}"
     validateOnly: Validate the request without actually doing any updates.
@@ -4306,8 +4315,9 @@ class GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest(_messages.Mes
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):

@@ -49,6 +49,7 @@ class AppengineV1alpha(base_api.BaseApiClient):
     self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
+    self.projects_locations_applications_authorizedCertificates = self.ProjectsLocationsApplicationsAuthorizedCertificatesService(self)
     self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
     self.projects_locations_applications_domainMappings = self.ProjectsLocationsApplicationsDomainMappingsService(self)
     self.projects_locations_applications_services_migration = self.ProjectsLocationsApplicationsServicesMigrationService(self)
@@ -1292,6 +1293,151 @@ class AppengineV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsApplicationsAuthorizedCertificatesService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_authorizedCertificates resource."""
+
+    _NAME = 'projects_locations_applications_authorizedCertificates'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.ProjectsLocationsApplicationsAuthorizedCertificatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Uploads the specified SSL certificate.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsAuthorizedCertificatesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizedCertificate) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/authorizedCertificates',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.authorizedCertificates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/authorizedCertificates',
+        request_field='authorizedCertificate',
+        request_type_name='AppengineProjectsLocationsApplicationsAuthorizedCertificatesCreateRequest',
+        response_type_name='AuthorizedCertificate',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified SSL certificate.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsAuthorizedCertificatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/authorizedCertificates/{authorizedCertificatesId}',
+        http_method='DELETE',
+        method_id='appengine.projects.locations.applications.authorizedCertificates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsAuthorizedCertificatesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified SSL certificate.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsAuthorizedCertificatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizedCertificate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/authorizedCertificates/{authorizedCertificatesId}',
+        http_method='GET',
+        method_id='appengine.projects.locations.applications.authorizedCertificates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsAuthorizedCertificatesGetRequest',
+        response_type_name='AuthorizedCertificate',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all SSL certificates the user is authorized to administer.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsAuthorizedCertificatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthorizedCertificatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/authorizedCertificates',
+        http_method='GET',
+        method_id='appengine.projects.locations.applications.authorizedCertificates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha/{+parent}/authorizedCertificates',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsAuthorizedCertificatesListRequest',
+        response_type_name='ListAuthorizedCertificatesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified SSL certificate. To renew a certificate and maintain its existing domain mappings, update certificate_data with a new certificate. The new certificate must be applicable to the same domains as the original certificate. The certificate display_name may also be updated.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsAuthorizedCertificatesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizedCertificate) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/authorizedCertificates/{authorizedCertificatesId}',
+        http_method='PATCH',
+        method_id='appengine.projects.locations.applications.authorizedCertificates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='authorizedCertificate',
+        request_type_name='AppengineProjectsLocationsApplicationsAuthorizedCertificatesPatchRequest',
+        response_type_name='AuthorizedCertificate',
+        supports_download=False,
+    )
+
   class ProjectsLocationsApplicationsAuthorizedDomainsService(base_api.BaseApiService):
     """Service class for the projects_locations_applications_authorizedDomains resource."""
 
@@ -1338,6 +1484,33 @@ class AppengineV1alpha(base_api.BaseApiClient):
       super(AppengineV1alpha.ProjectsLocationsApplicationsDomainMappingsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Maps a domain to an application. A user must be authorized to administer a domain in order to map it to an application. For a list of available authorized domains, see AuthorizedDomains.ListAuthorizedDomains.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsDomainMappingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/domainMappings',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.domainMappings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['noManagedCertificate', 'overrideStrategy'],
+        relative_path='v1alpha/{+parent}/domainMappings',
+        request_field='domainMapping',
+        request_type_name='AppengineProjectsLocationsApplicationsDomainMappingsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets the specified domain mapping.

@@ -310,7 +310,6 @@ def AddVolumeSnapshotDirectoryArg(parser):
       type=arg_parsers.ArgBoolean(
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
-      default='true',
       help="""Snapshot Directory if enabled (true) makes the Volume
             contain a read-only .snapshot directory which provides access
             to each of the volume's snapshots

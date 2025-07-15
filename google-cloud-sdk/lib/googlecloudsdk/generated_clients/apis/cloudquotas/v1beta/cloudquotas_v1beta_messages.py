@@ -15,11 +15,8 @@ from apitools.base.py import encoding
 package = 'cloudquotas'
 
 
-class CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
-    _messages.Message
-):
+class CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(_messages.Message):
   r"""A CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettin
-
   gsRequest object.
 
   Fields:
@@ -30,11 +27,8 @@ class CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRe
   name = _messages.StringField(1, required=True)
 
 
-class CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
-    _messages.Message
-):
+class CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(_messages.Message):
   r"""A CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSet
-
   tingsRequest object.
 
   Fields:
@@ -223,11 +217,8 @@ class CloudquotasFoldersLocationsServicesQuotaInfosListRequest(_messages.Message
   parent = _messages.StringField(3, required=True)
 
 
-class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(
-    _messages.Message
-):
+class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(_messages.Message):
   r"""A CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjuster
-
   SettingsRequest object.
 
   Fields:
@@ -238,11 +229,8 @@ class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSett
   name = _messages.StringField(1, required=True)
 
 
-class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(
-    _messages.Message
-):
+class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest(_messages.Message):
   r"""A CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjus
-
   terSettingsRequest object.
 
   Fields:
@@ -757,7 +745,6 @@ class OperationMetadata(_messages.Message):
 
 class QuotaAdjusterSettings(_messages.Message):
   r"""The QuotaAdjusterSettings resource defines the settings for the Quota
-
   Adjuster.
 
   Enums:

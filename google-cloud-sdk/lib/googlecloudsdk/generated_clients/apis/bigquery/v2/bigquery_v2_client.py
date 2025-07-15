@@ -811,6 +811,33 @@ class BigqueryV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (BigqueryRoutinesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigquery.routines.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigqueryRoutinesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates information in an existing routine. The update method replaces the entire Routine resource.
 

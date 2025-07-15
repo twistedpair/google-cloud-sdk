@@ -43,6 +43,7 @@ SERVICE_MAX_SURGE_ANNOTATION = 'run.googleapis.com/max-surge'
 SERVICE_MAX_UNAVAILABLE_ANNOTATION = 'run.googleapis.com/max-unavailable'
 SERVICE_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
+PRESETS_ANNOTATION = 'run.googleapis.com/presets'
 RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION = (
     'run.googleapis.com/build-source-location'
 )

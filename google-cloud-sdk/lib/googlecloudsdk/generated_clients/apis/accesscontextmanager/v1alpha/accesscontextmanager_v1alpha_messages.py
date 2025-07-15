@@ -64,13 +64,10 @@ class AccessLevelFeatures(_messages.Message):
     hasAmendableConditions: Output only. Indicates whether there is a
       amendable response defined within access level conditions. Set to false
       if deny is the only configured result for all conditions.
-    hasRemediations: Output only. Deprecated field that needs to be cleaned up
-      after Pantheon validation.
   """
 
   canBeNested = _messages.BooleanField(1)
   hasAmendableConditions = _messages.BooleanField(2)
-  hasRemediations = _messages.BooleanField(3)
 
 
 class AccessPolicy(_messages.Message):
@@ -2599,8 +2596,6 @@ class UnsatisfiedResult(_messages.Message):
       successful user reauthentication may resolve a failing risk condition. -
       It applies only when result_type == AMENDABLE. - Only a single amendment
       i.e. "responses.reauthRequired" is allowed today.
-    remediations: Deprecated field that needs to be cleaned up after Pantheon
-      validation.
     resultType: The type of result to apply if the condition is not met.
   """
 
@@ -2609,32 +2604,14 @@ class UnsatisfiedResult(_messages.Message):
 
     Values:
       DENY: Default type of result.
-      REMEDIATION: Deprecated field that needs to be cleaned up after Pantheon
-        validation.
       AMENDABLE: The result is amendable. Currently, the only supported
         amendable is reauth.
     """
     DENY = 0
-    REMEDIATION = 1
-    AMENDABLE = 2
+    AMENDABLE = 1
 
   amendments = _messages.StringField(1, repeated=True)
-  remediations = _messages.StringField(2, repeated=True)
-  resultType = _messages.EnumField('ResultTypeValueValuesEnum', 3)
-
-
-class UnsupportedServicesOptions(_messages.Message):
-  r"""Specifies private access paths that the restriction applies to for
-  unsupported services. Currently, only "private.googleapis.com" is supported.
-  If empty, the VPC accessible services restriction will not be guaranteed for
-  unsupported services.
-
-  Fields:
-    restrictedAccessPaths: The list of private access paths that the
-      restriction applies to for unsupported services.
-  """
-
-  restrictedAccessPaths = _messages.StringField(1, repeated=True)
+  resultType = _messages.EnumField('ResultTypeValueValuesEnum', 2)
 
 
 class UserManagedRisk(_messages.Message):
@@ -2651,6 +2628,9 @@ class VpcAccessibleServices(_messages.Message):
   r"""Specifies how APIs are allowed to communicate within the Service
   Perimeter.
 
+  Enums:
+    ServicePatternsEnforcementScopesValueListEntryValuesEnum:
+
   Fields:
     allowedServicePatterns: Specifies which Google services are allowed to be
       accessed from VPC networks in the service perimeter.
@@ -2661,14 +2641,28 @@ class VpcAccessibleServices(_messages.Message):
       protected by the perimeter.
     enableRestriction: Whether to restrict API calls within the Service
       Perimeter to the list of APIs specified in 'allowed_services'.
-    unsupportedServicesOptions: Specifies which private access paths the
-      restriction applies to for unsupported services.
+    servicePatternsEnforcementScopes: Defines the enforcement scopes of
+      service patterns.
   """
+
+  class ServicePatternsEnforcementScopesValueListEntryValuesEnum(_messages.Enum):
+    r"""ServicePatternsEnforcementScopesValueListEntryValuesEnum enum type.
+
+    Values:
+      SERVICE_PATTERNS_ENFORCEMENT_SCOPE_UNSPECIFIED: Default value. This can
+        not be used.
+      GOOGLE_APIS_VIA_PRIVATE_PATH: Enables VPC Accessible Services
+        enforcement for all APIs (including unsupported APIs) for Private
+        Google Access configured with Private VIP and Private Service Connect
+        Endpoint for Global Google APIs that uses 'all-apis' bundle.
+    """
+    SERVICE_PATTERNS_ENFORCEMENT_SCOPE_UNSPECIFIED = 0
+    GOOGLE_APIS_VIA_PRIVATE_PATH = 1
 
   allowedServicePatterns = _messages.MessageField('ServicePattern', 1, repeated=True)
   allowedServices = _messages.StringField(2, repeated=True)
   enableRestriction = _messages.BooleanField(3)
-  unsupportedServicesOptions = _messages.MessageField('UnsupportedServicesOptions', 4)
+  servicePatternsEnforcementScopes = _messages.EnumField('ServicePatternsEnforcementScopesValueListEntryValuesEnum', 4, repeated=True)
 
 
 class VpcNetworkSource(_messages.Message):

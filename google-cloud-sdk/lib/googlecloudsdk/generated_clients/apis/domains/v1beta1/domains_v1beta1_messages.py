@@ -1814,10 +1814,10 @@ class Policy(_messages.Message):
 
 
 class PostalAddress(_messages.Message):
-  r"""Represents a postal address (for example, for postal delivery or
-  payments addresses). Given a postal address, a postal service can deliver
-  items to a premise, P.O. box or similar. It is not intended to model
-  geographical locations (roads, towns, mountains). In typical usage, an
+  r"""Represents a postal address, such as for postal delivery or payments
+  addresses. With a postal address, a postal service can deliver items to a
+  premise, P.O. box, or similar. A postal address is not intended to model
+  geographical locations like roads, towns, or mountains. In typical usage, an
   address would be created by user input or from importing existing data,
   depending on the type of process. Advice on address input or editing: - Use
   an internationalization-ready address widget such as
@@ -2232,12 +2232,18 @@ class Registration(_messages.Message):
         If the configuration is incorrect, you must fix it. If the
         configuration is correct, either wait or call the ConfigureDnsSettings
         method to retry the registry validation.
+      AUTO_RENEWAL_UPDATE_NOT_EFFECTIVE: Due to SquareSpace's constraints, the
+        auto-renewal update you made may not be effective during a certain
+        period of time. Generally, the time period is 15 days before
+        expiration for generic TLD domains, and 15 days before expiration + 3
+        days after expiration for country-code TLD domains.
     """
     ISSUE_UNSPECIFIED = 0
     CONTACT_SUPPORT = 1
     UNVERIFIED_EMAIL = 2
     PROBLEM_WITH_BILLING = 3
     DNS_NOT_ACTIVATED = 4
+    AUTO_RENEWAL_UPDATE_NOT_EFFECTIVE = 5
 
   class RegisterFailureReasonValueValuesEnum(_messages.Enum):
     r"""Output only. The reason the domain registration failed. Only set for

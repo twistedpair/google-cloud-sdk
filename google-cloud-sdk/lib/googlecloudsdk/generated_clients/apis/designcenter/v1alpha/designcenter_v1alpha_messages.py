@@ -76,6 +76,7 @@ class Application(_messages.Message):
     attributes: Optional. Attributes of the application.
     componentParameters: Optional. A list of component parameters to associate
       with the application.
+    connectionConfigs: Optional. Connection configuration for the application.
     createTime: Output only. Create timestamp.
     deploymentMetadata: Output only. Deployment metadata of the application.
     deploymentProject: Optional. Deployment project of the application.
@@ -131,24 +132,25 @@ class Application(_messages.Message):
   apphubApplication = _messages.StringField(2)
   attributes = _messages.MessageField('Attributes', 3)
   componentParameters = _messages.MessageField('ComponentParameters', 4, repeated=True)
-  createTime = _messages.StringField(5)
-  deploymentMetadata = _messages.MessageField('DeploymentMetadata', 6)
-  deploymentProject = _messages.StringField(7)
-  deploymentRegion = _messages.StringField(8)
-  deploymentRevision = _messages.StringField(9)
-  description = _messages.StringField(10)
-  displayName = _messages.StringField(11)
-  importExistingResources = _messages.BooleanField(12)
-  name = _messages.StringField(13)
-  previewReference = _messages.StringField(14)
-  projectParameters = _messages.MessageField('ProjectParameters', 15, repeated=True)
-  scope = _messages.MessageField('Scope', 16)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 17)
-  serviceAccount = _messages.StringField(18)
-  source = _messages.MessageField('DeploymentSource', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  updateTime = _messages.StringField(21)
-  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 22)
+  connectionConfigs = _messages.MessageField('ConnectionConfig', 5, repeated=True)
+  createTime = _messages.StringField(6)
+  deploymentMetadata = _messages.MessageField('DeploymentMetadata', 7)
+  deploymentProject = _messages.StringField(8)
+  deploymentRegion = _messages.StringField(9)
+  deploymentRevision = _messages.StringField(10)
+  description = _messages.StringField(11)
+  displayName = _messages.StringField(12)
+  importExistingResources = _messages.BooleanField(13)
+  name = _messages.StringField(14)
+  previewReference = _messages.StringField(15)
+  projectParameters = _messages.MessageField('ProjectParameters', 16, repeated=True)
+  scope = _messages.MessageField('Scope', 17)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 18)
+  serviceAccount = _messages.StringField(19)
+  source = _messages.MessageField('DeploymentSource', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
+  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 23)
 
 
 class ApplicationOperationMetadata(_messages.Message):
@@ -537,6 +539,8 @@ class Component(_messages.Message):
   Fields:
     apis: Output only. APIs required to be enabled to deploy the component, in
       the form of "*.googleapis.com".
+    connectionsParameters: Output only. The connection parameters of the
+      component.
     createTime: Output only.
     displayName: Optional. The component display name.
     name: Identifier. The component name.
@@ -549,13 +553,14 @@ class Component(_messages.Message):
   """
 
   apis = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  parameters = _messages.MessageField('Parameter', 5, repeated=True)
-  roles = _messages.StringField(6, repeated=True)
-  sharedTemplateRevisionUri = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  connectionsParameters = _messages.MessageField('ConnectionParameters', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  parameters = _messages.MessageField('Parameter', 6, repeated=True)
+  roles = _messages.StringField(7, repeated=True)
+  sharedTemplateRevisionUri = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ComponentOutputParameters(_messages.Message):
@@ -578,8 +583,7 @@ class ComponentParameters(_messages.Message):
 
   Fields:
     component: Required. The name of the component parameter.
-    connectionsParameters: Optional. A list of connections associated with the
-      component.
+    connectionsParameters: Output only.
     parameters: Optional. A list of parameters associated with the component.
     state: Output only. Deployment state of the component.
   """
@@ -617,18 +621,40 @@ class Connection(_messages.Message):
 
   Fields:
     createTime: Output only. The connection creation timestamp.
+    destinationComponentParameters: Optional. The parameters of the connection
+      associated with the destination component.
     destinationComponentUri: Required. The destination component URI used to
       generate the connection.
     name: Identifier. The connection name.
-    parameters: Optional. The connection parameters.
+    parameters: Optional.
+    sourceComponentParameters: Optional. The parameters of the connection
+      associated with the source component.
     updateTime: Output only. The connection update timestamp.
   """
 
   createTime = _messages.StringField(1)
-  destinationComponentUri = _messages.StringField(2)
-  name = _messages.StringField(3)
-  parameters = _messages.MessageField('Parameter', 4, repeated=True)
-  updateTime = _messages.StringField(5)
+  destinationComponentParameters = _messages.MessageField('Parameter', 2, repeated=True)
+  destinationComponentUri = _messages.StringField(3)
+  name = _messages.StringField(4)
+  parameters = _messages.MessageField('Parameter', 5, repeated=True)
+  sourceComponentParameters = _messages.MessageField('Parameter', 6, repeated=True)
+  updateTime = _messages.StringField(7)
+
+
+class ConnectionConfig(_messages.Message):
+  r"""Connection configuration for the application.
+
+  Fields:
+    connectionUri: Required. The connection URI.
+    destinationComponentParameters: Optional. The parameters of the connection
+      associated with the destination component.
+    sourceComponentParameters: Optional. The parameters of the connection
+      associated with the source component.
+  """
+
+  connectionUri = _messages.StringField(1)
+  destinationComponentParameters = _messages.MessageField('Parameter', 2, repeated=True)
+  sourceComponentParameters = _messages.MessageField('Parameter', 3, repeated=True)
 
 
 class ConnectionParameters(_messages.Message):
@@ -702,9 +728,33 @@ class DeployApplicationRequest(_messages.Message):
     replace: Optional. Flag to update the existing deployment. If not set or
       false, deploy will fail if application `state` is in the `DEPLOYED`
       state.
+    workerPool: Optional. The user-specified Worker Pool resource in which the
+      Cloud Build job will execute. Format
+      projects/{project}/locations/{location}/workerPools/{workerPoolId} If
+      this field is unspecified, the default Cloud Build worker pool will be
+      used. If omitted and application resource ref provided has worker_pool
+      defined, that worker pool is used.
   """
 
   replace = _messages.BooleanField(1)
+  workerPool = _messages.StringField(2)
+
+
+class DeploymentAttemptMetadata(_messages.Message):
+  r"""DeploymentAttemptMetadata represents a previous deployment attempt for
+  an operation that failed due to a retryable error.
+
+  Fields:
+    attempt: The sequential number of the attempt (starting from 1).
+    build: The build or execution ID associated with this specific attempt.
+      This can be used to link back to logs or trace information.
+    errorDetail: Human readable string that summarizes the deployment error
+      issue.
+  """
+
+  attempt = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  build = _messages.StringField(2)
+  errorDetail = _messages.StringField(3)
 
 
 class DeploymentError(_messages.Message):
@@ -723,6 +773,9 @@ class DeploymentError(_messages.Message):
       associated with the deployment issue.
     detail: Output only. Human readable string that summarizes the deployment
       error issue.
+    errorMessage: Output only. Stores errors generated by Infra Manager, as
+      well as all the non-internal errors (e.g., INVALID_ARGUMENT) that occur
+      before initiating the deployment.
     tfErrors: Output only. The error message associated with the deployment.
     type: Output only. The error type based on the deployment error code.
   """
@@ -786,8 +839,9 @@ class DeploymentError(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   deploymentFailureResolutionInfo = _messages.MessageField('DeploymentFailureResolutionInfo', 2, repeated=True)
   detail = _messages.StringField(3)
-  tfErrors = _messages.MessageField('TerraformError', 4, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  errorMessage = _messages.StringField(4)
+  tfErrors = _messages.MessageField('TerraformError', 5, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class DeploymentFailureResolutionInfo(_messages.Message):
@@ -813,14 +867,21 @@ class DeploymentMetadata(_messages.Message):
     componentOutputParameters: Output only. The component output parameters of
       the deployment.
     error: Output only. The error associated with the deployment.
+    retryAttempts: Output only. The attempted number of retry in the
+      deployment.
     revision: Output only. The revision of the deployment associated with the
       Application.
+    workerPool: Output only. The user-specified Cloud Build worker pool
+      resource used for application deployment. Format:
+      `projects/{project}/locations/{location}/workerPools/{workerPoolId}`.
   """
 
   build = _messages.StringField(1)
   componentOutputParameters = _messages.MessageField('ComponentOutputParameters', 2, repeated=True)
   error = _messages.MessageField('DeploymentError', 3)
-  revision = _messages.StringField(4)
+  retryAttempts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(5)
+  workerPool = _messages.StringField(6)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -835,6 +896,7 @@ class DeploymentOperationMetadata(_messages.Message):
       `gs://{bucket}/{object}` format.
     deploymentStep: Output only. The current step of the deployment. This will
       mimic the DeploymentStep enum in the deployment proto.
+    previousAttempt: Previous deployment attempt metadata.
     resources: Details of the Resourcess in the deployment.
   """
 
@@ -842,7 +904,8 @@ class DeploymentOperationMetadata(_messages.Message):
   deploymentBuild = _messages.StringField(2)
   deploymentLogs = _messages.StringField(3)
   deploymentStep = _messages.StringField(4)
-  resources = _messages.MessageField('Resource', 5, repeated=True)
+  previousAttempt = _messages.MessageField('DeploymentAttemptMetadata', 5)
+  resources = _messages.MessageField('Resource', 6, repeated=True)
 
 
 class DeploymentSource(_messages.Message):
@@ -1558,6 +1621,24 @@ class DesigncenterProjectsLocationsSpacesCatalogsSharesSyncRequest(_messages.Mes
   syncShareRequest = _messages.MessageField('SyncShareRequest', 2)
 
 
+class DesigncenterProjectsLocationsSpacesCatalogsTemplatesCreateRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesCatalogsTemplatesCreateRequest
+  object.
+
+  Fields:
+    catalogTemplate: A CatalogTemplate resource to be passed as the request
+      body.
+    catalogTemplateId: Required. The ID of the catalog template to create. The
+      ID is appended to the catalog template's name.
+    parent: Required. The parent resource in which the catalog template is
+      created.
+  """
+
+  catalogTemplate = _messages.MessageField('CatalogTemplate', 1)
+  catalogTemplateId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DesigncenterProjectsLocationsSpacesCatalogsTemplatesDeleteRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsSpacesCatalogsTemplatesDeleteRequest
   object.
@@ -1610,6 +1691,47 @@ class DesigncenterProjectsLocationsSpacesCatalogsTemplatesListRequest(_messages.
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DesigncenterProjectsLocationsSpacesCatalogsTemplatesPatchRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesCatalogsTemplatesPatchRequest
+  object.
+
+  Fields:
+    catalogTemplate: A CatalogTemplate resource to be passed as the request
+      body.
+    name: Identifier. The catalog template name in following format: projects/
+      $project/locations/$location/spaces/$space/catalogs/$catalog/templates/$
+      template
+    updateMask: Optional. The fields to overwrite in the catalog template
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If you don't provide a mask, all fields are overwritten.
+  """
+
+  catalogTemplate = _messages.MessageField('CatalogTemplate', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DesigncenterProjectsLocationsSpacesCatalogsTemplatesRevisionsCreateRequest(_messages.Message):
+  r"""A
+  DesigncenterProjectsLocationsSpacesCatalogsTemplatesRevisionsCreateRequest
+  object.
+
+  Fields:
+    catalogTemplateRevision: A CatalogTemplateRevision resource to be passed
+      as the request body.
+    catalogTemplateRevisionId: Required. The ID of the template revision to
+      create.
+    parent: Required. The parent in which the catalog template revisions
+      request is created in following format:
+      projects/$project/locations/$location/spaces/$space/templates/$template
+  """
+
+  catalogTemplateRevision = _messages.MessageField('CatalogTemplateRevision', 1)
+  catalogTemplateRevisionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DesigncenterProjectsLocationsSpacesCatalogsTemplatesRevisionsDeleteRequest(_messages.Message):
@@ -1681,7 +1803,8 @@ class DesigncenterProjectsLocationsSpacesDeleteRequest(_messages.Message):
   r"""A DesigncenterProjectsLocationsSpacesDeleteRequest object.
 
   Fields:
-    force: Optional. This field is not used. If passed, it will be ignored.
+    force: Optional. If set to true, the space's children are also deleted. If
+      false, the space is only deleted if it has no children.
     name: Required. The space name.
   """
 
@@ -1881,6 +2004,42 @@ class DeveloperConnectConfig(_messages.Message):
   """
 
   gitRepositoryLink = _messages.StringField(1)
+
+
+class DisplayVariableToggle(_messages.Message):
+  r"""Display variable toggle.
+
+  Enums:
+    VariableTypeValueValuesEnum: Output only. The type of the variable used to
+      toggle the display of another variable.
+
+  Fields:
+    variable: Output only. The name of the variable used to toggle the display
+      of another variable.
+    variableType: Output only. The type of the variable used to toggle the
+      display of another variable.
+    variableValues: Output only. The value of the variable used to toggle the
+      display of another variable.
+  """
+
+  class VariableTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the variable used to toggle the display of
+    another variable.
+
+    Values:
+      TOGGLE_VARIABLE_TYPE_UNSPECIFIED: Default
+      TOGGLE_VARIABLE_TYPE_BOOLEAN: Boolean
+      TOGGLE_VARIABLE_TYPE_STRING: String
+      TOGGLE_VARIABLE_TYPE_INTEGER: Integer
+    """
+    TOGGLE_VARIABLE_TYPE_UNSPECIFIED = 0
+    TOGGLE_VARIABLE_TYPE_BOOLEAN = 1
+    TOGGLE_VARIABLE_TYPE_STRING = 2
+    TOGGLE_VARIABLE_TYPE_INTEGER = 3
+
+  variable = _messages.StringField(1)
+  variableType = _messages.EnumField('VariableTypeValueValuesEnum', 2)
+  variableValues = _messages.StringField(3, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -2599,7 +2758,18 @@ class Policy(_messages.Message):
 
 
 class PreviewApplicationRequest(_messages.Message):
-  r"""Message for deploying an application."""
+  r"""Message for deploying an application.
+
+  Fields:
+    workerPool: Optional. The user-specified Worker Pool resource in which the
+      Cloud Build job will execute. Format
+      projects/{project}/locations/{location}/workerPools/{workerPoolId} If
+      this field is unspecified, the default Cloud Build worker pool will be
+      used. If omitted and application resource ref provided has worker_pool
+      defined, that worker pool is used.
+  """
+
+  workerPool = _messages.StringField(1)
 
 
 class PreviewOperationMetadata(_messages.Message):
@@ -2762,6 +2932,8 @@ class SerializedComponent(_messages.Message):
     apis: Optional. APIs required to be enabled to deploy the component, in
       the form of "*.googleapis.com".
     connections: Optional. The component connections.
+    connectionsParameters: Output only. The connection parameters of the
+      component.
     displayName: Optional. The component display name.
     parameters: Optional. The component parameters.
     roles: Optional. IAM roles required by the service account to deploy the
@@ -2773,26 +2945,33 @@ class SerializedComponent(_messages.Message):
 
   apis = _messages.StringField(1, repeated=True)
   connections = _messages.MessageField('SerializedConnection', 2, repeated=True)
-  displayName = _messages.StringField(3)
-  parameters = _messages.MessageField('Parameter', 4, repeated=True)
-  roles = _messages.StringField(5, repeated=True)
-  sharedTemplateRevisionUri = _messages.StringField(6)
-  uri = _messages.StringField(7)
+  connectionsParameters = _messages.MessageField('ConnectionParameters', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  parameters = _messages.MessageField('Parameter', 5, repeated=True)
+  roles = _messages.StringField(6, repeated=True)
+  sharedTemplateRevisionUri = _messages.StringField(7)
+  uri = _messages.StringField(8)
 
 
 class SerializedConnection(_messages.Message):
   r"""Serialized connection.
 
   Fields:
+    destinationComponentParameters: Optional. The parameters of the connection
+      associated with the destination component.
     destinationComponentUri: Optional. The destination component URI used to
       generate the connection.
-    parameters: Optional. The connection parameters.
+    parameters: Optional.
+    sourceComponentParameters: Optional. The parameters of the connection
+      associated with the source component.
     uri: Optional. The connection URI.
   """
 
-  destinationComponentUri = _messages.StringField(1)
-  parameters = _messages.MessageField('Parameter', 2, repeated=True)
-  uri = _messages.StringField(3)
+  destinationComponentParameters = _messages.MessageField('Parameter', 1, repeated=True)
+  destinationComponentUri = _messages.StringField(2)
+  parameters = _messages.MessageField('Parameter', 3, repeated=True)
+  sourceComponentParameters = _messages.MessageField('Parameter', 4, repeated=True)
+  uri = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2936,6 +3115,19 @@ class Space(_messages.Message):
     displayName: Optional. Display name for the space.
     enableGcpSharedTemplates: Optional. Flag to enable Google opinionated
       shared templates.
+    gcsBucket: Optional. The user-specified Google Cloud Storage bucket for
+      the space. This bucket will be used while setting up ADC If not
+      provided, a default bucket will be created. Format: , name of an already
+      existing cloud storage bucket In case Cloud Storage bucket URI is
+      gs://mvedant-adc-ff-test-5-us-central1-adc, user needs to provide only
+      bucket name that is mvedant-adc-ff-test-5-us-central1-adc. User can only
+      provide name of buckets that exist in Cloud Storage In case user
+      provides a bucket name that does not exist, the request will fail with
+      an INVALID_ARGUMENT error. In case user does not have access to the
+      provided bucket's metadata then the request will fail with a
+      PERMISSION_DENIED error. In case user provides a bucket that is not in
+      the same project as the Space, then the request will fail with an
+      INVALID_ARGUMENT error.
     name: Identifier. The space name.
     updateTime: Output only. Space update timestamp
   """
@@ -2944,8 +3136,9 @@ class Space(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   enableGcpSharedTemplates = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  gcsBucket = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3227,6 +3420,10 @@ class TerraformUiInput(_messages.Message):
 class TerraformUiInputDisplayVariable(_messages.Message):
   r"""Terraform blueprint UI input display variable.
 
+  Messages:
+    PropertiesValue: Output only. properties is a map defining all the fields
+      of the input variable.
+
   Fields:
     alternateDefaults: Output only. Alternate defaults for the input.
     displayName: Output only. Display name of the input.
@@ -3239,13 +3436,43 @@ class TerraformUiInputDisplayVariable(_messages.Message):
       to level 1 by the UI implementation. Optional.
     max: Output only. Maximum value for numeric types.
     min: Output only. Minimum value for numeric types.
+    properties: Output only. properties is a map defining all the fields of
+      the input variable.
     regexValidation: Output only. Regex based validation rules for the
       variable.
+    subtext: Output only. Property subtext, displayed below the title.
     title: Output only. Title of the input.
+    toggleUsingVariables: Output only. Variables used to toggle the display of
+      another variable.
     validation: Output only. Text describing the validation rules for the
       property. Typically shown after an invalid input. Optional. UTF-8 text.
       No markup. At most 128 characters.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Output only. properties is a map defining all the fields of the input
+    variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TerraformUiInputDisplayVariable attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TerraformUiInputDisplayVariable', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   alternateDefaults = _messages.MessageField('AlternateDefault', 1, repeated=True)
   displayName = _messages.StringField(2)
@@ -3253,9 +3480,12 @@ class TerraformUiInputDisplayVariable(_messages.Message):
   level = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   max = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
   min = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
-  regexValidation = _messages.StringField(7)
-  title = _messages.StringField(8)
-  validation = _messages.StringField(9)
+  properties = _messages.MessageField('PropertiesValue', 7)
+  regexValidation = _messages.StringField(8)
+  subtext = _messages.StringField(9)
+  title = _messages.StringField(10)
+  toggleUsingVariables = _messages.MessageField('DisplayVariableToggle', 11, repeated=True)
+  validation = _messages.StringField(12)
 
 
 class TerraformUiOutput(_messages.Message):

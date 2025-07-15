@@ -307,6 +307,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}',
+        http_method='PATCH',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='autonomousDatabase',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restart(self, request, global_params=None):
       r"""Restarts an Autonomous Database.
 

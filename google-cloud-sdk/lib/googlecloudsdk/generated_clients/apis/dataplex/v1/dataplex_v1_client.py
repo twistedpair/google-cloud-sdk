@@ -15,7 +15,7 @@ class DataplexV1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://dataplex.mtls.googleapis.com/'
 
   _PACKAGE = 'dataplex'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = 'v1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'
@@ -394,29 +394,29 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListOperations(self, request, global_params=None):
+    def List(self, request, global_params=None):
       r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.
 
       Args:
-        request: (DataplexOrganizationsLocationsOperationsListOperationsRequest) input message
+        request: (DataplexOrganizationsLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleLongrunningListOperationsResponse) The response message.
       """
-      config = self.GetMethodConfig('ListOperations')
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    ListOperations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations',
         http_method='GET',
-        method_id='dataplex.organizations.locations.operations.listOperations',
+        method_id='dataplex.organizations.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}',
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name='DataplexOrganizationsLocationsOperationsListOperationsRequest',
+        request_type_name='DataplexOrganizationsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )

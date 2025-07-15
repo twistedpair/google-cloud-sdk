@@ -22,6 +22,9 @@ from googlecloudsdk.api_lib.util import waiter
 _LIST_REQUEST_BATCH_SIZE_ATTRIBUTE = 'pageSize'
 _VARIANT_STORAGE_STRATEGY_LABEL_KEY = 'configdelivery-variant-storage-strategy'
 _VARIANT_STORAGE_STRATEGY_LABEL_VALUE_NESTED = 'nested'
+_SKIP_CREATING_VARIANT_RESOURCES_LABEL_KEY = 'configdelivery-skip-creating-variant-resources'
+_SKIP_CREATING_VARIANT_RESOURCES_LABEL_VALUE = 'true'
+
 
 RELEASE_COLLECTION = 'configdelivery.projects.locations.resourceBundles.releases'
 
@@ -91,6 +94,7 @@ class ReleasesClient(object):
       location,
       lifecycle=None,
       variants=None,
+      skip_creating_variant_resources=False,
   ):
     """Create Release for a ResourceBundle.
 
@@ -101,6 +105,8 @@ class ReleasesClient(object):
       location: Valid GCP location (e.g., uc-central1)
       lifecycle: Lifecycle of the Release.
       variants: Variants of the Release.
+      skip_creating_variant_resources: Whether to use the crane upload strategy
+        to upload variant images.
 
     Returns:
       Created Release resource.
@@ -126,6 +132,13 @@ class ReleasesClient(object):
             )
         ]
     )
+    if skip_creating_variant_resources:
+      labels.additionalProperties.append(
+          self.messages.Release.LabelsValue.AdditionalProperty(
+              key=_SKIP_CREATING_VARIANT_RESOURCES_LABEL_KEY,
+              value=_SKIP_CREATING_VARIANT_RESOURCES_LABEL_VALUE,
+          )
+      )
     release = self.messages.Release(
         name=fully_qualified_path,
         labels=labels,

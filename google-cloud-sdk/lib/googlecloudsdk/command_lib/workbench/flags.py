@@ -217,8 +217,13 @@ def GetReservationTypeMapper(messages):
   )
 
 
-def AddCreateInstanceFlags(parser):
-  """Construct groups and arguments specific to the instance creation."""
+def AddCreateInstanceFlags(support_managed_euc, parser):
+  """Construct groups and arguments specific to the instance creation.
+
+  Args:
+    support_managed_euc: Whether to support managed euc.
+    parser: The parser to add the flags to.
+  """
   accelerator_choices = [
       'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
       'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
@@ -294,7 +299,7 @@ def AddCreateInstanceFlags(parser):
           'The ID of the Google Cloud project that this VM image belongs to. '
           'Format: projects/`{project_id}`.'
       ),
-      default='deeplearning-platform-release',
+      default='cloud-notebooks-managed',
   )
   vm_mutex_group = vm_source_group.add_group(mutex=True, required=True)
   vm_mutex_group.add_argument(
@@ -561,6 +566,19 @@ def AddCreateInstanceFlags(parser):
           ' for third party identity.'
       ),
   )
+
+  if support_managed_euc:
+    parser.add_argument(
+        '--enable-managed-euc',
+        hidden=True,
+        action='store_true',
+        dest='enable_managed_euc',
+        help=(
+            'If true, the notebook instance will be created with managed end'
+            '  user credentials enabled.'
+        ),
+    )
+
   parser.add_argument(
       '--labels',
       help=(

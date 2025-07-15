@@ -60,6 +60,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.globalOperations = self.GlobalOperationsService(self)
     self.globalOrganizationOperations = self.GlobalOrganizationOperationsService(self)
     self.globalPublicDelegatedPrefixes = self.GlobalPublicDelegatedPrefixesService(self)
+    self.haControllers = self.HaControllersService(self)
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
@@ -166,6 +167,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.wireGroups = self.WireGroupsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zoneQueuedResources = self.ZoneQueuedResourcesService(self)
+    self.zoneVmExtensionPolicies = self.ZoneVmExtensionPoliciesService(self)
     self.zones = self.ZonesService(self)
 
   class AcceleratorTypesService(base_api.BaseApiService):
@@ -4768,6 +4770,42 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/global/publicDelegatedPrefixes/{publicDelegatedPrefix}',
         request_field='publicDelegatedPrefixResource',
         request_type_name='ComputeGlobalPublicDelegatedPrefixesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class HaControllersService(base_api.BaseApiService):
+    """Service class for the haControllers resource."""
+
+    _NAME = 'haControllers'
+
+    def __init__(self, client):
+      super(ComputeAlpha.HaControllersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Failover(self, request, global_params=None):
+      r"""Fails over a VM targeted by the specified HaController to the selected zone.
+
+      Args:
+        request: (ComputeHaControllersFailoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Failover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Failover.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.haControllers.failover',
+        ordered_params=['project', 'region', 'haController'],
+        path_params=['haController', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/haControllers/{haController}/failover',
+        request_field='haControllersFailoverRequest',
+        request_type_name='ComputeHaControllersFailoverRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -28761,6 +28799,146 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeZoneQueuedResourcesListRequest',
         response_type_name='QueuedResourceList',
+        supports_download=False,
+    )
+
+  class ZoneVmExtensionPoliciesService(base_api.BaseApiService):
+    """Service class for the zoneVmExtensionPolicies resource."""
+
+    _NAME = 'zoneVmExtensionPolicies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ZoneVmExtensionPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specified zone VM extension policy.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.zoneVmExtensionPolicies.delete',
+        ordered_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        path_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{zoneVmExtensionPolicy}',
+        request_field='',
+        request_type_name='ComputeZoneVmExtensionPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves details of a specific zone VM extension policy.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ZoneVmExtensionPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.zoneVmExtensionPolicies.get',
+        ordered_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        path_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{zoneVmExtensionPolicy}',
+        request_field='',
+        request_type_name='ComputeZoneVmExtensionPoliciesGetRequest',
+        response_type_name='ZoneVmExtensionPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new zone-level VM extension policy within a project.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.zoneVmExtensionPolicies.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies',
+        request_field='zoneVmExtensionPolicy',
+        request_type_name='ComputeZoneVmExtensionPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all VM extension policies within a specific zone for a project.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ZoneVmExtensionPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.zoneVmExtensionPolicies.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies',
+        request_field='',
+        request_type_name='ComputeZoneVmExtensionPoliciesListRequest',
+        response_type_name='ZoneVmExtensionPolicyList',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Modifies an existing zone VM extension policy.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.zoneVmExtensionPolicies.update',
+        ordered_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        path_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{zoneVmExtensionPolicy}',
+        request_field='zoneVmExtensionPolicyResource',
+        request_type_name='ComputeZoneVmExtensionPoliciesUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

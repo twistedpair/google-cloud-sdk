@@ -131,6 +131,18 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'applicationsId'],
       True
   )
+  PROJECTS_LOCATIONS_APPLICATIONS_AUTHORIZEDCERTIFICATES = (
+      'projects.locations.applications.authorizedCertificates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/applications/'
+              '{applicationsId}/authorizedCertificates/'
+              '{authorizedCertificatesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_APPLICATIONS_DOMAINMAPPINGS = (
       'projects.locations.applications.domainMappings',
       '{+name}',

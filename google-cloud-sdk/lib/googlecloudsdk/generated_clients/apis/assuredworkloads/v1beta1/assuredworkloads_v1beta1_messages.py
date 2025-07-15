@@ -477,6 +477,32 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
         Science Controls with US Support
       IRS_1075: Internal Revenue Service 1075 controls
       CANADA_CONTROLLED_GOODS: Canada Controlled Goods
+      AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT: Australia Data Boundary and Support
+      CANADA_DATA_BOUNDARY_AND_SUPPORT: Canada Data Boundary and Support
+      DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS: Data Boundary for Canada
+        Controlled Goods
+      DATA_BOUNDARY_FOR_CANADA_PROTECTED_B: Data Boundary for Canada Protected
+        B
+      DATA_BOUNDARY_FOR_CJIS: Data Boundary for CJIS
+      DATA_BOUNDARY_FOR_FEDRAMP_HIGH: Data Boundary for FedRAMP High
+      DATA_BOUNDARY_FOR_FEDRAMP_MODERATE: Data Boundary for FedRAMP Moderate
+      DATA_BOUNDARY_FOR_IL2: Data Boundary for IL2
+      DATA_BOUNDARY_FOR_IL4: Data Boundary for IL4
+      DATA_BOUNDARY_FOR_IL5: Data Boundary for IL5
+      DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075: Data Boundary for IRS
+        Publication 1075
+      DATA_BOUNDARY_FOR_ITAR: Data Boundary for ITAR
+      EU_DATA_BOUNDARY_AND_SUPPORT: Data Boundary for EU Regions and Support
+      ISRAEL_DATA_BOUNDARY_AND_SUPPORT: Data Boundary for Israel Regions
+      US_DATA_BOUNDARY_AND_SUPPORT: Data Boundary for US Regions and Support
+      US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES: Data Boundary for US
+        Healthcare and Life Sciences
+      US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT: Data
+        Boundary for US Healthcare and Life Sciences with Support
+      KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS: KSA Data Boundary with
+        Access Justifications
+      REGIONAL_DATA_BOUNDARY: Regional Data Boundary
+      JAPAN_DATA_BOUNDARY: JAPAN Data Boundary
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -503,6 +529,26 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
     IRS_1075 = 23
     CANADA_CONTROLLED_GOODS = 24
+    AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT = 25
+    CANADA_DATA_BOUNDARY_AND_SUPPORT = 26
+    DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS = 27
+    DATA_BOUNDARY_FOR_CANADA_PROTECTED_B = 28
+    DATA_BOUNDARY_FOR_CJIS = 29
+    DATA_BOUNDARY_FOR_FEDRAMP_HIGH = 30
+    DATA_BOUNDARY_FOR_FEDRAMP_MODERATE = 31
+    DATA_BOUNDARY_FOR_IL2 = 32
+    DATA_BOUNDARY_FOR_IL4 = 33
+    DATA_BOUNDARY_FOR_IL5 = 34
+    DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075 = 35
+    DATA_BOUNDARY_FOR_ITAR = 36
+    EU_DATA_BOUNDARY_AND_SUPPORT = 37
+    ISRAEL_DATA_BOUNDARY_AND_SUPPORT = 38
+    US_DATA_BOUNDARY_AND_SUPPORT = 39
+    US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES = 40
+    US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT = 41
+    KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS = 42
+    REGIONAL_DATA_BOUNDARY = 43
+    JAPAN_DATA_BOUNDARY = 44
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -1072,6 +1118,32 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
         Science Controls with US Support
       IRS_1075: Internal Revenue Service 1075 controls
       CANADA_CONTROLLED_GOODS: Canada Controlled Goods
+      AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT: Australia Data Boundary and Support
+      CANADA_DATA_BOUNDARY_AND_SUPPORT: Canada Data Boundary and Support
+      DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS: Data Boundary for Canada
+        Controlled Goods
+      DATA_BOUNDARY_FOR_CANADA_PROTECTED_B: Data Boundary for Canada Protected
+        B
+      DATA_BOUNDARY_FOR_CJIS: Data Boundary for CJIS
+      DATA_BOUNDARY_FOR_FEDRAMP_HIGH: Data Boundary for FedRAMP High
+      DATA_BOUNDARY_FOR_FEDRAMP_MODERATE: Data Boundary for FedRAMP Moderate
+      DATA_BOUNDARY_FOR_IL2: Data Boundary for IL2
+      DATA_BOUNDARY_FOR_IL4: Data Boundary for IL4
+      DATA_BOUNDARY_FOR_IL5: Data Boundary for IL5
+      DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075: Data Boundary for IRS
+        Publication 1075
+      DATA_BOUNDARY_FOR_ITAR: Data Boundary for ITAR
+      EU_DATA_BOUNDARY_AND_SUPPORT: Data Boundary for EU Regions and Support
+      ISRAEL_DATA_BOUNDARY_AND_SUPPORT: Data Boundary for Israel Regions
+      US_DATA_BOUNDARY_AND_SUPPORT: Data Boundary for US Regions and Support
+      US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES: Data Boundary for US
+        Healthcare and Life Sciences
+      US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT: Data
+        Boundary for US Healthcare and Life Sciences with Support
+      KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS: KSA Data Boundary with
+        Access Justifications
+      REGIONAL_DATA_BOUNDARY: Regional Data Boundary
+      JAPAN_DATA_BOUNDARY: JAPAN Data Boundary
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1098,6 +1170,26 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
     IRS_1075 = 23
     CANADA_CONTROLLED_GOODS = 24
+    AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT = 25
+    CANADA_DATA_BOUNDARY_AND_SUPPORT = 26
+    DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS = 27
+    DATA_BOUNDARY_FOR_CANADA_PROTECTED_B = 28
+    DATA_BOUNDARY_FOR_CJIS = 29
+    DATA_BOUNDARY_FOR_FEDRAMP_HIGH = 30
+    DATA_BOUNDARY_FOR_FEDRAMP_MODERATE = 31
+    DATA_BOUNDARY_FOR_IL2 = 32
+    DATA_BOUNDARY_FOR_IL4 = 33
+    DATA_BOUNDARY_FOR_IL5 = 34
+    DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075 = 35
+    DATA_BOUNDARY_FOR_ITAR = 36
+    EU_DATA_BOUNDARY_AND_SUPPORT = 37
+    ISRAEL_DATA_BOUNDARY_AND_SUPPORT = 38
+    US_DATA_BOUNDARY_AND_SUPPORT = 39
+    US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES = 40
+    US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT = 41
+    KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS = 42
+    REGIONAL_DATA_BOUNDARY = 43
+    JAPAN_DATA_BOUNDARY = 44
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

@@ -67,6 +67,7 @@ class AdminClustersClient(client.ClientBase):
         'name': self._admin_cluster_name(args),
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'allowMissing': self.GetFlag(args, 'allow_missing'),
+        'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
     req = messages.GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest(
         **kwargs

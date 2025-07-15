@@ -312,7 +312,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         method_id='datafusion.projects.locations.instances.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='DatafusionProjectsLocationsInstancesDeleteRequest',

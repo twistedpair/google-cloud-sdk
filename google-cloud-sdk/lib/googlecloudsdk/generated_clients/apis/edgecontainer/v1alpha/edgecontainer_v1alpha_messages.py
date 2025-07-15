@@ -1203,23 +1203,6 @@ class EdgecontainerProjectsLocationsServiceAccountsListRequest(_messages.Message
   parent = _messages.StringField(5, required=True)
 
 
-class EdgecontainerProjectsLocationsServiceAccountsPatchRequest(_messages.Message):
-  r"""A EdgecontainerProjectsLocationsServiceAccountsPatchRequest object.
-
-  Fields:
-    name: Identifier. The canonical resource name of the project service
-      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
-      ervice_account}
-    serviceAccount: A ServiceAccount resource to be passed as the request
-      body.
-    updateMask: Optional. The list of fields to update.
-  """
-
-  name = _messages.StringField(1, required=True)
-  serviceAccount = _messages.MessageField('ServiceAccount', 2)
-  updateMask = _messages.StringField(3)
-
-
 class EdgecontainerProjectsLocationsVpnConnectionsCreateRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsVpnConnectionsCreateRequest object.
 
@@ -3070,12 +3053,14 @@ class ZonalService(_messages.Message):
       VMM: VMM service, gdcvmmanager.googleapis.com.
       BOOKSTORE: Bookstore service, bookstore.googleapis.com.
       VERTEX: Vertex service, aiplatform.googleapis.com.
+      BOOKSTORE_AI: Bookstore.AI service, bookstore-ai.googleapis.com.
     """
     SERVICE_SELECTOR_UNSPECIFIED = 0
     ALLOYDB = 1
     VMM = 2
     BOOKSTORE = 3
     VERTEX = 4
+    BOOKSTORE_AI = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the service.
@@ -3130,6 +3115,9 @@ class ZonalService(_messages.Message):
 class Zone(_messages.Message):
   r"""Represents a zone.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the zone.
+
   Messages:
     LabelsValue: Optional. Labels associated with this resource.
 
@@ -3140,7 +3128,20 @@ class Zone(_messages.Message):
     labels: Optional. Labels associated with this resource.
     name: Identifier. The canonical resource name of the zone. E.g.
       organizations/{organization}/locations/{location}/zones/{zone}
+    state: Output only. The state of the zone.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the zone.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      STATE_RUNNING: The zone is in RUNNING state.
+      STATE_ERROR: The zone is in ERROR state.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_RUNNING = 1
+    STATE_ERROR = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3171,6 +3172,7 @@ class Zone(_messages.Message):
   dnsServers = _messages.MessageField('DNSServer', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class ZoneMetadata(_messages.Message):

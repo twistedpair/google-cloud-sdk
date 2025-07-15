@@ -35,7 +35,7 @@ from googlecloudsdk.core.credentials import requests
 from six.moves import http_client
 
 GDC_GGS_MODEL_IDS = frozenset(
-    {'gemini-2.0-flash-001', 'multimodalembedding@001'}
+    {'gemini-2.0-flash-001'}
 )
 
 

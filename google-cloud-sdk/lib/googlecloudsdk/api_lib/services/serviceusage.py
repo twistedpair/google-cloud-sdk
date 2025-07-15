@@ -23,6 +23,7 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
+from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import http_retry
 from googlecloudsdk.core import log
@@ -369,9 +370,54 @@ def UpdateConsumerPolicyV2Alpha(
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.UpdateConsumerPolicyPermissionDeniedException
+    exceptions.ReraiseError(e, exceptions.UpdateConsumerPolicyException)
+  except apitools_exceptions.HttpBadRequestError as e:
+    log.status.Print(
+        'Provide the --force flag if you wish to force disable services.'
     )
+    exceptions.ReraiseError(e, exceptions.Error)
+
+
+def UpdateConsumerPolicyV2Beta(
+    consumerpolicy, name, force=False, validateonly=False
+):
+  """Make API call to update a consumer policy.
+
+  Args:
+    consumerpolicy: The consumer policy to update.
+    name: The resource name of the policy. Currently supported format
+      '{resource_type}/{resource_name}/consumerPolicies/default. For example,
+      'projects/100/consumerPolicies/default'.
+    force: Disable service with usage within last 30 days or disable recently
+      enabled service.
+    validateonly: If set, validate the request and preview the result but do not
+      actually commit it. The default is false.
+
+  Raises:
+    exceptions.UpdateConsumerPolicyException: when updating a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Updated consumer policy
+  """
+  client = _GetClientInstance(_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageConsumerPoliciesPatchRequest(
+      googleApiServiceusageV2betaConsumerPolicy=consumerpolicy,
+      name=name,
+      force=force,
+      validateOnly=validateonly,
+  )
+
+  try:
+    return client.consumerPolicies.Patch(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.UpdateConsumerPolicyException)
   except apitools_exceptions.HttpBadRequestError as e:
     log.status.Print(
         'Provide the --force flag if you wish to force disable services.'
@@ -517,7 +563,7 @@ def ListExpandedMembers(resource: str, service_group: str, page_size: int = 50):
     exceptions.ReraiseError(e, exceptions.ListExpandedMembersException)
 
 
-def ListAncestorGroups(resource: str, service: str, page_size=50):
+def ListAncestorGroups(resource: str, service: str, page_size: int = 50):
   """Make API call to list ancestor groups that depend on the service.
 
   Args:
@@ -556,6 +602,44 @@ def ListAncestorGroups(resource: str, service: str, page_size=50):
     exceptions.ReraiseError(
         e, exceptions.ListAncestorGroupsPermissionDeniedException
     )
+
+
+def AnalyzeConsumerPolicy(
+    proposed_policy,
+):
+  """Make API call to analyze a consumer policy for dependencies.
+
+  Args:
+    proposed_policy: The consumer policy to analyze. type :
+      message.GoogleApiServiceusageV2alphaConsumerPolicy
+
+  Raises:
+    exceptions.AnalyzeConsumerPolicyException: when analyzing a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    message.
+  """
+  client = _GetClientInstance(version=_V2BETA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageConsumerPoliciesAnalyzeRequest(
+      analyzeConsumerPolicyRequest=messages.AnalyzeConsumerPolicyRequest(
+          proposedPolicy=proposed_policy,
+          analysisTypes=[
+              messages.AnalyzeConsumerPolicyRequest.AnalysisTypesValueListEntryValuesEnum.ANALYSIS_TYPE_DEPENDENCY,
+          ],
+      ),
+      name=proposed_policy.name,
+  )
+  try:
+    return client.consumerPolicies.Analyze(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.AnalyzeConsumerPolicyException)
 
 
 def AddEnableRule(
@@ -689,44 +773,56 @@ def RemoveEnableRule(
   policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
-    current_policy = GetConsumerPolicyV2Alpha(policy_name)
+    current_policy = GetConsumerPolicyV2Beta(policy_name)
 
-    ancestor_groups = ListAncestorGroups(
-        resource_name, _SERVICE_RESOURCE % service
-    )
-
-    if not force:
-      enabled = set()
-
-      for enable_rule in current_policy.enableRules:
-        enabled.update(enable_rule.services)
-
-      enabled_dependents = set()
-
-      for ancestor_group in ancestor_groups:
-        service_name = '/'.join(str.split(ancestor_group.groupName, '/')[:2])
-        if service_name in enabled:
-          enabled_dependents.add(service_name)
-
-      if enabled_dependents:
-        enabled_dependents = ','.join(enabled_dependents)
-        raise exceptions.ConfigError(
-            'The service '
-            + service
-            + ' is depended on by the following active service(s) '
-            + enabled_dependents
-            + ' . Provide the --force flag if you wish to force disable'
-            ' services.'
-        )
-
-    to_remove = {_SERVICE_RESOURCE % service}
-    for ancestor_group in ancestor_groups:
-      to_remove.add('/'.join(str.split(ancestor_group.groupName, '/')[:2]))
-
-    updated_consumer_poicy = copy.deepcopy(current_policy)
-    updated_consumer_poicy.enableRules.clear()
+    service_is_enabled = False
 
     for enable_rule in current_policy.enableRules:
+      if _SERVICE_RESOURCE % service in enable_rule.services:
+        service_is_enabled = True
+        break
+
+    if not service_is_enabled:
+      raise exceptions.ConfigError(
+          'The service ' + service + ' is not enabled.'
+      )
+
+    proposed_policy = copy.deepcopy(current_policy)
+    for enable_rule in proposed_policy.enableRules:
+      if _SERVICE_RESOURCE % service in enable_rule.services:
+        enable_rule.services.remove(_SERVICE_RESOURCE % service)
+
+    op = AnalyzeConsumerPolicy(proposed_policy)
+
+    op = services_util.WaitOperation(op.name, GetOperationV2Beta)
+
+    analysis_reponse = encoding.MessageToDict(op.response)
+
+    to_remove = []
+
+    if 'analysis' in analysis_reponse:
+      for analysis in analysis_reponse['analysis']:
+        for warning in analysis['analysisResult']['warnings']:
+          ## check if analysis is related to service to be removed.
+          if _SERVICE_RESOURCE % service in warning['detail']:
+            to_remove.append(analysis['service'])
+
+    if not force and to_remove:
+      to_remove = ','.join(to_remove)
+      raise exceptions.ConfigError(
+          'The service '
+          + service
+          + ' is depended on by the following active service(s) '
+          + to_remove
+          + ' . Provide the --force flag if you wish to force disable services.'
+      )
+
+    to_remove = set(to_remove)
+
+    updated_consumer_poicy = copy.deepcopy(proposed_policy)
+    updated_consumer_poicy.enableRules.clear()
+
+    for enable_rule in proposed_policy.enableRules:
       rule = copy.deepcopy(enable_rule)
       for service_name in enable_rule.services:
         if service_name in to_remove:
@@ -734,7 +830,7 @@ def RemoveEnableRule(
       if rule.services:
         updated_consumer_poicy.enableRules.append(rule)
 
-    return UpdateConsumerPolicyV2Alpha(
+    return UpdateConsumerPolicyV2Beta(
         updated_consumer_poicy,
         policy_name,
         force=force,
@@ -751,8 +847,6 @@ def RemoveEnableRule(
     log.status.Print(
         'Provide the --force flag if you wish to force disable services.'
     )
-    # TODO(b/274633761) Repharse error message to avoid showing internal
-    # flags in the error message.
     exceptions.ReraiseError(e, exceptions.Error)
 
 
@@ -1051,6 +1145,32 @@ def GetOperationV2Alpha(name: str):
     The message.Operation object with response and error.
   """
   client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+  request = messages.ServiceusageOperationsGetRequest(name=name)
+  try:
+    return client.operations.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.OperationErrorException)
+
+
+def GetOperationV2Beta(name: str):
+  """Make API call to get an operation using serviceusageV2beta api.
+
+  Args:
+    name: The name of the operation resource. Format
+      'operations/<operation_id>'.
+
+  Raises:
+    exceptions.OperationErrorException: when the getting operation API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The message.Operation object with response and error.
+  """
+  client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
   request = messages.ServiceusageOperationsGetRequest(name=name)
   try:

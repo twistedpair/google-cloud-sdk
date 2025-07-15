@@ -282,8 +282,7 @@ def CreateVmImageFromArgs(args, messages):
     return None
 
   vm_image = messages.VmImage()
-  if args.IsSpecified('vm_image_project'):
-    vm_image.project = args.vm_image_project
+  vm_image.project = args.vm_image_project
   if args.IsSpecified('vm_image_family'):
     vm_image.family = args.vm_image_family
   else:
@@ -425,18 +424,25 @@ def GetEnableThirdPartyIdentityFromArgs(args):
   return args.enable_third_party_identity
 
 
+def GetEnableManagedEucFromArgs(args):
+  if not args.IsSpecified('enable_managed_euc'):
+    return None
+  return args.enable_managed_euc
+
+
 def GetDisableProxyAccessFromArgs(args):
   if not args.IsSpecified('disable_proxy_access'):
     return None
   return args.disable_proxy_access
 
 
-def CreateInstance(args, messages):
+def CreateInstance(args, messages, support_managed_euc):
   """Creates the Instance message for the create request.
 
   Args:
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the specified API.
+    support_managed_euc: Whether the managed EUC feature is supported.
 
   Returns:
     Instance of the Instance message.
@@ -470,13 +476,26 @@ def CreateInstance(args, messages):
       instanceOwners=GetInstanceOwnersFromArgs(args),
       labels=GetLabelsFromArgs(args, messages),
       enableThirdPartyIdentity=GetEnableThirdPartyIdentityFromArgs(args),
+      enableManagedEuc=GetEnableManagedEucFromArgs(args)
+      if support_managed_euc
+      else None,
   )
   return instance
 
 
-def CreateInstanceCreateRequest(args, messages):
+def CreateInstanceCreateRequest(args, messages, support_managed_euc):
+  """Creates the update mask for update Instance request.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the API.
+    support_managed_euc: Whether the managed EUC feature is supported.
+
+  Returns:
+    Update mask of the Instance message.
+  """
   parent = util.GetParentForInstance(args)
-  instance = CreateInstance(args, messages)
+  instance = CreateInstance(args, messages, support_managed_euc)
   return messages.NotebooksProjectsLocationsInstancesCreateRequest(
       parent=parent, instance=instance, instanceId=args.instance)
 

@@ -22,8 +22,9 @@ from googlecloudsdk.command_lib.compute import operation_utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 
 
-def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
-                                resources):
+def ResolveUrlMapDefaultService(
+    args, backend_service_arg, url_map_ref, resources
+):
   """Parses the backend service that is pointed to by a URL map from args.
 
   This function handles parsing a regional/global backend service that is
@@ -31,10 +32,10 @@ def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
 
   Args:
     args: The arguments provided to the url-maps command
-    backend_service_arg: The ResourceArgument specification for the
-                         backend service argument.
+    backend_service_arg: The ResourceArgument specification for the backend
+      service argument.
     url_map_ref: The resource reference to the URL MAP. This is returned by
-                 parsing the URL map arguments provided.
+      parsing the URL map arguments provided.
     resources: ComputeApiHolder resources.
 
   Returns:
@@ -48,6 +49,37 @@ def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
       args.global_default_service = args.default_service
 
   return backend_service_arg.ResolveAsResource(args, resources)
+
+
+def ResolveUrlMapDefaultBackendBucket(
+    args, backend_bucket_arg, url_map_ref, resources
+):
+  """Parses the backend bucket that is pointed to by a URL map from args.
+
+  This function handles parsing a backend bucket that is pointed to by a URL
+  map. If neither the --default-backend-bucket-region,
+  --global-default-backend-bucket is specified, the scope is set to the scope
+  of url map.
+
+  Args:
+    args: The arguments provided to the url-maps command
+    backend_bucket_arg: The ResourceArgument specification for the backend
+      bucket argument.
+    url_map_ref: The resource reference to the URL MAP. This is returned by
+      parsing the URL map arguments provided.
+    resources: ComputeApiHolder resources.
+
+  Returns:
+    Backend bucket reference parsed from args.
+  """
+
+  if not compute_scope.IsSpecifiedForFlag(args, 'default_backend_bucket'):
+    if IsRegionalUrlMapRef(url_map_ref):
+      args.default_backend_bucket_region = url_map_ref.region
+    else:
+      args.global_default_backend_bucket = args.default_backend_bucket
+
+  return backend_bucket_arg.ResolveAsResource(args, resources)
 
 
 def IsRegionalUrlMapRef(url_map_ref):
@@ -66,9 +98,11 @@ def SendGetRequest(client, url_map_ref):
   """Send Url Maps get request."""
   if url_map_ref.Collection() == 'compute.regionUrlMaps':
     return client.apitools_client.regionUrlMaps.Get(
-        client.messages.ComputeRegionUrlMapsGetRequest(**url_map_ref.AsDict()))
+        client.messages.ComputeRegionUrlMapsGetRequest(**url_map_ref.AsDict())
+    )
   return client.apitools_client.urlMaps.Get(
-      client.messages.ComputeUrlMapsGetRequest(**url_map_ref.AsDict()))
+      client.messages.ComputeUrlMapsGetRequest(**url_map_ref.AsDict())
+  )
 
 
 def WaitForOperation(resources, service, operation, url_map_ref, message):
@@ -90,5 +124,6 @@ def WaitForOperation(resources, service, operation, url_map_ref, message):
   else:
     collection = operation_utils.GetGlobalOperationsCollection()
 
-  return operation_utils.WaitForOperation(resources, service, operation,
-                                          collection, url_map_ref, message)
+  return operation_utils.WaitForOperation(
+      resources, service, operation, collection, url_map_ref, message
+  )

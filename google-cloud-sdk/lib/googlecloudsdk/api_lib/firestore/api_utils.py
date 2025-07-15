@@ -45,3 +45,29 @@ def FormatDurationString(duration):
     a duration with string format.
   """
   return '{}s'.format(duration)
+
+
+def ParseTagsForTagsValue(tags, tags_value_message_type):
+  """Returns the TagsValue message.
+
+  Args:
+    tags: the tags, a dictionary.
+    tags_value_message_type: the TagsValue message type.
+
+  Returns:
+    a TagsValue message.
+  """
+  tags_value = None
+  if tags:
+    additional_properties = [
+        tags_value_message_type.AdditionalProperty(
+            key=key, value=value
+        )
+        for key, value in tags.items()
+    ]
+    tags_value = (
+        tags_value_message_type(
+            additionalProperties=additional_properties
+        )
+    )
+  return tags_value

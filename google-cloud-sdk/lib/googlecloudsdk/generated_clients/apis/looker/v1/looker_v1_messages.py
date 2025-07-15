@@ -238,11 +238,13 @@ class Instance(_messages.Message):
   r"""A Looker instance.
 
   Enums:
+    ClassTypeValueValuesEnum: Optional. Storage class of the instance.
     PlatformEditionValueValuesEnum: Platform edition.
     StateValueValuesEnum: Output only. The state of the instance.
 
   Fields:
     adminSettings: Looker Instance Admin settings.
+    classType: Optional. Storage class of the instance.
     consumerNetwork: Network name in the consumer project. Format:
       `projects/{project}/global/networks/{network}`. Note that the consumer
       network may be in a different GCP project than the consumer project that
@@ -288,6 +290,18 @@ class Instance(_messages.Message):
       updated.
     userMetadata: Optional. User metadata.
   """
+
+  class ClassTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Storage class of the instance.
+
+    Values:
+      CLASS_TYPE_UNSPECIFIED: Unspecified storage class.
+      R1: Filestore.
+      P1: PD SSD.
+    """
+    CLASS_TYPE_UNSPECIFIED = 0
+    R1 = 1
+    P1 = 2
 
   class PlatformEditionValueValuesEnum(_messages.Enum):
     r"""Platform edition.
@@ -344,35 +358,36 @@ class Instance(_messages.Message):
     IMPORTING = 8
 
   adminSettings = _messages.MessageField('AdminSettings', 1)
-  consumerNetwork = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  customDomain = _messages.MessageField('CustomDomain', 4)
-  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 5)
-  egressPublicIp = _messages.StringField(6)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
-  fipsEnabled = _messages.BooleanField(8)
-  geminiEnabled = _messages.BooleanField(9)
-  ingressPrivateIp = _messages.StringField(10)
-  ingressPublicIp = _messages.StringField(11)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 12)
-  linkedLspProjectNumber = _messages.IntegerField(13)
-  lookerUri = _messages.StringField(14)
-  lookerVersion = _messages.StringField(15)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 16)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 17)
-  name = _messages.StringField(18)
-  oauthConfig = _messages.MessageField('OAuthConfig', 19)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
-  privateIpEnabled = _messages.BooleanField(21)
-  pscConfig = _messages.MessageField('PscConfig', 22)
-  pscEnabled = _messages.BooleanField(23)
-  publicIpEnabled = _messages.BooleanField(24)
-  reservedRange = _messages.StringField(25)
-  satisfiesPzi = _messages.BooleanField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  updateTime = _messages.StringField(29)
-  userMetadata = _messages.MessageField('UserMetadata', 30)
+  classType = _messages.EnumField('ClassTypeValueValuesEnum', 2)
+  consumerNetwork = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  customDomain = _messages.MessageField('CustomDomain', 5)
+  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 6)
+  egressPublicIp = _messages.StringField(7)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
+  fipsEnabled = _messages.BooleanField(9)
+  geminiEnabled = _messages.BooleanField(10)
+  ingressPrivateIp = _messages.StringField(11)
+  ingressPublicIp = _messages.StringField(12)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 13)
+  linkedLspProjectNumber = _messages.IntegerField(14)
+  lookerUri = _messages.StringField(15)
+  lookerVersion = _messages.StringField(16)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
+  name = _messages.StringField(19)
+  oauthConfig = _messages.MessageField('OAuthConfig', 20)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 21)
+  privateIpEnabled = _messages.BooleanField(22)
+  pscConfig = _messages.MessageField('PscConfig', 23)
+  pscEnabled = _messages.BooleanField(24)
+  publicIpEnabled = _messages.BooleanField(25)
+  reservedRange = _messages.StringField(26)
+  satisfiesPzi = _messages.BooleanField(27)
+  satisfiesPzs = _messages.BooleanField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  updateTime = _messages.StringField(30)
+  userMetadata = _messages.MessageField('UserMetadata', 31)
 
 
 class InstanceBackup(_messages.Message):

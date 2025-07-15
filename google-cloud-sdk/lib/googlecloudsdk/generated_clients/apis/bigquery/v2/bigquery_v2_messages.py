@@ -693,11 +693,11 @@ class BigqueryDatasetsGetRequest(_messages.Message):
 
     Values:
       DATASET_VIEW_UNSPECIFIED: The default value. Default to the FULL view.
-      METADATA: Updates metadata information for the dataset, such as
+      METADATA: View metadata information for the dataset, such as
         friendlyName, description, labels, etc.
-      ACL: Updates ACL information for the dataset, which defines dataset
-        access for one or more entities.
-      FULL: Updates both dataset metadata and ACL information.
+      ACL: View ACL information for the dataset, which defines dataset access
+        for one or more entities.
+      FULL: View both dataset metadata and ACL information.
     """
     DATASET_VIEW_UNSPECIFIED = 0
     METADATA = 1
@@ -1275,6 +1275,22 @@ class BigqueryRoutinesSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigqueryRoutinesTestIamPermissionsRequest(_messages.Message):
+  r"""A BigqueryRoutinesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigqueryRoutinesUpdateRequest(_messages.Message):
@@ -3548,6 +3564,32 @@ class ExternalDatasetReference(_messages.Message):
   externalSource = _messages.StringField(2)
 
 
+class ExternalRuntimeOptions(_messages.Message):
+  r"""Options for the runtime of the external system.
+
+  Fields:
+    containerCpu: Optional. Amount of CPU provisioned for the container
+      instance. If not specified, the default value is 0.33 vCPUs.
+    containerMemory: Optional. Amount of memory provisioned for the container
+      instance. Format: {number}{unit} where unit is one of "M", "G", "Mi" and
+      "Gi" (e.g. 1G, 512Mi). If not specified, the default value is 512Mi.
+    maxBatchingRows: Optional. Maximum number of rows in each batch sent to
+      the external runtime. If absent or if 0, BigQuery dynamically decides
+      the number of rows in a batch.
+    runtimeConnection: Optional. Fully qualified name of the connection whose
+      service account will be used to execute the code in the container.
+      Format: ```"projects/{project_id}/locations/{location_id}/connections/{c
+      onnection_id}"```
+    runtimeVersion: Optional. Language runtime version (e.g. python-3.11).
+  """
+
+  containerCpu = _messages.FloatField(1)
+  containerMemory = _messages.StringField(2)
+  maxBatchingRows = _messages.IntegerField(3)
+  runtimeConnection = _messages.StringField(4)
+  runtimeVersion = _messages.StringField(5)
+
+
 class ExternalServiceCost(_messages.Message):
   r"""The external service cost is a portion of the total cost, these costs
   are not additive with total_bytes_billed. Moreover, this field only track
@@ -4010,6 +4052,12 @@ class IndexUnusedReason(_messages.Message):
       ESTIMATED_PERFORMANCE_GAIN_TOO_LOW: Indicates that the estimated
         performance gain from using the search index is too low for the given
         search query.
+      COLUMN_METADATA_INDEX_NOT_USED: Indicates that the column metadata index
+        (which the search index depends on) is not used. User can refer to the
+        [column metadata index
+        usage](https://cloud.google.com/bigquery/docs/metadata-indexing-
+        managed-tables#view_column_metadata_index_usage) for more details on
+        why it was not used.
       NOT_SUPPORTED_IN_STANDARD_EDITION: Indicates that search indexes can not
         be used for search query with STANDARD edition.
       INDEX_SUPPRESSED_BY_FUNCTION_OPTION: Indicates that an option in the
@@ -4039,12 +4087,13 @@ class IndexUnusedReason(_messages.Message):
     BASE_TABLE_TOO_SMALL = 12
     BASE_TABLE_TOO_LARGE = 13
     ESTIMATED_PERFORMANCE_GAIN_TOO_LOW = 14
-    NOT_SUPPORTED_IN_STANDARD_EDITION = 15
-    INDEX_SUPPRESSED_BY_FUNCTION_OPTION = 16
-    QUERY_CACHE_HIT = 17
-    STALE_INDEX = 18
-    INTERNAL_ERROR = 19
-    OTHER_REASON = 20
+    COLUMN_METADATA_INDEX_NOT_USED = 15
+    NOT_SUPPORTED_IN_STANDARD_EDITION = 16
+    INDEX_SUPPRESSED_BY_FUNCTION_OPTION = 17
+    QUERY_CACHE_HIT = 18
+    STALE_INDEX = 19
+    INTERNAL_ERROR = 20
+    OTHER_REASON = 21
 
   baseTable = _messages.MessageField('TableReference', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
@@ -4149,7 +4198,6 @@ class Job(_messages.Message):
     etag: Output only. A hash of this resource.
     id: Output only. Opaque ID field of the job.
     jobCreationReason: Output only. The reason why a Job was created.
-      [Preview](https://cloud.google.com/products/#product-launch-stages)
     jobReference: Optional. Reference describing the unique-per-user name of
       the job.
     kind: Output only. The type of the resource.
@@ -4974,7 +5022,6 @@ class JobCreationReason(_messages.Message):
   `JOB_CREATION_OPTIONAL` Job creation mode. For [`jobs.insert`](https://cloud
   .google.com/bigquery/docs/reference/rest/v2/jobs/insert) method calls it
   will always be `REQUESTED`.
-  [Preview](https://cloud.google.com/products/#product-launch-stages)
 
   Enums:
     CodeValueValuesEnum: Output only. Specifies the high level reason why a
@@ -6507,6 +6554,20 @@ class ProjectReference(_messages.Message):
   projectId = _messages.StringField(1)
 
 
+class PythonOptions(_messages.Message):
+  r"""Options for a user-defined Python function.
+
+  Fields:
+    entryPoint: Required. The entry point function in the user's Python code.
+    packages: Optional. A list of package names along with versions to be
+      installed. Follows requirements.txt syntax (e.g. numpy==2.0,
+      permutation, urllib3<2.2.1)
+  """
+
+  entryPoint = _messages.StringField(1)
+  packages = _messages.StringField(2, repeated=True)
+
+
 class QueryInfo(_messages.Message):
   r"""Query optimization information for a QUERY job.
 
@@ -6646,8 +6707,7 @@ class QueryRequest(_messages.Message):
   Enums:
     JobCreationModeValueValuesEnum: Optional. If not set, jobs are always
       required. If set, the query request will follow the behavior described
-      JobCreationMode. [Preview](https://cloud.google.com/products/#product-
-      launch-stages)
+      JobCreationMode.
 
   Messages:
     LabelsValue: Optional. The labels associated with this query. Labels can
@@ -6681,7 +6741,6 @@ class QueryRequest(_messages.Message):
     formatOptions: Optional. Output format adjustments.
     jobCreationMode: Optional. If not set, jobs are always required. If set,
       the query request will follow the behavior described JobCreationMode.
-      [Preview](https://cloud.google.com/products/#product-launch-stages)
     jobTimeoutMs: Optional. Job timeout in milliseconds. If this time limit is
       exceeded, BigQuery will attempt to stop a longer job, but may not always
       succeed in canceling it before the job completes. For example, a job
@@ -6770,7 +6829,6 @@ class QueryRequest(_messages.Message):
   class JobCreationModeValueValuesEnum(_messages.Enum):
     r"""Optional. If not set, jobs are always required. If set, the query
     request will follow the behavior described JobCreationMode.
-    [Preview](https://cloud.google.com/products/#product-launch-stages)
 
     Values:
       JOB_CREATION_MODE_UNSPECIFIED: If unspecified JOB_CREATION_REQUIRED is
@@ -6865,7 +6923,6 @@ class QueryResponse(_messages.Message):
     jobCreationReason: Optional. The reason why a Job was created. Only
       relevant when a job_reference is present in the response. If
       job_reference is not present it will always be unset.
-      [Preview](https://cloud.google.com/products/#product-launch-stages)
     jobReference: Reference to the Job that was created to run the query. This
       field will be present even if the original request timed out, in which
       case GetQueryResults can be used to read the results once the query has
@@ -6887,7 +6944,6 @@ class QueryResponse(_messages.Message):
       [Paging through table
       data](https://cloud.google.com/bigquery/docs/paging-results).
     queryId: Auto-generated ID for the query.
-      [Preview](https://cloud.google.com/products/#product-launch-stages)
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
       GetQueryResults and specify the jobReference returned above.
@@ -7238,12 +7294,18 @@ class Routine(_messages.Message):
     determinismLevel: Optional. The determinism level of the JavaScript UDF,
       if defined.
     etag: Output only. A hash of this resource.
+    externalRuntimeOptions: Optional. Options for the runtime of the external
+      system executing the routine. This field is only applicable for Python
+      UDFs. [Preview](https://cloud.google.com/products/#product-launch-
+      stages)
     importedLibraries: Optional. If language = "JAVASCRIPT", this field stores
       the path of the imported JAVASCRIPT libraries.
     language: Optional. Defaults to "SQL" if remote_function_options field is
       absent, not set otherwise.
     lastModifiedTime: Output only. The time when this routine was last
       modified, in milliseconds since the epoch.
+    pythonOptions: Optional. Options for Python UDF.
+      [Preview](https://cloud.google.com/products/#product-launch-stages)
     remoteFunctionOptions: Optional. Remote function specific options.
     returnTableType: Optional. Can be set only if routine_type =
       "TABLE_VALUED_FUNCTION". If absent, the return table type is inferred
@@ -7372,17 +7434,19 @@ class Routine(_messages.Message):
   description = _messages.StringField(5)
   determinismLevel = _messages.EnumField('DeterminismLevelValueValuesEnum', 6)
   etag = _messages.StringField(7)
-  importedLibraries = _messages.StringField(8, repeated=True)
-  language = _messages.EnumField('LanguageValueValuesEnum', 9)
-  lastModifiedTime = _messages.IntegerField(10)
-  remoteFunctionOptions = _messages.MessageField('RemoteFunctionOptions', 11)
-  returnTableType = _messages.MessageField('StandardSqlTableType', 12)
-  returnType = _messages.MessageField('StandardSqlDataType', 13)
-  routineReference = _messages.MessageField('RoutineReference', 14)
-  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 15)
-  securityMode = _messages.EnumField('SecurityModeValueValuesEnum', 16)
-  sparkOptions = _messages.MessageField('SparkOptions', 17)
-  strictMode = _messages.BooleanField(18)
+  externalRuntimeOptions = _messages.MessageField('ExternalRuntimeOptions', 8)
+  importedLibraries = _messages.StringField(9, repeated=True)
+  language = _messages.EnumField('LanguageValueValuesEnum', 10)
+  lastModifiedTime = _messages.IntegerField(11)
+  pythonOptions = _messages.MessageField('PythonOptions', 12)
+  remoteFunctionOptions = _messages.MessageField('RemoteFunctionOptions', 13)
+  returnTableType = _messages.MessageField('StandardSqlTableType', 14)
+  returnType = _messages.MessageField('StandardSqlDataType', 15)
+  routineReference = _messages.MessageField('RoutineReference', 16)
+  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 17)
+  securityMode = _messages.EnumField('SecurityModeValueValuesEnum', 18)
+  sparkOptions = _messages.MessageField('SparkOptions', 19)
+  strictMode = _messages.BooleanField(20)
 
 
 class RoutineReference(_messages.Message):
@@ -8488,11 +8552,12 @@ class Table(_messages.Message):
     Values:
       MANAGED_TABLE_TYPE_UNSPECIFIED: No managed table type specified.
       NATIVE: The managed table is a native BigQuery table.
-      ICEBERG: The managed table is a BigQuery table for Apache Iceberg.
+      BIGLAKE: The managed table is a BigLake table for Apache Iceberg in
+        BigQuery.
     """
     MANAGED_TABLE_TYPE_UNSPECIFIED = 0
     NATIVE = 1
-    ICEBERG = 2
+    BIGLAKE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

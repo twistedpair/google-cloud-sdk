@@ -79,9 +79,8 @@ class RolloutSequenceFlags:
         required=True,
         help="""\
             Path to the YAML file containing the stage configurations. The YAML
-            file should contain a list of stages. Fleets are required. If
-            soak_duration is not specified, the default is 0. If label_selector
-            is not specified, there is no filtering. Example:
+            file should contain a list of stages. Fleets and soak_duration are required.
+            If label_selector is not specified, there is no filtering. Example:
 
             ```yaml
             - stage:
@@ -183,8 +182,10 @@ class RolloutSequenceFlagParser:
           labelSelector=stage_data.get('label-selector')
       )
       soak_duration = stage_data.get('soak-duration')
-      fleets = stage_data.get('fleets')
+      if not soak_duration:
+        raise ValueError('soak-duration is required in the yaml file')
 
+      fleets = stage_data.get('fleets')
       if not fleets:
         raise ValueError('fleets is required in the yaml file')
 

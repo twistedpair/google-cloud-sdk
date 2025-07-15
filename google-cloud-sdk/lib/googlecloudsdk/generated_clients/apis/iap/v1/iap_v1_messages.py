@@ -278,12 +278,12 @@ class Brand(_messages.Message):
 
 class CorsSettings(_messages.Message):
   r"""Allows customers to configure HTTP request paths that'll allow HTTP
-  OPTIONS call to bypass authentication and authorization.
+  `OPTIONS` call to bypass authentication and authorization.
 
   Fields:
-    allowHttpOptions: Configuration to allow HTTP OPTIONS calls to skip
-      authorization. If undefined, IAP will not apply any special logic to
-      OPTIONS requests.
+    allowHttpOptions: Configuration to allow HTTP `OPTIONS` calls to skip
+      authentication and authorization. If undefined, IAP will not apply any
+      special logic to `OPTIONS` requests.
   """
 
   allowHttpOptions = _messages.BooleanField(1)
@@ -350,18 +350,19 @@ class Expr(_messages.Message):
 
 
 class GcipSettings(_messages.Message):
-  r"""Allows customers to configure tenant_id for GCIP instance per-app.
+  r"""Allows customers to configure tenant IDs for a Cloud Identity Platform
+  (GCIP) instance for each application.
 
   Fields:
     loginPageUri: Login page URI associated with the GCIP tenants. Typically,
       all resources within the same project share the same login page, though
       it could be overridden at the sub resource level.
-    tenantIds: Optional. GCIP tenant ids that are linked to the IAP resource.
-      tenant_ids could be a string beginning with a number character to
-      indicate authenticating with GCIP tenant flow, or in the format of _ to
-      indicate authenticating with GCIP agent flow. If agent flow is used,
-      tenant_ids should only contain one single element, while for tenant
-      flow, tenant_ids can contain multiple elements.
+    tenantIds: Optional. GCIP tenant IDs that are linked to the IAP resource.
+      `tenant_ids` could be a string beginning with a number character to
+      indicate authenticating with GCIP tenant flow, or in the format of `_`
+      to indicate authenticating with GCIP agent flow. If agent flow is used,
+      `tenant_ids` should only contain one single element, while for tenant
+      flow, `tenant_ids` can contain multiple elements.
   """
 
   loginPageUri = _messages.StringField(1)
@@ -1041,6 +1042,15 @@ class Resource(_messages.Message):
       attribute please: * Read go/iam-conditions-labels-comm and ensure your
       service can meet the data availability and management requirements. *
       Talk to iam-conditions-eng@ about your use case.
+    locations: The locations of the resource. This field is used to determine
+      whether the request is compliant with Trust Boundaries. Usage: - If
+      unset or empty, the location of authorization is used as the target
+      location. - For global resources: use a single value of "global". - For
+      regional/multi-regional resources: use name of the GCP region(s) where
+      the resource exists (e.g., ["us-east1", "us-west1"]). For multi-regional
+      resources specify the name of each GCP region in the resource's multi-
+      region. NOTE: Only GCP cloud region names are supported - go/cloud-
+      region-names.
     name: The **relative** name of the resource, which is the URI path of the
       resource without the leading "/". See
       https://cloud.google.com/iam/docs/conditions-resource-
@@ -1158,10 +1168,11 @@ class Resource(_messages.Message):
 
   expectedNextState = _messages.MessageField('ExpectedNextStateValue', 1)
   labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  nextStateOfTags = _messages.MessageField('NextStateOfTags', 4)
-  service = _messages.StringField(5)
-  type = _messages.StringField(6)
+  locations = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  nextStateOfTags = _messages.MessageField('NextStateOfTags', 5)
+  service = _messages.StringField(6)
+  type = _messages.StringField(7)
 
 
 class SetIamPolicyRequest(_messages.Message):

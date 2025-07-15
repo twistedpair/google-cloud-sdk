@@ -138,6 +138,14 @@ def AddFacility(parser):
   )
 
 
+def AddRemoteLocation(parser):
+  """Adds remote location flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--remote-location',
+      help='The location of the interconnect for Cross-Cloud Interconnect.',
+  )
+
+
 def AddDescription(parser):
   """Adds description flag to the argparse.ArgumentParser."""
   parser.add_argument(
@@ -258,7 +266,7 @@ def AddMemberInterconnectsForCreateMembers(parser):
               'no-admin-enabled': None,
               'noc-contact-email': str,
               'customer-name': str,
-              # 'remote-location': str, # Cross-Cloud Interconnect not supported
+              'remote-location': str,
               'requested-features': arg_parsers.ArgList(
                   choices=interconnect_flags.REQUESTED_FEATURES_CHOICES,
                   custom_delim_char=':',

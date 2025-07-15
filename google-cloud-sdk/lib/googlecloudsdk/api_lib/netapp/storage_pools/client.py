@@ -98,7 +98,8 @@ class StoragePoolsClient(object):
                              total_iops=None,
                              hot_tier_size=None,
                              enable_hot_tier_auto_resize=None,
-                             labels=None):
+                             labels=None,
+                             unified_pool=None):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
         name=name,
@@ -117,7 +118,8 @@ class StoragePoolsClient(object):
         total_iops=total_iops,
         hot_tier_size=hot_tier_size,
         enable_hot_tier_auto_resize=enable_hot_tier_auto_resize,
-        labels=labels
+        labels=labels,
+        unified_pool=unified_pool,
     )
 
   def ListStoragePools(self, location_ref, limit=None):
@@ -309,6 +311,7 @@ class StoragePoolsAdapter(object):
       hot_tier_size,
       enable_hot_tier_auto_resize,
       labels,
+      unified_pool,
   ):
     """Parses the command line arguments for Create Storage Pool into a config.
 
@@ -331,6 +334,7 @@ class StoragePoolsAdapter(object):
       enable_hot_tier_auto_resize: Bool on whether hot tier auto resize is
         enabled
       labels: the parsed labels value
+      unified_pool: Bool on whether the Storage Pool is a unified pool
 
     Returns:
       The configuration that will be used as the request body for creating a
@@ -364,6 +368,8 @@ class StoragePoolsAdapter(object):
     if enable_hot_tier_auto_resize is not None:
       storage_pool.enableHotTierAutoResize = enable_hot_tier_auto_resize
     storage_pool.labels = labels
+    if unified_pool is not None:
+      storage_pool.unifiedPool = unified_pool
     return storage_pool
 
   def ParseUpdatedStoragePoolConfig(

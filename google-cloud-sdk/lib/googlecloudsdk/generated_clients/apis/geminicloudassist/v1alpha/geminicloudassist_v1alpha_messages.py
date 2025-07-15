@@ -700,8 +700,7 @@ class Investigation(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     dataVersion: Optional. The data model version of this Investigation.
       Should be either 1 or 2. Treat 0 as 1. If 1, use V1 Investigation data
-      model. If 2, use the Investigation Observation data model, see go/gca-
-      investigations-v2.
+      model. If 2, use the Investigation Observation data model.
     error: Output only. [Output only] If the investigation execution state is
       FAILED, this field will contain the error message.
     executionState: Output only. [Output only] The execution state of this
@@ -1322,7 +1321,7 @@ class Observation(_messages.Message):
       steps with executable commands - Specific and tactical troubleshooting
       steps for where to investigate next with executable commands
     relevanceOverride: Optional. The user's relevance judgement.
-    relevantResources: Optional. The GCP resources relevant to the
+    relevantResources: Optional. The Google Cloud resources relevant to the
       observation. These should be fully qualified resource URIs, e.g.,
       "//compute.googleapis.com/projects/my-project/zones/us-
       central1-a/instances/my-instance"
@@ -2189,7 +2188,7 @@ class TimeRange(_messages.Message):
     endTime: If end is unspecified, that implies that it continues to the
       present. Use end==start for a single moment.
     startTime: When this observation began applying. Use 'now' if the observer
-      is just looking at the current state of GCP.
+      is just looking at the current state of Google Cloud.
   """
 
   endTime = _messages.StringField(1)

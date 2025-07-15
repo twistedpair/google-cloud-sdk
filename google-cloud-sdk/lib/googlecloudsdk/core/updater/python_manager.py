@@ -70,9 +70,8 @@ def PromptAndInstallPythonOnMac():
       print('Running Python {} installer, you may be prompted for sudo '
             'password...'.format(PYTHON_VERSION))
 
-      # Xcode is required to install Python. Install it if it is not already
-      # installed.
-      PromptAndInstallXcode()
+      # Xcode Command Line Tools is required to install Python.
+      PromptAndInstallXcodeCommandLineTools()
 
       with files.TemporaryDirectory() as tempdir:
         with files.ChDir(tempdir):
@@ -104,30 +103,34 @@ def PromptAndInstallPythonOnMac():
           '\n*'.join(install_errors)))
 
 
-def CheckXcodeInstalled() -> bool:
-  """Checks if Xcode is installed."""
+def CheckXcodeCommandLineToolsInstalled() -> bool:
+  """Checks if Xcode Command Line Tools is installed."""
   exit_code = execution_utils.Exec(['xcode-select', '-p'], no_exit=True)
   return exit_code == 0
 
 
-def PromptAndInstallXcode():
-  """Optionally install Xcode on Mac machines."""
+def PromptAndInstallXcodeCommandLineTools():
+  """Optionally install Xcode Command Line Tools on Mac machines."""
   if platforms.OperatingSystem.Current() != platforms.OperatingSystem.MACOSX:
     return
 
-  if CheckXcodeInstalled():
-    print('Xcode is already installed.')
+  if CheckXcodeCommandLineToolsInstalled():
+    print('Xcode Command Line Tools is already installed.')
     return
 
-  prompt = 'Xcode is required to install Python. Continue to install (Y/n)?'
+  prompt = (
+      'Xcode Command Line Tools is required to install Python. Continue to'
+      ' install (Y/n)?'
+  )
   setup_xcode = console_io.PromptContinue(prompt_string=prompt, default=True)
 
   if setup_xcode:
-    print('Installing Xcode...')
+    print('Installing Xcode Command Line Tools...')
     xcode_command = ['xcode-select', '--install']
     exit_code = execution_utils.Exec(xcode_command, no_exit=True)
     if exit_code != 0:
-      print('Failed to install Xcode. '
-            'Please run `xcode-select --install` manually to install Xcode.')
+      print('Failed to install Xcode Command Line Tools. '
+            'Please run `xcode-select --install` manually to install '
+            'Xcode Command Line Tools.')
     else:
-      print('Xcode is installed.')
+      print('Xcode Command Line Tools is installed.')

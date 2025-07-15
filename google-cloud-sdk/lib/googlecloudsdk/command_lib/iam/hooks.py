@@ -226,6 +226,25 @@ def AddClearableExtraAttributesConfigToRequest(ref, args, request):
   return request
 
 
+def AddClearableExtendedAttributesConfigToRequest(ref, args, request):
+  """Add ExtraAttributesOAuth2Client fields to update workforcePoolProvider requests."""
+  del ref
+  messages = apis.GetMessagesModule('iam', 'v1')
+  if (
+      args.clear_extended_attributes_config is not None
+      and args.clear_extended_attributes_config
+  ):
+    arg_utils.SetFieldInMessage(
+        request,
+        'workforcePoolProvider.extendedAttributesOauth2Client',
+        None,
+    )
+  else:
+    SetExtendedAttributesOauth2ClientFields(request, args, messages)
+
+  return request
+
+
 def SetExtraAttributesOauth2ClientFields(request, args, messages):
   """Set ExtraAttributesOauth2Client fields in the request."""
   if args.extra_attributes_type is not None:
@@ -336,6 +355,33 @@ def AddExtraAttributesConfigFieldMask(unused_ref, args, request):
     mask_fields.append('extraAttributesOauth2Client.issuerUri')
   if args.extra_attributes_filter is not None:
     mask_fields.append('extraAttributesOauth2Client.queryParameters.filter')
+  if mask_fields:
+    request.updateMask = ','.join(mask_fields)
+  return request
+
+
+def AddExtendedAttributesConfigFieldMask(unused_ref, args, request):
+  """Adds ExtendedAttributesOauth2Client specific fieldmask entries to the update workforcePoolProvider request."""
+  mask_fields = []
+  if request.updateMask:
+    mask_fields = request.updateMask.split(',')
+  if (
+      args.clear_extended_attributes_config is not None
+      and args.clear_extended_attributes_config
+  ):
+    mask_fields.append('extendedAttributesOauth2Client')
+  if args.extended_attributes_type is not None:
+    mask_fields.append('extendedAttributesOauth2Client.attributesType')
+  if args.extended_attributes_client_id is not None:
+    mask_fields.append('extendedAttributesOauth2Client.clientId')
+  if args.extended_attributes_client_secret_value is not None:
+    mask_fields.append(
+        'extendedAttributesOauth2Client.clientSecret.value.plainText'
+    )
+  if args.extended_attributes_issuer_uri is not None:
+    mask_fields.append('extendedAttributesOauth2Client.issuerUri')
+  if args.extended_attributes_filter is not None:
+    mask_fields.append('extendedAttributesOauth2Client.queryParameters.filter')
   if mask_fields:
     request.updateMask = ','.join(mask_fields)
   return request

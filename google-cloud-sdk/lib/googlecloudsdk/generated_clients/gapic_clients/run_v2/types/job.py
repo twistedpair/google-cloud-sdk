@@ -502,6 +502,21 @@ class Job(proto.Message):
             63 characters.
 
             This field is a member of `oneof`_ ``create_execution``.
+        tags (MutableMapping[str, str]):
+            Optional. Input only. Immutable. Tag keys/values directly
+            bound to this job. For example the following are valid
+            inputs:
+
+            -  {"tagKeys/333" : "tagValues/444", "tagKeys/123" :
+               "tagValues/456"}
+            -  {"123/environment" : "production", "345/abc" : "xyz"}
+               Note:
+            -  Invalid combinations of ID & namespaced format is not
+               supported. For instance: {"123/environment" :
+               "tagValues/444"} is invalid.
+            -  Inconsistent format is not supported. For instance:
+               {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
+               invalid.
         etag (str):
             Output only. A system-generated fingerprint
             for this version of the resource. May be used to
@@ -621,6 +636,11 @@ class Job(proto.Message):
         proto.STRING,
         number=27,
         oneof='create_execution',
+    )
+    tags: MutableMapping[str, str] = proto.MapField(
+        proto.STRING,
+        proto.STRING,
+        number=29,
     )
     etag: str = proto.Field(
         proto.STRING,

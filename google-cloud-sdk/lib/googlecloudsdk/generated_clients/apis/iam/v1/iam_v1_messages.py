@@ -1393,6 +1393,109 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsPatchRequest(_messages.Messa
   workforcePoolProviderScimTenant = _messages.MessageField('WorkforcePoolProviderScimTenant', 3)
 
 
+class IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent tenant to create scim token. Format: 'locatio
+      ns/{location}/workforcePools/{workforce_pool}/providers/{provider}/scimT
+      enants/{scim_tenant}'
+    workforcePoolProviderScimToken: A WorkforcePoolProviderScimToken resource
+      to be passed as the request body.
+    workforcePoolProviderScimTokenId: Required. The ID to use for the scim
+      token, which becomes the final component of the resource name. This
+      value should be 4-32 characters and follow this pattern:
+      "([a-z]([a-z0-9\\-]{2,30}[a-z0-9]))"
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workforcePoolProviderScimToken = _messages.MessageField('WorkforcePoolProviderScimToken', 2)
+  workforcePoolProviderScimTokenId = _messages.StringField(3)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the scim token to delete. Format: `locations/{
+      location}/workforcePools/{workforce_pool}/providers/{provider}/scimTenan
+      ts/{scim_tenant}/tokens/{token}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest object.
+
+  Fields:
+    name: Required. The name of the scim token to retrieve. Format: `locations
+      /{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTen
+      ants/{scim_tenant}/tokens/{token}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of scim tokens to return. If
+      unspecified, at most 2 scim tokens will be returned.
+    pageToken: Optional. A page token, received from a previous
+      `ListWorkforcePoolProviderScimTokens` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The parent to list scim tokens. Format: 'locations/{loca
+      tion}/workforcePools/{workforce_pool}/providers/{provider}/scimTenants/{
+      scim_tenant}'
+    showDeleted: Optional. Whether to return soft-deleted scim tokens.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. The resource name of the SCIM Token. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {workforce_pool_provider}/scimTenants/{scim_tenant}/tokens/{token}`
+    updateMask: Optional. The list of fields to update.
+    workforcePoolProviderScimToken: A WorkforcePoolProviderScimToken resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workforcePoolProviderScimToken = _messages.MessageField('WorkforcePoolProviderScimToken', 3)
+
+
+class IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the scim token to undelete. Format: `locations
+      /{location}/workforcePools/{workforce_pool}/providers/{provider}/scimTen
+      ants/{scim_tenant}/tokens/{token}`
+    undeleteWorkforcePoolProviderScimTokenRequest: A
+      UndeleteWorkforcePoolProviderScimTokenRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolProviderScimTokenRequest = _messages.MessageField('UndeleteWorkforcePoolProviderScimTokenRequest', 2)
+
+
 class IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersScimTenantsUndeleteRequest object.
 
@@ -4336,6 +4439,20 @@ class ListWorkforcePoolProviderScimTenantsResponse(_messages.Message):
   workforcePoolProviderScimTenants = _messages.MessageField('WorkforcePoolProviderScimTenant', 2, repeated=True)
 
 
+class ListWorkforcePoolProviderScimTokensResponse(_messages.Message):
+  r"""Response message for ListWorkforcePoolProviderScimTokens.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    workforcePoolProviderScimTokens: Output only. A list of scim tokens.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workforcePoolProviderScimTokens = _messages.MessageField('WorkforcePoolProviderScimToken', 2, repeated=True)
+
+
 class ListWorkforcePoolProvidersResponse(_messages.Message):
   r"""Response message for ListWorkforcePoolProviders.
 
@@ -5742,6 +5859,10 @@ class UndeleteWorkforcePoolProviderScimTenantRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePoolProviderScimTenant."""
 
 
+class UndeleteWorkforcePoolProviderScimTokenRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolProviderScimToken."""
+
+
 class UndeleteWorkforcePoolRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePool."""
 
@@ -6282,6 +6403,44 @@ class WorkforcePoolProviderScimTenant(_messages.Message):
   name = _messages.StringField(5)
   purgeTime = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class WorkforcePoolProviderScimToken(_messages.Message):
+  r"""Represents a token for the WorkforcePoolProviderScimTenant. Used for
+  authenticating SCIM Provisioning requests.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the token.
+
+  Fields:
+    displayName: Optional. The user-specified display name of the scim token.
+      Cannot exceed 32 characters.
+    name: Identifier. The resource name of the SCIM Token. Format:
+      `locations/{location}/workforcePools/{workforce_pool}/providers/
+      {workforce_pool_provider}/scimTenants/{scim_tenant}/tokens/{token}`
+    securityToken: Output only. The token string. Provide this to the IdP for
+      authentication. Will be set only during creation.
+    state: Output only. The state of the token.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the token.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The tenant is active and may be used to provision users and
+        groups.
+      DELETED: The tenant is soft-deleted. Soft-deleted tenants are
+        permanently deleted after approximately 30 days.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  securityToken = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class WorkloadIdentityPool(_messages.Message):

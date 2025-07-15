@@ -1492,11 +1492,8 @@ class Cluster(_messages.Message):
     Values:
       STATE_UNSPECIFIED: The state of the cluster is unknown.
       READY: The cluster is active and running.
-      STOPPED: The cluster is stopped. All instances in the cluster are
-        stopped. Customers can start a stopped cluster at any point and all
-        their instances will come back to life with same names and IP
-        resources. In this state, customer pays for storage. Associated
-        backups could also be present in a stopped cluster.
+      STOPPED: This is unused. Even when all instances in the cluster are
+        stopped, the cluster remains in READY state.
       EMPTY: The cluster is empty and has no associated resources. All
         instances, associated storage and backups have been deleted.
       CREATING: The cluster is being created.
@@ -2589,9 +2586,10 @@ class InstanceNetworkConfig(_messages.Message):
       private IP AlloyDB instance, for example: "google-managed-services-
       default". If set, the instance IPs will be created from this allocated
       range and will override the IP range used by the parent cluster. The
-      range name must comply with [RFC 1035](http://go/rfc/1035).
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
+      range name must comply with [RFC
+      1035](http://datatracker.ietf.org/doc/html/rfc1035). Specifically, the
+      name must be 1-63 characters long and match the regular expression
+      [a-z]([-a-z0-9]*[a-z0-9])?.
     authorizedExternalNetworks: Optional. A list of external network
       authorized to access this instance.
     enableOutboundPublicIp: Optional. Enabling an outbound public IP address
@@ -2612,7 +2610,7 @@ class InstanceNetworkConfig(_messages.Message):
 
 
 class InstanceUpgradeDetails(_messages.Message):
-  r"""Details regarding the upgrade of instaces associated with a cluster.
+  r"""Details regarding the upgrade of instances associated with a cluster.
 
   Enums:
     InstanceTypeValueValuesEnum: Instance type.
@@ -3548,6 +3546,26 @@ class StageInfo(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
+class StageSchedule(_messages.Message):
+  r"""Timing information for the stage execution.
+
+  Fields:
+    actualEndTime: Actual end time of the stage. Set only if the stage has
+      completed.
+    actualStartTime: Actual start time of the stage. Set only if the stage has
+      started.
+    estimatedEndTime: When the stage is expected to end. Set only if the stage
+      has not completed yet.
+    estimatedStartTime: When the stage is expected to start. Set only if the
+      stage has not started yet.
+  """
+
+  actualEndTime = _messages.StringField(1)
+  actualStartTime = _messages.StringField(2)
+  estimatedEndTime = _messages.StringField(3)
+  estimatedStartTime = _messages.StringField(4)
+
+
 class StageStatus(_messages.Message):
   r"""Status of an upgrade stage.
 
@@ -3557,6 +3575,7 @@ class StageStatus(_messages.Message):
 
   Fields:
     readPoolInstancesUpgrade: Read pool instances upgrade metadata.
+    schedule: Output only. Timing information for the stage execution.
     stage: Upgrade stage.
     state: State of this stage.
   """
@@ -3606,8 +3625,9 @@ class StageStatus(_messages.Message):
     CANCELLED = 7
 
   readPoolInstancesUpgrade = _messages.MessageField('ReadPoolInstancesUpgradeStageStatus', 1)
-  stage = _messages.EnumField('StageValueValuesEnum', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  schedule = _messages.MessageField('StageSchedule', 2)
+  stage = _messages.EnumField('StageValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3855,6 +3875,51 @@ class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
   version = _messages.StringField(2)
 
 
+class StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData(_messages.Message):
+  r"""Config based signal data. This is used to send signals to Condor which
+  are based on the DB level configurations. These will be used to send signals
+  for self managed databases.
+
+  Enums:
+    SignalTypeValueValuesEnum: Required. Signal type of the signal
+
+  Fields:
+    fullResourceName: Required. Full Resource name of the source resource.
+    lastRefreshTime: Required. Last time signal was refreshed
+    resourceId: Database resource id.
+    signalBoolValue: Signal data for boolean signals.
+    signalType: Required. Signal type of the signal
+  """
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Signal type of the signal
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified signal type.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated Minor Version
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a database has a password
+        configured for the root account or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 2
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+
+  fullResourceName = _messages.StringField(1)
+  lastRefreshTime = _messages.StringField(2)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 3)
+  signalBoolValue = _messages.BooleanField(4)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 5)
+
+
 class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message):
   r"""Any custom metadata associated with the resource. e.g. A spanner
   instance can have multiple databases with its own unique metadata.
@@ -3872,12 +3937,14 @@ class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message)
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform.
+  different database resource level events into Condor platform. Next ID: 9
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
 
   Fields:
+    configBasedSignalData: Config based signal data is used to ingest signals
+      that are generated based on the configuration of the database resource.
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
     observabilityMetricData: A
@@ -3902,20 +3969,23 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       OBSERVABILITY_DATA: Database resource monitoring data
       SECURITY_FINDING_DATA: Database resource security health signal data
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
+      CONFIG_BASED_SIGNAL_DATA: Database config based signal data
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
     OBSERVABILITY_DATA = 2
     SECURITY_FINDING_DATA = 3
     RECOMMENDATION_SIGNAL_DATA = 4
+    CONFIG_BASED_SIGNAL_DATA = 5
 
-  feedTimestamp = _messages.StringField(1)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 3)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 4)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 5)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 6)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 7)
+  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 1)
+  feedTimestamp = _messages.StringField(2)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 3)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 4)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 5)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 6)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 7)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 8)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -3949,6 +4019,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     externalUri: The external-uri of the signal, using which more information
       about this signal can be obtained. In GCP, this will take user to SCC
       page to get more details about signals.
+    location: This is used to identify the location of the resource. Example:
+      "us-central1"
     name: Required. The name of the signal, ex: PUBLIC_SQL_INSTANCE,
       SQL_LOG_ERROR_VERBOSITY etc.
     provider: Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
@@ -4261,6 +4333,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         not satisfied.
       SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
         satisfied.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4358,6 +4431,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
     SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
     SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4404,15 +4478,16 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
   description = _messages.StringField(3)
   eventTime = _messages.StringField(4)
   externalUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  provider = _messages.EnumField('ProviderValueValuesEnum', 7)
-  resourceContainer = _messages.StringField(8)
-  resourceName = _messages.StringField(9)
-  signalClass = _messages.EnumField('SignalClassValueValuesEnum', 10)
-  signalId = _messages.StringField(11)
-  signalSeverity = _messages.EnumField('SignalSeverityValueValuesEnum', 12)
-  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  location = _messages.StringField(6)
+  name = _messages.StringField(7)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 8)
+  resourceContainer = _messages.StringField(9)
+  resourceName = _messages.StringField(10)
+  signalClass = _messages.EnumField('SignalClassValueValuesEnum', 11)
+  signalId = _messages.StringField(12)
+  signalSeverity = _messages.EnumField('SignalSeverityValueValuesEnum', 13)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message):
@@ -4429,13 +4504,17 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     providerDescription: Optional. Needs to be used only when the provider is
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
-      redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
-      alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
+      go/keep-sorted start alloydb.googleapis.com/Cluster,
+      alloydb.googleapis.com/Instance, bigtableadmin.googleapis.com/Cluster,
+      bigtableadmin.googleapis.com/Instance compute.googleapis.com/Instance
+      firestore.googleapis.com/Database, redis.googleapis.com/Instance,
+      redis.googleapis.com/Cluster,
+      oracledatabase.googleapis.com/CloudExadataInfrastructure
+      oracledatabase.googleapis.com/CloudVmCluster
+      oracledatabase.googleapis.com/AutonomousDatabase
       spanner.googleapis.com/Instance, spanner.googleapis.com/Database,
-      firestore.googleapis.com/Database, sqladmin.googleapis.com/Instance,
-      bigtableadmin.googleapis.com/Cluster,
-      bigtableadmin.googleapis.com/Instance REQUIRED Please refer go/condor-
-      common-datamodel
+      sqladmin.googleapis.com/Instance, go/keep-sorted end REQUIRED Please
+      refer go/condor-common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -4947,6 +5026,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         not satisfied.
       SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
         satisfied.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5044,6 +5124,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
     SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
     SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -5430,6 +5511,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
 
   Fields:
     engine: The specific engine that the underlying database is running.
+    minorVersion: Minor version of the underlying database engine. Example
+      values: For MySQL, it could be "8.0.32", "5.7.32" etc.. For Postgres, it
+      could be "14.3", "15.3" etc..
     type: Type of specific database product. It could be CloudSQL, AlloyDB
       etc..
     version: Version of the underlying database engine. Example values: For
@@ -5464,6 +5548,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
         be when engine is known, but it is not present in this enum.
       ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
       ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
+      ENGINE_EXADATA_ORACLE: Oracle Exadata engine.
+      ENGINE_ADB_SERVERLESS_ORACLE: Oracle Autonomous DB Serverless engine.
     """
     ENGINE_UNSPECIFIED = 0
     ENGINE_MYSQL = 1
@@ -5481,6 +5567,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     ENGINE_OTHER = 13
     ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
     ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
+    ENGINE_EXADATA_ORACLE = 16
+    ENGINE_ADB_SERVERLESS_ORACLE = 17
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -5499,6 +5587,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
       PRODUCT_TYPE_COMPUTE_ENGINE: Compute Engine self managed databases
+      PRODUCT_TYPE_ORACLE_ON_GCP: Oracle product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -5514,11 +5603,13 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_BIGTABLE = 9
     PRODUCT_TYPE_FIRESTORE = 10
     PRODUCT_TYPE_COMPUTE_ENGINE = 11
-    PRODUCT_TYPE_OTHER = 12
+    PRODUCT_TYPE_ORACLE_ON_GCP = 12
+    PRODUCT_TYPE_OTHER = 13
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-  version = _messages.StringField(3)
+  minorVersion = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  version = _messages.StringField(4)
 
 
 class StorageDatabasecenterProtoCommonTypedValue(_messages.Message):

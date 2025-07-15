@@ -42,10 +42,17 @@ class PrivateConnectionsClient:
     """Returns a private connection object."""
     private_connection_obj = self._messages.PrivateConnection(
         name=private_connection_id, labels={}, displayName=args.display_name)
-    vpc_peering_ref = args.CONCEPTS.vpc.Parse()
-
-    private_connection_obj.vpcPeeringConfig = self._messages.VpcPeeringConfig(
-        vpcName=vpc_peering_ref.RelativeName(), subnet=args.subnet)
+    if args.IsKnownAndSpecified('network_attachment'):
+      private_connection_obj.pscInterfaceConfig = (
+          self._messages.PscInterfaceConfig(
+              networkAttachment=args.network_attachment
+          )
+      )
+    else:
+      vpc_peering_ref = args.CONCEPTS.vpc.Parse()
+      private_connection_obj.vpcPeeringConfig = self._messages.VpcPeeringConfig(
+          vpcName=vpc_peering_ref.RelativeName(), subnet=args.subnet
+      )
 
     return private_connection_obj
 
@@ -66,12 +73,15 @@ class PrivateConnectionsClient:
     private_connection = self._GetPrivateConnection(private_connection_id, args)
 
     request_id = api_util.GenerateRequestId()
-    create_req_type = self._messages.DatamigrationProjectsLocationsPrivateConnectionsCreateRequest
+    create_req_type = (
+        self._messages.DatamigrationProjectsLocationsPrivateConnectionsCreateRequest
+    )
     create_req = create_req_type(
         privateConnection=private_connection,
         privateConnectionId=private_connection.name,
         parent=parent_ref,
-        requestId=request_id)
+        requestId=request_id,
+        validateOnly=args.validate_only)
     if args.IsKnownAndSpecified('skip_validation'):
       create_req.skipValidation = True
 
@@ -88,7 +98,9 @@ class PrivateConnectionsClient:
     """
 
     request_id = api_util.GenerateRequestId()
-    delete_req_type = self._messages.DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest
+    delete_req_type = (
+        self._messages
+        .DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest)
     delete_req = delete_req_type(
         name=private_connection_name, requestId=request_id)
 

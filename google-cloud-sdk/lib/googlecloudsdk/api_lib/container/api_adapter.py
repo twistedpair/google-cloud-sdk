@@ -119,6 +119,10 @@ No label named '{name}' found on cluster '{cluster}'."""
 NO_LABELS_ON_CLUSTER_ERROR_MSG = """\
 Cluster '{cluster}' has no labels to remove."""
 
+CREATE_SUBNETWORK_INVALID_KEY_FOR_IPV6_ERROR_MSG = """\
+Invalid key '{key}' for --create-subnetwork (must be 'name').
+"""
+
 CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG = """\
 Invalid key '{key}' for --create-subnetwork (must be one of 'name', 'range').
 """
@@ -313,6 +317,10 @@ CLUSTER_TIER_NOT_SUPPORTED = """\
 Provided cluster tier '{tier}' is not supported.
 """
 
+NETWORK_TIER_NOT_SUPPORTED = """\
+Provided network tier '{network_tier}' is not supported.
+"""
+
 TPU_TOPOLOGY_INCORRECT_FORMAT_ERROR_MSG = """\
 Invalid format '{topology}' for argument --tpu-topology. Must provide 2-3 integers separated by 'x' (e.g. 2x4 or 2x2x4)
 """
@@ -330,6 +338,10 @@ Anonymous authentication mode '{mode}' is not supported.
 
 MEMBERSHIP_TYPE_NOT_SUPPORTED = """\
 Fleet membership type '{type}' is not supported.
+"""
+
+ROUTE_BASED_CLUSTERS_NOT_SUPPORTED_WITH_STACK_TYPE_IPV6 = """\
+Route-based clusters are not supported with stack type IPV6.
 """
 
 DEFAULT_MAX_NODES_PER_POOL = 1000
@@ -843,6 +855,7 @@ class CreateClusterOptions(object):
       enable_k8s_certs_via_dns=None,
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
+      network_tier=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1134,6 +1147,7 @@ class CreateClusterOptions(object):
     self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
+    self.network_tier = network_tier
 
 
 class UpdateClusterOptions(object):
@@ -1305,6 +1319,7 @@ class UpdateClusterOptions(object):
       enable_autopilot_compatibility_auditing=None,
       service_account_signing_keys=None,
       service_account_verification_keys=None,
+      control_plane_disk_encryption_key=None,
       anonymous_authentication_config=None,
       patch_update=None,
       enable_auto_ipam=None,
@@ -1315,6 +1330,7 @@ class UpdateClusterOptions(object):
       enable_k8s_certs_via_dns=None,
       boot_disk_provisioned_iops=None,
       boot_disk_provisioned_throughput=None,
+      network_tier=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1528,6 +1544,7 @@ class UpdateClusterOptions(object):
     )
     self.service_account_verification_keys = service_account_verification_keys
     self.service_account_signing_keys = service_account_signing_keys
+    self.control_plane_disk_encryption_key = control_plane_disk_encryption_key
     self.anonymous_authentication_config = anonymous_authentication_config
     self.patch_update = patch_update
     self.enable_auto_ipam = enable_auto_ipam
@@ -1538,6 +1555,7 @@ class UpdateClusterOptions(object):
     self.enable_k8s_certs_via_dns = enable_k8s_certs_via_dns
     self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
     self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
+    self.network_tier = network_tier
 
 
 class SetMasterAuthOptions(object):
@@ -1755,8 +1773,8 @@ class CreateNodePoolOptions(object):
     self.secondary_boot_disks = secondary_boot_disks
     self.storage_pools = storage_pools
     self.local_ssd_encryption_mode = local_ssd_encryption_mode
-    self.provisioned_iops = boot_disk_provisioned_iops
-    self.provisioned_throughput = boot_disk_provisioned_throughput
+    self.boot_disk_provisioned_iops = boot_disk_provisioned_iops
+    self.boot_disk_provisioned_throughput = boot_disk_provisioned_throughput
 
 
 class UpdateNodePoolOptions(object):
@@ -2509,7 +2527,13 @@ class APIAdapter(object):
           workloadPool=options.workload_pool
       )
 
-    self.ParseIPAliasOptions(options, cluster)
+    is_cluster_ipv6 = (
+        options.stack_type and options.stack_type.lower() == 'ipv6'
+    )
+    if not is_cluster_ipv6:
+      # IP Alias is a no-op for IPv6-only clusters.
+      self.ParseIPAliasOptions(options, cluster)
+
     self.ParseAllowRouteOverlapOptions(options, cluster)
     self.ParsePrivateClusterOptions(options, cluster)
     self.ParseTpuOptions(options, cluster)
@@ -3140,6 +3164,11 @@ class APIAdapter(object):
       cluster.ipAllocationPolicy.autoIpamConfig = self.messages.AutoIpamConfig(
           enabled=True
       )
+
+    if options.network_tier is not None:
+      if cluster.ipAllocationPolicy is None:
+        cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy()
+      cluster.ipAllocationPolicy.networkTierConfig = _GetNetworkTierConfig(options, self.messages)
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -3253,10 +3282,12 @@ class APIAdapter(object):
 
   def ParseBootDiskConfig(self, options):
     boot_disk_config = self.messages.BootDisk()
-    if options.provisioned_iops:
-      boot_disk_config.provisionedIops = options.provisioned_iops
-    if options.provisioned_throughput:
-      boot_disk_config.provisionedThroughput = options.provisioned_throughput
+    if options.boot_disk_provisioned_iops:
+      boot_disk_config.provisionedIops = options.boot_disk_provisioned_iops
+    if options.boot_disk_provisioned_throughput:
+      boot_disk_config.provisionedThroughput = (
+          options.boot_disk_provisioned_throughput
+      )
     return boot_disk_config
 
   def ParseAdvancedMachineFeatures(self, options, node_config):
@@ -5186,6 +5217,17 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredUserManagedKeysConfig=updated_user_managed_keys_config
       )
+    if options.control_plane_disk_encryption_key is not None:
+      cluster = self.GetCluster(cluster_ref)
+      updated_user_managed_keys_config = self.messages.UserManagedKeysConfig()
+      if cluster.userManagedKeysConfig is not None:
+        updated_user_managed_keys_config = cluster.userManagedKeysConfig
+      updated_user_managed_keys_config.controlPlaneDiskEncryptionKey = (
+          options.control_plane_disk_encryption_key
+      )
+      update = self.messages.ClusterUpdate(
+          desiredUserManagedKeysConfig=updated_user_managed_keys_config
+      )
     if options.disable_auto_ipam:
       update = self.messages.ClusterUpdate(
           desiredAutoIpamConfig=self.messages.AutoIpamConfig(enabled=False)
@@ -5207,6 +5249,12 @@ class APIAdapter(object):
       config.mode = modes[options.anonymous_authentication_config]
       update = self.messages.ClusterUpdate(
           desiredAnonymousAuthenticationConfig=config
+      )
+    if options.network_tier is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNetworkTierConfig=_GetNetworkTierConfig(
+              options, self.messages
+          )
       )
 
     return update
@@ -5746,7 +5794,10 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.image_type:
       node_config.imageType = options.image_type
-    if options.provisioned_iops or options.provisioned_throughput:
+    if (
+        options.boot_disk_provisioned_iops
+        or options.boot_disk_provisioned_throughput
+    ):
       node_config.bootDisk = self.ParseBootDiskConfig(options)
 
     self.ParseAdvancedMachineFeatures(options, node_config)
@@ -8389,9 +8440,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         )
 
     if options.stack_type is not None:
-      cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
-          self.messages
-      ).GetEnumForChoice(options.stack_type)
+      if options.stack_type.lower() == 'ipv6':
+        self._ParseIPv6Options(options, cluster)
+      else:
+        cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
+            self.messages
+        ).GetEnumForChoice(options.stack_type)
 
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
@@ -8920,6 +8974,45 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         )
     )
 
+  def _ParseIPv6Options(self, options, cluster):
+    """Converts options for IPv6-only clusters."""
+    if options.enable_ip_alias is not None and not options.enable_ip_alias:
+      raise util.Error(ROUTE_BASED_CLUSTERS_NOT_SUPPORTED_WITH_STACK_TYPE_IPV6)
+
+    if options.subnetwork and options.create_subnetwork is not None:
+      raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
+
+    subnetwork_name = None
+
+    if options.create_subnetwork is not None:
+      for key in options.create_subnetwork:
+        if key != 'name':
+          raise util.Error(
+              CREATE_SUBNETWORK_INVALID_KEY_FOR_IPV6_ERROR_MSG.format(key=key)
+          )
+      subnetwork_name = options.create_subnetwork.get('name', None)
+
+    policy = self.messages.IPAllocationPolicy(
+        createSubnetwork=options.create_subnetwork is not None,
+        subnetworkName=subnetwork_name,
+        stackType=self.messages.IPAllocationPolicy.StackTypeValueValuesEnum.IPV6,
+        clusterSecondaryRangeName=options.cluster_secondary_range_name,
+        servicesSecondaryRangeName=options.services_secondary_range_name,
+    )
+    if options.disable_pod_cidr_overprovision is not None:
+      policy.podCidrOverprovisionConfig = (
+          self.messages.PodCIDROverprovisionConfig(
+              disable=options.disable_pod_cidr_overprovision
+          )
+      )
+    if options.ipv6_access_type is not None:
+      policy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
+          self.messages
+      ).GetEnumForChoice(options.ipv6_access_type)
+
+    cluster.ipAllocationPolicy = policy
+    return cluster
+
 
 def _GetCloudRunLoadBalancerType(options, messages):
   """Gets the Cloud Run load balancer type."""
@@ -9153,7 +9246,7 @@ def _GetReleaseChannel(options, messages):
         'extended': messages.ReleaseChannel.ChannelValueValuesEnum.EXTENDED,
         'None': messages.ReleaseChannel.ChannelValueValuesEnum.UNSPECIFIED,
     }
-    return messages.ReleaseChannel(channel=channels[options.release_channel[0]])
+    return messages.ReleaseChannel(channel=channels[options.release_channel])
 
 
 def _GetGkeAutoUpgradeConfig(options, messages):
@@ -9922,3 +10015,27 @@ def _ConfidentialNodeTypeEnumFromString(options, messages, for_node_pool=False):
             type=options.confidential_node_type.lower(), choices=choices
         )
     )
+
+
+def _GetNetworkTierConfig(options, messages):
+  """Gets the NetworkTierConfig from options."""
+  network_tier_config = messages.NetworkTierConfig()
+  if options.network_tier is not None:
+    network_tiers = {
+        'standard': (
+            messages.NetworkTierConfig.NetworkTierValueValuesEnum.NETWORK_TIER_STANDARD
+        ),
+        'premium': (
+            messages.NetworkTierConfig.NetworkTierValueValuesEnum.NETWORK_TIER_PREMIUM
+        ),
+        'network-default': (
+            messages.NetworkTierConfig.NetworkTierValueValuesEnum.NETWORK_TIER_DEFAULT
+        ),
+    }
+    if options.network_tier not in network_tiers:
+      raise util.Error(
+          NETWORK_TIER_NOT_SUPPORTED.format(network_tier=options.network_tier)
+      )
+    network_tier_config.networkTier = network_tiers[options.network_tier]
+  return network_tier_config
+

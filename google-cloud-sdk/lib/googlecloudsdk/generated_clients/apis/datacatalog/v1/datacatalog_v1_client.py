@@ -139,7 +139,7 @@ class DatacatalogV1(base_api.BaseApiClient):
           }
 
     def RetrieveConfig(self, request, global_params=None):
-      r"""Retrieves the configuration related to the migration from Data Catalog to Dataplex for a specific organization, including all the projects under it which have a separate configuration set.
+      r"""Retrieves the configuration related to the migration from Data Catalog to Dataplex Universal Catalog for a specific organization, including all the projects under it which have a separate configuration set.
 
       Args:
         request: (DatacatalogOrganizationsLocationsRetrieveConfigRequest) input message
@@ -166,7 +166,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def RetrieveEffectiveConfig(self, request, global_params=None):
-      r"""Retrieves the effective configuration related to the migration from Data Catalog to Dataplex for a specific organization or project. If there is no specific configuration set for the resource, the setting is checked hierarchicahlly through the ancestors of the resource, starting from the resource itself.
+      r"""Retrieves the effective configuration related to the migration from Data Catalog to Dataplex Universal Catalog for a specific organization or project. If there is no specific configuration set for the resource, the setting is checked hierarchicahlly through the ancestors of the resource, starting from the resource itself.
 
       Args:
         request: (DatacatalogOrganizationsLocationsRetrieveEffectiveConfigRequest) input message
@@ -193,7 +193,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def SetConfig(self, request, global_params=None):
-      r"""Sets the configuration related to the migration to Dataplex for an organization or project.
+      r"""Sets the configuration related to the migration to Dataplex Universal Catalog for an organization or project.
 
       Args:
         request: (DatacatalogOrganizationsLocationsSetConfigRequest) input message
@@ -2068,7 +2068,7 @@ class DatacatalogV1(base_api.BaseApiClient):
           }
 
     def RetrieveEffectiveConfig(self, request, global_params=None):
-      r"""Retrieves the effective configuration related to the migration from Data Catalog to Dataplex for a specific organization or project. If there is no specific configuration set for the resource, the setting is checked hierarchicahlly through the ancestors of the resource, starting from the resource itself.
+      r"""Retrieves the effective configuration related to the migration from Data Catalog to Dataplex Universal Catalog for a specific organization or project. If there is no specific configuration set for the resource, the setting is checked hierarchicahlly through the ancestors of the resource, starting from the resource itself.
 
       Args:
         request: (DatacatalogProjectsLocationsRetrieveEffectiveConfigRequest) input message
@@ -2095,7 +2095,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def SetConfig(self, request, global_params=None):
-      r"""Sets the configuration related to the migration to Dataplex for an organization or project.
+      r"""Sets the configuration related to the migration to Dataplex Universal Catalog for an organization or project.
 
       Args:
         request: (DatacatalogProjectsLocationsSetConfigRequest) input message

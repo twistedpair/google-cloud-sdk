@@ -1402,7 +1402,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a deployment resource in the API hub. The following fields in the deployment resource can be updated: * display_name * description * documentation * deployment_type * resource_uri * endpoints * slo * environment * attributes The update_mask should be used to specify the fields being updated.
+      r"""Update a deployment resource in the API hub. The following fields in the deployment resource can be updated: * display_name * description * documentation * deployment_type * resource_uri * endpoints * slo * environment * attributes * source_project * source_environment * management_url * source_uri The update_mask should be used to specify the fields being updated.
 
       Args:
         request: (ApihubProjectsLocationsDeploymentsPatchRequest) input message
@@ -1978,6 +1978,33 @@ class ApihubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApihubProjectsLocationsPluginsInstancesListRequest',
         response_type_name='GoogleCloudApihubV1ListPluginInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a plugin instance in the API hub. The following fields in the plugin_instance can be updated currently: * display_name * schedule_cron_expression The update_mask should be used to specify the fields being updated. To update the auth_config and additional_config of the plugin instance, use the ApplyPluginInstanceConfig method.
+
+      Args:
+        request: (ApihubProjectsLocationsPluginsInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApihubV1PluginInstance) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/plugins/{pluginsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='apihub.projects.locations.plugins.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApihubV1PluginInstance',
+        request_type_name='ApihubProjectsLocationsPluginsInstancesPatchRequest',
+        response_type_name='GoogleCloudApihubV1PluginInstance',
         supports_download=False,
     )
 

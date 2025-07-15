@@ -540,7 +540,7 @@ class BigQueryDestination(_messages.Message):
     force: If the destination table already exists and this flag is `TRUE`,
       the table will be overwritten by the contents of assets snapshot. If the
       flag is `FALSE` or unset and the destination table already exists, the
-      export call returns an INVALID_ARGUMEMT error.
+      export call returns an INVALID_ARGUMENT error.
     partitionSpec: [partition_spec] determines whether to export to
       partitioned table(s) and how to partition the data. If [partition_spec]
       is unset or [partition_spec.partition_key] is unset or
@@ -2312,10 +2312,20 @@ class FeatureEnablement(_messages.Message):
       COLLECT_AWS_SNS_SUBSCRIPTION_ATTRIBUTES: Collect
         GetSubcriptionAttributes as supplementary config for
         AWS::SNS::Subscription.
+      COLLECT_AWS_BEDROCK_AGENTS: Collect ListAgents as a sumpplementary
+        config for AWS Bedrock types
+      COLLECT_AWS_BEDROCK_KNOWLEDGE_BASES: Collect ListKnowledgeBases for type
+        AWS::Bedrock::KnowledgeBase.
+      COLLECT_AZURE_GRAPH_ROLES: Add permissions
+        `DeviceManagementRBAC.Read.All` for type
+        Microsoft.Graph/roleAssignments, Microsoft.Graph/roleDefinitions
     """
     FEATURE_ID_UNSPECIFIED = 0
     COLLECT_AWS_OU = 1
     COLLECT_AWS_SNS_SUBSCRIPTION_ATTRIBUTES = 2
+    COLLECT_AWS_BEDROCK_AGENTS = 3
+    COLLECT_AWS_BEDROCK_KNOWLEDGE_BASES = 4
+    COLLECT_AZURE_GRAPH_ROLES = 5
 
   enablement = _messages.EnumField('EnablementValueValuesEnum', 1)
   featureId = _messages.EnumField('FeatureIdValueValuesEnum', 2)

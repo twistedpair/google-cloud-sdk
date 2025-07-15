@@ -32,7 +32,7 @@ range_limited:
   range:
     max: 8
     min: 0
-  severity: major
+  severity: minor
   reason: Cloud Run supports max 8 CPUs.
   flags:
   - --cpu
@@ -42,7 +42,7 @@ range_limited:
   range:
     max: 32
     min: 0.5369
-  severity: major
+  severity: minor
   reason: Cloud Run supports max 32Gi of memory.
   flags:
   - --memory
@@ -52,7 +52,7 @@ range_limited:
   range:
     max: 1000
     min: 0
-  severity: major
+  severity: minor
   reason: Cloud Run supports automatic scaling min instances values between 0 to 1000.
   flags:
   - --min-instances
@@ -62,7 +62,7 @@ range_limited:
   range:
     max: 1000
     min: 0
-  severity: major
+  severity: minor
   reason: Cloud Run supports automatic scaling max instances values between 0 to 1000.
   flags:
   - --max-instances
@@ -72,7 +72,7 @@ range_limited:
   range:
     max: 1000
     min: 0
-  severity: major
+  severity: minor
   reason: Cloud Run supports manual scaling values between 0 and 1000.
   flags:
   - --min-instances
@@ -83,7 +83,7 @@ range_limited:
   range:
     max: 1000
     min: 0
-  severity: major
+  severity: minor
   reason: Cloud Run supports basic scaling values between 0 and 1000.
   flags:
   - --min-instances
@@ -94,7 +94,7 @@ range_limited:
   range:
     max: 1000
     min: 1
-  severity: major
+  severity: minor
   reason: Cloud Run supports concurrency values between 1 and 1000.
   flags:
   - --concurrency
@@ -104,7 +104,7 @@ range_limited:
   range:
     max: 1000
     min: 1
-  severity: major
+  severity: minor
   reason: Cloud Run supports concurrency values between 1 and 1000.
   flags:
   - --concurrency
@@ -125,49 +125,97 @@ value_limited:
   known_values:
   - aspnetcore
   - custom
-  - java
+  - java8
+  - java11
+  - java17
+  - java21
   - python39
   - python310
   - python311
   - python312
+  - php55
+  - php72
+  - php73
+  - php74
   - php81
   - php82
   - php83
+  - php84
+  - ruby25
+  - ruby26
+  - ruby27
   - ruby30
   - ruby31
   - ruby32
+  - ruby33
+  - ruby34
+  - go111
+  - go112
+  - go113
+  - go114
+  - go115
+  - go116
+  - go117
+  - go118
+  - go119
   - go120
   - go121
   - go122
   - go123
-  - go124
-  - go125
+  - nodejs8
+  - nodejs10
+  - nodejs12
+  - nodejs14
   - nodejs16
   - nodejs18
   - nodejs20
+  - nodejs22
   allowed_values:
   - aspnetcore
   - custom
-  - java
+  - java11
+  - java17
+  - java21
   - python39
   - python310
   - python311
   - python312
+  - php72
+  - php73
+  - php74
   - php81
   - php82
   - php83
+  - php84
+  - ruby25
+  - ruby26
+  - ruby27
   - ruby30
   - ruby31
   - ruby32
+  - ruby33
+  - ruby34
+  - go111
+  - go112
+  - go113
+  - go114
+  - go115
+  - go116
+  - go117
+  - go118
+  - go119
   - go120
   - go121
   - go122
   - go123
-  - go124
-  - go125
+  - nodejs8
+  - nodejs10
+  - nodejs12
+  - nodejs14
   - nodejs16
   - nodejs18
   - nodejs20
+  - nodejs22
   severity: major
   reason: Cloud Run supports App Engine standard Gen2 runtimes. Older runtimes are not compatible.
 supported:

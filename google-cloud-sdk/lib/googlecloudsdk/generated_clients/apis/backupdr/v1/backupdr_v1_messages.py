@@ -460,12 +460,14 @@ class Backup(_messages.Message):
       ACTIVE: The backup has been created and is fully usable.
       DELETING: The backup is being deleted.
       ERROR: The backup is experiencing an issue and might be unusable.
+      UPLOADING: The backup is being uploaded.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     ERROR = 4
+    UPLOADING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -931,8 +933,13 @@ class BackupPlanAssociation(_messages.Message):
     backupPlan: Required. Resource name of backup plan which needs to be
       applied on workload. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
-    cloudSqlInstanceBackupPlanAssociationProperties: Cloud SQL instance's
-      backup plan association properties.
+    backupPlanRevisionId: Output only. The user friendly revision ID of the
+      `BackupPlanRevision`. Example: v0, v1, v2, etc.
+    backupPlanRevisionName: Output only. The resource id of the
+      `BackupPlanRevision`. Format: `projects/{project}/locations/{location}/b
+      ackupPlans/{backup_plan}/revisions/{revision_id}`
+    cloudSqlInstanceBackupPlanAssociationProperties: Output only. Cloud SQL
+      instance's backup plan association properties.
     createTime: Output only. The time when the instance was created.
     dataSource: Output only. Resource name of data source which will be used
       as storage location for backups taken. Format : projects/{project}/locat
@@ -940,8 +947,12 @@ class BackupPlanAssociation(_messages.Message):
     name: Output only. Identifier. The resource name of BackupPlanAssociation
       in below format Format : projects/{project}/locations/{location}/backupP
       lanAssociations/{backupPlanAssociationId}
-    resource: Required. Immutable. Resource name of workload on which
-      backupplan is applied
+    resource: Required. Immutable. Resource name of workload on which the
+      backup plan is applied. The format can either be the resource name
+      (e.g., "projects/my-project/zones/us-central1-a/instances/my-instance")
+      or the full resource URI (e.g.,
+      "https://www.googleapis.com/compute/v1/projects/my-project/zones/us-
+      central1-a/instances/my-instance").
     resourceType: Required. Immutable.
     rulesConfigInfo: Output only. The config info related to backup rules.
     state: Output only. The BackupPlanAssociation resource state.
@@ -967,15 +978,17 @@ class BackupPlanAssociation(_messages.Message):
     UPDATING = 5
 
   backupPlan = _messages.StringField(1)
-  cloudSqlInstanceBackupPlanAssociationProperties = _messages.MessageField('CloudSqlInstanceBackupPlanAssociationProperties', 2)
-  createTime = _messages.StringField(3)
-  dataSource = _messages.StringField(4)
-  name = _messages.StringField(5)
-  resource = _messages.StringField(6)
-  resourceType = _messages.StringField(7)
-  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 8, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  backupPlanRevisionId = _messages.StringField(2)
+  backupPlanRevisionName = _messages.StringField(3)
+  cloudSqlInstanceBackupPlanAssociationProperties = _messages.MessageField('CloudSqlInstanceBackupPlanAssociationProperties', 4)
+  createTime = _messages.StringField(5)
+  dataSource = _messages.StringField(6)
+  name = _messages.StringField(7)
+  resource = _messages.StringField(8)
+  resourceType = _messages.StringField(9)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class BackupPlanRevision(_messages.Message):
@@ -1027,11 +1040,8 @@ class BackupRule(_messages.Message):
       data will be kept. It is defined in "days". The value should be greater
       than or equal to minimum enforced retention of the backup vault. Minimum
       value is 1 and maximum value is 36159 for custom retention on-demand
-      backup. Minimum value is 1 and maximum value is 90 for hourly backups.
-      Minimum value is 1 and maximum value is 186 for daily backups. Minimum
-      value is 7 and maximum value is 366 for weekly backups. Minimum value is
-      30 and maximum value is 732 for monthly backups. Minimum value is 365
-      and maximum value is 36159 for yearly backups.
+      backup. Minimum and maximum values are workload specific for all other
+      rules.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -1135,9 +1145,8 @@ class BackupVault(_messages.Message):
     WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA = 4
 
   class BackupRetentionInheritanceValueValuesEnum(_messages.Enum):
-    r"""Optional.
-
-    Setting for how a backup's enforced retention end time is inherited.
+    r"""Optional. Setting for how a backup's enforced retention end time is
+    inherited.
 
     Values:
       BACKUP_RETENTION_INHERITANCE_UNSPECIFIED: Inheritance behavior not set.
@@ -1153,7 +1162,6 @@ class BackupVault(_messages.Message):
         time must be updated together and have the same value. Invalid update
         requests will be rejected by the server.
     """
-
     BACKUP_RETENTION_INHERITANCE_UNSPECIFIED = 0
     INHERIT_VAULT_RETENTION = 1
     MATCH_BACKUP_EXPIRE_TIME = 2
@@ -1231,9 +1239,7 @@ class BackupVault(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 2)
   backupCount = _messages.IntegerField(3)
   backupMinimumEnforcedRetentionDuration = _messages.StringField(4)
-  backupRetentionInheritance = _messages.EnumField(
-      'BackupRetentionInheritanceValueValuesEnum', 5
-  )
+  backupRetentionInheritance = _messages.EnumField('BackupRetentionInheritanceValueValuesEnum', 5)
   createTime = _messages.StringField(6)
   deletable = _messages.BooleanField(7)
   description = _messages.StringField(8)
@@ -2601,18 +2607,21 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
   properties. .
 
   Fields:
-    databaseInstalledVersion: The installed database version of the Cloud SQL
-      instance when the backup was taken.
-    description: An optional text description for the backup. DEPRECATED: Use
-      the description field in the Backup resource instead.
-    finalBackup: Whether the backup is a final backup.
-    sourceInstance: The source instance of the backup.
+    databaseInstalledVersion: Output only. The installed database version of
+      the Cloud SQL instance when the backup was taken.
+    finalBackup: Output only. Whether the backup is a final backup.
+    instanceCreateTime: Output only. The instance creation timestamp.
+    instanceTier: Output only. The tier (or machine type) for this instance.
+      Example: `db-custom-1-3840`
+    sourceInstance: Output only. The source instance of the backup. Format:
+      projects/{project}/instances/{instance}
   """
 
   databaseInstalledVersion = _messages.StringField(1)
-  description = _messages.StringField(2)
-  finalBackup = _messages.BooleanField(3)
-  sourceInstance = _messages.StringField(4)
+  finalBackup = _messages.BooleanField(2)
+  instanceCreateTime = _messages.StringField(3)
+  instanceTier = _messages.StringField(4)
+  sourceInstance = _messages.StringField(5)
 
 
 class CloudSqlInstanceDataSourceProperties(_messages.Message):
@@ -2620,18 +2629,22 @@ class CloudSqlInstanceDataSourceProperties(_messages.Message):
   Cloud SQL resource that are stored in the DataSource. .
 
   Fields:
-    databaseInstalledVersion: The installed database version of the Cloud SQL
-      instance.
-    instanceCreateTime: The instance creation timestamp.
-    name: Name of the Cloud SQL instance backed up by the datasource.
-    pitrWindows: Point in time recovery windows. This is not intended to be
-      exposed to the customers yet.
+    databaseInstalledVersion: Output only. The installed database version of
+      the Cloud SQL instance.
+    instanceCreateTime: Output only. The instance creation timestamp.
+    instanceTier: Output only. The tier (or machine type) for this instance.
+      Example: `db-custom-1-3840`
+    name: Output only. Name of the Cloud SQL instance backed up by the
+      datasource. Format: projects/{project}/instances/{instance}
+    pitrWindows: Output only. Point in time recovery windows. This is not
+      intended to be exposed to the customers yet.
   """
 
   databaseInstalledVersion = _messages.StringField(1)
   instanceCreateTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pitrWindows = _messages.MessageField('PitrWindow', 4, repeated=True)
+  instanceTier = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pitrWindows = _messages.MessageField('PitrWindow', 5, repeated=True)
 
 
 class CloudSqlInstanceDataSourceReferenceProperties(_messages.Message):
@@ -2639,18 +2652,48 @@ class CloudSqlInstanceDataSourceReferenceProperties(_messages.Message):
   of a Cloud SQL resource that are stored in the DataSourceReference. .
 
   Fields:
-    databaseInstalledVersion: The installed database version of the Cloud SQL
-      instance.
-    instanceCreateTime: The instance creation timestamp.
-    name: Name of the Cloud SQL instance backed up by the datasource.
-    pitrWindows: Point in time recovery windows. This is not intended to be
-      exposed to the customers yet.
+    databaseInstalledVersion: Output only. The installed database version of
+      the Cloud SQL instance.
+    instanceCreateTime: Output only. The instance creation timestamp.
+    instanceTier: Output only. The tier (or machine type) for this instance.
+      Example: `db-custom-1-3840`
+    name: Output only. Name of the Cloud SQL instance backed up by the
+      datasource. Format: projects/{project}/instances/{instance}
+    pitrWindows: Output only. Point in time recovery windows. This is not
+      intended to be exposed to the customers yet.
   """
 
   databaseInstalledVersion = _messages.StringField(1)
   instanceCreateTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pitrWindows = _messages.MessageField('PitrWindow', 4, repeated=True)
+  instanceTier = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pitrWindows = _messages.MessageField('PitrWindow', 5, repeated=True)
+
+
+class CloudSqlInstanceInitializationConfig(_messages.Message):
+  r"""CloudSqlInstanceInitializationConfig contains the configuration for
+  initializing a Cloud SQL instance.
+
+  Enums:
+    EditionValueValuesEnum: Required. The edition of the Cloud SQL instance.
+
+  Fields:
+    edition: Required. The edition of the Cloud SQL instance.
+  """
+
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Required. The edition of the Cloud SQL instance.
+
+    Values:
+      EDITION_UNSPECIFIED: Unspecified edition.
+      ENTERPRISE: Enterprise edition.
+      ENTERPRISE_PLUS: Enterprise Plus edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    ENTERPRISE = 1
+    ENTERPRISE_PLUS = 2
+
+  edition = _messages.EnumField('EditionValueValuesEnum', 1)
 
 
 class ComputeInstanceBackupProperties(_messages.Message):
@@ -3168,9 +3211,9 @@ class DataSourceGcpResource(_messages.Message):
   GcpResourceDataSource or GcpDataSourceResource
 
   Fields:
-    cloudSqlInstanceDatasourceProperties: CloudSqlInstanceDataSourceProperties
-      has a subset of Cloud SQL Instance properties that are useful at the
-      Datasource level.
+    cloudSqlInstanceDatasourceProperties: Output only.
+      CloudSqlInstanceDataSourceProperties has a subset of Cloud SQL Instance
+      properties that are useful at the Datasource level.
     computeInstanceDatasourceProperties: ComputeInstanceDataSourceProperties
       has a subset of Compute Instance properties that are useful at the
       Datasource level.
@@ -3197,6 +3240,8 @@ class DataSourceGcpResourceInfo(_messages.Message):
   Fields:
     cloudSqlInstanceProperties: Output only. The properties of the Cloud SQL
       instance.
+    filestoreInstanceProperties: Output only. The properties of the Filestore
+      instance.
     gcpResourcename: Output only. The resource name of the GCP resource. Ex:
       projects/{project}/zones/{zone}/instances/{instance}
     location: Output only. The location of the GCP resource. Ex:
@@ -3206,9 +3251,10 @@ class DataSourceGcpResourceInfo(_messages.Message):
   """
 
   cloudSqlInstanceProperties = _messages.MessageField('CloudSqlInstanceDataSourceReferenceProperties', 1)
-  gcpResourcename = _messages.StringField(2)
-  location = _messages.StringField(3)
-  type = _messages.StringField(4)
+  filestoreInstanceProperties = _messages.MessageField('FilestoreInstanceDataSourceReferenceProperties', 2)
+  gcpResourcename = _messages.StringField(3)
+  location = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class DataSourceReference(_messages.Message):
@@ -3221,9 +3267,9 @@ class DataSourceReference(_messages.Message):
   Fields:
     createTime: Output only. The time when the DataSourceReference was
       created.
-    dataSource: Required. The resource name of the DataSource. Format: project
-      s/{project}/locations/{location}/backupVaults/{backupVault}/dataSources/
-      {dataSource}
+    dataSource: Output only. The resource name of the DataSource. Format: proj
+      ects/{project}/locations/{location}/backupVaults/{backupVault}/dataSourc
+      es/{dataSource}
     dataSourceBackupConfigInfo: Output only. Information of backup
       configuration on the DataSource.
     dataSourceBackupConfigState: Output only. The backup configuration state
@@ -3507,6 +3553,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class Entry(_messages.Message):
   r"""A key/value pair to be used for storing metadata.
 
@@ -3603,11 +3650,9 @@ class FetchDataSourceReferencesForResourceTypeResponse(_messages.Message):
   r"""Response for the FetchDataSourceReferencesForResourceType method.
 
   Fields:
-    dataSourceReferences: Output only. The DataSourceReferences from the
-      specified parent.
-    nextPageToken: Output only. A token, which can be sent as `page_token` to
-      retrieve the next page. If this field is omitted, there are no
-      subsequent pages.
+    dataSourceReferences: The DataSourceReferences from the specified parent.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
   """
 
   dataSourceReferences = _messages.MessageField('DataSourceReference', 1, repeated=True)
@@ -3632,6 +3677,20 @@ class FetchUsableBackupVaultsResponse(_messages.Message):
   backupVaults = _messages.MessageField('BackupVault', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class FilestoreInstanceDataSourceReferenceProperties(_messages.Message):
+  r"""FilestoreInstanceDataSourceReferenceProperties represents the properties
+  of a Filestore resource that are stored in the DataSourceReference. .
+
+  Fields:
+    instanceCreateTime: Output only. The instance creation timestamp.
+    name: Output only. Name of the Filestore instance backed up by the
+      datasource. Format: projects/{project}/instances/{instance}
+  """
+
+  instanceCreateTime = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class FinalizeBackupRequest(_messages.Message):
@@ -3684,12 +3743,21 @@ class GCPBackupPlanInfo(_messages.Message):
     backupPlan: Resource name of backup plan by which workload is protected at
       the time of the backup. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
+    backupPlanRevisionId: The user friendly id of the backup plan revision
+      which triggered this backup in case of scheduled backup or used for on
+      demand backup.
+    backupPlanRevisionName: Resource name of the backup plan revision which
+      triggered this backup in case of scheduled backup or used for on demand
+      backup. Format: projects/{project}/locations/{location}/backupPlans/{bac
+      kupPlanId}/revisions/{revisionId}
     backupPlanRuleId: The rule id of the backup plan which triggered this
       backup in case of scheduled backup or used for
   """
 
   backupPlan = _messages.StringField(1)
-  backupPlanRuleId = _messages.StringField(2)
+  backupPlanRevisionId = _messages.StringField(2)
+  backupPlanRevisionName = _messages.StringField(3)
+  backupPlanRuleId = _messages.StringField(4)
 
 
 class GcpBackupConfig(_messages.Message):
@@ -3701,6 +3769,9 @@ class GcpBackupConfig(_messages.Message):
     backupPlan: The name of the backup plan.
     backupPlanAssociation: The name of the backup plan association.
     backupPlanDescription: The description of the backup plan.
+    backupPlanRevisionId: The user friendly id of the backup plan revision.
+      E.g. v0, v1 etc.
+    backupPlanRevisionName: The name of the backup plan revision.
     backupPlanRules: The names of the backup plan rules which point to this
       backupvault
   """
@@ -3708,7 +3779,9 @@ class GcpBackupConfig(_messages.Message):
   backupPlan = _messages.StringField(1)
   backupPlanAssociation = _messages.StringField(2)
   backupPlanDescription = _messages.StringField(3)
-  backupPlanRules = _messages.StringField(4, repeated=True)
+  backupPlanRevisionId = _messages.StringField(4)
+  backupPlanRevisionName = _messages.StringField(5)
+  backupPlanRules = _messages.StringField(6, repeated=True)
 
 
 class GcpResource(_messages.Message):
@@ -3793,6 +3866,8 @@ class InitializeServiceRequest(_messages.Message):
   r"""Request message for initializing the service.
 
   Fields:
+    cloudSqlInstanceInitializationConfig: Optional. The configuration for
+      initializing a Cloud SQL instance.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3809,8 +3884,9 @@ class InitializeServiceRequest(_messages.Message):
       "compute.googleapis.com/Instance" and "storage.googleapis.com/Bucket".
   """
 
-  requestId = _messages.StringField(1)
-  resourceType = _messages.StringField(2)
+  cloudSqlInstanceInitializationConfig = _messages.MessageField('CloudSqlInstanceInitializationConfig', 1)
+  requestId = _messages.StringField(2)
+  resourceType = _messages.StringField(3)
 
 
 class InitiateBackupRequest(_messages.Message):
@@ -4687,9 +4763,9 @@ class PitrWindow(_messages.Message):
   r"""Point in time recovery window for a Cloud SQL instance.
 
   Fields:
-    endTime: The end time of the PITR window.
-    logRetentionDays: Log retention days for the PITR window.
-    startTime: The start time of the PITR window.
+    endTime: Output only. The end time of the PITR window.
+    logRetentionDays: Output only. Log retention days for the PITR window.
+    startTime: Output only. The start time of the PITR window.
   """
 
   endTime = _messages.StringField(1)

@@ -1228,9 +1228,9 @@ class GoogleCloudBigqueryMigrationV2MigrationTask(_messages.Message):
     metrics: Output only. The metrics for the task.
     processingError: Output only. An explanation that may be populated when
       the task is in FAILED state.
-    resourceErrorCount: The number or resources with errors. Note: This is not
-      the total number of errors as each resource can have more than one
-      error. This is used to indicate truncation by having a
+    resourceErrorCount: Output only. The number or resources with errors.
+      Note: This is not the total number of errors as each resource can have
+      more than one error. This is used to indicate truncation by having a
       `resource_error_count` that is higher than the size of
       `resource_error_details`.
     resourceErrorDetails: Output only. Provides details to errors and issues

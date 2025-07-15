@@ -269,7 +269,7 @@ def AddEncryptionConfigGroup(parser, source_type):
 
   Args:
     parser: The argparse parser.
-    source_type: The type of source being restored, for example "backup".
+    source_type: "backup" if a restore; "database" if a clone
   """
   encryption_config = parser.add_argument_group(
       required=False,
@@ -341,6 +341,50 @@ def AddKmsKeyNameFlag(parser, additional_help_text=None):
       required=False,
       default=None,
       help=help_text,
+  )
+
+
+def AddDestinationDatabase(parser, action_name, source_type):
+  parser.add_argument(
+      '--destination-database',
+      metavar='DESTINATION_DATABASE',
+      type=str,
+      required=True,
+      help=textwrap.dedent(f"""\
+          Destination database to {action_name} to. Destination database will be created in the same location as the source {source_type}.
+
+          This value should be 4-63 characters. Valid characters are /[a-z][0-9]-/
+          with first character a letter and the last a letter or a number. Must
+          not be UUID-like /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/.
+
+          Using "(default)" database ID is also allowed.
+
+          For example, to {action_name} to database `testdb`:
+
+          $ {{command}} --destination-database=testdb
+          """),
+  )
+
+
+def AddTags(parser, resource_type):
+  """Adds the --tags flag to the given parser.
+
+  Args:
+    parser: The parser to add the flag to.
+    resource_type: The resource type to use in the help text (e.g. 'database').
+  """
+  parser.add_argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      default=None,
+      help=textwrap.dedent(f"""\
+          Tags to attach to the destination {resource_type}. Example: --tags=key1=value1,key2=value2
+
+          For example, to attach tags to a {resource_type}:
+
+          $ --tags=key1=value1,key2=value2
+          """),
   )
 
 

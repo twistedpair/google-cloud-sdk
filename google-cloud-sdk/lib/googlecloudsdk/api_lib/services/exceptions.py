@@ -93,8 +93,8 @@ class GetConsumerPolicyException(Error):
   """Exception for get consumer policy."""
 
 
-class UpdateConsumerPolicyPermissionDeniedException(Error):
-  """Permission denied exception for update consumer policy."""
+class UpdateConsumerPolicyException(Error):
+  """Update consumer policy."""
 
 
 class GetReverseDependencyClosurePermissionDeniedException(Error):
@@ -143,6 +143,10 @@ class BatchGetServiceException(Error):
 
 class ListCategoryServicesException(Error):
   """List category service."""
+
+
+class AnalyzeConsumerPolicyException(Error):
+  """Analyze consumer policy."""
 
 
 class OperationErrorException(Error):

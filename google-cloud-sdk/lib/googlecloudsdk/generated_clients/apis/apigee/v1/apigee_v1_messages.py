@@ -609,6 +609,26 @@ class ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsApisKeyvaluemapsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisKeyvaluemapsGetRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to fetch the key
+      value map. Use **one** of the following structures in your request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsApisListRequest(_messages.Message):
   r"""A ApigeeOrganizationsApisListRequest object.
 
@@ -899,6 +919,38 @@ class ApigeeOrganizationsAppgroupsAppsUpdateRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsAppgroupsBalanceAdjustRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsBalanceAdjustRequest object.
+
+  Fields:
+    googleCloudApigeeV1AdjustAppGroupBalanceRequest: A
+      GoogleCloudApigeeV1AdjustAppGroupBalanceRequest resource to be passed as
+      the request body.
+    name: Required. Account balance for the AppGroup. Use the following
+      structure in your request:
+      `organizations/{org}/appgroups/{app_group}/balance`
+  """
+
+  googleCloudApigeeV1AdjustAppGroupBalanceRequest = _messages.MessageField('GoogleCloudApigeeV1AdjustAppGroupBalanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsBalanceCreditRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsBalanceCreditRequest object.
+
+  Fields:
+    googleCloudApigeeV1CreditAppGroupBalanceRequest: A
+      GoogleCloudApigeeV1CreditAppGroupBalanceRequest resource to be passed as
+      the request body.
+    name: Required. Account balance for the AppGroup. Use the following
+      structure in your request:
+      `organizations/{org}/appgroups/{app_group}/balance`
+  """
+
+  googleCloudApigeeV1CreditAppGroupBalanceRequest = _messages.MessageField('GoogleCloudApigeeV1CreditAppGroupBalanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsAppgroupsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsCreateRequest object.
 
@@ -920,6 +972,30 @@ class ApigeeOrganizationsAppgroupsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the AppGroup. Use the following structure in your
       request: `organizations/{org}/appgroups/{app_group_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsGetBalanceRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsGetBalanceRequest object.
+
+  Fields:
+    name: Required. Account balance for the AppGroup. Use the following
+      structure in your request:
+      `organizations/{org}/appgroups/{app_group}/balance`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsGetMonetizationConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsGetMonetizationConfigRequest object.
+
+  Fields:
+    name: Required. Monetization configuration for the AppGroup. Use the
+      following structure in your request:
+      `organizations/{org}/appgroups/{app_group}/monetizationConfig`
   """
 
   name = _messages.StringField(1, required=True)
@@ -956,6 +1032,22 @@ class ApigeeOrganizationsAppgroupsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ApigeeOrganizationsAppgroupsUpdateMonetizationConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsUpdateMonetizationConfigRequest object.
+
+  Fields:
+    googleCloudApigeeV1AppGroupMonetizationConfig: A
+      GoogleCloudApigeeV1AppGroupMonetizationConfig resource to be passed as
+      the request body.
+    name: Required. Monetization configuration for the AppGroup. Use the
+      following structure in your request:
+      `organizations/{org}/appgroups/{app_group}/monetizationConfig`
+  """
+
+  googleCloudApigeeV1AppGroupMonetizationConfig = _messages.MessageField('GoogleCloudApigeeV1AppGroupMonetizationConfig', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsAppgroupsUpdateRequest(_messages.Message):
@@ -1014,7 +1106,7 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
       "page_token" is supported from ver 1.10.0 and above.
     parent: Required. Resource path of the parent in the following format:
       `organizations/{org}`
-    rows: Optional. Maximum number of app IDs to return. Defaults to 10000.
+    rows: Optional. Maximum number of app IDs to return. Defaults to 1000.
     startKey: Returns the list of apps starting from the specified app ID.
     status: Optional. Filter by the status of the app. Valid values are
       `approved` or `revoked`. Defaults to `approved`.
@@ -2998,6 +3090,26 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest(_messages.Me
   parent = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsKeyvaluemapsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsKeyvaluemapsGetRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to fetch the key
+      value map. Use **one** of the following structures in your request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsModifyEnvironmentRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsModifyEnvironmentRequest object.
 
@@ -3306,6 +3418,18 @@ class ApigeeOrganizationsEnvironmentsSecurityActionsCreateRequest(_messages.Mess
   securityActionId = _messages.StringField(3)
 
 
+class ApigeeOrganizationsEnvironmentsSecurityActionsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the security monitoring condition to delete.
+      Format: `organizations/{org}/environment/{env}/securityActions/{security
+      _action}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsSecurityActionsDisableRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsSecurityActionsDisableRequest object.
 
@@ -3372,6 +3496,26 @@ class ApigeeOrganizationsEnvironmentsSecurityActionsListRequest(_messages.Messag
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityActionsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityAction: A GoogleCloudApigeeV1SecurityAction
+      resource to be passed as the request body.
+    name: Immutable. This field is ignored during creation as per AIP-133.
+      Please set the `security_action_id` field in the
+      CreateSecurityActionRequest when creating a new SecurityAction. Format:
+      organizations/{org}/environments/{env}/securityActions/{security_action}
+    updateMask: Optional. The list of fields to update. Valid fields to update
+      are `description`, `state`, `allow`, `deny`, and `flag`, `expire_time`,
+      and `ttl`, `api_proxies`, and `condition_config`.
+  """
+
+  googleCloudApigeeV1SecurityAction = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsEnvironmentsSecurityIncidentsBatchUpdateRequest(_messages.Message):
@@ -4620,6 +4764,26 @@ class ApigeeOrganizationsKeyvaluemapsEntriesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsKeyvaluemapsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsKeyvaluemapsGetRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to fetch the key
+      value map. Use **one** of the following structures in your request: *
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. *
+      `organizations/{organization}/environments/{environment}/keyvaluemaps/{k
+      eyvaluemap}` *
+      `organizations/{organization}/keyvaluemaps/{keyvaluemap}`. If the
+      KeyValueMap is under an API Proxy resource that has the `space`
+      attribute set, IAM permissions are checked against the Space resource
+      path. To learn more, read the [Apigee Spaces
+      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
+      administration/spaces/apigee-spaces-overview).
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsListRequest object.
 
@@ -4795,73 +4959,6 @@ class ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest(_messages.
 
   googleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest', 1)
   name = _messages.StringField(2, required=True)
-
-
-class ApigeeOrganizationsSecurityFeedbackCreateRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityFeedbackCreateRequest object.
-
-  Fields:
-    googleCloudApigeeV1SecurityFeedback: A GoogleCloudApigeeV1SecurityFeedback
-      resource to be passed as the request body.
-    parent: Required. Name of the organization. Use the following structure in
-      your request: `organizations/{org}`.
-    securityFeedbackId: Optional. The id for this feedback report. If not
-      provided, it will be set to a system-generated UUID.
-  """
-
-  googleCloudApigeeV1SecurityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 1)
-  parent = _messages.StringField(2, required=True)
-  securityFeedbackId = _messages.StringField(3)
-
-
-class ApigeeOrganizationsSecurityFeedbackDeleteRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityFeedbackDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the SecurityFeedback to delete. Use the following
-      structure in your request:
-      `organizations/{org}/securityFeedback/{feedback_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ApigeeOrganizationsSecurityFeedbackGetRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityFeedbackGetRequest object.
-
-  Fields:
-    name: Required. Name of the SecurityFeedback. Format:
-      `organizations/{org}/securityFeedback/{feedback_id}` Example:
-      organizations/apigee-organization-name/securityFeedback/feedback-id
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ApigeeOrganizationsSecurityFeedbackListRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityFeedbackListRequest object.
-
-  Fields:
-    filter: Optional. Allow filtering.
-    pageSize: Optional. The maximum number of feedback reports to return. The
-      service may return fewer than this value.
-      LINT.IfChange(documented_page_size_limits) If unspecified, at most 100
-      feedback reports will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000. LINT.ThenChange( //depot/google3/edg
-      e/sense/boq/service/v1/securityfeedback/securityfeedback_rpc.go:page_siz
-      e_limits )
-    pageToken: Optional. A page token, received from a previous
-      `ListSecurityFeedback` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to
-      `ListSecurityFeedback` must match the call that provided the page token.
-    parent: Required. Name of the organization. Format: `organizations/{org}`.
-      Example: organizations/apigee-organization-name/securityFeedback
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
 
 
 class ApigeeOrganizationsSecurityMonitoringConditionsCreateRequest(_messages.Message):
@@ -5969,6 +6066,21 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
   monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 6)
 
 
+class GoogleCloudApigeeV1AdjustAppGroupBalanceRequest(_messages.Message):
+  r"""Request for AdjustAppGroupBalance.
+
+  Fields:
+    adjustment: Required. * A positive value of `adjustment` means that that
+      the API provider wants to adjust the balance for an under-charged
+      AppGroup i.e. the balance of the AppGroup will decrease. * A negative
+      value of `adjustment` means that that the API provider wants to adjust
+      the balance for an over-charged AppGroup i.e. the balance of the
+      AppGroup will increase.
+  """
+
+  adjustment = _messages.MessageField('GoogleTypeMoney', 1)
+
+
 class GoogleCloudApigeeV1AdjustDeveloperBalanceRequest(_messages.Message):
   r"""Request for AdjustDeveloperBalance.
 
@@ -6795,6 +6907,7 @@ class GoogleCloudApigeeV1AppGroup(_messages.Message):
     channelUri: A reference to the associated storefront/marketplace.
     createdAt: Output only. Created time as milliseconds since epoch.
     displayName: app group name displayed in the UI
+    email: Optional. Email of the AppGroup.
     lastModifiedAt: Output only. Modified time as milliseconds since epoch.
     name: Immutable. Name of the AppGroup. Characters you can use in the name
       are restricted to: A-Z0-9._\-$ %.
@@ -6810,10 +6923,11 @@ class GoogleCloudApigeeV1AppGroup(_messages.Message):
   channelUri = _messages.StringField(4)
   createdAt = _messages.IntegerField(5)
   displayName = _messages.StringField(6)
-  lastModifiedAt = _messages.IntegerField(7)
-  name = _messages.StringField(8)
-  organization = _messages.StringField(9)
-  status = _messages.StringField(10)
+  email = _messages.StringField(7)
+  lastModifiedAt = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  organization = _messages.StringField(10)
+  status = _messages.StringField(11)
 
 
 class GoogleCloudApigeeV1AppGroupApp(_messages.Message):
@@ -6896,6 +7010,58 @@ class GoogleCloudApigeeV1AppGroupAppKey(_messages.Message):
   issuedAt = _messages.IntegerField(7)
   scopes = _messages.StringField(8, repeated=True)
   status = _messages.StringField(9)
+
+
+class GoogleCloudApigeeV1AppGroupBalance(_messages.Message):
+  r"""AppGroupBalance for the AppGroup.
+
+  Fields:
+    wallets: Output only. List of all wallets. Each individual wallet stores
+      the account balance for a particular currency.
+  """
+
+  wallets = _messages.MessageField('GoogleCloudApigeeV1AppGroupBalanceWallet', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1AppGroupBalanceWallet(_messages.Message):
+  r"""Wallet used to manage an account balance for a particular currency.
+
+  Fields:
+    balance: Current remaining balance of the AppGroup for a particular
+      currency.
+    lastCreditTime: Output only. Time at which the AppGroup last added credit
+      to the account in milliseconds since epoch.
+  """
+
+  balance = _messages.MessageField('GoogleTypeMoney', 1)
+  lastCreditTime = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1AppGroupMonetizationConfig(_messages.Message):
+  r"""Monetization configuration for the AppGroup.
+
+  Enums:
+    BillingTypeValueValuesEnum: Required. Billing type.
+
+  Fields:
+    billingType: Required. Billing type.
+  """
+
+  class BillingTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Billing type.
+
+    Values:
+      BILLING_TYPE_UNSPECIFIED: The default/unset value.
+      PREPAID: AppGroup pays in advance for the use of APIs and the charged
+        amount is deducted from their account balance.
+      POSTPAID: AppGroup does not maintain an account balance. The API
+        provider bills the AppGroup for API usage.
+    """
+    BILLING_TYPE_UNSPECIFIED = 0
+    PREPAID = 1
+    POSTPAID = 2
+
+  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 1)
 
 
 class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
@@ -7442,6 +7608,25 @@ class GoogleCloudApigeeV1Credential(_messages.Message):
   issuedAt = _messages.IntegerField(6)
   scopes = _messages.StringField(7, repeated=True)
   status = _messages.StringField(8)
+
+
+class GoogleCloudApigeeV1CreditAppGroupBalanceRequest(_messages.Message):
+  r"""Request for CreditAppGroupBalance.
+
+  Fields:
+    transactionAmount: Required. The amount of money to be credited. The
+      wallet corresponding to the currency specified within
+      `transaction_amount` will be updated. For example, if you specified
+      `currency_code` within `transaction_amount` as "USD", then the amount
+      would be added to the wallet which has the "USD" currency or if no such
+      wallet exists, a new wallet will be created with the "USD" currency.
+    transactionId: Required. Each transaction_id uniquely identifies a credit
+      balance request. If multiple requests are received with the same
+      transaction_id, only one of them will be considered.
+  """
+
+  transactionAmount = _messages.MessageField('GoogleTypeMoney', 1)
+  transactionId = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1CreditDeveloperBalanceRequest(_messages.Message):
@@ -10027,20 +10212,6 @@ class GoogleCloudApigeeV1ListSecurityActionsResponse(_messages.Message):
   securityActions = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 2, repeated=True)
 
 
-class GoogleCloudApigeeV1ListSecurityFeedbackResponse(_messages.Message):
-  r"""Response for ListSecurityFeedback
-
-  Fields:
-    nextPageToken: A token that can be sent as `page_token` in
-      `ListSecurityFeedbackRequest` to retrieve the next page. If this field
-      is omitted, there are no subsequent pages.
-    securityFeedback: List of SecurityFeedback reports.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  securityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 2, repeated=True)
-
-
 class GoogleCloudApigeeV1ListSecurityIncidentEnvironmentsResponse(_messages.Message):
   r"""Response for ListEnvironmentSecurityIncident.
 
@@ -10804,6 +10975,9 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     lastModifiedAt: Output only. Time that the Apigee organization was last
       modified in milliseconds since epoch.
     name: Output only. Name of the Apigee organization.
+    networkEgressRestricted: Optional. Flag that specifies if internet egress
+      is restricted for VPC Service Controls. Valid only when runtime_type is
+      `CLOUD` and disable_vpc_peering is `true`.
     portalDisabled: Optional. Configuration for the Portals settings.
     projectId: Output only. Project ID associated with the Apigee
       organization.
@@ -10973,16 +11147,17 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   expiresAt = _messages.IntegerField(17)
   lastModifiedAt = _messages.IntegerField(18)
   name = _messages.StringField(19)
-  portalDisabled = _messages.BooleanField(20)
-  projectId = _messages.StringField(21)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 22)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 23)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(24)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  subscriptionPlan = _messages.EnumField('SubscriptionPlanValueValuesEnum', 27)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 28)
-  type = _messages.EnumField('TypeValueValuesEnum', 29)
+  networkEgressRestricted = _messages.BooleanField(20)
+  portalDisabled = _messages.BooleanField(21)
+  projectId = _messages.StringField(22)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 23)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 24)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(25)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  subscriptionPlan = _messages.EnumField('SubscriptionPlanValueValuesEnum', 28)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 29)
+  type = _messages.EnumField('TypeValueValuesEnum', 30)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -12681,65 +12856,6 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommen
   uri = _messages.StringField(2)
 
 
-class GoogleCloudApigeeV1SecurityFeedback(_messages.Message):
-  r"""Represents a feedback report from an Advanced API Security customer.
-
-  Fields:
-    comment: Optional. Optional text the user can provide for additional,
-      unstructured context.
-    createTime: Output only. The time when this specific feedback id was
-      created.
-    feedbackContext: Required. One or more attribute/value pairs for
-      constraining the feedback.
-    name: Output only. Identifier. The feedback name is intended to be a
-      system-generated uuid.
-  """
-
-  comment = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  feedbackContext = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedbackFeedbackContext', 3, repeated=True)
-  name = _messages.StringField(4)
-
-
-class GoogleCloudApigeeV1SecurityFeedbackFeedbackContext(_messages.Message):
-  r"""FeedbackContext captures the intent of the submitted feedback.
-
-  Enums:
-    FeedbackTypeValueValuesEnum: Required. The type of feedback being
-      submitted.
-
-  Fields:
-    attribute: Required. The API attribute the user is providing feedback
-      about. Supported values: - useragent - client_received_start_timestamp -
-      apiproxy - client_id - organization - environment - request_uri -
-      proxy_basepath - ax_resolved_client_ip - request_size - response_size -
-      is_error - ax_geo_country - access_token - developer_app - incident_id -
-      incident_name - api_product - developer_email - response_status_code -
-      bot_reason - target_url
-    feedbackType: Required. The type of feedback being submitted.
-    value: Required. The value of the attribute the user is providing feedback
-      about.
-  """
-
-  class FeedbackTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of feedback being submitted.
-
-    Values:
-      FEEDBACK_TYPE_UNSPECIFIED: Unspecified feedback type.
-      DETECTION_FALSE_POSITIVE: Feedback identifying an incorrect
-        classification by an ML model.
-      DETECTION_FALSE_NEGATIVE: Feedback identifying a classification by an ML
-        model that was missed.
-    """
-    FEEDBACK_TYPE_UNSPECIFIED = 0
-    DETECTION_FALSE_POSITIVE = 1
-    DETECTION_FALSE_NEGATIVE = 2
-
-  attribute = _messages.StringField(1)
-  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 2)
-  value = _messages.StringField(3)
-
-
 class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
   r"""Represents an SecurityIncident resource.
 
@@ -13801,8 +13917,9 @@ class GoogleCloudApigeeV1UpdateAppGroupAppKeyRequest(_messages.Message):
     apiProducts: The list of API products that will be associated with the
       credential. This list will be appended to the existing list of
       associated API Products for this App Key. Duplicates will be ignored.
-    appGroupAppKey: The new AppGroupKey to be amended. Note that the status
-      can be updated only via action.
+    appGroupAppKey: Note that only Scopes and Attributes of the AppGroupAppKey
+      can be amended. Scopes and Attributes mentioned in the request will be
+      inserted and the existing scopes and attributes will be removed.
   """
 
   action = _messages.StringField(1)

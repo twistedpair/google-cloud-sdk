@@ -312,13 +312,18 @@ def GetArgDetails(arg, depth=0):
     return help_message
   if arg.is_group or arg.is_positional:
     choices = None
+    hidden_choices = None
   elif arg.choices:
-    choices = getattr(arg, 'visible_choices', arg.choices)
+    choices = arg.choices
+    hidden_choices = getattr(arg, 'hidden_choices', [])
   else:
     try:
-      choices = getattr(arg.type, 'visible_choices', arg.type.choices)
+      choices = arg.type.choices
     except AttributeError:
       choices = None
+      hidden_choices = None
+    else:
+      hidden_choices = getattr(arg.type, 'hidden_choices', [])
   extra_help = []
   if hasattr(arg, 'store_property'):
     prop, _, _ = arg.store_property
@@ -355,7 +360,7 @@ def GetArgDetails(arg, depth=0):
     metavar = arg.metavar or arg.dest.upper()
     if metavar != ' ':
       choices = getattr(arg, 'choices_help', choices)
-      if len(choices) > 1:
+      if len(choices) - len(hidden_choices) > 1:
         one_of = 'one of'
       else:
         # TBD I guess?
@@ -366,6 +371,8 @@ def GetArgDetails(arg, depth=0):
           choices_iteritems = sorted(choices_iteritems)
         choices = []
         for name, desc in choices_iteritems:
+          if name in hidden_choices:
+            continue
           dedented_desc = textwrap.dedent(desc)
           choice_help = '*{name}*{depth} {desc}'.format(
               name=name,
@@ -385,7 +392,10 @@ def GetArgDetails(arg, depth=0):
             '_{metavar}_ must be {one_of}: {choices}.'.format(
                 metavar=metavar,
                 one_of=one_of,
-                choices=', '.join(['*{0}*'.format(x) for x in choices]),
+                choices=', '.join([
+                    '*{0}*'.format(x) for x in choices
+                    if x not in hidden_choices
+                ]),
             )
         )
 

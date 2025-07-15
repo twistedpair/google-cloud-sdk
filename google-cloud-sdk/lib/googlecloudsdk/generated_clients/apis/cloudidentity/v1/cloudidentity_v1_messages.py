@@ -2561,8 +2561,8 @@ class Group(_messages.Message):
 
   Messages:
     LabelsValue: Required. One or more label entries that apply to the Group.
-      Currently supported labels contain a key with an empty value. Google
-      Groups are the default type of group and have a label with a key of
+      Labels contain a key with an empty value. Google Groups are the default
+      type of group and have a label with a key of
       `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
       value. Existing Google Groups can have an additional label with a key of
       `cloudidentity.googleapis.com/groups.security` and an empty value added
@@ -2570,7 +2570,11 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value.
+      an empty value. Google Groups can be
+      [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+      add a label with a key of `cloudidentity.googleapis.com/groups.locked`
+      and an empty value. Doing so locks the group. To unlock the group,
+      remove this label.
 
   Fields:
     additionalGroupKeys: Output only. Additional group keys associated with
@@ -2583,8 +2587,8 @@ class Group(_messages.Message):
       status.
     groupKey: Required. The `EntityKey` of the `Group`.
     labels: Required. One or more label entries that apply to the Group.
-      Currently supported labels contain a key with an empty value. Google
-      Groups are the default type of group and have a label with a key of
+      Labels contain a key with an empty value. Google Groups are the default
+      type of group and have a label with a key of
       `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
       value. Existing Google Groups can have an additional label with a key of
       `cloudidentity.googleapis.com/groups.security` and an empty value added
@@ -2592,7 +2596,11 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value.
+      an empty value. Google Groups can be
+      [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+      add a label with a key of `cloudidentity.googleapis.com/groups.locked`
+      and an empty value. Doing so locks the group. To unlock the group,
+      remove this label.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group}`.
@@ -2608,9 +2616,9 @@ class Group(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Required. One or more label entries that apply to the Group. Currently
-    supported labels contain a key with an empty value. Google Groups are the
-    default type of group and have a label with a key of
+    r"""Required. One or more label entries that apply to the Group. Labels
+    contain a key with an empty value. Google Groups are the default type of
+    group and have a label with a key of
     `cloudidentity.googleapis.com/groups.discussion_forum` and an empty value.
     Existing Google Groups can have an additional label with a key of
     `cloudidentity.googleapis.com/groups.security` and an empty value added to
@@ -2618,7 +2626,11 @@ class Group(_messages.Message):
     removed once added.** Dynamic groups have a label with a key of
     `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for
     Cloud Search have a label with a key of `system/groups/external` and an
-    empty value.
+    empty value. Google Groups can be
+    [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+    add a label with a key of `cloudidentity.googleapis.com/groups.locked` and
+    an empty value. Doing so locks the group. To unlock the group, remove this
+    label.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

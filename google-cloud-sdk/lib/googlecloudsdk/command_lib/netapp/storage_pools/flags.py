@@ -282,6 +282,18 @@ def AddStoragePoolEnableHotTierAutoResizeArg(parser):
       help="""Boolean flag indicating whether Storage Pool is allowed to use hot tier auto resize""",
   )
 
+
+def AddStoragePoolUnifiedPoolArg(parser):
+  """Adds the Unified Pool arg to the  parser."""
+  parser.add_argument(
+      '--unified-pool',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
+      ),
+      help="""Boolean flag indicating whether Storage Pool is a unified pool that supports BLOCK storage. Defaults to False if not specified.""",
+      hidden=True,
+  )
+
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 
 
@@ -312,6 +324,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
+    AddStoragePoolUnifiedPoolArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):

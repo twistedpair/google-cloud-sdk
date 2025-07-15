@@ -831,7 +831,6 @@ def _GetDayOfWeekArgList(alloydb_messages):
   return arg_parsers.ArgList(
       element_type=_ParseDayOfWeek,
       choices=choices,
-      visible_choices=visible_choices,
   )
 
 

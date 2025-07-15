@@ -15,7 +15,7 @@ instance:
   - &instance
     parameter_name: instancesId
     attribute_name: instance
-    help: Name of the Cloud Bigtable instance.
+    help: Name of the Bigtable instance.
   disable_auto_completers: false
 
 cluster:
@@ -27,7 +27,7 @@ cluster:
   - &cluster
     parameter_name: clustersId
     attribute_name: cluster
-    help: Name of the Cloud Bigtable cluster.
+    help: Name of the Bigtable cluster.
   disable_auto_completers: false
 
 table:
@@ -39,7 +39,7 @@ table:
   - &table
     parameter_name: tablesId
     attribute_name: table
-    help: Name of the Cloud Bigtable table.
+    help: Name of the Bigtable table.
   disable_auto_completers: false
 
 backup:
@@ -52,7 +52,7 @@ backup:
   - &backup
     parameter_name: backupsId
     attribute_name: backup
-    help: Name of the Cloud Bigtable backup.
+    help: Name of the Bigtable backup.
   disable_auto_completers: false
 
 operation:
@@ -62,7 +62,7 @@ operation:
   - &operation
     parameter_name: operationsId
     attribute_name: operation
-    help: Name of the Cloud Bigtable operation.
+    help: Name of the Bigtable operation.
   disable_auto_completers: false
 
 app_profile:
@@ -74,7 +74,7 @@ app_profile:
   - &appProfile
     parameter_name: appProfilesId
     attribute_name: app_profile
-    help: Name of the Cloud Bigtable app profile.
+    help: Name of the Bigtable app profile.
 
 authorized_view:
   name: authorized-view
@@ -87,7 +87,7 @@ authorized_view:
   - &authorizedView
     parameter_name: authorizedViewsId
     attribute_name: authorized_view
-    help: Name of the Cloud Bigtable authorized view.
+    help: Name of the Bigtable authorized view.
   disable_auto_completers: false
 
 schema_bundle:

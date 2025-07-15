@@ -368,6 +368,9 @@ class Service(proto.Message):
             this Service.
         iap_enabled (bool):
             Optional. IAP settings on the Service.
+        multi_region_settings (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.Service.MultiRegionSettings):
+            Optional. Settings for multi-region
+            deployment.
         custom_audiences (MutableSequence[str]):
             One or more custom audiences that you want
             this service to support. Specify each custom
@@ -375,6 +378,21 @@ class Service(proto.Message):
             audiences are encoded in the token and used to
             authenticate requests. For more information, see
             https://cloud.google.com/run/docs/configuring/custom-audiences.
+        tags (MutableMapping[str, str]):
+            Optional. Input only. Immutable. Tag keys/values directly
+            bound to this service. For example the following are valid
+            inputs:
+
+            -  {"tagKeys/333" : "tagValues/444", "tagKeys/123" :
+               "tagValues/456"}
+            -  {"123/environment" : "production", "345/abc" : "xyz"}
+               Note:
+            -  Invalid combinations of ID & namespaced format is not
+               supported. For instance: {"123/environment" :
+               "tagValues/444"} is invalid.
+            -  Inconsistent format is not supported. For instance:
+               {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
+               invalid.
         observed_generation (int):
             Output only. The generation of this Service currently
             serving traffic. See comments in ``reconciling`` for
@@ -452,6 +470,27 @@ class Service(proto.Message):
             for this version of the resource. May be used to
             detect modification conflict during updates.
     """
+
+    class MultiRegionSettings(proto.Message):
+        r"""Settings for multi-region deployment.
+
+        Attributes:
+            regions (MutableSequence[str]):
+                Required. List of regions to deploy to,
+                including primary region.
+            multi_region_id (str):
+                Optional. System-generated unique id for the
+                multi-region Service.
+        """
+
+        regions: MutableSequence[str] = proto.RepeatedField(
+            proto.STRING,
+            number=1,
+        )
+        multi_region_id: str = proto.Field(
+            proto.STRING,
+            number=2,
+        )
 
     name: str = proto.Field(
         proto.STRING,
@@ -561,9 +600,19 @@ class Service(proto.Message):
         proto.BOOL,
         number=25,
     )
+    multi_region_settings: MultiRegionSettings = proto.Field(
+        proto.MESSAGE,
+        number=26,
+        message=MultiRegionSettings,
+    )
     custom_audiences: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=37,
+    )
+    tags: MutableMapping[str, str] = proto.MapField(
+        proto.STRING,
+        proto.STRING,
+        number=27,
     )
     observed_generation: int = proto.Field(
         proto.INT64,

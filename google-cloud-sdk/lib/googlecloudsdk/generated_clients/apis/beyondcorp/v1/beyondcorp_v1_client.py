@@ -45,6 +45,8 @@ class BeyondcorpV1(base_api.BaseApiClient):
     self.projects_locations_clientConnectorServices = self.ProjectsLocationsClientConnectorServicesService(self)
     self.projects_locations_clientGateways = self.ProjectsLocationsClientGatewaysService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_securityGateways_applications = self.ProjectsLocationsSecurityGatewaysApplicationsService(self)
+    self.projects_locations_securityGateways = self.ProjectsLocationsSecurityGatewaysService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1320,6 +1322,458 @@ class BeyondcorpV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSecurityGatewaysApplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_securityGateways_applications resource."""
+
+    _NAME = 'projects_locations_securityGateways_applications'
+
+    def __init__(self, client):
+      super(BeyondcorpV1.ProjectsLocationsSecurityGatewaysApplicationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Application in a given project and location.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['applicationId', 'requestId'],
+        relative_path='v1/{+parent}/applications',
+        request_field='googleCloudBeyondcorpSecuritygatewaysV1Application',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Application.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications/{applicationsId}',
+        http_method='DELETE',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Application.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSecuritygatewaysV1Application) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications/{applicationsId}',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1Application',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications/{applicationsId}:getIamPolicy',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Applications in a given project and location.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSecuritygatewaysV1ListApplicationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/applications',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsListRequest',
+        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1ListApplicationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Application.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications/{applicationsId}',
+        http_method='PATCH',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudBeyondcorpSecuritygatewaysV1Application',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications/{applicationsId}:setIamPolicy',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}/applications/{applicationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.applications.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysApplicationsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSecurityGatewaysService(base_api.BaseApiService):
+    """Service class for the projects_locations_securityGateways resource."""
+
+    _NAME = 'projects_locations_securityGateways'
+
+    def __init__(self, client):
+      super(BeyondcorpV1.ProjectsLocationsSecurityGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SecurityGateway in a given project and location.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'securityGatewayId'],
+        relative_path='v1/{+parent}/securityGateways',
+        request_field='googleCloudBeyondcorpSecuritygatewaysV1SecurityGateway',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SecurityGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}',
+        http_method='DELETE',
+        method_id='beyondcorp.projects.locations.securityGateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SecurityGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysGetRequest',
+        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}:getIamPolicy',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SecurityGateways in a given project and location.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSecuritygatewaysV1ListSecurityGatewaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityGateways',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysListRequest',
+        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1ListSecurityGatewaysResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single SecurityGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}',
+        http_method='PATCH',
+        method_id='beyondcorp.projects.locations.securityGateways.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudBeyondcorpSecuritygatewaysV1SecurityGateway',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}:setIamPolicy',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}:testIamPermissions',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 

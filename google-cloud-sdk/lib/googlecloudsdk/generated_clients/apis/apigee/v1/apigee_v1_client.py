@@ -56,6 +56,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_appgroups_apps_keys_apiproducts = self.OrganizationsAppgroupsAppsKeysApiproductsService(self)
     self.organizations_appgroups_apps_keys = self.OrganizationsAppgroupsAppsKeysService(self)
     self.organizations_appgroups_apps = self.OrganizationsAppgroupsAppsService(self)
+    self.organizations_appgroups_balance = self.OrganizationsAppgroupsBalanceService(self)
     self.organizations_appgroups = self.OrganizationsAppgroupsService(self)
     self.organizations_apps = self.OrganizationsAppsService(self)
     self.organizations_datacollectors = self.OrganizationsDatacollectorsService(self)
@@ -120,7 +121,6 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_optimizedHostStats = self.OrganizationsOptimizedHostStatsService(self)
     self.organizations_reports = self.OrganizationsReportsService(self)
     self.organizations_securityAssessmentResults = self.OrganizationsSecurityAssessmentResultsService(self)
-    self.organizations_securityFeedback = self.OrganizationsSecurityFeedbackService(self)
     self.organizations_securityMonitoringConditions = self.OrganizationsSecurityMonitoringConditionsService(self)
     self.organizations_securityProfiles_environments = self.OrganizationsSecurityProfilesEnvironmentsService(self)
     self.organizations_securityProfiles = self.OrganizationsSecurityProfilesService(self)
@@ -1111,6 +1111,60 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Get the key value map scoped to an organization, environment, or API proxy.
+
+      Args:
+        request: (ApigeeOrganizationsApisKeyvaluemapsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueMap) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}',
+        http_method='GET',
+        method_id='apigee.organizations.apis.keyvaluemaps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApisKeyvaluemapsGetRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueMap',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update the key value map scoped to an organization, environment, or API proxy.
+
+      Args:
+        request: (GoogleCloudApigeeV1KeyValueMap) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueMap) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}',
+        http_method='PUT',
+        method_id='apigee.organizations.apis.keyvaluemaps.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1KeyValueMap',
+        response_type_name='GoogleCloudApigeeV1KeyValueMap',
+        supports_download=False,
+    )
+
   class OrganizationsApisRevisionsDeploymentsService(base_api.BaseApiService):
     """Service class for the organizations_apis_revisions_deployments resource."""
 
@@ -1567,7 +1621,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def UpdateAppGroupAppKey(self, request, global_params=None):
-      r"""Adds an API product to an AppGroupAppKey, enabling the app that holds the key to access the API resources bundled in the API product. In addition, you can add attributes to the AppGroupAppKey. This API replaces the existing attributes with those specified in the request. Include or exclude any existing attributes that you want to retain or delete, respectively. You can use the same key to access all API products associated with the app.
+      r"""Adds an API product to an AppGroupAppKey, enabling the app that holds the key to access the API resources bundled in the API product. In addition, you can add attributes and scopes to the AppGroupAppKey. This API replaces the existing attributes with those specified in the request. Include or exclude any existing attributes that you want to retain or delete, respectively. You can use the same key to access all API products associated with the app.
 
       Args:
         request: (ApigeeOrganizationsAppgroupsAppsKeysUpdateAppGroupAppKeyRequest) input message
@@ -1738,6 +1792,70 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsAppgroupsBalanceService(base_api.BaseApiService):
+    """Service class for the organizations_appgroups_balance resource."""
+
+    _NAME = 'organizations_appgroups_balance'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsAppgroupsBalanceService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Adjust(self, request, global_params=None):
+      r"""Adjust the prepaid balance for the AppGroup. This API will be used in scenarios where the AppGroup has been under-charged or over-charged.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsBalanceAdjustRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupBalance) The response message.
+      """
+      config = self.GetMethodConfig('Adjust')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Adjust.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/balance:adjust',
+        http_method='POST',
+        method_id='apigee.organizations.appgroups.balance.adjust',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:adjust',
+        request_field='googleCloudApigeeV1AdjustAppGroupBalanceRequest',
+        request_type_name='ApigeeOrganizationsAppgroupsBalanceAdjustRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupBalance',
+        supports_download=False,
+    )
+
+    def Credit(self, request, global_params=None):
+      r"""Credits the account balance for the AppGroup.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsBalanceCreditRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupBalance) The response message.
+      """
+      config = self.GetMethodConfig('Credit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Credit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/balance:credit',
+        http_method='POST',
+        method_id='apigee.organizations.appgroups.balance.credit',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:credit',
+        request_field='googleCloudApigeeV1CreditAppGroupBalanceRequest',
+        request_type_name='ApigeeOrganizationsAppgroupsBalanceCreditRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupBalance',
+        supports_download=False,
+    )
+
   class OrganizationsAppgroupsService(base_api.BaseApiService):
     """Service class for the organizations_appgroups resource."""
 
@@ -1829,6 +1947,60 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetBalance(self, request, global_params=None):
+      r"""Gets the account balance for the AppGroup.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsGetBalanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupBalance) The response message.
+      """
+      config = self.GetMethodConfig('GetBalance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBalance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/balance',
+        http_method='GET',
+        method_id='apigee.organizations.appgroups.getBalance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsAppgroupsGetBalanceRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupBalance',
+        supports_download=False,
+    )
+
+    def GetMonetizationConfig(self, request, global_params=None):
+      r"""Gets the monetization configuration for the AppGroup.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsGetMonetizationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupMonetizationConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetMonetizationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMonetizationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/monetizationConfig',
+        http_method='GET',
+        method_id='apigee.organizations.appgroups.getMonetizationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsAppgroupsGetMonetizationConfigRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupMonetizationConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all AppGroups in an organization. A maximum of 1000 AppGroups are returned in the response if PageSize is not specified, or if the PageSize is greater than 1000.
 
@@ -1880,6 +2052,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1AppGroup',
         request_type_name='ApigeeOrganizationsAppgroupsUpdateRequest',
         response_type_name='GoogleCloudApigeeV1AppGroup',
+        supports_download=False,
+    )
+
+    def UpdateMonetizationConfig(self, request, global_params=None):
+      r"""Updates the monetization configuration for the AppGroup.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsUpdateMonetizationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupMonetizationConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMonetizationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMonetizationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/monetizationConfig',
+        http_method='PUT',
+        method_id='apigee.organizations.appgroups.updateMonetizationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1AppGroupMonetizationConfig',
+        request_type_name='ApigeeOrganizationsAppgroupsUpdateMonetizationConfigRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupMonetizationConfig',
         supports_download=False,
     )
 
@@ -2467,7 +2666,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def UpdateDeveloperAppKey(self, request, global_params=None):
-      r"""Adds an API product to a developer app key, enabling the app that holds the key to access the API resources bundled in the API product. In addition, you can add attributes to a developer app key. This API replaces the existing attributes with those specified in the request. Include or exclude any existing attributes that you want to retain or delete, respectively. You can use the same key to access all API products associated with the app.
+      r"""Adds an API product to a developer app key, enabling the app that holds the key to access the API resources bundled in the API product. In addition, you can add attributes and scopes associated with the API product to the developer app key. The status of the key can be updated via "action" Query Parameter. None of the other fields can be updated via this API. This API replaces the existing attributes with those specified in the request. Include or exclude any existing attributes that you want to retain or delete, respectively. None of the other fields can be updated. You can use the same key to access all API products associated with the app.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysUpdateDeveloperAppKeyRequest) input message
@@ -5274,6 +5473,60 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Get the key value map scoped to an organization, environment, or API proxy.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueMap) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.keyvaluemaps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsKeyvaluemapsGetRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueMap',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update the key value map scoped to an organization, environment, or API proxy.
+
+      Args:
+        request: (GoogleCloudApigeeV1KeyValueMap) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueMap) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}',
+        http_method='PUT',
+        method_id='apigee.organizations.environments.keyvaluemaps.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1KeyValueMap',
+        response_type_name='GoogleCloudApigeeV1KeyValueMap',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsOptimizedStatsService(base_api.BaseApiService):
     """Service class for the organizations_environments_optimizedStats resource."""
 
@@ -5783,6 +6036,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Delete a SecurityAction.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions/{securityActionsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.environments.securityActions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
     def Disable(self, request, global_params=None):
       r"""Disable a SecurityAction. The `state` of the SecurityAction after disabling is `DISABLED`. `DisableSecurityAction` can be called on SecurityActions in the state `ENABLED`; SecurityActions in a different state (including `DISABLED`) return an error.
 
@@ -5888,6 +6168,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsListRequest',
         response_type_name='GoogleCloudApigeeV1ListSecurityActionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a SecurityAction.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityAction) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions/{securityActionsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.securityActions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecurityAction',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsPatchRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityAction',
         supports_download=False,
     )
 
@@ -8251,6 +8558,60 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Get the key value map scoped to an organization, environment, or API proxy.
+
+      Args:
+        request: (ApigeeOrganizationsKeyvaluemapsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueMap) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}',
+        http_method='GET',
+        method_id='apigee.organizations.keyvaluemaps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsKeyvaluemapsGetRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueMap',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update the key value map scoped to an organization, environment, or API proxy.
+
+      Args:
+        request: (GoogleCloudApigeeV1KeyValueMap) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueMap) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}',
+        http_method='PUT',
+        method_id='apigee.organizations.keyvaluemaps.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1KeyValueMap',
+        response_type_name='GoogleCloudApigeeV1KeyValueMap',
+        supports_download=False,
+    )
+
   class OrganizationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_operations resource."""
 
@@ -8531,124 +8892,6 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest',
         request_type_name='ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest',
         response_type_name='GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsResponse',
-        supports_download=False,
-    )
-
-  class OrganizationsSecurityFeedbackService(base_api.BaseApiService):
-    """Service class for the organizations_securityFeedback resource."""
-
-    _NAME = 'organizations_securityFeedback'
-
-    def __init__(self, client):
-      super(ApigeeV1.OrganizationsSecurityFeedbackService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new report containing customer feedback.
-
-      Args:
-        request: (ApigeeOrganizationsSecurityFeedbackCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudApigeeV1SecurityFeedback) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/securityFeedback',
-        http_method='POST',
-        method_id='apigee.organizations.securityFeedback.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['securityFeedbackId'],
-        relative_path='v1/{+parent}/securityFeedback',
-        request_field='googleCloudApigeeV1SecurityFeedback',
-        request_type_name='ApigeeOrganizationsSecurityFeedbackCreateRequest',
-        response_type_name='GoogleCloudApigeeV1SecurityFeedback',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a specific feedback report. Used for "undo" of a feedback submission.
-
-      Args:
-        request: (ApigeeOrganizationsSecurityFeedbackDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/securityFeedback/{securityFeedbackId}',
-        http_method='DELETE',
-        method_id='apigee.organizations.securityFeedback.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='ApigeeOrganizationsSecurityFeedbackDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets a specific customer feedback report.
-
-      Args:
-        request: (ApigeeOrganizationsSecurityFeedbackGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudApigeeV1SecurityFeedback) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/securityFeedback/{securityFeedbackId}',
-        http_method='GET',
-        method_id='apigee.organizations.securityFeedback.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='ApigeeOrganizationsSecurityFeedbackGetRequest',
-        response_type_name='GoogleCloudApigeeV1SecurityFeedback',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists all feedback reports which have already been submitted.
-
-      Args:
-        request: (ApigeeOrganizationsSecurityFeedbackListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudApigeeV1ListSecurityFeedbackResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/securityFeedback',
-        http_method='GET',
-        method_id='apigee.organizations.securityFeedback.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/securityFeedback',
-        request_field='',
-        request_type_name='ApigeeOrganizationsSecurityFeedbackListRequest',
-        response_type_name='GoogleCloudApigeeV1ListSecurityFeedbackResponse',
         supports_download=False,
     )
 

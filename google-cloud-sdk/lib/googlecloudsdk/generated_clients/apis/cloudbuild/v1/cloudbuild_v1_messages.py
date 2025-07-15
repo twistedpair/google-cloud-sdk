@@ -948,6 +948,7 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    results: Declaration of results for this build step.
     script: A shell script to be executed in the step. When script is
       provided, the user cannot specify the entrypoint or args.
     secretEnv: A list of environment variables which are encrypted using a
@@ -1013,13 +1014,14 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(9)
   name = _messages.StringField(10)
   pullTiming = _messages.MessageField('TimeSpan', 11)
-  script = _messages.StringField(12)
-  secretEnv = _messages.StringField(13, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  timeout = _messages.StringField(15)
-  timing = _messages.MessageField('TimeSpan', 16)
-  volumes = _messages.MessageField('Volume', 17, repeated=True)
-  waitFor = _messages.StringField(18, repeated=True)
+  results = _messages.MessageField('StepResult', 12, repeated=True)
+  script = _messages.StringField(13)
+  secretEnv = _messages.StringField(14, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  timeout = _messages.StringField(16)
+  timing = _messages.MessageField('TimeSpan', 17)
+  volumes = _messages.MessageField('Volume', 18, repeated=True)
+  waitFor = _messages.StringField(19, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -4863,6 +4865,8 @@ class Source(_messages.Message):
   r"""Location of the source in a supported storage service.
 
   Fields:
+    buildConfigFileName: Path, from the source root, to the build
+      configuration file (i.e. cloudbuild.yaml).
     connectedRepository: Optional. If provided, get the source from this 2nd-
       gen Google Cloud Build repository resource.
     developerConnectConfig: If provided, get the source from this Developer
@@ -4878,12 +4882,13 @@ class Source(_messages.Message):
       builders/tree/master/gcs-fetcher).
   """
 
-  connectedRepository = _messages.MessageField('ConnectedRepository', 1)
-  developerConnectConfig = _messages.MessageField('DeveloperConnectConfig', 2)
-  gitSource = _messages.MessageField('GitSource', 3)
-  repoSource = _messages.MessageField('RepoSource', 4)
-  storageSource = _messages.MessageField('StorageSource', 5)
-  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 6)
+  buildConfigFileName = _messages.StringField(1)
+  connectedRepository = _messages.MessageField('ConnectedRepository', 2)
+  developerConnectConfig = _messages.MessageField('DeveloperConnectConfig', 3)
+  gitSource = _messages.MessageField('GitSource', 4)
+  repoSource = _messages.MessageField('RepoSource', 5)
+  storageSource = _messages.MessageField('StorageSource', 6)
+  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 7)
 
 
 class SourceProvenance(_messages.Message):
@@ -5072,6 +5077,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StepResult(_messages.Message):
+  r"""StepResult is the declaration of a result for a build step.
+
+  Fields:
+    attestationContent: Optional. The content of the attestation to be
+      generated.
+    attestationType: Optional. The type of attestation to be generated.
+    name: Required. The name of the result.
+  """
+
+  attestationContent = _messages.StringField(1)
+  attestationType = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class StorageSource(_messages.Message):

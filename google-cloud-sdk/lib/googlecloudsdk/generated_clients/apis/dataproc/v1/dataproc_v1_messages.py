@@ -716,8 +716,10 @@ class AutoscalingPolicy(_messages.Message):
 
     Values:
       CLUSTER_TYPE_UNSPECIFIED: Not set.
-      STANDARD: Standard dataproc cluster with minimum 2 primary workers.
-      ZERO_SCALE: Clusters that can be scaled down to zero worker nodes.
+      STANDARD: Standard dataproc cluster with a minimum of two primary
+        workers.
+      ZERO_SCALE: Clusters that can use only secondary workers and be scaled
+        down to zero secondary worker nodes.
     """
     CLUSTER_TYPE_UNSPECIFIED = 0
     STANDARD = 1
@@ -1302,14 +1304,14 @@ class ClusterConfig(_messages.Message):
   r"""The cluster config.
 
   Enums:
-    ClusterTierValueValuesEnum: Optional. The tier of the cluster.
+    ClusterTierValueValuesEnum: Optional. The cluster tier.
     ClusterTypeValueValuesEnum: Optional. The type of the cluster.
 
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
     auxiliaryNodeGroups: Optional. The node group settings.
-    clusterTier: Optional. The tier of the cluster.
+    clusterTier: Optional. The cluster tier.
     clusterType: Optional. The type of the cluster.
     configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
@@ -1373,13 +1375,13 @@ class ClusterConfig(_messages.Message):
   """
 
   class ClusterTierValueValuesEnum(_messages.Enum):
-    r"""Optional. The tier of the cluster.
+    r"""Optional. The cluster tier.
 
     Values:
       CLUSTER_TIER_UNSPECIFIED: Not set. Works the same as
         CLUSTER_TIER_STANDARD.
-      CLUSTER_TIER_STANDARD: Standard dataproc cluster.
-      CLUSTER_TIER_PREMIUM: Premium dataproc cluster.
+      CLUSTER_TIER_STANDARD: Standard Dataproc cluster.
+      CLUSTER_TIER_PREMIUM: Premium Dataproc cluster.
     """
     CLUSTER_TIER_UNSPECIFIED = 0
     CLUSTER_TIER_STANDARD = 1
@@ -1395,7 +1397,8 @@ class ClusterConfig(_messages.Message):
       SINGLE_NODE:
         https://cloud.google.com/dataproc/docs/concepts/configuring-
         clusters/single-node-clusters
-      ZERO_SCALE: Clusters that can be scaled down to zero worker nodes.
+      ZERO_SCALE: Clusters that can use only secondary workers and be scaled
+        down to zero secondary worker nodes.
     """
     CLUSTER_TYPE_UNSPECIFIED = 0
     STANDARD = 1
@@ -3089,6 +3092,7 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest(_messa
     JobStatusValueValuesEnum: Optional. List only jobs in the specific state.
 
   Fields:
+    jobIds: Optional. List of Job IDs to filter by if provided.
     jobStatus: Optional. List only jobs in the specific state.
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
@@ -3118,11 +3122,12 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest(_messa
     JOB_EXECUTION_STATUS_FAILED = 3
     JOB_EXECUTION_STATUS_UNKNOWN = 4
 
-  jobStatus = _messages.EnumField('JobStatusValueValuesEnum', 1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5)
+  jobIds = _messages.IntegerField(1, repeated=True)
+  jobStatus = _messages.EnumField('JobStatusValueValuesEnum', 2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSearchNativeSqlQueriesRequest(_messages.Message):
@@ -3206,6 +3211,8 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchSqlQueriesRequest(
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
       D/sparkApplications/APPLICATION_ID"
+    operationIds: Optional. List of Spark Connect operation IDs to filter by
+      if provided.
     pageSize: Optional. Maximum number of queries to return in each response.
       The service may return fewer than this. The default page size is 10; the
       maximum page size is 100.
@@ -3219,10 +3226,11 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchSqlQueriesRequest(
 
   details = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5)
-  planDescription = _messages.BooleanField(6)
+  operationIds = _messages.StringField(3, repeated=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  planDescription = _messages.BooleanField(7)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptTasksRequest(_messages.Message):
@@ -3327,6 +3335,7 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_mes
       SearchSessionSparkApplicationStages call. Provide this token to retrieve
       the subsequent page.
     parent: Required. Parent (Session) resource reference.
+    stageIds: Optional. List of Stage IDs to filter by if provided.
     stageStatus: Optional. List only stages in the given state.
     summaryMetricsMask: Optional. The list of summary metrics fields to
       include. Empty list will default to skip all summary metrics fields.
@@ -3356,8 +3365,9 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_mes
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4)
-  stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
-  summaryMetricsMask = _messages.StringField(6)
+  stageIds = _messages.IntegerField(5, repeated=True)
+  stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 6)
+  summaryMetricsMask = _messages.StringField(7)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
@@ -3381,14 +3391,16 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeJobsRequest(_me
   object.
 
   Fields:
+    jobIds: Optional. List of Job IDs to filter by if provided.
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
       D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
-  name = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
+  jobIds = _messages.IntegerField(1, repeated=True)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStageAttemptTasksRequest(_messages.Message):
@@ -3420,10 +3432,12 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStagesRequest(_
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
       D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
+    stageIds: Optional. List of Stage IDs to filter by if provided.
   """
 
   name = _messages.StringField(1, required=True)
   parent = _messages.StringField(2)
+  stageIds = _messages.IntegerField(3, repeated=True)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsWriteRequest(_messages.Message):
@@ -8984,6 +8998,34 @@ class ResizeNodeGroupRequest(_messages.Message):
   size = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ResolvedCohortInfo(_messages.Message):
+  r"""Information about the cohort the workload belongs to.
+
+  Enums:
+    CohortSourceValueValuesEnum: Output only. Source of the cohort.
+
+  Fields:
+    cohortSource: Output only. Source of the cohort.
+    resolvedCohort: Output only. Final cohort used to tune the workload.
+  """
+
+  class CohortSourceValueValuesEnum(_messages.Enum):
+    r"""Output only. Source of the cohort.
+
+    Values:
+      COHORT_SOURCE_UNSPECIFIED: Cohort source is unspecified.
+      USER_PROVIDED: Cohort was resolved from the cohort config, explicitly
+        provided by the user.
+      AIRFLOW: Composed from the labels coming from Airflow/Composer.
+    """
+    COHORT_SOURCE_UNSPECIFIED = 0
+    USER_PROVIDED = 1
+    AIRFLOW = 2
+
+  cohortSource = _messages.EnumField('CohortSourceValueValuesEnum', 1)
+  resolvedCohort = _messages.StringField(2)
+
+
 class ResourceInformation(_messages.Message):
   r"""A ResourceInformation object.
 
@@ -9143,6 +9185,8 @@ class RuntimeInfo(_messages.Message):
     outputUri: Output only. A URI pointing to the location of the stdout and
       stderr of the workload.
     propertiesInfo: Optional. Properties of the workload organized by origin.
+    resolvedCohortInfo: Output only. Information about the cohort the workload
+      belongs to.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -9176,6 +9220,7 @@ class RuntimeInfo(_messages.Message):
   endpoints = _messages.MessageField('EndpointsValue', 4)
   outputUri = _messages.StringField(5)
   propertiesInfo = _messages.MessageField('PropertiesInfo', 6)
+  resolvedCohortInfo = _messages.MessageField('ResolvedCohortInfo', 7)
 
 
 class SchedulingConfig(_messages.Message):

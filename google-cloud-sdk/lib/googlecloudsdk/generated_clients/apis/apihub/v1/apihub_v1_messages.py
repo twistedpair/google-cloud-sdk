@@ -177,28 +177,33 @@ class ApihubProjectsLocationsApisListRequest(_messages.Message):
       value of the user defined JSON attribute associated with the Resource.
       Allowed comparison operator is `:`. Here user-defined-attribute-json is
       a placeholder that can be replaced with any user defined JSON attribute
-      name. Expressions are combined with either `AND` logic operator or `OR`
-      logical operator but not both of them together i.e. only one of the
-      `AND` or `OR` operator can be used throughout the filter string and both
-      the operators cannot be used together. No other logical operators are
-      supported. At most three filter fields are allowed in the filter string
-      and if provided more than that then `INVALID_ARGUMENT` error is returned
-      by the API. Here are a few examples: * `owner.email =
-      \"apihub@google.com\"` - - The owner team email is _apihub@google.com_.
-      * `owner.email = \"apihub@google.com\" AND create_time <
-      \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
-      The owner team email is _apihub@google.com_ and the api was created
-      before _2021-08-15 14:50:00 UTC_ and after _2021-08-10 12:00:00 UTC_. *
-      `owner.email = \"apihub@google.com\" OR team.enum_values.values.id:
-      apihub-team-id` - The filter string specifies the APIs where the owner
-      team email is _apihub@google.com_ or the id of the allowed value
-      associated with the team attribute is _apihub-team-id_. * `owner.email =
-      \"apihub@google.com\" OR team.enum_values.values.display_name: ApiHub
-      Team` - The filter string specifies the APIs where the owner team email
-      is _apihub@google.com_ or the display name of the allowed value
-      associated with the team attribute is `ApiHub Team`. * `owner.email =
-      \"apihub@google.com\" AND attributes.projects/test-project-
-      id/locations/test-location-id/
+      name. A filter function is also supported in the filter string. The
+      filter function is `id(name)`. The `id(name)` function returns the id of
+      the resource name. For example, `id(name) = \"api-1\"` is equivalent to
+      `name = \"projects/test-project-id/locations/test-location-
+      id/apis/api-1\"` provided the parent is `projects/test-project-
+      id/locations/test-location-id`. Expressions are combined with either
+      `AND` logic operator or `OR` logical operator but not both of them
+      together i.e. only one of the `AND` or `OR` operator can be used
+      throughout the filter string and both the operators cannot be used
+      together. No other logical operators are supported. At most three filter
+      fields are allowed in the filter string and if provided more than that
+      then `INVALID_ARGUMENT` error is returned by the API. Here are a few
+      examples: * `owner.email = \"apihub@google.com\"` - - The owner team
+      email is _apihub@google.com_. * `owner.email = \"apihub@google.com\" AND
+      create_time < \"2021-08-15T14:50:00Z\" AND create_time >
+      \"2021-08-10T12:00:00Z\"` - The owner team email is _apihub@google.com_
+      and the api was created before _2021-08-15 14:50:00 UTC_ and after
+      _2021-08-10 12:00:00 UTC_. * `owner.email = \"apihub@google.com\" OR
+      team.enum_values.values.id: apihub-team-id` - The filter string
+      specifies the APIs where the owner team email is _apihub@google.com_ or
+      the id of the allowed value associated with the team attribute is
+      _apihub-team-id_. * `owner.email = \"apihub@google.com\" OR
+      team.enum_values.values.display_name: ApiHub Team` - The filter string
+      specifies the APIs where the owner team email is _apihub@google.com_ or
+      the display name of the allowed value associated with the team attribute
+      is `ApiHub Team`. * `owner.email = \"apihub@google.com\" AND
+      attributes.projects/test-project-id/locations/test-location-id/
       attributes/17650f90-4a29-4971-b3c0-d5532da3764b.enum_values.values.id:
       test_enum_id AND attributes.projects/test-project-id/locations/test-
       location-id/
@@ -1170,18 +1175,24 @@ class ApihubProjectsLocationsDeploymentsListRequest(_messages.Message):
       value of the user defined JSON attribute associated with the Resource.
       Allowed comparison operator is `:`. Here user-defined-attribute-json is
       a placeholder that can be replaced with any user defined JSON attribute
-      name. Expressions are combined with either `AND` logic operator or `OR`
-      logical operator but not both of them together i.e. only one of the
-      `AND` or `OR` operator can be used throughout the filter string and both
-      the operators cannot be used together. No other logical operators are
-      supported. At most three filter fields are allowed in the filter string
-      and if provided more than that then `INVALID_ARGUMENT` error is returned
-      by the API. Here are a few examples: *
-      `environment.enum_values.values.id: staging-id` - The allowed value id
-      of the environment attribute associated with the Deployment is _staging-
-      id_. * `environment.enum_values.values.display_name: \"Staging
-      Deployment\"` - The allowed value display name of the environment
-      attribute associated with the Deployment is `Staging Deployment`. *
+      name. A filter function is also supported in the filter string. The
+      filter function is `id(name)`. The `id(name)` function returns the id of
+      the resource name. For example, `id(name) = \"deployment-1\"` is
+      equivalent to `name = \"projects/test-project-id/locations/test-
+      location-id/deployments/deployment-1\"` provided the parent is
+      `projects/test-project-id/locations/test-location-id`. Expressions are
+      combined with either `AND` logic operator or `OR` logical operator but
+      not both of them together i.e. only one of the `AND` or `OR` operator
+      can be used throughout the filter string and both the operators cannot
+      be used together. No other logical operators are supported. At most
+      three filter fields are allowed in the filter string and if provided
+      more than that then `INVALID_ARGUMENT` error is returned by the API.
+      Here are a few examples: * `environment.enum_values.values.id: staging-
+      id` - The allowed value id of the environment attribute associated with
+      the Deployment is _staging-id_. *
+      `environment.enum_values.values.display_name: \"Staging Deployment\"` -
+      The allowed value display name of the environment attribute associated
+      with the Deployment is `Staging Deployment`. *
       `environment.enum_values.values.id: production-id AND create_time <
       \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
       The allowed value id of the environment attribute associated with the
@@ -1488,7 +1499,7 @@ class ApihubProjectsLocationsPluginsCreateRequest(_messages.Message):
       optional. * If provided, the same will be used. The service will throw
       an error if the specified id is already used by another Plugin resource
       in the API hub instance. * If not provided, a system generated id will
-      be used. This value should be 4-500 characters, overall resource name
+      be used. This value should be 4-63 characters, overall resource name
       which will be of format
       `projects/{project}/locations/{location}/plugins/{plugin}`, its length
       is limited to 1000 characters and valid characters are /a-z[0-9]-_/.
@@ -1575,7 +1586,7 @@ class ApihubProjectsLocationsPluginsInstancesCreateRequest(_messages.Message):
       This field is optional. * If provided, the same will be used. The
       service will throw an error if the specified id is already used by
       another plugin instance in the plugin resource. * If not provided, a
-      system generated id will be used. This value should be 4-500 characters,
+      system generated id will be used. This value should be 4-63 characters,
       and valid characters are /a-z[0-9]-_/.
   """
 
@@ -1665,14 +1676,21 @@ class ApihubProjectsLocationsPluginsInstancesListRequest(_messages.Message):
       operator must be one of: `<`, `>` or `=`. Filters are not case
       sensitive. The following fields in the `PluginInstances` are eligible
       for filtering: * `state` - The state of the Plugin Instance. Allowed
-      comparison operators: `=`. Expressions are combined with either `AND`
-      logic operator or `OR` logical operator but not both of them together
-      i.e. only one of the `AND` or `OR` operator can be used throughout the
-      filter string and both the operators cannot be used together. No other
-      logical operators are supported. At most three filter fields are allowed
-      in the filter string and if provided more than that then
-      `INVALID_ARGUMENT` error is returned by the API. Here are a few
-      examples: * `state = ENABLED` - The plugin instance is in enabled state.
+      comparison operators: `=`. A filter function is also supported in the
+      filter string. The filter function is `id(name)`. The `id(name)`
+      function returns the id of the resource name. For example, `id(name) =
+      \"plugin-instance-1\"` is equivalent to `name = \"projects/test-project-
+      id/locations/test-location-id/plugins/plugin-1/instances/plugin-
+      instance-1\"` provided the parent is `projects/test-project-
+      id/locations/test-location-id/plugins/plugin-1`. Expressions are
+      combined with either `AND` logic operator or `OR` logical operator but
+      not both of them together i.e. only one of the `AND` or `OR` operator
+      can be used throughout the filter string and both the operators cannot
+      be used together. No other logical operators are supported. At most
+      three filter fields are allowed in the filter string and if provided
+      more than that then `INVALID_ARGUMENT` error is returned by the API.
+      Here are a few examples: * `state = ENABLED` - The plugin instance is in
+      enabled state.
     pageSize: Optional. The maximum number of hub plugins to return. The
       service may return fewer than this value. If unspecified, at most 50 hub
       plugins will be returned. The maximum value is 1000; values above 1000
@@ -1691,6 +1709,23 @@ class ApihubProjectsLocationsPluginsInstancesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ApihubProjectsLocationsPluginsInstancesPatchRequest(_messages.Message):
+  r"""A ApihubProjectsLocationsPluginsInstancesPatchRequest object.
+
+  Fields:
+    googleCloudApihubV1PluginInstance: A GoogleCloudApihubV1PluginInstance
+      resource to be passed as the request body.
+    name: Identifier. The unique name of the plugin instance resource. Format:
+      `projects/{project}/locations/{location}/plugins/{plugin}/instances/{ins
+      tance}`
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudApihubV1PluginInstance = _messages.MessageField('GoogleCloudApihubV1PluginInstance', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApihubProjectsLocationsPluginsListRequest(_messages.Message):
@@ -1936,8 +1971,18 @@ class GoogleCloudApihubV1Api(_messages.Message):
   Fields:
     apiFunctionalRequirements: Optional. The api functional requirements
       associated with the API resource. Carinality is 1 for this attribute.
+      This maps to the following system defined attribute:
+      `projects/{project}/locations/{location}/attributes/system-api-
+      functional-requirements` attribute. The value of the attribute should be
+      a proper URI, and in case of Cloud Storage URI, it should point to a
+      Cloud Storage object, not a directory.
     apiRequirements: Optional. The api requirement doc associated with the API
-      resource. Carinality is 1 for this attribute.
+      resource. Carinality is 1 for this attribute. This maps to the following
+      system defined attribute:
+      `projects/{project}/locations/{location}/attributes/system-api-
+      requirements` attribute. The value of the attribute should be a proper
+      URI, and in case of Cloud Storage URI, it should point to a Cloud
+      Storage object, not a directory.
     apiStyle: Optional. The style of the API. This maps to the following
       system defined attribute:
       `projects/{project}/locations/{location}/attributes/system-api-style`
@@ -1947,6 +1992,11 @@ class GoogleCloudApihubV1Api(_messages.Message):
       the attribute.
     apiTechnicalRequirements: Optional. The api technical requirements
       associated with the API resource. Carinality is 1 for this attribute.
+      This maps to the following system defined attribute:
+      `projects/{project}/locations/{location}/attributes/system-api-
+      technical-requirements` attribute. The value of the attribute should be
+      a proper URI, and in case of Cloud Storage URI, it should point to a
+      Cloud Storage object, not a directory.
     attributes: Optional. The list of user defined attributes associated with
       the API resource. The key is the attribute name. It will be of the
       format:
@@ -3131,6 +3181,12 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
       cardinality of the attribute. The same can be retrieved via GetAttribute
       API. All values should be from the list of allowed values defined for
       the attribute.
+    managementUrl: Optional. The uri where users can navigate to for the
+      management of the deployment. This maps to the following system defined
+      attribute: `projects/{project}/locations/{location}/attributes/system-
+      management-url` The number of values for this attribute will be based on
+      the cardinality of the attribute. The same can be retrieved via
+      GetAttribute API.
     name: Identifier. The name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
     resourceUri: Required. A uri that uniquely identfies the deployment within
@@ -3144,8 +3200,19 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
       cardinality of the attribute. The same can be retrieved via GetAttribute
       API. All values should be from the list of allowed values defined for
       the attribute.
+    sourceEnvironment: Optional. The environment at source for the deployment.
+      For example: prod, dev, staging, etc.
     sourceMetadata: Output only. The list of sources and metadata from the
       sources of the deployment.
+    sourceProject: Optional. The project to which the deployment belongs. For
+      GCP gateways, this will refer to the project identifier. For others like
+      Edge/OPDK, this will refer to the org identifier.
+    sourceUri: Optional. The uri where additional source specific information
+      for this deployment can be found. This maps to the following system
+      defined attribute:
+      `projects/{project}/locations/{location}/attributes/system-source-uri`
+      The number of values for this attribute will be based on the cardinality
+      of the attribute. The same can be retrieved via GetAttribute API.
     updateTime: Output only. The time at which the deployment was last
       updated.
   """
@@ -3186,11 +3253,15 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
   documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 7)
   endpoints = _messages.StringField(8, repeated=True)
   environment = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 9)
-  name = _messages.StringField(10)
-  resourceUri = _messages.StringField(11)
-  slo = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
-  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 13, repeated=True)
-  updateTime = _messages.StringField(14)
+  managementUrl = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 10)
+  name = _messages.StringField(11)
+  resourceUri = _messages.StringField(12)
+  slo = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 13)
+  sourceEnvironment = _messages.StringField(14)
+  sourceMetadata = _messages.MessageField('GoogleCloudApihubV1SourceMetadata', 15, repeated=True)
+  sourceProject = _messages.StringField(16)
+  sourceUri = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudApihubV1DeploymentMetadata(_messages.Message):
@@ -3958,6 +4029,7 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
   r"""A plugin resource in the API Hub.
 
   Enums:
+    GatewayTypeValueValuesEnum: Optional. The type of the gateway.
     OwnershipTypeValueValuesEnum: Output only. The type of the plugin,
       indicating whether it is 'SYSTEM_OWNED' or 'USER_OWNED'.
     PluginCategoryValueValuesEnum: Optional. The category of the plugin,
@@ -3978,6 +4050,7 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
       characters (Unicode code points).
     documentation: Optional. The documentation of the plugin, that explains
       how to set up and use the plugin.
+    gatewayType: Optional. The type of the gateway.
     hostingService: Optional. This field is optional. It is used to notify the
       plugin hosting service for any lifecycle changes of the plugin instance
       and trigger execution of plugin instance actions in case of API hub
@@ -4010,6 +4083,29 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
     updateTime: Output only. Timestamp indicating when the plugin was last
       updated.
   """
+
+  class GatewayTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the gateway.
+
+    Values:
+      GATEWAY_TYPE_UNSPECIFIED: The gateway type is not specified.
+      APIGEE_X_AND_HYBRID: The gateway type is Apigee X and Hybrid.
+      APIGEE_EDGE_PUBLIC_CLOUD: The gateway type is Apigee Edge Public Cloud.
+      APIGEE_EDGE_PRIVATE_CLOUD: The gateway type is Apigee Edge Private
+        Cloud.
+      CLOUD_API_GATEWAY: The gateway type is Cloud API Gateway.
+      CLOUD_ENDPOINTS: The gateway type is Cloud Endpoints.
+      API_DISCOVERY: The gateway type is API Discovery.
+      OTHERS: The gateway type for any other types of gateways.
+    """
+    GATEWAY_TYPE_UNSPECIFIED = 0
+    APIGEE_X_AND_HYBRID = 1
+    APIGEE_EDGE_PUBLIC_CLOUD = 2
+    APIGEE_EDGE_PRIVATE_CLOUD = 3
+    CLOUD_API_GATEWAY = 4
+    CLOUD_ENDPOINTS = 5
+    API_DISCOVERY = 6
+    OTHERS = 7
 
   class OwnershipTypeValueValuesEnum(_messages.Enum):
     r"""Output only. The type of the plugin, indicating whether it is
@@ -4062,13 +4158,14 @@ class GoogleCloudApihubV1Plugin(_messages.Message):
   description = _messages.StringField(4)
   displayName = _messages.StringField(5)
   documentation = _messages.MessageField('GoogleCloudApihubV1Documentation', 6)
-  hostingService = _messages.MessageField('GoogleCloudApihubV1HostingService', 7)
-  name = _messages.StringField(8)
-  ownershipType = _messages.EnumField('OwnershipTypeValueValuesEnum', 9)
-  pluginCategory = _messages.EnumField('PluginCategoryValueValuesEnum', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  type = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 12)
-  updateTime = _messages.StringField(13)
+  gatewayType = _messages.EnumField('GatewayTypeValueValuesEnum', 7)
+  hostingService = _messages.MessageField('GoogleCloudApihubV1HostingService', 8)
+  name = _messages.StringField(9)
+  ownershipType = _messages.EnumField('OwnershipTypeValueValuesEnum', 10)
+  pluginCategory = _messages.EnumField('PluginCategoryValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  type = _messages.MessageField('GoogleCloudApihubV1AttributeValues', 13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudApihubV1PluginActionConfig(_messages.Message):
@@ -4156,6 +4253,9 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
     name: Identifier. The unique name of the plugin instance resource. Format:
       `projects/{project}/locations/{location}/plugins/{plugin}/instances/{ins
       tance}`
+    sourceProjectId: Optional. The source project id of the plugin instance.
+      This will be the id of runtime project in case of gcp based plugins and
+      org id in case of non gcp based plugins. This is a required field.
     state: Output only. The current state of the plugin instance (e.g.,
       enabled, disabled, provisioning).
     updateTime: Output only. Timestamp indicating when the plugin instance was
@@ -4232,8 +4332,9 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
   displayName = _messages.StringField(5)
   errorMessage = _messages.StringField(6)
   name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  sourceProjectId = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudApihubV1PluginInstanceAction(_messages.Message):
@@ -4251,11 +4352,16 @@ class GoogleCloudApihubV1PluginInstanceAction(_messages.Message):
       plugin action is publishing data to API hub curate layer.
     hubInstanceAction: Optional. The execution information for the plugin
       instance action done corresponding to an API hub instance.
+    resourceConfig: Output only. The configuration of resources created for a
+      given plugin instance action. Note these will be returned only in case
+      of Non-GCP plugins like OPDK.
     scheduleCronExpression: Optional. The schedule for this plugin instance
       action. This can only be set if the plugin supports
       API_HUB_SCHEDULE_TRIGGER mode for this action.
     scheduleTimeZone: Optional. The time zone for the schedule cron
       expression. If not provided, UTC will be used.
+    serviceAccount: Optional. The service account used to publish data. Note,
+      the service account will only be accepted for non GCP plugins like OPDK.
     state: Output only. The current state of the plugin action in the plugin
       instance.
   """
@@ -4290,9 +4396,11 @@ class GoogleCloudApihubV1PluginInstanceAction(_messages.Message):
   actionId = _messages.StringField(1)
   curationConfig = _messages.MessageField('GoogleCloudApihubV1CurationConfig', 2)
   hubInstanceAction = _messages.MessageField('GoogleCloudApihubV1ExecutionStatus', 3)
-  scheduleCronExpression = _messages.StringField(4)
-  scheduleTimeZone = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  resourceConfig = _messages.MessageField('GoogleCloudApihubV1ResourceConfig', 4)
+  scheduleCronExpression = _messages.StringField(5)
+  scheduleTimeZone = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class GoogleCloudApihubV1PluginInstanceActionID(_messages.Message):
@@ -4347,6 +4455,35 @@ class GoogleCloudApihubV1Range(_messages.Message):
 
   end = _messages.MessageField('GoogleCloudApihubV1Point', 1)
   start = _messages.MessageField('GoogleCloudApihubV1Point', 2)
+
+
+class GoogleCloudApihubV1ResourceConfig(_messages.Message):
+  r"""The configuration of resources created for a given plugin instance
+  action.
+
+  Enums:
+    ActionTypeValueValuesEnum: Output only. The type of the action.
+
+  Fields:
+    actionType: Output only. The type of the action.
+    pubsubTopic: Output only. The pubsub topic to publish the data to. Format
+      is projects/{project}/topics/{topic}
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the action.
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: Default unspecified action type.
+      SYNC_METADATA: Action type for sync metadata.
+      SYNC_RUNTIME_DATA: Action type for sync runtime data.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    SYNC_METADATA = 1
+    SYNC_RUNTIME_DATA = 2
+
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
+  pubsubTopic = _messages.StringField(2)
 
 
 class GoogleCloudApihubV1RuntimeProjectAttachment(_messages.Message):

@@ -149,10 +149,7 @@ apis:
     v1:
       discovery_doc: apihub_v1.json
       default: true
-  appconfigmanager:
-    v1alpha:
-      discovery_doc: appconfigmanager_v1alpha.json
-      default: true
+
   parametermanager:
     v1:
       discovery_doc: parametermanager_v1.json
@@ -526,6 +523,11 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}
     v1beta:
       discovery_doc: configdelivery_v1beta.json
+      resources:
+        projects.locations.connections.repositories:
+          path: projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}
+    v1:
+      discovery_doc: configdelivery_v1.json
       resources:
         projects.locations.connections.repositories:
           path: projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}
@@ -1936,10 +1938,6 @@ canonical_surfaces:
   apigateway:
     name: apigateway
     command: api-gateway
-  appconfigmanager:
-    name: appconfigmanager
-    command: app-config-manager
-    hidden: true
   parametermanager:
     name: parametermanager
     command: parameter-manager

@@ -303,13 +303,11 @@ class WorkerPoolsAsyncClient:
                 The request object. Request message for creating a
                 WorkerPool.
             parent (:class:`str`):
-                Required. The location and project in
-                which this worker pool should be
-                created. Format:
-                projects/{project}/locations/{location},
-                where {project} can be project id or
-                number. Only lowercase characters,
-                digits, and hyphens.
+                Required. The location and project in which this worker
+                pool should be created. Format:
+                ``projects/{project}/locations/{location}``, where
+                ``{project}`` can be project id or number. Only
+                lowercase characters, digits, and hyphens.
 
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -325,7 +323,7 @@ class WorkerPoolsAsyncClient:
                 Required. The unique identifier for the WorkerPool. It
                 must begin with letter, and cannot end with hyphen; must
                 contain fewer than 50 characters. The name of the worker
-                pool becomes {parent}/workerPools/{worker_pool_id}.
+                pool becomes ``{parent}/workerPools/{worker_pool_id}``.
 
                 This corresponds to the ``worker_pool_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -447,8 +445,8 @@ class WorkerPoolsAsyncClient:
                 WorkerPool by its full name.
             name (:class:`str`):
                 Required. The full name of the WorkerPool. Format:
-                projects/{project}/locations/{location}/workerPools/{worker_pool},
-                where {project} can be project id or number.
+                ``projects/{project}/locations/{location}/workerPools/{worker_pool}``,
+                where ``{project}`` can be project id or number.
 
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -560,13 +558,11 @@ class WorkerPoolsAsyncClient:
                 The request object. Request message for retrieving a list
                 of WorkerPools.
             parent (:class:`str`):
-                Required. The location and project to
-                list resources on. Location must be a
-                valid Google Cloud region, and cannot be
-                the "-" wildcard. Format:
-                projects/{project}/locations/{location},
-                where {project} can be project id or
-                number.
+                Required. The location and project to list resources on.
+                Location must be a valid Google Cloud region, and cannot
+                be the "-" wildcard. Format:
+                ``projects/{project}/locations/{location}``, where
+                ``{project}`` can be project id or number.
 
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -816,8 +812,8 @@ class WorkerPoolsAsyncClient:
                 WorkerPool by its full name.
             name (:class:`str`):
                 Required. The full name of the WorkerPool. Format:
-                projects/{project}/locations/{location}/workerPools/{worker_pool},
-                where {project} can be project id or number.
+                ``projects/{project}/locations/{location}/workerPools/{worker_pool}``,
+                where ``{project}`` can be project id or number.
 
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this

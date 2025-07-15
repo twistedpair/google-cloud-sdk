@@ -1701,8 +1701,9 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
   Fields:
     databaseViewSpec: Spec what applies to tables that are actually views. Not
       set for "real" tables.
-    dataplexTable: Output only. Fields specific to a Dataplex table and
-      present only in the Dataplex table entries.
+    dataplexTable: Output only. Fields specific to a Dataplex Universal
+      Catalog table and present only in the Dataplex Universal Catalog table
+      entries.
     type: Type of this table.
   """
 
@@ -1753,12 +1754,12 @@ class GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec(_messages.Messag
 
 
 class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
-  r"""External table registered by Dataplex. Dataplex publishes data
-  discovered from an asset into multiple other systems (BigQuery, DPMS) in
-  form of tables. We call them "external tables". External tables are also
-  synced into the Data Catalog. This message contains pointers to those
-  external tables (fully qualified name, resource name et cetera) within the
-  Data Catalog.
+  r"""External table registered by Dataplex Universal Catalog. Dataplex
+  Universal Catalog publishes data discovered from an asset into multiple
+  other systems (BigQuery, DPMS) in form of tables. We call them "external
+  tables". External tables are also synced into the Data Catalog. This message
+  contains pointers to those external tables (fully qualified name, resource
+  name et cetera) within the Data Catalog.
 
   Enums:
     SystemValueValuesEnum: Service in which the external table is registered.
@@ -1779,7 +1780,7 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
-      DATAPLEX: Dataplex.
+      DATAPLEX: Dataplex Universal Catalog.
       CLOUD_SPANNER: Cloud Spanner
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
@@ -1804,27 +1805,27 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1DataplexFilesetSpec(_messages.Message):
-  r"""Entry specyfication for a Dataplex fileset.
+  r"""Entry specification for a Dataplex Universal Catalog fileset.
 
   Fields:
-    dataplexSpec: Common Dataplex fields.
+    dataplexSpec: Common Dataplex Universal Catalog fields.
   """
 
   dataplexSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataplexSpec', 1)
 
 
 class GoogleCloudDatacatalogV1DataplexSpec(_messages.Message):
-  r"""Common Dataplex fields.
+  r"""Common Dataplex Universal Catalog fields.
 
   Fields:
-    asset: Fully qualified resource name of an asset in Dataplex, to which the
-      underlying data source (Cloud Storage bucket or BigQuery dataset) of the
-      entity is attached.
+    asset: Fully qualified resource name of an asset in Dataplex Universal
+      Catalog, to which the underlying data source (Cloud Storage bucket or
+      BigQuery dataset) of the entity is attached.
     compressionFormat: Compression format of the data, e.g., zip, gzip etc.
     dataFormat: Format of the data.
     projectId: Project ID of the underlying Cloud Storage or BigQuery data.
-      Note that this may not be the same project as the correspondingly
-      Dataplex lake / zone / asset.
+      Note that this may not be the same project as the corresponding Dataplex
+      Universal Catalog lake / zone / asset.
   """
 
   asset = _messages.StringField(1)
@@ -1834,13 +1835,13 @@ class GoogleCloudDatacatalogV1DataplexSpec(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1DataplexTableSpec(_messages.Message):
-  r"""Entry specification for a Dataplex table.
+  r"""Entry specification for a Dataplex Universal Catalog table.
 
   Fields:
-    dataplexSpec: Common Dataplex fields.
-    externalTables: List of external tables registered by Dataplex in other
-      systems based on the same underlying data. External tables allow to
-      query this data in those systems.
+    dataplexSpec: Common Dataplex Universal Catalog fields.
+    externalTables: List of external tables registered by Dataplex Universal
+      Catalog in other systems based on the same underlying data. External
+      tables allow to query this data in those systems.
     userManaged: Indicates if the table schema is managed by the user or not.
   """
 
@@ -1997,7 +1998,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
-      DATAPLEX: Dataplex.
+      DATAPLEX: Dataplex Universal Catalog.
       CLOUD_SPANNER: Cloud Spanner
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
@@ -2034,8 +2035,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       DATA_SOURCE_CONNECTION: Connection to a data source. For example, a
         BigQuery connection.
       ROUTINE: Routine, for example, a BigQuery routine.
-      LAKE: A Dataplex lake.
-      ZONE: A Dataplex zone.
+      LAKE: A Dataplex Universal Catalog lake.
+      ZONE: A Dataplex Universal Catalog zone.
       SERVICE: A service, for example, a Dataproc Metastore service.
       DATABASE_SCHEMA: Schema within a relational database.
       DASHBOARD: A Dashboard, for example from Looker.
@@ -2145,7 +2146,7 @@ class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
       Note: The entry group itself and its child resources might not be stored
       in the location specified in its name.
     transferredToDataplex: Optional. When set to [true], it means DataCatalog
-      EntryGroup was transferred to Dataplex Catalog Service. It makes
+      EntryGroup was transferred to Dataplex Universal Catalog. It makes
       EntryGroup and its Entries to be read-only in DataCatalog. However, new
       Tags on EntryGroup and its Entries can be created. After setting the
       flag to [true] it cannot be unset.
@@ -2277,8 +2278,8 @@ class GoogleCloudDatacatalogV1FilesetSpec(_messages.Message):
   'FILESET' type.
 
   Fields:
-    dataplexFileset: Fields specific to a Dataplex fileset and present only in
-      the Dataplex fileset entries.
+    dataplexFileset: Fields specific to a Dataplex Universal Catalog fileset
+      and present only in the Dataplex Universal Catalog fileset entries.
   """
 
   dataplexFileset = _messages.MessageField('GoogleCloudDatacatalogV1DataplexFilesetSpec', 1)
@@ -2371,8 +2372,8 @@ class GoogleCloudDatacatalogV1ImportEntriesRequest(_messages.Message):
   Fields:
     gcsBucketPath: Path to a Cloud Storage bucket that contains a dump ready
       for ingestion.
-    jobId: Optional. (Optional) Dataplex task job id, if specified will be
-      used as part of ImportEntries LRO ID
+    jobId: Optional. (Optional) Dataplex Universal Catalog task job id, if
+      specified will be used as part of ImportEntries LRO ID
   """
 
   gcsBucketPath = _messages.StringField(1)
@@ -2550,32 +2551,33 @@ class GoogleCloudDatacatalogV1LookerSystemSpec(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1MigrationConfig(_messages.Message):
-  r"""The configuration related to the migration to Dataplex applied to an
-  organization or project. It is the response message for SetConfig and
-  RetrieveEffectiveConfig.
+  r"""The configuration related to the migration to Dataplex Universal Catalog
+  applied to an organization or project. It is the response message for
+  SetConfig and RetrieveEffectiveConfig.
 
   Enums:
     CatalogUiExperienceValueValuesEnum: Opt-in status for the UI switch to
-      Dataplex.
+      Dataplex Universal Catalog.
     TagTemplateMigrationValueValuesEnum: Opt-in status for the migration of
-      Tag Templates to Dataplex.
+      Tag Templates to Dataplex Universal Catalog.
 
   Fields:
-    catalogUiExperience: Opt-in status for the UI switch to Dataplex.
+    catalogUiExperience: Opt-in status for the UI switch to Dataplex Universal
+      Catalog.
     tagTemplateMigration: Opt-in status for the migration of Tag Templates to
-      Dataplex.
+      Dataplex Universal Catalog.
     templateMigrationEnabledTime: The time when the Tag Template migration was
       enabled. If the Tag Template migration is not enabled, this field is not
       set.
   """
 
   class CatalogUiExperienceValueValuesEnum(_messages.Enum):
-    r"""Opt-in status for the UI switch to Dataplex.
+    r"""Opt-in status for the UI switch to Dataplex Universal Catalog.
 
     Values:
       CATALOG_UI_EXPERIENCE_UNSPECIFIED: Default value. The default UI is
-        Dataplex.
-      CATALOG_UI_EXPERIENCE_ENABLED: The UI is Dataplex.
+        Dataplex Universal Catalog.
+      CATALOG_UI_EXPERIENCE_ENABLED: The UI is Dataplex Universal Catalog.
       CATALOG_UI_EXPERIENCE_DISABLED: The UI is Data Catalog.
     """
     CATALOG_UI_EXPERIENCE_UNSPECIFIED = 0
@@ -2583,24 +2585,25 @@ class GoogleCloudDatacatalogV1MigrationConfig(_messages.Message):
     CATALOG_UI_EXPERIENCE_DISABLED = 2
 
   class TagTemplateMigrationValueValuesEnum(_messages.Enum):
-    r"""Opt-in status for the migration of Tag Templates to Dataplex.
+    r"""Opt-in status for the migration of Tag Templates to Dataplex Universal
+    Catalog.
 
     Values:
       TAG_TEMPLATE_MIGRATION_UNSPECIFIED: Default value. Migration of Tag
-        Templates from Data Catalog to Dataplex is not performed. For projects
-        that are under an organization, the project inherits the
-        organization's configuration when you set the project-level
-        configuration to unspecified (`TAG_TEMPLATE_MIGRATION_UNSPECIFIED`).
-        This means that when migration is enabled at the organization level,
-        and the project-level configuration is unspecified, the project is
-        migrated. To explicitly opt-in or opt-out individual projects, set the
-        project-level configuration to enabled
-        (`TAG_TEMPLATE_MIGRATION_ENABLED`) or disabled
-        (`TAG_TEMPLATE_MIGRATION_DISABLED`).
+        Templates from Data Catalog to Dataplex Universal Catalog is not
+        performed. For projects that are under an organization, the project
+        inherits the organization's configuration when you set the project-
+        level configuration to unspecified
+        (`TAG_TEMPLATE_MIGRATION_UNSPECIFIED`). This means that when migration
+        is enabled at the organization level, and the project-level
+        configuration is unspecified, the project is migrated. To explicitly
+        opt-in or opt-out individual projects, set the project-level
+        configuration to enabled (`TAG_TEMPLATE_MIGRATION_ENABLED`) or
+        disabled (`TAG_TEMPLATE_MIGRATION_DISABLED`).
       TAG_TEMPLATE_MIGRATION_ENABLED: Migration of Tag Templates from Data
-        Catalog to Dataplex is enabled.
+        Catalog to Dataplex Universal Catalog is enabled.
       TAG_TEMPLATE_MIGRATION_DISABLED: Migration of Tag Templates from Data
-        Catalog to Dataplex is disabled.
+        Catalog to Dataplex Universal Catalog is disabled.
     """
     TAG_TEMPLATE_MIGRATION_UNSPECIFIED = 0
     TAG_TEMPLATE_MIGRATION_ENABLED = 1
@@ -2644,8 +2647,8 @@ class GoogleCloudDatacatalogV1ModifyEntryOverviewRequest(_messages.Message):
 
 class GoogleCloudDatacatalogV1OrganizationConfig(_messages.Message):
   r"""The configuration related to the migration from Data Catalog to Dataplex
-  that has been applied to an organization and any projects under it. It is
-  the response message for RetrieveConfig.
+  Universal Catalog that has been applied to an organization and any projects
+  under it. It is the response message for RetrieveConfig.
 
   Messages:
     ConfigValue: Map of organizations and project resource names and their
@@ -3166,7 +3169,7 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
-      DATAPLEX: Dataplex.
+      DATAPLEX: Dataplex Universal Catalog.
       CLOUD_SPANNER: Cloud Spanner
       CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
@@ -3282,23 +3285,24 @@ class GoogleCloudDatacatalogV1SetConfigRequest(_messages.Message):
 
   Enums:
     CatalogUiExperienceValueValuesEnum: Opt-in status for the UI switch to
-      Dataplex.
+      Dataplex Universal Catalog.
     TagTemplateMigrationValueValuesEnum: Opt-in status for the migration of
-      Tag Templates to Dataplex.
+      Tag Templates to Dataplex Universal Catalog.
 
   Fields:
-    catalogUiExperience: Opt-in status for the UI switch to Dataplex.
+    catalogUiExperience: Opt-in status for the UI switch to Dataplex Universal
+      Catalog.
     tagTemplateMigration: Opt-in status for the migration of Tag Templates to
-      Dataplex.
+      Dataplex Universal Catalog.
   """
 
   class CatalogUiExperienceValueValuesEnum(_messages.Enum):
-    r"""Opt-in status for the UI switch to Dataplex.
+    r"""Opt-in status for the UI switch to Dataplex Universal Catalog.
 
     Values:
       CATALOG_UI_EXPERIENCE_UNSPECIFIED: Default value. The default UI is
-        Dataplex.
-      CATALOG_UI_EXPERIENCE_ENABLED: The UI is Dataplex.
+        Dataplex Universal Catalog.
+      CATALOG_UI_EXPERIENCE_ENABLED: The UI is Dataplex Universal Catalog.
       CATALOG_UI_EXPERIENCE_DISABLED: The UI is Data Catalog.
     """
     CATALOG_UI_EXPERIENCE_UNSPECIFIED = 0
@@ -3306,24 +3310,25 @@ class GoogleCloudDatacatalogV1SetConfigRequest(_messages.Message):
     CATALOG_UI_EXPERIENCE_DISABLED = 2
 
   class TagTemplateMigrationValueValuesEnum(_messages.Enum):
-    r"""Opt-in status for the migration of Tag Templates to Dataplex.
+    r"""Opt-in status for the migration of Tag Templates to Dataplex Universal
+    Catalog.
 
     Values:
       TAG_TEMPLATE_MIGRATION_UNSPECIFIED: Default value. Migration of Tag
-        Templates from Data Catalog to Dataplex is not performed. For projects
-        that are under an organization, the project inherits the
-        organization's configuration when you set the project-level
-        configuration to unspecified (`TAG_TEMPLATE_MIGRATION_UNSPECIFIED`).
-        This means that when migration is enabled at the organization level,
-        and the project-level configuration is unspecified, the project is
-        migrated. To explicitly opt-in or opt-out individual projects, set the
-        project-level configuration to enabled
-        (`TAG_TEMPLATE_MIGRATION_ENABLED`) or disabled
-        (`TAG_TEMPLATE_MIGRATION_DISABLED`).
+        Templates from Data Catalog to Dataplex Universal Catalog is not
+        performed. For projects that are under an organization, the project
+        inherits the organization's configuration when you set the project-
+        level configuration to unspecified
+        (`TAG_TEMPLATE_MIGRATION_UNSPECIFIED`). This means that when migration
+        is enabled at the organization level, and the project-level
+        configuration is unspecified, the project is migrated. To explicitly
+        opt-in or opt-out individual projects, set the project-level
+        configuration to enabled (`TAG_TEMPLATE_MIGRATION_ENABLED`) or
+        disabled (`TAG_TEMPLATE_MIGRATION_DISABLED`).
       TAG_TEMPLATE_MIGRATION_ENABLED: Migration of Tag Templates from Data
-        Catalog to Dataplex is enabled.
+        Catalog to Dataplex Universal Catalog is enabled.
       TAG_TEMPLATE_MIGRATION_DISABLED: Migration of Tag Templates from Data
-        Catalog to Dataplex is disabled.
+        Catalog to Dataplex Universal Catalog is disabled.
     """
     TAG_TEMPLATE_MIGRATION_UNSPECIFIED = 0
     TAG_TEMPLATE_MIGRATION_ENABLED = 1
@@ -3457,14 +3462,15 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
 
     Values:
       DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
-        tags are only visible and editable in DataCatalog.
-      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
-        Visible in both services. Editable in DataCatalog, read-only in
-        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
-        in favor of organization or project wide TagTemplate migration opt-in.
+        tags are only visible and editable in Data Catalog.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex Universal
+        Catalog service. Visible in both services. Editable in Data Catalog,
+        read-only in Dataplex Universal Catalog. Deprecated: Individual
+        TagTemplate migration is deprecated in favor of organization or
+        project wide TagTemplate migration opt-in.
       TRANSFERRED: TagTemplate and its tags are auto-copied to Dataplex
-        service. Visible in both services. Editable in Dataplex, read-only in
-        DataCatalog.
+        Universal Catalog service. Visible in both services. Editable in
+        Dataplex Universal Catalog, read-only in Data Catalog.
     """
     DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
     MIGRATED = 1
@@ -3596,14 +3602,15 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
 
     Values:
       DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
-        tags are only visible and editable in DataCatalog.
-      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
-        Visible in both services. Editable in DataCatalog, read-only in
-        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
-        in favor of organization or project wide TagTemplate migration opt-in.
+        tags are only visible and editable in Data Catalog.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex Universal
+        Catalog service. Visible in both services. Editable in Data Catalog,
+        read-only in Dataplex Universal Catalog. Deprecated: Individual
+        TagTemplate migration is deprecated in favor of organization or
+        project wide TagTemplate migration opt-in.
       TRANSFERRED: TagTemplate and its tags are auto-copied to Dataplex
-        service. Visible in both services. Editable in Dataplex, read-only in
-        DataCatalog.
+        Universal Catalog service. Visible in both services. Editable in
+        Dataplex Universal Catalog, read-only in Data Catalog.
     """
     DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
     MIGRATED = 1
@@ -3764,7 +3771,7 @@ class GoogleCloudDatacatalogV1TaxonomyService(_messages.Message):
 
     Values:
       MANAGING_SYSTEM_UNSPECIFIED: Default value
-      MANAGING_SYSTEM_DATAPLEX: Dataplex.
+      MANAGING_SYSTEM_DATAPLEX: Dataplex Universal Catalog.
       MANAGING_SYSTEM_OTHER: Other
     """
     MANAGING_SYSTEM_UNSPECIFIED = 0

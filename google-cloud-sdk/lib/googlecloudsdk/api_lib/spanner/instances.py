@@ -14,10 +14,6 @@
 # limitations under the License.
 """Spanner instance API helper."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import datetime
 import re
 
@@ -82,6 +78,16 @@ def MaybeGetAutoscalingOverride(msgs, asymmetric_autoscaling_option):
 
 # Merges existing_overrides with new_overrides and returned the merged result.
 def MergeAutoscalingConfigOverride(msgs, existing_overrides, new_overrides):
+  """Merges two AutoscalingConfigOverrides objects.
+
+  Args:
+    msgs: The messages module for the Spanner API.
+    existing_overrides: The existing AutoscalingConfigOverrides object.
+    new_overrides: The new AutoscalingConfigOverrides object to merge.
+
+  Returns:
+    The merged AutoscalingConfigOverrides object.
+  """
   if existing_overrides is None and new_overrides is None:
     return None
 
@@ -132,6 +138,14 @@ def MergeAutoscalingConfigOverride(msgs, existing_overrides, new_overrides):
 def PatchAsymmetricAutoscalingOptions(
     msgs, instance_obj, current_instance, asym_options_patch
 ):
+  """Patch asymmetric autoscaling options.
+
+  Args:
+    msgs: API messages module.
+    instance_obj: The instance object to patch.
+    current_instance: The current instance object.
+    asym_options_patch: A list of AsymmetricAutoscalingOption objects to patch.
+  """
   option_by_location = {}
   if config := current_instance.autoscalingConfig:
     for existing_option in config.asymmetricAutoscalingOptions:
@@ -175,6 +189,7 @@ def Create(
     ssd_cache=None,
     edition=None,
     default_backup_schedule_type=None,
+    tags=None,
 ):
   """Create a new instance.
 
@@ -200,6 +215,7 @@ def Create(
     ssd_cache: The ssd cache to use.
     edition: The edition to use.
     default_backup_schedule_type: The type of default backup schedule to use.
+    tags: The parsed tags value.
 
   Returns:
     The created instance.
@@ -262,6 +278,14 @@ def Create(
             default_backup_schedule_type
         )
     )
+  if tags is not None:
+    instance_obj.tags = msgs.Instance.TagsValue(
+        additionalProperties=[
+            msgs.Instance.TagsValue.AdditionalProperty(key=key, value=value)
+            for key, value in sorted(tags.items())
+        ]
+    )
+
   # Add asymmetric autoscaling options, if present.
   if asymmetric_autoscaling_options is not None:
     for asym_option in asymmetric_autoscaling_options:

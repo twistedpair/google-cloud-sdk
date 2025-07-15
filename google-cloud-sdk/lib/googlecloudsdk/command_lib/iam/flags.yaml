@@ -571,6 +571,17 @@ workforce_pool_provider_scim_tenant:
     help_text: |-
       A comma-separated list of KEY=VALUE pairs defining attribute mappings.
 
+workforce_pool_provider_scim_token:
+  display_name:
+    api_field: workforcePoolProviderScimToken.displayName
+    arg_name: display-name
+    help_text: |-
+      Optional, user-specified display name for the SCIM token (max 32 characters).
+  show_deleted:
+    arg_name: show-deleted
+    api_field: showDeleted
+    action: store_true
+    help_text: Include soft-deleted tokens in the results.
 
 workforce_pool_provider:
   display_name:

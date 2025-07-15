@@ -2284,6 +2284,30 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
   parent = _messages.StringField(5, required=True)
 
 
+class SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest object.
+
+  Fields:
+    name: Optional. A unique identifier for a repository. The name should be
+      of the format: `projects/{project}/locations/{location_id}/repositories/
+      {repository_id}`
+    repository: A Repository resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the repository resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. False by default. If set to true, the request is
+      validated and the user is provided with an expected result, but no
+      actual change is made.
+  """
+
+  name = _messages.StringField(1, required=True)
+  repository = _messages.MessageField('Repository', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCloseRequest(_messages.Message):
   r"""A
   SecuresourcemanagerProjectsLocationsRepositoriesPullRequestsCloseRequest

@@ -599,6 +599,8 @@ class Job(_messages.Message):
       execution time according to the schedule.
     pubsubTarget: Pub/Sub target.
     retryConfig: Settings that determine the retry behavior.
+    satisfiesPzs: Output only. Whether or not this Job satisfies the
+      requirements of physical zone separation
     schedule: Specifies a schedule of start times. This can be used to specify
       complicated and time-zone-aware schedules. A scheduled start time will
       be delayed if the previous execution has not ended when its scheduled
@@ -645,10 +647,11 @@ class Job(_messages.Message):
   nextScheduleTime = _messages.StringField(8)
   pubsubTarget = _messages.MessageField('PubsubTarget', 9)
   retryConfig = _messages.MessageField('RetryConfig', 10)
-  schedule = _messages.MessageField('Schedule', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  status = _messages.MessageField('Status', 13)
-  userUpdateTime = _messages.StringField(14)
+  satisfiesPzs = _messages.BooleanField(11)
+  schedule = _messages.MessageField('Schedule', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  status = _messages.MessageField('Status', 14)
+  userUpdateTime = _messages.StringField(15)
 
 
 class ListJobsResponse(_messages.Message):

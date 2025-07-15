@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://cloudlocationfinder.googleapis.com/v1alpha/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/location-finder/docs'
 
 
 class Collections(enum.Enum):

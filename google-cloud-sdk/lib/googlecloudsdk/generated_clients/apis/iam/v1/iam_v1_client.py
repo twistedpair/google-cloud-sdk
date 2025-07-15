@@ -45,6 +45,7 @@ class IamV1(base_api.BaseApiClient):
     self.locations_workforcePools_providers_keys_operations = self.LocationsWorkforcePoolsProvidersKeysOperationsService(self)
     self.locations_workforcePools_providers_keys = self.LocationsWorkforcePoolsProvidersKeysService(self)
     self.locations_workforcePools_providers_operations = self.LocationsWorkforcePoolsProvidersOperationsService(self)
+    self.locations_workforcePools_providers_scimTenants_tokens = self.LocationsWorkforcePoolsProvidersScimTenantsTokensService(self)
     self.locations_workforcePools_providers_scimTenants = self.LocationsWorkforcePoolsProvidersScimTenantsService(self)
     self.locations_workforcePools_providers = self.LocationsWorkforcePoolsProvidersService(self)
     self.locations_workforcePools_subjects_operations = self.LocationsWorkforcePoolsSubjectsOperationsService(self)
@@ -565,6 +566,178 @@ class IamV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='IamLocationsWorkforcePoolsProvidersOperationsGetRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class LocationsWorkforcePoolsProvidersScimTenantsTokensService(base_api.BaseApiService):
+    """Service class for the locations_workforcePools_providers_scimTenants_tokens resource."""
+
+    _NAME = 'locations_workforcePools_providers_scimTenants_tokens'
+
+    def __init__(self, client):
+      super(IamV1.LocationsWorkforcePoolsProvidersScimTenantsTokensService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkforcePoolProviderScimToken in a WorkforcePoolProviderScimTenant. You cannot reuse the name of a deleted SCIM token until 30 days after deletion.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolProviderScimToken) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/scimTenants/{scimTenantsId}/tokens',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.providers.scimTenants.tokens.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['workforcePoolProviderScimTokenId'],
+        relative_path='v1/{+parent}/tokens',
+        request_field='workforcePoolProviderScimToken',
+        request_type_name='IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest',
+        response_type_name='WorkforcePoolProviderScimToken',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a WorkforcePoolProviderScimToken. You can undelete a scim token for 30 days. After 30 days, deletion is permanent. You cannot update deleted scim tokens. However, you can view and list them.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolProviderScimToken) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/scimTenants/{scimTenantsId}/tokens/{tokensId}',
+        http_method='DELETE',
+        method_id='iam.locations.workforcePools.providers.scimTenants.tokens.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsProvidersScimTenantsTokensDeleteRequest',
+        response_type_name='WorkforcePoolProviderScimToken',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an individual WorkforcePoolProviderScimToken.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolProviderScimToken) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/scimTenants/{scimTenantsId}/tokens/{tokensId}',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.providers.scimTenants.tokens.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsProvidersScimTenantsTokensGetRequest',
+        response_type_name='WorkforcePoolProviderScimToken',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted WorkforcePoolProviderScimTokenss in a WorkforcePoolProviderScimTenant. If `show_deleted` is set to `true`, then deleted SCIM tokens are also listed.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkforcePoolProviderScimTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/scimTenants/{scimTenantsId}/tokens',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.providers.scimTenants.tokens.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/tokens',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsProvidersScimTenantsTokensListRequest',
+        response_type_name='ListWorkforcePoolProviderScimTokensResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing WorkforcePoolProviderScimToken.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolProviderScimToken) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/scimTenants/{scimTenantsId}/tokens/{tokensId}',
+        http_method='PATCH',
+        method_id='iam.locations.workforcePools.providers.scimTenants.tokens.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workforcePoolProviderScimToken',
+        request_type_name='IamLocationsWorkforcePoolsProvidersScimTenantsTokensPatchRequest',
+        response_type_name='WorkforcePoolProviderScimToken',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkforcePoolProviderScimToken, as long as it was deleted fewer than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolProviderScimToken) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/scimTenants/{scimTenantsId}/tokens/{tokensId}:undelete',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.providers.scimTenants.tokens.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkforcePoolProviderScimTokenRequest',
+        request_type_name='IamLocationsWorkforcePoolsProvidersScimTenantsTokensUndeleteRequest',
+        response_type_name='WorkforcePoolProviderScimToken',
         supports_download=False,
     )
 

@@ -352,6 +352,10 @@ class InsightsConfigClient(object):
     )
 
     for workload in workloads:
+      # Skip if these fields are not set.
+      # This could happen if the workload is detached.
+      if not workload.workloadReference or not workload.workloadReference.uri:
+        continue
       gke_workload = name.parse_gke_deployment_uri(
           workload.workloadReference.uri
       )

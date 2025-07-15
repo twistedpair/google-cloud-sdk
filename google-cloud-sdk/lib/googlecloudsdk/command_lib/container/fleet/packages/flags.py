@@ -84,6 +84,17 @@ def AddResourceBundleFlag(parser):
   )
 
 
+def AddSkipCreatingVariantResourcesFlag(parser):
+  parser.add_argument(
+      '--skip-creating-variant-resources',
+      required=False,
+      help='Whether to opt-in to the alternate variant upload flow.',
+      default=False,
+      hidden=True,
+      action='store_true',
+  )
+
+
 def AddForceDeleteFlag(parser, resource_name):
   parser.add_argument(
       '--force',

@@ -5,6 +5,139 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 530.0.0 (2025-07-15)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Deprecated Python 3.8. The minimum supported Python version is Python 3.9.
+
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.38 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.38>.
+
+### Cloud Composer
+
+* Added `gcloud composer environments restart-web-server` to restart web server for a Cloud Composer environment.
+
+### Cloud Dataflow
+
+* Deprecated JAVA8 from `gcloud dataflow flex-template build`
+  flex-template-base-image option. Set to JAVA8 now redirects to JAVA11 and will
+  be removed in a future release.
+* Added `gcloud dataflow jobs archive` command to archive a job.
+
+### Cloud Firestore
+
+* Promoted `--tags` flag of `gcloud firestore databases create` and `gcloud firestore databases restore` command to beta and GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.20.0
+  * Add support for __namespace__ queries.
+  * Add support for __key__ queries.
+  * Fix bug where entity version behavior differed from production.
+
+### Cloud Identity-Aware Proxy
+
+*   Deprecated `gcloud iap oauth-brands` and `gcloud iap oauth-clients` commands.
+
+### Cloud Managed Kafka
+
+* Added `--delete-mode` and `--delete-config` flags to `gcloud managed-kafka schema-registries subject update`, which gives users the capability to delete a subject mode and config.
+
+### Cloud NetApp
+
+* Add new `gcloud CLI` command `restore-backup-files` for NetApp Volumes.
+
+### Cloud Resource Manager
+
+* Updated `--purpose-data` flag from `gcloud resource-manager tags keys
+  create` command with a new value `organization`.
+
+### Cloud Run
+
+* Added `--[no-]gpu-zonal-redundancy` flag to `gcloud beta run jobs` command
+  group to support setting zonal redundancy for Cloud Run Jobs using GPU.
+
+### Compute Engine
+
+* Added `gcloud compute org-security-policies rules add-preconfig-waf-exclusion|remove-preconfig-waf-exclusion` in alpha and beta.
+* Added and promoted flags related to tls-settings to GA:
+    - `--tls-settings` of `gcloud compute backend-service create`.
+    - `--tls-settings` of `gcloud compute backend-service update`.
+    - `--no-tls-settings` of `gcloud compute backend-service update`.
+* Added `gcloud compute reservations sub-blocks performMaintenance` command in beta and v1.
+
+### Container
+
+* Add `--enable-auto-ipam` and `--disable-auto-ipam` flag to `gcloud container clusters create/update` to enable/disable automatic IP address management for the cluster.
+* Add `--sole-tenant-min-node-cpus` flag to `gcloud container node-pools create` to specify the minimum number of vCPUs that can be used by a sole-tenant node pool.
+
+### Database Migration
+
+* Added `gcloud database-migrations conversion-workspaces mapping-rules list`.
+* Added support for `--database` flag in Postgres connection profiles.
+
+### Distributed Cloud Edge
+
+* Added `--enable-google-group-authentication` flag to `gcloud edge-cloud container clusters create` command to allow for specifying whether Google Groups authentication is enabled for the cluster.
+
+### Kubernetes Engine
+
+*   Added flag option `--addons=LustreCsiDriver` to
+    add support for enabling/disabling the Lustre CSI Driver on GKE Standard
+    clusters.
+*   Added flag option `--enable-lustre-csi-driver` to
+    add support for enabling the Lustre CSI Driver on GKE Autopilot clusters.
+*   Added flag option `--enable-legacy-lustre-port` to
+    allow the Lustre CSI Driver to initialize LNet (the virtual network layer
+    for the Lustre kernel module) using port 6988.
+*   Added kubelet config options `maxParallelImagePulls` to
+    `gcloud container clusters create`, `gcloud container node-pools create`,
+    and `gcloud container node-pools update` command which defines the maximum
+    number of image pulls in parallel.
+*   Added linux config options `transparentHugepageEnabled` and
+    `transparentHugepageDefrag` to `gcloud container clusters create`,
+    `gcloud container node-pools create`, and
+    `gcloud container node-pools update` command which controls transparent
+    hugepage behavior on the node.
+*   Added `- -enable-confidential-nodes` flag to `gcloud container clusters
+    create-auto` to allow creation of confidential nodes on GKE Autopilot
+    clusters.
+
+### Looker
+
+* Added `--class-type` flag to `gcloud looker instances create` and `gcloud looker instances update`.
+* Added `domains` as an option to the `--psc-service-attachment` flag of `gcloud looker instances update` to support multiple domains to a single PSC connection.
+
+### Network Connectivity
+
+* Canonicalize `--allocation-strategy` and
+  `--first-available-ranges-lookup-size` flags to
+  `gcloud network-connectivity internal-ranges create` to make use of dashes
+  instead of underscores. This puts them in-line with the documentation.
+
+### Network Security
+
+*   Updated import and export schemas for `gcloud beta network-security authz-policies`.
+
+### Network Services
+
+* Promote `--isolation-config-granularity` and `--isolation-config-mode` to GA.
+
+### Recaptcha
+
+* Added `integration-type=policy-based-challenge` to
+  `gcloud recaptcha keys create`, and associated options
+  `default-score-threshold` and `action-score-thresholds` to
+  `gcloud recaptcha keys create` and `gcloud recaptcha keys update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 529.0.0 (2025-07-01)
 
 ### Breaking Changes

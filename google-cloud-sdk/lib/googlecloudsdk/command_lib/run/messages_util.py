@@ -217,29 +217,3 @@ def GetBuildEquivalentForSourceRunMessage(name, pack, source, subgroup=''):
   return msg.format(
       name=name, build_flag=build_flag, source=source, subgroup=subgroup
   )
-
-
-def GetSuccessMessageForWorkerDeploy(worker, no_promote):
-  """Returns a user message for a successful synchronous deploy.
-
-  TODO(b/322180968): Once Worker API is ready, replace Service related
-  references.
-  Args:
-    worker: googlecloudsdk.api_lib.run.service.Service, Deployed service for
-      which to build a success message.
-    no_promote: bool, whether the worker was deployed with --no-promote flag.
-  """
-  latest_ready = worker.status.latestReadyRevisionName
-  # Use lastCreatedRevisionName if --no-promote is set. This was due to a bug
-  # where the latestReadyRevisionName was not updated in time when traffic
-  # update was not needed in reconciliation steps.
-  latest_created = worker.status.latestCreatedRevisionName
-  msg = (
-      'Worker [{{bold}}{worker}{{reset}}] '
-      'revision [{{bold}}{rev}{{reset}}] '
-      'has been deployed.'
-  )
-  return msg.format(
-      worker=worker.name,
-      rev=latest_created if no_promote else latest_ready,
-  )

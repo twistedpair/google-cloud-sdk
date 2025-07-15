@@ -463,6 +463,24 @@ workforce_pool_provider_scim_tenant:
       This value must be 4-32 characters, alphanumeric ([a-z0-9-]), and cannot start with gcp-.
   disable_auto_completers: false
 
+workforce_pool_provider_scim_token:
+  name: workforce pool provider scim token
+  collection: iam.locations.workforcePools.providers.scimTenants.tokens
+  request_id_field: workforcePoolProviderScimTokenId
+  attributes:
+  - *wf_location
+  - *workforce_pool
+  - *workforce_pool_provider
+  - *scim_tenant_id_attr
+  - &scim_token_id_attr
+    parameter_name: tokensId
+    attribute_name: token
+    help: |
+      The ID for the SCIM token, which becomes the final component of the resource name. This value
+      This value should be 4-32 characters, and may contain the characters [a-z0-9-]. It must start
+      with a lowercase letter, and end with a lowercase letter or number. Additionally, the prefix
+      `gcp-` is reserved for use by Google, and may not be specified.
+  disable_auto_completers: false
 
 oauth_client:
   name: oauth client

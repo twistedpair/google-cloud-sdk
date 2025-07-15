@@ -47,14 +47,23 @@ def ParseLocation(args):
   return 'locations/{}'.format(args.location)
 
 
-def AddClearableExtraAttributesOAuth2Client():
-  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client Attributes for the update-oidc command."""
+def AddClearableExtraAndExtendedAttributesOAuth2Client():
+  """Creates an ArgumentGroup for ExtraAttributesOAuth2Client and ExtendedAttributesOAuth2Client Attributes for the update-oidc command."""
   clear_extra_attributes_config_arg = base.Argument(
       '--clear-extra-attributes-config',
       dest='clear_extra_attributes_config',
       action='store_true',
       required=False,
       help='Clear the extra attributes configuration.',
+  )
+  clear_extended_attributes_config_arg = base.Argument(
+      '--clear-extended-attributes-config',
+      dest='clear_extended_attributes_config',
+      action='store_true',
+      required=False,
+      help='Clear the extended attributes configuration.',
+      # TODO: b/427486786 - Unhide for launch.
+      hidden=True,
   )
 
   clearable_extra_attributes_group = base.ArgumentGroup(mutex=True)
@@ -64,8 +73,18 @@ def AddClearableExtraAttributesOAuth2Client():
   clearable_extra_attributes_group.AddArgument(
       ExtraAttributesOAuth2ClientAttributesGroup(required=False)
   )
+  clearable_extended_attributes_group = base.ArgumentGroup(
+      mutex=True,
+      hidden=True,  # TODO: b/427486786 - Unhide for launch.
+  )
+  clearable_extended_attributes_group.AddArgument(
+      clear_extended_attributes_config_arg
+  )
+  clearable_extended_attributes_group.AddArgument(
+      ExtendedAttributesOAuth2ClientAttributesGroup(required=False)
+  )
 
-  return [clearable_extra_attributes_group]
+  return [clearable_extra_attributes_group, clearable_extended_attributes_group]
 
 
 def AddExtraAndExtendedAttributesOAuth2Client():
@@ -126,7 +145,7 @@ def ExtraAttributesOAuth2ClientAttributesGroup(required=True):
               'azure-ad-groups-id',
               'azure-ad-groups-display-name',
           ],
-          visible_choices=['azure-ad-groups-mail', 'azure-ad-groups-id'],
+          hidden_choices=['azure-ad-groups-display-name'],
           max_length=1,
           min_length=1,
       ),
@@ -230,7 +249,6 @@ def ExtendedAttributesOAuth2ClientAttributesGroup(required=True):
           choices=[
               'azure-ad-groups-id',
           ],
-          visible_choices=['azure-ad-groups-id'],
           max_length=1,
           min_length=1,
       ),

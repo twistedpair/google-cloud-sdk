@@ -14,11 +14,9 @@
 # limitations under the License.
 """Code that's shared between multiple backend-buckets subcommands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 def GetNegativeCachingPolicy(client, args, backend_bucket):
@@ -207,3 +205,64 @@ def ApplyCdnPolicyArgs(client,
 
   if cdn_policy != client.messages.BackendBucketCdnPolicy():
     backend_bucket.cdnPolicy = cdn_policy
+
+
+def GetIamPolicy(backend_bucket_ref, client):
+  """Gets the IAM policy for a backend bucket.
+
+  Args:
+    backend_bucket_ref: The backend bucket reference.
+    client: The client.
+
+  Returns:
+    The IAM policy.
+  """
+  if backend_bucket_ref.Collection() == 'compute.regionBackendBuckets':
+    service = client.apitools_client.regionBackendBuckets
+    request = client.messages.ComputeRegionBackendBucketsGetIamPolicyRequest(
+        resource=backend_bucket_ref.Name(),
+        region=backend_bucket_ref.region,
+        project=backend_bucket_ref.project)
+    return client.MakeRequests([(service, 'GetIamPolicy', request)])[0]
+  service = client.apitools_client.backendBuckets
+  request = client.messages.ComputeBackendBucketsGetIamPolicyRequest(
+      resource=backend_bucket_ref.Name(), project=backend_bucket_ref.project
+  )
+  return client.MakeRequests([(service, 'GetIamPolicy', request)])[0]
+
+
+def SetIamPolicy(backend_bucket_ref, client, policy):
+  """Sets the IAM policy for a backend bucket.
+
+  Args:
+    backend_bucket_ref: The backend bucket reference.
+    client: The client.
+    policy: The IAM policy.
+
+  Returns:
+    The set IAM policy.
+  """
+  result = None
+  if backend_bucket_ref.Collection() == 'compute.backendBuckets':
+    service = client.apitools_client.backendBuckets
+    request = client.messages.ComputeBackendBucketsSetIamPolicyRequest(
+        resource=backend_bucket_ref.Name(),
+        project=backend_bucket_ref.project,
+        globalSetPolicyRequest=client.messages.GlobalSetPolicyRequest(
+            policy=policy
+        ),
+    )
+    result = client.MakeRequests([(service, 'SetIamPolicy', request)])[0]
+  elif backend_bucket_ref.Collection() == 'compute.regionBackendBuckets':
+    service = client.apitools_client.regionBackendBuckets
+    request = client.messages.ComputeRegionBackendBucketsSetIamPolicyRequest(
+        resource=backend_bucket_ref.Name(),
+        region=backend_bucket_ref.region,
+        project=backend_bucket_ref.project,
+        regionSetPolicyRequest=client.messages.RegionSetPolicyRequest(
+            policy=policy
+        ),
+    )
+    result = client.MakeRequests([(service, 'SetIamPolicy', request)])[0]
+  iam_util.LogSetIamPolicy(backend_bucket_ref.Name(), 'backend bucket')
+  return result
