@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
+
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.run.printers import revision_printer
@@ -27,6 +29,7 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 SERVICE_PRINTER_FORMAT = 'service'
+PRESET_ANNOTATION = 'run.googleapis.com/presets'
 
 
 class ServicePrinter(cp.CustomPrinterBase):
@@ -35,6 +38,8 @@ class ServicePrinter(cp.CustomPrinterBase):
   Format specific to Cloud Run services. Only available on Cloud Run commands
   that print services.
   """
+
+  with_presets = False
 
   def _GetRevisionHeader(self, record):
     header = ''
@@ -91,10 +96,45 @@ class ServicePrinter(cp.CustomPrinterBase):
       ])
       labels.append(description_label)
 
-    labels.append(cp.Labeled([
-        ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record)),
-    ]))
+    labels.append(
+        cp.Labeled([
+            ('Threat Detection', k8s_util.GetThreatDetectionEnabled(record)),
+        ])
+    )
     return cp.Section(labels)
+
+  def _GetPresetInfo(self, record):
+    """Adds preset information if available."""
+    preset_annotation = record.annotations.get(PRESET_ANNOTATION)
+    if preset_annotation:
+      try:
+        presets_list = json.loads(preset_annotation)
+        if isinstance(presets_list, list) and presets_list:
+          preset_names = [
+              p.get('type')
+              for p in presets_list
+              if isinstance(p, dict) and p.get('type')
+          ]
+          if preset_names:
+            if len(preset_names) == 1:
+              return cp.Lines([
+                  'The service was deployed with preset "{}".'.format(
+                      preset_names[0]
+                  )
+              ])
+            else:
+              formatted_names = ', '.join(
+                  '"{}"'.format(name) for name in preset_names
+              )
+              return cp.Lines([
+                  'The service was deployed with presets: {}.'.format(
+                      formatted_names
+                  )
+              ])
+      except (ValueError, TypeError):
+        # Silently ignore if the annotation is not valid JSON.
+        pass
+    return None
 
   def BuildHeader(self, record):
     return k8s_util.BuildHeader(record)
@@ -127,16 +167,32 @@ class ServicePrinter(cp.CustomPrinterBase):
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
     service_settings = self._GetServiceSettings(record)
-    fmt = cp.Lines([
+    preset_info = self._GetPresetInfo(record) if self.with_presets else None
+    lines = [
         self.BuildHeader(record),
-        k8s_util.GetLabels(record.labels), ' ',
-        traffic_printer.TransformRouteFields(record), ' ', service_settings,
+        k8s_util.GetLabels(record.labels),
+    ]
+    if preset_info:
+      lines.extend([' ', preset_info])
+    lines.extend([
+        ' ',
+        traffic_printer.TransformRouteFields(record),
+        ' ',
+        service_settings,
         (' ' if service_settings.WillPrintOutput() else ''),
-        cp.Labeled([(k8s_util.LastUpdatedMessage(record),
-                     self._RevisionPrinters(record))]),
-        k8s_util.FormatReadyMessage(record)
+        cp.Labeled([(
+            k8s_util.LastUpdatedMessage(record),
+            self._RevisionPrinters(record),
+        )]),
+        k8s_util.FormatReadyMessage(record),
     ])
-    return fmt
+    return cp.Lines(lines)
+
+
+class ServicePrinterAlpha(ServicePrinter):
+  """Prints the run Service in a custom human-readable format."""
+
+  with_presets = True
 
 
 class MultiRegionServicePrinter(ServicePrinter):

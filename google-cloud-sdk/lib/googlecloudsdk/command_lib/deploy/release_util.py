@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+import enum
 import os.path
 import shutil
 import tarfile
@@ -74,6 +75,15 @@ _TIME_PATTERN = '$TIME'
 
 
 GENERATED_SKAFFOLD = 'skaffold.yaml'
+
+
+class Tools(enum.Enum):
+  DOCKER = 'docker'
+  HELM = 'helm'
+  KPT = 'kpt'
+  KUBECTL = 'kubectl'
+  KUSTOMIZE = 'kustomize'
+  SKAFFOLD = 'skaffold'
 
 
 def RenderPattern(release_id):
@@ -159,6 +169,7 @@ def CreateReleaseConfig(
     description,
     skaffold_version,
     skaffold_file,
+    deploy_config_file,
     location,
     pipeline_uuid,
     from_k8s_manifest,
@@ -173,7 +184,8 @@ def CreateReleaseConfig(
   # a Skaffold file should be generated, so we should not check at this stage
   # if the Skaffold file exists.
   if not (from_k8s_manifest or from_run_manifest):
-    _VerifySkaffoldFileExists(source, skaffold_file)
+    _VerifyConfigFileExists(source, skaffold_file, deploy_config_file)
+
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
   release_config = messages.Release()
   release_config.description = description
@@ -188,6 +200,7 @@ def CreateReleaseConfig(
       from_k8s_manifest,
       from_run_manifest,
       skaffold_file,
+      deploy_config_file,
       pipeline_obj,
       hide_logs,
   )
@@ -208,8 +221,6 @@ def _CreateAndUploadTarball(
     source,
     ignore_file,
     hide_logs,
-    release_config,
-    print_skaffold_config=False,
 ):
   """Creates a local tarball and uploads it to GCS.
 
@@ -222,9 +233,9 @@ def _CreateAndUploadTarball(
     source: the location of the source files
     ignore_file: the ignore file to use
     hide_logs: whether to show logs, defaults to False
-    release_config: release configuration
-    print_skaffold_config: if true, the Cloud Storage URI of tar.gz archive
-      containing Skaffold configuration will be printed, defaults to False.
+
+  Returns:
+    the gcs uri where the tarball was uploaded.
   """
   source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
   size_str = resource_transform.TransformSize(source_snapshot.uncompressed_size)
@@ -242,15 +253,9 @@ def _CreateAndUploadTarball(
       ignore_file=ignore_file,
       hide_logs=hide_logs,
   )
-  release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
+  return 'gs://{bucket}/{object}'.format(
       bucket=staged_source_obj.bucket, object=staged_source_obj.name
   )
-  if print_skaffold_config:
-    log.status.Print(
-        'Generated Skaffold file can be found here: {config_uri}'.format(
-            config_uri=release_config.skaffoldConfigUri,
-        )
-    )
 
 
 def _SetSource(
@@ -264,6 +269,7 @@ def _SetSource(
     kubernetes_manifest,
     cloud_run_manifest,
     skaffold_file,
+    deploy_config_file,
     pipeline_obj,
     hide_logs=False,
 ):
@@ -288,6 +294,8 @@ def _SetSource(
       and uploaded to GCS on behalf of the customer.
     skaffold_file: path of the skaffold file relative to the source directory
       that contains the Skaffold file.
+    deploy_config_file: path of the deploy config file relative to the source
+      directory that contains the deploy config file.
     pipeline_obj: the pipeline_obj used for this release.
     hide_logs: whether to show logs, defaults to False
 
@@ -344,8 +352,6 @@ def _SetSource(
         '--gcs-source-staging-dir.'.format(default_bucket_name),
     )
 
-  skaffold_is_generated = False
-
   if gcs_source_staging_dir.object:
     staged_object = gcs_source_staging_dir.object + '/' + staged_object
   gcs_source_staging = resources.REGISTRY.Create(
@@ -353,34 +359,35 @@ def _SetSource(
       bucket=gcs_source_staging_dir.bucket,
       object=staged_object,
   )
+
+  gcs_uri = ''
+  skaffold_is_generated = False
   if source.startswith('gs://'):
     gcs_source = resources.REGISTRY.Parse(source, collection='storage.objects')
     staged_source_obj = gcs_client.Rewrite(gcs_source, gcs_source_staging)
-    release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
+    gcs_uri = 'gs://{bucket}/{object}'.format(
         bucket=staged_source_obj.bucket, object=staged_source_obj.name
     )
   else:
     # If a Skaffold file should be generated
     if kubernetes_manifest or cloud_run_manifest:
       skaffold_is_generated = True
-      _UploadTarballGeneratedSkaffoldAndManifest(
+      gcs_uri = _UploadTarballGeneratedSkaffoldAndManifest(
           kubernetes_manifest,
           cloud_run_manifest,
           gcs_client,
           gcs_source_staging,
           ignore_file,
           hide_logs,
-          release_config,
           pipeline_obj,
       )
     elif os.path.isdir(source):
-      _CreateAndUploadTarball(
+      gcs_uri = _CreateAndUploadTarball(
           gcs_client,
           gcs_source_staging,
           source,
           ignore_file,
           hide_logs,
-          release_config,
       )
     # When its a tar file
     elif os.path.isfile(source):
@@ -393,16 +400,21 @@ def _SetSource(
             )
         )
       staged_source_obj = gcs_client.CopyFileToGCS(source, gcs_source_staging)
-      release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
+      gcs_uri = 'gs://{bucket}/{object}'.format(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name
       )
 
   if skaffold_version:
     release_config.skaffoldVersion = skaffold_version
 
-  release_config = _SetSkaffoldConfigPath(
-      release_config, skaffold_file, skaffold_is_generated
-  )
+  if deploy_config_file:
+    release_config.deployConfigPath = deploy_config_file
+    release_config.deployConfigUri = gcs_uri
+  else:
+    release_config = _SetSkaffoldConfigPath(
+        release_config, skaffold_file, skaffold_is_generated
+    )
+    release_config.skaffoldConfigUri = gcs_uri
 
   return release_config
 
@@ -459,7 +471,6 @@ def _UploadTarballGeneratedSkaffoldAndManifest(
     gcs_source_staging,
     ignore_file,
     hide_logs,
-    release_config,
     pipeline_obj,
 ):
   """Generates a Skaffold file and uploads the file and k8 manifest to GCS.
@@ -475,8 +486,10 @@ def _UploadTarballGeneratedSkaffoldAndManifest(
     gcs_source_staging: directory in google cloud storage to use for staging
     ignore_file: the ignore file to use
     hide_logs: whether to show logs, defaults to False
-    release_config: a Release message
     pipeline_obj: the pipeline_obj used for this release.
+
+  Returns:
+    the gcs uri where the tarball was uploaded.
   """
   with files.TemporaryDirectory() as temp_dir:
     manifest = ''
@@ -510,24 +523,40 @@ def _UploadTarballGeneratedSkaffoldAndManifest(
       f.write('# Auto-generated by Google Cloud Deploy\n')
       # Dump the yaml data to the Skaffold file.
       yaml.dump(skaffold_yaml, f, round_trip=True)
-    _CreateAndUploadTarball(
+    gcs_uri = _CreateAndUploadTarball(
         gcs_client,
         gcs_source_staging,
         temp_dir,
         ignore_file,
         hide_logs,
-        release_config,
-        True,
     )
+    log.status.Print(
+        'Generated Skaffold file can be found here: {gcs_uri}'.format(
+            gcs_uri=gcs_uri,
+        )
+    )
+    return gcs_uri
 
 
-def _VerifySkaffoldFileExists(source, skaffold_file):
-  """Checks that the specified source contains a skaffold configuration file."""
+def _VerifyConfigFileExists(source, skaffold_file, deploy_config_file):
+  """Checks that the specified source contains a skaffold or deploy config file.
+
+  Args:
+    source: the location of the source files
+    skaffold_file: path of the skaffold file relative to the source directory
+    deploy_config_file: path of the deploy config file relative to the source
+      directory.
+
+  Raises:
+    BadFileException: If the source directory or files can't be found.
+  """
   if not skaffold_file:
     skaffold_file = 'skaffold.yaml'
+  if not deploy_config_file:
+    deploy_config_file = 'deploy-config.yaml'
   if source.startswith('gs://'):
     log.status.Print(
-        'Skipping skaffold file check. '
+        'Skipping config file check. '
         'Reason: source is not a local archive or directory'
     )
   elif not os.path.exists(source):
@@ -535,13 +564,23 @@ def _VerifySkaffoldFileExists(source, skaffold_file):
         'could not find source [{src}]'.format(src=source)
     )
   elif os.path.isfile(source):
-    _VerifySkaffoldIsInArchive(source, skaffold_file)
+    _VerifyConfigFileIsInArchive(source, skaffold_file, deploy_config_file)
   else:
-    _VerifySkaffoldIsInFolder(source, skaffold_file)
+    _VerifyConfigFileIsInFolder(source, skaffold_file, deploy_config_file)
 
 
-def _VerifySkaffoldIsInArchive(source, skaffold_file):
-  """Checks that the specified source file is a readable archive with skaffold file present."""
+def _VerifyConfigFileIsInArchive(source, skaffold_file, deploy_config_file):
+  """Verifies the skaffold or deploy config file is in the archive.
+
+  Args:
+    source: the location of the source archive.
+    skaffold_file: path of the skaffold file in the source archive.
+    deploy_config_file: path of the deploy config file in the source archive.
+
+  Raises:
+    BadFileException: If the config file is not a readable compressed file or
+    can't be found.
+  """
   _, ext = os.path.splitext(source)
   if ext not in _ALLOWED_SOURCE_EXT:
     raise c_exceptions.BadFileException(
@@ -555,21 +594,38 @@ def _VerifySkaffoldIsInArchive(source, skaffold_file):
     try:
       archive.getmember(skaffold_file)
     except KeyError:
-      raise c_exceptions.BadFileException(
-          'Could not find skaffold file. '
-          'File [{skaffold}] does not exist in source archive'.format(
-              skaffold=skaffold_file
-          )
-      )
+      try:
+        archive.getmember(deploy_config_file)
+      except KeyError:
+        raise c_exceptions.BadFileException(
+            'Could not find skaffold or deploy config file. File [{skaffold}]'
+            ' or [{deploy_config}] does not exist in source archive'.format(
+                skaffold=skaffold_file, deploy_config=deploy_config_file
+            )
+        )
 
 
-def _VerifySkaffoldIsInFolder(source, skaffold_file):
-  """Checks that the specified source folder contains a skaffold configuration file."""
+def _VerifyConfigFileIsInFolder(source, skaffold_file, deploy_config_file):
+  """Verifies the skaffold or deploy config file is in the folder.
+
+  Args:
+    source: the location of the source files
+    skaffold_file: path of the skaffold file relative to the source directory
+    deploy_config_file: path of the deploy config file relative to the source
+      directory.
+
+  Raises:
+    BadFileException: If the config file can't be found.
+  """
   path_to_skaffold = os.path.join(source, skaffold_file)
-  if not os.path.exists(path_to_skaffold):
+  path_to_deploy_config = os.path.join(source, deploy_config_file)
+  if not os.path.exists(path_to_skaffold) and not os.path.exists(
+      path_to_deploy_config
+  ):
     raise c_exceptions.BadFileException(
-        'Could not find skaffold file. File [{skaffold}] does not exist'.format(
-            skaffold=path_to_skaffold
+        'Could not find skaffold or deploy config file. File [{skaffold}] or'
+        ' [{deploy_config}] does not exist'.format(
+            skaffold=path_to_skaffold, deploy_config=path_to_deploy_config
         )
     )
 
@@ -774,8 +830,141 @@ def GetSnappedTarget(release_obj, target_id):
   return target_obj
 
 
-def GetSkaffoldSupportState(release_obj):
+def CheckReleaseSupportState(release_obj, action):
+  """Checks the support state on a release.
+
+  If the release is in maintenance mode, a warning will be logged.
+  If the release is in expiration mode, an exception will be raised.
+
+  Args:
+    release_obj: The release object to check.
+    action: the action that is being performed that requires the check.
+
+  Raises: an core_exceptions.Error if any support state is unsupported
+  """
+  tools_in_maintenance = []
+  tools_unsupported = []
+  messages = client_util.GetMessagesModule(client_util.GetClientInstance())
+  tools = [Tools.DOCKER,
+           Tools.HELM,
+           Tools.KPT,
+           Tools.KUBECTL,
+           Tools.KUSTOMIZE,
+           Tools.SKAFFOLD]
+  for t in tools:
+    state = _GetToolVersionSupportState(release_obj, t)
+    if not state:
+      continue
+    tool_version_enum = (
+        messages.ToolVersionSupportedCondition.ToolVersionSupportStateValueValuesEnum
+    )
+    if state == tool_version_enum.TOOL_VERSION_SUPPORT_STATE_UNSUPPORTED:
+      tools_unsupported.append(t)
+    elif state == tool_version_enum.TOOL_VERSION_SUPPORT_STATE_MAINTENANCE_MODE:
+      tools_in_maintenance.append(t)
+    else:
+      continue
+  # A singular unsupported tool prevents a release from being supported.
+  if tools_unsupported:
+    joined = ', '.join([t.value for t in tools_unsupported])
+    raise core_exceptions.Error(
+        f"You can't {action} because the versions used for tools: [{joined}] "
+        'are no longer supported.\n'
+        'https://cloud.google.com/deploy/docs/select-tool-version'
+    )
+  if tools_in_maintenance:
+    joined = ', '.join([t.value for t in tools_in_maintenance])
+    log.status.Print(
+        f'WARNING: The versions used for tools: [{joined}] are in maintenance '
+        'mode and will be unsupported soon.\n'
+        'https://cloud.google.com/deploy/docs/select-tool-version'
+    )
+    return
+  # The old skaffold support state is correctly backfilled even if the release
+  # uses tools.
+  # This is mostly for releases that don't use tools.
+  skaffold_support_state = _GetSkaffoldSupportState(release_obj)
+  skaffold_support_state_enum = (
+      messages.SkaffoldSupportedCondition.SkaffoldSupportStateValueValuesEnum
+  )
+  if (
+      skaffold_support_state
+      == skaffold_support_state_enum.SKAFFOLD_SUPPORT_STATE_UNSUPPORTED
+  ):
+    raise core_exceptions.Error(
+        f"You can't {action} because the Skaffold version that was"
+        ' used to create the release is no longer supported.\n'
+        'https://cloud.google.com/deploy/docs/using-skaffold/select-skaffold'
+        '#skaffold_version_deprecation_and_maintenance_policy'
+    )
+
+  if (
+      skaffold_support_state
+      == skaffold_support_state_enum.SKAFFOLD_SUPPORT_STATE_MAINTENANCE_MODE
+  ):
+    log.status.Print(
+        "WARNING: This release's Skaffold version is in maintenance mode and"
+        ' will be unsupported soon.\n'
+        ' https://cloud.google.com/deploy/docs/using-skaffold/select-skaffold'
+        '#skaffold_version_deprecation_and_maintenance_policy'
+    )
+
+
+def _GetSkaffoldSupportState(release_obj):
+  """Gets the Skaffold Support State from the release.
+
+  Args:
+    release_obj: release message obj.
+
+  Returns:
+    None or SkaffoldSupportStateValueValuesEnum
+  """
   # NOMUTANTS
   if release_obj.condition and release_obj.condition.skaffoldSupportedCondition:
     return release_obj.condition.skaffoldSupportedCondition.skaffoldSupportState
+  return None
+
+
+def _GetToolVersionSupportState(release_obj, tool):
+  """Gets the Tool Version Support State from the release for a particular tool.
+
+  Args:
+    release_obj: release message obj.
+    tool: Tools.Enum.
+
+  Returns:
+    None or ToolVersionSupportStateValueValuesEnum
+  """
+  if not release_obj.condition:
+    return None
+  if tool == Tools.DOCKER:
+    if release_obj.condition.dockerVersionSupportedCondition:
+      return (
+          release_obj.condition.dockerVersionSupportedCondition.toolVersionSupportState
+      )
+  elif tool == Tools.HELM:
+    if release_obj.condition.helmVersionSupportedCondition:
+      return (
+          release_obj.condition.helmVersionSupportedCondition.toolVersionSupportState
+      )
+  elif tool == Tools.KPT:
+    if release_obj.condition.kptVersionSupportedCondition:
+      return (
+          release_obj.condition.kptVersionSupportedCondition.toolVersionSupportState
+      )
+  elif tool == Tools.KUBECTL:
+    if release_obj.condition.kubectlVersionSupportedCondition:
+      return (
+          release_obj.condition.kubectlVersionSupportedCondition.toolVersionSupportState
+      )
+  elif tool == Tools.KUSTOMIZE:
+    if release_obj.condition.kustomizeVersionSupportedCondition:
+      return (
+          release_obj.condition.kustomizeVersionSupportedCondition.toolVersionSupportState
+      )
+  elif tool == Tools.SKAFFOLD:
+    if release_obj.condition.skaffoldVersionSupportedCondition:
+      return (
+          release_obj.condition.skaffoldVersionSupportedCondition.toolVersionSupportState
+      )
   return None

@@ -72,7 +72,8 @@ class _Command(object):
   def __AddFlag(self, flag, name):
     choices = 'bool'
     if flag.choices:
-      choices = sorted(flag.choices)
+      hidden_choices = getattr(flag, 'hidden_choices', [])
+      choices = sorted(c for c in flag.choices if c not in hidden_choices)
       if choices == ['false', 'true']:
         choices = 'bool'
     elif flag.nargs != 0:

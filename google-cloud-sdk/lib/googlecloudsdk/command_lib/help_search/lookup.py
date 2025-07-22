@@ -22,8 +22,10 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import cli_tree
 
 
+ATTR = cli_tree.LOOKUP_ATTR
 CAPSULE = cli_tree.LOOKUP_CAPSULE
 CHOICES = cli_tree.LOOKUP_CHOICES
+HIDDEN_CHOICES = cli_tree.LOOKUP_HIDDEN_CHOICES
 COMMANDS = cli_tree.LOOKUP_COMMANDS
 DEFAULT = cli_tree.LOOKUP_DEFAULT
 DESCRIPTION = cli_tree.LOOKUP_DESCRIPTION

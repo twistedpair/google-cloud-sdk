@@ -406,6 +406,12 @@ def _GetTemplateConfigurationChanges(
   )
   if 'gpu_type' in args and args.gpu_type:
     changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+  if flags.FlagIsExplicitlySet(args, 'gpu_zonal_redundancy'):
+    changes.append(
+        config_changes.GpuZonalRedundancyChange(
+            gpu_zonal_redundancy=args.gpu_zonal_redundancy
+        )
+    )
   # Cloud SQL changes
   if flags.HasCloudSQLChanges(args):
     changes.extend(_GetCloudSQLChanges(args))

@@ -252,6 +252,9 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
         connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
         connection_pooling_stats_users=args.connection_pooling_stats_users,
         connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        args=args,
     )
 
   return instance_resource
@@ -790,27 +793,49 @@ def _ConnectionPoolConfig(**kwargs):
   ignore_startup_parameters = kwargs.get(
       'connection_pooling_ignore_startup_parameters'
   )
+  server_lifetime = kwargs.get(
+      'connection_pooling_server_lifetime'
+  )
+  client_connection_idle_timeout = kwargs.get(
+      'connection_pooling_client_connection_idle_timeout'
+  )
 
   alloydb_messages = kwargs.get('alloydb_messages')
   config = alloydb_messages.ConnectionPoolConfig()
   config.enable = enable_connection_pooling
   config.enabled = enable_connection_pooling
+  flags = {}
   if pool_mode is not None:
-    config.poolMode = _ParsePoolMode(alloydb_messages, pool_mode)
+    flags['pool_mode'] = pool_mode.lower()
   if min_pool_size is not None:
-    config.minPoolSize = min_pool_size
+    flags['min_pool_size'] = min_pool_size
   if default_pool_size is not None:
-    config.defaultPoolSize = default_pool_size
+    flags['max_pool_size'] = default_pool_size
   if max_client_conn is not None:
-    config.maxClientConn = max_client_conn
+    flags['max_client_connections'] = max_client_conn
   if server_idle_timeout is not None:
-    config.serverIdleTimeout = server_idle_timeout
+    flags['server_connection_idle_timeout'] = server_idle_timeout
   if query_wait_timeout is not None:
-    config.queryWaitTimeout = query_wait_timeout
+    flags['query_wait_timeout'] = query_wait_timeout
   if stats_users is not None:
-    config.statsUsers = stats_users
+    flags['stats_users'] = ','.join(stats_users)
   if ignore_startup_parameters is not None:
-    config.ignoreStartupParameters = ignore_startup_parameters
+    flags['ignore_startup_parameters'] = ','.join(ignore_startup_parameters)
+  if server_lifetime is not None:
+    flags['server_lifetime'] = server_lifetime
+  if client_connection_idle_timeout is not None:
+    flags['client_connection_idle_timeout'] = (
+        client_connection_idle_timeout
+    )
+
+  config.flags = alloydb_messages.ConnectionPoolConfig.FlagsValue(
+      additionalProperties=[
+          alloydb_messages.ConnectionPoolConfig.FlagsValue.AdditionalProperty(
+              key=key, value=value
+          )
+          for key, value in flags.items()
+      ]
+  )
   return config
 
 
@@ -836,6 +861,12 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
   ignore_startup_parameters = kwargs.get(
       'connection_pooling_ignore_startup_parameters'
   )
+  server_lifetime = kwargs.get(
+      'connection_pooling_server_lifetime'
+  )
+  client_connection_idle_timeout = kwargs.get(
+      'connection_pooling_client_connection_idle_timeout'
+  )
   alloydb_messages = kwargs.get('alloydb_messages')
 
   should_update_config = any([
@@ -848,11 +879,14 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
       query_wait_timeout is not None,
       stats_users is not None,
       ignore_startup_parameters is not None,
+      server_lifetime is not None,
+      client_connection_idle_timeout is not None,
   ])
   if not should_update_config:
     return None
 
   config = alloydb_messages.ConnectionPoolConfig()
+  flags = {}
 
   # Disabling managed connection pooling should set all other connection pooling
   # settings to None.
@@ -862,89 +896,96 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
     return config
 
   # Build the connection pooling config based on the existing values that are
-  # set in the instance, if they aren't specified in the update.
+  # set in the instance, if they aren't specified in the update. If the flag
+  # is set in the update, it will override the existing value.
   client = api_util.AlloyDBClient(base.ReleaseTrack.ALPHA)
   alloydb_client = client.alloydb_client
   req = alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest(
       name=instance_ref.RelativeName()
   )
-  existing_instance = (
-      alloydb_client.projects_locations_clusters_instances.Get(req)
+  existing_instance = alloydb_client.projects_locations_clusters_instances.Get(
+      req
   )
   has_existing_config = existing_instance.connectionPoolConfig is not None
+  if (
+      has_existing_config
+      and existing_instance.connectionPoolConfig.flags is not None
+  ):
+    flag_names = [
+        'pool_mode',
+        'min_pool_size',
+        'max_pool_size',
+        'max_client_connections',
+        'server_connection_idle_timeout',
+        'query_wait_timeout',
+        'stats_users',
+        'ignore_startup_parameters',
+        'server_lifetime',
+        'client_connection_idle_timeout',
+    ]
+    for f in flag_names:
+      exists, value = _CheckIfConnectionPoolConfigFlagExists(
+          existing_instance, f
+      )
+      if exists:
+        flags[f] = value
 
   if enable_connection_pooling is not None:
     config.enable = enable_connection_pooling
     config.enabled = enable_connection_pooling
-  else:
+  elif has_existing_config:
     config.enable = existing_instance.connectionPoolConfig.enable
     config.enabled = existing_instance.connectionPoolConfig.enabled
 
   if pool_mode is not None:
-    config.poolMode = _ParsePoolMode(alloydb_messages, pool_mode)
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.poolMode is not None
-  ):
-    config.poolMode = existing_instance.connectionPoolConfig.poolMode
+    flags['pool_mode'] = pool_mode.lower()
   if min_pool_size is not None:
-    config.minPoolSize = min_pool_size
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.minPoolSize is not None
-  ):
-    config.minPoolSize = existing_instance.connectionPoolConfig.minPoolSize
+    flags['min_pool_size'] = min_pool_size
   if default_pool_size is not None:
-    config.defaultPoolSize = default_pool_size
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.defaultPoolSize is not None
-  ):
-    config.defaultPoolSize = (
-        existing_instance.connectionPoolConfig.defaultPoolSize
-    )
+    flags['max_pool_size'] = default_pool_size
   if max_client_conn is not None:
-    config.maxClientConn = max_client_conn
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.maxClientConn is not None
-  ):
-    config.maxClientConn = existing_instance.connectionPoolConfig.maxClientConn
+    flags['max_client_connections'] = max_client_conn
   if server_idle_timeout is not None:
-    config.serverIdleTimeout = server_idle_timeout
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.serverIdleTimeout is not None
-  ):
-    config.serverIdleTimeout = (
-        existing_instance.connectionPoolConfig.serverIdleTimeout
-    )
+    flags['server_connection_idle_timeout'] = server_idle_timeout
   if query_wait_timeout is not None:
-    config.queryWaitTimeout = query_wait_timeout
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.queryWaitTimeout is not None
-  ):
-    config.queryWaitTimeout = (
-        existing_instance.connectionPoolConfig.queryWaitTimeout
-    )
+    flags['query_wait_timeout'] = query_wait_timeout
   if stats_users is not None:
-    config.statsUsers = stats_users
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.statsUsers is not None
-  ):
-    config.statsUsers = existing_instance.connectionPoolConfig.statsUsers
+    flags['stats_users'] = ','.join(stats_users)
   if ignore_startup_parameters is not None:
-    config.ignoreStartupParameters = ignore_startup_parameters
-  elif (
-      has_existing_config and
-      existing_instance.connectionPoolConfig.ignoreStartupParameters is not None
-  ):
-    config.ignoreStartupParameters = (
-        existing_instance.connectionPoolConfig.ignoreStartupParameters
-    )
+    flags['ignore_startup_parameters'] = ','.join(ignore_startup_parameters)
+  if server_lifetime is not None:
+    flags['server_lifetime'] = server_lifetime
+  if client_connection_idle_timeout is not None:
+    flags['client_connection_idle_timeout'] = client_connection_idle_timeout
+
+  config.flags = alloydb_messages.ConnectionPoolConfig.FlagsValue(
+      additionalProperties=[
+          alloydb_messages.ConnectionPoolConfig.FlagsValue.AdditionalProperty(
+              key=key, value=value
+          )
+          for key, value in flags.items()
+      ]
+  )
   return config
+
+
+def _CheckIfConnectionPoolConfigFlagExists(instance, flag_name):
+  """Checks if a flag exists in the instance's connection pool config.
+
+  Args:
+    instance: The existing instance to check against.
+    flag_name: The name of the flag to check if it exists in the instance.
+
+  Returns:
+    True and the value of the flag if the flag exists, False otherwise.
+
+  """
+  if instance.connectionPoolConfig.flags.additionalProperties is None:
+    return False, None
+  for prop in instance.connectionPoolConfig.flags.additionalProperties:
+    if prop.key == flag_name:
+      return True, prop.value
+  return False, None
 
 
 def PscInstanceConfig(**kwargs):
@@ -1184,22 +1225,26 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
       or args.connection_pooling_server_idle_timeout is not None
       or args.connection_pooling_query_wait_timeout is not None
       or args.connection_pooling_stats_users is not None
-      or args.connection_pooling_ignore_startup_parameters is not None):
+      or args.connection_pooling_ignore_startup_parameters is not None
+      or args.connection_pooling_server_lifetime is not None
+      or args.connection_pooling_client_connection_idle_timeout is not None):
     paths.append('connectionPoolConfig')
 
-  instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
-      instance_ref,
-      alloydb_messages=alloydb_messages,
-      enable_connection_pooling=args.enable_connection_pooling,
-      connection_pooling_pool_mode=args.connection_pooling_pool_mode,
-      connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
-      connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
-      connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
-      connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
-      connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
-      connection_pooling_stats_users=args.connection_pooling_stats_users,
-      connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
-  )
+    instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
+        instance_ref,
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+    )
   return instance_resource, paths
 
 

@@ -561,6 +561,7 @@ class FilestoreClient(object):
           accessMode=access_mode,
           squashMode=squash_mode,
           securityFlavors=security_flavors_list,
+          network=nfs_export_option.get('network', None),
       )
       nfs_export_configs.append(nfs_export_config)
     return nfs_export_configs

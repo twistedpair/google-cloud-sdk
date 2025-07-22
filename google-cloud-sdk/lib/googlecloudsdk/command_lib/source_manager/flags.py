@@ -23,7 +23,7 @@ from googlecloudsdk.calliope import arg_parsers
 
 def AddAllowMissing(
     parser,
-    help_text="If set to true, and the repository is not found, the request will succeed but no action will be taken on the server.",
+    help_text="If set to true, and the resource is not found, the request will succeed but no action will be taken on the server.",
 ):
   parser.add_argument(
       "--allow-missing",
@@ -32,6 +32,22 @@ def AddAllowMissing(
       default=False,
       help=help_text,
       action="store_true",
+  )
+
+
+def AddValidateOnly(
+    parser,
+    help_text=(
+        "If set to true, the request is validated and the user is provided with"
+        " an expected result, but no actual change is made."
+    ),
+):
+  parser.add_argument(
+      "--validate-only",
+      dest="validate_only",
+      action="store_true",
+      required=False,
+      help=help_text,
   )
 
 

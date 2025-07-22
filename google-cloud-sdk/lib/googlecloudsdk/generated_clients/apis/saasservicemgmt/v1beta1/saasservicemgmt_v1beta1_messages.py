@@ -98,8 +98,8 @@ class EvaluationSpec(_messages.Message):
   r"""EvaluationSpec holds rules for evaluating the value of a flag.
 
   Fields:
-    defaultTarget: Default variant for the flag.
-    variants: A list of variants.
+    defaultTarget: Required. Default variant for the flag.
+    variants: Optional. A list of variants.
   """
 
   defaultTarget = _messages.StringField(1)
@@ -133,7 +133,10 @@ class Flag(_messages.Message):
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
     evaluationSpec: Optional. Specification of how the flag value should be
-      evaluated.
+      evaluated. If a bool flag is created without an evaluation_spec
+      specified, two default variants, "Enabled" (with bool_value = true) and
+      "Disabled" (with bool_value = false), are created by default, and
+      "Disabled" is set as the default_target.
     key: Required. Immutable. Flag key used in runtime evaluation APIs
       (OpenFeature). Max length: 256 bytes.
     labels: Optional. The labels on the resource, which can be used for
@@ -159,9 +162,13 @@ class Flag(_messages.Message):
     Values:
       FLAG_VALUE_TYPE_UNSPECIFIED: <no description>
       FLAG_VALUE_TYPE_BOOL: <no description>
+      FLAG_VALUE_TYPE_INT: <no description>
+      FLAG_VALUE_TYPE_STRING: <no description>
     """
     FLAG_VALUE_TYPE_UNSPECIFIED = 0
     FLAG_VALUE_TYPE_BOOL = 1
+    FLAG_VALUE_TYPE_INT = 2
+    FLAG_VALUE_TYPE_STRING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -3810,12 +3817,16 @@ class Variant(_messages.Message):
   r"""Variant is an identifier for a value (name assigned to a value).
 
   Fields:
-    boolValue: A boolean attribute.
-    name: Name of the variant. Max length: 128 bytes.
+    boolValue: Optional. Boolean flag value.
+    intValue: Optional. Integer flag value.
+    name: Required. Name of the variant. Max length: 128 bytes.
+    stringValue: Optional. String flag value.
   """
 
   boolValue = _messages.BooleanField(1)
-  name = _messages.StringField(2)
+  intValue = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  stringValue = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

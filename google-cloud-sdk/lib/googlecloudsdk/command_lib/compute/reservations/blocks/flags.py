@@ -29,6 +29,23 @@ def AddDescribeFlags(parser):
       help='The name of the reservation block.')
 
 
+def AddFullViewFlag(parser):
+  help_text = """\
+  The view type for the reservation block.
+  """
+  parser.add_argument(
+      '--full-view',
+      metavar='FULL_VIEW',
+      choices={
+          'BLOCK_VIEW_FULL': 'Full detailed view of the reservation block.',
+          'BLOCK_VIEW_BASIC': 'Basic default view of the reservation block.',
+      },
+      default='BLOCK_VIEW_UNSPECIFIED',
+      help=help_text,
+      required=False,
+  )
+
+
 def AddScopeFlags(parser):
   """Adds scope flag to the parser."""
   parser.add_argument(

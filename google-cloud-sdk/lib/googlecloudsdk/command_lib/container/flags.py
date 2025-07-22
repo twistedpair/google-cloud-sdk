@@ -3195,7 +3195,7 @@ Type of the node VM boot disk. For version 1.24 and later, defaults to pd-balanc
 
 def AddBootDiskConfigFlags(parser):
   """Adds flags to configure the boot disk to the given parser."""
-  group = parser.add_group(help='Configure boot disk options.', hidden=True)
+  group = parser.add_group(help='Configure boot disk options.')
   AddBootDiskProvisionedIopsFlag(group)
   AddBootDiskProvisionedThroughputFlag(group)
 
@@ -3213,7 +3213,6 @@ Configure the Provisioned IOPS for the node pool boot disks. Only valid for hype
       '--boot-disk-provisioned-iops',
       type=int,
       help=help_text,
-      hidden=True,
   )
 
 
@@ -3230,7 +3229,6 @@ Configure the Provisioned Throughput for the node pool boot disks. Only valid fo
       '--boot-disk-provisioned-throughput',
       type=int,
       help=help_text,
-      hidden=True,
   )
 
 

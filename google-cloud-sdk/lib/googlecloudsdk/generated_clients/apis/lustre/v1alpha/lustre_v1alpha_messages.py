@@ -99,7 +99,8 @@ class Instance(_messages.Message):
       instance. Must be eight characters or less and can only contain letters
       and numbers.
     gkeSupportEnabled: Optional. Indicates whether you want to enable support
-      for GKE clients. By default, GKE clients are not supported.
+      for GKE clients. By default, GKE clients are not supported. Deprecated.
+      No longer required for GKE instance creation.
     labels: Optional. Labels as key value pairs.
     mountPoint: Output only. Mount point of the instance in the format
       `IP_ADDRESS@tcp:/FILESYSTEM`.
@@ -124,6 +125,7 @@ class Instance(_messages.Message):
       UPGRADING: The instance is being upgraded.
       REPAIRING: The instance is being repaired.
       STOPPED: The instance is stopped.
+      UPDATING: The instance is being updated.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -132,6 +134,7 @@ class Instance(_messages.Message):
     UPGRADING = 4
     REPAIRING = 5
     STOPPED = 6
+    UPDATING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

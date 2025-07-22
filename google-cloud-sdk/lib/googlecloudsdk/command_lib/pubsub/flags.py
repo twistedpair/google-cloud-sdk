@@ -856,7 +856,7 @@ def AddSubscriptionSettingsFlags(
       '--max-retry-delay',
       type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
       help="""The maximum delay between consecutive deliveries of a given
-          message. Value should be between 0 and 600 seconds. Defaults to 10
+          message. Value should be between 0 and 600 seconds. Defaults to 600
           seconds. {}""".format(DURATION_HELP_STR),
   )
 

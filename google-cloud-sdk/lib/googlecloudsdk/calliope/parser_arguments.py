@@ -311,6 +311,8 @@ class ArgumentInterceptor(Argument):
     suggestion_aliases = kwargs.pop('suggestion_aliases', None)
     if suggestion_aliases is None:
       suggestion_aliases = []
+    # A subset of 'choices' that should be hidden from documentation.
+    hidden_choices = kwargs.pop('hidden_choices', None)
 
     if self.is_global and category == base.COMMONLY_USED_FLAGS:
       category = 'GLOBAL'
@@ -385,6 +387,8 @@ class ArgumentInterceptor(Argument):
         # the markdown generator.
         setattr(added_argument, 'choices_help', added_argument.choices)
         added_argument.choices = sorted(added_argument.choices.keys())
+      if hidden_choices is not None:
+        setattr(added_argument, 'hidden_choices', hidden_choices)
       self.flag_args.append(added_argument)
 
       inverted_flag = self._AddInvertedBooleanFlagIfNecessary(

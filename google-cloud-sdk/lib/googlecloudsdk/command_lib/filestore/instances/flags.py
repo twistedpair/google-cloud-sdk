@@ -616,6 +616,10 @@ The security flavors supported are:
 - KRB5I: KRB5 plus integrity protection (data packets are tamper proof).
 - KRB5P: KRB5I plus privacy protection (data packets are tamper proof and
   encrypted).
+
+*network*::: The source VPC network for `ip-ranges`. Required for instances using
+Private Service Connect, optional otherwise. If provided, must be the same
+network specified in the `network.name` field.
 """
 
   file_share_help = {

@@ -315,6 +315,7 @@ class Choice(object):
     else:
       self.enum_value = arg_utils.ChoiceToEnumName(self.arg_value)
     self.help_text = data.get('help_text')
+    self.hidden = data.get('hidden')
 
   @classmethod
   def ToChoiceMap(cls, choices):

@@ -820,7 +820,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def ExecuteSql(self, request, global_params=None):
-      r"""Runs a SQL statement in a database that's inside of a Cloud SQL instance.
+      r"""Execute SQL statements.
 
       Args:
         request: (SqlInstancesExecuteSqlRequest) input message

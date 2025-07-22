@@ -480,7 +480,7 @@ class LogExclusion(proto.Message):
 
     Attributes:
         name (str):
-            Output only. A client-assigned identifier, such as
+            Optional. A client-assigned identifier, such as
             ``"load-balancer-exclusion"``. Identifiers are limited to
             100 characters and can include only letters, digits,
             underscores, hyphens, and periods. First character has to be
@@ -600,8 +600,8 @@ class LogSink(proto.Message):
 
     Attributes:
         name (str):
-            Output only. The client-assigned sink identifier, unique
-            within the project.
+            Optional. The client-assigned sink identifier, unique within
+            the project.
 
             For example: ``"my-syslog-errors-to-pubsub"``.
 
@@ -663,7 +663,7 @@ class LogSink(proto.Message):
             filters will not be exported.
 
             If a log entry is matched by both ``filter`` and one of
-            ``exclusion_filters`` it will not be exported.
+            ``exclusions`` it will not be exported.
         output_version_format (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogSink.VersionFormat):
             Deprecated. This field is unused.
         writer_identity (str):

@@ -2708,6 +2708,33 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ForceStartProgressiveRollout(self, request, global_params=None):
+      r"""Starts a brand new progressive rollout of hierarchical firewall policy. This API will return an error when there is an ongoing progressive rollout.
+
+      Args:
+        request: (ComputeFirewallPoliciesForceStartProgressiveRolloutRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ForceStartProgressiveRollout')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ForceStartProgressiveRollout.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='locations/global/firewallPolicies/{firewallPoliciesId}/forceStartProgressiveRollout',
+        http_method='POST',
+        method_id='compute.firewallPolicies.forceStartProgressiveRollout',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=[],
+        relative_path='locations/global/{+firewallPolicy}/forceStartProgressiveRollout',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesForceStartProgressiveRolloutRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the specified firewall policy.
 
@@ -22160,7 +22187,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.reservationBlocks.get',
         ordered_params=['project', 'zone', 'reservation', 'reservationBlock'],
         path_params=['project', 'reservation', 'reservationBlock', 'zone'],
-        query_params=[],
+        query_params=['view'],
         relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}',
         request_field='',
         request_type_name='ComputeReservationBlocksGetRequest',

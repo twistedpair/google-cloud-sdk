@@ -1851,6 +1851,40 @@ class Deployment(_messages.Message):
   zip = _messages.MessageField('ZipInfo', 5)
 
 
+class DirectVpcConfig(_messages.Message):
+  r"""Direct VPC configuration.
+
+  Enums:
+    EgressSettingValueValuesEnum: The egress setting for the subnetwork,
+      controlling what traffic is diverted through it.
+
+  Fields:
+    egressSetting: The egress setting for the subnetwork, controlling what
+      traffic is diverted through it.
+    subnetworkKey: The subnetwork key.
+    tags: The network tags to apply to the instance.
+  """
+
+  class EgressSettingValueValuesEnum(_messages.Enum):
+    r"""The egress setting for the subnetwork, controlling what traffic is
+    diverted through it.
+
+    Values:
+      EGRESS_SETTING_UNSPECIFIED: No value set; apply default behavior
+      ALL_TRAFFIC: Force all traffic to egress through the NetworkInterface
+        (and configured VPC Network)
+      PRIVATE_IP_RANGES: Force all Private IP Space traffic to egress through
+        NetworkInterface (and configured VPC Network)
+    """
+    EGRESS_SETTING_UNSPECIFIED = 0
+    ALL_TRAFFIC = 1
+    PRIVATE_IP_RANGES = 2
+
+  egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
+  subnetworkKey = _messages.MessageField('SubnetworkKey', 2)
+  tags = _messages.MessageField('VpcNetworkTag', 3, repeated=True)
+
+
 class DiskUtilization(_messages.Message):
   r"""Target scaling by disk usage. Only applicable in the App Engine flexible
   environment.
@@ -3799,6 +3833,20 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SubnetworkKey(_messages.Message):
+  r"""Subnetwork key message.
+
+  Fields:
+    hostProjectId: Project id (name not number) of the project that hosts the
+      network
+    subnetworkName: Short name of the subnetwork. e.g. SUBNET instead of
+      projects/{PROJECT_NAME}/regions/{REGION}/subnetworks/{SUBNET}
+  """
+
+  hostProjectId = _messages.StringField(1)
+  subnetworkName = _messages.StringField(2)
+
+
 class TrafficSplit(_messages.Message):
   r"""Traffic routing configuration for versions within a single service.
   Traffic splits define how traffic directed to the service is assigned to
@@ -4079,6 +4127,7 @@ class Version(_messages.Message):
       if view=FULL is set.
     deployment: Code and application artifacts that make up this version.Only
       returned in GET requests if view=FULL is set.
+    directVpcConfig: Enables Direct VPC connectivity for standard apps.
     diskUsageBytes: Output only. Total size in bytes of all the files that are
       included in this version and currently hosted on the App Engine
       disk.@OutputOnly
@@ -4320,38 +4369,39 @@ class Version(_messages.Message):
   createdBy = _messages.StringField(8)
   defaultExpiration = _messages.StringField(9)
   deployment = _messages.MessageField('Deployment', 10)
-  diskUsageBytes = _messages.IntegerField(11)
-  endpointsApiService = _messages.MessageField('EndpointsApiService', 12)
-  entrypoint = _messages.MessageField('Entrypoint', 13)
-  env = _messages.StringField(14)
-  envVariables = _messages.MessageField('EnvVariablesValue', 15)
-  errorHandlers = _messages.MessageField('ErrorHandler', 16, repeated=True)
-  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 17)
-  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 18)
-  handlers = _messages.MessageField('UrlMap', 19, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 20)
-  id = _messages.StringField(21)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 22, repeated=True)
-  instanceClass = _messages.StringField(23)
-  libraries = _messages.MessageField('Library', 24, repeated=True)
-  livenessCheck = _messages.MessageField('LivenessCheck', 25)
-  manualScaling = _messages.MessageField('ManualScaling', 26)
-  name = _messages.StringField(27)
-  network = _messages.MessageField('Network', 28)
-  nobuildFilesRegex = _messages.StringField(29)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 30)
-  resources = _messages.MessageField('Resources', 31)
-  runtime = _messages.StringField(32)
-  runtimeApiVersion = _messages.StringField(33)
-  runtimeChannel = _messages.StringField(34)
-  runtimeMainExecutablePath = _messages.StringField(35)
-  serviceAccount = _messages.StringField(36)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 37)
-  threadsafe = _messages.BooleanField(38)
-  versionUrl = _messages.StringField(39)
-  vm = _messages.BooleanField(40)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 41)
-  zones = _messages.StringField(42, repeated=True)
+  directVpcConfig = _messages.MessageField('DirectVpcConfig', 11)
+  diskUsageBytes = _messages.IntegerField(12)
+  endpointsApiService = _messages.MessageField('EndpointsApiService', 13)
+  entrypoint = _messages.MessageField('Entrypoint', 14)
+  env = _messages.StringField(15)
+  envVariables = _messages.MessageField('EnvVariablesValue', 16)
+  errorHandlers = _messages.MessageField('ErrorHandler', 17, repeated=True)
+  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 18)
+  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 19)
+  handlers = _messages.MessageField('UrlMap', 20, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 21)
+  id = _messages.StringField(22)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 23, repeated=True)
+  instanceClass = _messages.StringField(24)
+  libraries = _messages.MessageField('Library', 25, repeated=True)
+  livenessCheck = _messages.MessageField('LivenessCheck', 26)
+  manualScaling = _messages.MessageField('ManualScaling', 27)
+  name = _messages.StringField(28)
+  network = _messages.MessageField('Network', 29)
+  nobuildFilesRegex = _messages.StringField(30)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 31)
+  resources = _messages.MessageField('Resources', 32)
+  runtime = _messages.StringField(33)
+  runtimeApiVersion = _messages.StringField(34)
+  runtimeChannel = _messages.StringField(35)
+  runtimeMainExecutablePath = _messages.StringField(36)
+  serviceAccount = _messages.StringField(37)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 38)
+  threadsafe = _messages.BooleanField(39)
+  versionUrl = _messages.StringField(40)
+  vm = _messages.BooleanField(41)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 42)
+  zones = _messages.StringField(43, repeated=True)
 
 
 class Volume(_messages.Message):
@@ -4400,6 +4450,16 @@ class VpcAccessConnector(_messages.Message):
 
   egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
   name = _messages.StringField(2)
+
+
+class VpcNetworkTag(_messages.Message):
+  r"""Network tag message.
+
+  Fields:
+    value: value for the tag name
+  """
+
+  value = _messages.StringField(1)
 
 
 class ZipInfo(_messages.Message):

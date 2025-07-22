@@ -106,6 +106,17 @@ future_reservation:
     attribute_name: future_reservation
     help: The name of the Google Compute Engine future reservation.
 
+health_aggregation_policy:
+  name: health aggregation policy
+  collection: compute.regionHealthAggregationPolicies
+  attributes:
+  - *project
+  - *region
+  - &health_aggregation_policy
+    parameter_name: healthAggregationPolicy
+    attribute_name: health_aggregation_policy
+    help: The name of the Google Compute Engine health aggregation policy.
+
 image:
   name: image
   collection: compute.images

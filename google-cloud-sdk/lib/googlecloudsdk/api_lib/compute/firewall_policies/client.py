@@ -179,6 +179,15 @@ class OrgFirewallPolicy(object):
         ),
     )
 
+  def _MakeForceStartProgressiveRolloutRequestTuple(self, firewall_policy):
+    return (
+        self._client.firewallPolicies,
+        'ForceStartProgressiveRollout',
+        self._messages.ComputeFirewallPoliciesForceStartProgressiveRolloutRequest(
+            firewallPolicy=firewall_policy
+        ),
+    )
+
   def AddAssociation(
       self,
       association=None,
@@ -407,6 +416,29 @@ class OrgFirewallPolicy(object):
     )
     return self.WaitOperation(
         op_res, message='Creating the organization firewall policy.'
+    )
+
+  def ForceStartProgressiveRollout(
+      self,
+      firewall_policy=None,
+      batch_mode=False,
+      only_generate_request=False,
+  ):
+    """Sends request to start rollout of a firewall policy."""
+
+    if batch_mode:
+      requests = [
+          self._MakeForceStartProgressiveRolloutRequestTuple(firewall_policy)
+      ]
+      if not only_generate_request:
+        return self._compute_client.MakeRequests(requests)
+      return requests
+
+    op_res = self._service.ForceStartProgressiveRollout(
+        self._MakeForceStartProgressiveRolloutRequestTuple(firewall_policy)[2]
+    )
+    return self.WaitOperation(
+        op_res, message='Starting rollout of the organization firewall policy.'
     )
 
 

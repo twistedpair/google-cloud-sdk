@@ -350,49 +350,59 @@ def AddIapSettingFileArg(parser):
       'setting_file',
       help="""JSON or YAML file containing the IAP resource settings.
 
-       JSON example:
-         {
-           "access_settings" : {
-             "oauth_settings" : {
-                "login_hint" : {
-                   "value": "test_hint"
-                }
-             },
-             "gcip_settings" : {
-                "tenant_ids": ["tenant1-p9puj", "tenant2-y8rxc"],
-                "login_page_uri" : {
-                   "value" : "https://test.com/?apiKey=abcd_efgh"
-                }
-             },
-             "cors_settings": {
-                "allow_http_options" : {
-                   "value": true
-                }
-             }
-          },
-          "application_settings" : {
-             "csm_settings" : {
-               "rctoken_aud" : {
-                  "value" : "test_aud"
-               }
-             }
-          }
-        }
+JSON example:
 
-       YAML example:
-       accessSettings :
-          oauthSettings:
-            loginHint: test_hint
-          gcipSettings:
-            tenantIds:
-            - tenant1-p9puj
-            - tenant2-y8rxc
-            loginPageUri: https://test.com/?apiKey=abcd_efgh
-          corsSettings:
-            allowHttpOptions: true
-       applicationSettings:
-          csmSettings:
-            rctokenAud: test_aud""")
+```
+{
+  "access_settings": {
+    "oauth_settings": {
+      "login_hint": {
+        "value": "test_hint"
+      }
+    },
+    "gcip_settings": {
+      "tenant_ids": [
+        "tenant1-p9puj",
+        "tenant2-y8rxc"
+      ],
+      "login_page_uri": {
+        "value": "https://test.com/?apiKey=abcd_efgh"
+      }
+    },
+    "cors_settings": {
+      "allow_http_options": {
+        "value": true
+      }
+    }
+  },
+  "application_settings": {
+    "csm_settings": {
+      "rctoken_aud": {
+        "value": "test_aud"
+      }
+    }
+  }
+}
+```
+
+YAML example:
+
+```
+accessSettings :
+  oauthSettings:
+    loginHint: test_hint
+  gcipSettings:
+    tenantIds:
+    - tenant1-p9puj
+    - tenant2-y8rxc
+    loginPageUri: https://test.com/?apiKey=abcd_efgh
+  corsSettings:
+    allowHttpOptions: true
+applicationSettings:
+  csmSettings:
+    rctokenAud: test_aud
+```
+""")
 
 
 def ParseIapIamResource(

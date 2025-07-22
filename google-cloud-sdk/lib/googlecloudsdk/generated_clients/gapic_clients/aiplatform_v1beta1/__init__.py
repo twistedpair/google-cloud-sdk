@@ -125,6 +125,7 @@ from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
 from .types.tool import FunctionResponse
+from .types.tool import GoogleMaps
 from .types.tool import GoogleSearchRetrieval
 from .types.tool import RagRetrievalConfig
 from .types.tool import Retrieval
@@ -218,6 +219,7 @@ __all__ = (
 'GenerateVideoResponse',
 'GenerationConfig',
 'GoogleDriveSource',
+'GoogleMaps',
 'GoogleSearchRetrieval',
 'GroundingChunk',
 'GroundingMetadata',

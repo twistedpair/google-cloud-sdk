@@ -1478,9 +1478,9 @@ class GcpUserAccessBinding(_messages.Message):
       be logged. Only one access level is supported, not multiple. This list
       must have exactly one element. Example:
       "accessPolicies/9522/accessLevels/device_trusted"
-    groupKey: Optional. Immutable. Google Group id whose members are subject
-      to this binding's restrictions. See "id" in the [G Suite Directory API's
-      Groups resource] (https://developers.google.com/admin-
+    groupKey: Optional. Immutable. Google Group id whose users are subject to
+      this binding's restrictions. See "id" in the [Google Workspace Directory
+      API's Group Resource] (https://developers.google.com/admin-
       sdk/directory/v1/reference/groups#resource). If a group's email
       address/alias is changed, this resource will continue to point at the
       changed group. This field does not accept group email addresses or

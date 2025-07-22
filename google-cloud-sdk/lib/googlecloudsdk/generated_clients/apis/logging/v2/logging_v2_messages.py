@@ -1849,6 +1849,13 @@ class LogBucket(_messages.Message):
     LifecycleStateValueValuesEnum: Output only. The bucket lifecycle state.
     UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum:
 
+  Messages:
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this bucket. Each item in the map must be expressed as " : ". tag-
+      key-namespaced-name is the project_number/tag-key-short-name For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
+
   Fields:
     analyticsEnabled: Optional. Whether log analytics is enabled for this
       bucket.Once enabled, log analytics features cannot be disabled.
@@ -1886,6 +1893,10 @@ class LogBucket(_messages.Message):
       of time, after which they will automatically be deleted. The minimum
       retention period is 1 day. If this value is set to zero at bucket
       creation time, the default time of 30 days will be used.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this bucket. Each item in the map must be expressed as " : ". tag-key-
+      namespaced-name is the project_number/tag-key-short-name For example:
+      "123/environment" : "production", "123/costCenter" : "marketing"
     unmetAnalyticsUpgradeRequirements: Output only. The requirements for an
       upgrade to analytics that are not satisfied by the current bucket
       configuration, in an arbitrary order. This will eventually be deprecated
@@ -1974,6 +1985,33 @@ class LogBucket(_messages.Message):
     BILLING_ACCOUNT_BUCKET = 10
     SUPPORTED_BUCKET_REGION = 11
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this bucket. Each item in the map must be expressed as " : ". tag-key-
+    namespaced-name is the project_number/tag-key-short-name For example:
+    "123/environment" : "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   analyticsEnabled = _messages.BooleanField(1)
   analyticsUpgradeTime = _messages.StringField(2)
   cmekSettings = _messages.MessageField('CmekSettings', 3)
@@ -1985,8 +2023,9 @@ class LogBucket(_messages.Message):
   name = _messages.StringField(9)
   restrictedFields = _messages.StringField(10, repeated=True)
   retentionDays = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  unmetAnalyticsUpgradeRequirements = _messages.EnumField('UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum', 12, repeated=True)
-  updateTime = _messages.StringField(13)
+  tags = _messages.MessageField('TagsValue', 12)
+  unmetAnalyticsUpgradeRequirements = _messages.EnumField('UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum', 13, repeated=True)
+  updateTime = _messages.StringField(14)
 
 
 class LogEntry(_messages.Message):
@@ -2020,6 +2059,10 @@ class LogEntry(_messages.Message):
     apphub: Output only. AppHub application metadata associated with this
       LogEntry. May be empty if there is no associated AppHub application or
       multiple associated applications (such as for VPC flow logs)
+    apphubDestination: Output only. AppHub application metadata associated
+      with the destination application. This is only populated if the log
+      represented "edge"-like data (such as for VPC flow logs) with a source
+      and destination.
     errorGroups: Output only. The Error Reporting
       (https://cloud.google.com/error-reporting) error groups associated with
       this LogEntry. Error Reporting sets the values for this field during
@@ -2252,25 +2295,26 @@ class LogEntry(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apphub = _messages.MessageField('AppHub', 1)
-  errorGroups = _messages.MessageField('LogErrorGroup', 2, repeated=True)
-  httpRequest = _messages.MessageField('HttpRequest', 3)
-  insertId = _messages.StringField(4)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  logName = _messages.StringField(7)
-  metadata = _messages.MessageField('MonitoredResourceMetadata', 8)
-  operation = _messages.MessageField('LogEntryOperation', 9)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 10)
-  receiveTimestamp = _messages.StringField(11)
-  resource = _messages.MessageField('MonitoredResource', 12)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 13)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 14)
-  spanId = _messages.StringField(15)
-  split = _messages.MessageField('LogSplit', 16)
-  textPayload = _messages.StringField(17)
-  timestamp = _messages.StringField(18)
-  trace = _messages.StringField(19)
-  traceSampled = _messages.BooleanField(20)
+  apphubDestination = _messages.MessageField('AppHub', 2)
+  errorGroups = _messages.MessageField('LogErrorGroup', 3, repeated=True)
+  httpRequest = _messages.MessageField('HttpRequest', 4)
+  insertId = _messages.StringField(5)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  logName = _messages.StringField(8)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 9)
+  operation = _messages.MessageField('LogEntryOperation', 10)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 11)
+  receiveTimestamp = _messages.StringField(12)
+  resource = _messages.MessageField('MonitoredResource', 13)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 14)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 15)
+  spanId = _messages.StringField(16)
+  split = _messages.MessageField('LogSplit', 17)
+  textPayload = _messages.StringField(18)
+  timestamp = _messages.StringField(19)
+  trace = _messages.StringField(20)
+  traceSampled = _messages.BooleanField(21)
 
 
 class LogEntryOperation(_messages.Message):
@@ -2356,7 +2400,7 @@ class LogExclusion(_messages.Message):
       the following query matches 99% of low-severity log entries from Google
       Cloud Storage buckets:resource.type=gcs_bucket severity<ERROR
       sample(insertId, 0.99)
-    name: Output only. A client-assigned identifier, such as "load-balancer-
+    name: Optional. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods. First character
       has to be alphanumeric.
@@ -2639,7 +2683,7 @@ class LogSink(_messages.Message):
       not export any log entries.
     exclusions: Optional. Log entries that match any of these exclusion
       filters will not be exported.If a log entry is matched by both filter
-      and one of exclusion_filters it will not be exported.
+      and one of exclusions it will not be exported.
     filter: Optional. An advanced logs filter
       (https://cloud.google.com/logging/docs/view/advanced-queries). The only
       exported log entries are those that are in the resource owning the sink
@@ -2667,7 +2711,7 @@ class LogSink(_messages.Message):
       The sink appears in the results of a ListSinks call from a child
       resource if the value of the filter field in its request is either
       'in_scope("ALL")' or 'in_scope("ANCESTOR")'.
-    name: Output only. The client-assigned sink identifier, unique within the
+    name: Optional. The client-assigned sink identifier, unique within the
       project.For example: "my-syslog-errors-to-pubsub".Sink identifiers are
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens,
@@ -9065,10 +9109,7 @@ class QueryDataRequest(_messages.Message):
       view.Example: projects/[PROJECT_ID]
     timeout: Optional. For queries made through QueryData, query will be
       terminated if it is not completed by the time this duration is exceeded.
-      If not set, the default is 5 minutes.For queries made through
-      QueryDataSync, defines a timeout after which query will fall back to
-      asynchronous execution. If not set, the synchronous query timeout is set
-      to the request's deadline.
+      If not set, the default is 5 minutes.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

@@ -266,27 +266,6 @@ class AnthosCluster(_messages.Message):
   membership = _messages.StringField(1)
 
 
-class AnthosRenderMetadata(_messages.Message):
-  r"""AnthosRenderMetadata contains Anthos information associated with a
-  `Release` render.
-
-  Fields:
-    canaryDeployment: Output only. Name of the canary version of the
-      Kubernetes Deployment that will be applied to the Anthos cluster. Only
-      set if a canary deployment strategy was configured.
-    deployment: Output only. Name of the Kubernetes Deployment that will be
-      applied to the Anthos cluster. Only set if a single Deployment was
-      provided in the rendered manifest.
-    kubernetesNamespace: Output only. Namespace the Kubernetes resources will
-      be applied to in the Anthos cluster. Only set if applying resources to a
-      single namespace.
-  """
-
-  canaryDeployment = _messages.StringField(1)
-  deployment = _messages.StringField(2)
-  kubernetesNamespace = _messages.StringField(3)
-
-
 class ApproveRolloutRequest(_messages.Message):
   r"""The request object used by `ApproveRollout`.
 
@@ -2500,13 +2479,17 @@ class Config(_messages.Message):
   Fields:
     defaultSkaffoldVersion: Default Skaffold version that is assigned when a
       Release is created without specifying a Skaffold version.
+    defaultToolVersions: Output only. Default tool versions. These tool
+      versions are assigned when a Release is created without specifying tool
+      versions.
     name: Name of the configuration.
     supportedVersions: All supported versions of Skaffold.
   """
 
   defaultSkaffoldVersion = _messages.StringField(1)
-  name = _messages.StringField(2)
-  supportedVersions = _messages.MessageField('SkaffoldVersion', 3, repeated=True)
+  defaultToolVersions = _messages.MessageField('ToolVersions', 2)
+  name = _messages.StringField(3)
+  supportedVersions = _messages.MessageField('SkaffoldVersion', 4, repeated=True)
 
 
 class ConfigTask(_messages.Message):
@@ -3921,27 +3904,6 @@ class GkeCluster(_messages.Message):
   proxyUrl = _messages.StringField(4)
 
 
-class GkeRenderMetadata(_messages.Message):
-  r"""GkeRenderMetadata contains GKE information associated with a `Release`
-  render.
-
-  Fields:
-    canaryDeployment: Output only. Name of the canary version of the
-      Kubernetes Deployment that will be applied to the GKE cluster. Only set
-      if a canary deployment strategy was configured.
-    deployment: Output only. Name of the Kubernetes Deployment that will be
-      applied to the GKE cluster. Only set if a single Deployment was provided
-      in the rendered manifest.
-    kubernetesNamespace: Output only. Namespace the Kubernetes resources will
-      be applied to in the GKE cluster. Only set if applying resources to a
-      single namespace.
-  """
-
-  canaryDeployment = _messages.StringField(1)
-  deployment = _messages.StringField(2)
-  kubernetesNamespace = _messages.StringField(3)
-
-
 class GoogleCloudAnalysis(_messages.Message):
   r"""GoogleCloudAnalysis is a set of Google Cloud-based checks to perform on
   the deployment.
@@ -5179,6 +5141,9 @@ class Release(_messages.Message):
       operation for that target.
     targetSnapshots: Output only. Snapshot of the targets taken at release
       creation time.
+    toolVersions: Optional. The tool versions to use for this release and all
+      subsequent operations involving this release. If unset, then it will
+      freeze the tool versions at the time of release creation.
     uid: Output only. Unique identifier of the `Release`.
   """
 
@@ -5358,20 +5323,39 @@ class Release(_messages.Message):
   targetArtifacts = _messages.MessageField('TargetArtifactsValue', 21)
   targetRenders = _messages.MessageField('TargetRendersValue', 22)
   targetSnapshots = _messages.MessageField('Target', 23, repeated=True)
-  uid = _messages.StringField(24)
+  toolVersions = _messages.MessageField('ToolVersions', 24)
+  uid = _messages.StringField(25)
 
 
 class ReleaseCondition(_messages.Message):
   r"""ReleaseCondition contains all conditions relevant to a Release.
 
   Fields:
+    dockerVersionSupportedCondition: Output only. Details around the support
+      state of the release's Docker version.
+    helmVersionSupportedCondition: Output only. Details around the support
+      state of the release's Helm version.
+    kptVersionSupportedCondition: Output only. Details around the support
+      state of the release's Kpt version.
+    kubectlVersionSupportedCondition: Output only. Details around the support
+      state of the release's Kubectl version.
+    kustomizeVersionSupportedCondition: Output only. Details around the
+      support state of the release's Kustomize version.
     releaseReadyCondition: Details around the Releases's overall status.
     skaffoldSupportedCondition: Details around the support state of the
       release's Skaffold version.
+    skaffoldVersionSupportedCondition: Output only. Details around the support
+      state of the release's Skaffold version.
   """
 
-  releaseReadyCondition = _messages.MessageField('ReleaseReadyCondition', 1)
-  skaffoldSupportedCondition = _messages.MessageField('SkaffoldSupportedCondition', 2)
+  dockerVersionSupportedCondition = _messages.MessageField('ToolVersionSupportedCondition', 1)
+  helmVersionSupportedCondition = _messages.MessageField('ToolVersionSupportedCondition', 2)
+  kptVersionSupportedCondition = _messages.MessageField('ToolVersionSupportedCondition', 3)
+  kubectlVersionSupportedCondition = _messages.MessageField('ToolVersionSupportedCondition', 4)
+  kustomizeVersionSupportedCondition = _messages.MessageField('ToolVersionSupportedCondition', 5)
+  releaseReadyCondition = _messages.MessageField('ReleaseReadyCondition', 6)
+  skaffoldSupportedCondition = _messages.MessageField('SkaffoldSupportedCondition', 7)
+  skaffoldVersionSupportedCondition = _messages.MessageField('ToolVersionSupportedCondition', 8)
 
 
 class ReleaseNotificationEvent(_messages.Message):
@@ -5513,21 +5497,16 @@ class RenderMetadata(_messages.Message):
   r"""RenderMetadata includes information associated with a `Release` render.
 
   Fields:
-    anthos: Output only. Metadata associated with rendering for an Anthos
-      Target.
     cloudRun: Output only. Metadata associated with rendering for Cloud Run.
     custom: Output only. Custom metadata provided by user-defined render
       operation.
-    gke: Output only. Metadata associated with rendering for a GKE Target.
     kubernetes: Output only. Metadata associated with rendering for a
       Kubernetes cluster (GKE or GKE Enterprise target).
   """
 
-  anthos = _messages.MessageField('AnthosRenderMetadata', 1)
-  cloudRun = _messages.MessageField('CloudRunRenderMetadata', 2)
-  custom = _messages.MessageField('CustomMetadata', 3)
-  gke = _messages.MessageField('GkeRenderMetadata', 4)
-  kubernetes = _messages.MessageField('KubernetesRenderMetadata', 5)
+  cloudRun = _messages.MessageField('CloudRunRenderMetadata', 1)
+  custom = _messages.MessageField('CustomMetadata', 2)
+  kubernetes = _messages.MessageField('KubernetesRenderMetadata', 3)
 
 
 class RepairPhase(_messages.Message):
@@ -7330,6 +7309,72 @@ class TimedPromoteReleaseRule(_messages.Message):
   id = _messages.StringField(4)
   schedule = _messages.StringField(5)
   timeZone = _messages.StringField(6)
+
+
+class ToolVersionSupportedCondition(_messages.Message):
+  r"""ToolVersionSupportedCondition contains information about when support
+  for the release's version of a Tool ends.
+
+  Enums:
+    ToolVersionSupportStateValueValuesEnum: Output only. The Tool support
+      state for this release's version of the Tool.
+
+  Fields:
+    maintenanceModeTime: Output only. The time at which this release's version
+      of the Tool will enter maintenance mode.
+    status: Output only. True if the version of Tool used by this release is
+      supported.
+    supportExpirationTime: Output only. The time at which this release's
+      version of the Tool will no longer be supported.
+    toolVersionSupportState: Output only. The Tool support state for this
+      release's version of the Tool.
+  """
+
+  class ToolVersionSupportStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The Tool support state for this release's version of the
+    Tool.
+
+    Values:
+      TOOL_VERSION_SUPPORT_STATE_UNSPECIFIED: Default value. This value is
+        unused.
+      TOOL_VERSION_SUPPORT_STATE_SUPPORTED: This Tool version is currently
+        supported.
+      TOOL_VERSION_SUPPORT_STATE_MAINTENANCE_MODE: This Tool version is in
+        maintenance mode.
+      TOOL_VERSION_SUPPORT_STATE_UNSUPPORTED: This Tool version is no longer
+        supported.
+    """
+    TOOL_VERSION_SUPPORT_STATE_UNSPECIFIED = 0
+    TOOL_VERSION_SUPPORT_STATE_SUPPORTED = 1
+    TOOL_VERSION_SUPPORT_STATE_MAINTENANCE_MODE = 2
+    TOOL_VERSION_SUPPORT_STATE_UNSUPPORTED = 3
+
+  maintenanceModeTime = _messages.StringField(1)
+  status = _messages.BooleanField(2)
+  supportExpirationTime = _messages.StringField(3)
+  toolVersionSupportState = _messages.EnumField('ToolVersionSupportStateValueValuesEnum', 4)
+
+
+class ToolVersions(_messages.Message):
+  r"""Details of ToolVersions for the release.
+
+  Fields:
+    docker: Optional. The docker version to use for Cloud Deploy operations.
+    helm: Optional. The helm version to use for Cloud Deploy operations.
+    kpt: Optional. The kpt version to use for Cloud Deploy operations.
+    kubectl: Optional. The kubectl version to use for Cloud Deploy operations.
+    kustomize: Optional. The kustomize version to use for Cloud Deploy
+      operations.
+    skaffold: Optional. The skaffold version to use for Cloud Deploy
+      operations.
+  """
+
+  docker = _messages.StringField(1)
+  helm = _messages.StringField(2)
+  kpt = _messages.StringField(3)
+  kubectl = _messages.StringField(4)
+  kustomize = _messages.StringField(5)
+  skaffold = _messages.StringField(6)
 
 
 class Verify(_messages.Message):

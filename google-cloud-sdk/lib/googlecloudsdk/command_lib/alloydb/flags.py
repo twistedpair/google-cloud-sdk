@@ -374,6 +374,44 @@ def AddConnectionPoolingIgnoreStartupParameters(parser):
   )
 
 
+def AddConnectionPoolingServerLifetime(parser):
+  """Adds --connection-pooling-server-lifetime flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-server-lifetime',
+      type=str,
+      required=False,
+      default=None,
+      help=(
+          'The lifetime of a server connection in seconds. The pooler will '
+          'close an unused (not currently linked to any client connection) '
+          'server connection that has been connected longer than this. Setting '
+          ' it to 0 means the connection is to be used only once, then closed. '
+      ),
+  )
+
+
+def AddConnectionPoolingClientConnectionIdleTimeout(parser):
+  """Adds --connection-pooling-client-connection-idle-timeout flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-client-connection-idle-timeout',
+      type=str,
+      required=False,
+      default=None,
+      help=(
+          'The maximum number of seconds a client is allowed to be idle '
+          'before it is disconnected.'
+      ),
+  )
+
+
 def AddEnablePrivateServiceConnect(parser):
   """Adds the `--enable-private-service-connect` flag to the parser."""
   parser.add_argument(

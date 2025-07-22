@@ -167,3 +167,31 @@ class RepositoriesClient(object):
             batch_size_attribute='pageSize',
         )
     )
+
+  def Update(self, repository_ref, update_mask, validate_only, description):
+    """Update a Secure Source Manager repository.
+
+    Args:
+      repository_ref: a Resource reference to a
+        securesourcemanager.projects.locations.repositories resource.
+      update_mask: Field mask is used to specify the fields to be overwritten in
+        the repository resource by the update.
+      validate_only: Optional. If set to true, and the repository is not found,
+        the request will succeed but no action will be taken on the server.
+      description: Description of the repository.
+
+    Returns:
+    Updated Repository Resource.
+    """
+
+    repository = self.messages.Repository(
+        name=repository_ref.RelativeName(),
+        description=description,
+    )
+    update_req = self.messages.SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest(
+        name=repository_ref.RelativeName(),
+        repository=repository,
+        updateMask=','.join(update_mask),
+        validateOnly=validate_only,
+    )
+    return self._service.Patch(update_req)

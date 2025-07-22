@@ -868,7 +868,8 @@ class ServerlessOperations(object):
       enable_automatic_updates: If true, opt-in automatic build image updates.
         If false, opt-out automatic build image updates.
       is_verbose: Print verbose output. Forces polling instead of waiting.
-      source_bucket: The bucket to use for source uploads.
+      source_bucket: The existing bucket to use for source uploads. Leave it
+        as None to create a new bucket.
       kms_key: The KMS key to use for the deployment.
       iap_enabled: If true, assign run.invoker access to IAP P4SA, if false,
         remove run.invoker access from IAP P4SA.

@@ -32,8 +32,10 @@ from googlecloudsdk.command_lib.interactive import lexer
 import six
 
 
+LOOKUP_ATTR = cli_tree.LOOKUP_ATTR
 LOOKUP_COMMANDS = cli_tree.LOOKUP_COMMANDS
 LOOKUP_CHOICES = cli_tree.LOOKUP_CHOICES
+LOOKUP_HIDDEN_CHOICES = cli_tree.LOOKUP_HIDDEN_CHOICES
 LOOKUP_COMPLETER = cli_tree.LOOKUP_COMPLETER
 LOOKUP_FLAGS = cli_tree.LOOKUP_FLAGS
 LOOKUP_GROUPS = cli_tree.LOOKUP_GROUPS

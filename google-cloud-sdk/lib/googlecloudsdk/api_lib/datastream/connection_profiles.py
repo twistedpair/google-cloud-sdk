@@ -64,6 +64,11 @@ class ConnectionProfilesClient:
         args.postgresql_client_key, 'Postgresql client private key'
     )
 
+    # Validation for Oracle SSL config fields.
+    self._ValidateCertificateFormat(
+        args.oracle_ca_certificate, 'Oracle CA certificate'
+    )
+
   def _ValidateCertificateFormat(self, certificate, name):
     if not certificate:
       return True
@@ -93,13 +98,22 @@ class ConnectionProfilesClient:
         sslConfig=ssl_config)
 
   def _GetOracleProfile(self, args):
+    ssl_config = self._GetOracleSslConfig(args)
     return self._messages.OracleProfile(
         hostname=args.oracle_hostname,
         port=args.oracle_port,
         username=args.oracle_username,
         password=args.oracle_password,
         secretManagerStoredPassword=args.oracle_secret_manager_stored_password,
-        databaseService=args.database_service)
+        databaseService=args.database_service,
+        oracleSslConfig=ssl_config)
+
+  def _GetOracleSslConfig(self, args):
+    """Returns a OracleSslConfig message based on the given args."""
+    return self._messages.OracleSslConfig(
+        caCertificate=args.oracle_ca_certificate,
+        serverCertificateDistinguishedName=args.oracle_server_certificate_distinguished_name,
+    )
 
   def _GetPostgresqlSslConfig(self, args):
     """Returns a PostgresqlSslConfig message based on the given args."""
@@ -109,13 +123,17 @@ class ConnectionProfilesClient:
               clientCertificate=args.postgresql_client_certificate,
               clientKey=args.postgresql_client_key,
               caCertificate=args.postgresql_ca_certificate,
-          ))
+              serverCertificateHostname=args.postgresql_server_certificate_hostname,
+          )
+      )
 
     if args.postgresql_ca_certificate:
       return self._messages.PostgresqlSslConfig(
           serverVerification=self._messages.ServerVerification(
               caCertificate=args.postgresql_ca_certificate,
-          ))
+              serverCertificateHostname=args.postgresql_server_certificate_hostname,
+          )
+      )
 
     return None
 
@@ -543,6 +561,23 @@ class ConnectionProfilesClient:
         )
         update_fields.append(
             'postgresqlProfile.sslConfig.serverVerification.caCertificate'
+        )
+    if args.IsSpecified('postgresql_server_certificate_hostname'):
+      if (
+          connection_profile.postgresqlProfile.sslConfig.serverAndClientVerification
+      ):
+        connection_profile.postgresqlProfile.sslConfig.serverAndClientVerification.serverCertificateHostname = (
+            args.postgresql_server_certificate_hostname
+        )
+        update_fields.append(
+            'postgresqlProfile.sslConfig.serverAndClientVerification.serverCertificateHostname'
+        )
+      else:
+        connection_profile.postgresqlProfile.sslConfig.serverVerification.serverCertificateHostname = (
+            args.postgresql_server_certificate_hostname
+        )
+        update_fields.append(
+            'postgresqlProfile.sslConfig.serverVerification.serverCertificateHostname'
         )
 
   def _UpdatePostgresqlProfile(self, connection_profile, args, update_fields):

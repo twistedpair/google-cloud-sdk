@@ -152,6 +152,17 @@ def AddArgsCloneRules(parser):
   )
 
 
+def AddArgsForceStartProgressiveRollout(parser):
+  """Adds the argument for firewall policy force start progressive rollout."""
+  parser.add_argument(
+      '--organization',
+      help=(
+          'Organization in which the organization firewall policy to start the'
+          ' rollout of resides. Must be set if firewall-policy is short name.'
+      ),
+  )
+
+
 def AddArgsListFirewallPolicy(parser):
   """Adds the argument for firewall policy list."""
   group = parser.add_group(required=True, mutex=True)

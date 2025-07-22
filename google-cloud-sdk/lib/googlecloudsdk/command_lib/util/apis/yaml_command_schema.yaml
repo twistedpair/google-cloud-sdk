@@ -75,6 +75,8 @@ definitions:
         enum_value: {type: string}
         # The help text to show next to the choice on the man page.
         help_text: {type: string}
+        # Whether or not the choice should be hidden from help text.
+        hidden: {type: boolean}
 
   flag_spec:
     type: array

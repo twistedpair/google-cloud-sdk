@@ -54,6 +54,9 @@ enabled and list of public network sources and vpc network sources:
         },
     ]
   }
+
+For more information about supported configurations, see
+[Cloud Storage bucket IP filtering configurations](https://cloud.google.com/storage/docs/create-ip-filter#ip-filtering-configurations)
 """
 
 

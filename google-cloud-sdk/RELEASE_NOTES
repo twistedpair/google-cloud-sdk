@@ -5,6 +5,118 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 531.0.0 (2025-07-22)
+
+### Google Cloud CLI
+
+* Updated windows bundled Python for the `gcloud` CLI to 3.12.10.
+
+### AlloyDB
+
+* Add two new Managed Connection Pooling related flags for users to configure on
+`gcloud alloydb instances create` and `gcloud alloydb instances update`. The new
+flags are:
+  * `--connection-pooling-server-lifetime`
+  * `--connection-pooling-client-connection-idle-timeout`
+
+### BigQuery
+
+* Added new flag `--null_markers` for external tables to define the strings
+that represent NULL values in CSV files.
+* Added support for `--source_column_match` flag for
+  `bq mk --table --external_table_definition` and `bq mkdef` commands.
+* Added support for `--reservation_group` and `--reservation_group_name` flags for reservation group feature.
+
+### Cloud Dataflow
+
+*   Fixed an issue where the environment variable
+    `FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES` does not install Python dependencies
+    in Flex Templates.
+*   Added `--template-file-gcs-location` flag to `gcloud dataflow yaml run`
+    to support user-defined YAML templates.
+*   Added `--network` and `--subnetwork` flags to `gcloud dataflow yaml run`
+    to support specifying network options for Dataflow workers.
+
+### Cloud Datastream
+
+*   Added `--postgresql-server-certificate-hostname` flag to `gcloud datastream
+    connection-profiles create` command to validate the hostname in the server
+    certificate for SSL connections to PostgreSQL sources.
+*   Added `--oracle-ca-certificate` flag to `gcloud datastream
+    connection-profiles create` command to create connection with SSL server
+    only verification for Oracle sources.
+*   Added `--oracle-server-certificate-distinguished-name` flag to `gcloud
+    datastream connection-profiles create` command to validate the server
+    certificate for SSL connections to Oracle sources.
+*   Added `--postgresql-server-certificate-hostname`, `--oracle-ca-certificate`
+    and `--oracle-server-certificate-distinguished-name` flags to
+    `gcloud datastream connection-profiles update` command to support updating
+    the SSL config for PostgreSQL and Oracle sources.
+
+### Cloud Interconnect
+
+* Promoted `gcloud compute interconnects application-awareness get-config` to beta.
+* Promoted `gcloud compute interconnects application-awareness update` to beta.
+* Promoted `gcloud compute interconnects application-awareness delete` to beta.
+* Promoted `gcloud compute interconnects application-awareness configure-bandwidth-percentage-policy` to beta.
+* Promoted `gcloud compute interconnects application-awareness configure-shaper-average-percentage` to beta.
+* Promoted `gcloud compute interconnects application-awareness configure-strict-priority-policy` to beta.
+
+### Cloud Run
+
+* Added `--startup-probe` flag to `gcloud run jobs` command group to allow
+  configuring startup probe for a Cloud Run Job.
+
+### Cloud Storage
+
+* Promoted `--ip-filter-file` flag of `gcloud storage buckets create` and `gcloud storage buckets update` to GA.
+* Promoted `--clear-ip-filter` flag of `gcloud storage buckets update` to GA.
+
+### Compute Engine
+
+* Added `gcloud compute org-security-policies rules add-preconfig-waf-exclusion|remove-preconfig-waf-exclusion` in alpha and beta.
+* Added and promoted flags related to tls-settings to GA:
+    - `--tls-settings` of `gcloud compute backend-service create`.
+    - `--tls-settings` of `gcloud compute backend-service update`.
+    - `--no-tls-settings` of `gcloud compute backend-service update`.
+* Added `gcloud compute reservations sub-blocks performMaintenance` command in beta and v1.
+* Added new new plane `60-month` to commitment alpha.
+*  Added `--resolve-subnet-mask` flag for alpha and beta to
+  `gcloud compute networks subnets create` to allow users to enable resolve
+  subnet mask feature on the subnetwork resource during creation.
+* Added `--full-view` flag for v1 to `gcloud compute reservations blocks describe` to allow users to see the full reservation block view.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.132.1.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Container
+
+* Added `--boot-disk-provisioned-iops` flag to `gcloud container clusters create` command to specify the provisioned iops on Hyperdisk Balanced boot disks.
+* Added `--boot-disk-provisioned-throughput` flag to `gcloud container clusters create` command to specify the provisioned throughput on Hyperdisk Balanced boot disks.
+* Added `--boot-disk-provisioned-iops` flag to `gcloud container node-pools create` command to specify the provisioned iops on Hyperdisk Balanced boot disks.
+* Added `--boot-disk-provisioned-throughput` flag to `gcloud container node-pools create` command to specify the provisioned throughput on Hyperdisk Balanced boot disks.
+* Added `--boot-disk-provisioned-iops` flag to `gcloud container node-pools update` command to specify the provisioned iops on Hyperdisk Balanced boot disks.
+* Added `--boot-disk-provisioned-throughput` flag to `gcloud container node-pools update` command to specify the provisioned throughput on Hyperdisk Balanced boot disks.
+
+### Dataproc Diagnose
+
+* Added `--tarball-gcs-dir` flag to `gcloud dataproc clusters diagnose` to
+  specify the output Cloud Storage directory for the diagnostic tarball.
+
+### Migrate to Virtual Machines
+
+* Remove `--suppress-package-installation-failure` flag.
+
+### Secure Source Manager
+
+* Shortened `gcloud beta source-manager repos create/delete` command output to show a status message. The previous output format can be displayed with `--format=default`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 530.0.0 (2025-07-15)
 
 ### Breaking Changes
@@ -328,7 +440,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Migrate to Virtual Machines
 
 * Add `--adaptation-modifiers` flag to support os adaptation modifiers.
-* Add `--suppress-package-installation-failure` flag to support skipping package installation failure during adaptation.
 * Add `--rootfs-uuid` flag to support multiple operating systems found in adaptation.
 
 ### Network Security

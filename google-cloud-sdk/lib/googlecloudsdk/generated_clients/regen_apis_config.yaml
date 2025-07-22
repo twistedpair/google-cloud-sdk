@@ -1422,6 +1422,8 @@ apis:
       resources:
         projects.locations.jobs:
           path: projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}
+        projects.locations.workerpools:
+          path: projects/{projectsId}/locations/{locationsId}/workerpools/{workerpoolsId}
     v2:
       discovery_doc: run_v2.json
       gcloud_gapic_library: google/cloud/run/v2:run_v2_py

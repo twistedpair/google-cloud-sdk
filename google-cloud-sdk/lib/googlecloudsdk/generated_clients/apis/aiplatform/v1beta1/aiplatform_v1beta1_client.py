@@ -4434,7 +4434,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def MutateDeployedModel(self, request, global_params=None):
-      r"""Updates an existing deployed model. Updatable fields include `min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`, `disable_container_logging` (v1 only), and `enable_container_logging` (v1beta1 only).
+      r"""Updates an existing deployed model. Updatable fields include `min_replica_count`, `max_replica_count`, `required_replica_count`, `autoscaling_metric_specs`, `disable_container_logging` (v1 only), and `enable_container_logging` (v1beta1 only).
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsMutateDeployedModelRequest) input message
@@ -22235,6 +22235,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def FetchPublisherModelConfig(self, request, global_params=None):
+      r"""Fetches the configs of publisher models.
+
+      Args:
+        request: (AiplatformProjectsFetchPublisherModelConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1PublisherModelConfig) The response message.
+      """
+      config = self.GetMethodConfig('FetchPublisherModelConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchPublisherModelConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}:fetchPublisherModelConfig',
+        http_method='GET',
+        method_id='aiplatform.projects.fetchPublisherModelConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:fetchPublisherModelConfig',
+        request_field='',
+        request_type_name='AiplatformProjectsFetchPublisherModelConfigRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1PublisherModelConfig',
+        supports_download=False,
+    )
+
     def GetCacheConfig(self, request, global_params=None):
       r"""Gets a GenAI cache config.
 
@@ -22259,6 +22286,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsGetCacheConfigRequest',
         response_type_name='GoogleCloudAiplatformV1beta1CacheConfig',
+        supports_download=False,
+    )
+
+    def SetPublisherModelConfig(self, request, global_params=None):
+      r"""Sets (creates or updates) configs of publisher models. For example, sets the request/response logging config.
+
+      Args:
+        request: (AiplatformProjectsSetPublisherModelConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('SetPublisherModelConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetPublisherModelConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}:setPublisherModelConfig',
+        http_method='POST',
+        method_id='aiplatform.projects.setPublisherModelConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:setPublisherModelConfig',
+        request_field='googleCloudAiplatformV1beta1SetPublisherModelConfigRequest',
+        request_type_name='AiplatformProjectsSetPublisherModelConfigRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

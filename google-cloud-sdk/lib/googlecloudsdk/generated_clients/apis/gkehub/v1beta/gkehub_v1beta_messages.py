@@ -1339,7 +1339,7 @@ class ConfigManagementDeploymentOverride(_messages.Message):
     deploymentName: Required. The name of the deployment resource to be
       overridden.
     deploymentNamespace: Required. The namespace of the deployment resource to
-      be overridden..
+      be overridden.
   """
 
   containers = _messages.MessageField('ConfigManagementContainerOverride', 1, repeated=True)
@@ -7199,6 +7199,7 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -7208,6 +7209,7 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   implementation = _messages.EnumField('ImplementationValueValuesEnum', 2)
@@ -7241,6 +7243,7 @@ class ServiceMeshDataPlaneManagement(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -7250,6 +7253,7 @@ class ServiceMeshDataPlaneManagement(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -7314,10 +7318,13 @@ class ServiceMeshMembershipSpec(_messages.Message):
         cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
+      MANAGEMENT_NOT_INSTALLED: Google should remove any managed Service Mesh
+        components from this cluster and deprovision any resources.
     """
     MANAGEMENT_UNSPECIFIED = 0
     MANAGEMENT_AUTOMATIC = 1
     MANAGEMENT_MANUAL = 2
+    MANAGEMENT_NOT_INSTALLED = 3
 
   configApi = _messages.EnumField('ConfigApiValueValuesEnum', 1)
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 2)

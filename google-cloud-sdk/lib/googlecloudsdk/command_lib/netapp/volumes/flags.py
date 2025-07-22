@@ -310,6 +310,7 @@ def AddVolumeSnapshotDirectoryArg(parser):
       type=arg_parsers.ArgBoolean(
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
+      default='true',
       help="""Snapshot Directory if enabled (true) makes the Volume
             contain a read-only .snapshot directory which provides access
             to each of the volume's snapshots
@@ -686,18 +687,16 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeRestrictedActionsArg(parser)
   AddVolumeLargeCapacityArg(parser)
   AddVolumeMultipleEndpointsArg(parser)
-  if (
-      release_track == calliope_base.ReleaseTrack.BETA
-      or release_track == calliope_base.ReleaseTrack.GA
-  ):
+  if release_track in [
+      calliope_base.ReleaseTrack.BETA, calliope_base.ReleaseTrack.GA,
+  ]:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeHybridReplicationParametersArg(parser, messages, release_track)
-  if (
-      release_track == calliope_base.ReleaseTrack.BETA
-      or release_track == calliope_base.ReleaseTrack.ALPHA
-  ):
+  if release_track in [
+      calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,
+  ]:
     AddVolumeCacheParametersArg(parser, hidden=True)
   labels_util.AddCreateLabelsFlags(parser)
 
@@ -736,13 +735,16 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
-  if (
-      release_track == calliope_base.ReleaseTrack.BETA
-      or release_track == calliope_base.ReleaseTrack.GA
-  ):
+  if release_track in [
+      calliope_base.ReleaseTrack.BETA, calliope_base.ReleaseTrack.GA,
+  ]:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
+  if release_track in [
+      calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,
+  ]:
+    AddVolumeCacheParametersArg(parser, hidden=True)
   labels_util.AddUpdateLabelsFlags(parser)
 
 

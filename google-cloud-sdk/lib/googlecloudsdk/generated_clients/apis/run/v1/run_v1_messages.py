@@ -418,8 +418,7 @@ class Container(_messages.Message):
       (0.0.0.0) within the container to be accessible. If omitted, a port
       number will be chosen and passed to the container through the PORT
       environment variable for the container to listen on.
-    readinessProbe: Readiness probe to be used for health checks. Not
-      supported by Cloud Run.
+    readinessProbe: Readiness probe to be used for health checks.
     resources: Compute Resources required by this container.
     securityContext: Not supported by Cloud Run.
     startupProbe: Startup probe of application within the container. All other
@@ -1789,8 +1788,7 @@ class GoogleDevtoolsCloudbuildV1GitSourceRepository(_messages.Message):
   r"""A repository for a git source.
 
   Fields:
-    developerConnect: The Developer Connect Git repository link or the url
-      that matches a repository link in the current project, formatted as
+    developerConnect: The Developer Connect Git repository link formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLink/*`
     url: Location of the Git repository.
   """
@@ -5616,13 +5614,18 @@ class TaskAttemptResult(_messages.Message):
   Fields:
     exitCode: Optional. The exit code of this attempt. This may be unset if
       the container was unable to exit cleanly with a code due to some other
-      failure. See status field for possible failure details.
+      failure. See status field for possible failure details. At most one of
+      exit_code or term_signal will be set.
     status: Optional. The status of this attempt. If the status code is OK,
       then the attempt succeeded.
+    termSignal: Optional. Termination signal of the container. This is set to
+      non-zero if the container is terminated by the system. At most one of
+      exit_code or term_signal will be set.
   """
 
   exitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   status = _messages.MessageField('GoogleRpcStatus', 2)
+  termSignal = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class TaskSpec(_messages.Message):

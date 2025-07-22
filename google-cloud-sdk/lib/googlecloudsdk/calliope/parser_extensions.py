@@ -890,7 +890,8 @@ class ArgumentParser(argparse.ArgumentParser):
     # If we are dealing with flags, see if the spelling was close to something
     # else that exists here.
     suggestion = None
-    choices = sorted(action.choices)
+    hidden_choices = getattr(action, 'hidden_choices', [])
+    choices = sorted(c for c in action.choices if c not in hidden_choices)
     if not is_subparser:
       suggester = usage_text.TextChoiceSuggester(choices)
       suggestion = suggester.GetSuggestion(arg)

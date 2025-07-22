@@ -121,6 +121,11 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       line: The example line.
     """
     self._blank = True
+    indent = len(line) - len(line.lstrip())
+    line = line.lstrip()
+    command_pattern = re.compile(r'\A\$\s+')
+    is_start_of_command_example = bool(command_pattern.match(line))
+
     if not self._example:
       self._example = True
       self._in_command_block = False
@@ -130,14 +135,13 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
 
       lang = self._lang or 'sh'  # Default to 'sh' if no language is specified
       self._out.write(
-          '<pre class="prettyprint lang-{lang} wrap-code">\n'.format(lang=lang)
+          '<pre class="prettyprint lang-{lang}{wrap_code}">\n'.format(
+              lang=lang,
+              wrap_code=' wrap-code' if is_start_of_command_example else '',
+          )
       )
 
-    indent = len(line) - len(line.lstrip())
-    line = line.lstrip()
-
-    command_pattern = re.compile(r'\A\$\s+')
-    if command_pattern.match(line):
+    if is_start_of_command_example:
       self._in_command_block = True
     if self._in_command_block:
       line = command_pattern.sub('', line)

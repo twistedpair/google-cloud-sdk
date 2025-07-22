@@ -1094,6 +1094,7 @@ def ChoiceArgument(
     dest=None,
     default=None,
     hidden=False,
+    hidden_choices=None,
 ):
   """Returns Argument with a Cloud SDK style compliant set of choices.
 
@@ -1113,6 +1114,8 @@ def ChoiceArgument(
     default: string,  The value produced if the argument is absent from the
       command line.
     hidden: boolean, Whether or not the command-line option is hidden.
+    hidden_choices: list, A subset of 'choices' that should be hidden from
+      documentation.
 
   Returns:
      Argument object with choices, that can accept both lowercase and uppercase
@@ -1161,6 +1164,7 @@ def ChoiceArgument(
       dest=dest,
       default=default,
       hidden=hidden,
+      hidden_choices=hidden_choices,
   )
 
 

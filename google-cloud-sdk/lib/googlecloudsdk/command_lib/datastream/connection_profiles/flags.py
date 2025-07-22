@@ -134,6 +134,23 @@ def AddOracleProfileGroup(parser, required=True):
       default='',
   )
 
+  ssl_config = oracle_profile.add_group()
+  ssl_config.add_argument(
+      '--oracle-ca-certificate',
+      help="""\
+          PEM-encoded certificate of the CA that signed the source database
+          server's certificate.""",
+      default='',
+  )
+  ssl_config.add_argument(
+      '--oracle-server-certificate-distinguished-name',
+      help="""\
+          The distinguished name (DN) mentioned in the server
+          certificate. This corresponds to the SSL_SERVER_CERT_DN sqlnet parameter.
+          If this field is not provided, the DN matching is not enforced.""",
+      default='',
+  )
+
 
 def AddPostgresqlProfileGroup(parser, required=True):
   """Adds necessary postgresql profile flags to the given parser."""
@@ -185,6 +202,14 @@ def AddPostgresqlProfileGroup(parser, required=True):
           server's certificate. The replica will use this certificate to verify
           it's connecting to the right host.""",
       required=required)
+  ssl_config.add_argument(
+      '--postgresql-server-certificate-hostname',
+      help="""\
+          The hostname mentioned in the Subject or SAN extension of the server
+          certificate. If this field is not provided, the hostname in the
+          server certificate is not validated.""",
+      default='',
+  )
 
   client_ssl_config = ssl_config.add_group()
   client_ssl_config.add_argument(

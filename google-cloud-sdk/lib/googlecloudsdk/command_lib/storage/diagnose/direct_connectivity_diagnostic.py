@@ -172,7 +172,7 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
       with files.FileReader(self._logs_path) as file_reader:
         for line in file_reader:
           if re.search(
-              r'(?:\[ipv6:(?:%5B)?2001:4860:80[4-7].+\])?(?:\[ipv4:(?:%5B)?34\.126.+\])?',
+              r'(?:\[ipv6:(?:%5B)?2001:4860:80[4-7].+\])|(?:\[ipv4:(?:%5B)?34\.126.+\])',
               line,
           ):
             return _SUCCESS

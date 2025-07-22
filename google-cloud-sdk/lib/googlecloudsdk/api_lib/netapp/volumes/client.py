@@ -267,6 +267,7 @@ class VolumesClient(object):
       large_capacity=None,
       multiple_endpoints=None,
       tiering_policy=None,
+      cache_parameters=None,
   ):
     """Parses updates into a volume config."""
     return self._adapter.ParseUpdatedVolumeConfig(
@@ -292,6 +293,7 @@ class VolumesClient(object):
         large_capacity=large_capacity,
         multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy,
+        cache_parameters=cache_parameters,
     )
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
@@ -617,6 +619,7 @@ class VolumesAdapter(object):
       large_capacity=None,
       multiple_endpoints=None,
       tiering_policy=None,
+      cache_parameters=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -661,6 +664,8 @@ class VolumesAdapter(object):
       volume_config.multipleEndpoints = multiple_endpoints
     if tiering_policy is not None:
       self.ParseTieringPolicy(volume_config, tiering_policy)
+    if cache_parameters is not None:
+      self.ParseCacheParameters(volume_config, cache_parameters)
     return volume_config
 
   def ParseBackupConfig(self, volume, backup_config):

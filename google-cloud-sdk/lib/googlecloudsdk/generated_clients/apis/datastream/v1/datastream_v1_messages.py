@@ -2112,10 +2112,18 @@ class OracleSslConfig(_messages.Message):
       the source database server's certificate.
     caCertificateSet: Output only. Indicates whether the ca_certificate field
       has been set for this Connection-Profile.
+    serverCertificateDistinguishedName: Optional. The distinguished name (DN)
+      mentioned in the server certificate. This corresponds to
+      SSL_SERVER_CERT_DN sqlnet parameter. Refer
+      https://docs.oracle.com/en/database/oracle/oracle-
+      database/19/netrf/local-naming-parameters-in-tns-ora-
+      file.html#GUID-70AB0695-A9AA-4A94-B141-4C605236EEB7 If this field is not
+      provided, the DN matching is not enforced.
   """
 
   caCertificate = _messages.StringField(1)
   caCertificateSet = _messages.BooleanField(2)
+  serverCertificateDistinguishedName = _messages.StringField(3)
 
 
 class OracleTable(_messages.Message):
@@ -2537,11 +2545,15 @@ class ServerAndClientVerification(_messages.Message):
       the client certificate. This value will be used during the SSL/TLS
       handshake, allowing the PostgreSQL server to authenticate the client's
       identity, i.e. identity of the Datastream.
+    serverCertificateHostname: Optional. The hostname mentioned in the Subject
+      or SAN extension of the server certificate. If this field is not
+      provided, the hostname in the server certificate is not validated.
   """
 
   caCertificate = _messages.StringField(1)
   clientCertificate = _messages.StringField(2)
   clientKey = _messages.StringField(3)
+  serverCertificateHostname = _messages.StringField(4)
 
 
 class ServerVerification(_messages.Message):
@@ -2552,9 +2564,13 @@ class ServerVerification(_messages.Message):
   Fields:
     caCertificate: Required. Input only. PEM-encoded server root CA
       certificate.
+    serverCertificateHostname: Optional. The hostname mentioned in the Subject
+      or SAN extension of the server certificate. If this field is not
+      provided, the hostname in the server certificate is not validated.
   """
 
   caCertificate = _messages.StringField(1)
+  serverCertificateHostname = _messages.StringField(2)
 
 
 class SingleTargetDataset(_messages.Message):

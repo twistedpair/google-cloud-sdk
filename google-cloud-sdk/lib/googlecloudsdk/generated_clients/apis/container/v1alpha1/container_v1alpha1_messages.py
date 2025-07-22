@@ -574,7 +574,6 @@ class AutoscaledRolloutPolicy(_messages.Message):
   """
 
 
-
 class AvailableVersion(_messages.Message):
   r"""Deprecated.
 
@@ -1123,6 +1122,8 @@ class Cluster(_messages.Message):
     satisfiesPzs: Output only. Reserved for future use.
     scheduleUpgradeConfig: Configuration for scheduled upgrades.
     secretManagerConfig: Secret CSI driver configuration.
+    secretSyncConfig: Configuration for sync Secret Manager secrets as k8s
+      secrets.
     securityPostureConfig: Enable/Disable Security Posture API features for
       the cluster.
     securityProfile: User selected security profile
@@ -1348,25 +1349,26 @@ class Cluster(_messages.Message):
   satisfiesPzs = _messages.BooleanField(82)
   scheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 83)
   secretManagerConfig = _messages.MessageField('SecretManagerConfig', 84)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 85)
-  securityProfile = _messages.MessageField('SecurityProfile', 86)
-  selfLink = _messages.StringField(87)
-  servicesIpv4Cidr = _messages.StringField(88)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 89)
-  status = _messages.EnumField('StatusValueValuesEnum', 90)
-  statusMessage = _messages.StringField(91)
-  subnetwork = _messages.StringField(92)
-  tags = _messages.MessageField('TagsValue', 93)
-  tpuConfig = _messages.MessageField('TpuConfig', 94)
-  tpuIpv4CidrBlock = _messages.StringField(95)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 96)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 97)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 98)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 99)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 100)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 101)
-  workloadMonitoringEnabledEap = _messages.BooleanField(102)
-  zone = _messages.StringField(103)
+  secretSyncConfig = _messages.MessageField('SecretSyncConfig', 85)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 86)
+  securityProfile = _messages.MessageField('SecurityProfile', 87)
+  selfLink = _messages.StringField(88)
+  servicesIpv4Cidr = _messages.StringField(89)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 90)
+  status = _messages.EnumField('StatusValueValuesEnum', 91)
+  statusMessage = _messages.StringField(92)
+  subnetwork = _messages.StringField(93)
+  tags = _messages.MessageField('TagsValue', 94)
+  tpuConfig = _messages.MessageField('TpuConfig', 95)
+  tpuIpv4CidrBlock = _messages.StringField(96)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 97)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 98)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 99)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 100)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 101)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 102)
+  workloadMonitoringEnabledEap = _messages.BooleanField(103)
+  zone = _messages.StringField(104)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1466,9 +1468,10 @@ class ClusterTelemetry(_messages.Message):
 
 
 class ClusterUpdate(_messages.Message):
-  r"""ClusterUpdate describes an update to the cluster. Exactly one update can
-  be applied to a cluster with each request, so at most one field can be
-  provided.
+  r"""ClusterUpdate describes an update to the cluster.
+
+  Exactly one update can be applied to a cluster with each request, so at most
+  one field can be provided.
 
   Enums:
     DesiredDatapathProviderValueValuesEnum: The desired datapath provider for
@@ -1678,6 +1681,7 @@ class ClusterUpdate(_messages.Message):
     desiredScheduleUpgradeConfig: The desired schedule upgrade configuration
       for the cluster.
     desiredSecretManagerConfig: Enable/Disable Secret Manager Config.
+    desiredSecretSyncConfig: The desired secret sync config for the cluster.
     desiredSecurityPostureConfig: Enable/Disable Security Posture API features
       for the cluster.
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
@@ -1868,26 +1872,43 @@ class ClusterUpdate(_messages.Message):
   desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 80)
   desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 81)
   desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 82)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 83)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 84)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 85)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 86)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 87)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 88)
-  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 89)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 90)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 91)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 92)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 93)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 94)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 95)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 96)
-  etag = _messages.StringField(97)
-  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 98)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 99)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 100)
-  securityProfile = _messages.MessageField('SecurityProfile', 101)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 102)
+  desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 83)
+  desiredSecurityPostureConfig = _messages.MessageField(
+      'SecurityPostureConfig', 84
+  )
+  desiredServiceExternalIpsConfig = _messages.MessageField(
+      'ServiceExternalIPsConfig', 85
+  )
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 86)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 87)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 88)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 89)
+  desiredUserManagedKeysConfig = _messages.MessageField(
+      'UserManagedKeysConfig', 90
+  )
+  desiredVerticalPodAutoscaling = _messages.MessageField(
+      'VerticalPodAutoscaling', 91
+  )
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 92)
+  desiredWorkloadCertificates = _messages.MessageField(
+      'WorkloadCertificates', 93
+  )
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 94)
+  desiredWorkloadIdentityConfig = _messages.MessageField(
+      'WorkloadIdentityConfig', 95
+  )
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField(
+      'WorkloadMonitoringEapConfig', 96
+  )
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 97)
+  etag = _messages.StringField(98)
+  gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 99)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 100)
+  removedAdditionalPodRangesConfig = _messages.MessageField(
+      'AdditionalPodRangesConfig', 101
+  )
+  securityProfile = _messages.MessageField('SecurityProfile', 102)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 103)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -1972,7 +1993,6 @@ class CompleteConvertToAutopilotRequest(_messages.Message):
   """
 
 
-
 class CompleteIPRotationRequest(_messages.Message):
   r"""CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
@@ -2003,7 +2023,6 @@ class CompleteNodePoolUpgradeRequest(_messages.Message):
   r"""CompleteNodePoolUpgradeRequest sets the name of target node pool to
   complete upgrade.
   """
-
 
 
 class CompliancePostureConfig(_messages.Message):
@@ -3166,7 +3185,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EnterpriseConfig(_messages.Message):
   r"""EnterpriseConfig is the cluster enterprise configuration.
 
@@ -4252,8 +4270,8 @@ class LinuxNodeConfig(_messages.Message):
       allocation can be managed by either limiting defragmentation for delayed
       allocation or skipping it entirely for immediate allocation only. See
       https://docs.kernel.org/admin-guide/mm/transhuge.html for more details.
-    TransparentHugepageEnabledValueValuesEnum: Optional. Transparent Hugepage
-      Support for anonymous memory can be entirely disabled (mostly for
+    TransparentHugepageEnabledValueValuesEnum: Optional. Transparent hugepage
+      support for anonymous memory can be entirely disabled (mostly for
       debugging purposes) or only enabled inside MADV_HUGEPAGE regions (to
       avoid the risk of consuming more memory resources) or enabled system
       wide. See https://docs.kernel.org/admin-guide/mm/transhuge.html for more
@@ -4266,12 +4284,18 @@ class LinuxNodeConfig(_messages.Message):
       net.core.rmem_max net.core.rmem_default net.core.wmem_default
       net.core.wmem_max net.core.optmem_max net.core.somaxconn
       net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
-      net.netfilter.nf_conntrack_max net.netfilter.nf_conntrack_buckets
+      net.ipv4.tcp_max_orphans net.netfilter.nf_conntrack_max
+      net.netfilter.nf_conntrack_buckets
       net.netfilter.nf_conntrack_tcp_timeout_close_wait
       net.netfilter.nf_conntrack_tcp_timeout_time_wait
       net.netfilter.nf_conntrack_tcp_timeout_established
       net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax
-      kernel.shmall vm.max_map_count
+      kernel.shmall fs.aio-max-nr fs.file-max fs.inotify.max_user_instances
+      fs.inotify.max_user_watches fs.nr_open vm.dirty_background_ratio
+      vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_writeback_centisecs
+      vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
+      vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
+      vm.min_free_kbytes
 
   Fields:
     cgroupMode: cgroup_mode specifies the cgroup mode to be used on the node.
@@ -4282,18 +4306,24 @@ class LinuxNodeConfig(_messages.Message):
       net.core.rmem_max net.core.rmem_default net.core.wmem_default
       net.core.wmem_max net.core.optmem_max net.core.somaxconn
       net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
-      net.netfilter.nf_conntrack_max net.netfilter.nf_conntrack_buckets
+      net.ipv4.tcp_max_orphans net.netfilter.nf_conntrack_max
+      net.netfilter.nf_conntrack_buckets
       net.netfilter.nf_conntrack_tcp_timeout_close_wait
       net.netfilter.nf_conntrack_tcp_timeout_time_wait
       net.netfilter.nf_conntrack_tcp_timeout_established
       net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax
-      kernel.shmall vm.max_map_count
+      kernel.shmall fs.aio-max-nr fs.file-max fs.inotify.max_user_instances
+      fs.inotify.max_user_watches fs.nr_open vm.dirty_background_ratio
+      vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_writeback_centisecs
+      vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
+      vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
+      vm.min_free_kbytes
     transparentHugepageDefrag: Optional. Defines the transparent hugepage
       defrag configuration on the node. VM hugepage allocation can be managed
       by either limiting defragmentation for delayed allocation or skipping it
       entirely for immediate allocation only. See
       https://docs.kernel.org/admin-guide/mm/transhuge.html for more details.
-    transparentHugepageEnabled: Optional. Transparent Hugepage Support for
+    transparentHugepageEnabled: Optional. Transparent hugepage support for
       anonymous memory can be entirely disabled (mostly for debugging
       purposes) or only enabled inside MADV_HUGEPAGE regions (to avoid the
       risk of consuming more memory resources) or enabled system wide. See
@@ -4317,15 +4347,16 @@ class LinuxNodeConfig(_messages.Message):
     CGROUP_MODE_V2 = 2
 
   class TransparentHugepageDefragValueValuesEnum(_messages.Enum):
-    r"""Optional. Defines the transparent hugepage defrag configuration on the
-    node. VM hugepage allocation can be managed by either limiting
-    defragmentation for delayed allocation or skipping it entirely for
-    immediate allocation only. See https://docs.kernel.org/admin-
-    guide/mm/transhuge.html for more details.
+    r"""Optional.
+
+    Defines the transparent hugepage defrag configuration on the node. VM
+    hugepage allocation can be managed by either limiting defragmentation for
+    delayed allocation or skipping it entirely for immediate allocation only.
+    See https://docs.kernel.org/admin- guide/mm/transhuge.html for more details.
 
     Values:
-      TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. This should not
-        be used.
+      TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. GKE will not
+        modify the kernel configuration.
       TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS: It means that an application
         requesting THP will stall on allocation failure and directly reclaim
         pages and compact memory in an effort to allocate a THP immediately.
@@ -4341,7 +4372,7 @@ class LinuxNodeConfig(_messages.Message):
         future.
       TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE: It means that an application will
         enter direct reclaim like always but only for regions that are have
-        used madvise(MADV_HUGEPAGE). This is the default behaviour for both.
+        used madvise(MADV_HUGEPAGE). This is the default kernel configuration.
       TRANSPARENT_HUGEPAGE_DEFRAG_NEVER: It means that an application will
         never enter direct reclaim or compaction.
     """
@@ -4353,20 +4384,23 @@ class LinuxNodeConfig(_messages.Message):
     TRANSPARENT_HUGEPAGE_DEFRAG_NEVER = 5
 
   class TransparentHugepageEnabledValueValuesEnum(_messages.Enum):
-    r"""Optional. Transparent Hugepage Support for anonymous memory can be
-    entirely disabled (mostly for debugging purposes) or only enabled inside
-    MADV_HUGEPAGE regions (to avoid the risk of consuming more memory
-    resources) or enabled system wide. See https://docs.kernel.org/admin-
-    guide/mm/transhuge.html for more details.
+    r"""Optional.
+
+    Transparent hugepage support for anonymous memory can be entirely disabled
+    (mostly for debugging purposes) or only enabled inside MADV_HUGEPAGE regions
+    (to avoid the risk of consuming more memory resources) or enabled system
+    wide. See https://docs.kernel.org/admin- guide/mm/transhuge.html for more
+    details.
 
     Values:
-      TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. This should not
-        be used.
-      TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent Hugepage support for
+      TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. GKE will not
+        modify the kernel configuration.
+      TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent hugepage support for
         anonymous memory is enabled system wide.
-      TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent Hugepage support for
-        anonymous memory is enabled inside MADV_HUGEPAGE regions.
-      TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent Hugepage support for
+      TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent hugepage support for
+        anonymous memory is enabled inside MADV_HUGEPAGE regions. This is the
+        default kernel configuration.
+      TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent hugepage support for
         anonymous memory is disabled.
     """
     TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED = 0
@@ -4377,17 +4411,23 @@ class LinuxNodeConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
+
     running on the nodes. The following parameters are supported.
     net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
     net.core.rmem_max net.core.rmem_default net.core.wmem_default
     net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
-    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse net.netfilter.nf_conntrack_max
-    net.netfilter.nf_conntrack_buckets
+    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse net.ipv4.tcp_max_orphans
+    net.netfilter.nf_conntrack_max net.netfilter.nf_conntrack_buckets
     net.netfilter.nf_conntrack_tcp_timeout_close_wait
     net.netfilter.nf_conntrack_tcp_timeout_time_wait
     net.netfilter.nf_conntrack_tcp_timeout_established
     net.netfilter.nf_conntrack_acct kernel.shmmni kernel.shmmax kernel.shmall
-    vm.max_map_count
+    fs.aio-max-nr fs.file-max fs.inotify.max_user_instances
+    fs.inotify.max_user_watches fs.nr_open vm.dirty_background_ratio
+    vm.dirty_expire_centisecs vm.dirty_ratio vm.dirty_writeback_centisecs
+    vm.max_map_count vm.overcommit_memory vm.overcommit_ratio
+    vm.vfs_cache_pressure vm.swappiness vm.watermark_scale_factor
+    vm.min_free_kbytes
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -7525,7 +7565,6 @@ class SecondaryBootDiskUpdateStrategy(_messages.Message):
   """
 
 
-
 class SecretManagerConfig(_messages.Message):
   r"""SecretManagerConfig is config for secret manager enablement.
 
@@ -7536,6 +7575,18 @@ class SecretManagerConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   rotationConfig = _messages.MessageField('RotationConfig', 2)
+
+
+class SecretSyncConfig(_messages.Message):
+  r"""Configuration for sync Secret Manager secrets as k8s secrets.
+
+  Fields:
+    enabled: Enable/Disable Secret Sync Config.
+    rotationConfig: Rotation config for secret manager.
+  """
+
+  enabled = _messages.BooleanField(1)
+  rotationConfig = _messages.MessageField('SyncRotationConfig', 2)
 
 
 class SecurityPostureConfig(_messages.Message):
@@ -8476,6 +8527,19 @@ class StatusCondition(_messages.Message):
   canonicalCode = _messages.EnumField('CanonicalCodeValueValuesEnum', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
   message = _messages.StringField(3)
+
+
+class SyncRotationConfig(_messages.Message):
+  r"""SyncRotationConfig is config for secret manager auto rotation.
+
+  Fields:
+    enabled: Whether the rotation is enabled.
+    rotationInterval: The interval between two consecutive rotations. Default
+      rotation interval is 2 minutes.
+  """
+
+  enabled = _messages.BooleanField(1)
+  rotationInterval = _messages.StringField(2)
 
 
 class TimeWindow(_messages.Message):

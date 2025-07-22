@@ -44,3 +44,14 @@ job:
     parameter_name: jobsId
     attribute_name: job
     help: The name of the Cloud Run job.
+
+workerpool:
+  name: workerpool
+  collection: run.projects.locations.workerpools
+  attributes:
+  - *project
+  - *region
+  - &workerpool
+    parameter_name: workerpoolsId
+    attribute_name: workerpool
+    help: The name of the Cloud Run worker pool.

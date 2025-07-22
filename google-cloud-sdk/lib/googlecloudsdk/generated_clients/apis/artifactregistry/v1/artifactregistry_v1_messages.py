@@ -234,6 +234,21 @@ class ArtifactregistryProjectsLocationsRepositoriesAttachmentsListRequest(_messa
   parent = _messages.StringField(4, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesCopyRepositoryRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesCopyRepositoryRequest
+  object.
+
+  Fields:
+    copyRepositoryRequest: A CopyRepositoryRequest resource to be passed as
+      the request body.
+    destinationRepository: Required. Repository to copy to. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+  """
+
+  copyRepositoryRequest = _messages.MessageField('CopyRepositoryRequest', 1)
+  destinationRepository = _messages.StringField(2, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesCreateRequest object.
 
@@ -1536,6 +1551,68 @@ class CommonRemoteRepository(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class CopyRepositoryMetadata(_messages.Message):
+  r"""The metadata for a copy repository long running operation, to understand
+  the progress of the repo copy.
+
+  Fields:
+    copyStartTime: The time that the request was received, and the time we
+      will copy from. Artifacts pushed after this time will not be copied.
+    destinationRepository: Repository being copied to. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+    packagesCopiedCount: The total number of packages successfully copied.
+    sourceRepository: Repository being copied from. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+    totalPackagesCount: The total number of packages in the repository.
+    totalVersionsCount: The total number of versions in the repository. You
+      can use this field to calculate the progress of the repository copy:
+      Progress % = (versions_copied_count / total_versions_count) * 100
+    versionsCopiedCount: The total number of versions successfully copied.
+  """
+
+  copyStartTime = _messages.StringField(1)
+  destinationRepository = _messages.StringField(2)
+  packagesCopiedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sourceRepository = _messages.StringField(4)
+  totalPackagesCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  totalVersionsCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  versionsCopiedCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class CopyRepositoryRequest(_messages.Message):
+  r"""The request for copying from another repository.
+
+  Fields:
+    sourceRepository: Required. Repository to copy from. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+  """
+
+  sourceRepository = _messages.StringField(1)
+
+
+class CopyRepositoryResponse(_messages.Message):
+  r"""The response for copying from another repository.
+
+  Fields:
+    copyStartTime: The time that the request was received, and the time we
+      will copy from. Artifacts pushed after this time will not be copied.
+    destinationRepository: Repository copied to. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+    packagesCopiedCount: The total number of packages successfully copied.
+      This equals the number of packages in the source repository.
+    sourceRepository: Repository copied from. Format:
+      projects/{project}/locations/{location}/repositories/{repository}
+    versionsCopiedCount: The total number of versions successfully copied.
+      This equals the number of versions in the source repository.
+  """
+
+  copyStartTime = _messages.StringField(1)
+  destinationRepository = _messages.StringField(2)
+  packagesCopiedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sourceRepository = _messages.StringField(4)
+  versionsCopiedCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class DockerImage(_messages.Message):
   r"""DockerImage represents a docker artifact. The following fields are
   returned as untyped metadata in the Version resource, using camelcase keys
@@ -1558,7 +1635,7 @@ class DockerImage(_messages.Message):
       returned as the 'metadata.mediaType' field in the Version resource.
     name: Required. registry_location, project_id, repository_name and image
       id forms a unique image
-      name:`projects//locations//repository//dockerImages/`. For example,
+      name:`projects//locations//repositories//dockerImages/`. For example,
       "projects/test-project/locations/us-west4/repositories/test-
       repo/dockerImages/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4
       bf072163515467d6a823c7cf", where "us-west4" is the registry_location,

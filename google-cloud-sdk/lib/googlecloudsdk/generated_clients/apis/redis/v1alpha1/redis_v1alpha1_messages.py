@@ -277,6 +277,17 @@ class BackupConfiguration(_messages.Message):
   pointInTimeRecoveryEnabled = _messages.BooleanField(3)
 
 
+class BackupDRConfiguration(_messages.Message):
+  r"""BackupDRConfiguration to capture the backup and disaster recovery
+  details of database resource.
+
+  Fields:
+    backupdrManaged: Indicates if the resource is managed by BackupDR.
+  """
+
+  backupdrManaged = _messages.BooleanField(1)
+
+
 class BackupFile(_messages.Message):
   r"""Backup is consisted of multiple backup files.
 
@@ -402,6 +413,11 @@ class Cluster(_messages.Message):
       mutable Redis Configs
 
   Fields:
+    allowFewerZonesDeployment: Optional. Immutable. Allows customers to
+      specify if they are okay with deploying a multi-zone cluster in less
+      than 3 zones. Once set, if there is a zonal outage during the cluster
+      creation, the cluster will only be deployed in 2 zones, and stay within
+      the 2 zones for its lifecycle.
     asyncClusterEndpointsDeletionEnabled: Optional. If true, cluster endpoints
       that are created and registered by customers can be deleted
       asynchronously. That is, such a cluster endpoint can be de-registered
@@ -575,46 +591,47 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  asyncClusterEndpointsDeletionEnabled = _messages.BooleanField(1)
-  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
-  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 3)
-  availableMaintenanceVersions = _messages.StringField(4, repeated=True)
-  backupCollection = _messages.StringField(5)
-  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 6, repeated=True)
-  createTime = _messages.StringField(7)
-  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 8)
-  deletionProtectionEnabled = _messages.BooleanField(9)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 10, repeated=True)
-  effectiveMaintenanceVersion = _messages.StringField(11)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 12)
-  gcsSource = _messages.MessageField('GcsBackupSource', 13)
-  kmsKey = _messages.StringField(14)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 15)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 16)
-  maintenanceVersion = _messages.StringField(17)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 18)
-  name = _messages.StringField(19)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 20)
-  ondemandMaintenance = _messages.BooleanField(21)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 22)
-  preciseSizeGb = _messages.FloatField(23)
-  primaryZones = _messages.StringField(24, repeated=True)
-  pscConfigs = _messages.MessageField('PscConfig', 25, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 26, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 27, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 28)
-  replicaCount = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(30)
-  satisfiesPzs = _messages.BooleanField(31)
-  shardCount = _messages.IntegerField(32, variant=_messages.Variant.INT32)
-  simulateMaintenanceEvent = _messages.BooleanField(33)
-  sizeGb = _messages.IntegerField(34, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 35)
-  stateInfo = _messages.MessageField('StateInfo', 36)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 37)
-  uid = _messages.StringField(38)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 39)
-  zones = _messages.StringField(40, repeated=True)
+  allowFewerZonesDeployment = _messages.BooleanField(1)
+  asyncClusterEndpointsDeletionEnabled = _messages.BooleanField(2)
+  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 3)
+  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 4)
+  availableMaintenanceVersions = _messages.StringField(5, repeated=True)
+  backupCollection = _messages.StringField(6)
+  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 7, repeated=True)
+  createTime = _messages.StringField(8)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 9)
+  deletionProtectionEnabled = _messages.BooleanField(10)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 11, repeated=True)
+  effectiveMaintenanceVersion = _messages.StringField(12)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 13)
+  gcsSource = _messages.MessageField('GcsBackupSource', 14)
+  kmsKey = _messages.StringField(15)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 16)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 17)
+  maintenanceVersion = _messages.StringField(18)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 19)
+  name = _messages.StringField(20)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 21)
+  ondemandMaintenance = _messages.BooleanField(22)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 23)
+  preciseSizeGb = _messages.FloatField(24)
+  primaryZones = _messages.StringField(25, repeated=True)
+  pscConfigs = _messages.MessageField('PscConfig', 26, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 27, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 28, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 29)
+  replicaCount = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(31)
+  satisfiesPzs = _messages.BooleanField(32)
+  shardCount = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(34)
+  sizeGb = _messages.IntegerField(35, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 36)
+  stateInfo = _messages.MessageField('StateInfo', 37)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 38)
+  uid = _messages.StringField(39)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 40)
+  zones = _messages.StringField(41, repeated=True)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -723,16 +740,18 @@ class ClusterWeeklyMaintenanceWindow(_messages.Message):
   r"""Time window specified for weekly operations.
 
   Enums:
-    DayValueValuesEnum: Allows to define schedule that runs specified day of
-      the week.
+    DayValueValuesEnum: Optional. Allows to define schedule that runs
+      specified day of the week.
 
   Fields:
-    day: Allows to define schedule that runs specified day of the week.
-    startTime: Start time of the window in UTC.
+    day: Optional. Allows to define schedule that runs specified day of the
+      week.
+    startTime: Optional. Start time of the window in UTC.
   """
 
   class DayValueValuesEnum(_messages.Enum):
-    r"""Allows to define schedule that runs specified day of the week.
+    r"""Optional. Allows to define schedule that runs specified day of the
+    week.
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
@@ -771,6 +790,51 @@ class Compliance(_messages.Message):
   version = _messages.StringField(2)
 
 
+class ConfigBasedSignalData(_messages.Message):
+  r"""Config based signal data. This is used to send signals to Condor which
+  are based on the DB level configurations. These will be used to send signals
+  for self managed databases.
+
+  Enums:
+    SignalTypeValueValuesEnum: Required. Signal type of the signal
+
+  Fields:
+    fullResourceName: Required. Full Resource name of the source resource.
+    lastRefreshTime: Required. Last time signal was refreshed
+    resourceId: Database resource id.
+    signalBoolValue: Signal data for boolean signals.
+    signalType: Required. Signal type of the signal
+  """
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Signal type of the signal
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified signal type.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated Minor Version
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a database has a password
+        configured for the root account or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 1
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 2
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 3
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 4
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 5
+
+  fullResourceName = _messages.StringField(1)
+  lastRefreshTime = _messages.StringField(2)
+  resourceId = _messages.MessageField('DatabaseResourceId', 3)
+  signalBoolValue = _messages.BooleanField(4)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 5)
+
+
 class ConnectionDetail(_messages.Message):
   r"""Detailed information of each PSC connection.
 
@@ -789,11 +853,12 @@ class CrossClusterReplicationConfig(_messages.Message):
   r"""Cross cluster replication config.
 
   Enums:
-    ClusterRoleValueValuesEnum: The role of the cluster in cross cluster
-      replication.
+    ClusterRoleValueValuesEnum: Output only. The role of the cluster in cross
+      cluster replication.
 
   Fields:
-    clusterRole: The role of the cluster in cross cluster replication.
+    clusterRole: Output only. The role of the cluster in cross cluster
+      replication.
     membership: Output only. An output only view of all the member clusters
       participating in the cross cluster replication. This view will be
       provided by every member cluster irrespective of its cluster
@@ -814,7 +879,7 @@ class CrossClusterReplicationConfig(_messages.Message):
   """
 
   class ClusterRoleValueValuesEnum(_messages.Enum):
-    r"""The role of the cluster in cross cluster replication.
+    r"""Output only. The role of the cluster in cross cluster replication.
 
     Values:
       CLUSTER_ROLE_UNSPECIFIED: Cluster role is not set. The behavior is
@@ -856,12 +921,14 @@ class CustomMetadataData(_messages.Message):
 
 class DatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
-  different database resource level events into Condor platform.
+  different database resource level events into Condor platform. Next ID: 9
 
   Enums:
     FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
 
   Fields:
+    configBasedSignalData: Config based signal data is used to ingest signals
+      that are generated based on the configuration of the database resource.
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
     observabilityMetricData: A ObservabilityMetricData attribute.
@@ -882,20 +949,23 @@ class DatabaseResourceFeed(_messages.Message):
       OBSERVABILITY_DATA: Database resource monitoring data
       SECURITY_FINDING_DATA: Database resource security health signal data
       RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
+      CONFIG_BASED_SIGNAL_DATA: Database config based signal data
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
     OBSERVABILITY_DATA = 2
     SECURITY_FINDING_DATA = 3
     RECOMMENDATION_SIGNAL_DATA = 4
+    CONFIG_BASED_SIGNAL_DATA = 5
 
-  feedTimestamp = _messages.StringField(1)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
-  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 3)
-  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 4)
-  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 5)
-  resourceId = _messages.MessageField('DatabaseResourceId', 6)
-  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 7)
+  configBasedSignalData = _messages.MessageField('ConfigBasedSignalData', 1)
+  feedTimestamp = _messages.StringField(2)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 3)
+  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 4)
+  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 5)
+  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 6)
+  resourceId = _messages.MessageField('DatabaseResourceId', 7)
+  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 8)
 
 
 class DatabaseResourceHealthSignalData(_messages.Message):
@@ -929,6 +999,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     externalUri: The external-uri of the signal, using which more information
       about this signal can be obtained. In GCP, this will take user to SCC
       page to get more details about signals.
+    location: This is used to identify the location of the resource. Example:
+      "us-central1"
     name: Required. The name of the signal, ex: PUBLIC_SQL_INSTANCE,
       SQL_LOG_ERROR_VERBOSITY etc.
     provider: Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
@@ -1241,6 +1313,9 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         not satisfied.
       SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
         satisfied.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
+      SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED: Schema not optimized.
+      SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1338,6 +1413,9 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
     SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
     SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
+    SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED = 97
+    SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1384,15 +1462,16 @@ class DatabaseResourceHealthSignalData(_messages.Message):
   description = _messages.StringField(3)
   eventTime = _messages.StringField(4)
   externalUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  provider = _messages.EnumField('ProviderValueValuesEnum', 7)
-  resourceContainer = _messages.StringField(8)
-  resourceName = _messages.StringField(9)
-  signalClass = _messages.EnumField('SignalClassValueValuesEnum', 10)
-  signalId = _messages.StringField(11)
-  signalSeverity = _messages.EnumField('SignalSeverityValueValuesEnum', 12)
-  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  location = _messages.StringField(6)
+  name = _messages.StringField(7)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 8)
+  resourceContainer = _messages.StringField(9)
+  resourceName = _messages.StringField(10)
+  signalClass = _messages.EnumField('SignalClassValueValuesEnum', 11)
+  signalId = _messages.StringField(12)
+  signalSeverity = _messages.EnumField('SignalSeverityValueValuesEnum', 13)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class DatabaseResourceId(_messages.Message):
@@ -1409,13 +1488,17 @@ class DatabaseResourceId(_messages.Message):
     providerDescription: Optional. Needs to be used only when the provider is
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
-      redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
-      alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
+      go/keep-sorted start alloydb.googleapis.com/Cluster,
+      alloydb.googleapis.com/Instance, bigtableadmin.googleapis.com/Cluster,
+      bigtableadmin.googleapis.com/Instance compute.googleapis.com/Instance
+      firestore.googleapis.com/Database, redis.googleapis.com/Instance,
+      redis.googleapis.com/Cluster,
+      oracledatabase.googleapis.com/CloudExadataInfrastructure
+      oracledatabase.googleapis.com/CloudVmCluster
+      oracledatabase.googleapis.com/AutonomousDatabase
       spanner.googleapis.com/Instance, spanner.googleapis.com/Database,
-      firestore.googleapis.com/Database, sqladmin.googleapis.com/Instance,
-      bigtableadmin.googleapis.com/Cluster,
-      bigtableadmin.googleapis.com/Instance REQUIRED Please refer go/condor-
-      common-datamodel
+      sqladmin.googleapis.com/Instance, go/keep-sorted end REQUIRED Please
+      refer go/condor-common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -1452,7 +1535,7 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 25
+  r"""Common model for database resource instance metadata. Next ID: 26
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -1471,6 +1554,7 @@ class DatabaseResourceMetadata(_messages.Message):
     availabilityConfiguration: Availability configuration for this instance
     backupConfiguration: Backup configuration for this instance
     backupRun: Latest backup run information for this instance
+    backupdrConfiguration: Optional. BackupDR Configuration for the resource.
     creationTime: The creation time of the resource, i.e. the time when
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
@@ -1619,26 +1703,27 @@ class DatabaseResourceMetadata(_messages.Message):
   availabilityConfiguration = _messages.MessageField('AvailabilityConfiguration', 1)
   backupConfiguration = _messages.MessageField('BackupConfiguration', 2)
   backupRun = _messages.MessageField('BackupRun', 3)
-  creationTime = _messages.StringField(4)
-  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
-  customMetadata = _messages.MessageField('CustomMetadataData', 6)
-  edition = _messages.EnumField('EditionValueValuesEnum', 7)
-  entitlements = _messages.MessageField('Entitlement', 8, repeated=True)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 9)
-  gcbdrConfiguration = _messages.MessageField('GCBDRConfiguration', 10)
-  id = _messages.MessageField('DatabaseResourceId', 11)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
-  location = _messages.StringField(13)
-  machineConfiguration = _messages.MessageField('MachineConfiguration', 14)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 15)
-  primaryResourceLocation = _messages.StringField(16)
-  product = _messages.MessageField('Product', 17)
-  resourceContainer = _messages.StringField(18)
-  resourceName = _messages.StringField(19)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 20)
-  tagsSet = _messages.MessageField('Tags', 21)
-  updationTime = _messages.StringField(22)
-  userLabelSet = _messages.MessageField('UserLabels', 23)
+  backupdrConfiguration = _messages.MessageField('BackupDRConfiguration', 4)
+  creationTime = _messages.StringField(5)
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 6)
+  customMetadata = _messages.MessageField('CustomMetadataData', 7)
+  edition = _messages.EnumField('EditionValueValuesEnum', 8)
+  entitlements = _messages.MessageField('Entitlement', 9, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 10)
+  gcbdrConfiguration = _messages.MessageField('GCBDRConfiguration', 11)
+  id = _messages.MessageField('DatabaseResourceId', 12)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
+  location = _messages.StringField(14)
+  machineConfiguration = _messages.MessageField('MachineConfiguration', 15)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 16)
+  primaryResourceLocation = _messages.StringField(17)
+  product = _messages.MessageField('Product', 18)
+  resourceContainer = _messages.StringField(19)
+  resourceName = _messages.StringField(20)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 21)
+  tagsSet = _messages.MessageField('Tags', 22)
+  updationTime = _messages.StringField(23)
+  userLabelSet = _messages.MessageField('UserLabels', 24)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -1927,6 +2012,9 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         not satisfied.
       SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
         satisfied.
+      SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
+      SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED: Schema not optimized.
+      SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -2024,6 +2112,9 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_HIGH_READ_PRESSURE = 93
     SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
     SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
+    SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
+    SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED = 97
+    SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -3551,6 +3642,9 @@ class Product(_messages.Message):
 
   Fields:
     engine: The specific engine that the underlying database is running.
+    minorVersion: Minor version of the underlying database engine. Example
+      values: For MySQL, it could be "8.0.32", "5.7.32" etc.. For Postgres, it
+      could be "14.3", "15.3" etc..
     type: Type of specific database product. It could be CloudSQL, AlloyDB
       etc..
     version: Version of the underlying database engine. Example values: For
@@ -3585,6 +3679,10 @@ class Product(_messages.Message):
         be when engine is known, but it is not present in this enum.
       ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
       ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
+      ENGINE_FIRESTORE_WITH_MONGODB_COMPATIBILITY_MODE: Firestore with MongoDB
+        compatibility mode.
+      ENGINE_EXADATA_ORACLE: Oracle Exadata engine.
+      ENGINE_ADB_SERVERLESS_ORACLE: Oracle Autonomous DB Serverless engine.
     """
     ENGINE_UNSPECIFIED = 0
     ENGINE_MYSQL = 1
@@ -3602,6 +3700,9 @@ class Product(_messages.Message):
     ENGINE_OTHER = 13
     ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
     ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
+    ENGINE_FIRESTORE_WITH_MONGODB_COMPATIBILITY_MODE = 16
+    ENGINE_EXADATA_ORACLE = 17
+    ENGINE_ADB_SERVERLESS_ORACLE = 18
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -3620,6 +3721,7 @@ class Product(_messages.Message):
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
       PRODUCT_TYPE_COMPUTE_ENGINE: Compute Engine self managed databases
+      PRODUCT_TYPE_ORACLE_ON_GCP: Oracle product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -3635,11 +3737,13 @@ class Product(_messages.Message):
     PRODUCT_TYPE_BIGTABLE = 9
     PRODUCT_TYPE_FIRESTORE = 10
     PRODUCT_TYPE_COMPUTE_ENGINE = 11
-    PRODUCT_TYPE_OTHER = 12
+    PRODUCT_TYPE_ORACLE_ON_GCP = 12
+    PRODUCT_TYPE_OTHER = 13
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-  version = _messages.StringField(3)
+  minorVersion = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  version = _messages.StringField(4)
 
 
 class PscAutoConnection(_messages.Message):
@@ -3747,7 +3851,8 @@ class PscConnection(_messages.Message):
       east1/forwardingRules/{resourceId}.
     network: Required. The consumer network where the IP address resides, in
       the form of projects/{project_id}/global/networks/{network_id}.
-    port: Output only. The port number of the exposed discovery endpoint.
+    port: Output only. port will only be set for Primary/Reader or Discovery
+      endpoint.
     projectId: Optional. Project ID of the consumer project where the
       forwarding rule is created in.
     pscConnectionId: Required. The PSC connection id of the forwarding rule
@@ -4431,8 +4536,8 @@ class RemoteCluster(_messages.Message):
   cluster replication setup.
 
   Fields:
-    cluster: The full resource path of the remote cluster in the format:
-      projects//locations//clusters/
+    cluster: Output only. The full resource path of the remote cluster in the
+      format: projects//locations//clusters/
     uid: Output only. The unique identifier of the remote cluster.
   """
 

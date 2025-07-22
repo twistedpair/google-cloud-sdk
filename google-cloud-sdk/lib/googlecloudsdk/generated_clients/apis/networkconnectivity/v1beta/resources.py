@@ -95,24 +95,27 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MIATAS = (
-      'projects.locations.miatas',
+  PROJECTS_LOCATIONS_MULTICLOUDDATATRANSFERCONFIGS = (
+      'projects.locations.multicloudDataTransferConfigs',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/miatas/'
-              '{miatasId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicloudDataTransferConfigs/'
+              '{multicloudDataTransferConfigsId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MIATAS_MIATADESTINATIONS = (
-      'projects.locations.miatas.miataDestinations',
+  PROJECTS_LOCATIONS_MULTICLOUDDATATRANSFERCONFIGS_DESTINATIONS = (
+      'projects.locations.multicloudDataTransferConfigs.destinations',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/miatas/'
-              '{miatasId}/miataDestinations/{miataDestinationsId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicloudDataTransferConfigs/'
+              '{multicloudDataTransferConfigsId}/destinations/'
+              '{destinationsId}',
       },
       ['name'],
       True

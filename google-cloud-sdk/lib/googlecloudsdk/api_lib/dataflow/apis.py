@@ -703,13 +703,24 @@ class Templates:
         'rm -rf /var/lib/apt/lists/*',
     ]
 
-    env['FLEX_TEMPLATE_PYTHON_PY_FILE'] = '/template/{}'.format(
-        (env['FLEX_TEMPLATE_PYTHON_PY_FILE']))
+    env['FLEX_TEMPLATE_PYTHON_PY_FILE'] = (
+        f'/template/{env["FLEX_TEMPLATE_PYTHON_PY_FILE"]}'
+    )
+    if 'FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES' in env:
+      env['FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES'] = (
+          f'/template/{env["FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES"]}'
+      )
+      commands.append(
+          f'pip install {env["FLEX_TEMPLATE_PYTHON_EXTRA_PACKAGES"]}'
+      )
     if 'FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE' in env:
-      env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'] = '/template/{}'.format(
-          env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'])
-      commands.append('pip install --no-cache-dir -U -r {}'.format(
-          env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE']))
+      env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'] = (
+          f'/template/{env["FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE"]}'
+      )
+      commands.append(
+          'pip install --no-cache-dir -U -r'
+          f' {env["FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE"]}'
+      )
       commands.append(
           '(pip check || (e=$?; echo "Building a container with incompatible'
           ' dependencies is prevented by default. If you are sure you want to'
@@ -718,8 +729,9 @@ class Templates:
           ' exit $e))'
       )
     if 'FLEX_TEMPLATE_PYTHON_SETUP_FILE' in env:
-      env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'] = '/template/{}'.format(
-          env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'])
+      env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'] = (
+          f'/template/{env["FLEX_TEMPLATE_PYTHON_SETUP_FILE"]}'
+      )
 
     envs = ['ENV {}={}'.format(k, v) for k, v in sorted(env.items())]
     env_list = '\n'.join(envs)

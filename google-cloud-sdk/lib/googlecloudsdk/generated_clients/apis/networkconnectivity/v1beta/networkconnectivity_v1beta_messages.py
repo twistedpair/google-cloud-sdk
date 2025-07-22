@@ -233,25 +233,98 @@ class GoogleCloudNetworkconnectivityV1betaDeactivateSpokeRequest(_messages.Messa
   requestId = _messages.StringField(1)
 
 
-class GoogleCloudNetworkconnectivityV1betaEndpoint(_messages.Message):
-  r"""The metadata for a Miata Endpoint.
+class GoogleCloudNetworkconnectivityV1betaDestination(_messages.Message):
+  r"""The Destination resource.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the Destination was created.
+    description: Optional. An optional field to provide a description of this
+      resource.
+    endpoints: Required. Unordered list. The list of Endpoints configured for
+      the IP Prefix.
+    etag: The etag is computed by the server, and may be sent on update and
+      delete requests to ensure the client has an up-to-date value before
+      proceeding.
+    ipPrefix: Required. Immutable. Remote IP Prefix in the remote CSP, where
+      the customer's workload is located
+    labels: Optional. User-defined labels.
+    name: Identifier. The name of the Destination resource. Format: `projects/
+      {project}/locations/{location}/multicloudDataTransferConfigs/{multicloud
+      _data_transfer_config}/destinations/{destination}`.
+    stateTimeline: Output only. The timeline of the expected Destination
+      states or the current rest state. If a state change is expected, the
+      value will be the list of ADDING, DELETING or SUSPENDING statesdepending
+      on the actions taken. Example: "state_timeline": { "states": [ {
+      "state": "ADDING", // The time when the Destination will be activated.
+      "effective_time": "2024-12-01T08:00:00Z" }, { "state": "SUSPENDING", //
+      The time when the Destination will be suspended. "effective_time":
+      "2024-12-01T20:00:00Z" } ] }
+    uid: Output only. The Google-generated UUID for the destination. This
+      value is unique across all destination resources. If a destination is
+      deleted and another with the same name is created, the new destination
+      is assigned a different uid.
+    updateTime: Output only. Time when the Destination was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  endpoints = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaDestinationEndpoint', 3, repeated=True)
+  etag = _messages.StringField(4)
+  ipPrefix = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  stateTimeline = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateTimeline', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class GoogleCloudNetworkconnectivityV1betaDestinationEndpoint(_messages.Message):
+  r"""The metadata for a DestinationEndpoint.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the Miata Endpoint.
+    StateValueValuesEnum: Output only. The state of the Endpoint.
 
   Fields:
     asn: Required. The ASN of the remote IP Prefix.
     csp: Required. The name of the CSP of the remote IP Prefix.
-    state: Output only. The state of the Miata Endpoint.
+    state: Output only. The state of the Endpoint.
+    updateTime: Output only. Time when the DestinationEndpoint was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the Miata Endpoint.
+    r"""Output only. The state of the Endpoint.
 
     Values:
       STATE_UNSPECIFIED: An invalid state as the default case.
-      VALID: The Miata Endpoint is valid.
-      INVALID: The Miata Endpoint is invalid.
+      VALID: The Endpoint is valid.
+      INVALID: The Endpoint is invalid.
     """
     STATE_UNSPECIFIED = 0
     VALID = 1
@@ -260,6 +333,7 @@ class GoogleCloudNetworkconnectivityV1betaEndpoint(_messages.Message):
   asn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   csp = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaExportPscConfig(_messages.Message):
@@ -656,9 +730,10 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
       /{hub_id}/routeTables/{route_table_id}` This field is read-only. Network
       Connectivity Center automatically populates it based on the route tables
       nested under the hub.
-    routingVpcs: The VPC networks associated with this hub's spokes. This
-      field is read-only. Network Connectivity Center automatically populates
-      it based on the set of spokes attached to the hub.
+    routingVpcs: Output only. The VPC networks associated with this hub's
+      spokes. This field is read-only. Network Connectivity Center
+      automatically populates it based on the set of spokes attached to the
+      hub.
     spokeSummary: Output only. A summary of the spokes associated with a hub.
       The summary includes a count of spokes according to type and according
       to state. If any spokes are inactive, the summary also lists the reasons
@@ -853,9 +928,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
   capable of advertising the same prefixes.
 
   Fields:
-    includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub (does not control transit connectivity). The only
-      allowed value for now is "ALL_IPV4_RANGES".
+    includeImportRanges: Optional. Hub routes fully encompassed by include
+      import ranges are included during import from hub.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -887,7 +961,7 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
     producerNetwork: Output only. The URI of the Producer VPC.
     proposedExcludeExportRanges: Output only. The proposed exclude export IP
       ranges waiting for hub administration's approval.
-    proposedIncludeExportRanges: Optional. The proposed include export IP
+    proposedIncludeExportRanges: Output only. The proposed include export IP
       ranges waiting for hub administration's approval.
     serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
   """
@@ -909,9 +983,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
   with the same spoke.
 
   Fields:
-    includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub (does not control transit connectivity). The only
-      allowed value for now is "ALL_IPV4_RANGES".
+    includeImportRanges: Optional. Hub routes fully encompassed by include
+      import ranges are included during import from hub.
     instances: The list of router appliance instances.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
@@ -944,7 +1017,7 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
       of these producer VPC spokes are connected to the NCC Hub.
     proposedExcludeExportRanges: Output only. The proposed exclude export IP
       ranges waiting for hub administration's approval.
-    proposedIncludeExportRanges: Optional. The proposed include export IP
+    proposedIncludeExportRanges: Output only. The proposed include export IP
       ranges waiting for hub administration's approval.
     uri: Required. The URI of the VPC network resource.
   """
@@ -964,9 +1037,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
   be capable of advertising the same prefixes.
 
   Fields:
-    includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub (does not control transit connectivity). The only
-      allowed value for now is "ALL_IPV4_RANGES".
+    includeImportRanges: Optional. Hub routes fully encompassed by include
+      import ranges are included during import from hub.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -980,6 +1052,20 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
   siteToSiteDataTransfer = _messages.BooleanField(2)
   uris = _messages.StringField(3, repeated=True)
   vpcNetwork = _messages.StringField(4)
+
+
+class GoogleCloudNetworkconnectivityV1betaListDestinationsResponse(_messages.Message):
+  r"""Response message for ListDestinations.
+
+  Fields:
+    destinations: Destinations to be returned.
+    nextPageToken: The next page token.
+    unreachable: Locations that could not be reached.
+  """
+
+  destinations = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaDestination', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudNetworkconnectivityV1betaListGatewayAdvertisedRoutesResponse(_messages.Message):
@@ -1047,30 +1133,17 @@ class GoogleCloudNetworkconnectivityV1betaListHubsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class GoogleCloudNetworkconnectivityV1betaListMiataDestinationsResponse(_messages.Message):
-  r"""Response message for ListMiataDestinations.
+class GoogleCloudNetworkconnectivityV1betaListMulticloudDataTransferConfigsResponse(_messages.Message):
+  r"""Response message for ListMulticloudDataTransferConfigs.
 
   Fields:
-    miataDestinations: MiataDestinations to be returned.
+    multicloudDataTransferConfigs: MulticloudDataTransferConfigs to be
+      returned.
     nextPageToken: The next page token.
     unreachable: Locations that could not be reached.
   """
 
-  miataDestinations = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMiataDestination', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class GoogleCloudNetworkconnectivityV1betaListMiatasResponse(_messages.Message):
-  r"""Response message for ListMiatas.
-
-  Fields:
-    miatas: Miatas to be returned.
-    nextPageToken: The next page token.
-    unreachable: Locations that could not be reached.
-  """
-
-  miatas = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMiata', 1, repeated=True)
+  multicloudDataTransferConfigs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -1184,9 +1257,9 @@ class GoogleCloudNetworkconnectivityV1betaLocationMetadata(_messages.Message):
   locationFeatures = _messages.EnumField('LocationFeaturesValueListEntryValuesEnum', 1, repeated=True)
 
 
-class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
-  r"""The Miata resource. This lists the services for which customer is opting
-  in for Miata.
+class GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig(_messages.Message):
+  r"""The MulticloudDataTransferConfig resource. This lists the services for
+  which customer is opting in for Multicloud Data Transfer.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
@@ -1199,19 +1272,21 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
       storage": { "states": [ { "state": "ACTIVE", } ] } }
 
   Fields:
-    createTime: Output only. Time when the Miata was created.
+    createTime: Output only. Time when the MulticloudDataTransferConfig was
+      created.
     description: Optional. An optional field to provide a description of this
       resource.
+    destinationsActiveCount: Output only. The number of Destinations in use
+      under the MulticloudDataTransferConfig resource.
+    destinationsCount: Output only. The number of Destinations configured
+      under the MulticloudDataTransferConfig resource.
     etag: The etag is computed by the server, and may be sent on update and
       delete requests to ensure the client has an up-to-date value before
       proceeding.
     labels: Optional. User-defined labels.
-    miataDestinationsActiveCount: Output only. The number of MiataDestinations
-      in use under the Miata resource.
-    miataDestinationsCount: Output only. The number of MiataDestinations
-      configured under the Miata resource.
-    name: Identifier. The name of the Miata resource. Format:
-      `projects/{project}/locations/{location}/miatas/{miata}`.
+    name: Identifier. The name of the MulticloudDataTransferConfig resource.
+      Format: `projects/{project}/locations/{location}/multicloudDataTransferC
+      onfigs/{multicloud_data_transfer_config}`.
     services: Optional. This map services to either their current or planned
       states. Service names are keys, and the associated values describe the
       service's state. If a state change is expected, the value will be the
@@ -1219,7 +1294,14 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
       Example: "services": { "big-query": { "states": [ { "state": "ADDING",
       "effective_time": "2024-12-12T08:00:00Z" }, ] }, "cloud-storage": {
       "states": [ { "state": "ACTIVE", } ] } }
-    updateTime: Output only. Time when the Miata was updated.
+    uid: Output only. The Google-generated UUID for the
+      MulticloudDataTransferConfig. This value is unique across all
+      MulticloudDataTransferConfig resources. If a
+      MulticloudDataTransferConfig is deleted and another with the same name
+      is created, the new MulticloudDataTransferConfig is assigned a different
+      uid.
+    updateTime: Output only. Time when the MulticloudDataTransferConfig was
+      updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1278,80 +1360,14 @@ class GoogleCloudNetworkconnectivityV1betaMiata(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  miataDestinationsActiveCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  miataDestinationsCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  name = _messages.StringField(7)
-  services = _messages.MessageField('ServicesValue', 8)
-  updateTime = _messages.StringField(9)
-
-
-class GoogleCloudNetworkconnectivityV1betaMiataDestination(_messages.Message):
-  r"""The MiataDestination resource.
-
-  Messages:
-    LabelsValue: Optional. User-defined labels.
-
-  Fields:
-    createTime: Output only. Time when the MiataDestination was created.
-    description: Optional. An optional field to provide a description of this
-      resource.
-    endpoints: Unordered list. The list of Miata Endpoints configured for the
-      IP Prefix.
-    etag: The etag is computed by the server, and may be sent on update and
-      delete requests to ensure the client has an up-to-date value before
-      proceeding.
-    ipPrefix: Required. Immutable. Remote IP Prefix in the remote CSP, where
-      the customer's workload is located
-    labels: Optional. User-defined labels.
-    name: Identifier. The name of the MiataDestination resource. Format: `proj
-      ects/{project}/locations/{location}/miatas/{miata}/miataDestinations/{mi
-      ata_destination}`.
-    stateTimeline: Output only. The timeline of the expected MiataDestination
-      states or the current rest state. If a state change is expected, the
-      value will be the list of ADDING, DELETING or SUSPENDING statesdepending
-      on the actions taken. Example: "state_timeline": { "states": [ {
-      "state": "ADDING", // The time when the MiataDestination will be
-      activated. "effective_time": "2024-12-01T08:00:00Z" }, { "state":
-      "SUSPENDING", // The time when the MiataDestination will be suspended.
-      "effective_time": "2024-12-01T20:00:00Z" } ] }
-    updateTime: Output only. Time when the MiataDestination was updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. User-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  endpoints = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaEndpoint', 3, repeated=True)
-  etag = _messages.StringField(4)
-  ipPrefix = _messages.StringField(5)
+  destinationsActiveCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  destinationsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  etag = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  stateTimeline = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateTimeline', 8)
-  updateTime = _messages.StringField(9)
+  services = _messages.MessageField('ServicesValue', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudNetworkconnectivityV1betaNextHopInterconnectAttachment(_messages.Message):
@@ -3766,15 +3782,17 @@ class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
 
 
-class NetworkconnectivityProjectsLocationsMiatasCreateRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasCreateRequest object.
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsCreat
+  eRequest object.
 
   Fields:
-    googleCloudNetworkconnectivityV1betaMiata: A
-      GoogleCloudNetworkconnectivityV1betaMiata resource to be passed as the
-      request body.
-    miataId: Optional. The ID to use for the Miata, which will become the
-      final component of the Miata's resource name.
+    googleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig: A
+      GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig
+      resource to be passed as the request body.
+    multicloudDataTransferConfigId: Required. The ID to use for the
+      MulticloudDataTransferConfig, which will become the final component of
+      the MulticloudDataTransferConfig's resource name.
     parent: Required. The parent resource's name
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -3784,25 +3802,28 @@ class NetworkconnectivityProjectsLocationsMiatasCreateRequest(_messages.Message)
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate Miatas. The
-      request ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+      This prevents clients from accidentally creating duplicate
+      MulticloudDataTransferConfigs. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
-  googleCloudNetworkconnectivityV1betaMiata = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMiata', 1)
-  miataId = _messages.StringField(2)
+  googleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig', 1)
+  multicloudDataTransferConfigId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
 
 
-class NetworkconnectivityProjectsLocationsMiatasDeleteRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasDeleteRequest object.
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDelet
+  eRequest object.
 
   Fields:
     etag: Optional. The etag is computed by the server, and may be sent on
       update and delete requests to ensure the client has an up-to-date value
       before proceeding.
-    name: Required. The name of the Miata resource to delete.
+    name: Required. The name of the MulticloudDataTransferConfig resource to
+      delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3811,9 +3832,10 @@ class NetworkconnectivityProjectsLocationsMiatasDeleteRequest(_messages.Message)
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate Miatas. The
-      request ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+      This prevents clients from accidentally creating duplicate
+      MulticloudDataTransferConfigs. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   etag = _messages.StringField(1)
@@ -3821,18 +3843,76 @@ class NetworkconnectivityProjectsLocationsMiatasDeleteRequest(_messages.Message)
   requestId = _messages.StringField(3)
 
 
-class NetworkconnectivityProjectsLocationsMiatasGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasGetRequest object.
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDesti
+  nationsCreateRequest object.
 
   Fields:
-    name: Required. Name of the Miata to get.
+    destinationId: Required. The ID to use for the Destination, which will
+      become the final component of the Destination's resource name.
+    googleCloudNetworkconnectivityV1betaDestination: A
+      GoogleCloudNetworkconnectivityV1betaDestination resource to be passed as
+      the request body.
+    parent: Required. The parent resource's name
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate Destinations.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  destinationId = _messages.StringField(1)
+  googleCloudNetworkconnectivityV1betaDestination = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaDestination', 2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDesti
+  nationsDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag is computed by the server, and may be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
+    name: Required. The name of the Destination resource to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDesti
+  nationsGetRequest object.
+
+  Fields:
+    name: Required. Name of the Destination to get.
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class NetworkconnectivityProjectsLocationsMiatasListRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasListRequest object.
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDesti
+  nationsListRequest object.
 
   Fields:
     filter: Optional. A filter expression that filters the results listed in
@@ -3854,19 +3934,17 @@ class NetworkconnectivityProjectsLocationsMiatasListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
-class NetworkconnectivityProjectsLocationsMiatasMiataDestinationsCreateRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsMiatasMiataDestinationsCreateRequest
-  object.
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDestinationsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsDesti
+  nationsPatchRequest object.
 
   Fields:
-    googleCloudNetworkconnectivityV1betaMiataDestination: A
-      GoogleCloudNetworkconnectivityV1betaMiataDestination resource to be
-      passed as the request body.
-    miataDestinationId: Optional. The ID to use for the MiataDestination,
-      which will become the final component of the MiataDestination's resource
-      name.
-    parent: Required. The parent resource's name
+    googleCloudNetworkconnectivityV1betaDestination: A
+      GoogleCloudNetworkconnectivityV1betaDestination resource to be passed as
+      the request body.
+    name: Identifier. The name of the Destination resource. Format: `projects/
+      {project}/locations/{location}/multicloudDataTransferConfigs/{multicloud
+      _data_transfer_config}/destinations/{destination}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3875,128 +3953,69 @@ class NetworkconnectivityProjectsLocationsMiatasMiataDestinationsCreateRequest(_
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate
-      MiataDestinations. The request ID must be a valid UUID with the
-      exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  googleCloudNetworkconnectivityV1betaMiataDestination = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMiataDestination', 1)
-  miataDestinationId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsMiatasMiataDestinationsDeleteRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsMiatasMiataDestinationsDeleteRequest
-  object.
-
-  Fields:
-    etag: Optional. The etag is computed by the server, and may be sent on
-      update and delete requests to ensure the client has an up-to-date value
-      before proceeding.
-    name: Required. The name of the MiataDestination resource to delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate
-      MiataDestinations. The request ID must be a valid UUID with the
-      exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
-class NetworkconnectivityProjectsLocationsMiatasMiataDestinationsGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasMiataDestinationsGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the MiataDestination to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsMiatasMiataDestinationsListRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasMiataDestinationsListRequest
-  object.
-
-  Fields:
-    filter: Optional. A filter expression that filters the results listed in
-      the response.
-    orderBy: Optional. Sort the results by a certain order.
-    pageSize: Optional. The maximum number of results per page that should be
-      returned.
-    pageToken: Optional. The page token.
-    parent: Required. The parent resource's name
-    returnPartialSuccess: Optional. If true, allow partial responses for
-      multi-regional Aggregated List requests.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  returnPartialSuccess = _messages.BooleanField(6)
-
-
-class NetworkconnectivityProjectsLocationsMiatasMiataDestinationsPatchRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsMiatasMiataDestinationsPatchRequest
-  object.
-
-  Fields:
-    googleCloudNetworkconnectivityV1betaMiataDestination: A
-      GoogleCloudNetworkconnectivityV1betaMiataDestination resource to be
-      passed as the request body.
-    name: Identifier. The name of the MiataDestination resource. Format: `proj
-      ects/{project}/locations/{location}/miatas/{miata}/miataDestinations/{mi
-      ata_destination}`.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate
-      MiataDestinations. The request ID must be a valid UUID with the
-      exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the MiataDestination resource by the update. The fields
+      overwritten in the Destination resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.
   """
 
-  googleCloudNetworkconnectivityV1betaMiataDestination = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMiataDestination', 1)
+  googleCloudNetworkconnectivityV1betaDestination = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaDestination', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
 
 
-class NetworkconnectivityProjectsLocationsMiatasPatchRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsMiatasPatchRequest object.
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsGetRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsGetRequest
+  object.
 
   Fields:
-    googleCloudNetworkconnectivityV1betaMiata: A
-      GoogleCloudNetworkconnectivityV1betaMiata resource to be passed as the
-      request body.
-    name: Identifier. The name of the Miata resource. Format:
-      `projects/{project}/locations/{location}/miatas/{miata}`.
+    name: Required. Name of the MulticloudDataTransferConfig to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsListRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the results listed in
+      the response.
+    orderBy: Optional. Sort the results by a certain order.
+    pageSize: Optional. The maximum number of results per page that should be
+      returned.
+    pageToken: Optional. The page token.
+    parent: Required. The parent resource's name
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsPatch
+  Request object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig: A
+      GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig
+      resource to be passed as the request body.
+    name: Identifier. The name of the MulticloudDataTransferConfig resource.
+      Format: `projects/{project}/locations/{location}/multicloudDataTransferC
+      onfigs/{multicloud_data_transfer_config}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4005,17 +4024,18 @@ class NetworkconnectivityProjectsLocationsMiatasPatchRequest(_messages.Message):
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate Miatas. The
-      request ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+      This prevents clients from accidentally creating duplicate
+      MulticloudDataTransferConfigs. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Miata resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+      overwritten in the MulticloudDataTransferConfig resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
   """
 
-  googleCloudNetworkconnectivityV1betaMiata = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMiata', 1)
+  googleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)

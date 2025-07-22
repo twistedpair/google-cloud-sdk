@@ -67,6 +67,7 @@ LOOKUP_ATTR = 'attr'
 LOOKUP_CAPSULE = 'capsule'
 LOOKUP_CATEGORY = 'category'
 LOOKUP_CHOICES = 'choices'
+LOOKUP_HIDDEN_CHOICES = 'hidden_choices'
 LOOKUP_COMMANDS = 'commands'
 LOOKUP_COMPLETER = 'completer'
 LOOKUP_CONSTRAINTS = 'constraints'
@@ -305,6 +306,8 @@ class Flag(FlagOrPositional):
         self.type = 'bool'
       else:
         self.choices = flag.choices
+        if hidden_choices := getattr(flag, LOOKUP_HIDDEN_CHOICES, None):
+          self.attr[LOOKUP_HIDDEN_CHOICES] = sorted(hidden_choices)
     if getattr(flag, LOOKUP_ALTERNATIVE_NAMES, False):
       self.alternative_names = flag.alternative_names
     if getattr(flag, LOOKUP_INVERTED_SYNOPSIS, False):

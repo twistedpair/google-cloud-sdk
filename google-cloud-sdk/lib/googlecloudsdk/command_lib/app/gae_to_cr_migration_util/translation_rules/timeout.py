@@ -31,7 +31,6 @@ _SCALING_METHOD_W_60_MIN_TIMEOUT = frozenset({
 def translate_timeout_features(input_data: Mapping[str, any]) -> Sequence[str]:
   """Translate timeout features based on scaling method."""
   scaling_features_used = scaling.get_scaling_features_used(input_data)
-
   if len(scaling_features_used) == 1:
     scaling_feature = scaling_features_used[0]
     if scaling_feature in _SCALING_METHOD_W_10_MIN_TIMEOUT:

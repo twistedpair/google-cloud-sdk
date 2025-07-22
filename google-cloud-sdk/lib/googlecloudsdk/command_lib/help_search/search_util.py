@@ -521,7 +521,12 @@ def LocateTerm(command, term):
 
   # Look in flag sections
   for flag_name, flag in sorted(six.iteritems(_Flags(command))):
-    for sub_attribute in [lookup.CHOICES, lookup.DESCRIPTION, lookup.DEFAULT]:
+    hidden_choices = flag.get(lookup.ATTR, {}).get(lookup.HIDDEN_CHOICES, [])
+    choices = [
+        c for c in flag.get(lookup.CHOICES, []) if c not in hidden_choices]
+    if regexp.search(six.text_type(choices)):
+      return DOT.join([lookup.FLAGS, flag[lookup.NAME], lookup.CHOICES])
+    for sub_attribute in [lookup.DESCRIPTION, lookup.DEFAULT]:
       if regexp.search(six.text_type(flag.get(sub_attribute, ''))):
         return DOT.join([lookup.FLAGS, flag[lookup.NAME], sub_attribute])
 

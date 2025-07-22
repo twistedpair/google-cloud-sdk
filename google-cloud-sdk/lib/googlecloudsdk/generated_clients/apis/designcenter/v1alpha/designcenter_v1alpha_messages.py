@@ -97,7 +97,7 @@ class Application(_messages.Message):
       application template.
     serviceAccount: Optional. Your own service account that you use to deploy
       an application.
-    source: Optional. The application deployment source.
+    source: Required. The application deployment source.
     state: Output only. Deployment state of the application.
     updateTime: Output only. Update timestamp.
     updatedTemplateRevision: Output only. The updated template revision
@@ -626,7 +626,7 @@ class Connection(_messages.Message):
     destinationComponentUri: Required. The destination component URI used to
       generate the connection.
     name: Identifier. The connection name.
-    parameters: Optional.
+    parameters: Optional. The connection parameters.
     sourceComponentParameters: Optional. The parameters of the connection
       associated with the source component.
     updateTime: Output only. The connection update timestamp.
@@ -728,6 +728,17 @@ class DeployApplicationRequest(_messages.Message):
     replace: Optional. Flag to update the existing deployment. If not set or
       false, deploy will fail if application `state` is in the `DEPLOYED`
       state.
+    serviceAccount: Optional. The email address of the service account to use
+      for this deployment. - If provided, this service account will be used to
+      execute the deployment process, taking precedence over any
+      service_account specified on the Application resource itself for this
+      operation. - The caller MUST have the 'iam.serviceAccounts.actAs'
+      permission on this service account. - If this field is omitted, the
+      system will use the 'service_account' defined within the Application
+      resource. - It is strongly RECOMMENDED to provide a service account
+      either here or on the Application resource, as deployment will fail if
+      no service account can be determined. Format:
+      projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
     workerPool: Optional. The user-specified Worker Pool resource in which the
       Cloud Build job will execute. Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
@@ -737,7 +748,8 @@ class DeployApplicationRequest(_messages.Message):
   """
 
   replace = _messages.BooleanField(1)
-  workerPool = _messages.StringField(2)
+  serviceAccount = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
 
 
 class DeploymentAttemptMetadata(_messages.Message):
@@ -1490,7 +1502,7 @@ class DesigncenterProjectsLocationsSpacesCatalogsDeleteRequest(_messages.Message
   Fields:
     force: Optional. If set to true, the catalog's children are also deleted.
       If false, the catalog is only deleted if it has no children.
-    name: Required. The catalog name int the following format:
+    name: Required. The catalog name in the following format:
       projects/$project/locations/$location/spaces/$space/catalogs/$catalog
   """
 
@@ -2761,6 +2773,17 @@ class PreviewApplicationRequest(_messages.Message):
   r"""Message for deploying an application.
 
   Fields:
+    serviceAccount: Optional. The email address of the service account to use
+      for this preview operation. - If provided, this service account will be
+      used to execute the preview process, taking precedence over any
+      service_account specified on the Application resource itself for this
+      operation. - The caller MUST have the 'iam.serviceAccounts.actAs'
+      permission on this service account. - If this field is omitted, the
+      system will use the 'service_account' defined within the Application
+      resource. - It is strongly RECOMMENDED to provide a service account
+      either here or on the Application resource, as preview will fail if no
+      service account can be determined. Format:
+      projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
     workerPool: Optional. The user-specified Worker Pool resource in which the
       Cloud Build job will execute. Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
@@ -2769,7 +2792,8 @@ class PreviewApplicationRequest(_messages.Message):
       defined, that worker pool is used.
   """
 
-  workerPool = _messages.StringField(1)
+  serviceAccount = _messages.StringField(1)
+  workerPool = _messages.StringField(2)
 
 
 class PreviewOperationMetadata(_messages.Message):
@@ -2961,7 +2985,7 @@ class SerializedConnection(_messages.Message):
       associated with the destination component.
     destinationComponentUri: Optional. The destination component URI used to
       generate the connection.
-    parameters: Optional.
+    parameters: Optional. The connection parameters.
     sourceComponentParameters: Optional. The parameters of the connection
       associated with the source component.
     uri: Optional. The connection URI.
@@ -3116,18 +3140,17 @@ class Space(_messages.Message):
     enableGcpSharedTemplates: Optional. Flag to enable Google opinionated
       shared templates.
     gcsBucket: Optional. The user-specified Google Cloud Storage bucket for
-      the space. This bucket will be used while setting up ADC If not
-      provided, a default bucket will be created. Format: , name of an already
-      existing cloud storage bucket In case Cloud Storage bucket URI is
-      gs://mvedant-adc-ff-test-5-us-central1-adc, user needs to provide only
-      bucket name that is mvedant-adc-ff-test-5-us-central1-adc. User can only
-      provide name of buckets that exist in Cloud Storage In case user
-      provides a bucket name that does not exist, the request will fail with
-      an INVALID_ARGUMENT error. In case user does not have access to the
-      provided bucket's metadata then the request will fail with a
-      PERMISSION_DENIED error. In case user provides a bucket that is not in
-      the same project as the Space, then the request will fail with an
-      INVALID_ARGUMENT error.
+      the space. This bucket will be used while setting up ADC. If not
+      provided, a default bucket will be created. Format: {$bucket_name} ,
+      name of an already existing cloud storage bucket. In case Cloud Storage
+      bucket URI is gs://{$bucket_name}, user needs to provide only bucket
+      name that is {$bucket_name}. User can only provide name of buckets that
+      exist in Cloud Storage. In case user provides a bucket name that does
+      not exist, the request will fail with an INVALID_ARGUMENT error. In case
+      user does not have access to the provided bucket's metadata then the
+      request will fail with a PERMISSION_DENIED error. In case user provides
+      a bucket that is not in the same project as the Space, then the request
+      will fail with an INVALID_ARGUMENT error.
     name: Identifier. The space name.
     updateTime: Output only. Space update timestamp
   """

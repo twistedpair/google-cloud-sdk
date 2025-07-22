@@ -24,12 +24,16 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
-MACOS_PYTHON_INSTALL_PATH = '/Library/Frameworks/Python.framework/Versions/3.12/'
+PYTHON_VERSION = '3.12'
+PYTHON_VERSION_INFO = (3, 12)
 MACOS_PYTHON = 'python-3.12.8-macos11.tar.gz'
+
+HOMEBREW_BIN = '/opt/homebrew/bin'
+MACOS_PYTHON_INSTALL_PATH = (
+    f'/Library/Frameworks/Python.framework/Versions/{PYTHON_VERSION}/')
 MACOS_PYTHON_URL = (
     'https://dl.google.com/dl/cloudsdk/channels/rapid/' + MACOS_PYTHON
 )
-PYTHON_VERSION = '3.12'
 
 
 def EnableVirtualEnv(python_to_use):
@@ -48,59 +52,107 @@ def EnableVirtualEnv(python_to_use):
     print('Failed to enable virtual environment')
 
 
+def _IsHomebrewInstalled():
+  return os.path.isdir(HOMEBREW_BIN) and 'homebrew' in config.GcloudPath()
+
+
+def _PromptPythonUpdate(python_install_path):
+  return (
+      f'Python {PYTHON_VERSION} installation detected in '
+      f'{python_install_path}, install recommended modules?')
+
+
+def _PromptPythonInstall():
+  if _IsHomebrewInstalled():
+    return f'Homebrew install Python {PYTHON_VERSION}?'
+  else:
+    return f'Download and run Python {PYTHON_VERSION} installer?'
+
+
+def _BrewInstallPython():
+  """Make sure python version is correct for user using gcloud with homebrew."""
+  brew_install = f'{HOMEBREW_BIN}/brew install python@{PYTHON_VERSION}'
+  print(f'Running "{brew_install}".')
+
+  exit_code = execution_utils.Exec(brew_install.split(' '), no_exit=True)
+  if exit_code != 0:
+    return (
+        f'"{brew_install}" failed. Please brew install '
+        f'python@{PYTHON_VERSION} manually.')
+  return None
+
+
+def _MacInstallPython():
+  """Optionally install Python on Mac machines."""
+
+  print(f'Running Python {PYTHON_VERSION} installer, you may be prompted for '
+        'sudo password...')
+
+  # Xcode Command Line Tools is required to install Python.
+  PromptAndInstallXcodeCommandLineTools()
+
+  with files.TemporaryDirectory() as tempdir:
+    with files.ChDir(tempdir):
+      curl_args = ['curl', '--silent', '-O', MACOS_PYTHON_URL]
+      exit_code = execution_utils.Exec(curl_args, no_exit=True)
+      if exit_code != 0:
+        return 'Failed to download Python installer'
+
+      exit_code = execution_utils.Exec(
+          ['tar', '-xf', MACOS_PYTHON], no_exit=True)
+      if exit_code != 0:
+        return 'Failed to extract Python installer'
+
+      exit_code = execution_utils.Exec([
+          'sudo', 'installer', '-target', '/', '-pkg',
+          './python-3.12.8-macos11.pkg'
+      ], no_exit=True)
+      if exit_code != 0:
+        return 'Installer failed.'
+
+  return None
+
+
 def PromptAndInstallPythonOnMac():
   """Optionally install Python on Mac machines."""
   if platforms.OperatingSystem.Current() != platforms.OperatingSystem.MACOSX:
     return
 
-  print('\nGoogle Cloud CLI works best with Python {} and certain modules.\n'
-        .format(PYTHON_VERSION))
+  print(
+      f'\nGoogle Cloud CLI works best with Python {PYTHON_VERSION} '
+      'and certain modules.\n')
 
-  already_have_python_version = os.path.isdir(MACOS_PYTHON_INSTALL_PATH)
-  if already_have_python_version:
-    prompt = ('Python {} installation detected, install recommended'
-              ' modules?'.format(PYTHON_VERSION))
+  # Determine python install path
+  homebrew_installed = _IsHomebrewInstalled()
+
+  if homebrew_installed:
+    python_to_use = f'{HOMEBREW_BIN}/python{PYTHON_VERSION}'
   else:
-    prompt = 'Download and run Python {} installer?'.format(PYTHON_VERSION)
-  setup_python = console_io.PromptContinue(prompt_string=prompt, default=True)
+    python_to_use = f'{MACOS_PYTHON_INSTALL_PATH}bin/python3'
+  already_installed = os.path.isfile(python_to_use)
 
-  if setup_python:
-    install_errors = []
-    if not already_have_python_version:
-      print('Running Python {} installer, you may be prompted for sudo '
-            'password...'.format(PYTHON_VERSION))
+  # Prompt for user permission
+  if already_installed:
+    prompt = _PromptPythonUpdate(python_to_use)
+  else:
+    prompt = _PromptPythonInstall()
+  if not console_io.PromptContinue(prompt_string=prompt, default=True):
+    return
 
-      # Xcode Command Line Tools is required to install Python.
-      PromptAndInstallXcodeCommandLineTools()
+  # Install python if needed
+  if not already_installed:
+    install_errors = (_BrewInstallPython()
+                      if homebrew_installed else _MacInstallPython())
+  else:
+    install_errors = None
 
-      with files.TemporaryDirectory() as tempdir:
-        with files.ChDir(tempdir):
-          curl_args = ['curl', '--silent', '-O', MACOS_PYTHON_URL]
-          exit_code = execution_utils.Exec(curl_args, no_exit=True)
-          if exit_code != 0:
-            install_errors.append('Failed to download Python installer')
-          else:
-            exit_code = execution_utils.Exec(['tar', '-xf', MACOS_PYTHON],
-                                             no_exit=True)
-            if exit_code != 0:
-              install_errors.append('Failed to extract Python installer')
-            else:
-              exit_code = execution_utils.Exec([
-                  'sudo', 'installer', '-target', '/', '-pkg',
-                  './python-3.12.8-macos11.pkg'
-              ],
-                                               no_exit=True)
-              if exit_code != 0:
-                install_errors.append('Installer failed.')
-
-    if not install_errors:
-      python_to_use = '{}/bin/python3'.format(MACOS_PYTHON_INSTALL_PATH)
-      os.environ['CLOUDSDK_PYTHON'] = python_to_use
-      print('Setting up virtual environment')
-      EnableVirtualEnv(python_to_use)
-    else:
-      print('Failed to install Python. Errors \n\n{}'.format(
-          '\n*'.join(install_errors)))
+  # Update python dependencies
+  if not install_errors:
+    os.environ['CLOUDSDK_PYTHON'] = python_to_use
+    print('Setting up virtual environment')
+    EnableVirtualEnv(python_to_use)
+  else:
+    print(f'Failed to install Python. Error: {install_errors}')
 
 
 def CheckXcodeCommandLineToolsInstalled() -> bool:

@@ -118,6 +118,7 @@ def AddVariantsPatternFlag(parser):
   parser.add_argument(
       '--variants-pattern',
       required=False,
+      default='*',  # default to include all files in the provided directory.
       help="""Glob pattern to Variants of the Release, to be paired with the
         ``--source'' arg.
         ex: --source=/manifests-dir/ --variants-pattern=```**```,

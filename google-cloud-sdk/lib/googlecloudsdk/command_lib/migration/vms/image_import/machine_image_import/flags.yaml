@@ -75,13 +75,6 @@ adaptation_modifiers:
     The actual value depends on the modifier and can also be empty.
     e.g. --adaptation-flags=flag1=value1,flag2
 
-suppress-package-installation-failure:
-  api_field: imageImport.machineImageTargetDefaults.osAdaptationParameters.adaptationModifiers
-  arg_name: suppress-package-installation-failure
-  type: bool
-  help_text: |
-    If true, suppress package installation failure and continue with a warning. Default false.
-
 rootfs_uuid:
   arg_name: rootfs-uuid
   help_text: |

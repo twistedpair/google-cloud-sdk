@@ -63,7 +63,6 @@ def FixCreateDiskImageImportRequest(ref, args, req):
       or args.license_type
       or args.boot_conversion
       or args.adaptation_modifiers
-      or args.suppress_package_installation_failure
       or args.rootfs_uuid
   ):
     req.imageImport.diskImageTargetDefaults.osAdaptationParameters = None
@@ -92,12 +91,6 @@ def FixCreateDiskImageImportRequest(ref, args, req):
     adaptation_modifiers = ProcessAdaptationModifiers(args.adaptation_modifiers)
     req.imageImport.diskImageTargetDefaults.osAdaptationParameters.adaptationModifiers = ProcessAdaptationModifiers(
         args.adaptation_modifiers
-    )
-  if args.suppress_package_installation_failure:
-    adaptation_modifiers.append(
-        hooks.GetMessageClass('AdaptationModifier')(
-            name='suppress-package-installation-failure'
-        )
     )
   if args.rootfs_uuid:
     adaptation_modifiers.append(
@@ -137,7 +130,6 @@ def FixCreateMachineImageImportRequest(ref, args, req):
       and not args.license_type
       and not args.boot_conversion
       and not args.adaptation_modifiers
-      and not args.suppress_package_installation_failure
       and not args.rootfs_uuid
   ):
     req.imageImport.machineImageTargetDefaults.osAdaptationParameters = None
@@ -168,12 +160,6 @@ def FixCreateMachineImageImportRequest(ref, args, req):
           hooks.GetMessageClass('ImageImportOsAdaptationParameters')()
       )
     adaptation_modifiers = ProcessAdaptationModifiers(args.adaptation_modifiers)
-  if args.suppress_package_installation_failure:
-    adaptation_modifiers.append(
-        hooks.GetMessageClass('AdaptationModifier')(
-            name='suppress-package-installation-failure'
-        )
-    )
   if args.rootfs_uuid:
     adaptation_modifiers.append(
         hooks.GetMessageClass('AdaptationModifier')(

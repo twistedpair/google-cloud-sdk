@@ -603,7 +603,11 @@ class InteractiveCliCompleter(completion.Completer):
     choices = arg.get(parser.LOOKUP_CHOICES)
     if choices:
       # static choices
-      return [v for v in choices if v.startswith(value)], -len(value)
+      hidden_choices = arg.get(parser.LOOKUP_ATTR, {}).get(
+          parser.LOOKUP_HIDDEN_CHOICES, [])
+      static_choices = [
+          v for v in choices if v.startswith(value) and v not in hidden_choices]
+      return static_choices, -len(value)
 
     if not value and not self.event.completion_requested:
       return [], 0

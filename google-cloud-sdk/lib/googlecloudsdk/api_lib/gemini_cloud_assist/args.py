@@ -15,39 +15,45 @@
 """Shared resource arguments and flags."""
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
-def RegionAttributeConfig():
-  """Returns the resource parameter attribute config for region."""
+def LocationAttributeConfig():
+  """Returns the resource parameter attribute config for location."""
   return concepts.ResourceParameterAttributeConfig(
-      name='region',
+      name='location',
       help_text='The Cloud region for the {resource}.',
+      fallthroughs=[deps.ValueFallthrough('global')],
   )
 
 
-def InvestigationAttributeConfig():
+def InvestigationAttributeConfig(allow_no_id):
   """Returns the resource parameter attribute config for investigation."""
+  fallthroughs = []
+  if allow_no_id:
+    fallthroughs = [deps.ValueFallthrough('-')]
   return concepts.ResourceParameterAttributeConfig(
       name='investigation',
       help_text='The name of the {resource}.',
+      fallthroughs=fallthroughs,
   )
 
 
-def GetInvestigationResourceSpec():
+def GetInvestigationResourceSpec(allow_no_id):
   """Returns the resource spec for investigation."""
   return concepts.ResourceSpec(
       'geminicloudassist.projects.locations.investigations',
       resource_name='investigation',
       disable_auto_completers=False,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
-      investigationsId=InvestigationAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      investigationsId=InvestigationAttributeConfig(allow_no_id),
   )
 
 
 def AddInvestigationResourceArg(
-    parser, verb='', help_text_override='', required=True
+    parser, verb='', help_text_override='', required=True, allow_no_id=False
 ):
   """Adds investigations resource argument to the parser.
 
@@ -59,12 +65,15 @@ def AddInvestigationResourceArg(
     help_text_override: (Optional)str, the help text to use for the resource
       argument. If override is providded, verb will be ignored.
     required: bool, whether the argument is required.
+    allow_no_id: bool, whether to no investigation id, if none is passed '-'
+      will be used instead.
   """
   help_text = help_text_override or f'The investigation name {verb}.'
   concept_parsers.ConceptParser.ForResource(
       'investigation',
-      GetInvestigationResourceSpec(),
+      GetInvestigationResourceSpec(allow_no_id),
       help_text,
+      flag_name_overrides={'location': ''},
       required=required,
   ).AddToParser(parser)
 

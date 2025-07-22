@@ -403,6 +403,14 @@ def GenerateChoices(field, attributes):
   return choices
 
 
+def GenerateHiddenChoices(attributes):
+  if attributes.choices is not None:
+    hidden_choices = [c.arg_value for c in attributes.choices if c.hidden]
+    if hidden_choices:
+      return hidden_choices
+  return None
+
+
 STORE_TRUE = 'store_true'
 
 
@@ -475,7 +483,8 @@ def GenerateFlagType(field, attributes, fix_bools=True):
       # it.
       elif not is_arg_list and action != append_action:
         flag_type = arg_parsers.ArgList(
-            element_type=flag_type, choices=GenerateChoices(field, attributes))
+            element_type=flag_type, choices=GenerateChoices(field, attributes),
+            hidden_choices=GenerateHiddenChoices(attributes))
   elif isinstance(flag_type, RepeatedMessageBindableType):
     raise ArgumentGenerationError(
         field.name,
@@ -537,10 +546,12 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   flag_type, action = GenerateFlagType(field, attributes, fix_bools)
 
   if isinstance(flag_type, arg_parsers.ArgList):
-    choices = None
-  else:
     # Choices are already combined in the ArgList
+    choices = None
+    hidden_choices = None
+  else:
     choices = GenerateChoices(field, attributes)
+    hidden_choices = GenerateHiddenChoices(attributes)
 
   if field and not flag_type and not action and not attributes.processor:
     # The type is unknown and there is no custom action or processor, we don't
@@ -568,6 +579,8 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
       arg.kwargs['metavar'] = metavar
     arg.kwargs['type'] = flag_type
     arg.kwargs['choices'] = choices
+    if hidden_choices:
+      arg.kwargs['hidden_choices'] = hidden_choices
   if not attributes.is_positional:
     arg.kwargs['required'] = attributes.required
   return arg
@@ -1110,6 +1123,7 @@ class ChoiceEnumMapper(object):
                dest=None,
                default=None,
                hidden=False,
+               hidden_choices=None,
                include_filter=None):
     """Initialize ChoiceEnumMapper.
 
@@ -1131,6 +1145,8 @@ class ChoiceEnumMapper(object):
           see base.ChoiceArgument().
       hidden: boolean, pass through for base.Argument,
           see base.ChoiceArgument().
+      hidden_choices: list, pass through for base.Argument,
+          see base.ChoiceArgument().
       include_filter: callable, function of type string->bool used to filter
           enum values from message_enum that should be included in choices.
           If include_filter returns True for a particular enum value, it will be
@@ -1148,6 +1164,7 @@ class ChoiceEnumMapper(object):
     self._arg_name = arg_name
     self._enum = message_enum
     self._custom_mappings = custom_mappings
+    self._hidden_choices = hidden_choices
     if include_filter is not None and not callable(include_filter):
       raise TypeError('include_filter must be callable received [{}]'.format(
           include_filter))
@@ -1164,7 +1181,8 @@ class ChoiceEnumMapper(object):
         metavar=metavar,
         dest=dest,
         default=default,
-        hidden=hidden)
+        hidden=hidden,
+        hidden_choices=hidden_choices)
 
   def _ValidateAndParseMappings(self):
     """Validates and parses choice to enum mappings.
@@ -1208,6 +1226,12 @@ class ChoiceEnumMapper(object):
           for x, y in six.iteritems(self._choice_to_enum)
       }
       self._choices = sorted(self._choice_to_enum.keys())
+
+    if self._hidden_choices:
+      if not set(self._choices).issuperset(self._hidden_choices):
+        raise ValueError(
+            'hidden_choices [{}] must be subset of choices [{}]'.format(
+                ', '.join(self._hidden_choices), ', '.join(self._choices)))
 
   def _ParseCustomMappingsFromTuples(self):
     """Parses choice to enum mappings from custom_mapping with tuples.

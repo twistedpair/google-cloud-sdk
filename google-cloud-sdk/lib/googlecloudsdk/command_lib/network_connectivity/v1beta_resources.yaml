@@ -30,28 +30,28 @@ projects_locations:
     attribute_name: location
     help: The location id of the {resource} resource.
   disable_auto_completers: true
-projects_locations_miatas:
-  name: miata
-  plural_name: miatas
-  collection: networkconnectivity.projects.locations.miatas
+projects_locations_multicloud_data_transfer_configs:
+  name: multicloudDataTransferConfig
+  plural_name: multicloudDataTransferConfigs
+  collection: networkconnectivity.projects.locations.multicloudDataTransferConfigs
   attributes:
   - *project
   - *location
-  - &miata
-    parameter_name: miatasId
-    attribute_name: miata
-    help: The miata id of the {resource} resource.
+  - &multicloudDataTransferConfig
+    parameter_name: multicloudDataTransferConfigsId
+    attribute_name: multicloud_data_transfer_config
+    help: The multicloudDataTransferConfig id of the {resource} resource.
   disable_auto_completers: false
-projects_locations_miatas_miata_destinations:
-  name: miataDestination
-  plural_name: miataDestinations
-  collection: networkconnectivity.projects.locations.miatas.miataDestinations
+projects_locations_multicloud_data_transfer_configs_destinations:
+  name: destination
+  plural_name: destinations
+  collection: networkconnectivity.projects.locations.multicloudDataTransferConfigs.destinations
   attributes:
   - *project
   - *location
-  - *miata
-  - &miataDestination
-    parameter_name: miataDestinationsId
-    attribute_name: miata_destination
-    help: The miataDestination id of the {resource} resource.
+  - *multicloudDataTransferConfig
+  - &destination
+    parameter_name: destinationsId
+    attribute_name: destination
+    help: The destination id of the {resource} resource.
   disable_auto_completers: false

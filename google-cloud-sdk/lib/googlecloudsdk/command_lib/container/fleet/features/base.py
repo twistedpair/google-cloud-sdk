@@ -171,8 +171,14 @@ class DisableCommand(UpdateCommandMixin, calliope_base.DeleteCommand):
     parser.add_argument(
         '--force',
         action='store_true',
-        help='Disable this feature, even if it is currently in use. '
-        'Force disablement may result in unexpected behavior.')
+        help=(
+            'Bypasses any prompts for confirmation.'
+            ' When disabling the entire feature, forces disable'
+            ' even if the feature is in use.'
+            ' Force disablement of the entire feature'
+            ' may result in unexpected behavior.'
+        ),
+    )
     if cls.support_fleet_default:
       cls.fleet_default_member_config_flag(parser)
 

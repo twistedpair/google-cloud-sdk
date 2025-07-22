@@ -1147,6 +1147,7 @@ class ControlPlaneManagement(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -1156,6 +1157,7 @@ class ControlPlaneManagement(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('StatusDetails', 1, repeated=True)
   implementation = _messages.EnumField('ImplementationValueValuesEnum', 2)
@@ -1222,6 +1224,7 @@ class ControlPlaneRevision(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -1231,6 +1234,7 @@ class ControlPlaneRevision(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the control plane revision.
@@ -1389,6 +1393,7 @@ class DataPlaneManagement(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -1398,6 +1403,7 @@ class DataPlaneManagement(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('StatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -1449,7 +1455,7 @@ class DeploymentOverride(_messages.Message):
     deploymentName: Required. The name of the deployment resource to be
       overridden.
     deploymentNamespace: Required. The namespace of the deployment resource to
-      be overridden..
+      be overridden.
   """
 
   containers = _messages.MessageField('ContainerOverride', 1, repeated=True)
@@ -3070,6 +3076,7 @@ class MeshConnectivity(_messages.Message):
         migrate workloads to a new control plane revision.)
       DEGRADED: DEGRADED means that the component is ready, but operating in a
         degraded state.
+      DEPROVISIONING: DEPROVISIONING means that deprovisioning is in progress.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
@@ -3079,6 +3086,7 @@ class MeshConnectivity(_messages.Message):
     STALLED = 5
     NEEDS_ATTENTION = 6
     DEGRADED = 7
+    DEPROVISIONING = 8
 
   details = _messages.MessageField('StatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -4760,10 +4768,13 @@ class ServiceMeshMembershipSpec(_messages.Message):
         cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
+      MANAGEMENT_NOT_INSTALLED: Google should remove any managed Service Mesh
+        components from this cluster and deprovision any resources.
     """
     MANAGEMENT_UNSPECIFIED = 0
     MANAGEMENT_AUTOMATIC = 1
     MANAGEMENT_MANUAL = 2
+    MANAGEMENT_NOT_INSTALLED = 3
 
   configApi = _messages.EnumField('ConfigApiValueValuesEnum', 1)
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 2)

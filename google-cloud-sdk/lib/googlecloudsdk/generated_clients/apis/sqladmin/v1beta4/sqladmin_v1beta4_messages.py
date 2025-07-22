@@ -2051,7 +2051,7 @@ class Empty(_messages.Message):
 
 
 class ExecuteSqlPayload(_messages.Message):
-  r"""The request payload used to execute a SQL statement.
+  r"""The request payload used to execute SQL statements.
 
   Enums:
     OutputFormatValueValuesEnum: Optional. The requested format of the SQL
@@ -2071,7 +2071,7 @@ class ExecuteSqlPayload(_messages.Message):
     secretPath: Optional. The resource ID of a secret in secret manager which
       contains the database user's password. Expected format -
       projects/{project}/secrets/{secret}/versions/{version}.
-    sqlStatement: Required. SQL statement to run on the database. It can be a
+    sqlStatement: Required. SQL statements to run on the database. It can be a
       single statement or a sequence of statements separated by semicolons.
     user: Optional. The name of an existing database user.
   """
@@ -3092,6 +3092,10 @@ class InstancesRestoreBackupRequest(_messages.Message):
       the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
+    restoreInstanceClearOverridesFieldNames: Optional. This field has the same
+      purpose as restore_instance_settings, changes any instance settings
+      stored in the backup you are restoring from. With the difference that
+      these fields are cleared in the settings.
     restoreInstanceSettings: Optional. By using this parameter, Cloud SQL
       overrides any instance settings stored in the backup you are restoring
       from. You can't change the instance's major database version and you can
@@ -3103,7 +3107,8 @@ class InstancesRestoreBackupRequest(_messages.Message):
   backup = _messages.StringField(1)
   backupdrBackup = _messages.StringField(2)
   restoreBackupContext = _messages.MessageField('RestoreBackupContext', 3)
-  restoreInstanceSettings = _messages.MessageField('DatabaseInstance', 4)
+  restoreInstanceClearOverridesFieldNames = _messages.StringField(4, repeated=True)
+  restoreInstanceSettings = _messages.MessageField('DatabaseInstance', 5)
 
 
 class InstancesRotateServerCaRequest(_messages.Message):
@@ -3461,11 +3466,11 @@ class ManagementConfig(_messages.Message):
 
 
 class Metadata(_messages.Message):
-  r"""The additional metadata information regarding the execution of the sql
-  statement.
+  r"""The additional metadata information regarding the execution of the SQL
+  statements.
 
   Fields:
-    sqlStatementExecutionTime: The time taken to execute the sql statement.
+    sqlStatementExecutionTime: The time taken to execute the SQL statements.
   """
 
   sqlStatementExecutionTime = _messages.StringField(1)
@@ -4310,8 +4315,8 @@ class QueryResult(_messages.Message):
     columns: List of columns included in the result. This also includes the
       data type of the column.
     message: Message related to the SQL execution result.
-    partialResult: Set to true if a partial result of the SQL execution is
-      returned.
+    partialResult: Set to true if the SQL execution's result is truncated due
+      to size limits.
     rows: Rows returned by the SQL statement.
   """
 
@@ -5517,17 +5522,16 @@ class SqlInstancesExecuteSqlRequest(_messages.Message):
 
 
 class SqlInstancesExecuteSqlResponse(_messages.Message):
-  r"""Execute a SQL statement response.
+  r"""Execute SQL statements response.
 
   Fields:
     columns: Deprecated field. Use results.columns instead.
     formattedRows: If output format was set to JSON, then this field will
       contain the response in JSON format.
-    message: Message related to the SQL execution result.
+    message: Deprecated field. Use results.message instead.
     metadata: The additional metadata information regarding the execution of
-      the SQL statement.
-    partialResult: Set to true if a partial result of the SQL execution is
-      returned.
+      the SQL statements.
+    partialResult: Deprecated field. Use results.partial_result instead.
     results: The list of results after executing all the SQL statements.
     rows: Deprecated field. Use results.rows instead.
   """
@@ -5591,13 +5595,16 @@ class SqlInstancesGetLatestRecoveryTimeResponse(_messages.Message):
   r"""Instance get latest recovery time response.
 
   Fields:
+    earliestRecoveryTime: Timestamp, identifies the earliest recovery time of
+      the source instance.
     kind: This is always `sql#getLatestRecoveryTime`.
     latestRecoveryTime: Timestamp, identifies the latest recovery time of the
       source instance.
   """
 
-  kind = _messages.StringField(1)
-  latestRecoveryTime = _messages.StringField(2)
+  earliestRecoveryTime = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  latestRecoveryTime = _messages.StringField(3)
 
 
 class SqlInstancesGetRequest(_messages.Message):
@@ -5914,6 +5921,11 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
       file configuration is used. Valid values are `LOGICAL` or `PHYSICAL`.
       Only applicable to MySQL.
     mysqlSyncConfig: MySQL-specific settings for start external sync.
+    replicaOverwriteEnabled: Optional. MySQL only. True if end-user has
+      confirmed that this SES call will wipe replica databases overlapping
+      with the proposed selected_objects. If this field is not set and there
+      are both overlapping and additional databases proposed, an error will be
+      returned.
     skipVerification: Whether to skip the verification step (VESS).
     syncMode: External sync mode.
     syncParallelLevel: Optional. Parallel level for initial data sync.
@@ -5969,9 +5981,10 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
 
   migrationType = _messages.EnumField('MigrationTypeValueValuesEnum', 1)
   mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 2)
-  skipVerification = _messages.BooleanField(3)
-  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 4)
-  syncParallelLevel = _messages.EnumField('SyncParallelLevelValueValuesEnum', 5)
+  replicaOverwriteEnabled = _messages.BooleanField(3)
+  skipVerification = _messages.BooleanField(4)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 5)
+  syncParallelLevel = _messages.EnumField('SyncParallelLevelValueValuesEnum', 6)
 
 
 class SqlInstancesStartReplicaRequest(_messages.Message):
@@ -6890,6 +6903,7 @@ class User(_messages.Message):
         Cloud IAM group.
       CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Read-only. Login for a service account
         that belongs to the Cloud IAM group.
+      CLOUD_IAM_WORKFORCE_IDENTITY: Cloud IAM workforce identity.
     """
     BUILT_IN = 0
     CLOUD_IAM_USER = 1
@@ -6897,6 +6911,7 @@ class User(_messages.Message):
     CLOUD_IAM_GROUP = 3
     CLOUD_IAM_GROUP_USER = 4
     CLOUD_IAM_GROUP_SERVICE_ACCOUNT = 5
+    CLOUD_IAM_WORKFORCE_IDENTITY = 6
 
   dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 1)
   etag = _messages.StringField(2)

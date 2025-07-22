@@ -392,6 +392,12 @@ class LogEntry(proto.Message):
             there is no associated AppHub application or
             multiple associated applications (such as for
             VPC flow logs)
+        apphub_destination (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.AppHub):
+            Output only. AppHub application metadata
+            associated with the destination application.
+            This is only populated if the log represented
+            "edge"-like data (such as for VPC flow logs)
+            with a source and destination.
     """
 
     log_name: str = proto.Field(
@@ -489,6 +495,11 @@ class LogEntry(proto.Message):
     apphub: 'AppHub' = proto.Field(
         proto.MESSAGE,
         number=37,
+        message='AppHub',
+    )
+    apphub_destination: 'AppHub' = proto.Field(
+        proto.MESSAGE,
+        number=38,
         message='AppHub',
     )
 

@@ -391,11 +391,12 @@ def AddFinalBackup(parser):
 def AddFinalbackupRetentionDays(parser, hidden=False):
   help_text = (
       'Specifies number of days to retain final backup. The valid range is'
-      ' between 1 and 365. Default value is 30 days.'
+      ' between 1 and 365. For instances managed by BackupDR, the valid range'
+      ' is between 1 day and 99 years. Default value is 30 days.'
   )
   parser.add_argument(
       '--final-backup-retention-days',
-      type=arg_parsers.BoundedInt(1, 365, unlimited=False),
+      type=arg_parsers.BoundedInt(1, 365 * 99, unlimited=False),
       required=False,
       hidden=hidden,
       help=help_text,
@@ -444,7 +445,8 @@ def AddFinalBackupExpiryTimeArgument(parser):
       required=False,
       help=(
           'Specifies the time at which the final backup will expire. Maximum'
-          ' time allowed is 365 days from now. Format: YYYY-MM-DDTHH:MM:SS.'
+          ' time allowed is 365 days. For instances managed by BackupDR, the'
+          ' maximum time allowed is 99 years. Format: YYYY-MM-DDTHH:MM:SS.'
       ),
   )
 

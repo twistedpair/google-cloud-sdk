@@ -42,6 +42,7 @@ __protobuf__ = proto.module(
         'VertexAISearch',
         'ExternalApi',
         'GoogleSearchRetrieval',
+        'GoogleMaps',
         'EnterpriseWebSearch',
         'DynamicRetrievalConfig',
         'ToolConfig',
@@ -72,7 +73,7 @@ class Tool(proto.Message):
             [FunctionResponse][google.cloud.aiplatform.v1beta1.Part.function_response]
             for each function call in the next turn. Based on the
             function responses, Model will generate the final response
-            back to the user. Maximum 128 function declarations can be
+            back to the user. Maximum 512 function declarations can be
             provided.
         retrieval (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Retrieval):
             Optional. Retrieval tool type.
@@ -88,6 +89,9 @@ class Tool(proto.Message):
             Optional. GoogleSearchRetrieval tool type.
             Specialized retrieval tool that is powered by
             Google search.
+        google_maps (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GoogleMaps):
+            Optional. GoogleMaps tool type.
+            Tool to support Google Maps in Model.
         enterprise_web_search (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.EnterpriseWebSearch):
             Optional. Tool to support searching public
             web data, powered by Vertex AI Search and Sec4
@@ -166,6 +170,11 @@ class Tool(proto.Message):
         proto.MESSAGE,
         number=3,
         message='GoogleSearchRetrieval',
+    )
+    google_maps: 'GoogleMaps' = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message='GoogleMaps',
     )
     enterprise_web_search: 'EnterpriseWebSearch' = proto.Field(
         proto.MESSAGE,
@@ -901,6 +910,31 @@ class GoogleSearchRetrieval(proto.Message):
         proto.MESSAGE,
         number=2,
         message='DynamicRetrievalConfig',
+    )
+
+
+class GoogleMaps(proto.Message):
+    r"""Tool to retrieve public maps data for grounding, powered by
+    Google.
+
+    Attributes:
+        api_auth (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ApiAuth):
+            The authentication config to access the API. Deprecated.
+            Please use auth_config instead.
+        auth_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.AuthConfig):
+            The authentication config to access the API.
+            Only API key is supported.
+    """
+
+    api_auth: gca_api_auth.ApiAuth = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message=gca_api_auth.ApiAuth,
+    )
+    auth_config: auth.AuthConfig = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=auth.AuthConfig,
     )
 
 

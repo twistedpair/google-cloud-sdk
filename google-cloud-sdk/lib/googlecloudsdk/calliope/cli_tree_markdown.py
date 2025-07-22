@@ -187,6 +187,7 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     self._sections = self._command[cli_tree.LOOKUP_SECTIONS]
     self._subcommands = self.GetSubCommandHelp()
     self._subgroups = self.GetSubGroupHelp()
+    self._sort_top_level_args = True
 
   def _GetCommandFromPath(self, command_path):
     """Returns the command node for command_path."""

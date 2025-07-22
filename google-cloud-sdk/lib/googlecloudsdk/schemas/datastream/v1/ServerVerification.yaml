@@ -30,3 +30,9 @@ properties:
   caCertificate:
     description: Input only. PEM-encoded server root CA certificate.
     type: string
+  serverCertificateHostname:
+    description: |-
+      The hostname mentioned in the Subject or SAN extension of the server
+      certificate. If this field is not provided, the hostname in the server
+      certificate is not validated.
+    type: string

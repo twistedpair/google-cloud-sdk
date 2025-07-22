@@ -593,6 +593,23 @@ class GpuTypeChange(config_changes.TemplateConfigChanger):
     return resource
 
 
+@dataclasses.dataclass(frozen=True)
+class GpuZonalRedundancyChange(config_changes.TemplateConfigChanger):
+  """Sets the gpu-zonal-redundancy-disabled field on the resource template.
+
+  Attributes:
+    gpu_zonal_redundancy: The gpu_zonal_redundancy value to set.
+  """
+
+  gpu_zonal_redundancy: bool
+
+  def Adjust(self, resource):
+    resource.template.gpu_zonal_redundancy_disabled = (
+        not self.gpu_zonal_redundancy
+    )
+    return resource
+
+
 @dataclasses.dataclass(init=False, frozen=True)
 class ContainerCommandChange(ContainerConfigChanger):
   """Represents the user intent to change the 'command' for the container.

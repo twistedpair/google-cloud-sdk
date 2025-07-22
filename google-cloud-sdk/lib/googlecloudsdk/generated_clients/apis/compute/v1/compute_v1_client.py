@@ -17167,7 +17167,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.reservationBlocks.get',
         ordered_params=['project', 'zone', 'reservation', 'reservationBlock'],
         path_params=['project', 'reservation', 'reservationBlock', 'zone'],
-        query_params=[],
+        query_params=['view'],
         relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}',
         request_field='',
         request_type_name='ComputeReservationBlocksGetRequest',
