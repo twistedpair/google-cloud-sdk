@@ -57,6 +57,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_appgroups_apps_keys = self.OrganizationsAppgroupsAppsKeysService(self)
     self.organizations_appgroups_apps = self.OrganizationsAppgroupsAppsService(self)
     self.organizations_appgroups_balance = self.OrganizationsAppgroupsBalanceService(self)
+    self.organizations_appgroups_subscriptions = self.OrganizationsAppgroupsSubscriptionsService(self)
     self.organizations_appgroups = self.OrganizationsAppgroupsService(self)
     self.organizations_apps = self.OrganizationsAppsService(self)
     self.organizations_datacollectors = self.OrganizationsDatacollectorsService(self)
@@ -1853,6 +1854,124 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1CreditAppGroupBalanceRequest',
         request_type_name='ApigeeOrganizationsAppgroupsBalanceCreditRequest',
         response_type_name='GoogleCloudApigeeV1AppGroupBalance',
+        supports_download=False,
+    )
+
+  class OrganizationsAppgroupsSubscriptionsService(base_api.BaseApiService):
+    """Service class for the organizations_appgroups_subscriptions resource."""
+
+    _NAME = 'organizations_appgroups_subscriptions'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsAppgroupsSubscriptionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a subscription to an API product. .
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsSubscriptionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/subscriptions',
+        http_method='POST',
+        method_id='apigee.organizations.appgroups.subscriptions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/subscriptions',
+        request_field='googleCloudApigeeV1AppGroupSubscription',
+        request_type_name='ApigeeOrganizationsAppgroupsSubscriptionsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupSubscription',
+        supports_download=False,
+    )
+
+    def Expire(self, request, global_params=None):
+      r"""Expires an API product subscription immediately.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsSubscriptionsExpireRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Expire')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Expire.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/subscriptions/{subscriptionsId}:expire',
+        http_method='POST',
+        method_id='apigee.organizations.appgroups.subscriptions.expire',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:expire',
+        request_field='googleCloudApigeeV1ExpireAppGroupSubscriptionRequest',
+        request_type_name='ApigeeOrganizationsAppgroupsSubscriptionsExpireRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupSubscription',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an api product subscription for an appgroup.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsSubscriptionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1AppGroupSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/subscriptions/{subscriptionsId}',
+        http_method='GET',
+        method_id='apigee.organizations.appgroups.subscriptions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsAppgroupsSubscriptionsGetRequest',
+        response_type_name='GoogleCloudApigeeV1AppGroupSubscription',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all api product subscriptions for an appgroup.
+
+      Args:
+        request: (ApigeeOrganizationsAppgroupsSubscriptionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListAppGroupSubscriptionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/appgroups/{appgroupsId}/subscriptions',
+        http_method='GET',
+        method_id='apigee.organizations.appgroups.subscriptions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/subscriptions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsAppgroupsSubscriptionsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListAppGroupSubscriptionsResponse',
         supports_download=False,
     )
 

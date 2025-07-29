@@ -51,24 +51,11 @@ properties:
       response in the load balancer. * If response headers have been delivered,
       then the HTTP stream to the downstream client is reset.
     type: boolean
-  forwardAttributes:
-    description: |-
-      List of the Envoy attributes to forward to the extension server. The
-      attributes provided here are included as part of the
-      `ProcessingRequest.attributes` field (of type `map`), where the keys are
-      the attribute names. Refer to the
-      [documentation](https://cloud.google.com/service-extensions/docs/cel-
-      matcher-language-reference#attributes) for the names of attributes that
-      can be forwarded. If omitted, no attributes are sent. Each element is a
-      string indicating the attribute name.
-    type: array
-    items:
-      type: string
   forwardHeaders:
     description: |-
-      List of the HTTP headers to forward to the extension (from the
-      client). If omitted, all headers are sent. Each element is a string
-      indicating the header name.
+      List of the HTTP headers to forward to the extension (from the client). If
+      omitted, all headers are sent. Each element is a string indicating the
+      header name.
     type: array
     items:
       type: string
@@ -81,28 +68,25 @@ properties:
     $ref: LabelsValue.yaml
   loadBalancingScheme:
     description: |-
-      All backend services and forwarding rules referenced by this
-      extension must share the same load balancing scheme. Supported
-      values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
-      information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-
-      service).
+      All backend services and forwarding rules referenced by this extension
+      must share the same load balancing scheme. Supported values:
+      `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+      [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
     type: string
     enum:
     - EXTERNAL_MANAGED
     - INTERNAL_MANAGED
-    - INTERNAL_SELF_MANAGED
     - LOAD_BALANCING_SCHEME_UNSPECIFIED
   metadata:
     description: |-
       The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
-      `ProcessingRequest` message sent to the extension server. The
-      metadata is available under the namespace
-      `com.google.authz_extension.`. The following variables are
-      supported in the metadata Struct: `{forwarding_rule_id}` -
-      substituted with the forwarding rule's fully qualified resource
-      name.
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
     type: object
   name:
     description: |-
@@ -112,27 +96,26 @@ properties:
     type: string
   service:
     description: |-
-      The reference to the service that runs the extension. Currently
-      only callout extensions are supported here. To configure a callout
-      extension, `service` must be a fully-qualified reference to a
-      [backend
-      service](https://cloud.google.com/compute/docs/reference/rest/v
-      1/backendServices) in the format:
-      `https://www.googleapis.com/compute/v1 /projects/{project}/regions
-      /{region}/backendServices/{backendService}` or `https://www.google
-      apis.com/compute/v1/projects/{project}/global/back
-      endServices/{backendService}`.
+      The reference to the service that runs the extension. To configure a
+      callout extension, `service` must be a fully-qualified reference to a
+      [backend service](https://cloud.google.com/compute/docs/r
+      eference/rest/v1/backendServices) in the format:
+      `https://www.googleapis .com/compute/v1/projects/{project}/regions/{re
+      gion}/backendServices/{bac kendService}` or
+      `https://www.googleapis.com/compute/v1/projects/{projec
+      t}/global/backendServices/{backendService}`.
     type: string
   timeout:
     description: |-
-      Specifies the timeout for each individual message on the stream.
-      The timeout must be between 10-10000 milliseconds.
+      Specifies the timeout for each individual message on the stream. The
+      timeout must be between 10-10000 milliseconds.
     type: string
   wireFormat:
     description: |-
-      The format of communication supported by the callout extension. If
-      not specified, the default is `EXT_PROC_GRPC`.
+      The format of communication supported by the callout extension. If not
+      specified, the default value `EXT_PROC_GRPC` is used.
     type: string
     enum:
+    - EXT_AUTHZ_GRPC
     - EXT_PROC_GRPC
     - WIRE_FORMAT_UNSPECIFIED

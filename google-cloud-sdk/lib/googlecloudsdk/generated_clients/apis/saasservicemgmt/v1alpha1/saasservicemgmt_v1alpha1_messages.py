@@ -167,8 +167,8 @@ class EvaluationSpec(_messages.Message):
   r"""EvaluationSpec holds rules for evaluating the value of a flag.
 
   Fields:
-    defaultTarget: Default variant for the flag.
-    variants: A list of variants.
+    defaultTarget: Required. Default variant for the flag.
+    variants: Optional. A list of variants.
   """
 
   defaultTarget = _messages.StringField(1)
@@ -231,9 +231,13 @@ class Flag(_messages.Message):
     Values:
       FLAG_VALUE_TYPE_UNSPECIFIED: <no description>
       FLAG_VALUE_TYPE_BOOL: <no description>
+      FLAG_VALUE_TYPE_INT: <no description>
+      FLAG_VALUE_TYPE_STRING: <no description>
     """
     FLAG_VALUE_TYPE_UNSPECIFIED = 0
     FLAG_VALUE_TYPE_BOOL = 1
+    FLAG_VALUE_TYPE_INT = 2
+    FLAG_VALUE_TYPE_STRING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -5009,11 +5013,15 @@ class Variant(_messages.Message):
 
   Fields:
     boolValue: A boolean attribute.
-    name: Name of the variant. Max length: 128 bytes.
+    intValue: A string attribute.
+    name: Required. Name of the variant. Max length: 128 bytes.
+    stringValue: A string attribute.
   """
 
   boolValue = _messages.BooleanField(1)
-  name = _messages.StringField(2)
+  intValue = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  stringValue = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

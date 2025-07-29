@@ -54,6 +54,33 @@ class NotebooksV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CheckAuthorization(self, request, global_params=None):
+      r"""Initiated by Cloud Console for Oauth consent flow for Workbench Instances. Do not use this method directly. Design doc: go/wbi-euc:auth-dd.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesCheckAuthorizationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckAuthorizationResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckAuthorization')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckAuthorization.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:checkAuthorization',
+        http_method='POST',
+        method_id='notebooks.projects.locations.instances.checkAuthorization',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:checkAuthorization',
+        request_field='checkAuthorizationRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesCheckAuthorizationRequest',
+        response_type_name='CheckAuthorizationResponse',
+        supports_download=False,
+    )
+
     def CheckUpgradability(self, request, global_params=None):
       r"""Checks whether a notebook instance is upgradable.
 
@@ -159,6 +186,33 @@ class NotebooksV2(base_api.BaseApiClient):
         request_field='diagnoseInstanceRequest',
         request_type_name='NotebooksProjectsLocationsInstancesDiagnoseRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def GenerateAccessToken(self, request, global_params=None):
+      r"""Called by VM to return an EUC for the instance owner. Do not use this method directly. Design doc: go/wbi-euc:dd.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesGenerateAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:generateAccessToken',
+        http_method='POST',
+        method_id='notebooks.projects.locations.instances.generateAccessToken',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:generateAccessToken',
+        request_field='generateAccessTokenRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesGenerateAccessTokenRequest',
+        response_type_name='GenerateAccessTokenResponse',
         supports_download=False,
     )
 

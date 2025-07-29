@@ -102,7 +102,7 @@ def InvestigationShort(investigation):
         {}
         """).format(
       investigation["name"],
-      investigation["title"],
+      investigation["title"] if "title" in investigation else "No Title",
       investigation["executionState"],
       textwrap.indent("\n".join(map(InputObservationShort, inputs)), "  "),
       textwrap.indent("\n".join(map(ObservationShort, observations)), "  "),
@@ -242,7 +242,7 @@ def InvestigationDetailed(investigation):
         {}
         """).format(
       investigation["name"],
-      investigation["title"],
+      investigation["title"] if "title" in investigation else "No Title",
       investigation["executionState"],
       textwrap.indent("\n".join(map(InputObservationDetailed, inputs)), "  "),
       textwrap.indent("\n".join(map(ObservationDetailed, observations)), "  "),

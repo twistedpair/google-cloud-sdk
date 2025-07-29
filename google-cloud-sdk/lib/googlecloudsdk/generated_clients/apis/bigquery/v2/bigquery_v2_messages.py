@@ -933,7 +933,16 @@ class BigqueryJobsDeleteResponse(_messages.Message):
 class BigqueryJobsGetQueryResultsRequest(_messages.Message):
   r"""A BigqueryJobsGetQueryResultsRequest object.
 
+  Enums:
+    FormatOptionsTimestampOutputFormatValueValuesEnum: Optional. The API
+      output format for a timestamp. This offers more explicit control over
+      the timestamp output format as compared to the existing
+      `use_int64_timestamp` option.
+
   Fields:
+    formatOptions_timestampOutputFormat: Optional. The API output format for a
+      timestamp. This offers more explicit control over the timestamp output
+      format as compared to the existing `use_int64_timestamp` option.
     formatOptions_useInt64Timestamp: Optional. Output timestamp as usec int64.
       Default is false.
     jobId: Required. Job ID of the query job.
@@ -961,14 +970,33 @@ class BigqueryJobsGetQueryResultsRequest(_messages.Message):
       jobComplete field in the getQueryResults response is true.
   """
 
-  formatOptions_useInt64Timestamp = _messages.BooleanField(1)
-  jobId = _messages.StringField(2, required=True)
-  location = _messages.StringField(3)
-  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(5)
-  projectId = _messages.StringField(6, required=True)
-  startIndex = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  timeoutMs = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  class FormatOptionsTimestampOutputFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The API output format for a timestamp. This offers more
+    explicit control over the timestamp output format as compared to the
+    existing `use_int64_timestamp` option.
+
+    Values:
+      TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED: Corresponds to default API output
+        behavior, which is FLOAT64.
+      FLOAT64: Timestamp is output as float64 seconds since Unix epoch.
+      INT64: Timestamp is output as int64 microseconds since Unix epoch.
+      ISO8601_STRING: Timestamp is output as ISO 8601 String ("YYYY-MM-
+        DDTHH:MM:SS.FFFFFFFFFFFFZ").
+    """
+    TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED = 0
+    FLOAT64 = 1
+    INT64 = 2
+    ISO8601_STRING = 3
+
+  formatOptions_timestampOutputFormat = _messages.EnumField('FormatOptionsTimestampOutputFormatValueValuesEnum', 1)
+  formatOptions_useInt64Timestamp = _messages.BooleanField(2)
+  jobId = _messages.StringField(3, required=True)
+  location = _messages.StringField(4)
+  maxResults = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(6)
+  projectId = _messages.StringField(7, required=True)
+  startIndex = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  timeoutMs = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
 
 
 class BigqueryJobsGetRequest(_messages.Message):
@@ -1483,8 +1511,17 @@ class BigqueryTabledataInsertAllRequest(_messages.Message):
 class BigqueryTabledataListRequest(_messages.Message):
   r"""A BigqueryTabledataListRequest object.
 
+  Enums:
+    FormatOptionsTimestampOutputFormatValueValuesEnum: Optional. The API
+      output format for a timestamp. This offers more explicit control over
+      the timestamp output format as compared to the existing
+      `use_int64_timestamp` option.
+
   Fields:
     datasetId: Required. Dataset id of the table to list.
+    formatOptions_timestampOutputFormat: Optional. The API output format for a
+      timestamp. This offers more explicit control over the timestamp output
+      format as compared to the existing `use_int64_timestamp` option.
     formatOptions_useInt64Timestamp: Optional. Output timestamp as usec int64.
       Default is false.
     maxResults: Row limit of the table.
@@ -1498,14 +1535,33 @@ class BigqueryTabledataListRequest(_messages.Message):
     tableId: Required. Table id of the table to list.
   """
 
+  class FormatOptionsTimestampOutputFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The API output format for a timestamp. This offers more
+    explicit control over the timestamp output format as compared to the
+    existing `use_int64_timestamp` option.
+
+    Values:
+      TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED: Corresponds to default API output
+        behavior, which is FLOAT64.
+      FLOAT64: Timestamp is output as float64 seconds since Unix epoch.
+      INT64: Timestamp is output as int64 microseconds since Unix epoch.
+      ISO8601_STRING: Timestamp is output as ISO 8601 String ("YYYY-MM-
+        DDTHH:MM:SS.FFFFFFFFFFFFZ").
+    """
+    TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED = 0
+    FLOAT64 = 1
+    INT64 = 2
+    ISO8601_STRING = 3
+
   datasetId = _messages.StringField(1, required=True)
-  formatOptions_useInt64Timestamp = _messages.BooleanField(2)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
-  selectedFields = _messages.StringField(6)
-  startIndex = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  tableId = _messages.StringField(8, required=True)
+  formatOptions_timestampOutputFormat = _messages.EnumField('FormatOptionsTimestampOutputFormatValueValuesEnum', 2)
+  formatOptions_useInt64Timestamp = _messages.BooleanField(3)
+  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  selectedFields = _messages.StringField(7)
+  startIndex = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  tableId = _messages.StringField(9, required=True)
 
 
 class BigqueryTablesDeleteRequest(_messages.Message):
@@ -2238,12 +2294,39 @@ class CsvOptions(_messages.Message):
 class DataFormatOptions(_messages.Message):
   r"""Options for data format adjustments.
 
+  Enums:
+    TimestampOutputFormatValueValuesEnum: Optional. The API output format for
+      a timestamp. This offers more explicit control over the timestamp output
+      format as compared to the existing `use_int64_timestamp` option.
+
   Fields:
+    timestampOutputFormat: Optional. The API output format for a timestamp.
+      This offers more explicit control over the timestamp output format as
+      compared to the existing `use_int64_timestamp` option.
     useInt64Timestamp: Optional. Output timestamp as usec int64. Default is
       false.
   """
 
-  useInt64Timestamp = _messages.BooleanField(1)
+  class TimestampOutputFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The API output format for a timestamp. This offers more
+    explicit control over the timestamp output format as compared to the
+    existing `use_int64_timestamp` option.
+
+    Values:
+      TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED: Corresponds to default API output
+        behavior, which is FLOAT64.
+      FLOAT64: Timestamp is output as float64 seconds since Unix epoch.
+      INT64: Timestamp is output as int64 microseconds since Unix epoch.
+      ISO8601_STRING: Timestamp is output as ISO 8601 String ("YYYY-MM-
+        DDTHH:MM:SS.FFFFFFFFFFFFZ").
+    """
+    TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED = 0
+    FLOAT64 = 1
+    INT64 = 2
+    ISO8601_STRING = 3
+
+  timestampOutputFormat = _messages.EnumField('TimestampOutputFormatValueValuesEnum', 1)
+  useInt64Timestamp = _messages.BooleanField(2)
 
 
 class DataMaskingStatistics(_messages.Message):
@@ -3568,11 +3651,16 @@ class ExternalRuntimeOptions(_messages.Message):
   r"""Options for the runtime of the external system.
 
   Fields:
-    containerCpu: Optional. Amount of CPU provisioned for the container
-      instance. If not specified, the default value is 0.33 vCPUs.
-    containerMemory: Optional. Amount of memory provisioned for the container
-      instance. Format: {number}{unit} where unit is one of "M", "G", "Mi" and
-      "Gi" (e.g. 1G, 512Mi). If not specified, the default value is 512Mi.
+    containerCpu: Optional. Amount of CPU provisioned for a Python UDF
+      container instance. For more information, see [Configure container
+      limits for Python UDFs](https://cloud.google.com/bigquery/docs/user-
+      defined-functions-python#configure-container-limits)
+    containerMemory: Optional. Amount of memory provisioned for a Python UDF
+      container instance. Format: {number}{unit} where unit is one of "M",
+      "G", "Mi" and "Gi" (e.g. 1G, 512Mi). If not specified, the default value
+      is 512Mi. For more information, see [Configure container limits for
+      Python UDFs](https://cloud.google.com/bigquery/docs/user-defined-
+      functions-python#configure-container-limits)
     maxBatchingRows: Optional. Maximum number of rows in each batch sent to
       the external runtime. If absent or if 0, BigQuery dynamically decides
       the number of rows in a batch.
@@ -3580,7 +3668,8 @@ class ExternalRuntimeOptions(_messages.Message):
       service account will be used to execute the code in the container.
       Format: ```"projects/{project_id}/locations/{location_id}/connections/{c
       onnection_id}"```
-    runtimeVersion: Optional. Language runtime version (e.g. python-3.11).
+    runtimeVersion: Optional. Language runtime version. Example:
+      `python-3.11`.
   """
 
   containerCpu = _messages.FloatField(1)
@@ -3603,6 +3692,9 @@ class ExternalServiceCost(_messages.Message):
   billing purposes. Output only.
 
   Fields:
+    billingMethod: The billing method used for the external job. This field is
+      only used when billed on the services sku, set to "SERVICES_SKU".
+      Otherwise, it is unspecified for backward compatibility.
     bytesBilled: External service cost in terms of bigquery bytes billed.
     bytesProcessed: External service cost in terms of bigquery bytes
       processed.
@@ -3613,11 +3705,12 @@ class ExternalServiceCost(_messages.Message):
     slotMs: External service cost in terms of bigquery slot milliseconds.
   """
 
-  bytesBilled = _messages.IntegerField(1)
-  bytesProcessed = _messages.IntegerField(2)
-  externalService = _messages.StringField(3)
-  reservedSlotCount = _messages.IntegerField(4)
-  slotMs = _messages.IntegerField(5)
+  billingMethod = _messages.StringField(1)
+  bytesBilled = _messages.IntegerField(2)
+  bytesProcessed = _messages.IntegerField(3)
+  externalService = _messages.StringField(4)
+  reservedSlotCount = _messages.IntegerField(5)
+  slotMs = _messages.IntegerField(6)
 
 
 class FeatureValue(_messages.Message):
@@ -4271,6 +4364,10 @@ class JobConfiguration(_messages.Message):
       values are optional. Label keys must start with a letter and each label
       in the list must have a different key.
     load: [Pick one] Configures a load job.
+    maxSlots: Optional. INTERNAL: DO NOT USE. The maximum rate of slot
+      consumption to allow for this job. If set, the number of slots used to
+      execute the job will be throttled to try and keep its slot consumption
+      below the requested rate.
     query: [Pick one] Configures a query job.
     reservation: Optional. The reservation that job would use. User can
       specify a reservation to execute the job. If reservation is not set,
@@ -4315,8 +4412,9 @@ class JobConfiguration(_messages.Message):
   jobType = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   load = _messages.MessageField('JobConfigurationLoad', 7)
-  query = _messages.MessageField('JobConfigurationQuery', 8)
-  reservation = _messages.StringField(9)
+  maxSlots = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  query = _messages.MessageField('JobConfigurationQuery', 9)
+  reservation = _messages.StringField(10)
 
 
 class JobConfigurationExtract(_messages.Message):
@@ -5438,6 +5536,10 @@ class JobStatistics2(_messages.Message):
       upper bound of what the query would cost.
     totalPartitionsProcessed: Output only. Total number of partitions
       processed from all partitioned tables referenced in the job.
+    totalServicesSkuSlotMs: Output only. Total slot-milliseconds for the job
+      that run on external services and billed on the service SKU. This field
+      is only populated for jobs that have external service costs, and is the
+      total of the usage for costs whose billing method is "SERVICES_SKU".
     totalSlotMs: Output only. Slot-milliseconds for the job.
     transferredBytes: Output only. Total bytes transferred for cross-cloud
       queries such as Cross Cloud Transfer and CREATE TABLE AS SELECT (CTAS).
@@ -5500,10 +5602,11 @@ class JobStatistics2(_messages.Message):
   totalBytesProcessed = _messages.IntegerField(38)
   totalBytesProcessedAccuracy = _messages.StringField(39)
   totalPartitionsProcessed = _messages.IntegerField(40)
-  totalSlotMs = _messages.IntegerField(41)
-  transferredBytes = _messages.IntegerField(42)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 43, repeated=True)
-  vectorSearchStatistics = _messages.MessageField('VectorSearchStatistics', 44)
+  totalServicesSkuSlotMs = _messages.IntegerField(41)
+  totalSlotMs = _messages.IntegerField(42)
+  transferredBytes = _messages.IntegerField(43)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 44, repeated=True)
+  vectorSearchStatistics = _messages.MessageField('VectorSearchStatistics', 45)
 
 
 class JobStatistics3(_messages.Message):
@@ -6558,10 +6661,13 @@ class PythonOptions(_messages.Message):
   r"""Options for a user-defined Python function.
 
   Fields:
-    entryPoint: Required. The entry point function in the user's Python code.
-    packages: Optional. A list of package names along with versions to be
-      installed. Follows requirements.txt syntax (e.g. numpy==2.0,
-      permutation, urllib3<2.2.1)
+    entryPoint: Required. The name of the function defined in Python code as
+      the entry point when the Python UDF is invoked.
+    packages: Optional. A list of Python package names along with versions to
+      be installed. Example: ["pandas>=2.1", "google-cloud-translate==3.11"].
+      For more information, see [Use third-party
+      packages](https://cloud.google.com/bigquery/docs/user-defined-functions-
+      python#third-party-packages).
   """
 
   entryPoint = _messages.StringField(1)
@@ -6635,6 +6741,10 @@ class QueryParameterType(_messages.Message):
       range.
     structTypes: Optional. The types of the fields of this struct, in order,
       if this is a struct.
+    timestampPrecision: Optional. Precision (maximum number of total digits in
+      base 10) for seconds of TIMESTAMP type. Possible values include: * 6
+      (Default, for TIMESTAMP type with microsecond precision) * 12 (For
+      TIMESTAMP type with picosecond precision)
     type: Required. The top level type of this field.
   """
 
@@ -6654,7 +6764,8 @@ class QueryParameterType(_messages.Message):
   arrayType = _messages.MessageField('QueryParameterType', 1)
   rangeElementType = _messages.MessageField('QueryParameterType', 2)
   structTypes = _messages.MessageField('StructTypesValueListEntry', 3, repeated=True)
-  type = _messages.StringField(4)
+  timestampPrecision = _messages.IntegerField(4, default=6)
+  type = _messages.StringField(5)
 
 
 class QueryParameterValue(_messages.Message):
@@ -6763,6 +6874,10 @@ class QueryRequest(_messages.Message):
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
+    maxSlots: Optional. INTERNAL: DO NOT USE. The maximum rate of slot
+      consumption to allow for this job. If set, the number of slots used to
+      execute the job will be throttled to try and keep its slot consumption
+      below the requested rate. This limit is best effort.
     maximumBytesBilled: Optional. Limits the bytes billed for this query.
       Queries with bytes billed above this limit will fail (without incurring
       a charge). If unspecified, the project default is used.
@@ -6886,17 +7001,18 @@ class QueryRequest(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   location = _messages.StringField(12)
   maxResults = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
-  maximumBytesBilled = _messages.IntegerField(14)
-  parameterMode = _messages.StringField(15)
-  preserveNulls = _messages.BooleanField(16)
-  query = _messages.StringField(17)
-  queryParameters = _messages.MessageField('QueryParameter', 18, repeated=True)
-  requestId = _messages.StringField(19)
-  reservation = _messages.StringField(20)
-  timeoutMs = _messages.IntegerField(21, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(22, default=True)
-  useQueryCache = _messages.BooleanField(23, default=True)
-  writeIncrementalResults = _messages.BooleanField(24)
+  maxSlots = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  maximumBytesBilled = _messages.IntegerField(15)
+  parameterMode = _messages.StringField(16)
+  preserveNulls = _messages.BooleanField(17)
+  query = _messages.StringField(18)
+  queryParameters = _messages.MessageField('QueryParameter', 19, repeated=True)
+  requestId = _messages.StringField(20)
+  reservation = _messages.StringField(21)
+  timeoutMs = _messages.IntegerField(22, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(23, default=True)
+  useQueryCache = _messages.BooleanField(24, default=True)
+  writeIncrementalResults = _messages.BooleanField(25)
 
 
 class QueryResponse(_messages.Message):
@@ -7280,16 +7396,17 @@ class Routine(_messages.Message):
       routines](https://cloud.google.com/bigquery/docs/user-defined-
       functions#custom-mask).
     definitionBody: Required. The body of the routine. For functions, this is
-      the expression in the AS clause. If language=SQL, it is the substring
-      inside (but excluding) the parentheses. For example, for the function
-      created with the following statement: `CREATE FUNCTION JoinLines(x
-      string, y string) as (concat(x, "\n", y))` The definition_body is
-      `concat(x, "\n", y)` (\n is not replaced with linebreak). If
-      language=JAVASCRIPT, it is the evaluated string in the AS clause. For
-      example, for the function created with the following statement: `CREATE
-      FUNCTION f() RETURNS STRING LANGUAGE js AS 'return "\n";\n'` The
-      definition_body is `return "\n";\n` Note that both \n are replaced with
-      linebreaks.
+      the expression in the AS clause. If `language = "SQL"`, it is the
+      substring inside (but excluding) the parentheses. For example, for the
+      function created with the following statement: `CREATE FUNCTION
+      JoinLines(x string, y string) as (concat(x, "\n", y))` The
+      definition_body is `concat(x, "\n", y)` (\n is not replaced with
+      linebreak). If `language="JAVASCRIPT"`, it is the evaluated string in
+      the AS clause. For example, for the function created with the following
+      statement: `CREATE FUNCTION f() RETURNS STRING LANGUAGE js AS 'return
+      "\n";\n'` The definition_body is `return "\n";\n` Note that both \n are
+      replaced with linebreaks. If `definition_body` references another
+      routine, then that routine must be fully qualified with its project ID.
     description: Optional. The description of the routine, if defined.
     determinismLevel: Optional. The determinism level of the JavaScript UDF,
       if defined.
@@ -7304,7 +7421,7 @@ class Routine(_messages.Message):
       absent, not set otherwise.
     lastModifiedTime: Output only. The time when this routine was last
       modified, in milliseconds since the epoch.
-    pythonOptions: Optional. Options for Python UDF.
+    pythonOptions: Optional. Options for the Python UDF.
       [Preview](https://cloud.google.com/products/#product-launch-stages)
     remoteFunctionOptions: Optional. Remote function specific options.
     returnTableType: Optional. Can be set only if routine_type =
@@ -10376,6 +10493,10 @@ encoding.AddCustomJsonEnumMapping(
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
 encoding.AddCustomJsonFieldMapping(
+    BigqueryJobsGetQueryResultsRequest, 'formatOptions_timestampOutputFormat', 'formatOptions.timestampOutputFormat')
+encoding.AddCustomJsonFieldMapping(
     BigqueryJobsGetQueryResultsRequest, 'formatOptions_useInt64Timestamp', 'formatOptions.useInt64Timestamp')
+encoding.AddCustomJsonFieldMapping(
+    BigqueryTabledataListRequest, 'formatOptions_timestampOutputFormat', 'formatOptions.timestampOutputFormat')
 encoding.AddCustomJsonFieldMapping(
     BigqueryTabledataListRequest, 'formatOptions_useInt64Timestamp', 'formatOptions.useInt64Timestamp')

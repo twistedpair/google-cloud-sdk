@@ -1219,6 +1219,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""UpdateServiceAccount updates the corresponding project service account CR in the project namespace in the cluster (infra cluster for V2, user cluster for V1).
+
+      Args:
+        request: (EdgecontainerProjectsLocationsServiceAccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceAccounts/{serviceAccountsId}',
+        http_method='PATCH',
+        method_id='edgecontainer.projects.locations.serviceAccounts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='serviceAccount',
+        request_type_name='EdgecontainerProjectsLocationsServiceAccountsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsVpnConnectionsService(base_api.BaseApiService):
     """Service class for the projects_locations_vpnConnections resource."""
 

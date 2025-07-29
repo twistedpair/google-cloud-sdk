@@ -97,6 +97,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
     self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_sipTrunks = self.ProjectsLocationsSipTrunksService(self)
     self.projects_locations_statelessSuggestion = self.ProjectsLocationsStatelessSuggestionService(self)
     self.projects_locations_suggestions = self.ProjectsLocationsSuggestionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -7377,6 +7378,151 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSipTrunksService(base_api.BaseApiService):
+    """Service class for the projects_locations_sipTrunks resource."""
+
+    _NAME = 'projects_locations_sipTrunks'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsSipTrunksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a SipTrunk for a specified location.
+
+      Args:
+        request: (DialogflowProjectsLocationsSipTrunksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SipTrunk) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sipTrunks',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.sipTrunks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/sipTrunks',
+        request_field='googleCloudDialogflowV2SipTrunk',
+        request_type_name='DialogflowProjectsLocationsSipTrunksCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2SipTrunk',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specified SipTrunk.
+
+      Args:
+        request: (DialogflowProjectsLocationsSipTrunksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sipTrunks/{sipTrunksId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.sipTrunks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsSipTrunksDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified SipTrunk.
+
+      Args:
+        request: (DialogflowProjectsLocationsSipTrunksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SipTrunk) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sipTrunks/{sipTrunksId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.sipTrunks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsSipTrunksGetRequest',
+        response_type_name='GoogleCloudDialogflowV2SipTrunk',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of SipTrunks in the specified location.
+
+      Args:
+        request: (DialogflowProjectsLocationsSipTrunksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListSipTrunksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sipTrunks',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.sipTrunks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sipTrunks',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsSipTrunksListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListSipTrunksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified SipTrunk.
+
+      Args:
+        request: (DialogflowProjectsLocationsSipTrunksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SipTrunk) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sipTrunks/{sipTrunksId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.sipTrunks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2SipTrunk',
+        request_type_name='DialogflowProjectsLocationsSipTrunksPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2SipTrunk',
         supports_download=False,
     )
 

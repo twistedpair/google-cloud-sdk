@@ -86,8 +86,11 @@ class Instance(_messages.Message):
 
   Fields:
     capacityGib: Required. The storage capacity of the instance in gibibytes
-      (GiB). Allowed values are from `18000` to `954000`, in increments of
-      9000.
+      (GiB). Allowed values are from `18000` to `7632000`, depending on the
+      `perUnitStorageThroughput`. See [Performance tiers and maximum storage
+      capacities](https://cloud.google.com/managed-lustre/docs/create-
+      instance#performance-tiers) for specific minimums, maximums, and step
+      sizes for each performance tier.
     createTime: Output only. Timestamp when the instance was created.
     description: Optional. A user-readable description of the instance.
     filesystem: Required. Immutable. The filesystem name for this instance.
@@ -105,7 +108,9 @@ class Instance(_messages.Message):
       the instance is connected. Must be in the format
       `projects/{project_id}/global/networks/{network_name}`.
     perUnitStorageThroughput: Required. The throughput of the instance in
-      MB/s/TiB. Valid values are 125, 250, 500, 1000.
+      MB/s/TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
+      and maximum storage capacities](https://cloud.google.com/managed-
+      lustre/docs/create-instance#performance-tiers) for more information.
     state: Output only. The state of the instance.
     updateTime: Output only. Timestamp when the instance was last updated.
   """

@@ -257,9 +257,12 @@ class AnalyzeBatchRequest(_messages.Message):
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
+    requestorId: Optional. The requestor ID is used to identify if the request
+      comes from a GCA investigation or the old Ask Gemini Experience.
   """
 
   requestId = _messages.StringField(1)
+  requestorId = _messages.StringField(2)
 
 
 class AnalyzeOperationMetadata(_messages.Message):
@@ -1272,7 +1275,10 @@ class Cluster(_messages.Message):
 
 
 class ClusterAuthenticationConfig(_messages.Message):
-  r"""Cluster user workload credential configuration.
+  r"""WIP: User workload credential configuration for Personal Auth v2 in
+  DPGCE Clusters. This is distinct from
+  environmentConfig.executionConfig.authenticationConfig in the s8s config
+  (see shared.proto). Unimplemented and not ready for use.
 
   Enums:
     UserWorkloadAuthenticationTypeValueValuesEnum: Optional. Authentication
@@ -9515,8 +9521,8 @@ class SecurityConfig(_messages.Message):
   r"""Security related configuration, including encryption, Kerberos, etc.
 
   Fields:
-    authenticationConfig: Optional. User workload credential configuration.
-      This is mutually exclusive with the identity_config field.
+    authenticationConfig: Optional. User workload credential configuration
+      (WIP). This is mutually exclusive with the identity_config field.
     identityConfig: Optional. Identity related configuration, including
       service account based secure multi-tenancy user mappings.
     kerberosConfig: Optional. Kerberos related configuration.
@@ -9773,7 +9779,15 @@ class SessionTemplate(_messages.Message):
       empty, but, if present, must contain 1 to 63 characters and conform to
       RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels
       can be associated with a session.
-    name: Required. The resource name of the session template.
+    name: Required. Identifier. The resource name of the session template.
+    preWarmedDriversCount: Optional. The count of drivers to have pre-warmed
+      available for Sessions created from this SessionTemplate. These are
+      created and billed as soon as the SessionTemplate is created. When a
+      Session is created from this SessionTemplate, it will use one of these
+      pre-warmed drivers, if any are available. If not available, then the
+      Session will create its own driver. As soon as a Session adopts one of
+      these pre-warmed drivers, a new pre-warmed driver will be created to
+      replace it.
     runtimeConfig: Optional. Runtime configuration for session execution.
     sparkConnectSession: Optional. Spark connect session config.
     updateTime: Output only. The time the template was last updated.
@@ -9817,10 +9831,11 @@ class SessionTemplate(_messages.Message):
   jupyterSession = _messages.MessageField('JupyterConfig', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  runtimeConfig = _messages.MessageField('RuntimeConfig', 8)
-  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 9)
-  updateTime = _messages.StringField(10)
-  uuid = _messages.StringField(11)
+  preWarmedDriversCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 9)
+  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 10)
+  updateTime = _messages.StringField(11)
+  uuid = _messages.StringField(12)
 
 
 class SetIamPolicyRequest(_messages.Message):

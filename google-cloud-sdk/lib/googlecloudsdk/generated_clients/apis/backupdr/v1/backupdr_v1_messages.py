@@ -420,6 +420,8 @@ class Backup(_messages.Message):
       each other.
     expireTime: Optional. When this backup is automatically expired.
     gcpBackupPlanInfo: Output only. Configuration for a Google Cloud resource.
+    kmsKeyVersions: Optional. Output only. The list of KMS key versions used
+      to encrypt the backup.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined.
     name: Output only. Identifier. Name of the backup to create. It must have
@@ -507,14 +509,15 @@ class Backup(_messages.Message):
   etag = _messages.StringField(11)
   expireTime = _messages.StringField(12)
   gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  resourceSizeBytes = _messages.IntegerField(16)
-  satisfiesPzi = _messages.BooleanField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  serviceLocks = _messages.MessageField('BackupLock', 19, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  updateTime = _messages.StringField(21)
+  kmsKeyVersions = _messages.StringField(14, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  resourceSizeBytes = _messages.IntegerField(17)
+  satisfiesPzi = _messages.BooleanField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  serviceLocks = _messages.MessageField('BackupLock', 20, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -692,8 +695,6 @@ class BackupConfigInfo(_messages.Message):
       BackupVault
     lastSuccessfulBackupConsistencyTime: Output only. If the last backup were
       successful, this field has the consistency date.
-    lastSuccessfulLogBackupConsistencyTime: Output only. If the last log
-      backup were successful, this field has the consistency date.
   """
 
   class LastBackupStateValueValuesEnum(_messages.Enum):
@@ -718,7 +719,6 @@ class BackupConfigInfo(_messages.Message):
   lastBackupError = _messages.MessageField('Status', 3)
   lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 4)
   lastSuccessfulBackupConsistencyTime = _messages.StringField(5)
-  lastSuccessfulLogBackupConsistencyTime = _messages.StringField(6)
 
 
 class BackupDrPlanConfig(_messages.Message):
@@ -823,8 +823,7 @@ class BackupPlan(_messages.Message):
       custom labels to be supplied by the user. Example, {"tag": "Weekly"}.
 
   Fields:
-    backupRules: Required. The backup rules for this `BackupPlan`. There must
-      be at least one `BackupRule` message.
+    backupRules: Optional. The backup rules for this `BackupPlan`.
     backupVault: Required. Resource name of backup vault which will be used as
       storage location for backups. Format:
       projects/{project}/locations/{location}/backupVaults/{backupvault}
@@ -842,14 +841,20 @@ class BackupPlan(_messages.Message):
       prevent stale resources.
     labels: Optional. This collection of key/value pairs allows for custom
       labels to be supplied by the user. Example, {"tag": "Weekly"}.
-    logRetentionDays: Optional. Required for CloudSQL resource_type Configures
-      how long logs will be stored. It is defined in "days". This value should
-      be greater than or equal to minimum enforced log retention duration of
-      the backup vault.
+    logRetentionDays: Optional. Applicable only for CloudSQL resource_type.
+      Configures how long logs will be stored. It is defined in "days". This
+      value should be greater than or equal to minimum enforced log retention
+      duration of the backup vault.
     name: Output only. Identifier. The resource name of the `BackupPlan`.
       Format:
       `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
-    resourceType: Required.
+    onDemandRetentionDaysLimit: Optional. Optional field to configure the
+      maximum number of days for which a backup can be retained. This field is
+      only applicable for on-demand backups taken with custom retention value.
+    resourceType: Required. The resource type to which the `BackupPlan` will
+      be applied. Examples include, "compute.googleapis.com/Instance",
+      "sqladmin.googleapis.com/Instance", "alloydb.googleapis.com/Cluster",
+      "compute.googleapis.com/Disk".
     revisionId: Output only. The user friendly revision ID of the
       `BackupPlanRevision`. Example: v0, v1, v2, etc.
     revisionName: Output only. The resource id of the `BackupPlanRevision`.
@@ -913,12 +918,13 @@ class BackupPlan(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   logRetentionDays = _messages.IntegerField(8)
   name = _messages.StringField(9)
-  resourceType = _messages.StringField(10)
-  revisionId = _messages.StringField(11)
-  revisionName = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  supportedResourceTypes = _messages.StringField(14, repeated=True)
-  updateTime = _messages.StringField(15)
+  onDemandRetentionDaysLimit = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  resourceType = _messages.StringField(11)
+  revisionId = _messages.StringField(12)
+  revisionName = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  supportedResourceTypes = _messages.StringField(15, repeated=True)
+  updateTime = _messages.StringField(16)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -953,7 +959,8 @@ class BackupPlanAssociation(_messages.Message):
       or the full resource URI (e.g.,
       "https://www.googleapis.com/compute/v1/projects/my-project/zones/us-
       central1-a/instances/my-instance").
-    resourceType: Required. Immutable.
+    resourceType: Required. Immutable. Resource type of workload on which
+      backupplan is applied
     rulesConfigInfo: Output only. The config info related to backup rules.
     state: Output only. The BackupPlanAssociation resource state.
     updateTime: Output only. The time when the instance was updated.
@@ -1065,6 +1072,8 @@ class BackupVault(_messages.Message):
       if not provided during creation.
     BackupRetentionInheritanceValueValuesEnum: Optional. Setting for how a
       backup's enforced retention end time is inherited.
+    EncryptionModeValueValuesEnum: Optional. The encryption mode of the backup
+      vault.
     StateValueValuesEnum: Output only. The BackupVault resource instance
       state.
 
@@ -1096,6 +1105,7 @@ class BackupVault(_messages.Message):
       characters or less).
     effectiveTime: Optional. Time after which the BackupVault resource is
       locked.
+    encryptionMode: Optional. The encryption mode of the backup vault.
     etag: Optional. Server specified ETag for the backup vault resource to
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
@@ -1165,6 +1175,23 @@ class BackupVault(_messages.Message):
     BACKUP_RETENTION_INHERITANCE_UNSPECIFIED = 0
     INHERIT_VAULT_RETENTION = 1
     MATCH_BACKUP_EXPIRE_TIME = 2
+
+  class EncryptionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The encryption mode of the backup vault.
+
+    Values:
+      ENCRYPTION_MODE_UNSPECIFIED: Encryption mode not set. This will default
+        to `GMEK_ENCRYPTION`.
+      GMEK_ENCRYPTION: Backups are encrypted with Google-managed encryption
+        keys. This is the default behavior.
+      CMEK_ENCRYPTION: Backups are encrypted with customer-managed encryption
+        keys via Cloud KMS. Note that this option does not provide key
+        compatibility checks and may be subject to cryptoshredding
+        vulnerabilities.
+    """
+    ENCRYPTION_MODE_UNSPECIFIED = 0
+    GMEK_ENCRYPTION = 1
+    CMEK_ENCRYPTION = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The BackupVault resource instance state.
@@ -1244,15 +1271,16 @@ class BackupVault(_messages.Message):
   deletable = _messages.BooleanField(7)
   description = _messages.StringField(8)
   effectiveTime = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  logMinimumEnforcedRetentionDuration = _messages.StringField(12)
-  name = _messages.StringField(13)
-  serviceAccount = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  totalStoredBytes = _messages.IntegerField(16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  encryptionMode = _messages.EnumField('EncryptionModeValueValuesEnum', 10)
+  etag = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  logMinimumEnforcedRetentionDuration = _messages.StringField(13)
+  name = _messages.StringField(14)
+  serviceAccount = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  totalStoredBytes = _messages.IntegerField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class BackupWindow(_messages.Message):
@@ -2380,6 +2408,23 @@ class BackupdrProjectsLocationsManagementServersListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class BackupdrProjectsLocationsManagementServersMsComplianceMetadataRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsManagementServersMsComplianceMetadataRequest
+  object.
+
+  Fields:
+    fetchMsComplianceMetadataRequest: A FetchMsComplianceMetadataRequest
+      resource to be passed as the request body.
+    parent: Required. The project and location to be used to check CSS
+      metadata for target project information, in the format
+      'projects/{project_id}/locations/{location}'. In Cloud BackupDR,
+      locations map to Google Cloud regions, for example **us-central1**.
+  """
+
+  fetchMsComplianceMetadataRequest = _messages.MessageField('FetchMsComplianceMetadataRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class BackupdrProjectsLocationsManagementServersSetIamPolicyRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsManagementServersSetIamPolicyRequest object.
 
@@ -2604,7 +2649,7 @@ class CloudSqlInstanceBackupPlanAssociationProperties(_messages.Message):
 
 class CloudSqlInstanceBackupProperties(_messages.Message):
   r"""CloudSqlInstanceBackupProperties represents Cloud SQL Instance Backup
-  properties. .
+  properties.
 
   Fields:
     databaseInstalledVersion: Output only. The installed database version of
@@ -2626,7 +2671,7 @@ class CloudSqlInstanceBackupProperties(_messages.Message):
 
 class CloudSqlInstanceDataSourceProperties(_messages.Message):
   r"""CloudSqlInstanceDataSourceProperties represents the properties of a
-  Cloud SQL resource that are stored in the DataSource. .
+  Cloud SQL resource that are stored in the DataSource.
 
   Fields:
     databaseInstalledVersion: Output only. The installed database version of
@@ -2649,7 +2694,7 @@ class CloudSqlInstanceDataSourceProperties(_messages.Message):
 
 class CloudSqlInstanceDataSourceReferenceProperties(_messages.Message):
   r"""CloudSqlInstanceDataSourceReferenceProperties represents the properties
-  of a Cloud SQL resource that are stored in the DataSourceReference. .
+  of a Cloud SQL resource that are stored in the DataSourceReference.
 
   Fields:
     databaseInstalledVersion: Output only. The installed database version of
@@ -2861,7 +2906,9 @@ class ComputeInstanceRestoreProperties(_messages.Message):
     description: Optional. An optional description of this resource. Provide
       this property when you create the resource.
     disks: Optional. Array of disks associated with this instance. Persistent
-      disks must be created before you can assign them.
+      disks must be created before you can assign them. Source regional
+      persistent disks will be restored with default replica zones if not
+      specified.
     displayDevice: Optional. Enables display device for the instance.
     guestAccelerators: Optional. A list of the type and count of accelerator
       cards attached to the instance.
@@ -2883,7 +2930,8 @@ class ComputeInstanceRestoreProperties(_messages.Message):
     networkInterfaces: Optional. An array of network configurations for this
       instance. These specify how interfaces are configured to interact with
       other network services, such as connecting to the internet. Multiple
-      interfaces are supported per instance.
+      interfaces are supported per instance. Required to restore in different
+      project or region.
     networkPerformanceConfig: Optional. Configure network performance such as
       egress bandwidth tier.
     params: Input only. Additional params passed with the request, but not
@@ -2892,7 +2940,8 @@ class ComputeInstanceRestoreProperties(_messages.Message):
       the VM. If not specified, use INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Optional. Specifies the reservations that this
       instance can consume from.
-    resourcePolicies: Optional. Resource policies applied to this instance.
+    resourcePolicies: Optional. Resource policies applied to this instance. By
+      default, no resource policies will be applied.
     scheduling: Optional. Sets the scheduling options for this instance.
     serviceAccounts: Optional. A list of service accounts, with their
       specified scopes, authorized for this instance. Only one service account
@@ -3405,7 +3454,7 @@ class DiskRestoreProperties(_messages.Message):
     licenses: Optional. A list of publicly available licenses that are
       applicable to this backup. This is applicable if the original image had
       licenses attached, e.g. Windows image
-    name: Required. Name of the disk..
+    name: Required. Name of the disk.
     physicalBlockSizeBytes: Optional. Physical block size of the persistent
       disk, in bytes. If not present in a request, a default value is used.
       Currently, the supported size is 4096.
@@ -3657,6 +3706,28 @@ class FetchDataSourceReferencesForResourceTypeResponse(_messages.Message):
 
   dataSourceReferences = _messages.MessageField('DataSourceReference', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class FetchMsComplianceMetadataRequest(_messages.Message):
+  r"""Request message for GetMsComplianceMetadata
+
+  Fields:
+    projectId: Required. The project id of the target project
+  """
+
+  projectId = _messages.StringField(1)
+
+
+class FetchMsComplianceMetadataResponse(_messages.Message):
+  r"""Response message for GetMsComplianceMetadata
+
+  Fields:
+    isAssuredWorkload: The ms compliance metadata of the target project, if
+      the project is an assured workloads project, values will be true,
+      otherwise false.
+  """
+
+  isAssuredWorkload = _messages.BooleanField(1)
 
 
 class FetchUsableBackupVaultsResponse(_messages.Message):
@@ -5553,7 +5624,9 @@ class TriggerBackupRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    ruleId: Required. backup rule_id for which a backup needs to be triggered.
+    ruleId: Optional. backup rule_id for which a backup needs to be triggered.
+      If not specified, on-demand backup with custom retention will be
+      triggered.
   """
 
   requestId = _messages.StringField(1)

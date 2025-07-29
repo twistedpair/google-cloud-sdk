@@ -1023,10 +1023,11 @@ def AddInsightsConfigQueryStringLength(parser, hidden=False):
   parser.add_argument(
       '--insights-config-query-string-length',
       required=False,
-      type=arg_parsers.BoundedInt(lower_bound=256, upper_bound=4500),
-      help="""Query string length in bytes to be stored by the query insights
-        feature. Default length is 1024 bytes. Allowed range: 256 to 4500
-        bytes.""",
+      type=arg_parsers.BoundedInt(lower_bound=256, upper_bound=100000),
+      help="""Sets the default query length limit. For Cloud SQL Enterprise edition,
+      the range is from 256 to 4500 (in bytes) and the default query length is 1024
+      bytes. For Cloud SQL Enterprise Plus edition, the range is from 1024 to 100,000
+      (in bytes) and the default query length is 10,000 bytes.""",
       hidden=hidden,
   )
 
@@ -2734,6 +2735,18 @@ def AddUpgradeSqlNetworkArchitecture(parser):
   )
 
 
+def AddForceSqlNetworkArchitecture(parser):
+  """Adds --enforce-new-sql-network-architecture flag."""
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--enforce-new-sql-network-architecture',
+      required=False,
+      help="""Force the instance to use the new network architecture.""",
+      hidden=True,
+      **kwargs
+  )
+
+
 def AddCascadableReplica(parser, hidden=False):
   """Adds --cascadable-replica flag."""
   kwargs = _GetKwargsForBoolFlag(False)
@@ -3246,8 +3259,8 @@ def AddInstanceType(parser):
       '--instance-type',
       choices={
           'CLOUD_SQL_INSTANCE': 'A primary instance.',
-          'READ_REPLICA_INSTANCE': 'A read replica.',
-          'READ_POOL_INSTANCE': 'A read pool.',
+          'READ_REPLICA_INSTANCE': 'A read replica instance.',
+          'READ_POOL_INSTANCE': 'A read pool instance.',
       },
       required=False,
       default=None,
@@ -3298,4 +3311,20 @@ def AddClearPSCNetworkAttachmentUri(parser, hidden=False):
       action='store_true',
       hidden=hidden,
       help="""Disable outbound connectivity from a Cloud SQL instance which uses Private Service Connect (PSC).""",
+  )
+
+
+def AddEnableAcceleratedReplicaMode(parser):
+  """Adds --enable-accelerated-replica-mode flag."""
+  parser.add_argument(
+      '--enable-accelerated-replica-mode',
+      required=False,
+      help=(
+          'Accelerated replica mode improves the write performance of'
+          ' the replica instance by reducing its durability. In case of'
+          ' replica instance crash, it will be recreated from the primary'
+          ' instance.'
+      ),
+      action=arg_parsers.StoreTrueFalseAction,
+      hidden=True,
   )

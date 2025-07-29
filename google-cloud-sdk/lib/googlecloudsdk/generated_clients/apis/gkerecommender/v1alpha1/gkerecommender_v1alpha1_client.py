@@ -74,7 +74,7 @@ class GkerecommenderV1alpha1(base_api.BaseApiClient):
         method_id='gkerecommender.accelerators.list',
         ordered_params=[],
         path_params=[],
-        query_params=['modelName', 'modelServerName', 'modelServerVersion', 'performanceRequirements_cost_costPerMillionInputTokens_nanos', 'performanceRequirements_cost_costPerMillionInputTokens_units', 'performanceRequirements_cost_costPerMillionNormalizedOutputTokens_nanos', 'performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units', 'performanceRequirements_cost_pricingModel', 'performanceRequirements_maxNtpotMilliseconds'],
+        query_params=['modelName', 'modelServerName', 'modelServerVersion', 'performanceRequirements_cost_costPerMillionInputTokens_nanos', 'performanceRequirements_cost_costPerMillionInputTokens_units', 'performanceRequirements_cost_costPerMillionNormalizedOutputTokens_nanos', 'performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units', 'performanceRequirements_cost_outputToInputCostRatio', 'performanceRequirements_cost_pricingModel', 'performanceRequirements_maxNtpotMilliseconds'],
         relative_path='v1alpha1/accelerators',
         request_field='',
         request_type_name='GkerecommenderAcceleratorsListRequest',

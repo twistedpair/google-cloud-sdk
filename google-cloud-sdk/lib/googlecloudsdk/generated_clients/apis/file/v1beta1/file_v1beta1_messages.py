@@ -2346,6 +2346,7 @@ class ReplicaConfig(_messages.Message):
     state: Output only. The replica state.
     stateReasons: Output only. Additional information about the replication
       state, if available.
+    stateUpdateTime: Output only. The time when the replica state was updated.
   """
 
   class StateReasonsValueListEntryValuesEnum(_messages.Enum):
@@ -2371,17 +2372,20 @@ class ReplicaConfig(_messages.Message):
       FAILED: The replica is experiencing an issue and might be unusable. You
         can get further details from the `stateReasons` field of the
         `ReplicaConfig` object.
+      PROMOTING: The replica is being promoted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     REMOVING = 3
     FAILED = 4
+    PROMOTING = 5
 
   lastActiveSyncTime = _messages.StringField(1)
   peerInstance = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   stateReasons = _messages.EnumField('StateReasonsValueListEntryValuesEnum', 4, repeated=True)
+  stateUpdateTime = _messages.StringField(5)
 
 
 class Replication(_messages.Message):

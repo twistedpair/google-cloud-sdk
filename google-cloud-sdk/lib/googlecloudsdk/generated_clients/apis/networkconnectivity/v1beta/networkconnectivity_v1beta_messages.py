@@ -330,7 +330,7 @@ class GoogleCloudNetworkconnectivityV1betaDestinationEndpoint(_messages.Message)
     VALID = 1
     INVALID = 2
 
-  asn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  asn = _messages.IntegerField(1)
   csp = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   updateTime = _messages.StringField(4)
@@ -1148,6 +1148,18 @@ class GoogleCloudNetworkconnectivityV1betaListMulticloudDataTransferConfigsRespo
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudNetworkconnectivityV1betaListMulticloudDataTransferSupportedServicesResponse(_messages.Message):
+  r"""Response message for ListMulticloudDataTransferSupportedServices.
+
+  Fields:
+    multicloudDataTransferSupportedServices: The list of supported services.
+    nextPageToken: The next page token.
+  """
+
+  multicloudDataTransferSupportedServices = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferSupportedService', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudNetworkconnectivityV1betaListPolicyBasedRoutesResponse(_messages.Message):
   r"""Response for PolicyBasedRoutingService.ListPolicyBasedRoutes method.
 
@@ -1368,6 +1380,19 @@ class GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig(_messages
   services = _messages.MessageField('ServicesValue', 8)
   uid = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferSupportedService(_messages.Message):
+  r"""The supported service for Multicloud Data Transfer.
+
+  Fields:
+    name: Identifier. The name of the service.
+    serviceConfigs: Output only. The network service tiers supported for the
+      service.
+  """
+
+  name = _messages.StringField(1)
+  serviceConfigs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaServiceConfig', 2, repeated=True)
 
 
 class GoogleCloudNetworkconnectivityV1betaNextHopInterconnectAttachment(_messages.Message):
@@ -2105,6 +2130,49 @@ class GoogleCloudNetworkconnectivityV1betaRoutingVPC(_messages.Message):
 
   requiredForNewSiteToSiteDataTransferSpokes = _messages.BooleanField(1)
   uri = _messages.StringField(2)
+
+
+class GoogleCloudNetworkconnectivityV1betaServiceConfig(_messages.Message):
+  r"""Specifies the Multicloud Data Transfer supported services configuration.
+  This includes either the network tier or the request endpoint. If end of
+  support for multicloud data transfer is planned for a service's network tier
+  or request endpoint, the end time will be provided.
+
+  Enums:
+    EligibilityCriteriaValueValuesEnum: Output only. The eligibility criteria
+      for the service. The user has to meet the eligibility criteria specified
+      here for the service to qualify for multicloud data transfer.
+
+  Fields:
+    eligibilityCriteria: Output only. The eligibility criteria for the
+      service. The user has to meet the eligibility criteria specified here
+      for the service to qualify for multicloud data transfer.
+    supportEndTime: Output only. The eligibility criteria support end time. If
+      the end time is not specified, no planned end time is available.
+  """
+
+  class EligibilityCriteriaValueValuesEnum(_messages.Enum):
+    r"""Output only. The eligibility criteria for the service. The user has to
+    meet the eligibility criteria specified here for the service to qualify
+    for multicloud data transfer.
+
+    Values:
+      ELIGIBILITY_CRITERIA_UNSPECIFIED: An invalid eligibility criteria as the
+        default case.
+      NETWORK_SERVICE_TIER_PREMIUM_ONLY: The service is eligible for
+        multicloud data transfer only for the premium network tier.
+      NETWORK_SERVICE_TIER_STANDARD_ONLY: The service is eligible for
+        multicloud data transfer only for the standard network tier.
+      REQUEST_ENDPOINT_REGIONAL_ENDPOINT_ONLY: The service is eligible for
+        multicloud data transfer only for the regional endpoint.
+    """
+    ELIGIBILITY_CRITERIA_UNSPECIFIED = 0
+    NETWORK_SERVICE_TIER_PREMIUM_ONLY = 1
+    NETWORK_SERVICE_TIER_STANDARD_ONLY = 2
+    REQUEST_ENDPOINT_REGIONAL_ENDPOINT_ONLY = 3
+
+  eligibilityCriteria = _messages.EnumField('EligibilityCriteriaValueValuesEnum', 1)
+  supportEndTime = _messages.StringField(2)
 
 
 class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
@@ -4039,6 +4107,33 @@ class NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsPatchRequ
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedSer
+  vicesGetRequest object.
+
+  Fields:
+    name: Required. The name of the service.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedSer
+  vicesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results per page that should be
+      returned.
+    pageToken: Optional. The page token.
+    parent: Required. The parent resource's name
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class NetworkconnectivityProjectsLocationsOperationsCancelRequest(_messages.Message):

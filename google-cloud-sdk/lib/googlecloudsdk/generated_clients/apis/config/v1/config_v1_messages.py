@@ -1006,6 +1006,8 @@ class Deployment(_messages.Message):
     lockState: Output only. Current lock state of the deployment.
     name: Identifier. Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
+    providerConfig: Optional. This field specifies the provider
+      configurations.
     quotaValidation: Optional. Input to control quota checks for resources in
       terraform configuration files. There are limited resources on which
       quota validation applies.
@@ -1187,16 +1189,17 @@ class Deployment(_messages.Message):
   latestRevision = _messages.StringField(11)
   lockState = _messages.EnumField('LockStateValueValuesEnum', 12)
   name = _messages.StringField(13)
-  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 14)
-  serviceAccount = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateDetail = _messages.StringField(17)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 18)
-  tfErrors = _messages.MessageField('TerraformError', 19, repeated=True)
-  tfVersion = _messages.StringField(20)
-  tfVersionConstraint = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  workerPool = _messages.StringField(23)
+  providerConfig = _messages.MessageField('ProviderConfig', 14)
+  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 15)
+  serviceAccount = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateDetail = _messages.StringField(18)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 19)
+  tfErrors = _messages.MessageField('TerraformError', 20, repeated=True)
+  tfVersion = _messages.StringField(21)
+  tfVersionConstraint = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  workerPool = _messages.StringField(24)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -1878,6 +1881,8 @@ class Preview(_messages.Message):
       `projects/{project}/locations/{location}/previews/{preview}`
     previewArtifacts: Output only. Artifacts from preview.
     previewMode: Optional. Current mode of preview.
+    providerConfig: Optional. This field specifies the provider
+      configurations.
     serviceAccount: Required. User-specified Service Account (SA) credentials
       to be used when previewing resources. Format:
       `projects/{projectID}/serviceAccounts/{serviceAccount}`
@@ -2027,13 +2032,14 @@ class Preview(_messages.Message):
   name = _messages.StringField(11)
   previewArtifacts = _messages.MessageField('PreviewArtifacts', 12)
   previewMode = _messages.EnumField('PreviewModeValueValuesEnum', 13)
-  serviceAccount = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 16)
-  tfErrors = _messages.MessageField('TerraformError', 17, repeated=True)
-  tfVersion = _messages.StringField(18)
-  tfVersionConstraint = _messages.StringField(19)
-  workerPool = _messages.StringField(20)
+  providerConfig = _messages.MessageField('ProviderConfig', 14)
+  serviceAccount = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 17)
+  tfErrors = _messages.MessageField('TerraformError', 18, repeated=True)
+  tfVersion = _messages.StringField(19)
+  tfVersionConstraint = _messages.StringField(20)
+  workerPool = _messages.StringField(21)
 
 
 class PreviewArtifacts(_messages.Message):
@@ -2153,6 +2159,32 @@ class PropertyDrift(_messages.Message):
   before = _messages.MessageField('extra_types.JsonValue', 3)
   beforeSensitivePaths = _messages.StringField(4, repeated=True)
   path = _messages.StringField(5)
+
+
+class ProviderConfig(_messages.Message):
+  r"""ProviderConfig contains the provider configurations.
+
+  Enums:
+    SourceTypeValueValuesEnum: Optional. ProviderSource specifies the source
+      type of the provider.
+
+  Fields:
+    sourceType: Optional. ProviderSource specifies the source type of the
+      provider.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. ProviderSource specifies the source type of the provider.
+
+    Values:
+      PROVIDER_SOURCE_UNSPECIFIED: Unspecified source type, default to public
+        sources.
+      SERVICE_MAINTAINED: Service maintained provider source type.
+    """
+    PROVIDER_SOURCE_UNSPECIFIED = 0
+    SERVICE_MAINTAINED = 1
+
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 1)
 
 
 class Resource(_messages.Message):
@@ -2401,6 +2433,8 @@ class Revision(_messages.Message):
     name: Revision name. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
+    providerConfig: Output only. This field specifies the provider
+      configurations.
     quotaValidation: Optional. Input to control quota checks for resources in
       terraform configuration files. There are limited resources on which
       quota validation applies.
@@ -2509,17 +2543,18 @@ class Revision(_messages.Message):
   importExistingResources = _messages.BooleanField(7)
   logs = _messages.StringField(8)
   name = _messages.StringField(9)
-  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 10)
-  quotaValidationResults = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateDetail = _messages.StringField(14)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 15)
-  tfErrors = _messages.MessageField('TerraformError', 16, repeated=True)
-  tfVersion = _messages.StringField(17)
-  tfVersionConstraint = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workerPool = _messages.StringField(20)
+  providerConfig = _messages.MessageField('ProviderConfig', 10)
+  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 11)
+  quotaValidationResults = _messages.StringField(12)
+  serviceAccount = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateDetail = _messages.StringField(15)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 16)
+  tfErrors = _messages.MessageField('TerraformError', 17, repeated=True)
+  tfVersion = _messages.StringField(18)
+  tfVersionConstraint = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  workerPool = _messages.StringField(21)
 
 
 class SetIamPolicyRequest(_messages.Message):

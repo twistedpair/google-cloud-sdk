@@ -1391,6 +1391,9 @@ class Cluster(_messages.Message):
       version. This is an optional field and it is populated at the Cluster
       creation time. If a database version is not supplied at cluster creation
       time, then a default database version will be used.
+    MaintenanceVersionSelectionPolicyValueValuesEnum: Input only. Policy to
+      use to automatically select the maintenance version to which to update
+      the cluster's instances.
     StateValueValuesEnum: Output only. The current serving state of the
       cluster.
     SubscriptionTypeValueValuesEnum: Optional. Subscription type of the
@@ -1450,6 +1453,9 @@ class Cluster(_messages.Message):
       set.
     maintenanceUpdatePolicy: Optional. The maintenance update policy
       determines when to allow or deny updates.
+    maintenanceVersionSelectionPolicy: Input only. Policy to use to
+      automatically select the maintenance version to which to update the
+      cluster's instances.
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
@@ -1531,6 +1537,22 @@ class Cluster(_messages.Message):
     POSTGRES_15 = 3
     POSTGRES_16 = 4
     POSTGRES_17 = 5
+
+  class MaintenanceVersionSelectionPolicyValueValuesEnum(_messages.Enum):
+    r"""Input only. Policy to use to automatically select the maintenance
+    version to which to update the cluster's instances.
+
+    Values:
+      MAINTENANCE_VERSION_SELECTION_POLICY_UNSPECIFIED: The maintenance
+        version selection policy is not specified.
+      MAINTENANCE_VERSION_SELECTION_POLICY_LATEST: Use the latest available
+        maintenance version.
+      MAINTENANCE_VERSION_SELECTION_POLICY_DEFAULT: Use the current default
+        maintenance version.
+    """
+    MAINTENANCE_VERSION_SELECTION_POLICY_UNSPECIFIED = 0
+    MAINTENANCE_VERSION_SELECTION_POLICY_LATEST = 1
+    MAINTENANCE_VERSION_SELECTION_POLICY_DEFAULT = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the cluster.
@@ -1672,24 +1694,25 @@ class Cluster(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 17)
   maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
   maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 19)
-  migrationSource = _messages.MessageField('MigrationSource', 20)
-  name = _messages.StringField(21)
-  network = _messages.StringField(22)
-  networkConfig = _messages.MessageField('NetworkConfig', 23)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 24)
-  pscConfig = _messages.MessageField('PscConfig', 25)
-  reconciling = _messages.BooleanField(26)
-  satisfiesPzi = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 29)
-  serviceAccountEmail = _messages.StringField(30)
-  sslConfig = _messages.MessageField('SslConfig', 31)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 33)
-  tags = _messages.MessageField('TagsValue', 34)
-  trialMetadata = _messages.MessageField('TrialMetadata', 35)
-  uid = _messages.StringField(36)
-  updateTime = _messages.StringField(37)
+  maintenanceVersionSelectionPolicy = _messages.EnumField('MaintenanceVersionSelectionPolicyValueValuesEnum', 20)
+  migrationSource = _messages.MessageField('MigrationSource', 21)
+  name = _messages.StringField(22)
+  network = _messages.StringField(23)
+  networkConfig = _messages.MessageField('NetworkConfig', 24)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 25)
+  pscConfig = _messages.MessageField('PscConfig', 26)
+  reconciling = _messages.BooleanField(27)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 30)
+  serviceAccountEmail = _messages.StringField(31)
+  sslConfig = _messages.MessageField('SslConfig', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 34)
+  tags = _messages.MessageField('TagsValue', 35)
+  trialMetadata = _messages.MessageField('TrialMetadata', 36)
+  uid = _messages.StringField(37)
+  updateTime = _messages.StringField(38)
 
 
 class ClusterUpgradeDetails(_messages.Message):
@@ -4069,6 +4092,17 @@ class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message
   pointInTimeRecoveryEnabled = _messages.BooleanField(3)
 
 
+class StorageDatabasecenterPartnerapiV1mainBackupDRConfiguration(_messages.Message):
+  r"""BackupDRConfiguration to capture the backup and disaster recovery
+  details of database resource.
+
+  Fields:
+    backupdrManaged: Indicates if the resource is managed by BackupDR.
+  """
+
+  backupdrManaged = _messages.BooleanField(1)
+
+
 class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
   r"""A backup run.
 
@@ -4574,6 +4608,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
         satisfied.
       SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
+      SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED: Schema not optimized.
+      SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
+      SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
+      SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4672,6 +4710,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
     SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
+    SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED = 97
+    SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
+    SIGNAL_TYPE_REPLICATION_LAG = 99
+    SIGNAL_TYPE_OUTDATED_VERSION = 100
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4791,7 +4833,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 25
+  r"""Common model for database resource instance metadata. Next ID: 26
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -4810,6 +4852,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     availabilityConfiguration: Availability configuration for this instance
     backupConfiguration: Backup configuration for this instance
     backupRun: Latest backup run information for this instance
+    backupdrConfiguration: Optional. BackupDR Configuration for the resource.
     creationTime: The creation time of the resource, i.e. the time when
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
@@ -4958,26 +5001,27 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   availabilityConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration', 1)
   backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 2)
   backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 3)
-  creationTime = _messages.StringField(4)
-  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
-  customMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCustomMetadataData', 6)
-  edition = _messages.EnumField('EditionValueValuesEnum', 7)
-  entitlements = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainEntitlement', 8, repeated=True)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 9)
-  gcbdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainGCBDRConfiguration', 10)
-  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 11)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
-  location = _messages.StringField(13)
-  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 14)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 15)
-  primaryResourceLocation = _messages.StringField(16)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 17)
-  resourceContainer = _messages.StringField(18)
-  resourceName = _messages.StringField(19)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 20)
-  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 21)
-  updationTime = _messages.StringField(22)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 23)
+  backupdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRConfiguration', 4)
+  creationTime = _messages.StringField(5)
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 6)
+  customMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCustomMetadataData', 7)
+  edition = _messages.EnumField('EditionValueValuesEnum', 8)
+  entitlements = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainEntitlement', 9, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 10)
+  gcbdrConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainGCBDRConfiguration', 11)
+  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 12)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
+  location = _messages.StringField(14)
+  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 15)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 16)
+  primaryResourceLocation = _messages.StringField(17)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 18)
+  resourceContainer = _messages.StringField(19)
+  resourceName = _messages.StringField(20)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 21)
+  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 22)
+  updationTime = _messages.StringField(23)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 24)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -5267,6 +5311,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED: Location org policy not
         satisfied.
       SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
+      SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED: Schema not optimized.
+      SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
+      SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
+      SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5365,6 +5413,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_ENCRYPTION_ORG_POLICY_NOT_SATISFIED = 94
     SIGNAL_TYPE_LOCATION_ORG_POLICY_NOT_SATISFIED = 95
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
+    SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED = 97
+    SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
+    SIGNAL_TYPE_REPLICATION_LAG = 99
+    SIGNAL_TYPE_OUTDATED_VERSION = 100
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -5788,6 +5840,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
         be when engine is known, but it is not present in this enum.
       ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
       ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
+      ENGINE_FIRESTORE_WITH_MONGODB_COMPATIBILITY_MODE: Firestore with MongoDB
+        compatibility mode.
       ENGINE_EXADATA_ORACLE: Oracle Exadata engine.
       ENGINE_ADB_SERVERLESS_ORACLE: Oracle Autonomous DB Serverless engine.
     """
@@ -5807,8 +5861,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     ENGINE_OTHER = 13
     ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
     ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
-    ENGINE_EXADATA_ORACLE = 16
-    ENGINE_ADB_SERVERLESS_ORACLE = 17
+    ENGINE_FIRESTORE_WITH_MONGODB_COMPATIBILITY_MODE = 16
+    ENGINE_EXADATA_ORACLE = 17
+    ENGINE_ADB_SERVERLESS_ORACLE = 18
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..

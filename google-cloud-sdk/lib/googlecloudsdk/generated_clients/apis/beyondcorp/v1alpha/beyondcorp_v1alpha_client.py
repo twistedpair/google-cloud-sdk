@@ -2202,7 +2202,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Application.
+      r"""Deletes a single application.
 
       Args:
         request: (BeyondcorpProjectsLocationsSecurityGatewaysApplicationsDeleteRequest) input message
@@ -2401,7 +2401,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new SecurityGateway in a given project and location.
+      r"""Creates a new Security Gateway in a given project and location.
 
       Args:
         request: (BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest) input message

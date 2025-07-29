@@ -152,6 +152,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_APPGROUPS_SUBSCRIPTIONS = (
+      'organizations.appgroups.subscriptions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/appgroups/{appgroupsId}/'
+              'subscriptions/{subscriptionsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_APPS = (
       'organizations.apps',
       '{+name}',

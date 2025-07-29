@@ -61,8 +61,6 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
       an event add-on is triggered.
 
   Fields:
-    calendarNotificationTrigger: An endpoint that triggers when an event is
-      created or updated for a Calendar that the user is subscribed to.
     conferenceSolution: Defines conference solutions provided by this add-on.
       Third-party conferencing add-ons can only be built in [Apps
       Script](https://developers.google.com/apps-script/reference/conference-
@@ -108,14 +106,13 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
     WRITE = 3
     READ_WRITE = 4
 
-  calendarNotificationTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 1)
-  conferenceSolution = _messages.MessageField('GoogleAppsScriptTypeCalendarConferenceSolution', 2, repeated=True)
-  createSettingsUrlFunction = _messages.StringField(3)
-  currentEventAccess = _messages.EnumField('CurrentEventAccessValueValuesEnum', 4)
-  eventAttachmentTrigger = _messages.MessageField('GoogleAppsScriptTypeMenuItemExtensionPoint', 5)
-  eventOpenTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 6)
-  eventUpdateTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 7)
-  homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 8)
+  conferenceSolution = _messages.MessageField('GoogleAppsScriptTypeCalendarConferenceSolution', 1, repeated=True)
+  createSettingsUrlFunction = _messages.StringField(2)
+  currentEventAccess = _messages.EnumField('CurrentEventAccessValueValuesEnum', 3)
+  eventAttachmentTrigger = _messages.MessageField('GoogleAppsScriptTypeMenuItemExtensionPoint', 4)
+  eventOpenTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 5)
+  eventUpdateTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 6)
+  homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 7)
 
 
 class GoogleAppsScriptTypeCalendarCalendarExtensionPoint(_messages.Message):

@@ -488,6 +488,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SIPTRUNKS = (
+      'projects.locations.sipTrunks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sipTrunks/'
+              '{sipTrunksId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_OPERATIONS = (
       'projects.operations',
       '{+name}',

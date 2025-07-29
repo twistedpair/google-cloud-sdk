@@ -280,12 +280,149 @@ class Bucket(_messages.Message):
   class EncryptionValue(_messages.Message):
     r"""Encryption configuration for a bucket.
 
+    Messages:
+      CustomerManagedEncryptionEnforcementConfigValue: If set, the new objects
+        created in this bucket must comply with this enforcement config.
+        Changing this has no effect on existing objects; it applies to new
+        objects only. If omitted, the new objects are allowed to be encrypted
+        with Customer Managed Encryption type by default.
+      CustomerSuppliedEncryptionEnforcementConfigValue: If set, the new
+        objects created in this bucket must comply with this enforcement
+        config. Changing this has no effect on existing objects; it applies to
+        new objects only. If omitted, the new objects are allowed to be
+        encrypted with Customer Supplied Encryption type by default.
+      GoogleManagedEncryptionEnforcementConfigValue: If set, the new objects
+        created in this bucket must comply with this enforcement config.
+        Changing this has no effect on existing objects; it applies to new
+        objects only. If omitted, the new objects are allowed to be encrypted
+        with Google Managed Encryption type by default.
+
     Fields:
+      customerManagedEncryptionEnforcementConfig: If set, the new objects
+        created in this bucket must comply with this enforcement config.
+        Changing this has no effect on existing objects; it applies to new
+        objects only. If omitted, the new objects are allowed to be encrypted
+        with Customer Managed Encryption type by default.
+      customerSuppliedEncryptionEnforcementConfig: If set, the new objects
+        created in this bucket must comply with this enforcement config.
+        Changing this has no effect on existing objects; it applies to new
+        objects only. If omitted, the new objects are allowed to be encrypted
+        with Customer Supplied Encryption type by default.
       defaultKmsKeyName: A Cloud KMS key that will be used to encrypt objects
         inserted into this bucket, if no encryption method is specified.
+      googleManagedEncryptionEnforcementConfig: If set, the new objects
+        created in this bucket must comply with this enforcement config.
+        Changing this has no effect on existing objects; it applies to new
+        objects only. If omitted, the new objects are allowed to be encrypted
+        with Google Managed Encryption type by default.
     """
 
-    defaultKmsKeyName = _messages.StringField(1)
+    class CustomerManagedEncryptionEnforcementConfigValue(_messages.Message):
+      r"""If set, the new objects created in this bucket must comply with this
+      enforcement config. Changing this has no effect on existing objects; it
+      applies to new objects only. If omitted, the new objects are allowed to
+      be encrypted with Customer Managed Encryption type by default.
+
+      Enums:
+        RestrictionModeValueValuesEnum: Restriction mode for Customer-Managed
+          Encryption Keys. Defaults to NotRestricted.
+
+      Fields:
+        effectiveTime: Server-determined value that indicates the time from
+          which configuration was enforced and effective. This value is in RFC
+          3339 format.
+        restrictionMode: Restriction mode for Customer-Managed Encryption
+          Keys. Defaults to NotRestricted.
+      """
+
+      class RestrictionModeValueValuesEnum(_messages.Enum):
+        r"""Restriction mode for Customer-Managed Encryption Keys. Defaults to
+        NotRestricted.
+
+        Values:
+          NotRestricted: Creation of new objects with Customer-Managed
+            Encryption is not restricted.
+          FullyRestricted: Creation of new objects with Customer-Managed
+            Encryption is fully restricted.
+        """
+        NotRestricted = 0
+        FullyRestricted = 1
+
+      effectiveTime = _message_types.DateTimeField(1)
+      restrictionMode = _messages.EnumField('RestrictionModeValueValuesEnum', 2)
+
+    class CustomerSuppliedEncryptionEnforcementConfigValue(_messages.Message):
+      r"""If set, the new objects created in this bucket must comply with this
+      enforcement config. Changing this has no effect on existing objects; it
+      applies to new objects only. If omitted, the new objects are allowed to
+      be encrypted with Customer Supplied Encryption type by default.
+
+      Enums:
+        RestrictionModeValueValuesEnum: Restriction mode for Customer-Supplied
+          Encryption Keys. Defaults to NotRestricted.
+
+      Fields:
+        effectiveTime: Server-determined value that indicates the time from
+          which configuration was enforced and effective. This value is in RFC
+          3339 format.
+        restrictionMode: Restriction mode for Customer-Supplied Encryption
+          Keys. Defaults to NotRestricted.
+      """
+
+      class RestrictionModeValueValuesEnum(_messages.Enum):
+        r"""Restriction mode for Customer-Supplied Encryption Keys. Defaults
+        to NotRestricted.
+
+        Values:
+          NotRestricted: Creation of new objects with Customer-Supplied
+            Encryption is not restricted.
+          FullyRestricted: Creation of new objects with Customer-Supplied
+            Encryption is fully restricted.
+        """
+        NotRestricted = 0
+        FullyRestricted = 1
+
+      effectiveTime = _message_types.DateTimeField(1)
+      restrictionMode = _messages.EnumField('RestrictionModeValueValuesEnum', 2)
+
+    class GoogleManagedEncryptionEnforcementConfigValue(_messages.Message):
+      r"""If set, the new objects created in this bucket must comply with this
+      enforcement config. Changing this has no effect on existing objects; it
+      applies to new objects only. If omitted, the new objects are allowed to
+      be encrypted with Google Managed Encryption type by default.
+
+      Enums:
+        RestrictionModeValueValuesEnum: Restriction mode for Google-Managed
+          Encryption Keys. Defaults to NotRestricted.
+
+      Fields:
+        effectiveTime: Server-determined value that indicates the time from
+          which configuration was enforced and effective. This value is in RFC
+          3339 format.
+        restrictionMode: Restriction mode for Google-Managed Encryption Keys.
+          Defaults to NotRestricted.
+      """
+
+      class RestrictionModeValueValuesEnum(_messages.Enum):
+        r"""Restriction mode for Google-Managed Encryption Keys. Defaults to
+        NotRestricted.
+
+        Values:
+          NotRestricted: Creation of new objects with Google Managed
+            Encryption is not restricted.
+          FullyRestricted: Creation of new objects with Google Managed
+            Encryption is fully restricted.
+        """
+        NotRestricted = 0
+        FullyRestricted = 1
+
+      effectiveTime = _message_types.DateTimeField(1)
+      restrictionMode = _messages.EnumField('RestrictionModeValueValuesEnum', 2)
+
+    customerManagedEncryptionEnforcementConfig = _messages.MessageField('CustomerManagedEncryptionEnforcementConfigValue', 1)
+    customerSuppliedEncryptionEnforcementConfig = _messages.MessageField('CustomerSuppliedEncryptionEnforcementConfigValue', 2)
+    defaultKmsKeyName = _messages.StringField(3)
+    googleManagedEncryptionEnforcementConfig = _messages.MessageField('GoogleManagedEncryptionEnforcementConfigValue', 4)
 
   class HierarchicalNamespaceValue(_messages.Message):
     r"""The bucket's hierarchical namespace configuration.
@@ -1422,6 +1559,9 @@ class Object(_messages.Message):
   r"""An object.
 
   Messages:
+    ContextsValue: User-defined or system-defined object contexts. Each object
+      context is a key-payload pair, where the key provides the identification
+      and the payload holds the associated value and additional metadata.
     CustomerEncryptionValue: Metadata of customer-supplied encryption key, if
       the object is encrypted by such a key.
     MetadataValue: User-provided metadata, in key/value pairs.
@@ -1442,6 +1582,9 @@ class Object(_messages.Message):
     contentLanguage: Content-Language of the object data.
     contentType: Content-Type of the object data. If an object is stored
       without a Content-Type, it is served as application/octet-stream.
+    contexts: User-defined or system-defined object contexts. Each object
+      context is a key-payload pair, where the key provides the identification
+      and the payload holds the associated value and additional metadata.
     crc32c: CRC32c checksum, as described in RFC 4960, Appendix B; encoded
       using base64 in big-endian byte order. For more information about using
       the CRC32c checksum, see [Data Validation and Change
@@ -1524,6 +1667,44 @@ class Object(_messages.Message):
       class based on an Object Lifecycle Configuration.
   """
 
+  class ContextsValue(_messages.Message):
+    r"""User-defined or system-defined object contexts. Each object context is
+    a key-payload pair, where the key provides the identification and the
+    payload holds the associated value and additional metadata.
+
+    Messages:
+      CustomValue: User-defined object contexts.
+
+    Fields:
+      custom: User-defined object contexts.
+    """
+
+    @encoding.MapUnrecognizedFields('additionalProperties')
+    class CustomValue(_messages.Message):
+      r"""User-defined object contexts.
+
+      Messages:
+        AdditionalProperty: An additional property for a CustomValue object.
+
+      Fields:
+        additionalProperties: A single user-defined object context.
+      """
+
+      class AdditionalProperty(_messages.Message):
+        r"""An additional property for a CustomValue object.
+
+        Fields:
+          key: Name of the additional property.
+          value: A ObjectCustomContextPayload attribute.
+        """
+
+        key = _messages.StringField(1)
+        value = _messages.MessageField('ObjectCustomContextPayload', 2)
+
+      additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+    custom = _messages.MessageField('CustomValue', 1)
+
   class CustomerEncryptionValue(_messages.Message):
     r"""Metadata of customer-supplied encryption key, if the object is
     encrypted by such a key.
@@ -1593,35 +1774,36 @@ class Object(_messages.Message):
   contentEncoding = _messages.StringField(6)
   contentLanguage = _messages.StringField(7)
   contentType = _messages.StringField(8)
-  crc32c = _messages.StringField(9)
-  customTime = _message_types.DateTimeField(10)
-  customerEncryption = _messages.MessageField('CustomerEncryptionValue', 11)
-  etag = _messages.StringField(12)
-  eventBasedHold = _messages.BooleanField(13)
-  generation = _messages.IntegerField(14)
-  hardDeleteTime = _message_types.DateTimeField(15)
-  id = _messages.StringField(16)
-  kind = _messages.StringField(17, default='storage#object')
-  kmsKeyName = _messages.StringField(18)
-  md5Hash = _messages.StringField(19)
-  mediaLink = _messages.StringField(20)
-  metadata = _messages.MessageField('MetadataValue', 21)
-  metageneration = _messages.IntegerField(22)
-  name = _messages.StringField(23)
-  owner = _messages.MessageField('OwnerValue', 24)
-  restoreToken = _messages.StringField(25)
-  retention = _messages.MessageField('RetentionValue', 26)
-  retentionExpirationTime = _message_types.DateTimeField(27)
-  selfLink = _messages.StringField(28)
-  size = _messages.IntegerField(29, variant=_messages.Variant.UINT64)
-  softDeleteTime = _message_types.DateTimeField(30)
-  storageClass = _messages.StringField(31)
-  temporaryHold = _messages.BooleanField(32)
-  timeCreated = _message_types.DateTimeField(33)
-  timeDeleted = _message_types.DateTimeField(34)
-  timeFinalized = _message_types.DateTimeField(35)
-  timeStorageClassUpdated = _message_types.DateTimeField(36)
-  updated = _message_types.DateTimeField(37)
+  contexts = _messages.MessageField('ContextsValue', 9)
+  crc32c = _messages.StringField(10)
+  customTime = _message_types.DateTimeField(11)
+  customerEncryption = _messages.MessageField('CustomerEncryptionValue', 12)
+  etag = _messages.StringField(13)
+  eventBasedHold = _messages.BooleanField(14)
+  generation = _messages.IntegerField(15)
+  hardDeleteTime = _message_types.DateTimeField(16)
+  id = _messages.StringField(17)
+  kind = _messages.StringField(18, default='storage#object')
+  kmsKeyName = _messages.StringField(19)
+  md5Hash = _messages.StringField(20)
+  mediaLink = _messages.StringField(21)
+  metadata = _messages.MessageField('MetadataValue', 22)
+  metageneration = _messages.IntegerField(23)
+  name = _messages.StringField(24)
+  owner = _messages.MessageField('OwnerValue', 25)
+  restoreToken = _messages.StringField(26)
+  retention = _messages.MessageField('RetentionValue', 27)
+  retentionExpirationTime = _message_types.DateTimeField(28)
+  selfLink = _messages.StringField(29)
+  size = _messages.IntegerField(30, variant=_messages.Variant.UINT64)
+  softDeleteTime = _message_types.DateTimeField(31)
+  storageClass = _messages.StringField(32)
+  temporaryHold = _messages.BooleanField(33)
+  timeCreated = _message_types.DateTimeField(34)
+  timeDeleted = _message_types.DateTimeField(35)
+  timeFinalized = _message_types.DateTimeField(36)
+  timeStorageClassUpdated = _message_types.DateTimeField(37)
+  updated = _message_types.DateTimeField(38)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1690,6 +1872,22 @@ class ObjectAccessControls(_messages.Message):
 
   items = _messages.MessageField('ObjectAccessControl', 1, repeated=True)
   kind = _messages.StringField(2, default='storage#objectAccessControls')
+
+
+class ObjectCustomContextPayload(_messages.Message):
+  r"""The payload of a single user-defined object context.
+
+  Fields:
+    createTime: The time at which the object context was created in RFC 3339
+      format.
+    updateTime: The time at which the object context was last updated in RFC
+      3339 format.
+    value: The value of the object context.
+  """
+
+  createTime = _message_types.DateTimeField(1)
+  updateTime = _message_types.DateTimeField(2)
+  value = _messages.StringField(3)
 
 
 class Objects(_messages.Message):
@@ -3633,6 +3831,9 @@ class StorageObjectsListRequest(_messages.Message):
     endOffset: Filter results to objects whose names are lexicographically
       before endOffset. If startOffset is also set, the objects listed will
       have names between startOffset (inclusive) and endOffset (exclusive).
+    filter: Filter the returned objects. Currently only supported for the
+      contexts field. If delimiter is set, the returned prefixes are exempt
+      from this filter.
     includeFoldersAsPrefixes: Only applicable if delimiter is set to '/'. If
       true, will also include folders and managed folders (besides objects) in
       the returned prefixes.
@@ -3676,17 +3877,18 @@ class StorageObjectsListRequest(_messages.Message):
   bucket = _messages.StringField(1, required=True)
   delimiter = _messages.StringField(2)
   endOffset = _messages.StringField(3)
-  includeFoldersAsPrefixes = _messages.BooleanField(4)
-  includeTrailingDelimiter = _messages.BooleanField(5)
-  matchGlob = _messages.StringField(6)
-  maxResults = _messages.IntegerField(7, variant=_messages.Variant.UINT32, default=1000)
-  pageToken = _messages.StringField(8)
-  prefix = _messages.StringField(9)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
-  softDeleted = _messages.BooleanField(11)
-  startOffset = _messages.StringField(12)
-  userProject = _messages.StringField(13)
-  versions = _messages.BooleanField(14)
+  filter = _messages.StringField(4)
+  includeFoldersAsPrefixes = _messages.BooleanField(5)
+  includeTrailingDelimiter = _messages.BooleanField(6)
+  matchGlob = _messages.StringField(7)
+  maxResults = _messages.IntegerField(8, variant=_messages.Variant.UINT32, default=1000)
+  pageToken = _messages.StringField(9)
+  prefix = _messages.StringField(10)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 11)
+  softDeleted = _messages.BooleanField(12)
+  startOffset = _messages.StringField(13)
+  userProject = _messages.StringField(14)
+  versions = _messages.BooleanField(15)
 
 
 class StorageObjectsMoveRequest(_messages.Message):

@@ -956,11 +956,14 @@ class MessageTransform(_messages.Message):
     javascriptUdf: Optional. JavaScript User Defined Function. If multiple
       JavaScriptUDF's are specified on a resource, each must have a unique
       `function_name`.
+    schemaEncoding: Optional. Validate a message against a schema and
+      optionally transforms between JSON and BINARY format.
   """
 
   disabled = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   javascriptUdf = _messages.MessageField('JavaScriptUDF', 3)
+  schemaEncoding = _messages.MessageField('SchemaEncoding', 4)
 
 
 class MessageTransforms(_messages.Message):
@@ -2306,6 +2309,47 @@ class ReceivedMessage(_messages.Message):
   message = _messages.MessageField('PubsubMessage', 3)
 
 
+class ReplicationPolicy(_messages.Message):
+  r"""A policy for replication of messages published to the topic. Messages
+  are replicated based on the set properties. By default, messages are
+  replicated to different zones within the same region.
+
+  Enums:
+    ReplicationStrategyValueValuesEnum: The replication strategy to use for
+      the topic. If unspecified, messages are replicated across different
+      zones within the same region. Otherwise, messages are replicated to a
+      second region within the same continent.
+
+  Fields:
+    replicationStrategy: The replication strategy to use for the topic. If
+      unspecified, messages are replicated across different zones within the
+      same region. Otherwise, messages are replicated to a second region
+      within the same continent.
+  """
+
+  class ReplicationStrategyValueValuesEnum(_messages.Enum):
+    r"""The replication strategy to use for the topic. If unspecified,
+    messages are replicated across different zones within the same region.
+    Otherwise, messages are replicated to a second region within the same
+    continent.
+
+    Values:
+      REPLICATION_STRATEGY_UNSPECIFIED: Default value. This value is unused.
+      ZONAL_SYNCHRONOUS: Default value if not specified, messages are
+        replicated across different zones within the same region.
+      REGIONAL_SYNCHRONOUS: If specified, synchronously replicates messages
+        published to a second, nearby region. The second region is chosen by
+        the service and may not be the same for all messages published to the
+        same original region. The chosen region adheres to the topic's message
+        storage policy.
+    """
+    REPLICATION_STRATEGY_UNSPECIFIED = 0
+    ZONAL_SYNCHRONOUS = 1
+    REGIONAL_SYNCHRONOUS = 2
+
+  replicationStrategy = _messages.EnumField('ReplicationStrategyValueValuesEnum', 1)
+
+
 class RetryPolicy(_messages.Message):
   r"""A policy that specifies how Pub/Sub retries message delivery. Retry
   delay will be exponential based on provided minimum and maximum backoffs.
@@ -2374,6 +2418,70 @@ class Schema(_messages.Message):
   revisionCreateTime = _messages.StringField(3)
   revisionId = _messages.StringField(4)
   type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class SchemaEncoding(_messages.Message):
+  r"""Single message transform that can validate messages against a schema and
+  convert from one encoding to another.
+
+  Enums:
+    InputEncodingValueValuesEnum: Required. The encoding of messages validated
+      against `schema`.
+    OutputEncodingValueValuesEnum: Required. The encoding of messages to
+      output. If `output_encoding` is the same as `input_encoding`, then
+      messages are validated against `schema` without changing the format.
+
+  Fields:
+    firstRevisionId: Optional. The minimum (inclusive) revision allowed for
+      validating messages. If empty or not present, allow any revision to be
+      validated against last_revision or any revision created before.
+    inputEncoding: Required. The encoding of messages validated against
+      `schema`.
+    lastRevisionId: Optional. The maximum (inclusive) revision allowed for
+      validating messages. If empty or not present, allow any revision to be
+      validated against first_revision or any revision created after.
+    outputEncoding: Required. The encoding of messages to output. If
+      `output_encoding` is the same as `input_encoding`, then messages are
+      validated against `schema` without changing the format.
+    schema: Required. The name of the schema that messages published should be
+      validated against. Format is `projects/{project}/schemas/{schema}`. The
+      value of this field will be `_deleted-schema_` if the schema is deleted
+      after the SMT was created.
+  """
+
+  class InputEncodingValueValuesEnum(_messages.Enum):
+    r"""Required. The encoding of messages validated against `schema`.
+
+    Values:
+      ENCODING_UNSPECIFIED: Unspecified
+      JSON: JSON encoding
+      BINARY: Binary encoding, as defined by the schema type. For some schema
+        types, binary encoding may not be available.
+    """
+    ENCODING_UNSPECIFIED = 0
+    JSON = 1
+    BINARY = 2
+
+  class OutputEncodingValueValuesEnum(_messages.Enum):
+    r"""Required. The encoding of messages to output. If `output_encoding` is
+    the same as `input_encoding`, then messages are validated against `schema`
+    without changing the format.
+
+    Values:
+      ENCODING_UNSPECIFIED: Unspecified
+      JSON: JSON encoding
+      BINARY: Binary encoding, as defined by the schema type. For some schema
+        types, binary encoding may not be available.
+    """
+    ENCODING_UNSPECIFIED = 0
+    JSON = 1
+    BINARY = 2
+
+  firstRevisionId = _messages.StringField(1)
+  inputEncoding = _messages.EnumField('InputEncodingValueValuesEnum', 2)
+  lastRevisionId = _messages.StringField(3)
+  outputEncoding = _messages.EnumField('OutputEncodingValueValuesEnum', 4)
+  schema = _messages.StringField(5)
 
 
 class SchemaSettings(_messages.Message):
@@ -2935,6 +3043,10 @@ class Topic(_messages.Message):
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
       percent signs (`%`). It must be between 3 and 255 characters in length,
       and it must not start with `"goog"`.
+    replicationPolicy: The replication policy to use for the topic. If
+      unspecified, no cross-region replication happens for published messages.
+      Messages are still replicated to multiple zones within the region to
+      which they are published.
     satisfiesPzs: Optional. Reserved for future use. This field is set only in
       responses from the server; it is ignored if it is set in any requests.
     schemaSettings: Optional. Settings for validating messages published
@@ -2989,9 +3101,10 @@ class Topic(_messages.Message):
   messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 5)
   messageTransforms = _messages.MessageField('MessageTransform', 6, repeated=True)
   name = _messages.StringField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  schemaSettings = _messages.MessageField('SchemaSettings', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  replicationPolicy = _messages.MessageField('ReplicationPolicy', 8)
+  satisfiesPzs = _messages.BooleanField(9)
+  schemaSettings = _messages.MessageField('SchemaSettings', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class TransformedMessage(_messages.Message):

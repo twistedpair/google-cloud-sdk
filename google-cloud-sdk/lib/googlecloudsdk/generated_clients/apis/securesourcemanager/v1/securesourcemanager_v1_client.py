@@ -551,7 +551,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new hook in a given repository. **Host: Data Plane**.
+      r"""Creates a new hook in a given repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksCreateRequest) input message
@@ -578,7 +578,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Hook. **Host: Data Plane**.
+      r"""Deletes a Hook.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksDeleteRequest) input message
@@ -605,7 +605,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets metadata of a hook. **Host: Data Plane**.
+      r"""Gets metadata of a hook.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksGetRequest) input message
@@ -632,7 +632,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists hooks in a given repository. **Host: Data Plane**.
+      r"""Lists hooks in a given repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksListRequest) input message
@@ -659,7 +659,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the metadata of a hook. **Host: Data Plane**.
+      r"""Updates the metadata of a hook.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesHooksPatchRequest) input message

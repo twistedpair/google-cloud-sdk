@@ -126,7 +126,7 @@ class GoogleIamV3betaAccessPolicyRule(_messages.Message):
   r"""Access Policy Rule that determines the behavior of the policy.
 
   Enums:
-    EffectValueValuesEnum: Required. The effect of the rule (deny)
+    EffectValueValuesEnum: Required. The effect of the rule.
 
   Messages:
     ConditionsValue: Optional. The conditions that determine whether this rule
@@ -157,7 +157,7 @@ class GoogleIamV3betaAccessPolicyRule(_messages.Message):
       supported keys are: * `eventarc.googleapis.com` * `iam.googleapis.com`
     description: Optional. Customer specified description of the rule. Must be
       less than or equal to 256 characters.
-    effect: Required. The effect of the rule (deny)
+    effect: Required. The effect of the rule.
     excludedPrincipals: Optional. The identities that are excluded from the
       access policy rule, even if they are listed in the `principals`. For
       example, you could add a Google group to the `principals`, then exclude
@@ -202,7 +202,7 @@ class GoogleIamV3betaAccessPolicyRule(_messages.Message):
   """
 
   class EffectValueValuesEnum(_messages.Enum):
-    r"""Required. The effect of the rule (deny)
+    r"""Required. The effect of the rule.
 
     Values:
       EFFECT_UNSPECIFIED: The effect is unspecified.

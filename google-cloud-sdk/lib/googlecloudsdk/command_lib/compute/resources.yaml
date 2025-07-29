@@ -117,6 +117,17 @@ health_aggregation_policy:
     attribute_name: health_aggregation_policy
     help: The name of the Google Compute Engine health aggregation policy.
 
+health_source:
+  name: health source
+  collection: compute.regionHealthSources
+  attributes:
+  - *project
+  - *region
+  - &health_source
+    parameter_name: healthSource
+    attribute_name: health_source
+    help: The name of the Google Compute Engine health source.
+
 image:
   name: image
   collection: compute.images

@@ -49,6 +49,16 @@ class Collections(enum.Enum):
       ['projectsId', 'alertPoliciesId', 'conditionsId'],
       True
   )
+  PROJECTS_ALERTS = (
+      'projects.alerts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/alerts/{alertsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_GROUPS = (
       'projects.groups',
       '{+name}',

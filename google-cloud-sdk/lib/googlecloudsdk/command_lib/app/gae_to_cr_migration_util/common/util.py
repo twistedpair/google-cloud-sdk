@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*- #
 # Copyright 2025 Google LLC. All Rights Reserved.
 #
@@ -12,17 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """This module contains common utility function for GAE to CR migration."""
-
 import logging
 from typing import Mapping, Sequence, Tuple
-
 from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.command_lib.app.gae_to_cr_migration_util.config import feature_helper
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
-
 # Entrypoint for these runtimes must be specified in a Procfile
 # instead of via the `--command` flag at the gcloud run deploy
 # command.
@@ -92,7 +89,6 @@ def flatten_keys(
   Args:
       input_data: The input dictionary to be flattened.
       parent_path: The parent path of the input dictionary.
-
   Returns:
       A dictionary with flattened paths.
   For example:
@@ -124,14 +120,11 @@ def validate_input(
   r"""Validate the input for cli commands.
 
   could be used as an input at any given time.
-
   Return the input type and input data (as python objects) if validation passes.
-
   Args:
     appyaml: The app.yaml file path.
     service: The service name.
     version: The version name.
-
   Returns:
     A tuple of (input type, input data).
   """
@@ -180,7 +173,6 @@ def get_input_data_by_input_type(
         service=service, version=version
     )
     return yaml.load(gcloud_output)
-
   # appyaml is input type
   try:
     with files.FileReader(appyaml) as file:
@@ -188,7 +180,7 @@ def get_input_data_by_input_type(
       if appyaml_data is None:
         logging.error('%s is empty.', file.name)
       return appyaml_data
-  except IOError:
+  except files.MissingFileError:
     logging.error(
         'app.yaml does not exist in current directory, please use'
         ' --appyaml flag to specify the app.yaml location.'

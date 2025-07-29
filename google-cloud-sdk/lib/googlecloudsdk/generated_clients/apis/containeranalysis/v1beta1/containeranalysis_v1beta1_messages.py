@@ -1,8 +1,7 @@
 """Generated message classes for containeranalysis version v1beta1.
 
 This API is a prerequisite for leveraging Artifact Analysis scanning
-capabilities in both Artifact Registry and with Advanced Vulnerability
-Insights (runtime scanning) in GKE. In addition, the Container Analysis API is
+capabilities in Artifact Registry. In addition, the Container Analysis API is
 an implementation of the Grafeas API, which enables storing, querying, and
 retrieval of critical metadata about all of your software artifacts.
 """
@@ -2078,8 +2077,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1DependencyGitSourceRepository(_
   r"""A repository for a git source.
 
   Fields:
-    developerConnect: The Developer Connect Git repository link or the url
-      that matches a repository link in the current project, formatted as
+    developerConnect: The Developer Connect Git repository link formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLink/*`
     url: Location of the Git repository.
   """
@@ -2768,12 +2766,16 @@ class ContaineranalysisProjectsLocationsNotesListRequest(_messages.Message):
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: Required. The name of the project to list notes for in the form of
       `projects/[PROJECT_ID]`.
+    returnPartialSuccess: If set, the request will return all reachable Notes
+      and report all unreachable regions in the `unreachable` field in the
+      response. Only applicable for requests in the global region.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ContaineranalysisProjectsLocationsNotesOccurrencesListRequest(_messages.Message):
@@ -2928,10 +2930,15 @@ class ContaineranalysisProjectsLocationsOccurrencesGetVulnerabilitySummaryReques
     filter: The filter expression.
     parent: Required. The name of the project to get a vulnerability summary
       for in the form of `projects/[PROJECT_ID]`.
+    returnPartialSuccess: If set, the request will return all reachable
+      occurrence summaries and report all unreachable regions in the
+      `unreachable` field in the response. Only applicable for requests in the
+      global region.
   """
 
   filter = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
+  returnPartialSuccess = _messages.BooleanField(3)
 
 
 class ContaineranalysisProjectsLocationsOccurrencesListRequest(_messages.Message):
@@ -2945,12 +2952,17 @@ class ContaineranalysisProjectsLocationsOccurrencesListRequest(_messages.Message
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: Required. The name of the project to list occurrences for in the
       form of `projects/[PROJECT_ID]`.
+    returnPartialSuccess: If set, the request will return all reachable
+      Occurrences and report all unreachable regions in the `unreachable`
+      field in the response. Only applicable for requests in the global
+      region.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ContaineranalysisProjectsLocationsOccurrencesPatchRequest(_messages.Message):
@@ -3109,12 +3121,16 @@ class ContaineranalysisProjectsNotesListRequest(_messages.Message):
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: Required. The name of the project to list notes for in the form of
       `projects/[PROJECT_ID]`.
+    returnPartialSuccess: If set, the request will return all reachable Notes
+      and report all unreachable regions in the `unreachable` field in the
+      response. Only applicable for requests in the global region.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ContaineranalysisProjectsNotesOccurrencesListRequest(_messages.Message):
@@ -3265,10 +3281,15 @@ class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messag
     filter: The filter expression.
     parent: Required. The name of the project to get a vulnerability summary
       for in the form of `projects/[PROJECT_ID]`.
+    returnPartialSuccess: If set, the request will return all reachable
+      occurrence summaries and report all unreachable regions in the
+      `unreachable` field in the response. Only applicable for requests in the
+      global region.
   """
 
   filter = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
+  returnPartialSuccess = _messages.BooleanField(3)
 
 
 class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
@@ -3282,12 +3303,17 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: Required. The name of the project to list occurrences for in the
       form of `projects/[PROJECT_ID]`.
+    returnPartialSuccess: If set, the request will return all reachable
+      Occurrences and report all unreachable regions in the `unreachable`
+      field in the response. Only applicable for requests in the global
+      region.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ContaineranalysisProjectsOccurrencesPatchRequest(_messages.Message):
@@ -4809,10 +4835,14 @@ class ListNotesResponse(_messages.Message):
       be used as `page_token` for the following request. An empty value means
       no more results.
     notes: The notes requested.
+    unreachable: Unordered list. Unreachable regions. Populated for requests
+      from the global region when `return_partial_success` is set. Format:
+      projects//locations/
   """
 
   nextPageToken = _messages.StringField(1)
   notes = _messages.MessageField('Note', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOccurrencesResponse(_messages.Message):
@@ -4823,10 +4853,14 @@ class ListOccurrencesResponse(_messages.Message):
       be used as `page_token` for the following request. An empty value means
       no more results.
     occurrences: The occurrences requested.
+    unreachable: Unordered list. Unreachable regions. Populated for requests
+      from the global region when `return_partial_success` is set. Format:
+      projects//locations/
   """
 
   nextPageToken = _messages.StringField(1)
   occurrences = _messages.MessageField('Occurrence', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -6737,9 +6771,13 @@ class VulnerabilityOccurrencesSummary(_messages.Message):
   Fields:
     counts: A listing by resource of the number of fixable and total
       vulnerabilities.
+    unreachable: Unordered list. Unreachable regions. Populated for requests
+      from the global region when `return_partial_success` is set. Format:
+      projects//locations/
   """
 
   counts = _messages.MessageField('FixableTotalByDigest', 1, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
 
 
 class WindowsDetail(_messages.Message):

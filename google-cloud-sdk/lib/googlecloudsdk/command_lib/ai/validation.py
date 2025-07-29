@@ -26,16 +26,19 @@ def ValidateDisplayName(display_name):
   """Validates the display name."""
   if display_name is not None and not display_name:
     raise exceptions.InvalidArgumentException(
-        '--display-name',
-        'Display name can not be empty.')
+        '--display-name', 'Display name can not be empty.'
+    )
 
 
 def ValidateRegion(region, available_regions=constants.SUPPORTED_REGION):
   """Validates whether a given region is among the available ones."""
   if region not in available_regions:
     raise exceptions.InvalidArgumentException(
-        'region', 'Available values are [{}], but found [{}].'.format(
-            ', '.join(available_regions), region))
+        'region',
+        'Available values are [{}], but found [{}].'.format(
+            ', '.join(available_regions), region
+        ),
+    )
 
 
 def GetAndValidateKmsKey(args):
@@ -48,7 +51,8 @@ def GetAndValidateKmsKey(args):
       for keyword in ['kms_key', 'kms_keyring', 'kms_location', 'kms_project']:
         if getattr(args, keyword, None):
           raise exceptions.InvalidArgumentException(
-              '--kms-key', 'Encryption key not fully specified.')
+              '--kms-key', 'Encryption key not fully specified.'
+          )
 
 
 def ValidateAutoscalingMetricSpecs(specs):
@@ -60,11 +64,15 @@ def ValidateAutoscalingMetricSpecs(specs):
     if key not in constants.OP_AUTOSCALING_METRIC_NAME_MAPPER:
       raise exceptions.InvalidArgumentException(
           '--autoscaling-metric-specs',
-          """Autoscaling metric name can only be one of the following: {}."""
-          .format(', '.join([
-              "'{}'".format(c) for c in sorted(
-                  constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())
-          ])))
+          """Autoscaling metric name can only be one of the following: {}.""".format(
+              ', '.join([
+                  "'{}'".format(c)
+                  for c in sorted(
+                      constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys()
+                  )
+              ])
+          ),
+      )
 
     if key == 'request-counts-per-minute':
       if value <= 0:
@@ -82,17 +90,19 @@ def ValidateAutoscalingMetricSpecs(specs):
       )
 
 
-def ValidateSharedResourceArgs(shared_resources_ref=None,
-                               machine_type=None,
-                               accelerator_dict=None,
-                               min_replica_count=None,
-                               max_replica_count=None,
-                               autoscaling_metric_specs=None):
+def ValidateSharedResourceArgs(
+    shared_resources_ref=None,
+    machine_type=None,
+    accelerator_dict=None,
+    min_replica_count=None,
+    max_replica_count=None,
+    autoscaling_metric_specs=None,
+):
   """Value validation for dedicated resource args while making a shared resource command call.
 
   Args:
       shared_resources_ref: str or None, the shared deployment resource pool
-      full name the model should use, formatted as the full URI
+        full name the model should use, formatted as the full URI
       machine_type: str or None, the type of the machine to serve the model.
       accelerator_dict: dict or None, the accelerator attached to the deployed
         model from args.
@@ -108,21 +118,35 @@ def ValidateSharedResourceArgs(shared_resources_ref=None,
     return
 
   if machine_type is not None:
-    raise exceptions.InvalidArgumentException('--machine-type', """Cannot use
-    machine type and shared resources in the same command.""")
+    raise exceptions.InvalidArgumentException(
+        '--machine-type',
+        """Cannot use
+    machine type and shared resources in the same command.""",
+    )
   if accelerator_dict is not None:
-    raise exceptions.InvalidArgumentException('--accelerator', """Cannot
-    use accelerator and shared resources in the same command.""")
+    raise exceptions.InvalidArgumentException(
+        '--accelerator',
+        """Cannot
+    use accelerator and shared resources in the same command.""",
+    )
   if min_replica_count is not None:
-    raise exceptions.InvalidArgumentException('--max-replica-count', """Cannot
-    use max replica count and shared resources in the same command.""")
+    raise exceptions.InvalidArgumentException(
+        '--max-replica-count',
+        """Cannot
+    use max replica count and shared resources in the same command.""",
+    )
   if max_replica_count is not None:
-    raise exceptions.InvalidArgumentException('--min-replica-count', """Cannot
-    use min replica count and shared resources in the same command.""")
+    raise exceptions.InvalidArgumentException(
+        '--min-replica-count',
+        """Cannot
+    use min replica count and shared resources in the same command.""",
+    )
   if autoscaling_metric_specs is not None:
     raise exceptions.InvalidArgumentException(
-        '--autoscaling-metric-specs', """Cannot use autoscaling metric specs
-        and shared resources in the same command.""")
+        '--autoscaling-metric-specs',
+        """Cannot use autoscaling metric specs
+        and shared resources in the same command.""",
+    )
 
 
 def ValidateEndpointArgs(network=None, public_endpoint_enabled=None):

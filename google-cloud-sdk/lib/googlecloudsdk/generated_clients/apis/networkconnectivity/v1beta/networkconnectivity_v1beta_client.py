@@ -47,6 +47,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_multicloudDataTransferConfigs_destinations = self.ProjectsLocationsMulticloudDataTransferConfigsDestinationsService(self)
     self.projects_locations_multicloudDataTransferConfigs = self.ProjectsLocationsMulticloudDataTransferConfigsService(self)
+    self.projects_locations_multicloudDataTransferSupportedServices = self.ProjectsLocationsMulticloudDataTransferSupportedServicesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
     self.projects_locations_spokes_gatewayAdvertisedRoutes = self.ProjectsLocationsSpokesGatewayAdvertisedRoutesService(self)
@@ -1238,6 +1239,70 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request_field='googleCloudNetworkconnectivityV1betaMulticloudDataTransferConfig',
         request_type_name='NetworkconnectivityProjectsLocationsMulticloudDataTransferConfigsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMulticloudDataTransferSupportedServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_multicloudDataTransferSupportedServices resource."""
+
+    _NAME = 'projects_locations_multicloudDataTransferSupportedServices'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsMulticloudDataTransferSupportedServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single MulticloudDataTransferSupportedServices.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferSupportedService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/multicloudDataTransferSupportedServices/{multicloudDataTransferSupportedServicesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.multicloudDataTransferSupportedServices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaMulticloudDataTransferSupportedService',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the supported services for Multicloud Data Transfer. This is a passthrough method.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListMulticloudDataTransferSupportedServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/multicloudDataTransferSupportedServices',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.multicloudDataTransferSupportedServices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/multicloudDataTransferSupportedServices',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsMulticloudDataTransferSupportedServicesListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListMulticloudDataTransferSupportedServicesResponse',
         supports_download=False,
     )
 

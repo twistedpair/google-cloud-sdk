@@ -165,6 +165,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DNSTHREATDETECTORS = (
+      'projects.locations.dnsThreatDetectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dnsThreatDetectors/{dnsThreatDetectorsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FIREWALLENDPOINTASSOCIATIONS = (
       'projects.locations.firewallEndpointAssociations',
       '{+name}',

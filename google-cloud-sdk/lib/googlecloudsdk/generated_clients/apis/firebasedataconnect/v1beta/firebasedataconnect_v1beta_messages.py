@@ -936,9 +936,13 @@ class GraphqlErrorExtensions(_messages.Message):
   Fields:
     code: Maps to canonical gRPC codes. If not specified, it represents
       `Code.INTERNAL`.
-    debugDetails: More detailed error message to assist debugging. In the
-      backend, only include it in admin authenticated API like ExecuteGraphql.
-      In the emulator, always include it to assist debugging.
+    debugDetails: More detailed error message to assist debugging. It contains
+      application business logic that are inappropriate to leak publicly. In
+      the emulator, Data Connect API always includes it to assist local
+      development and debugging. In the backend, ConnectorService always hides
+      it. GraphqlService without impersonation always include it.
+      GraphqlService with impersonation includes it only if explicitly opted-
+      in with `include_debug_details` in `GraphqlRequestExtensions`.
     file: The source file name where the error occurred. Included only for
       `UpdateSchema` and `UpdateConnector`, it corresponds to `File.path` of
       the provided `Source`.
@@ -1198,6 +1202,8 @@ class Impersonation(_messages.Message):
       Should follow the Firebase Auth token format.
       https://firebase.google.com/docs/rules/rules-and-auth For example: a
       verified user may have auth_claims of {"sub": , "email_verified": true}
+    includeDebugDetails: Optional. If set, include debug details in GraphQL
+      error extensions.
     unauthenticated: Evaluate the auth policy as an unauthenticated request.
       Can only be set to true.
   """
@@ -1230,7 +1236,8 @@ class Impersonation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authClaims = _messages.MessageField('AuthClaimsValue', 1)
-  unauthenticated = _messages.BooleanField(2)
+  includeDebugDetails = _messages.BooleanField(2)
+  unauthenticated = _messages.BooleanField(3)
 
 
 class ListConnectorsResponse(_messages.Message):

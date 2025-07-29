@@ -5409,12 +5409,13 @@ class GooglePrivacyDlpV2Deidentify(_messages.Message):
       different from the input bucket. De-identified files will overwrite
       files in the output path. Form of: gs://bucket/folder/ or gs://bucket
     fileTypesToTransform: List of user-specified file type groups to
-      transform. If specified, only the files with these file types will be
-      transformed. If empty, all supported files will be transformed.
-      Supported types may be automatically added over time. If a file type is
-      set in this field that isn't supported by the Deidentify action then the
-      job will fail and will not be successfully created/started. Currently
-      the only file types supported are: IMAGES, TEXT_FILES, CSV, TSV.
+      transform. If specified, only the files with these file types are
+      transformed. If empty, all supported files are transformed. Supported
+      types may be automatically added over time. Any unsupported file types
+      that are set in this field are excluded from de-identification. An error
+      is recorded for each unsupported file in the TransformationDetails
+      output table. Currently the only file types supported are: IMAGES,
+      TEXT_FILES, CSV, TSV.
     transformationConfig: User specified deidentify templates and configs for
       structured, unstructured, and image files.
     transformationDetailsStorageConfig: Config for storing transformation
@@ -6632,6 +6633,21 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
+class GooglePrivacyDlpV2DocumentFallbackLocation(_messages.Message):
+  r"""Configure document processing to fall back to any of the following
+  processing options if document processing is unavailable in the original
+  request location.
+
+  Fields:
+    globalProcessing: Processing occurs in the global region.
+    multiRegionProcessing: Processing occurs in a multi-region that contains
+      the current region if available.
+  """
+
+  globalProcessing = _messages.MessageField('GooglePrivacyDlpV2GlobalProcessing', 1)
+  multiRegionProcessing = _messages.MessageField('GooglePrivacyDlpV2MultiRegionProcessing', 2)
+
+
 class GooglePrivacyDlpV2DocumentLocation(_messages.Message):
   r"""Location of a finding within a document.
 
@@ -6664,8 +6680,8 @@ class GooglePrivacyDlpV2Domain(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Category unspecified.
       AI: Indicates that the data profile is related to artificial
-        intelligence. When set all findings stored to Security Command Center
-        will set the corresponding AI domain field of Findings.
+        intelligence. When set, all findings stored to Security Command Center
+        will set the corresponding AI domain field of `Finding` objects.
       CODE: Indicates that the data profile is related to code.
     """
     CATEGORY_UNSPECIFIED = 0
@@ -6679,11 +6695,15 @@ class GooglePrivacyDlpV2Domain(_messages.Message):
       SIGNAL_UNSPECIFIED: Unused.
       MODEL: One or more machine learning models are present.
       TEXT_EMBEDDING: A table appears to be a text embedding.
-      VERTEX_PLUGIN: Cloud SQL Vertex plugin was installed on the database.
-      VECTOR_PLUGIN: Cloud SQL Vector plugin was installed on the database.
+      VERTEX_PLUGIN: The [Cloud SQL Vertex
+        AI](https://cloud.google.com/sql/docs/postgres/integrate-cloud-sql-
+        with-vertex-ai) plugin is installed on the database.
+      VECTOR_PLUGIN: Support for [Cloud SQL vector
+        embeddings](https://cloud.google.com/sql/docs/mysql/enable-vector-
+        search) is enabled on the database.
       SOURCE_CODE: Source code is present.
-      SERVICE: If the service determines the category type. For example Vertex
-        assets would always have a `Category` of `AI`.
+      SERVICE: If the service determines the category type. For example,
+        Vertex AI assets would always have a `Category` of `AI`.
     """
     SIGNAL_UNSPECIFIED = 0
     MODEL = 1
@@ -7452,7 +7472,7 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2GlobalProcessing(_messages.Message):
-  r"""Processing will happen in the global region."""
+  r"""Processing occurs in the global region."""
 
 
 class GooglePrivacyDlpV2HotwordRule(_messages.Message):
@@ -7692,13 +7712,14 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2ImageFallbackLocation(_messages.Message):
-  r"""Configure image processing to fall back to the configured processing
-  option below if unavailable in the request location.
+  r"""Configure image processing to fall back to any of the following
+  processing options if image processing is unavailable in the original
+  request location.
 
   Fields:
-    globalProcessing: Processing will happen in the global region.
-    multiRegionProcessing: Processing will happen in a multi-region that
-      contains the current region if available.
+    globalProcessing: Processing occurs in the global region.
+    multiRegionProcessing: Processing occurs in a multi-region that contains
+      the current region if available.
   """
 
   globalProcessing = _messages.MessageField('GooglePrivacyDlpV2GlobalProcessing', 1)
@@ -7831,6 +7852,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       ARGENTINA: The infoType is typically used in Argentina.
       ARMENIA: The infoType is typically used in Armenia.
       AUSTRALIA: The infoType is typically used in Australia.
+      AUSTRIA: The infoType is typically used in Austria.
       AZERBAIJAN: The infoType is typically used in Azerbaijan.
       BELARUS: The infoType is typically used in Belarus.
       BELGIUM: The infoType is typically used in Belgium.
@@ -7884,53 +7906,54 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     ARGENTINA = 2
     ARMENIA = 3
     AUSTRALIA = 4
-    AZERBAIJAN = 5
-    BELARUS = 6
-    BELGIUM = 7
-    BRAZIL = 8
-    CANADA = 9
-    CHILE = 10
-    CHINA = 11
-    COLOMBIA = 12
-    CROATIA = 13
-    CZECHIA = 14
-    DENMARK = 15
-    FRANCE = 16
-    FINLAND = 17
-    GERMANY = 18
-    HONG_KONG = 19
-    INDIA = 20
-    INDONESIA = 21
-    IRELAND = 22
-    ISRAEL = 23
-    ITALY = 24
-    JAPAN = 25
-    KAZAKHSTAN = 26
-    KOREA = 27
-    MEXICO = 28
-    THE_NETHERLANDS = 29
-    NEW_ZEALAND = 30
-    NORWAY = 31
-    PARAGUAY = 32
-    PERU = 33
-    POLAND = 34
-    PORTUGAL = 35
-    RUSSIA = 36
-    SINGAPORE = 37
-    SOUTH_AFRICA = 38
-    SPAIN = 39
-    SWEDEN = 40
-    SWITZERLAND = 41
-    TAIWAN = 42
-    THAILAND = 43
-    TURKEY = 44
-    UKRAINE = 45
-    UNITED_KINGDOM = 46
-    UNITED_STATES = 47
-    URUGUAY = 48
-    UZBEKISTAN = 49
-    VENEZUELA = 50
-    INTERNAL = 51
+    AUSTRIA = 5
+    AZERBAIJAN = 6
+    BELARUS = 7
+    BELGIUM = 8
+    BRAZIL = 9
+    CANADA = 10
+    CHILE = 11
+    CHINA = 12
+    COLOMBIA = 13
+    CROATIA = 14
+    CZECHIA = 15
+    DENMARK = 16
+    FRANCE = 17
+    FINLAND = 18
+    GERMANY = 19
+    HONG_KONG = 20
+    INDIA = 21
+    INDONESIA = 22
+    IRELAND = 23
+    ISRAEL = 24
+    ITALY = 25
+    JAPAN = 26
+    KAZAKHSTAN = 27
+    KOREA = 28
+    MEXICO = 29
+    THE_NETHERLANDS = 30
+    NEW_ZEALAND = 31
+    NORWAY = 32
+    PARAGUAY = 33
+    PERU = 34
+    POLAND = 35
+    PORTUGAL = 36
+    RUSSIA = 37
+    SINGAPORE = 38
+    SOUTH_AFRICA = 39
+    SPAIN = 40
+    SWEDEN = 41
+    SWITZERLAND = 42
+    TAIWAN = 43
+    THAILAND = 44
+    TURKEY = 45
+    UKRAINE = 46
+    UNITED_KINGDOM = 47
+    UNITED_STATES = 48
+    URUGUAY = 49
+    UZBEKISTAN = 50
+    VENEZUELA = 51
+    INTERNAL = 52
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs
@@ -8988,8 +9011,8 @@ class GooglePrivacyDlpV2MetadataLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2MultiRegionProcessing(_messages.Message):
-  r"""Processing will happen in a multi-region that contains the current
-  region if available.
+  r"""Processing occurs in a multi-region that contains the current region if
+  available.
   """
 
 
@@ -9318,11 +9341,14 @@ class GooglePrivacyDlpV2ProcessingLocation(_messages.Message):
   ProcessingLocation will redirect OCR to a location where OCR is provided.
 
   Fields:
-    imageFallbackLocation: Image processing will fall back using this
+    documentFallbackLocation: Document processing falls back using this
+      configuration.
+    imageFallbackLocation: Image processing falls back using this
       configuration.
   """
 
-  imageFallbackLocation = _messages.MessageField('GooglePrivacyDlpV2ImageFallbackLocation', 1)
+  documentFallbackLocation = _messages.MessageField('GooglePrivacyDlpV2DocumentFallbackLocation', 1)
+  imageFallbackLocation = _messages.MessageField('GooglePrivacyDlpV2ImageFallbackLocation', 2)
 
 
 class GooglePrivacyDlpV2ProfileStatus(_messages.Message):
@@ -9616,7 +9642,7 @@ class GooglePrivacyDlpV2QuasiId(_messages.Message):
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the
       user must indicate an auxiliary table that contains statistical
-      information on the possible values of this column (below).
+      information on the possible values of this column.
     field: Required. Identifies the column.
     inferred: If no semantic tag is indicated, we infer the statistical model
       from the distribution of values in the input data
@@ -9653,7 +9679,7 @@ class GooglePrivacyDlpV2QuasiIdentifierField(_messages.Message):
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the
       user must indicate an auxiliary table that contains statistical
-      information on the possible values of this column (below).
+      information on the possible values of this column.
     field: Identifies the column.
   """
 
@@ -9961,8 +9987,7 @@ class GooglePrivacyDlpV2RequestedRiskAnalysisOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2Result(_messages.Message):
-  r"""All result fields mentioned below are updated while the job is
-  processing.
+  r"""All Result fields are updated while the job is processing.
 
   Fields:
     hybridStats: Statistics related to the processing of hybrid inspect.
@@ -10727,7 +10752,7 @@ class GooglePrivacyDlpV2TaggedField(_messages.Message):
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the
       user must indicate an auxiliary table that contains statistical
-      information on the possible values of this column (below).
+      information on the possible values of this column.
     field: Required. Identifies the column.
     inferred: If no semantic tag is indicated, we infer the statistical model
       from the distribution of values in the input data

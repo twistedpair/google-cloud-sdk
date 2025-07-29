@@ -533,6 +533,62 @@ class DataplexProjectsLocationsDataAttributeBindingsTestIamPermissionsRequest(_m
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsDataProductsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsDataProductsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsDataProductsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataProductsTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsDataScansCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansCreateRequest object.
 
@@ -545,7 +601,8 @@ class DataplexProjectsLocationsDataScansCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The resource name of the parent location:
       projects/{project}/locations/{location_id} where project refers to a
-      project_id or project_number and location_id refers to a GCP region.
+      project_id or project_number and location_id refers to a Google Cloud
+      region.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -566,7 +623,7 @@ class DataplexProjectsLocationsDataScansDeleteRequest(_messages.Message):
     name: Required. The resource name of the dataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
   """
 
   force = _messages.BooleanField(1)
@@ -626,7 +683,7 @@ class DataplexProjectsLocationsDataScansGetRequest(_messages.Message):
     name: Required. The resource name of the dataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
     view: Optional. Select the DataScan view to return. Defaults to BASIC.
   """
 
@@ -675,7 +732,7 @@ class DataplexProjectsLocationsDataScansJobsGetRequest(_messages.Message):
     name: Required. The resource name of the DataScanJob: projects/{project}/l
       ocations/{location_id}/dataScans/{data_scan_id}/jobs/{data_scan_job_id}
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
     view: Optional. Select the DataScanJob view to return. Defaults to BASIC.
   """
 
@@ -719,7 +776,7 @@ class DataplexProjectsLocationsDataScansJobsListRequest(_messages.Message):
     parent: Required. The resource name of the parent environment:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -745,7 +802,8 @@ class DataplexProjectsLocationsDataScansListRequest(_messages.Message):
       provided the page token.
     parent: Required. The resource name of the parent location:
       projects/{project}/locations/{location_id} where project refers to a
-      project_id or project_number and location_id refers to a GCP region.
+      project_id or project_number and location_id refers to a Google Cloud
+      region.
   """
 
   filter = _messages.StringField(1)
@@ -765,7 +823,7 @@ class DataplexProjectsLocationsDataScansPatchRequest(_messages.Message):
       the form:
       projects/{project}/locations/{location_id}/dataScans/{datascan_id},
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
     updateMask: Optional. Mask of fields to update.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
@@ -787,7 +845,7 @@ class DataplexProjectsLocationsDataScansRunRequest(_messages.Message):
     name: Required. The resource name of the DataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}.
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.Only OnDemand data scans are allowed.
+      refers to a Google Cloud region.Only OnDemand data scans are allowed.
   """
 
   googleCloudDataplexV1RunDataScanRequest = _messages.MessageField('GoogleCloudDataplexV1RunDataScanRequest', 1)
@@ -1068,7 +1126,7 @@ class DataplexProjectsLocationsDataTaxonomiesListRequest(_messages.Message):
       must match the call that provided the page token.
     parent: Required. The resource name of the DataTaxonomy location, of the
       form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -1140,7 +1198,7 @@ class DataplexProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
       resource to be passed as the request body.
     parent: Required. The resource name of the entryGroup, of the form:
       projects/{project_number}/locations/{location_id} where location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
     validateOnly: Optional. The service validates the request without
       performing any mutations. The default is false.
   """
@@ -1706,7 +1764,8 @@ class DataplexProjectsLocationsGlossariesCategoriesCreateRequest(_messages.Messa
       request body.
     parent: Required. The parent resource where this GlossaryCategory will be
       created. Format: projects/{project_id_or_number}/locations/{location_id}
-      /glossaries/{glossary_id} where locationId refers to a GCP region.
+      /glossaries/{glossary_id} where locationId refers to a Google Cloud
+      region.
   """
 
   categoryId = _messages.StringField(1)
@@ -1788,7 +1847,8 @@ class DataplexProjectsLocationsGlossariesCategoriesListRequest(_messages.Message
       ListGlossaryCategories must match the call that provided the page token.
     parent: Required. The parent, which has this collection of
       GlossaryCategories. Format: projects/{project_id_or_number}/locations/{l
-      ocation_id}/glossaries/{glossary_id} Location is the GCP region.
+      ocation_id}/glossaries/{glossary_id} Location is the Google Cloud
+      region.
   """
 
   filter = _messages.StringField(1)
@@ -1859,7 +1919,7 @@ class DataplexProjectsLocationsGlossariesCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this Glossary will be created.
       Format: projects/{project_id_or_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
     validateOnly: Optional. Validates the request without actually creating
       the Glossary. Default: false.
   """
@@ -1941,7 +2001,7 @@ class DataplexProjectsLocationsGlossariesListRequest(_messages.Message):
       provided the page token.
     parent: Required. The parent, which has this collection of Glossaries.
       Format: projects/{project_id_or_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -1994,7 +2054,8 @@ class DataplexProjectsLocationsGlossariesTermsCreateRequest(_messages.Message):
       resource to be passed as the request body.
     parent: Required. The parent resource where the GlossaryTerm will be
       created. Format: projects/{project_id_or_number}/locations/{location_id}
-      /glossaries/{glossary_id} where location_id refers to a GCP region.
+      /glossaries/{glossary_id} where location_id refers to a Google Cloud
+      region.
     termId: Required. GlossaryTerm identifier.
   """
 
@@ -2076,7 +2137,7 @@ class DataplexProjectsLocationsGlossariesTermsListRequest(_messages.Message):
       match the call that provided the page token.
     parent: Required. The parent, which has this collection of GlossaryTerms.
       Format: projects/{project_id_or_number}/locations/{location_id}/glossari
-      es/{glossary_id} where location_id refers to a GCP region.
+      es/{glossary_id} where location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -2165,7 +2226,7 @@ class DataplexProjectsLocationsGovernanceRulesCreateRequest(_messages.Message):
       Must be unique within the Project.
     parent: Required. The resource name of the governance rule location, of
       the form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -2237,7 +2298,7 @@ class DataplexProjectsLocationsGovernanceRulesListRequest(_messages.Message):
       must match the call that provided the page token.
     parent: Required. The resource name of the GovernanceRule location, of the
       form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -2654,7 +2715,7 @@ class DataplexProjectsLocationsLakesCreateRequest(_messages.Message):
       customer project / location.
     parent: Required. The resource name of the lake location, of the form:
       projects/{project_number}/locations/{location_id} where location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -2903,7 +2964,7 @@ class DataplexProjectsLocationsLakesListRequest(_messages.Message):
       page token.
     parent: Required. The resource name of the lake location, of the form:
       projects/{project_number}/locations/{location_id} where location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -6214,7 +6275,7 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   (https://cloud.google.com/dataplex/docs/data-profiling-overview). Data
   discovery: scans data in Cloud Storage buckets to extract and then catalog
   metadata. For more information, see Discover and catalog Cloud Storage data
-  (https://cloud.google.com/bigquery/docs/automatic-discovery). LINT.IfChange
+  (https://cloud.google.com/bigquery/docs/automatic-discovery).
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the DataScan.
@@ -6244,7 +6305,7 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
       the form:
       projects/{project}/locations/{location_id}/dataScans/{datascan_id},
       where project refers to a project_id or project_number and location_id
-      refers to a GCP region.
+      refers to a Google Cloud region.
     state: Output only. Current state of the DataScan.
     type: Output only. The type of DataScan.
     uid: Output only. System generated globally unique ID for the scan. This
@@ -6717,7 +6778,7 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     name: Output only. Identifier. The relative resource name of the
       DataScanJob, of the form: projects/{project}/locations/{location_id}/dat
       aScans/{datascan_id}/jobs/{job_id}, where project refers to a project_id
-      or project_number and location_id refers to a GCP region.
+      or project_number and location_id refers to a Google Cloud region.
     startTime: Output only. The time when the DataScanJob was started.
     state: Output only. Execution state for the DataScanJob.
     type: Output only. The type of the parent DataScan.
@@ -6783,7 +6844,7 @@ class GoogleCloudDataplexV1DataSource(_messages.Message):
       r}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{ent
       ity_id}.
     resource: Immutable. The service-qualified full resource name of the cloud
-      resource for a DataScan job to scan against. The field could eitherbe:
+      resource for a DataScan job to scan against. The field could either be:
       Cloud Storage bucket for DataDiscoveryScan Format:
       //storage.googleapis.com/projects/PROJECT_ID/buckets/BUCKET_ID or
       BigQuery table of type "TABLE" for DataProfileScan/DataQualityScan
@@ -7446,9 +7507,13 @@ class GoogleCloudDataplexV1EntryLink(_messages.Message):
   Fields:
     createTime: Output only. The time when the Entry Link was created.
     entryLinkType: Required. Immutable. Relative resource name of the Entry
-      Link Type used to create this Entry Link, of the form: `projects/{projec
-      t_id_or_number}/locations/{location_id}/entryLinkTypes/{entry_link_type_
-      id}.
+      Link Type used to create this Entry Link. For example: Entry link
+      between synonym terms in a glossary: projects/dataplex-
+      types/locations/global/entryLinkTypes/synonym Entry link between related
+      terms in a glossary: projects/dataplex-
+      types/locations/global/entryLinkTypes/related Entry link between
+      glossary terms and data assets: projects/dataplex-
+      types/locations/global/entryLinkTypes/definition
     entryReferences: Required. Specifies the Entries referenced in the Entry
       Link. There should be exactly two entry references.
     name: Output only. Immutable. Identifier. The relative resource name of
@@ -7934,8 +7999,8 @@ class GoogleCloudDataplexV1GenerateDataQualityRulesResponse(_messages.Message):
 class GoogleCloudDataplexV1Glossary(_messages.Message):
   r"""A Glossary represents a collection of GlossaryCategories and
   GlossaryTerms defined by the user. Glossary is a top level resource and is
-  the GCP parent resource of all the GlossaryCategories and GlossaryTerms
-  within it.
+  the Google Cloud parent resource of all the GlossaryCategories and
+  GlossaryTerms within it.
 
   Messages:
     LabelsValue: Optional. User-defined labels for the Glossary.
@@ -11534,6 +11599,8 @@ encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsAspectTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsDataAttributeBindingsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsDataProductsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsDataScansGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

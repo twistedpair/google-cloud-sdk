@@ -295,6 +295,7 @@ class Asset(_messages.Message):
       hierarchy and ends at root. If the asset is a project, folder, or
       organization, the ancestry path starts from the asset itself. Example:
       `["projects/123456789", "folders/5432", "organizations/1234"]`
+    assetExceptions: The exceptions of a resource.
     assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
       See [Supported asset types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types) for more information.
@@ -334,17 +335,18 @@ class Asset(_messages.Message):
   accessLevel = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessLevel', 1)
   accessPolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessPolicy', 2)
   ancestors = _messages.StringField(3, repeated=True)
-  assetType = _messages.StringField(4)
-  iamPolicy = _messages.MessageField('Policy', 5)
-  name = _messages.StringField(6)
-  orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
-  osInventory = _messages.MessageField('Inventory', 8)
-  otherCloudProperties = _messages.MessageField('OtherCloudProperties', 9)
-  relatedAsset = _messages.MessageField('RelatedAsset', 10)
-  relatedAssets = _messages.MessageField('RelatedAssets', 11)
-  resource = _messages.MessageField('Resource', 12)
-  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 13)
-  updateTime = _messages.StringField(14)
+  assetExceptions = _messages.MessageField('AssetException', 4, repeated=True)
+  assetType = _messages.StringField(5)
+  iamPolicy = _messages.MessageField('Policy', 6)
+  name = _messages.StringField(7)
+  orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 8, repeated=True)
+  osInventory = _messages.MessageField('Inventory', 9)
+  otherCloudProperties = _messages.MessageField('OtherCloudProperties', 10)
+  relatedAsset = _messages.MessageField('RelatedAsset', 11)
+  relatedAssets = _messages.MessageField('RelatedAssets', 12)
+  resource = _messages.MessageField('Resource', 13)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 14)
+  updateTime = _messages.StringField(15)
 
 
 class AssetEnrichment(_messages.Message):
@@ -357,6 +359,32 @@ class AssetEnrichment(_messages.Message):
   """
 
   resourceOwners = _messages.MessageField('ResourceOwners', 1)
+
+
+class AssetException(_messages.Message):
+  r"""An exception of an asset.
+
+  Enums:
+    ExceptionTypeValueValuesEnum: The type of exception.
+
+  Fields:
+    details: The details of the exception.
+    exceptionType: The type of exception.
+  """
+
+  class ExceptionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of exception.
+
+    Values:
+      EXCEPTION_TYPE_UNSPECIFIED: exception_type is not applicable for the
+        current asset.
+      TRUNCATION: The asset content is truncated.
+    """
+    EXCEPTION_TYPE_UNSPECIFIED = 0
+    TRUNCATION = 1
+
+  details = _messages.StringField(1)
+  exceptionType = _messages.EnumField('ExceptionTypeValueValuesEnum', 2)
 
 
 class AttachedResource(_messages.Message):
@@ -2319,6 +2347,10 @@ class FeatureEnablement(_messages.Message):
       COLLECT_AZURE_GRAPH_ROLES: Add permissions
         `DeviceManagementRBAC.Read.All` for type
         Microsoft.Graph/roleAssignments, Microsoft.Graph/roleDefinitions
+      COLLECT_AZURE_OPENAI_TYPES: Add Cognitive Services Data Reader
+        permission for type Microsoft.AIServices/openAI/assistants,
+        Microsoft.AIServices/openAI/models, Microsoft.AIServices/openAI/files
+        Microsoft.AIServices/openAI/fineTuningJobs
     """
     FEATURE_ID_UNSPECIFIED = 0
     COLLECT_AWS_OU = 1
@@ -2326,6 +2358,7 @@ class FeatureEnablement(_messages.Message):
     COLLECT_AWS_BEDROCK_AGENTS = 3
     COLLECT_AWS_BEDROCK_KNOWLEDGE_BASES = 4
     COLLECT_AZURE_GRAPH_ROLES = 5
+    COLLECT_AZURE_OPENAI_TYPES = 6
 
   enablement = _messages.EnumField('EnablementValueValuesEnum', 1)
   featureId = _messages.EnumField('FeatureIdValueValuesEnum', 2)

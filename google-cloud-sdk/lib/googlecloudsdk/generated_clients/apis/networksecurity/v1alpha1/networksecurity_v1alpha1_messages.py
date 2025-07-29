@@ -943,8 +943,8 @@ class ClientTlsPolicy(_messages.Message):
     description: Optional. Free-text description of the resource.
     labels: Optional. Set of label tags associated with the resource.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
-      pattern
-      `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
+      pattern `projects/{project}/locations/{location}/clientTlsPolicies/{clie
+      nt_tls_policy}`
     serverValidationCa: Optional. Defines the mechanism to obtain the
       Certificate Authority certificate to validate the server certificate. If
       empty, client does not validate the server certificate.
@@ -5576,8 +5576,8 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesPatchRequest(_messages.Me
     clientTlsPolicy: A ClientTlsPolicy resource to be passed as the request
       body.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
-      pattern
-      `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
+      pattern `projects/{project}/locations/{location}/clientTlsPolicies/{clie
+      nt_tls_policy}`
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the ClientTlsPolicy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -5975,10 +5975,14 @@ class NetworksecurityProjectsLocationsGatewayAttachmentsDeleteRequest(_messages.
       request will fail if there are any GatewayEndpoints attached to the
       GatewayAttachment.
     name: Required. The resource name of the GatewayAttachment to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   force = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsCreateRequest(_messages.Message):
@@ -6017,9 +6021,13 @@ class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsDeleteRe
 
   Fields:
     name: Required. The resource name of the GatewayEndpoint to delete.
+    requestId: Optional. A unique identifier for this request. Must be a
+      UUID4. This request is only idempotent if a `request_id` is provided.
+      See https://google.aip.dev/155 for more details.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsGetRequest(_messages.Message):

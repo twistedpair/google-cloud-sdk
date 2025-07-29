@@ -1140,9 +1140,13 @@ class ApihubProjectsLocationsDeploymentsListRequest(_messages.Message):
       comparison operators: `>` and `<`. * `resource_uri` - A URI to the
       deployment resource. Allowed comparison operators: `=`. * `api_versions`
       - The API versions linked to this deployment. Allowed comparison
-      operators: `:`. * `deployment_type.enum_values.values.id` - The allowed
-      value id of the deployment_type attribute associated with the
-      Deployment. Allowed comparison operators: `:`. *
+      operators: `:`. * `source_project` - The project/organization at source
+      for the deployment. Allowed comparison operators: `=`. *
+      `source_environment` - The environment at source for the deployment.
+      Allowed comparison operators: `=`. *
+      `deployment_type.enum_values.values.id` - The allowed value id of the
+      deployment_type attribute associated with the Deployment. Allowed
+      comparison operators: `:`. *
       `deployment_type.enum_values.values.display_name` - The allowed value
       display name of the deployment_type attribute associated with the
       Deployment. Allowed comparison operators: `:`. *
@@ -3186,13 +3190,15 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
       attribute: `projects/{project}/locations/{location}/attributes/system-
       management-url` The number of values for this attribute will be based on
       the cardinality of the attribute. The same can be retrieved via
-      GetAttribute API.
+      GetAttribute API. The value of the attribute should be a valid URL.
     name: Identifier. The name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
-    resourceUri: Required. A uri that uniquely identfies the deployment within
-      a particular gateway. For example, if the runtime resource is of type
-      APIGEE_PROXY, then this field will be a combination of org, proxy name
-      and environment.
+    resourceUri: Required. The resource URI identifies the deployment within
+      its gateway. For Apigee gateways, its recommended to use the format:
+      organizations/{org}/environments/{env}/apis/{api}. For ex: if a proxy
+      with name `orders` is deployed in `staging` environment of `cymbal`
+      organization, the resource URI would be:
+      `organizations/cymbal/environments/staging/apis/orders`.
     slo: Optional. The SLO for this deployment. This maps to the following
       system defined attribute:
       `projects/{project}/locations/{location}/attributes/system-slo`
@@ -3212,7 +3218,9 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
       defined attribute:
       `projects/{project}/locations/{location}/attributes/system-source-uri`
       The number of values for this attribute will be based on the cardinality
-      of the attribute. The same can be retrieved via GetAttribute API.
+      of the attribute. The same can be retrieved via GetAttribute API. The
+      value of the attribute should be a valid URI, and in case of Cloud
+      Storage URI, it should point to a Cloud Storage object, not a directory.
     updateTime: Output only. The time at which the deployment was last
       updated.
   """
@@ -4255,7 +4263,8 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
       tance}`
     sourceProjectId: Optional. The source project id of the plugin instance.
       This will be the id of runtime project in case of gcp based plugins and
-      org id in case of non gcp based plugins. This is a required field.
+      org id in case of non gcp based plugins. This field will be a required
+      field for Google provided on-ramp plugins.
     state: Output only. The current state of the plugin instance (e.g.,
       enabled, disabled, provisioning).
     updateTime: Output only. Timestamp indicating when the plugin instance was

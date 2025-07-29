@@ -14,6 +14,19 @@ from apitools.base.py import extra_types
 package = 'cloudaicompanion'
 
 
+class APIToken(_messages.Message):
+  r"""Message for API Token based authentication.
+
+  Fields:
+    tokenSecretResource: Required. The secret key for the API token. Example:
+      projects//secrets//versions/
+    username: Required. The username for the API token.
+  """
+
+  tokenSecretResource = _messages.StringField(1)
+  username = _messages.StringField(2)
+
+
 class AttemptStats(_messages.Message):
   r"""Status for the execution attempt.
 
@@ -724,6 +737,60 @@ class CodeRepositoryIndex(_messages.Message):
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
+
+
+class ConfluenceConfig(_messages.Message):
+  r"""Confluence Configuration.
+
+  Fields:
+    pageId: Optional. The optional page ID of the Confluence page.
+    spaceKey: Required. The space key of the Confluence space.
+    uri: Required. The host address of the Confluence instance.
+  """
+
+  pageId = _messages.StringField(1)
+  spaceKey = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class DataTransformerRecommendation(_messages.Message):
+  r"""Individual DataTransformer recommendation containing the task config
+  with the new code, integration parameters and the explanation.
+
+  Fields:
+    explanation: The explanation of the DataTransformer code.
+    integrationParameters: Optional. The list of the new integration
+      parameters.
+    taskConfig: Optional. The task config of the DataTransformer task.
+  """
+
+  explanation = _messages.StringField(1)
+  integrationParameters = _messages.MessageField('IntegrationParameter', 2, repeated=True)
+  taskConfig = _messages.MessageField('TaskConfig', 3)
+
+
+class DataTransformerRequest(_messages.Message):
+  r"""Request message for Data Transformer Task using Gemini.
+
+  Fields:
+    integrationVersion: Required. The integration version which contains all
+      the integration parameters, all triggers and tasks including the
+      DataTransformer task.
+    taskId: Required. The task id of the DataTransformer task.
+  """
+
+  integrationVersion = _messages.MessageField('IntegrationVersion', 1)
+  taskId = _messages.StringField(2)
+
+
+class DataTransformerResponse(_messages.Message):
+  r"""Response message for DataTransformer Task using Gemini.
+
+  Fields:
+    recommendations: List of the DataTransformer recommendations.
+  """
+
+  recommendations = _messages.MessageField('DataTransformerRecommendation', 1, repeated=True)
 
 
 class DoubleParameterArray(_messages.Message):
@@ -1732,7 +1799,8 @@ class RepositoryGroup(_messages.Message):
     createTime: Output only. Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
-    repositories: Required. List of repositories to group
+    repositories: Optional. List of repositories to group
+    resources: Optional. List of third party connection resources
     updateTime: Output only. Update time stamp
   """
 
@@ -1764,7 +1832,18 @@ class RepositoryGroup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   repositories = _messages.MessageField('Repository', 4, repeated=True)
-  updateTime = _messages.StringField(5)
+  resources = _messages.MessageField('ThirdPartyConnection', 5, repeated=True)
+  updateTime = _messages.StringField(6)
+
+
+class ResourceAuthConfig(_messages.Message):
+  r"""Message for Authentication Configuration.
+
+  Fields:
+    apiToken: API Token based authentication.
+  """
+
+  apiToken = _messages.MessageField('APIToken', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1782,6 +1861,16 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SourceConfig(_messages.Message):
+  r"""Configuration for 3P Source.
+
+  Fields:
+    confluenceConfig: Confluence source configuration.
+  """
+
+  confluenceConfig = _messages.MessageField('ConfluenceConfig', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2153,6 +2242,35 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class ThirdPartyConnection(_messages.Message):
+  r"""Message for a Connection.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the 3p resource.
+
+  Fields:
+    authConfig: Required. The authentication configuration for the resource.
+    connection: Required. The name of the connection.
+    sourceConfig: Required. The source configuration for the resource.
+    type: Required. The type of the 3p resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the 3p resource.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified resource type.
+      CONFLUENCE: Confluence resource type.
+    """
+    TYPE_UNSPECIFIED = 0
+    CONFLUENCE = 1
+
+  authConfig = _messages.MessageField('ResourceAuthConfig', 1)
+  connection = _messages.StringField(2)
+  sourceConfig = _messages.MessageField('SourceConfig', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class TriggerConfig(_messages.Message):

@@ -23,7 +23,7 @@ from googlecloudsdk.core import execution_utils
 
 # default base command is sql
 _BASE_COMMAND = "sql"
-_SPANNER_CLI_BINARY = "spannercli"
+_SPANNER_CLI_BINARY = "spanner-cli"
 
 
 def GetEnvArgsForCommand(extra_vars=None, exclude_vars=None):

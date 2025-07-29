@@ -21,8 +21,8 @@ class Error(core_exceptions.Error):
   """Base class for Services errors."""
 
 
-class EnableServicePermissionDeniedException(Error):
-  """Permission denied exception for enable service command."""
+class EnableServiceException(Error):
+  """Exception for enable service command."""
 
 
 class ListServicesException(Error):

@@ -165,6 +165,13 @@ class Collections(enum.Enum):
       ['project', 'publicDelegatedPrefix'],
       True
   )
+  HACONTROLLERS = (
+      'haControllers',
+      'projects/{project}/regions/{region}/haControllers/{haController}',
+      {},
+      ['project', 'region', 'haController'],
+      True
+  )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
@@ -968,9 +975,9 @@ class Collections(enum.Enum):
   ZONEVMEXTENSIONPOLICIES = (
       'zoneVmExtensionPolicies',
       'projects/{project}/zones/{zone}/vmExtensionPolicies/'
-      '{zoneVmExtensionPolicy}',
+      '{vmExtensionPolicy}',
       {},
-      ['project', 'zone', 'zoneVmExtensionPolicy'],
+      ['project', 'zone', 'vmExtensionPolicy'],
       True
   )
   ZONES = (

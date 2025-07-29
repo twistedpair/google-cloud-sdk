@@ -184,6 +184,17 @@ def add_key_undelete_args(parser):
   _key_string_flag(undelete_set_group)
 
 
+def skip_dependency_flag(parser):
+  base.Argument(
+      '--skip-dependency',
+      action='store_true',
+      help=(
+          'If set, the dependencies of the service to be enabled will not be'
+          ' enabled.'
+      ),
+  ).AddToParser(parser)
+
+
 def validate_only_args(parser, suffix='to act on'):
   base.Argument(
       '--validate-only',

@@ -3372,7 +3372,7 @@ class GoogleCloudDocumentaiV1Processor(_messages.Message):
     StateValueValuesEnum: Output only. The state of the processor.
 
   Fields:
-    createTime: The time the processor was created.
+    createTime: Output only. The time the processor was created.
     defaultProcessorVersion: The default processor version.
     displayName: The display name of the processor.
     kmsKeyName: The [KMS key](https://cloud.google.com/security-key-
@@ -3531,19 +3531,21 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
     StateValueValuesEnum: Output only. The state of the processor version.
 
   Fields:
-    createTime: The time the processor version was created.
-    deprecationInfo: If set, information about the eventual deprecation of
-      this version.
+    createTime: Output only. The time the processor version was created.
+    deprecationInfo: Output only. If set, information about the eventual
+      deprecation of this version.
     displayName: The display name of the processor version.
-    documentSchema: The schema of the processor version. Describes the output.
+    documentSchema: Output only. The schema of the processor version.
+      Describes the output.
     genAiModelInfo: Output only. Information about Generative AI model-based
       processor versions.
     googleManaged: Output only. Denotes that this `ProcessorVersion` is
       managed by Google.
-    kmsKeyName: The KMS key name used for encryption.
-    kmsKeyVersionName: The KMS key version with which data is encrypted.
-    latestEvaluation: The most recently invoked evaluation for the processor
-      version.
+    kmsKeyName: Output only. The KMS key name used for encryption.
+    kmsKeyVersionName: Output only. The KMS key version with which data is
+      encrypted.
+    latestEvaluation: Output only. The most recently invoked evaluation for
+      the processor version.
     modelType: Output only. The model type of this processor version.
     name: Identifier. The resource name of the processor version. Format: `pro
       jects/{project}/locations/{location}/processors/{processor}/processorVer

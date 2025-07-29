@@ -1,8 +1,7 @@
 """Generated message classes for containeranalysis version v1alpha1.
 
 This API is a prerequisite for leveraging Artifact Analysis scanning
-capabilities in both Artifact Registry and with Advanced Vulnerability
-Insights (runtime scanning) in GKE. In addition, the Container Analysis API is
+capabilities in Artifact Registry. In addition, the Container Analysis API is
 an implementation of the Grafeas API, which enables storing, querying, and
 retrieval of critical metadata about all of your software artifacts.
 """
@@ -1941,8 +1940,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1DependencyGitSourceRepository(_
   r"""A repository for a git source.
 
   Fields:
-    developerConnect: The Developer Connect Git repository link or the url
-      that matches a repository link in the current project, formatted as
+    developerConnect: The Developer Connect Git repository link formatted as
       `projects/*/locations/*/connections/*/gitRepositoryLink/*`
     url: Location of the Git repository.
   """
@@ -3296,6 +3294,8 @@ class Discovered(_messages.Message):
       were archived.
     continuousAnalysis: Whether the resource is continuously analyzed.
     cpe: The CPE of the resource being scanned.
+    files: Optional. Files that make up the resource described by the
+      occurrence.
     lastScanTime: The last time this resource was scanned.
     operation: Output only. An operation that indicates the status of the
       current scan. This field is deprecated, do not use.
@@ -3344,10 +3344,11 @@ class Discovered(_messages.Message):
   archiveTime = _messages.StringField(5)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 6)
   cpe = _messages.StringField(7)
-  lastScanTime = _messages.StringField(8)
-  operation = _messages.MessageField('Operation', 9)
-  sbomStatus = _messages.MessageField('SBOMStatus', 10)
-  vulnerabilityAttestation = _messages.MessageField('VulnerabilityAttestation', 11)
+  files = _messages.MessageField('File', 8, repeated=True)
+  lastScanTime = _messages.StringField(9)
+  operation = _messages.MessageField('Operation', 10)
+  sbomStatus = _messages.MessageField('SBOMStatus', 11)
+  vulnerabilityAttestation = _messages.MessageField('VulnerabilityAttestation', 12)
 
 
 class Discovery(_messages.Message):
@@ -3632,6 +3633,45 @@ class ExternalRef(_messages.Message):
   comment = _messages.StringField(2)
   locator = _messages.StringField(3)
   type = _messages.StringField(4)
+
+
+class File(_messages.Message):
+  r"""A file as part of a resource.
+
+  Messages:
+    DigestValue: Optional. The digest(s) of the file.
+
+  Fields:
+    digest: Optional. The digest(s) of the file.
+    name: Optional. The name of the file.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""Optional. The digest(s) of the file.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  name = _messages.StringField(2)
 
 
 class FileHashes(_messages.Message):

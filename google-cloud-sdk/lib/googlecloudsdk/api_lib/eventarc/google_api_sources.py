@@ -30,10 +30,6 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
 
 
-class GoogleApiSourceAlreadyExistsInProjectError(exceptions.Error):
-  """Error when a GoogleApiSource already exists in the project."""
-
-
 class NoProjectSubscriptionsSpecifiedError(exceptions.Error):
   """Error when no project subscriptions were specified."""
 
@@ -261,19 +257,6 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
-
-  def RaiseErrorIfGoogleApiSourceExists(self, project):
-    list_req = (
-        self._messages.EventarcProjectsLocationsGoogleApiSourcesListRequest(
-            parent=f'projects/{project}/locations/-'
-        )
-    )
-    response = self._service.List(list_req)
-    if getattr(response, 'googleApiSources'):
-      raise GoogleApiSourceAlreadyExistsInProjectError(
-          'A Google API source already exists in the project. Currently, only'
-          ' one Google API source per project is supported.'
-      )
 
   def LabelsValueClass(self):
     """Returns the labels value class."""

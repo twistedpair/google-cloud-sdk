@@ -50,6 +50,11 @@ class CommitResponse(proto.Message):
             precommit token.
 
             This field is a member of `oneof`_ ``MultiplexedSessionRetry``.
+        snapshot_timestamp (google.protobuf.timestamp_pb2.Timestamp):
+            If ``TransactionOptions.isolation_level`` is set to
+            ``IsolationLevel.REPEATABLE_READ``, then the snapshot
+            timestamp is the timestamp at which all reads in the
+            transaction ran. This timestamp is never returned.
     """
 
     class CommitStats(proto.Message):
@@ -88,6 +93,11 @@ class CommitResponse(proto.Message):
         number=4,
         oneof='MultiplexedSessionRetry',
         message=transaction.MultiplexedSessionPrecommitToken,
+    )
+    snapshot_timestamp: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
     )
 
 

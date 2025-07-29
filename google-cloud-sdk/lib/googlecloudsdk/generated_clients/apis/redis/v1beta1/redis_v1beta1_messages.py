@@ -1283,6 +1283,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
       SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
       SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED: Schema not optimized.
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
+      SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
+      SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1383,6 +1385,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
     SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED = 97
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
+    SIGNAL_TYPE_REPLICATION_LAG = 99
+    SIGNAL_TYPE_OUTDATED_VERSION = 100
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1982,6 +1986,8 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
       SIGNAL_TYPE_OUTDATED_MINOR_VERSION: Outdated DB minor version.
       SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED: Schema not optimized.
       SIGNAL_TYPE_MANY_IDLE_CONNECTIONS: High number of idle connections.
+      SIGNAL_TYPE_REPLICATION_LAG: Replication delay.
+      SIGNAL_TYPE_OUTDATED_VERSION: Outdated version.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -2082,6 +2088,8 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_OUTDATED_MINOR_VERSION = 96
     SIGNAL_TYPE_SCHEMA_NOT_OPTIMIZED = 97
     SIGNAL_TYPE_MANY_IDLE_CONNECTIONS = 98
+    SIGNAL_TYPE_REPLICATION_LAG = 99
+    SIGNAL_TYPE_OUTDATED_VERSION = 100
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

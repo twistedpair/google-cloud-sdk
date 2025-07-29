@@ -304,6 +304,13 @@ def _ShowFailoverReplicaDeprecationWarning():
   )
 
 
+def _ShowAcceleratedReplicaModeWarning():
+  log.warning(
+      'Setting the accelerated replica mode for a replica may '
+      'cause recreate of the replica instance in case of crash.'
+  )
+
+
 class _BaseInstances(object):
   """Common utility functions for sql instance commands."""
 
@@ -575,6 +582,10 @@ class _BaseInstances(object):
         settings.dbAlignedAtomicWritesConfig.dbAlignedAtomicWrites = (
             args.enable_db_aligned_atomic_writes
         )
+
+      if args.IsKnownAndSpecified('enable_accelerated_replica_mode'):
+        _ShowAcceleratedReplicaModeWarning()
+        settings.acceleratedReplicaMode = args.enable_accelerated_replica_mode
 
     return settings
 
@@ -984,6 +995,11 @@ class _BaseInstances(object):
         sql_messages, args, original, release_track
     )
 
+    if args.IsKnownAndSpecified('enforce_new_sql_network_architecture'):
+      instance_resource.sqlNetworkArchitecture = (
+          sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
+      )
+
     if args.IsKnownAndSpecified('master_instance_name'):
       replication = (
           sql_messages.Settings.ReplicationTypeValueValuesEnum.ASYNCHRONOUS
@@ -1090,13 +1106,12 @@ class _BaseInstances(object):
           ]
       )
 
-    if IsBetaOrNewer(release_track):
-      if args.IsKnownAndSpecified('instance_type'):
-        instance_resource.instanceType = _ParseInstanceType(
-            sql_messages, args.instance_type
-        )
-      if args.IsKnownAndSpecified('node_count'):
-        instance_resource.nodeCount = args.node_count
+    if args.IsKnownAndSpecified('instance_type'):
+      instance_resource.instanceType = _ParseInstanceType(
+          sql_messages, args.instance_type
+      )
+    if args.IsKnownAndSpecified('node_count'):
+      instance_resource.nodeCount = args.node_count
 
     return instance_resource
 
@@ -1125,6 +1140,10 @@ class _BaseInstances(object):
     )
 
     if args.upgrade_sql_network_architecture:
+      instance_resource.sqlNetworkArchitecture = (
+          sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
+      )
+    if args.enforce_new_sql_network_architecture:
       instance_resource.sqlNetworkArchitecture = (
           sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
       )
@@ -1172,13 +1191,12 @@ class _BaseInstances(object):
           args.include_replicas_for_major_version_upgrade
       )
 
-    if IsBetaOrNewer(release_track):
-      if args.IsKnownAndSpecified('instance_type'):
-        instance_resource.instanceType = _ParseInstanceType(
-            sql_messages, args.instance_type
-        )
-      if args.IsKnownAndSpecified('node_count'):
-        instance_resource.nodeCount = args.node_count
+    if args.IsKnownAndSpecified('instance_type'):
+      instance_resource.instanceType = _ParseInstanceType(
+          sql_messages, args.instance_type
+      )
+    if args.IsKnownAndSpecified('node_count'):
+      instance_resource.nodeCount = args.node_count
 
     return instance_resource
 

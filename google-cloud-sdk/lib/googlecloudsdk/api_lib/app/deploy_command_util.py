@@ -552,7 +552,7 @@ def PossiblyEnableFlex(project):
     if credential and creds.IsServiceAccountCredentials(credential):
       warning += '\n\n{}'.format(FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT)
     log.warning(warning)
-  except s_exceptions.EnableServicePermissionDeniedException:
+  except s_exceptions.EnableServiceException:
     # If enabling the Flexible API fails due to a permissions error, the
     # deployment fails.
     raise PrepareFailureError(PREPARE_FAILURE_MSG.format(project))

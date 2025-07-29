@@ -31,10 +31,6 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
 
 
-class MessageBusAlreadyExistsInProjectError(exceptions.Error):
-  """Error when a MessageBus already exists in the project."""
-
-
 def GetMessageBusURI(resource):
   message_buses = resources.REGISTRY.ParseRelativeName(
       resource.name, collection='eventarc.projects.locations.messageBuses'
@@ -260,17 +256,6 @@ class MessageBusClientV1(base.EventarcClientBase):
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
-
-  def RaiseErrorIfMessageBusExists(self, project):
-    list_req = self._messages.EventarcProjectsLocationsMessageBusesListRequest(
-        parent=f'projects/{project}/locations/-'
-    )
-    response = self._service.List(list_req)
-    if getattr(response, 'messageBuses'):
-      raise MessageBusAlreadyExistsInProjectError(
-          'A message bus already exists in the project. Currently, only one'
-          ' message bus per project is supported.'
-      )
 
   def LabelsValueClass(self):
     """Returns the labels value class."""

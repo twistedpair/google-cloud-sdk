@@ -910,6 +910,10 @@ class SignatureInfo(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      ML_KEM_768: ML-KEM-768 (FIPS 203)
+      ML_KEM_1024: ML-KEM-1024 (FIPS 203)
+      KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
+        datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
@@ -954,9 +958,12 @@ class SignatureInfo(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
-    PQ_SIGN_ML_DSA_65 = 36
-    PQ_SIGN_SLH_DSA_SHA2_128S = 37
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
+    ML_KEM_768 = 36
+    ML_KEM_1024 = 37
+    KEM_XWING = 38
+    PQ_SIGN_ML_DSA_65 = 39
+    PQ_SIGN_SLH_DSA_SHA2_128S = 40
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
 
   customerKmsKeyVersion = _messages.StringField(1)
   googleKeyAlgorithm = _messages.EnumField('GoogleKeyAlgorithmValueValuesEnum', 2)

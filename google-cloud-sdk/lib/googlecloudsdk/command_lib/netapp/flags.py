@@ -148,6 +148,12 @@ def GetQuotaRuleAttributeConfig():
   )
 
 
+def GetHostGroupAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'host_group', 'The instance of the {resource}.'
+  )
+
+
 ## Resource Specs ##
 
 
@@ -326,6 +332,17 @@ def GetQuotaRuleResourceSpec():
       quotaRulesId=GetQuotaRuleAttributeConfig(),
   )
 
+
+def GetHostGroupResourceSpec():
+  return concepts.ResourceSpec(
+      constants.HOST_GROUPS_COLLECTION,
+      resource_name='host_group',
+      api_version=constants.BETA_API_VERSION,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      hostGroupsId=GetHostGroupAttributeConfig(),
+  )
+
 ## Presentation Specs ##
 
 
@@ -414,6 +431,15 @@ def GetQuotaRulePresentationSpec(group_help):
       group_help,
       required=True,
       flag_name_overrides={'volume': ''})
+
+
+def GetHostGroupPresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'host_group',
+      GetHostGroupResourceSpec(),
+      group_help,
+      required=True,
+  )
 
 
 # TODO(b/290375665): Add more unit tests to test Backup Poicy

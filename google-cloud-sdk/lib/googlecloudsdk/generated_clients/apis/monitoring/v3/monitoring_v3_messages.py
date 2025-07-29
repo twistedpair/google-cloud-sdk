@@ -341,6 +341,44 @@ class Aggregation(_messages.Message):
   perSeriesAligner = _messages.EnumField('PerSeriesAlignerValueValuesEnum', 4)
 
 
+class Alert(_messages.Message):
+  r"""An alert is the representation of a violation of an alert policy. It is
+  a read only resource that cannot be modified by the accompanied API.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the alert.
+
+  Fields:
+    closeTime: The time when the alert was closed.
+    name: Identifier. The name of the alert.The format is:
+      projects/[PROJECT_ID_OR_NUMBER]/alerts/[ALERT_ID] The [ALERT_ID] is a
+      system-assigned unique identifier for the alert.
+    openTime: The time when the alert was opened.
+    policy: The snapshot of the alert policy that generated this alert.
+    state: Output only. The current state of the alert.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the alert.
+
+    Values:
+      STATE_UNSPECIFIED: The alert state is unspecified.
+      OPENED: The alert is open. Will be deprecated in favor of OPEN.
+      OPEN: The alert is open.
+      CLOSED: The alert is closed.
+    """
+    STATE_UNSPECIFIED = 0
+    OPENED = 1
+    OPEN = 2
+    CLOSED = 3
+
+  closeTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  openTime = _messages.StringField(3)
+  policy = _messages.MessageField('PolicySnapshot', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
 class AlertPolicy(_messages.Message):
   r"""A description of the conditions under which some aspect of your system
   is considered to be "unhealthy" and the ways to notify people or services
@@ -1113,17 +1151,23 @@ class Criteria(_messages.Message):
   names are supplied.
 
   Fields:
-    filter: Optional. The filter string to match on Alert fields when
-      silencing the alerts. It follows the standard https://google.aip.dev/160
-      syntax. A filter string used to apply the snooze to specific incidents
-      that have matching filter values. Filters can be defined for snoozes
-      that apply to one alerting policy. Filters must be a string formatted as
-      one or more resource labels with specific label values. If multiple
-      resource labels are used, then they must be connected with an AND
-      operator. For example, the following filter applies the snooze to
-      incidents that have an instance ID of 1234567890 and a zone of us-
-      central1-a: resource.labels.instance_id="1234567890" AND
-      resource.labels.zone="us-central1-a"
+    filter: Optional. When you define a snooze, you can also define a filter
+      for that snooze. The filter is a string containing one or more key-value
+      pairs. The string uses the standard https://google.aip.dev/160 filter
+      syntax. If you define a filter for a snooze, then the snooze can only
+      apply to one alert policy. When the snooze is active, incidents won't be
+      created when the incident would have key-value pairs (labels) that match
+      those specified by the filter in the snooze.Snooze filters support
+      resource, metric, and metadata labels. If multiple labels are used, then
+      they must be connected with an AND operator. For example, the following
+      filter applies the snooze to incidents that have a resource label with
+      an instance ID of 1234567890, a metric label with an instance name of
+      test_group, a metadata user label with a key of foo and a value of bar,
+      and a metadata system label with a key of region and a value of us-
+      central1: "filter": "resource.labels.instance_id=\"1234567890\" AND
+      metric.labels.instance_name=\"test_group\" AND
+      metadata.user_labels.foo=\"bar\" AND metadata.system_labels.region=\"us-
+      central1\""
     policies: The specific AlertPolicy names for the alert that should be
       snoozed. The format is:
       projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[POLICY_ID] There is a
@@ -1427,7 +1471,11 @@ class Exponential(_messages.Message):
 
 
 class Field(_messages.Message):
-  r"""A single field of a message type.
+  r"""A single field of a message type.New usages of this message as an
+  alternative to FieldDescriptorProto are strongly discouraged. This message
+  does not reliability preserve all information necessary to model the schema
+  and preserve semantics. Instead make use of FileDescriptorSet which
+  preserves the necessary information.
 
   Enums:
     CardinalityValueValuesEnum: The field cardinality.
@@ -2115,6 +2163,24 @@ class ListAlertPoliciesResponse(_messages.Message):
   totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class ListAlertsResponse(_messages.Message):
+  r"""The ListAlerts response.
+
+  Fields:
+    alerts: The list of alerts.
+    nextPageToken: If not empty, indicates that there may be more results that
+      match the request. Use the value in the page_token field in a subsequent
+      request to fetch the next set of results. The token is encrypted and
+      only guaranteed to return correct results for 72 hours after it is
+      created. If empty, all results have been returned.
+    totalSize: The estimated total number of matching results for this query.
+  """
+
+  alerts = _messages.MessageField('Alert', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class ListGroupMembersResponse(_messages.Message):
   r"""The ListGroupMembers response.
 
@@ -2271,12 +2337,15 @@ class ListTimeSeriesResponse(_messages.Message):
       https://unitsofmeasure.org/ucum.html. If different time_series have
       different units (for example, because they come from different metric
       types, or a unit is absent), then unit will be "{not_a_unit}".
+    unreachable: Cloud regions that were unreachable which may have caused
+      incomplete data to be returned.
   """
 
   executionErrors = _messages.MessageField('Status', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   timeSeries = _messages.MessageField('TimeSeries', 3, repeated=True)
   unit = _messages.StringField(4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListUptimeCheckConfigsResponse(_messages.Message):
@@ -4620,6 +4689,48 @@ class MonitoringProjectsAlertPoliciesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class MonitoringProjectsAlertsGetRequest(_messages.Message):
+  r"""A MonitoringProjectsAlertsGetRequest object.
+
+  Fields:
+    name: Required. The name of the alert.The format is:
+      projects/[PROJECT_ID_OR_NUMBER]/alerts/[ALERT_ID] The [ALERT_ID] is a
+      system-assigned unique identifier for the alert.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MonitoringProjectsAlertsListRequest(_messages.Message):
+  r"""A MonitoringProjectsAlertsListRequest object.
+
+  Fields:
+    filter: Optional. An alert is returned if there is a match on any fields
+      belonging to the alert or its subfields.
+    orderBy: Optional. A comma-separated list of fields in Alert to use for
+      sorting. The default sort direction is ascending. To specify descending
+      order for a field, add a "desc" modifier.The currently supported fields
+      are: - open_time - close_timeFor example: close_time desc, open_timewill
+      return the alerts closed most recently, with ties broken in the order of
+      older alerts listed first.If the field is not set, the results are
+      sorted by "open_time desc".
+    pageSize: Optional. The maximum number of results to return in a single
+      response. If not set to a positive number, at most 50 alerts will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. If non-empty, page_token must contain a value
+      returned as the next_page_token in a previous response to request the
+      next set of results.
+    parent: Required. The name of the project to list alerts for.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class MonitoringProjectsCollectdTimeSeriesCreateRequest(_messages.Message):
   r"""A MonitoringProjectsCollectdTimeSeriesCreateRequest object.
 
@@ -6606,7 +6717,9 @@ class OperationMetadata(_messages.Message):
 
 class Option(_messages.Message):
   r"""A protocol buffer option, which can be attached to a message, field,
-  enumeration, etc.
+  enumeration, etc.New usages of this message as an alternative to
+  FileOptions, MessageOptions, FieldOptions, EnumOptions, EnumValueOptions,
+  ServiceOptions, or MethodOptions are strongly discouraged.
 
   Messages:
     ValueValue: The option's value packed in an Any message. If the value is a
@@ -6721,6 +6834,72 @@ class PointData(_messages.Message):
 
   timeInterval = _messages.MessageField('TimeInterval', 1)
   values = _messages.MessageField('TypedValue', 2, repeated=True)
+
+
+class PolicySnapshot(_messages.Message):
+  r"""The state of the policy at the time the alert was generated.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the alert policy.
+
+  Messages:
+    UserLabelsValue: The user labels for the alert policy.
+
+  Fields:
+    displayName: The display name of the alert policy.
+    name: The name of the alert policy resource. In the form of
+      "projects/PROJECT_ID_OR_NUMBER/alertPolicies/ALERT_POLICY_ID".
+    severity: The severity of the alert policy.
+    userLabels: The user labels for the alert policy.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the alert policy.
+
+    Values:
+      SEVERITY_UNSPECIFIED: No severity is specified. This is the default
+        value.
+      CRITICAL: This is the highest severity level. Use this if the problem
+        could cause significant damage or downtime.
+      ERROR: This is the medium severity level. Use this if the problem could
+        cause minor damage or downtime.
+      WARNING: This is the lowest severity level. Use this if the problem is
+        not causing any damage or downtime, but could potentially lead to a
+        problem in the future.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    ERROR = 2
+    WARNING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserLabelsValue(_messages.Message):
+    r"""The user labels for the alert policy.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 3)
+  userLabels = _messages.MessageField('UserLabelsValue', 4)
 
 
 class PrometheusQueryLanguageCondition(_messages.Message):
@@ -7791,7 +7970,11 @@ class Trigger(_messages.Message):
 
 
 class Type(_messages.Message):
-  r"""A protocol buffer message type.
+  r"""A protocol buffer message type.New usages of this message as an
+  alternative to DescriptorProto are strongly discouraged. This message does
+  not reliability preserve all information necessary to model the schema and
+  preserve semantics. Instead make use of FileDescriptorSet which preserves
+  the necessary information.
 
   Enums:
     SyntaxValueValuesEnum: The source syntax.
@@ -7873,6 +8056,7 @@ class UptimeCheckConfig(_messages.Message):
       additional entries will be ignored. This field is optional and should
       only be specified if a content match is required as part of the/ Uptime
       check.
+    disabled: Whether the check is disabled or not.
     displayName: A human-friendly name for the Uptime check configuration. The
       display name should be unique within a Cloud Monitoring Workspace in
       order to make it easier to identify; however, uniqueness is not
@@ -7887,6 +8071,8 @@ class UptimeCheckConfig(_messages.Message):
       'selected_regions'. It is an error to provide 'selected_regions' when
       is_internal is true, or to provide 'internal_checkers' when is_internal
       is false.
+    logCheckFailures: To specify whether to log the results of failed probes
+      to Cloud Logging.
     monitoredResource: The monitored resource
       (https://cloud.google.com/monitoring/api/resources) associated with the
       configuration. The following monitored resource types are valid for this
@@ -8000,19 +8186,21 @@ class UptimeCheckConfig(_messages.Message):
 
   checkerType = _messages.EnumField('CheckerTypeValueValuesEnum', 1)
   contentMatchers = _messages.MessageField('ContentMatcher', 2, repeated=True)
-  displayName = _messages.StringField(3)
-  httpCheck = _messages.MessageField('HttpCheck', 4)
-  internalCheckers = _messages.MessageField('InternalChecker', 5, repeated=True)
-  isInternal = _messages.BooleanField(6)
-  monitoredResource = _messages.MessageField('MonitoredResource', 7)
-  name = _messages.StringField(8)
-  period = _messages.StringField(9)
-  resourceGroup = _messages.MessageField('ResourceGroup', 10)
-  selectedRegions = _messages.EnumField('SelectedRegionsValueListEntryValuesEnum', 11, repeated=True)
-  syntheticMonitor = _messages.MessageField('SyntheticMonitorTarget', 12)
-  tcpCheck = _messages.MessageField('TcpCheck', 13)
-  timeout = _messages.StringField(14)
-  userLabels = _messages.MessageField('UserLabelsValue', 15)
+  disabled = _messages.BooleanField(3)
+  displayName = _messages.StringField(4)
+  httpCheck = _messages.MessageField('HttpCheck', 5)
+  internalCheckers = _messages.MessageField('InternalChecker', 6, repeated=True)
+  isInternal = _messages.BooleanField(7)
+  logCheckFailures = _messages.BooleanField(8)
+  monitoredResource = _messages.MessageField('MonitoredResource', 9)
+  name = _messages.StringField(10)
+  period = _messages.StringField(11)
+  resourceGroup = _messages.MessageField('ResourceGroup', 12)
+  selectedRegions = _messages.EnumField('SelectedRegionsValueListEntryValuesEnum', 13, repeated=True)
+  syntheticMonitor = _messages.MessageField('SyntheticMonitorTarget', 14)
+  tcpCheck = _messages.MessageField('TcpCheck', 15)
+  timeout = _messages.StringField(16)
+  userLabels = _messages.MessageField('UserLabelsValue', 17)
 
 
 class UptimeCheckIp(_messages.Message):

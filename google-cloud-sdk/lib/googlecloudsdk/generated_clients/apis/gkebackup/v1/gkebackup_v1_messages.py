@@ -139,6 +139,9 @@ class Backup(_messages.Message):
       permissive_mode value.
     podCount: Output only. The total number of Kubernetes Pods contained in
       the Backup.
+    regionalSnapshots: Output only. This flag indicates whether the backup
+      creates regional snapshot resources rather than global snapshot
+      resources for volume data backups.
     resourceCount: Output only. The total number of Kubernetes resources
       included in the Backup.
     retainDays: Optional. The age (in days) after which this Backup will be
@@ -153,6 +156,8 @@ class Backup(_messages.Message):
     satisfiesPzs: Output only. [Output Only] Reserved for future use.
     selectedApplications: Output only. If set, the list of
       ProtectedApplications whose resources were included in the Backup.
+    selectedNamespaceLabels: Output only. If set, the list of labels whose
+      constituent namespaces were included in the Backup.
     selectedNamespaces: Output only. If set, the list of namespaces that were
       included in the Backup.
     sizeBytes: Output only. The total size of the Backup in bytes = config
@@ -236,20 +241,22 @@ class Backup(_messages.Message):
   name = _messages.StringField(15)
   permissiveMode = _messages.BooleanField(16)
   podCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  resourceCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  retainDays = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  retainExpireTime = _messages.StringField(20)
-  satisfiesPzi = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  selectedApplications = _messages.MessageField('NamespacedNames', 23)
-  selectedNamespaces = _messages.MessageField('Namespaces', 24)
-  sizeBytes = _messages.IntegerField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  stateReason = _messages.StringField(27)
-  troubleshootingInfo = _messages.MessageField('TroubleshootingInfo', 28)
-  uid = _messages.StringField(29)
-  updateTime = _messages.StringField(30)
-  volumeCount = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  regionalSnapshots = _messages.BooleanField(18)
+  resourceCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  retainDays = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  retainExpireTime = _messages.StringField(21)
+  satisfiesPzi = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  selectedApplications = _messages.MessageField('NamespacedNames', 24)
+  selectedNamespaceLabels = _messages.MessageField('ResourceLabels', 25)
+  selectedNamespaces = _messages.MessageField('Namespaces', 26)
+  sizeBytes = _messages.IntegerField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  stateReason = _messages.StringField(29)
+  troubleshootingInfo = _messages.MessageField('TroubleshootingInfo', 30)
+  uid = _messages.StringField(31)
+  updateTime = _messages.StringField(32)
+  volumeCount = _messages.IntegerField(33, variant=_messages.Variant.INT32)
 
 
 class BackupChannel(_messages.Message):
@@ -347,6 +354,8 @@ class BackupConfig(_messages.Message):
       additional setup to restore. Default: False
     selectedApplications: If set, include just the resources referenced by the
       listed ProtectedApplications.
+    selectedNamespaceLabels: If set, the list of labels whose constituent
+      namespaces were included in the Backup.
     selectedNamespaces: If set, include just the resources in the listed
       namespaces.
   """
@@ -357,7 +366,8 @@ class BackupConfig(_messages.Message):
   includeVolumeData = _messages.BooleanField(4)
   permissiveMode = _messages.BooleanField(5)
   selectedApplications = _messages.MessageField('NamespacedNames', 6)
-  selectedNamespaces = _messages.MessageField('Namespaces', 7)
+  selectedNamespaceLabels = _messages.MessageField('ResourceLabels', 7)
+  selectedNamespaces = _messages.MessageField('Namespaces', 8)
 
 
 class BackupConfigDetails(_messages.Message):
@@ -446,6 +456,9 @@ class BackupPlan(_messages.Message):
       `projects/*/locations/*/backupPlans/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
+    regionalSnapshots: Optional. This flag specifies whether to create
+      regional snapshot resources rather than global snapshot resources for
+      volume data backups.
     retentionPolicy: Optional. RetentionPolicy governs lifecycle of Backups
       created under this plan.
     rpoRiskLevel: Output only. A number that represents the current risk level
@@ -557,14 +570,15 @@ class BackupPlan(_messages.Message):
   lastSuccessfulBackupTime = _messages.StringField(11)
   name = _messages.StringField(12)
   protectedPodCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  retentionPolicy = _messages.MessageField('RetentionPolicy', 14)
-  rpoRiskLevel = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  rpoRiskReason = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateReason = _messages.StringField(18)
-  tags = _messages.MessageField('TagsValue', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
+  regionalSnapshots = _messages.BooleanField(14)
+  retentionPolicy = _messages.MessageField('RetentionPolicy', 15)
+  rpoRiskLevel = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  rpoRiskReason = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateReason = _messages.StringField(19)
+  tags = _messages.MessageField('TagsValue', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -2567,6 +2581,18 @@ class GroupKindDependency(_messages.Message):
   satisfying = _messages.MessageField('GroupKind', 2)
 
 
+class Label(_messages.Message):
+  r"""A single Kubernetes label-value pair.
+
+  Fields:
+    key: Optional. The key/name of the label.
+    value: Optional. The value of the label.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class ListBackupChannelsResponse(_messages.Message):
   r"""Response message for ListBackupChannels.
 
@@ -3020,6 +3046,16 @@ class ResourceFilter(_messages.Message):
   groupKinds = _messages.MessageField('GroupKind', 1, repeated=True)
   jsonPath = _messages.StringField(2)
   namespaces = _messages.StringField(3, repeated=True)
+
+
+class ResourceLabels(_messages.Message):
+  r"""A list of Kubernetes labels.
+
+  Fields:
+    resourceLabels: Optional. A list of Kubernetes label-value pairs.
+  """
+
+  resourceLabels = _messages.MessageField('Label', 1, repeated=True)
 
 
 class ResourceSelector(_messages.Message):

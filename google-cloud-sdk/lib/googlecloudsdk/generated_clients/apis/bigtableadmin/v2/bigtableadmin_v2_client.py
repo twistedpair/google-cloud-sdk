@@ -1615,7 +1615,7 @@ class BigtableadminV2(base_api.BaseApiClient):
         method_id='bigtableadmin.projects.instances.tables.schemaBundles.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v2/{+parent}/schemaBundles',
         request_field='',
         request_type_name='BigtableadminProjectsInstancesTablesSchemaBundlesListRequest',

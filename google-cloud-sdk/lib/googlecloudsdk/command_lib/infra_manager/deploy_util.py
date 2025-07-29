@@ -273,6 +273,31 @@ def _CreateTFBlueprint(
   return terraform_blueprint
 
 
+def _CreateProviderConfig(
+    messages,
+    provider_source,
+):
+  """Returns the ProviderConfig message.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form Config API
+      messages based on our protos.
+    provider_source: Input to control from where to fetch providers.
+
+  Returns:
+      A messages.ProviderConfig to use with deployment operation or None if
+      provider_source is not set.
+  """
+  if provider_source is None:
+    return None
+  provider_config = messages.ProviderConfig(
+      sourceType=messages.ProviderConfig.SourceTypeValueValuesEnum(
+          provider_source
+      )
+  )
+  return provider_config
+
+
 def Apply(
     messages,
     async_,
@@ -294,6 +319,7 @@ def Apply(
     labels=None,
     quota_validation=None,
     annotations=None,
+    provider_source=None,
 ):
   """Updates the deployment if one exists, otherwise creates a deployment.
 
@@ -320,9 +346,8 @@ def Apply(
       instead attempt to automatically import the resource into the Terraform
       state (for supported resource types) and continue actuation.
     artifacts_gcs_bucket: User-defined location of Cloud Build logs and
-       artifacts in Google Cloud Storage. e.g.
-      `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
-      field is not set or empty
+      artifacts in Google Cloud Storage. e.g. `gs://{bucket}/{folder}` A default
+      bucket will be bootstrapped if the field is not set or empty
     worker_pool: The User-specified Worker Pool resource in which the Cloud
       Build job will execute. If this field is unspecified, the default Cloud
       Build worker pool will be used. e.g.
@@ -339,6 +364,7 @@ def Apply(
     quota_validation: Input to control quota checks for resources in terraform'
       configuration files.
     annotations: User-defined annotations for the deployment.
+    provider_source: Input to control from where to fetch providers.
 
   Returns:
     The resulting Deployment resource or, in the case that async_ is True, a
@@ -424,6 +450,7 @@ def Apply(
       git_source_ref,
       tf_input_values,
   )
+  provider_config = _CreateProviderConfig(messages, provider_source)
 
   deployment = messages.Deployment(
       name=deployment_full_name,
@@ -435,6 +462,7 @@ def Apply(
       annotations=annotations_message,
       tfVersionConstraint=tf_version_constraint,
       quotaValidation=quota_validation,
+      providerConfig=provider_config,
   )
 
   if artifacts_gcs_bucket is not None:
@@ -924,6 +952,7 @@ def Create(
     inputs_file=None,
     labels=None,
     annotations=None,
+    provider_source=None,
 ):
   """Creates a preview.
 
@@ -947,9 +976,8 @@ def Create(
       specified by local source flag. e.g. "gs://bucket-name/".
     ignore_file: optional string, a path to a gcloudignore file.
     artifacts_gcs_bucket: User-defined location of Cloud Build logs and
-      artifacts in Google Cloud Storage. e.g.
-      `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
-      field is not set or empty
+      artifacts in Google Cloud Storage. e.g. `gs://{bucket}/{folder}` A default
+      bucket will be bootstrapped if the field is not set or empty
     worker_pool: The User-specified Worker Pool resource in which the Cloud
       Build job will execute. If this field is unspecified, the default Cloud
       Build worker pool will be used. e.g.
@@ -964,6 +992,7 @@ def Create(
     inputs_file: Accepts .tfvars file.
     labels: User-defined metadata for the preview.
     annotations: User-defined annotations for the preview.
+    provider_source: Input to control where to fetch providers.
 
   Returns:
     The resulting Preview resource or, in the case that async_ is True, a
@@ -1013,12 +1042,14 @@ def Create(
       git_source_ref,
       tf_input_values,
   )
+  provider_config = _CreateProviderConfig(messages, provider_source)
 
   preview = messages.Preview(
       serviceAccount=service_account,
       workerPool=worker_pool,
       labels=labels_message,
       annotations=annotations_message,
+      providerConfig=provider_config,
   )
 
   # set tf_blueprint only when one of the three sources is specified.

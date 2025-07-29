@@ -263,12 +263,12 @@ def AddStoragePoolHotTierSizeArg(parser):
   parser.add_argument(
       '--hot-tier-size',
       type=arg_parsers.BinarySize(
-          default_unit='GiB/s',
-          suggested_binary_size_scales=['GiB/s'],
-          type_abbr='B/s',
+          default_unit='GiB',
+          suggested_binary_size_scales=['GiB'],
+          type_abbr='B',
       ),
-      help="""The hot tier size of the Storage Pool in GiB/s units.
-              If no throughput unit is specified, GiB/s is assumed.""",
+      help="""The hot tier size of the Storage Pool in GiB units.
+              This is a required field when --allow-auto-tiering is set for flex service level.""",
   )
 
 

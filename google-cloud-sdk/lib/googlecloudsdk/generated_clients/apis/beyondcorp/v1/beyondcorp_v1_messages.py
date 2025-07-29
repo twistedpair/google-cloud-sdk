@@ -2787,6 +2787,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1Application(_messages.Message):
       ("abc.com" and "22"), ("abc.com" and "22,33") etc
     name: Identifier. Name of the resource.
     updateTime: Output only. Timestamp when the resource was last modified.
+    upstreams: Optional. Which upstream resources to forward traffic to.
   """
 
   createTime = _messages.StringField(1)
@@ -2794,6 +2795,41 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1Application(_messages.Message):
   endpointMatchers = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1EndpointMatcher', 3, repeated=True)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
+  upstreams = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstream', 6, repeated=True)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstream(_messages.Message):
+  r"""Which upstream resource to forward traffic to.
+
+  Fields:
+    egressPolicy: Optional. Routing policy information.
+    network: Network to forward traffic to.
+  """
+
+  egressPolicy = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1EgressPolicy', 1)
+  network = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamNetwork', 2)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1ApplicationUpstreamNetwork(_messages.Message):
+  r"""Network to forward traffic to.
+
+  Fields:
+    name: Required. Network name is of the format:
+      `projects/{project}/global/networks/{network}
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1EgressPolicy(_messages.Message):
+  r"""Routing policy information.
+
+  Fields:
+    regions: Required. List of the regions where the application sends
+      traffic.
+  """
+
+  regions = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1EndpointMatcher(_messages.Message):
@@ -2873,6 +2909,8 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when the resource was created.
+    delegatingServiceAccount: Output only. Service account used for operations
+      that involve resources in consumer projects.
     displayName: Optional. An arbitrary user-provided name for the
       SecurityGateway. Cannot exceed 64 characters.
     externalIps: Output only. IP addresses that will be used for establishing
@@ -2932,12 +2970,13 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGateway(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  externalIps = _messages.StringField(3, repeated=True)
-  hubs = _messages.MessageField('HubsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  delegatingServiceAccount = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  externalIps = _messages.StringField(4, repeated=True)
+  hubs = _messages.MessageField('HubsValue', 5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGatewayOperationMetadata(_messages.Message):

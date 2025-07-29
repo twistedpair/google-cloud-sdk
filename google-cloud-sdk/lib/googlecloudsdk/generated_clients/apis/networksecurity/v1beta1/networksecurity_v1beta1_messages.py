@@ -868,8 +868,8 @@ class ClientTlsPolicy(_messages.Message):
     description: Optional. Free-text description of the resource.
     labels: Optional. Set of label tags associated with the resource.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
-      pattern
-      `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
+      pattern `projects/{project}/locations/{location}/clientTlsPolicies/{clie
+      nt_tls_policy}`
     serverValidationCa: Optional. Defines the mechanism to obtain the
       Certificate Authority certificate to validate the server certificate. If
       empty, client does not validate the server certificate.
@@ -985,6 +985,69 @@ class Destination(_messages.Message):
   httpHeaderMatch = _messages.MessageField('HttpHeaderMatch', 2)
   methods = _messages.StringField(3, repeated=True)
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
+
+
+class DnsThreatDetector(_messages.Message):
+  r"""Message describing DnsThreatDetector object
+
+  Enums:
+    ProviderValueValuesEnum: Required. The provider used for DNS threat
+      analysis.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    excludedNetworks: Optional. A list of Network resource names which are
+      exempt from the configuration in this DnsThreatDetector. Example:
+      `projects/PROJECT_ID/global/networks/NETWORK_NAME`.
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. Name of the DnsThreatDetector resource.
+    provider: Required. The provider used for DNS threat analysis.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Required. The provider used for DNS threat analysis.
+
+    Values:
+      PROVIDER_UNSPECIFIED: An unspecified provider.
+      INFOBLOX: The Infoblox DNS threat detecter.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    INFOBLOX = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  excludedNetworks = _messages.StringField(2, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -2330,6 +2393,21 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
   clientTlsPolicies = _messages.MessageField('ClientTlsPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListDnsThreatDetectorsResponse(_messages.Message):
+  r"""Message for response to listing DnsThreatDetectors
+
+  Fields:
+    dnsThreatDetectors: The list of DnsThreatDetector resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page.
+    unreachable: Unordered list. Unreachable `DnsThreatDetector` resources.
+  """
+
+  dnsThreatDetectors = _messages.MessageField('DnsThreatDetector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListFirewallEndpointAssociationsResponse(_messages.Message):
@@ -4705,8 +4783,8 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesPatchRequest(_messages.Me
     clientTlsPolicy: A ClientTlsPolicy resource to be passed as the request
       body.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
-      pattern
-      `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
+      pattern `projects/{project}/locations/{location}/clientTlsPolicies/{clie
+      nt_tls_policy}`
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the ClientTlsPolicy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -4753,6 +4831,82 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesTestIamPermissionsRequest
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest
+  object.
+
+  Fields:
+    dnsThreatDetector: A DnsThreatDetector resource to be passed as the
+      request body.
+    dnsThreatDetectorId: Optional. Id of the requesting DnsThreatDetector
+      object. If this field is not supplied, the service will generate an
+      identifier.
+    parent: Required. Value for parent of the DnsThreatDetector resource.
+  """
+
+  dnsThreatDetector = _messages.MessageField('DnsThreatDetector', 1)
+  dnsThreatDetectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the DnsThreatDetector resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest object.
+
+  Fields:
+    name: Required. Name of the DnsThreatDetector resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A page token, received from a previous
+      `ListDnsThreatDetectorsRequest` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. Parent value for ListDnsThreatDetectorsRequest
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest object.
+
+  Fields:
+    dnsThreatDetector: A DnsThreatDetector resource to be passed as the
+      request body.
+    name: Immutable. Identifier. Name of the DnsThreatDetector resource.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the DnsThreatDetector resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the mask
+      is not provided then all fields present in the request will be
+      overwritten.
+  """
+
+  dnsThreatDetector = _messages.MessageField('DnsThreatDetector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest(_messages.Message):

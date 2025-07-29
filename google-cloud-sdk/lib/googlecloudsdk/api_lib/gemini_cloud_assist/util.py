@@ -120,7 +120,7 @@ def CreateInvestigation(
   if title:
     investigation.title = title
 
-  if issue or start_time or end_time or resources:
+  if issue or start_time or end_time or relevant_resources:
     observation = messages.Observation(
         id='user.input.log',
         title='User Provided Issue',
@@ -171,6 +171,156 @@ def CreateInvestigation(
   )
 
 
+def CalculateTimeInterval(start_time, end_time, observation):
+  """Calculates the time interval for the given start and end times.
+
+  Args:
+    start_time: The start time of the investigation.
+    end_time: The end time of the investigation.
+    observation: The observation to get the existing time interval from.
+
+  Returns:
+    The calculated time interval.
+  """
+  start_time_str, end_time_str = None, None
+  if observation and len(observation.timeIntervals) >= 1:
+    start_time_str = observation.timeIntervals[0].startTime
+    end_time_str = observation.timeIntervals[0].endTime
+
+  if start_time:
+    start_time_str = (
+        # Treat min start time as clear
+        start_time.isoformat()
+        if start_time != datetime.datetime.min
+        else None
+    )
+  if end_time:
+    end_time_str = (
+        # Treat max end time as clear
+        end_time.isoformat()
+        if end_time != datetime.datetime.max
+        else None
+    )
+
+  return GetMessagesModule().Interval(
+      startTime=start_time_str, endTime=end_time_str
+  )
+
+
+def UpdateInvestigation(
+    investigation_resource,
+    title,
+    issue,
+    start_time,
+    end_time,
+    relevant_resources,
+):
+  """Updates the investigation for the given investigation resource.
+
+  Args:
+    investigation_resource: The investigation resource to create.
+    title: The title of the investigation. Pass an empty string to clear.
+    issue: The issue of the investigation.
+    start_time: The start time of the investigation. Pass datetime.datetime.min
+      to clear.
+    end_time: The end time of the investigation. Pass datetime.datetime.max to
+      clear.
+    relevant_resources: The resources of the investigation. Pass an empty array
+      to clear.
+
+  Returns:
+    The updated investigation.
+  """
+  # We need to do a read-modify-patch because we can't directly patch
+  # observation time intervals, only replace them outright.
+  old_investigation = GetInvestigation(investigation_resource.RelativeName())
+
+  client = GetClientInstance()
+  messages = GetMessagesModule()
+  investigation = messages.Investigation(dataVersion=2, observations={})
+  mask = []
+
+  investigation.name = investigation_resource.RelativeName()
+
+  investigation.observations.additionalProperties.append(
+      messages.Investigation.ObservationsValue.AdditionalProperty(
+          key='user.project',
+          value=messages.Observation(
+              id='user.project',
+              text=investigation_resource.Parent()
+              .Parent()
+              .RelativeName()
+              .split('/')[-1],
+              observationType=messages.Observation.ObservationTypeValueValuesEnum.OBSERVATION_TYPE_STRUCTURED_INPUT,
+              observerType=messages.Observation.ObserverTypeValueValuesEnum.OBSERVER_TYPE_USER,
+          ),
+      )
+  )
+  mask.append('observations.`user.project`')
+
+  if title is not None:
+    mask.append('title')
+    investigation.title = title
+
+  if (
+      issue is not None
+      or start_time
+      or end_time
+      or relevant_resources is not None
+  ):
+    observation = messages.Observation(
+        id='user.input.log',
+        title='User Provided Issue',
+        observationType=messages.Observation.ObservationTypeValueValuesEnum.OBSERVATION_TYPE_CLOUD_LOG,
+        observerType=messages.Observation.ObserverTypeValueValuesEnum.OBSERVER_TYPE_USER,
+    )
+    mask.append('observations.`user.input.log`.id')
+    mask.append('observations.`user.input.log`.title')
+    mask.append('observations.`user.input.log`.observationType')
+    mask.append('observations.`user.input.log`.observerType')
+
+    if issue is not None:
+      mask.append('observations.`user.input.log`.text')
+      observation.text = issue
+
+    if start_time or end_time:
+      mask.append('observations.`user.input.log`.timeIntervals')
+
+      # We need to read the old observation to get the existing time interval.
+      old_observation = None
+      for obs in old_investigation.observations.additionalProperties:
+        if obs.key == 'user.input.log':
+          old_observation = obs.value
+          break
+
+      observation.timeIntervals.append(
+          CalculateTimeInterval(
+              start_time,
+              end_time,
+              old_observation,
+          )
+      )
+
+    if relevant_resources is not None:
+      mask.append('observations.`user.input.log`.relevantResources')
+      observation.relevantResources = relevant_resources
+
+    investigation.observations.additionalProperties.append(
+        messages.Investigation.ObservationsValue.AdditionalProperty(
+            key=observation.id,
+            value=observation,
+        )
+    )
+
+  return client.projects_locations_investigations.Patch(
+      messages.GeminicloudassistProjectsLocationsInvestigationsPatchRequest(
+          name=investigation_resource.RelativeName(),
+          updateMask=','.join(mask),
+          investigation=investigation,
+      )
+  )
+
+
 def RunInvestigationRevisionBlocking(revision_name):
   """Runs the investigation revision for the given revision name.
 
@@ -194,11 +344,7 @@ def RunInvestigationRevisionBlocking(revision_name):
       operation.name,
       collection='geminicloudassist.projects.locations.operations',
   )
-  waiter.WaitFor(
-      poller,
-      operation_ref,
-      message='Running investigation'
-  )
+  waiter.WaitFor(poller, operation_ref, message='Running investigation')
   return GetInvestigation(revision_name.split('/revisions/')[0])
 
 

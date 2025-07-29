@@ -76,6 +76,8 @@ __protobuf__ = proto.module(
         'BucketAccessControl',
         'ChecksummedData',
         'ObjectChecksums',
+        'ObjectCustomContextPayload',
+        'ObjectContexts',
         'CustomerEncryption',
         'Object',
         'ObjectAccessControl',
@@ -183,7 +185,7 @@ class CreateBucketRequest(proto.Message):
             that owns this bucket should be specified in the
             ``bucket.project`` field.
         bucket (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket):
-            Required. Properties of the new bucket being inserted. The
+            Optional. Properties of the new bucket being inserted. The
             name of the bucket is specified in the ``bucket_id`` field.
             Populating ``bucket.name`` field will result in an error.
             The project of the bucket must be specified in the
@@ -428,7 +430,7 @@ class ComposeObjectRequest(proto.Message):
         destination (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object):
             Required. Properties of the resulting object.
         source_objects (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ComposeObjectRequest.SourceObject]):
-            Required. The list of source objects that
+            Optional. The list of source objects that
             will be concatenated into a single object.
         destination_predefined_acl (str):
             Optional. Apply a predefined set of access
@@ -1295,18 +1297,23 @@ class BidiReadObjectResponse(proto.Message):
 
 class BidiReadObjectRedirectedError(proto.Message):
     r"""Error proto containing details for a redirected read. This
-    error is only returned on initial open in case of a redirect.
+    error may be attached as details for an ABORTED response to
+    BidiReadObject.
 
 
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         read_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadHandle):
-            The read handle for the redirected read. The
-            client can use this for the subsequent open.
+            The read handle for the redirected read. If
+            set, the client may use this in the
+            BidiReadObjectSpec when retrying the read
+            stream.
         routing_token (str):
-            The routing token that should be used when
-            reopening the read stream.
+            The routing token the client must use when retrying the read
+            stream. This value must be provided in the header
+            ``x-goog-request-params``, with key ``routing_token`` and
+            this string verbatim as the value.
 
             This field is a member of `oneof`_ ``_routing_token``.
     """
@@ -1325,27 +1332,32 @@ class BidiReadObjectRedirectedError(proto.Message):
 
 class BidiWriteObjectRedirectedError(proto.Message):
     r"""Error proto containing details for a redirected write. This
-    error is only returned on initial open in case of a redirect.
+    error may be attached as details for an ABORTED response to
+    BidiWriteObject.
 
 
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         routing_token (str):
-            The routing token that should be used when
-            reopening the write stream.
+            The routing token the client must use when retrying the
+            write stream. This value must be provided in the header
+            ``x-goog-request-params``, with key ``routing_token`` and
+            this string verbatim as the value.
 
             This field is a member of `oneof`_ ``_routing_token``.
         write_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteHandle):
-            Opaque value describing a previous write.
+            Opaque value describing a previous write. If set, the client
+            must use this in an AppendObjectSpec first_message when
+            retrying the write stream. If not set, clients may retry the
+            original request.
 
             This field is a member of `oneof`_ ``_write_handle``.
         generation (int):
             The generation of the object that triggered the redirect.
-            Note that if this error was returned as part of an
-            appendable object create, this object generation is now
-            successfully created and append_object_spec should be used
-            when reconnecting.
+            This will be set iff write_handle is set. If set, the client
+            must use this in an AppendObjectSpec first_message when
+            retrying the write stream.
 
             This field is a member of `oneof`_ ``_generation``.
     """
@@ -1786,15 +1798,19 @@ class AppendObjectSpec(proto.Message):
             Required. The generation number of the object
             to open for writing.
         if_metageneration_match (int):
-            Makes the operation conditional on whether
-            the object's current metageneration matches the
-            given value.
+            Makes the operation conditional on whether the object's
+            current metageneration matches the given value.
+
+            Note that metageneration preconditions are only checked if
+            ``write_handle`` is empty.
 
             This field is a member of `oneof`_ ``_if_metageneration_match``.
         if_metageneration_not_match (int):
-            Makes the operation conditional on whether
-            the object's current metageneration does not
-            match the given value.
+            Makes the operation conditional on whether the object's
+            current metageneration does not match the given value.
+
+            Note that metageneration preconditions are only checked if
+            ``write_handle`` is empty.
 
             This field is a member of `oneof`_ ``_if_metageneration_not_match``.
         routing_token (str):
@@ -1804,9 +1820,12 @@ class AppendObjectSpec(proto.Message):
 
             This field is a member of `oneof`_ ``_routing_token``.
         write_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteHandle):
-            An optional write handle returned from a
-            previous BidiWriteObjectResponse message or a
+            An optional write handle returned from a previous
+            BidiWriteObjectResponse message or a
             BidiWriteObjectRedirectedError error.
+
+            Note that metageneration preconditions are only checked if
+            ``write_handle`` is empty.
 
             This field is a member of `oneof`_ ``_write_handle``.
     """
@@ -2104,6 +2123,10 @@ class ListObjectsRequest(proto.Message):
             this glob pattern. See `List Objects Using
             Glob <https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-objects-and-prefixes-using-glob>`__
             for the full syntax.
+        filter (str):
+            Optional. Filter the returned objects. Currently only
+            supported for the ``contexts`` field. If ``delimiter`` is
+            set, the returned ``prefixes`` are exempt from this filter.
     """
 
     parent: str = proto.Field(
@@ -2159,6 +2182,10 @@ class ListObjectsRequest(proto.Message):
     match_glob: str = proto.Field(
         proto.STRING,
         number=14,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=15,
     )
 
 
@@ -3198,17 +3225,172 @@ class Bucket(proto.Message):
     class Encryption(proto.Message):
         r"""Encryption properties of a bucket.
 
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
         Attributes:
             default_kms_key (str):
                 Optional. The name of the Cloud KMS key that
                 will be used to encrypt objects inserted into
                 this bucket, if no encryption method is
                 specified.
+            google_managed_encryption_enforcement_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Encryption.GoogleManagedEncryptionEnforcementConfig):
+                Optional. If omitted, then new objects with
+                GMEK encryption-type is allowed. If set, then
+                new objects created in this bucket must comply
+                with enforcement config. Changing this has no
+                effect on existing objects; it applies to new
+                objects only.
+
+                This field is a member of `oneof`_ ``_google_managed_encryption_enforcement_config``.
+            customer_managed_encryption_enforcement_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Encryption.CustomerManagedEncryptionEnforcementConfig):
+                Optional. If omitted, then new objects with
+                CMEK encryption-type is allowed. If set, then
+                new objects created in this bucket must comply
+                with enforcement config. Changing this has no
+                effect on existing objects; it applies to new
+                objects only.
+
+                This field is a member of `oneof`_ ``_customer_managed_encryption_enforcement_config``.
+            customer_supplied_encryption_enforcement_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig):
+                Optional. If omitted, then new objects with
+                CSEK encryption-type is allowed. If set, then
+                new objects created in this bucket must comply
+                with enforcement config. Changing this has no
+                effect on existing objects; it applies to new
+                objects only.
+
+                This field is a member of `oneof`_ ``_customer_supplied_encryption_enforcement_config``.
         """
+
+        class GoogleManagedEncryptionEnforcementConfig(proto.Message):
+            r"""Google Managed Encryption (GMEK) enforcement config of a
+            bucket.
+
+
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+            Attributes:
+                restriction_mode (str):
+                    Restriction mode for google-managed encryption for new
+                    objects within the bucket. Valid values are:
+                    "NotRestricted", "FullyRestricted". If ``NotRestricted`` or
+                    unset, creation of new objects with google-managed
+                    encryption is allowed. If ``FullyRestricted``, new objects
+                    can't be created using google-managed encryption.
+
+                    This field is a member of `oneof`_ ``_restriction_mode``.
+                effective_time (google.protobuf.timestamp_pb2.Timestamp):
+                    Time from which the config was effective.
+                    This is service-provided.
+
+                    This field is a member of `oneof`_ ``_effective_time``.
+            """
+
+            restriction_mode: str = proto.Field(
+                proto.STRING,
+                number=3,
+                optional=True,
+            )
+            effective_time: timestamp_pb2.Timestamp = proto.Field(
+                proto.MESSAGE,
+                number=2,
+                optional=True,
+                message=timestamp_pb2.Timestamp,
+            )
+
+        class CustomerManagedEncryptionEnforcementConfig(proto.Message):
+            r"""Customer Managed Encryption (CMEK) enforcement config of a
+            bucket.
+
+
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+            Attributes:
+                restriction_mode (str):
+                    Restriction mode for customer-managed encryption for new
+                    objects within the bucket. Valid values are:
+                    "NotRestricted", "FullyRestricted". If ``NotRestricted`` or
+                    unset, creation of new objects with customer-managed
+                    encryption is allowed. If ``FullyRestricted``, new objects
+                    can't be created using customer-managed encryption.
+
+                    This field is a member of `oneof`_ ``_restriction_mode``.
+                effective_time (google.protobuf.timestamp_pb2.Timestamp):
+                    Time from which the config was effective.
+                    This is service-provided.
+
+                    This field is a member of `oneof`_ ``_effective_time``.
+            """
+
+            restriction_mode: str = proto.Field(
+                proto.STRING,
+                number=3,
+                optional=True,
+            )
+            effective_time: timestamp_pb2.Timestamp = proto.Field(
+                proto.MESSAGE,
+                number=2,
+                optional=True,
+                message=timestamp_pb2.Timestamp,
+            )
+
+        class CustomerSuppliedEncryptionEnforcementConfig(proto.Message):
+            r"""Customer Supplied Encryption (CSEK) enforcement config of a
+            bucket.
+
+
+            .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+            Attributes:
+                restriction_mode (str):
+                    Restriction mode for customer-supplied encryption for new
+                    objects within the bucket. Valid values are:
+                    "NotRestricted", "FullyRestricted". If ``NotRestricted`` or
+                    unset, creation of new objects with customer-supplied
+                    encryption is allowed. If ``FullyRestricted``, new objects
+                    can't be created using customer-supplied encryption.
+
+                    This field is a member of `oneof`_ ``_restriction_mode``.
+                effective_time (google.protobuf.timestamp_pb2.Timestamp):
+                    Time from which the config was effective.
+                    This is service-provided.
+
+                    This field is a member of `oneof`_ ``_effective_time``.
+            """
+
+            restriction_mode: str = proto.Field(
+                proto.STRING,
+                number=3,
+                optional=True,
+            )
+            effective_time: timestamp_pb2.Timestamp = proto.Field(
+                proto.MESSAGE,
+                number=2,
+                optional=True,
+                message=timestamp_pb2.Timestamp,
+            )
 
         default_kms_key: str = proto.Field(
             proto.STRING,
             number=1,
+        )
+        google_managed_encryption_enforcement_config: 'Bucket.Encryption.GoogleManagedEncryptionEnforcementConfig' = proto.Field(
+            proto.MESSAGE,
+            number=2,
+            optional=True,
+            message='Bucket.Encryption.GoogleManagedEncryptionEnforcementConfig',
+        )
+        customer_managed_encryption_enforcement_config: 'Bucket.Encryption.CustomerManagedEncryptionEnforcementConfig' = proto.Field(
+            proto.MESSAGE,
+            number=3,
+            optional=True,
+            message='Bucket.Encryption.CustomerManagedEncryptionEnforcementConfig',
+        )
+        customer_supplied_encryption_enforcement_config: 'Bucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig' = proto.Field(
+            proto.MESSAGE,
+            number=4,
+            optional=True,
+            message='Bucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig',
         )
 
     class IamConfig(proto.Message):
@@ -3290,7 +3472,7 @@ class Bucket(proto.Message):
 
                 Attributes:
                     type_ (str):
-                        Required. Type of the action. Currently, only ``Delete``,
+                        Optional. Type of the action. Currently, only ``Delete``,
                         ``SetStorageClass``, and ``AbortIncompleteMultipartUpload``
                         are supported.
                     storage_class (str):
@@ -3606,7 +3788,7 @@ class Bucket(proto.Message):
         r"""Configuration for Custom Dual Regions. It should specify precisely
         two eligible regions within the same Multiregion. More information
         on regions may be found
-        [https://cloud.google.com/storage/docs/locations][here].
+        `here <https://cloud.google.com/storage/docs/locations>`__.
 
         Attributes:
             data_locations (MutableSequence[str]):
@@ -3693,7 +3875,7 @@ class Bucket(proto.Message):
 
                 This field is a member of `oneof`_ ``_public_network_source``.
             vpc_network_sources (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.IpFilter.VpcNetworkSource]):
-                Optional. / The list of network sources that
+                Optional. The list of network sources that
                 are allowed to access operations on the bucket
                 or the underlying objects.
             allow_cross_org_vpcs (bool):
@@ -3704,6 +3886,12 @@ class Bucket(proto.Message):
                 If set to false, each VPC network source will be
                 checked to belong to the same org as the bucket
                 as well as validated for existence.
+            allow_all_service_agent_access (bool):
+                Whether or not to allow all P4SA access to
+                the bucket. When set to true, IP filter config
+                validation will not apply.
+
+                This field is a member of `oneof`_ ``_allow_all_service_agent_access``.
         """
 
         class PublicNetworkSource(proto.Message):
@@ -3774,6 +3962,11 @@ class Bucket(proto.Message):
         allow_cross_org_vpcs: bool = proto.Field(
             proto.BOOL,
             number=4,
+        )
+        allow_all_service_agent_access: bool = proto.Field(
+            proto.BOOL,
+            number=5,
+            optional=True,
         )
 
     class HierarchicalNamespace(proto.Message):
@@ -3947,12 +4140,12 @@ class BucketAccessControl(proto.Message):
 
     Attributes:
         role (str):
-            Required. The access permission for the
+            Optional. The access permission for the
             entity.
         id (str):
-            Required. The ID of the access-control entry.
+            Optional. The ID of the access-control entry.
         entity (str):
-            Required. The entity holding the permission, in one of the
+            Optional. The entity holding the permission, in one of the
             following forms:
 
             -  ``user-{userid}``
@@ -4097,6 +4290,52 @@ class ObjectChecksums(proto.Message):
     md5_hash: bytes = proto.Field(
         proto.BYTES,
         number=2,
+    )
+
+
+class ObjectCustomContextPayload(proto.Message):
+    r"""The payload of a single user-defined object context.
+
+    Attributes:
+        value (str):
+            Required. The value of the object context.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The time at which the object
+            context was created.
+        update_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The time at which the object
+            context was last updated.
+    """
+
+    value: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=timestamp_pb2.Timestamp,
+    )
+
+
+class ObjectContexts(proto.Message):
+    r"""All contexts of an object grouped by type.
+
+    Attributes:
+        custom (MutableMapping[str, googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectCustomContextPayload]):
+            Optional. User-defined object contexts.
+    """
+
+    custom: MutableMapping[str, 'ObjectCustomContextPayload'] = proto.MapField(
+        proto.STRING,
+        proto.MESSAGE,
+        number=1,
+        message='ObjectCustomContextPayload',
     )
 
 
@@ -4262,6 +4501,12 @@ class Object(proto.Message):
         metadata (MutableMapping[str, str]):
             Optional. User-provided metadata, in
             key/value pairs.
+        contexts (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectContexts):
+            Optional. User-defined or system-defined
+            object contexts. Each object context is a
+            key-payload pair, where the key provides the
+            identification and the payload holds the
+            associated value and additional metadata.
         event_based_hold (bool):
             Whether an object is under event-based hold. An event-based
             hold is a way to force the retention of an object until
@@ -4465,6 +4710,11 @@ class Object(proto.Message):
         proto.STRING,
         number=22,
     )
+    contexts: 'ObjectContexts' = proto.Field(
+        proto.MESSAGE,
+        number=38,
+        message='ObjectContexts',
+    )
     event_based_hold: bool = proto.Field(
         proto.BOOL,
         number=23,
@@ -4509,7 +4759,7 @@ class ObjectAccessControl(proto.Message):
 
     Attributes:
         role (str):
-            Required. The access permission for the entity. One of the
+            Optional. The access permission for the entity. One of the
             following values:
 
             -  ``READER``

@@ -4811,6 +4811,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes an HaController in the specified project.
+
+      Args:
+        request: (ComputeHaControllersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.haControllers.delete',
+        ordered_params=['project', 'region', 'haController'],
+        path_params=['haController', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/haControllers/{haController}',
+        request_field='',
+        request_type_name='ComputeHaControllersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Failover(self, request, global_params=None):
       r"""Fails over a VM targeted by the specified HaController to the selected zone.
 
@@ -4833,6 +4859,110 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/haControllers/{haController}/failover',
         request_field='haControllersFailoverRequest',
         request_type_name='ComputeHaControllersFailoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns all the details of a specific HaController.
+
+      Args:
+        request: (ComputeHaControllersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HaController) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.haControllers.get',
+        ordered_params=['project', 'region', 'haController'],
+        path_params=['haController', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/haControllers/{haController}',
+        request_field='',
+        request_type_name='ComputeHaControllersGetRequest',
+        response_type_name='HaController',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates HaController in the specified project.
+
+      Args:
+        request: (ComputeHaControllersInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.haControllers.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/haControllers',
+        request_field='haController',
+        request_type_name='ComputeHaControllersInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all HaControllers in the specified project in the specified region.
+
+      Args:
+        request: (ComputeHaControllersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HaControllersList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.haControllers.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/haControllers',
+        request_field='',
+        request_type_name='ComputeHaControllersListRequest',
+        response_type_name='HaControllersList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates HaController in the specified project.
+
+      Args:
+        request: (ComputeHaControllersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.haControllers.patch',
+        ordered_params=['project', 'region', 'haController'],
+        path_params=['haController', 'project', 'region'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/haControllers/{haController}',
+        request_field='haControllerResource',
+        request_type_name='ComputeHaControllersPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -16939,6 +17069,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all HealthAggregationPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeRegionHealthAggregationPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthAggregationPolicyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionHealthAggregationPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/healthAggregationPolicies',
+        request_field='',
+        request_type_name='ComputeRegionHealthAggregationPoliciesAggregatedListRequest',
+        response_type_name='HealthAggregationPolicyAggregatedList',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified HealthAggregationPolicy in the given region.
 
@@ -28855,10 +29011,10 @@ class ComputeAlpha(base_api.BaseApiClient):
     Delete.method_config = lambda: base_api.ApiMethodInfo(
         http_method='DELETE',
         method_id='compute.zoneVmExtensionPolicies.delete',
-        ordered_params=['project', 'zone', 'zoneVmExtensionPolicy'],
-        path_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        ordered_params=['project', 'zone', 'vmExtensionPolicy'],
+        path_params=['project', 'vmExtensionPolicy', 'zone'],
         query_params=['requestId'],
-        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{zoneVmExtensionPolicy}',
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{vmExtensionPolicy}',
         request_field='',
         request_type_name='ComputeZoneVmExtensionPoliciesDeleteRequest',
         response_type_name='Operation',
@@ -28872,7 +29028,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         request: (ComputeZoneVmExtensionPoliciesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ZoneVmExtensionPolicy) The response message.
+        (VmExtensionPolicy) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -28881,13 +29037,13 @@ class ComputeAlpha(base_api.BaseApiClient):
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
         method_id='compute.zoneVmExtensionPolicies.get',
-        ordered_params=['project', 'zone', 'zoneVmExtensionPolicy'],
-        path_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        ordered_params=['project', 'zone', 'vmExtensionPolicy'],
+        path_params=['project', 'vmExtensionPolicy', 'zone'],
         query_params=[],
-        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{zoneVmExtensionPolicy}',
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{vmExtensionPolicy}',
         request_field='',
         request_type_name='ComputeZoneVmExtensionPoliciesGetRequest',
-        response_type_name='ZoneVmExtensionPolicy',
+        response_type_name='VmExtensionPolicy',
         supports_download=False,
     )
 
@@ -28911,7 +29067,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=['project', 'zone'],
         query_params=['requestId'],
         relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies',
-        request_field='zoneVmExtensionPolicy',
+        request_field='vmExtensionPolicy',
         request_type_name='ComputeZoneVmExtensionPoliciesInsertRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -28924,7 +29080,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         request: (ComputeZoneVmExtensionPoliciesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ZoneVmExtensionPolicyList) The response message.
+        (VmExtensionPolicyList) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -28939,7 +29095,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies',
         request_field='',
         request_type_name='ComputeZoneVmExtensionPoliciesListRequest',
-        response_type_name='ZoneVmExtensionPolicyList',
+        response_type_name='VmExtensionPolicyList',
         supports_download=False,
     )
 
@@ -28959,11 +29115,11 @@ class ComputeAlpha(base_api.BaseApiClient):
     Update.method_config = lambda: base_api.ApiMethodInfo(
         http_method='PATCH',
         method_id='compute.zoneVmExtensionPolicies.update',
-        ordered_params=['project', 'zone', 'zoneVmExtensionPolicy'],
-        path_params=['project', 'zone', 'zoneVmExtensionPolicy'],
+        ordered_params=['project', 'zone', 'vmExtensionPolicy'],
+        path_params=['project', 'vmExtensionPolicy', 'zone'],
         query_params=['requestId'],
-        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{zoneVmExtensionPolicy}',
-        request_field='zoneVmExtensionPolicyResource',
+        relative_path='projects/{project}/zones/{zone}/vmExtensionPolicies/{vmExtensionPolicy}',
+        request_field='vmExtensionPolicyResource',
         request_type_name='ComputeZoneVmExtensionPoliciesUpdateRequest',
         response_type_name='Operation',
         supports_download=False,

@@ -259,19 +259,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class Capabilities(_messages.Message):
-  r"""Capabilities adds and removes POSIX capabilities from running
-  containers.
-
-  Fields:
-    add: Optional. Added capabilities +optional
-    drop: Optional. Removed capabilities +optional
-  """
-
-  add = _messages.StringField(1, repeated=True)
-  drop = _messages.StringField(2, repeated=True)
-
-
 class ChildStatusReference(_messages.Message):
   r"""ChildStatusReference is used to point to the statuses of individual
   TaskRuns and Runs within this PipelineRun.
@@ -3169,8 +3156,6 @@ class SecurityContext(_messages.Message):
       container process. AllowPrivilegeEscalation is true always when the
       container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this
       field cannot be set when spec.os.name is windows. +optional
-    capabilities: Optional. Adds and removes POSIX capabilities from running
-      containers.
     privileged: Run container in privileged mode.
     runAsGroup: Optional. The GID to run the entrypoint of the container
       process. Uses runtime default if unset. May also be set in
@@ -3194,11 +3179,10 @@ class SecurityContext(_messages.Message):
   """
 
   allowPrivilegeEscalation = _messages.BooleanField(1)
-  capabilities = _messages.MessageField('Capabilities', 2)
-  privileged = _messages.BooleanField(3)
-  runAsGroup = _messages.IntegerField(4)
-  runAsNonRoot = _messages.BooleanField(5)
-  runAsUser = _messages.IntegerField(6)
+  privileged = _messages.BooleanField(2)
+  runAsGroup = _messages.IntegerField(3)
+  runAsNonRoot = _messages.BooleanField(4)
+  runAsUser = _messages.IntegerField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):

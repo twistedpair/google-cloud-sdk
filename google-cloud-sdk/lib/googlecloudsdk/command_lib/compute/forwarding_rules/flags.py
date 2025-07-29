@@ -623,6 +623,20 @@ def AddSourceIpRanges(parser):
       """)
 
 
+def AddTrafficDisabled(parser):
+  """Adds traffic disabled flag to the argparse."""
+  parser.add_argument(
+      '--traffic-disabled',
+      action='store_true',
+      default=False,
+      help="""\
+      If set to true, disables traffic from flowing through Private Service
+      Connect forwarding rule from consumer to producer. This can
+      only be specified if the forwarding rule's target is a service attachment
+      (`--target-service-attachment`).
+      """)
+
+
 def AddAllowGlobalAccess(parser):
   """Adds allow global access flag to the argparse."""
   parser.add_argument(

@@ -401,6 +401,17 @@ class BuilderConfig(_messages.Message):
   id = _messages.StringField(1)
 
 
+class CISAKnownExploitedVulnerabilities(_messages.Message):
+  r"""A CISAKnownExploitedVulnerabilities object.
+
+  Fields:
+    knownRansomwareCampaignUse: Whether the vulnerability is known to have
+      been leveraged as part of a ransomware campaign.
+  """
+
+  knownRansomwareCampaignUse = _messages.StringField(1)
+
+
 class CVSS(_messages.Message):
   r"""Common Vulnerability Scoring System. For details, see
   https://www.first.org/cvss/specification-document This is a message we will
@@ -850,6 +861,20 @@ class EnvelopeSignature(_messages.Message):
 
   keyid = _messages.StringField(1)
   sig = _messages.BytesField(2)
+
+
+class ExploitPredictionScoringSystem(_messages.Message):
+  r"""A ExploitPredictionScoringSystem object.
+
+  Fields:
+    percentile: The percentile of the current score, the proportion of all
+      scored vulnerabilities with the same or a lower EPSS score
+    score: The EPSS score representing the probability [0-1] of exploitation
+      in the wild in the next 30 days
+  """
+
+  percentile = _messages.FloatField(1)
+  score = _messages.FloatField(2)
 
 
 class File(_messages.Message):
@@ -2382,6 +2407,21 @@ class ResourceDescriptor(_messages.Message):
   uri = _messages.StringField(7)
 
 
+class Risk(_messages.Message):
+  r"""A Risk object.
+
+  Fields:
+    cisaKev: CISA maintains the authoritative source of vulnerabilities that
+      have been exploited in the wild.
+    epss: The Exploit Prediction Scoring System (EPSS) estimates the
+      likelihood (probability) that a software vulnerability will be exploited
+      in the wild.
+  """
+
+  cisaKev = _messages.MessageField('CISAKnownExploitedVulnerabilities', 1)
+  epss = _messages.MessageField('ExploitPredictionScoringSystem', 2)
+
+
 class RunDetails(_messages.Message):
   r"""A RunDetails object.
 
@@ -3325,6 +3365,7 @@ class VulnerabilityOccurrence(_messages.Message):
     packageIssue: Required. The set of affected locations and their fixes (if
       available) within the associated resource.
     relatedUrls: Output only. URLs related to this vulnerability.
+    risk: Risk information about the vulnerability, such as CISA, EPSS, etc.
     severity: Output only. The note provider assigned severity of this
       vulnerability.
     shortDescription: Output only. A one sentence description of this
@@ -3401,10 +3442,11 @@ class VulnerabilityOccurrence(_messages.Message):
   longDescription = _messages.StringField(8)
   packageIssue = _messages.MessageField('PackageIssue', 9, repeated=True)
   relatedUrls = _messages.MessageField('RelatedUrl', 10, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
-  shortDescription = _messages.StringField(12)
-  type = _messages.StringField(13)
-  vexAssessment = _messages.MessageField('VexAssessment', 14)
+  risk = _messages.MessageField('Risk', 11)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
+  shortDescription = _messages.StringField(13)
+  type = _messages.StringField(14)
+  vexAssessment = _messages.MessageField('VexAssessment', 15)
 
 
 class WindowsUpdate(_messages.Message):

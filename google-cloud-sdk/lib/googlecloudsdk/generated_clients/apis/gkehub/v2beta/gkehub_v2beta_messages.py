@@ -180,6 +180,9 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
         scope level, this means all eligible clusters are in COMPLETE status.
       PAUSED: The upgrade is paused. At the scope level, this means the
         upgrade is paused for all the clusters in the scope.
+      FORCED_COMPLETE: The upgrade was forced into soaking and the soaking
+        time has passed. This is the equivalent of COMPLETE status for
+        upgrades that were forced into soaking.
     """
     CODE_UNSPECIFIED = 0
     INELIGIBLE = 1
@@ -189,6 +192,7 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
     FORCED_SOAKING = 5
     COMPLETE = 6
     PAUSED = 7
+    FORCED_COMPLETE = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the status.

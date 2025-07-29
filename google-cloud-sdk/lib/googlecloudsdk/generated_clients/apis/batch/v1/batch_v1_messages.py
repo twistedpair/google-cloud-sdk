@@ -729,11 +729,14 @@ class InstancePolicy(_messages.Message):
         by this field) is the older model, and has been migrated to use the
         SPOT model as the underlying technology. This old model will still be
         supported.
+      RESERVATION_BOUND: Bound to the lifecycle of the reservation in which it
+        is provisioned.
     """
     PROVISIONING_MODEL_UNSPECIFIED = 0
     STANDARD = 1
     SPOT = 2
     PREEMPTIBLE = 3
+    RESERVATION_BOUND = 4
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
   bootDisk = _messages.MessageField('Disk', 2)
@@ -815,11 +818,14 @@ class InstanceStatus(_messages.Message):
         by this field) is the older model, and has been migrated to use the
         SPOT model as the underlying technology. This old model will still be
         supported.
+      RESERVATION_BOUND: Bound to the lifecycle of the reservation in which it
+        is provisioned.
     """
     PROVISIONING_MODEL_UNSPECIFIED = 0
     STANDARD = 1
     SPOT = 2
     PREEMPTIBLE = 3
+    RESERVATION_BOUND = 4
 
   bootDisk = _messages.MessageField('Disk', 1)
   machineType = _messages.StringField(2)

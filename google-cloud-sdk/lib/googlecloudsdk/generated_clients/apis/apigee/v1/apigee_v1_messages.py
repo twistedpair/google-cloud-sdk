@@ -1034,6 +1034,71 @@ class ApigeeOrganizationsAppgroupsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class ApigeeOrganizationsAppgroupsSubscriptionsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsSubscriptionsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1AppGroupSubscription: A
+      GoogleCloudApigeeV1AppGroupSubscription resource to be passed as the
+      request body.
+    parent: Required. Name of the appgroup that is purchasing a subscription
+      to the API product. Use the following structure in your request:
+      `organizations/{org}/appgroups/{appgroup}`
+  """
+
+  googleCloudApigeeV1AppGroupSubscription = _messages.MessageField('GoogleCloudApigeeV1AppGroupSubscription', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsSubscriptionsExpireRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsSubscriptionsExpireRequest object.
+
+  Fields:
+    googleCloudApigeeV1ExpireAppGroupSubscriptionRequest: A
+      GoogleCloudApigeeV1ExpireAppGroupSubscriptionRequest resource to be
+      passed as the request body.
+    name: Required. Name of the API product subscription. Use the following
+      structure in your request:
+      `organizations/{org}/appgroups/{appgroup}/subscriptions/{subscription}`
+  """
+
+  googleCloudApigeeV1ExpireAppGroupSubscriptionRequest = _messages.MessageField('GoogleCloudApigeeV1ExpireAppGroupSubscriptionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsSubscriptionsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsSubscriptionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the AppGroupSubscription to retrieve. Format:
+      `organizations/{org}/appgroups/{appgroup}/subscriptions/{subscription}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsSubscriptionsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsSubscriptionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of subscriptions to return. The
+      service may return fewer than this value. If unspecified, at most 100
+      subscriptions will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListAppGroupSubscriptions` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListAppGroupSubscriptions` must match the call that provided the page
+      token.
+    parent: Required. Name of the appgroup. Use the following structure in
+      your request: `organizations/{org}/appgroups/{appgroup}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsAppgroupsUpdateMonetizationConfigRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsUpdateMonetizationConfigRequest object.
 
@@ -1099,14 +1164,16 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
     keyStatus: Optional. Key status of the app. Valid values include
       `approved` or `revoked`. Defaults to `approved`.
     pageSize: Optional. Count of apps a single page can have in the response.
-      If unspecified, at most 100 apps will be returned. The maximum value is
-      100; values above 100 will be coerced to 100. "page_size" is supported
-      from ver 1.10.0 and above.
+      If unspecified, at most 1000 apps will be returned. The maximum value is
+      1000; values above 1000 will be coerced to 1000. "page_size" is
+      supported from ver 1.10.0 and above.
     pageToken: Optional. The starting index record for listing the developers.
       "page_token" is supported from ver 1.10.0 and above.
     parent: Required. Resource path of the parent in the following format:
       `organizations/{org}`
-    rows: Optional. Maximum number of app IDs to return. Defaults to 1000.
+    rows: Optional. Maximum number of app IDs to return. Defaults to 1000,
+      which is also the upper limit. To get more than 1000, use pagination
+      with 'pageSize' and 'pageToken' parameters.
     startKey: Returns the list of apps starting from the specified app ID.
     status: Optional. Filter by the status of the app. Valid values are
       `approved` or `revoked`. Defaults to `approved`.
@@ -2256,11 +2323,11 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsDataGetRequest(_m
   Fields:
     name: Required. The name of the debug session transaction. Must be of the
       form: `organizations/{organization}/environments/{environment}/apis/{api
-      }/revisions/{revision}/debugsessions/{session}/data/{transaction}`. If
-      the API proxy resource has the `space` attribute set, IAM permissions
-      are checked differently . To learn more, read the [Apigee Spaces
-      Overview](https://cloud.google.com/apigee/docs/api-platform/system-
-      administration/spaces/apigee-spaces-overview).
+      }/revisions/{revision}/debugsessions/{debug_session}/data/{transaction}`
+      . If the API proxy resource has the `space` attribute set, IAM
+      permissions are checked differently . To learn more, read the [Apigee
+      Spaces Overview](https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/spaces/apigee-spaces-overview).
   """
 
   name = _messages.StringField(1, required=True)
@@ -2291,7 +2358,7 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsGetRequest(_messa
   Fields:
     name: Required. The name of the debug session to retrieve. Must be of the
       form: `organizations/{organization}/environments/{environment}/apis/{api
-      }/revisions/{revision}/debugsessions/{session}`. If the API proxy
+      }/revisions/{revision}/debugsessions/{debug_session}`. If the API proxy
       resource has the `space` attribute set, IAM permissions are checked
       differently . To learn more, read the [Apigee Spaces
       Overview](https://cloud.google.com/apigee/docs/api-platform/system-
@@ -2306,10 +2373,10 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsListRequest(_mess
   object.
 
   Fields:
-    pageSize: Maximum number of debug sessions to return. The page size
-      defaults to 25.
-    pageToken: Page token, returned from a previous ListDebugSessions call,
-      that you can use to retrieve the next page.
+    pageSize: Optional. Maximum number of debug sessions to return. The page
+      size defaults to 25.
+    pageToken: Optional. Page token, returned from a previous
+      ListDebugSessions call, that you can use to retrieve the next page.
     parent: Required. The name of the API Proxy revision deployment for which
       to list debug sessions. Must be of the form: `organizations/{organizatio
       n}/environments/{environment}/apis/{api}/revisions/{revision}`. If the
@@ -5035,8 +5102,7 @@ class ApigeeOrganizationsSecurityMonitoringConditionsPatchRequest(_messages.Mess
       Format: organizations/{org}/securityMonitoringConditions/{security_monit
       oring_condition}
     updateMask: Optional. The list of fields to update. Valid fields to update
-      are `profile`, `scope`, `include_all_resources`, `include`, and
-      `exclude`.
+      are `include_all_resources` and `include`.
   """
 
   googleCloudApigeeV1SecurityMonitoringCondition = _messages.MessageField('GoogleCloudApigeeV1SecurityMonitoringCondition', 1)
@@ -6073,9 +6139,7 @@ class GoogleCloudApigeeV1AdjustAppGroupBalanceRequest(_messages.Message):
     adjustment: Required. * A positive value of `adjustment` means that that
       the API provider wants to adjust the balance for an under-charged
       AppGroup i.e. the balance of the AppGroup will decrease. * A negative
-      value of `adjustment` means that that the API provider wants to adjust
-      the balance for an over-charged AppGroup i.e. the balance of the
-      AppGroup will increase.
+      value of `adjustment` is not supported. Use credit balance API instead.
   """
 
   adjustment = _messages.MessageField('GoogleTypeMoney', 1)
@@ -7062,6 +7126,31 @@ class GoogleCloudApigeeV1AppGroupMonetizationConfig(_messages.Message):
     POSTPAID = 2
 
   billingType = _messages.EnumField('BillingTypeValueValuesEnum', 1)
+
+
+class GoogleCloudApigeeV1AppGroupSubscription(_messages.Message):
+  r"""AppGroup Subscription details.
+
+  Fields:
+    apiproduct: Required. Name of the API product for which the appgroup is
+      purchasing a subscription.
+    createdAt: Output only. Time when the API product subscription was created
+      in milliseconds since epoch.
+    endTime: Output only. Time when the API product subscription ends in
+      milliseconds since epoch.
+    lastModifiedAt: Output only. Time when the API product subscription was
+      last modified in milliseconds since epoch.
+    name: Output only. Name of the API product subscription.
+    startTime: Output only. Time when the API product subscription starts in
+      milliseconds since epoch.
+  """
+
+  apiproduct = _messages.StringField(1)
+  createdAt = _messages.IntegerField(2)
+  endTime = _messages.IntegerField(3)
+  lastModifiedAt = _messages.IntegerField(4)
+  name = _messages.StringField(5)
+  startTime = _messages.IntegerField(6)
 
 
 class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
@@ -9138,6 +9227,10 @@ class GoogleCloudApigeeV1EnvironmentGroupConfig(_messages.Message):
   uid = _messages.StringField(7)
 
 
+class GoogleCloudApigeeV1ExpireAppGroupSubscriptionRequest(_messages.Message):
+  r"""Request for ExpireAppGroupSubscription."""
+
+
 class GoogleCloudApigeeV1ExpireDeveloperSubscriptionRequest(_messages.Message):
   r"""Request for ExpireDeveloperSubscription."""
 
@@ -9749,14 +9842,17 @@ class GoogleCloudApigeeV1KeyValueMap(_messages.Message):
       encrypted. This field is retained for backward compatibility and the
       value of encrypted will always be `true`. Apigee X and hybrid do not
       support unencrypted key value maps.
+    maskedValues: Required. Flag that specifies whether entry values will be
+      masked when returned.
     name: Required. ID of the key value map.
     resourceName: Output only. Resource URI on which the key value map is
       based.
   """
 
   encrypted = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  resourceName = _messages.StringField(3)
+  maskedValues = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  resourceName = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1Keystore(_messages.Message):
@@ -9874,6 +9970,20 @@ class GoogleCloudApigeeV1ListAppGroupAppsResponse(_messages.Message):
   """
 
   appGroupApps = _messages.MessageField('GoogleCloudApigeeV1AppGroupApp', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListAppGroupSubscriptionsResponse(_messages.Message):
+  r"""Response for ListAppGroupSubscriptions.
+
+  Fields:
+    appGroupSubscriptions: The list of subscriptions for an AppGroup.
+    nextPageToken: Value that can be sent as `pageToken` to retrieve the next
+      page of content. If this field is omitted, there are no subsequent
+      pages.
+  """
+
+  appGroupSubscriptions = _messages.MessageField('GoogleCloudApigeeV1AppGroupSubscription', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -11765,19 +11875,12 @@ class GoogleCloudApigeeV1RatePlan(_messages.Message):
         Total price for 250 calls: 100 x $2 + 100 x $1.5 + 50 x $1 = $400.
       TIERED: **Note**: Not supported by Apigee at this time.
       STAIRSTEP: **Note**: Not supported by Apigee at this time.
-      BUNDLES: Cumulative rate charged for bundle of API calls whether or not
-        the entire bundle is used. Example: * 1-100 calls cost $150 flat fee.
-        * 101-200 calls cost $100 flat free. * 201-300 calls cost $75 flat
-        fee. * Total price for 1 call: $150 * Total price for 50 calls: $150 *
-        Total price for 150 calls: $150 + $100 * Total price for 250 calls:
-        $150 + $100 + $75
     """
     CONSUMPTION_PRICING_TYPE_UNSPECIFIED = 0
     FIXED_PER_UNIT = 1
     BANDED = 2
     TIERED = 3
     STAIRSTEP = 4
-    BUNDLES = 5
 
   class PaymentFundingModelValueValuesEnum(_messages.Enum):
     r"""DEPRECATED: This field is no longer supported and will eventually be

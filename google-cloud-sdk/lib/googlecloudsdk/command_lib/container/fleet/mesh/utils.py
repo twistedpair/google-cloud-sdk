@@ -70,7 +70,8 @@ def ParseFleetDefaultMemberConfig(yaml_config, msg):
   # Create empty MemberConfig.
   member_config = msg.ServiceMeshMembershipSpec()
 
-  # The config must contain a value of 'automatic' or 'manual' for the
+  # The config must contain a value of 'automatic' or 'manual' or
+  # 'not_installed' for the
   # 'management' field.
   if management == 'automatic':
     member_config.management = (
@@ -83,6 +84,12 @@ def ParseFleetDefaultMemberConfig(yaml_config, msg):
     member_config.management = (
         msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
             'MANAGEMENT_MANUAL'
+        )
+    )
+  elif management == 'not_installed':
+    member_config.management = (
+        msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
+            'MANAGEMENT_NOT_INSTALLED'
         )
     )
   elif management is None or management == 'unspecified':
@@ -128,7 +135,8 @@ def ParseFleetDefaultMemberConfigV2(yaml_config, msg):
   # Create empty MemberConfig.
   member_config = msg.ServiceMeshMembershipSpec()
 
-  # The config must contain a value of 'automatic' or 'manual' for the
+  # The config must contain a value of 'automatic' or 'manual'
+  # or 'not_installed' for the
   # 'management' field.
   if management == 'automatic':
     member_config.management = (
@@ -141,6 +149,12 @@ def ParseFleetDefaultMemberConfigV2(yaml_config, msg):
     member_config.management = (
         msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
             'MANAGEMENT_MANUAL'
+        )
+    )
+  elif management == 'not_installed':
+    member_config.management = (
+        msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
+            'MANAGEMENT_NOT_INSTALLED'
         )
     )
   elif management is None or management == 'unspecified':

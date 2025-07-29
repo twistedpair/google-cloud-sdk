@@ -612,6 +612,8 @@ class FolderOperationError(_messages.Message):
         delete contains active resources.
       DELETED_FOLDER_HEIGHT_VIOLATION: The attempted action would violate the
         max deleted folder depth constraint.
+      FOLDER_TO_DELETE_CONFIGURED_CAPABILITY_VIOLATION: The folder being
+        deleted has a configured capability.
     """
     ERROR_TYPE_UNSPECIFIED = 0
     ACTIVE_FOLDER_HEIGHT_VIOLATION = 1
@@ -623,6 +625,7 @@ class FolderOperationError(_messages.Message):
     FOLDER_BEING_MOVED_VIOLATION = 7
     FOLDER_TO_DELETE_NON_EMPTY_VIOLATION = 8
     DELETED_FOLDER_HEIGHT_VIOLATION = 9
+    FOLDER_TO_DELETE_CONFIGURED_CAPABILITY_VIOLATION = 10
 
   errorMessageId = _messages.EnumField('ErrorMessageIdValueValuesEnum', 1)
 

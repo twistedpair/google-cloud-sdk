@@ -439,6 +439,8 @@ def SetEnvForTask(messages, task):
   # map into an EnvValue message.
   if task.get(CONFIG_TASK_FIELD):
     config_task = task.get(CONFIG_TASK_FIELD)
+    if not config_task.get(ENV_FIELD):
+      return
     config_task_message = getattr(messages, 'ConfigTask')
     env_message = config_task_message.EnvValue
     env_dict = env_message()
@@ -450,6 +452,8 @@ def SetEnvForTask(messages, task):
   elif task.get(CONTAINERS_TASK_FIELD):
     containers_task = task.get(CONTAINERS_TASK_FIELD)
     for container in containers_task.get(CONTAINERS_FIELD):
+      if not container.get(ENV_FIELD):
+        continue
       container_message = getattr(messages, 'Container')
       env_message = container_message.EnvValue
       env_dict = env_message()

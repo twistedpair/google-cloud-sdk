@@ -935,6 +935,21 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest(
   parent = _messages.StringField(2, required=True)
 
 
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDecapsulateRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDecapsulat
+  eRequest object.
+
+  Fields:
+    decapsulateRequest: A DecapsulateRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      decapsulation.
+  """
+
+  decapsulateRequest = _messages.MessageField('DecapsulateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest(_messages.Message):
   r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest
@@ -988,13 +1003,20 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRe
         Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
         [Textual Encoding of Subject Public Key Info]
         (https://tools.ietf.org/html/rfc7468#section-13) for more information.
+      DER: The returned public key will be encoded in DER format (the
+        PrivateKeyInfo structure from RFC 5208).
       NIST_PQC: This is supported only for PQC algorithms. The key material is
         returned in the format defined by NIST PQC standards (FIPS 203, FIPS
         204, and FIPS 205).
+      XWING_RAW_BYTES: The returned public key is in raw bytes format defined
+        in its standard https://datatracker.ietf.org/doc/draft-connolly-cfrg-
+        xwing-kem.
     """
     PUBLIC_KEY_FORMAT_UNSPECIFIED = 0
     PEM = 1
-    NIST_PQC = 2
+    DER = 2
+    NIST_PQC = 3
+    XWING_RAW_BYTES = 4
 
   name = _messages.StringField(1, required=True)
   publicKeyFormat = _messages.EnumField('PublicKeyFormatValueValuesEnum', 2)
@@ -1737,6 +1759,8 @@ class CryptoKey(_messages.Message):
         interoperable symmetric encryption and does not support automatic
         CryptoKey rotation.
       MAC: CryptoKeys with this purpose may be used with MacSign.
+      KEY_ENCAPSULATION: CryptoKeys with this purpose may be used with
+        GetPublicKey and Decapsulate.
     """
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
@@ -1744,6 +1768,7 @@ class CryptoKey(_messages.Message):
     ASYMMETRIC_DECRYPT = 3
     RAW_ENCRYPT_DECRYPT = 4
     MAC = 5
+    KEY_ENCAPSULATION = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1905,6 +1930,10 @@ class CryptoKeyVersion(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      ML_KEM_768: ML-KEM-768 (FIPS 203)
+      ML_KEM_1024: ML-KEM-1024 (FIPS 203)
+      KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
+        datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
@@ -1949,9 +1978,12 @@ class CryptoKeyVersion(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
-    PQ_SIGN_ML_DSA_65 = 36
-    PQ_SIGN_SLH_DSA_SHA2_128S = 37
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
+    ML_KEM_768 = 36
+    ML_KEM_1024 = 37
+    KEM_XWING = 38
+    PQ_SIGN_ML_DSA_65 = 39
+    PQ_SIGN_SLH_DSA_SHA2_128S = 40
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -2128,6 +2160,10 @@ class CryptoKeyVersionTemplate(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      ML_KEM_768: ML-KEM-768 (FIPS 203)
+      ML_KEM_1024: ML-KEM-1024 (FIPS 203)
+      KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
+        datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
@@ -2172,9 +2208,12 @@ class CryptoKeyVersionTemplate(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
-    PQ_SIGN_ML_DSA_65 = 36
-    PQ_SIGN_SLH_DSA_SHA2_128S = 37
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
+    ML_KEM_768 = 36
+    ML_KEM_1024 = 37
+    KEM_XWING = 38
+    PQ_SIGN_ML_DSA_65 = 39
+    PQ_SIGN_SLH_DSA_SHA2_128S = 40
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2196,6 +2235,92 @@ class CryptoKeyVersionTemplate(_messages.Message):
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
+
+
+class DecapsulateRequest(_messages.Message):
+  r"""Request message for KeyManagementService.Decapsulate.
+
+  Fields:
+    ciphertext: Required. The ciphertext produced from encapsulation with the
+      named CryptoKeyVersion public key(s).
+    ciphertextCrc32c: Optional. A CRC32C checksum of the
+      DecapsulateRequest.ciphertext. If specified, KeyManagementService will
+      verify the integrity of the received DecapsulateRequest.ciphertext using
+      this checksum. KeyManagementService will report an error if the checksum
+      verification fails. If you receive a checksum error, your client should
+      verify that CRC32C(DecapsulateRequest.ciphertext) is equal to
+      DecapsulateRequest.ciphertext_crc32c, and if so, perform a limited
+      number of retries. A persistent mismatch may indicate an issue in your
+      computation of the CRC32C checksum. Note: This field is defined as int64
+      for reasons of compatibility across different languages. However, it is
+      a non-negative integer, which will never exceed 2^32-1, and can be
+      safely downconverted to uint32 in languages that support this type.
+  """
+
+  ciphertext = _messages.BytesField(1)
+  ciphertextCrc32c = _messages.IntegerField(2)
+
+
+class DecapsulateResponse(_messages.Message):
+  r"""Response message for KeyManagementService.Decapsulate.
+
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used in decapsulation.
+
+  Fields:
+    name: The resource name of the CryptoKeyVersion used for decapsulation.
+      Check this field to verify that the intended resource was used for
+      decapsulation.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
+      decapsulation.
+    sharedSecret: The decapsulated shared_secret originally encapsulated with
+      the matching public key.
+    sharedSecretCrc32c: Integrity verification field. A CRC32C checksum of the
+      returned DecapsulateResponse.shared_secret. An integrity check of
+      DecapsulateResponse.shared_secret can be performed by computing the
+      CRC32C checksum of DecapsulateResponse.shared_secret and comparing your
+      results to this field. Discard the response in case of non-matching
+      checksum values, and perform a limited number of retries. A persistent
+      mismatch may indicate an issue in your computation of the CRC32C
+      checksum. Note: receiving this response message indicates that
+      KeyManagementService is able to successfully decrypt the ciphertext.
+      Note: This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+    verifiedCiphertextCrc32c: Integrity verification field. A flag indicating
+      whether DecapsulateRequest.ciphertext_crc32c was received by
+      KeyManagementService and used for the integrity verification of the
+      ciphertext. A false value of this field indicates either that
+      DecapsulateRequest.ciphertext_crc32c was left unset or that it was not
+      delivered to KeyManagementService. If you've set
+      DecapsulateRequest.ciphertext_crc32c but this field is still false,
+      discard the response and perform a limited number of retries.
+  """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used in decapsulation.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+    EXTERNAL_VPC = 4
+
+  name = _messages.StringField(1)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
+  sharedSecret = _messages.BytesField(3)
+  sharedSecretCrc32c = _messages.IntegerField(4)
+  verifiedCiphertextCrc32c = _messages.BooleanField(5)
 
 
 class DecryptRequest(_messages.Message):
@@ -2726,6 +2851,10 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      ML_KEM_768: ML-KEM-768 (FIPS 203)
+      ML_KEM_1024: ML-KEM-1024 (FIPS 203)
+      KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
+        datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
@@ -2770,9 +2899,12 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
-    PQ_SIGN_ML_DSA_65 = 36
-    PQ_SIGN_SLH_DSA_SHA2_128S = 37
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
+    ML_KEM_768 = 36
+    ML_KEM_1024 = 37
+    KEM_XWING = 38
+    PQ_SIGN_ML_DSA_65 = 39
+    PQ_SIGN_SLH_DSA_SHA2_128S = 40
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -3789,6 +3921,10 @@ class PublicKey(_messages.Message):
       HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
+      ML_KEM_768: ML-KEM-768 (FIPS 203)
+      ML_KEM_1024: ML-KEM-1024 (FIPS 203)
+      KEM_XWING: X-Wing hybrid KEM combining ML-KEM-768 with X25519 following
+        datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/.
       PQ_SIGN_ML_DSA_65: The post-quantum Module-Lattice-Based Digital
         Signature Algorithm, at security level 3. Randomized version.
       PQ_SIGN_SLH_DSA_SHA2_128S: The post-quantum stateless hash-based digital
@@ -3833,9 +3969,12 @@ class PublicKey(_messages.Message):
     HMAC_SHA512 = 33
     HMAC_SHA224 = 34
     EXTERNAL_SYMMETRIC_ENCRYPTION = 35
-    PQ_SIGN_ML_DSA_65 = 36
-    PQ_SIGN_SLH_DSA_SHA2_128S = 37
-    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 38
+    ML_KEM_768 = 36
+    ML_KEM_1024 = 37
+    KEM_XWING = 38
+    PQ_SIGN_ML_DSA_65 = 39
+    PQ_SIGN_SLH_DSA_SHA2_128S = 40
+    PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256 = 41
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.
@@ -3869,13 +4008,20 @@ class PublicKey(_messages.Message):
         Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
         [Textual Encoding of Subject Public Key Info]
         (https://tools.ietf.org/html/rfc7468#section-13) for more information.
+      DER: The returned public key will be encoded in DER format (the
+        PrivateKeyInfo structure from RFC 5208).
       NIST_PQC: This is supported only for PQC algorithms. The key material is
         returned in the format defined by NIST PQC standards (FIPS 203, FIPS
         204, and FIPS 205).
+      XWING_RAW_BYTES: The returned public key is in raw bytes format defined
+        in its standard https://datatracker.ietf.org/doc/draft-connolly-cfrg-
+        xwing-kem.
     """
     PUBLIC_KEY_FORMAT_UNSPECIFIED = 0
     PEM = 1
-    NIST_PQC = 2
+    DER = 2
+    NIST_PQC = 3
+    XWING_RAW_BYTES = 4
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   name = _messages.StringField(2)

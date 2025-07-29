@@ -1331,8 +1331,8 @@ class Release(_messages.Message):
 
   Fields:
     createTime: Output only. Time `Release` was created.
-    info: Output only. `ResourceBundle` Release extra information e.g.,
-      artifact registry image path.
+    info: Optional. `ResourceBundle` Release extra information e.g., artifact
+      registry image path.
     labels: Optional. Labels as key value pairs.
     lifecycle: Optional. lifecycle of the `Release`.
     name: Identifier. Name of the Release. Format is `projects/{project}/locat
@@ -1394,20 +1394,20 @@ class ReleaseInfo(_messages.Message):
   release e.g., link to an artifact registry OCI image.
 
   Messages:
-    VariantOciImagePathsValue: Output only. per-variant paths to the oci
-      images the service uploads on package release creation
+    VariantOciImagePathsValue: Optional. per-variant paths to the oci images
+      the service uploads on package release creation
 
   Fields:
     ociImagePath: Output only. path to the oci image the service uploads to on
       a `Release` creation.
-    variantOciImagePaths: Output only. per-variant paths to the oci images the
+    variantOciImagePaths: Optional. per-variant paths to the oci images the
       service uploads on package release creation
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VariantOciImagePathsValue(_messages.Message):
-    r"""Output only. per-variant paths to the oci images the service uploads
-    on package release creation
+    r"""Optional. per-variant paths to the oci images the service uploads on
+    package release creation
 
     Messages:
       AdditionalProperty: An additional property for a

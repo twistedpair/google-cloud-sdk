@@ -485,14 +485,22 @@ def Deploy(
 ):
   """Deploys the publisher model to a Vertex endpoint."""
   try:
+    if machine_spec is not None:
+      machine_type = machine_spec.machineType
+      accelerator_type = machine_spec.acceleratorType
+      accelerator_count = machine_spec.acceleratorCount
+    else:
+      machine_type = None
+      accelerator_type = None
+      accelerator_count = None
     deploy_op = mg_client.Deploy(
         project=properties.VALUES.core.project.GetOrFail(),
         location=args.region,
         model=model,
         accept_eula=args.accept_eula,
-        accelerator_type=machine_spec.acceleratorType,
-        accelerator_count=machine_spec.acceleratorCount,
-        machine_type=machine_spec.machineType,
+        accelerator_type=accelerator_type,
+        accelerator_count=accelerator_count,
+        machine_type=machine_type,
         endpoint_display_name=endpoint_name,
         hugging_face_access_token=args.hugging_face_access_token,
         spot=args.spot,

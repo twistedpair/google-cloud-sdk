@@ -202,9 +202,14 @@ class AuthzExtension(_messages.Message):
         The backend service for the extension must use HTTP2 or H2C as the
         protocol. All `supported_events` for a client request are sent as part
         of the same gRPC stream.
+      EXT_AUTHZ_GRPC: The extension service uses Envoy's `ext_authz` gRPC API.
+        The backend service for the extension must use HTTP2, or H2C as the
+        protocol. `EXT_AUTHZ_GRPC` is only supported for `AuthzExtension`
+        resources.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
+    EXT_AUTHZ_GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -953,7 +958,7 @@ class EdgeCacheOrigin(_messages.Message):
       are both valid paths to an `EdgeCacheOrigin` resource: * `projects/my-
       project/locations/global/edgeCacheOrigins/my-origin` * `my-origin` The
       value of max_attempts_timeout dictates the timeout across all origins.
-    flexShielding: Optional. The FlexShieldingOptions to be used for all
+    flexShielding: Optional. The flexible shielding options to be used for all
       routes to this origin. If not set, defaults to a global caching layer in
       front of the origin.
     labels: Optional. A set of label tags associated with the EdgeCacheOrigin
@@ -1681,19 +1686,21 @@ class FlexShieldingOptions(_messages.Message):
     FlexShieldingRegionsValueListEntryValuesEnum:
 
   Fields:
-    flexShieldingRegions: Optional. Whenever possible, content will be fetched
-      from origin and cached in or near the specified region. Best effort. You
-      must specify exactly one FlexShieldingRegion.
+    flexShieldingRegions: Optional. Content is fetched from the origin and
+      cached in or near the specified region. Specify exactly one flexible
+      shielding region.
   """
 
   class FlexShieldingRegionsValueListEntryValuesEnum(_messages.Enum):
     r"""FlexShieldingRegionsValueListEntryValuesEnum enum type.
 
     Values:
-      FLEX_SHIELDING_REGION_UNSPECIFIED: It is an error to specify
-        FLEX_SHIELDING_REGION_UNSPECIFIED.
-      AFRICA_SOUTH1: Origin fetch from near africa-south1.
-      ME_CENTRAL1: Origin fetch from near me-central1.
+      FLEX_SHIELDING_REGION_UNSPECIFIED: This value indicates an error due to
+        a region not being specified.
+      AFRICA_SOUTH1: Content is fetched from an origin or cache near `africa-
+        south1`.
+      ME_CENTRAL1: Content is fetched from an origin or cache near `me-
+        central1`.
     """
     FLEX_SHIELDING_REGION_UNSPECIFIED = 0
     AFRICA_SOUTH1 = 1
@@ -1730,6 +1737,9 @@ class Gateway(_messages.Message):
       subnetwork is allocated This field only applies to gateways of type
       'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0 for
       IPv4 and :: for IPv6.
+    allowGlobalAccess: Optional. If true, the gateway will allow traffic from
+      clients outside of the region where the gateway is located. This field
+      is configurable only for gateways of type SECURE_WEB_GATEWAY.
     authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
       reference. Specifies how traffic is authorized. If empty, authorization
       checks are disabled.
@@ -1759,7 +1769,7 @@ class Gateway(_messages.Message):
       specific to gateways of type 'SECURE_WEB_GATEWAY'.
     ports: Required. One or more port numbers (1-65535), on which the Gateway
       will receive traffic. The proxy binds to the specified ports. Gateways
-      of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
+      of type 'SECURE_WEB_GATEWAY' are limited to 5 ports. Gateways of type
       'OPEN_MESH' listen on 0.0.0.0 for IPv4 and :: for IPv6 and support
       multiple ports.
     routingMode: Optional. The routing mode of the Gateway. This field is
@@ -1878,25 +1888,26 @@ class Gateway(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   addresses = _messages.StringField(1, repeated=True)
-  authorizationPolicy = _messages.StringField(2)
-  certificateUrls = _messages.StringField(3, repeated=True)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  envoyHeaders = _messages.EnumField('EnvoyHeadersValueValuesEnum', 6)
-  gatewaySecurityPolicy = _messages.StringField(7)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  ports = _messages.IntegerField(12, repeated=True, variant=_messages.Variant.INT32)
-  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 13)
-  scope = _messages.StringField(14)
-  securityPolicy = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  serverTlsPolicy = _messages.StringField(17)
-  subnetwork = _messages.StringField(18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  updateTime = _messages.StringField(20)
+  allowGlobalAccess = _messages.BooleanField(2)
+  authorizationPolicy = _messages.StringField(3)
+  certificateUrls = _messages.StringField(4, repeated=True)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  envoyHeaders = _messages.EnumField('EnvoyHeadersValueValuesEnum', 7)
+  gatewaySecurityPolicy = _messages.StringField(8)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  ports = _messages.IntegerField(13, repeated=True, variant=_messages.Variant.INT32)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 14)
+  scope = _messages.StringField(15)
+  securityPolicy = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  serverTlsPolicy = _messages.StringField(18)
+  subnetwork = _messages.StringField(19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  updateTime = _messages.StringField(21)
 
 
 class GatewayRouteView(_messages.Message):
@@ -3110,8 +3121,8 @@ class InvalidateCacheResponse(_messages.Message):
 
 class LbEdgeExtension(_messages.Message):
   r"""`LbEdgeExtension` is a resource that lets the extension service
-  influence the Backend Service selection or Cloud CDN cache keys by modifying
-  the request headers.
+  influence the selection of backend services and Cloud CDN cache keys by
+  modifying request headers.
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All forwarding rules
@@ -11133,17 +11144,17 @@ class WasmPluginLogConfig(_messages.Message):
   If logging is enabled, plugin logs are exported to Cloud Logging.
 
   Enums:
-    MinLogLevelValueValuesEnum: Non-empty default. Specificies the lowest
-      level of the plugin logs that are exported to Cloud Logging. This
-      setting relates to the logs generated by using logging statements in
-      your Wasm code. This field is can be set only if logging is enabled for
-      the plugin. If the field is not provided when logging is enabled, it is
-      set to `INFO` by default.
+    MinLogLevelValueValuesEnum: Non-empty default. Specifies the lowest level
+      of the plugin logs that are exported to Cloud Logging. This setting
+      relates to the logs generated by using logging statements in your Wasm
+      code. This field is can be set only if logging is enabled for the
+      plugin. If the field is not provided when logging is enabled, it is set
+      to `INFO` by default.
 
   Fields:
     enable: Optional. Specifies whether to enable logging for activity by this
       plugin. Defaults to `false`.
-    minLogLevel: Non-empty default. Specificies the lowest level of the plugin
+    minLogLevel: Non-empty default. Specifies the lowest level of the plugin
       logs that are exported to Cloud Logging. This setting relates to the
       logs generated by using logging statements in your Wasm code. This field
       is can be set only if logging is enabled for the plugin. If the field is
@@ -11158,11 +11169,11 @@ class WasmPluginLogConfig(_messages.Message):
   """
 
   class MinLogLevelValueValuesEnum(_messages.Enum):
-    r"""Non-empty default. Specificies the lowest level of the plugin logs
-    that are exported to Cloud Logging. This setting relates to the logs
-    generated by using logging statements in your Wasm code. This field is can
-    be set only if logging is enabled for the plugin. If the field is not
-    provided when logging is enabled, it is set to `INFO` by default.
+    r"""Non-empty default. Specifies the lowest level of the plugin logs that
+    are exported to Cloud Logging. This setting relates to the logs generated
+    by using logging statements in your Wasm code. This field is can be set
+    only if logging is enabled for the plugin. If the field is not provided
+    when logging is enabled, it is set to `INFO` by default.
 
     Values:
       LOG_LEVEL_UNSPECIFIED: Unspecified value. Defaults to `LogLevel.INFO`.

@@ -1203,6 +1203,23 @@ class EdgecontainerProjectsLocationsServiceAccountsListRequest(_messages.Message
   parent = _messages.StringField(5, required=True)
 
 
+class EdgecontainerProjectsLocationsServiceAccountsPatchRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsServiceAccountsPatchRequest object.
+
+  Fields:
+    name: Identifier. The canonical resource name of the project service
+      account. E.g. projects/{project}/locations/{location}/serviceAccounts/{s
+      ervice_account}
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+  updateMask = _messages.StringField(3)
+
+
 class EdgecontainerProjectsLocationsVpnConnectionsCreateRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsVpnConnectionsCreateRequest object.
 

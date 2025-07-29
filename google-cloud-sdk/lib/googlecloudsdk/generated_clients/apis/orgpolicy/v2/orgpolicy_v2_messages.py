@@ -518,8 +518,8 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
     denyAll: Setting this to true means that all values are denied. This field
       can be set only in policies for list constraints.
     enforce: If `true`, then the policy is enforced. If `false`, then any
-      configuration is acceptable. This field can be set only in policies for
-      boolean constraints.
+      configuration is acceptable. This field can be set in policies for
+      boolean constraints, custom constraints and managed constraints.
     parameters: Optional. Required for managed constraints if parameters are
       defined. Passes parameter values when policy enforcement is enabled.
       Ensure that parameter value types match those defined in the constraint

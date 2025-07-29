@@ -209,6 +209,8 @@ class Cluster(_messages.Message):
     createTime: Output only. The time when the cluster was created.
     gcpConfig: Required. Configuration properties for a Kafka cluster deployed
       to Google Cloud Platform.
+    kafkaVersion: Output only. Only populated when FULL view is requested. The
+      Kafka version of the cluster.
     labels: Optional. Labels as key value pairs.
     name: Identifier. The name of the cluster. Structured like:
       projects/{project_number}/locations/{location}/clusters/{cluster_id}
@@ -290,15 +292,16 @@ class Cluster(_messages.Message):
   capacityConfig = _messages.MessageField('CapacityConfig', 2)
   createTime = _messages.StringField(3)
   gcpConfig = _messages.MessageField('GcpConfig', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  rebalanceConfig = _messages.MessageField('RebalanceConfig', 7)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  tlsConfig = _messages.MessageField('TlsConfig', 11)
-  updateOptions = _messages.MessageField('UpdateOptions', 12)
-  updateTime = _messages.StringField(13)
+  kafkaVersion = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  rebalanceConfig = _messages.MessageField('RebalanceConfig', 8)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  tlsConfig = _messages.MessageField('TlsConfig', 12)
+  updateOptions = _messages.MessageField('UpdateOptions', 13)
+  updateTime = _messages.StringField(14)
 
 
 class ConnectAccessConfig(_messages.Message):
@@ -341,6 +344,8 @@ class ConnectCluster(_messages.Message):
     name: Identifier. The name of the Kafka Connect cluster. Structured like:
       projects/{project_number}/locations/{location}/connectClusters/{connect_
       cluster_id}
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the cluster.
     updateTime: Output only. The time when the cluster was last updated.
   """
@@ -416,8 +421,10 @@ class ConnectCluster(_messages.Message):
   kafkaCluster = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ConnectGcpConfig(_messages.Message):
@@ -2994,32 +3001,34 @@ class SchemaConfig(_messages.Message):
 
 class SchemaMode(_messages.Message):
   r"""SchemaMode represents the mode of a schema registry or a specific
-  subject. Four modes are supported: * NONE: This is the default mode for a
-  subject and essentially means that the subject does not have any mode set.
-  This means the subject will follow the schema registry's mode. * READONLY:
-  The schema registry is in read-only mode. * READWRITE: The schema registry
-  is in read-write mode, which allows limited write operations on the schema.
-  * IMPORT: The schema registry is in import mode, which allows more editing
-  operations on the schema for data importing purposes.
+  subject. Four modes are supported: * NONE: deprecated. This was the default
+  mode for a subject, but now the default is unset (which means use the global
+  schema registry setting) * READONLY: The schema registry is in read-only
+  mode. * READWRITE: The schema registry is in read-write mode, which allows
+  limited write operations on the schema. * IMPORT: The schema registry is in
+  import mode, which allows more editing operations on the schema for data
+  importing purposes.
 
   Enums:
     ModeValueValuesEnum: Required. The mode type of a schema registry
-      (READWRITE by default) or of a subject (NONE by default, which means use
-      the global schema registry setting).
+      (READWRITE by default) or of a subject (unset by default, which means
+      use the global schema registry setting).
 
   Fields:
     mode: Required. The mode type of a schema registry (READWRITE by default)
-      or of a subject (NONE by default, which means use the global schema
+      or of a subject (unset by default, which means use the global schema
       registry setting).
   """
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""Required. The mode type of a schema registry (READWRITE by default) or
-    of a subject (NONE by default, which means use the global schema registry
+    of a subject (unset by default, which means use the global schema registry
     setting).
 
     Values:
-      NONE: No mode.
+      NONE: The default / unset value. The subject mode is NONE/unset by
+        default, which means use the global schema registry mode. This should
+        not be used for setting the mode.
       READONLY: READONLY mode.
       READWRITE: READWRITE mode.
       IMPORT: IMPORT mode.
@@ -3410,7 +3419,9 @@ class UpdateSchemaModeRequest(_messages.Message):
     r"""Required. The mode type.
 
     Values:
-      NONE: No mode.
+      NONE: The default / unset value. The subject mode is NONE/unset by
+        default, which means use the global schema registry mode. This should
+        not be used for setting the mode.
       READONLY: READONLY mode.
       READWRITE: READWRITE mode.
       IMPORT: IMPORT mode.

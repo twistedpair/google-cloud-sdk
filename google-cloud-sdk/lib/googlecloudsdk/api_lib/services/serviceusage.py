@@ -649,6 +649,7 @@ def AddEnableRule(
     folder: str = None,
     organization: str = None,
     validate_only: bool = False,
+    skip_dependency: bool = False,
 ):
   """Make API call to enable a specific service.
 
@@ -662,15 +663,17 @@ def AddEnableRule(
     organization: The organization for which to enable the service.
     validate_only: If True, the action will be validated and result will be
       preview but not exceuted.
+    skip_dependency: If True, the dependencies of the service to be enabled will
+      not be enabled.
 
   Raises:
-    exceptions.EnableServicePermissionDeniedException: when enabling API fails.
+    exceptions.EnableServiceException: when enabling API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
     The result of the operation
   """
-  client = _GetClientInstance('v2alpha')
+  client = _GetClientInstance(version=_V2BETA_VERSION)
   messages = client.MESSAGES_MODULE
 
   resource_name = _PROJECT_RESOURCE % project
@@ -684,49 +687,60 @@ def AddEnableRule(
   policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
-    policy = GetConsumerPolicyV2Alpha(policy_name)
+    policy = GetConsumerPolicyV2Beta(policy_name)
 
     services_to_enabled = set()
 
-    for service in services:
-      services_to_enabled.add(_SERVICE_RESOURCE % service)
-      request = (
-          messages.ServiceusageServicesGroupsDescendantServicesListRequest(
-              parent='{}/{}'.format(
-                  resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
-              )
-          )
-      )
-      try:
-        list_descendant_services = (
-            client.services_groups_descendantServices.List(request)
-        ).services
-        for member in list_descendant_services:
-          services_to_enabled.add(member.serviceName)
-      except apitools_exceptions.HttpNotFoundError:
-        continue
     if policy.enableRules:
-      # Check if services to add is not already present in the policy.
-      enabled_services = policy.enableRules[0].services
+      enabled_services = set(policy.enableRules[0].services)
+      for service in services:
+        # Check if services to add is not already present in the policy.
+        if _SERVICE_RESOURCE % service not in enabled_services:
+          services_to_enabled.add(_SERVICE_RESOURCE % service)
+    else:
+      for service in services:
+        services_to_enabled.add(_SERVICE_RESOURCE % service)
+
+    if not services_to_enabled:
+      raise exceptions.ConfigError(
+          'The service(s) '
+          + ','.join(services)
+          + ' are already enabled and present in the consumer policy'
+      )
+
+    if not skip_dependency:
+      dependent_services = []
+      for service in services_to_enabled:
+        list_expanded_members = ListExpandedMembers(
+            resource_name, service + _DEPENDENCY_GROUP
+        )
+        for dependent_service in list_expanded_members:
+          # dependent_service is in format services/{service_name}
+          dependent_services.append(dependent_service)
+
+      for service in dependent_services:
+        services_to_enabled.add(service)
+
+    if policy.enableRules:
       for service in list(services_to_enabled):
-        if service not in enabled_services:
+        # check if dependent services are already enabled
+        if service not in policy.enableRules[0].services:
           policy.enableRules[0].services.append(service)
     else:
       policy.enableRules.append(
-          messages.GoogleApiServiceusageV2alphaEnableRule(
+          messages.GoogleApiServiceusageV2betaEnableRule(
               services=list(services_to_enabled)
           )
       )
-    return UpdateConsumerPolicyV2Alpha(
+
+    return UpdateConsumerPolicyV2Beta(
         policy, policy_name, validateonly=validate_only
     )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.EnableServicePermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.EnableServiceException)
 
 
 def RemoveEnableRule(
@@ -756,7 +770,7 @@ def RemoveEnableRule(
       preview but not exceuted.`
 
   Raises:
-    exceptions.EnableServicePermissionDeniedException: when disabling API fails.
+    exceptions.EnableServiceException: when disabling API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
@@ -840,9 +854,7 @@ def RemoveEnableRule(
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.EnableServicePermissionDeniedException
-    )
+    exceptions.ReraiseError(e, exceptions.EnableServiceException)
   except apitools_exceptions.HttpBadRequestError as e:
     log.status.Print(
         'Provide the --force flag if you wish to force disable services.'
@@ -859,7 +871,7 @@ def EnableApiCall(project, service):
       'serviceusage.googleapis.com'.
 
   Raises:
-    exceptions.EnableServicePermissionDeniedException: when enabling API fails.
+    exceptions.EnableServiceException: when enabling API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
@@ -874,8 +886,7 @@ def EnableApiCall(project, service):
     return client.services.Enable(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e,
-                            exceptions.EnableServicePermissionDeniedException)
+    exceptions.ReraiseError(e, exceptions.EnableServiceException)
 
 
 def BatchEnableApiCall(project, services):
@@ -886,7 +897,7 @@ def BatchEnableApiCall(project, services):
     services: Iterable of identifiers of services to enable.
 
   Raises:
-    exceptions.EnableServicePermissionDeniedException: when enabling API fails.
+    exceptions.EnableServiceException: when enabling API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
@@ -903,8 +914,7 @@ def BatchEnableApiCall(project, services):
     return client.services.BatchEnable(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e,
-                            exceptions.EnableServicePermissionDeniedException)
+    exceptions.ReraiseError(e, exceptions.EnableServiceException)
 
 
 def DisableApiCall(project, service, force=False):
@@ -919,7 +929,7 @@ def DisableApiCall(project, service, force=False):
       disabled.
 
   Raises:
-    exceptions.EnableServicePermissionDeniedException: when disabling API fails.
+    exceptions.EnableServiceException: when disabling API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
@@ -942,8 +952,7 @@ def DisableApiCall(project, service, force=False):
     return client.services.Disable(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e,
-                            exceptions.EnableServicePermissionDeniedException)
+    exceptions.ReraiseError(e, exceptions.EnableServiceException)
   except apitools_exceptions.HttpBadRequestError as e:
     log.status.Print('Provide the --force flag if you wish to force disable '
                      'services.')
@@ -1077,7 +1086,7 @@ def ListServices(project, enabled, page_size, limit):
     limit: The max number of services to display.
 
   Raises:
-    exceptions.ListServicesPermissionDeniedException: when listing services
+    exceptions.ListServicesException: when listing services
     fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
@@ -1103,8 +1112,7 @@ def ListServices(project, enabled, page_size, limit):
         field='services')
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e,
-                            exceptions.EnableServicePermissionDeniedException)
+    exceptions.ReraiseError(e, exceptions.ListServicesException)
 
 
 def GetOperation(name: str):

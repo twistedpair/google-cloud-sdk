@@ -758,6 +758,7 @@ class Input(_messages.Message):
   r"""Input asset.
 
   Fields:
+    attributes: Optional. Input Attributes.
     key: A unique key for this input. Must be specified when using advanced
       mapping and edit lists.
     preprocessingConfig: Preprocessing configurations.
@@ -769,9 +770,22 @@ class Input(_messages.Message):
       input-and-output-formats).
   """
 
-  key = _messages.StringField(1)
-  preprocessingConfig = _messages.MessageField('PreprocessingConfig', 2)
-  uri = _messages.StringField(3)
+  attributes = _messages.MessageField('InputAttributes', 1)
+  key = _messages.StringField(2)
+  preprocessingConfig = _messages.MessageField('PreprocessingConfig', 3)
+  uri = _messages.StringField(4)
+
+
+class InputAttributes(_messages.Message):
+  r"""Input attributes that provide additional information about the input
+  asset.
+
+  Fields:
+    trackDefinitions: Optional. A list of track definitions for the input
+      asset.
+  """
+
+  trackDefinitions = _messages.MessageField('TrackDefinition', 1, repeated=True)
 
 
 class Job(_messages.Message):
@@ -799,6 +813,8 @@ class Job(_messages.Message):
     error: Output only. An error object that describes the reason for the
       failure. This property is always present when ProcessingState is
       `FAILED`.
+    fillContentGaps: Optional. Insert silence and duplicate frames when
+      timestamp gaps are detected in a given stream.
     inputUri: Input only. Specify the `input_uri` to populate empty `uri`
       fields in each element of `Job.config.inputs` or
       `JobTemplate.config.inputs` when using template. URI of the media. Input
@@ -908,16 +924,17 @@ class Job(_messages.Message):
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
   error = _messages.MessageField('Status', 5)
-  inputUri = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mode = _messages.EnumField('ModeValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  optimization = _messages.EnumField('OptimizationValueValuesEnum', 10)
-  outputUri = _messages.StringField(11)
-  startTime = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  templateId = _messages.StringField(14)
-  ttlAfterCompletionDays = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  fillContentGaps = _messages.BooleanField(6)
+  inputUri = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mode = _messages.EnumField('ModeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  optimization = _messages.EnumField('OptimizationValueValuesEnum', 11)
+  outputUri = _messages.StringField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  templateId = _messages.StringField(15)
+  ttlAfterCompletionDays = _messages.IntegerField(16, variant=_messages.Variant.INT32)
 
 
 class JobConfig(_messages.Message):
@@ -1445,6 +1462,31 @@ class TextStream(_messages.Message):
   displayName = _messages.StringField(2)
   languageCode = _messages.StringField(3)
   mapping = _messages.MessageField('TextMapping', 4, repeated=True)
+
+
+class TrackDefinition(_messages.Message):
+  r"""Track definition for the input asset.
+
+  Fields:
+    detectLanguages: Optional. Whether to automatically detect the languages
+      present in the track. If true, the system will attempt to identify all
+      the languages present in the track and populate the languages field.
+    detectedLanguages: Output only. A list of languages detected in the input
+      asset, represented by a BCP 47 language code, such as "en-US" or "sr-
+      Latn". For more information, see
+      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier. This
+      field is only populated if the detect_languages field is set to true.
+    inputTrack: The input track.
+    languages: Optional. A list of languages spoken in the input asset,
+      represented by a BCP 47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+  """
+
+  detectLanguages = _messages.BooleanField(1)
+  detectedLanguages = _messages.StringField(2, repeated=True)
+  inputTrack = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  languages = _messages.StringField(4, repeated=True)
 
 
 class TranscoderProjectsLocationsJobTemplatesCreateRequest(_messages.Message):

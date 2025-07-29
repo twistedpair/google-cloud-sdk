@@ -526,7 +526,6 @@ def AddBackupRetentionInheritance(parser):
           'inherit-vault-retention',
           'match-backup-expire-time',
       ],
-      hidden=True,
       help=(
           'The inheritance mode for enforced retention end time of the backup'
           ' within this backup vault. Once set, the inheritance mode cannot be'

@@ -222,6 +222,19 @@ class BoostConfig(_messages.Message):
       machine-types). Defaults to `e2-standard-4`.
     poolSize: Optional. The number of boost VMs that the system should keep
       idle so that workstations can be boosted quickly. Defaults to `0`.
+    reservationAffinity: Optional. [ReservationAffinity](https://cloud.google.
+      com/compute/docs/instances/reserving-zonal-resources) specifies a
+      reservation that can be consumed to create boost VM instances. If
+      SPECIFIC_RESERVATION is specified, Cloud Workstations will only create
+      VMs in the zone where the reservation is located. This would affect
+      availability since the service will no longer be resilient to zonal
+      outages. If ANY_RESERVATION is specified, creating reservations in both
+      zones that the config creates VMs in will ensure higher availability.
+      **Important Considerations for Reservation Affinity:** * This feature is
+      intended for advanced users and requires familiarity with Google Compute
+      Engine reservations. * Using reservations incurs charges, regardless of
+      utilization. * The resources in the pool will consume the specified
+      reservation. Take this into account when setting the pool size.
   """
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
@@ -230,6 +243,7 @@ class BoostConfig(_messages.Message):
   id = _messages.StringField(4)
   machineType = _messages.StringField(5)
   poolSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 7)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -382,6 +396,17 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GatewayConfig(_messages.Message):
+  r"""Configuration options for Cluster HTTP Gateway.
+
+  Fields:
+    http2Enabled: Optional. Whether HTTP/2 is enabled for this workstation
+      cluster. Defaults to false.
+  """
+
+  http2Enabled = _messages.BooleanField(1)
+
+
 class GceConfidentialInstanceConfig(_messages.Message):
   r"""A set of Compute Engine Confidential VM instance options.
 
@@ -455,6 +480,19 @@ class GceInstance(_messages.Message):
       `0` in the API.
     pooledInstances: Output only. Number of instances currently available in
       the pool for faster workstation startup.
+    reservationAffinity: Optional. [ReservationAffinity](https://cloud.google.
+      com/compute/docs/instances/reserving-zonal-resources) specifies a
+      reservation that can be consumed to create boost VM instances. If
+      SPECIFIC_RESERVATION is specified, Cloud Workstations will only create
+      VMs in the zone where the reservation is located. This would affect
+      availability since the service will no longer be resilient to zonal
+      outages. If ANY_RESERVATION is specified, creating reservations in both
+      zones that the config creates VMs in will ensure higher availability.
+      **Important Considerations for Reservation Affinity:** * This feature is
+      intended for advanced users and requires familiarity with Google Compute
+      Engine reservations. * Using reservations incurs charges, regardless of
+      utilization. * The resources in the pool will consume the specified
+      reservation. Take this into account when setting the pool size.
     serviceAccount: Optional. The email address of the service account for
       Cloud Workstations VMs created with this configuration. When specified,
       be sure that the service account has `logging.logEntries.create` and
@@ -527,11 +565,12 @@ class GceInstance(_messages.Message):
   machineType = _messages.StringField(8)
   poolSize = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   pooledInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(11)
-  serviceAccountScopes = _messages.StringField(12, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 13)
-  tags = _messages.StringField(14, repeated=True)
-  vmTags = _messages.MessageField('VmTagsValue', 15)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 11)
+  serviceAccount = _messages.StringField(12)
+  serviceAccountScopes = _messages.StringField(13, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 14)
+  tags = _messages.StringField(15, repeated=True)
+  vmTags = _messages.MessageField('VmTagsValue', 16)
 
 
 class GceInstanceHost(_messages.Message):
@@ -1101,6 +1140,44 @@ class ReadinessCheck(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class ReservationAffinity(_messages.Message):
+  r"""ReservationAffinity is the configuration of the desired reservation from
+  which instances can consume resources.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Optional. Corresponds to the type
+      of reservation consumption.
+
+  Fields:
+    consumeReservationType: Optional. Corresponds to the type of reservation
+      consumption.
+    key: Optional. Corresponds to the label key of reservation resource.
+    values: Optional. Corresponds to the label values of reservation
+      resources. Valid values are either a name to a reservation in the same
+      project or "projects/{project}/reservations/{reservation}" to target a
+      shared reservation in the same zone but in a different project.
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Corresponds to the type of reservation consumption.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This should not be used.
+      NO_RESERVATION: Do not consume from any reserved capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class RuntimeHost(_messages.Message):
   r"""Runtime host for the workstation.
 
@@ -1486,9 +1563,12 @@ class WorkstationBoostConfig(_messages.Message):
 
   Fields:
     id: Output only. Boost configuration ID.
+    running: Output only. Whether or not the current workstation is actively
+      boosted with this id.
   """
 
   id = _messages.StringField(1)
+  running = _messages.BooleanField(2)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1526,6 +1606,7 @@ class WorkstationCluster(_messages.Message):
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
+    gatewayConfig: Optional. Configuration options for Cluster HTTP Gateway.
     labels: Optional.
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation cluster and that are also propagated
@@ -1637,17 +1718,18 @@ class WorkstationCluster(_messages.Message):
   displayName = _messages.StringField(7)
   domainConfig = _messages.MessageField('DomainConfig', 8)
   etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 13)
-  reconciling = _messages.BooleanField(14)
-  satisfiesPzi = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  subnetwork = _messages.StringField(17)
-  tags = _messages.MessageField('TagsValue', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  gatewayConfig = _messages.MessageField('GatewayConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 14)
+  reconciling = _messages.BooleanField(15)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  subnetwork = _messages.StringField(18)
+  tags = _messages.MessageField('TagsValue', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class WorkstationConfig(_messages.Message):

@@ -1852,6 +1852,8 @@ class NetworkConfig(_messages.Message):
     network: The name of the Google Compute Engine [VPC
       network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
       connected.
+    pscConfig: Optional. Private Service Connect configuration. Should only be
+      set when connect_mode is PRIVATE_SERVICE_CONNECT.
     reservedIpRange: Optional, reserved_ip_range can have one of the following
       two types of values. * CIDR range value when using DIRECT_PEERING
       connect mode. * [Allocated IP address
@@ -1880,10 +1882,14 @@ class NetworkConfig(_messages.Message):
       PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
         Service Access. Private services access provides an IP address range
         for multiple Google Cloud services, including Filestore.
+      PRIVATE_SERVICE_CONNECT: Connect to your Filestore instance using
+        Private Service Connect. A connection policy must exist in the region
+        for the VPC network and the google-cloud-filestore service class.
     """
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1
     PRIVATE_SERVICE_ACCESS = 2
+    PRIVATE_SERVICE_CONNECT = 3
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
     r"""ModesValueListEntryValuesEnum enum type.
@@ -1899,7 +1905,8 @@ class NetworkConfig(_messages.Message):
   ipAddresses = _messages.StringField(2, repeated=True)
   modes = _messages.EnumField('ModesValueListEntryValuesEnum', 3, repeated=True)
   network = _messages.StringField(4)
-  reservedIpRange = _messages.StringField(5)
+  pscConfig = _messages.MessageField('PscConfig', 5)
+  reservedIpRange = _messages.StringField(6)
 
 
 class NfsExportOptions(_messages.Message):
@@ -1931,6 +1938,10 @@ class NfsExportOptions(_messages.Message):
       file share. Overlapping IP ranges are not allowed, both within and
       across NfsExportOptions. An error will be returned. The limit is 64 IP
       ranges/addresses for each FileShareConfig among all NfsExportOptions.
+    network: Optional. The source VPC network for ip_ranges. Required for
+      instances using Private Service Connect, optional otherwise. If
+      provided, must be the same network specified in the
+      `NetworkConfig.network` field.
     squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
       exported directory, or ROOT_SQUASH, for not allowing root access. The
       default is NO_ROOT_SQUASH.
@@ -1969,7 +1980,8 @@ class NfsExportOptions(_messages.Message):
   anonGid = _messages.IntegerField(2)
   anonUid = _messages.IntegerField(3)
   ipRanges = _messages.StringField(4, repeated=True)
-  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 5)
+  network = _messages.StringField(5)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 6)
 
 
 class Operation(_messages.Message):
@@ -2173,6 +2185,19 @@ class PromoteReplicaRequest(_messages.Message):
   peerInstance = _messages.StringField(1)
 
 
+class PscConfig(_messages.Message):
+  r"""Private Service Connect configuration.
+
+  Fields:
+    endpointProject: Optional. Consumer service project in which the Private
+      Service Connect endpoint would be set up. This is optional, and only
+      relevant in case the network is a shared VPC. If this is not specified,
+      the endpoint would be setup in the VPC host project.
+  """
+
+  endpointProject = _messages.StringField(1)
+
+
 class ReplicaConfig(_messages.Message):
   r"""Replica configuration for the instance.
 
@@ -2187,6 +2212,7 @@ class ReplicaConfig(_messages.Message):
     state: Output only. The replica state.
     stateReasons: Output only. Additional information about the replication
       state, if available.
+    stateUpdateTime: Output only. The time when the replica state was updated.
   """
 
   class StateReasonsValueListEntryValuesEnum(_messages.Enum):
@@ -2212,17 +2238,20 @@ class ReplicaConfig(_messages.Message):
       FAILED: The replica is experiencing an issue and might be unusable. You
         can get further details from the `stateReasons` field of the
         `ReplicaConfig` object.
+      PROMOTING: The replica is being promoted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     REMOVING = 3
     FAILED = 4
+    PROMOTING = 5
 
   lastActiveSyncTime = _messages.StringField(1)
   peerInstance = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   stateReasons = _messages.EnumField('StateReasonsValueListEntryValuesEnum', 4, repeated=True)
+  stateUpdateTime = _messages.StringField(5)
 
 
 class Replication(_messages.Message):

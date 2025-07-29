@@ -62,8 +62,6 @@ def AddClearableExtraAndExtendedAttributesOAuth2Client():
       action='store_true',
       required=False,
       help='Clear the extended attributes configuration.',
-      # TODO: b/427486786 - Unhide for launch.
-      hidden=True,
   )
 
   clearable_extra_attributes_group = base.ArgumentGroup(mutex=True)
@@ -75,7 +73,6 @@ def AddClearableExtraAndExtendedAttributesOAuth2Client():
   )
   clearable_extended_attributes_group = base.ArgumentGroup(
       mutex=True,
-      hidden=True,  # TODO: b/427486786 - Unhide for launch.
   )
   clearable_extended_attributes_group.AddArgument(
       clear_extended_attributes_config_arg
@@ -202,42 +199,36 @@ def ExtendedAttributesOAuth2ClientAttributesGroup(required=True):
       dest='extended_attributes_client_id',
       type=str,
       required=required,
-      metavar='EXTRA_ATTRIBUTES_CLIENT_ID',
+      metavar='EXTENDED_ATTRIBUTES_CLIENT_ID',
       help=(
           'The OAuth 2.0 client ID for retrieving extended attributes from the'
           ' identity provider. Required to get extended group memberships for'
           ' a subset of Google Cloud products.'
       ),
-      # TODO: b/427486786 - Unhide for launch.
-      hidden=True,
   )
   extended_attributes_client_secret_value_arg = base.Argument(
       '--extended-attributes-client-secret-value',
       dest='extended_attributes_client_secret_value',
       type=str,
       required=required,
-      metavar='EXTRA_ATTRIBUTES_CLIENT_SECRET_VALUE',
+      metavar='EXTENDED_ATTRIBUTES_CLIENT_SECRET_VALUE',
       help=(
           'The OAuth 2.0 client secret for retrieving extended attributes from'
           ' the identity provider. Required to get extended group memberships'
           ' for a subset of Google Cloud products.'
       ),
-      # TODO: b/427486786 - Unhide for launch.
-      hidden=True,
   )
   extended_attributes_issuer_uri_arg = base.Argument(
       '--extended-attributes-issuer-uri',
       dest='extended_attributes_issuer_uri',
       type=str,
       required=required,
-      metavar='EXTRA_ATTRIBUTES_ISSUER_URI',
+      metavar='EXTENDED_ATTRIBUTES_ISSUER_URI',
       help=(
           "OIDC identity provider's issuer URI. Must be a valid URI using"
           ' the `https` scheme. Required to get the OIDC discovery'
           ' document.'
       ),
-      # TODO: b/427486786 - Unhide for launch.
-      hidden=True,
   )
   # Adding this flag as a ArgList to hide `AZURE_AD_GROUPS_DISPLAY_NAME` from
   # the end user. Currently there is no other way to hide new enum choices.
@@ -253,20 +244,18 @@ def ExtendedAttributesOAuth2ClientAttributesGroup(required=True):
           min_length=1,
       ),
       required=required,
-      metavar='EXTRA_ATTRIBUTES_TYPE',
+      metavar='EXTENDED_ATTRIBUTES_TYPE',
       help=(
           'Represents the identity provider and type of claims that should'
-          ' be fetched. Only `azure-ad-groups-id` is supported.'
+          ' be fetched.'
       ),
-      # TODO: b/427486786 - Unhide for launch.
-      hidden=True,
   )
   extended_attributes_filter_arg = base.Argument(
       '--extended-attributes-filter',
       dest='extended_attributes_filter',
       type=str,
       required=False,
-      metavar='EXTRA_ATTRIBUTES_FILTER',
+      metavar='EXTENDED_ATTRIBUTES_FILTER',
       help=(
           'The filter used to request specific records from the IdP. By'
           ' default, all of the groups that are associated with a user are'
@@ -284,11 +273,8 @@ def ExtendedAttributesOAuth2ClientAttributesGroup(required=True):
           ' query parameters cannot be added using this field. \n\n*'
           ' `AZURE_AD_GROUPS_ID`: `securityEnabled` filter is applied.'
       ),
-      # TODO: b/427486786 - Unhide for launch.
-      hidden=True,
   )
-  # TODO: b/427486786 - Unhide for launch
-  create_extended_attributes_group = base.ArgumentGroup(hidden=True)
+  create_extended_attributes_group = base.ArgumentGroup()
   create_extended_attributes_group.AddArgument(
       extended_attributes_client_id_arg
   )

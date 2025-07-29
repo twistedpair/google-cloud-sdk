@@ -120,6 +120,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICLOUDDATATRANSFERSUPPORTEDSERVICES = (
+      'projects.locations.multicloudDataTransferSupportedServices',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicloudDataTransferSupportedServices/'
+              '{multicloudDataTransferSupportedServicesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

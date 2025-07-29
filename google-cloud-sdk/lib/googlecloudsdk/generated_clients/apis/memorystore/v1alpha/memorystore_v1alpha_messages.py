@@ -466,6 +466,11 @@ class Instance(_messages.Message):
     LabelsValue: Optional. Labels to represent user-provided metadata.
 
   Fields:
+    allowFewerZonesDeployment: Optional. Immutable. Allows customers to
+      specify if they are okay with deploying a multi-zone instance in less
+      than 3 zones. Once set, if there is a zonal outage during the instance
+      creation, the instance will only be deployed in 2 zones, and stay within
+      the 2 zones for its lifecycle.
     asyncInstanceEndpointsDeletionEnabled: Optional. If true, instance
       endpoints that are created and registered by customers can be deleted
       asynchronously. That is, such an instance endpoint can be de-registered
@@ -482,9 +487,12 @@ class Instance(_messages.Message):
       replication.
     deletionProtectionEnabled: Optional. If set to true deletion of the
       instance will fail.
-    discoveryEndpoints: Output only. Deprecated: Use the
-      endpoints.connections.psc_auto_connection or
-      endpoints.connections.psc_connection values instead.
+    discoveryEndpoints: Output only. Deprecated: The discovery_endpoints
+      parameter is deprecated. As a result, it will not be populated if the
+      connections are created using endpoints parameter. Instead of this
+      parameter, for discovery, use endpoints.connections.pscConnection and
+      endpoints.connections.pscAutoConnection with connectionType
+      CONNECTION_TYPE_DISCOVERY.
     encryptionInfo: Output only. Encryption information of the data at rest of
       the cluster.
     endpoints: Optional. Endpoints for the instance.
@@ -519,6 +527,8 @@ class Instance(_messages.Message):
       endpoints.connections.psc_auto_connection value instead.
     replicaCount: Optional. Number of replica nodes per shard. If omitted the
       default is 0 replicas.
+    satisfiesPzi: Optional. Output only. Reserved for future use.
+    satisfiesPzs: Optional. Output only. Reserved for future use.
     shardCount: Optional. Number of shards for the instance.
     simulateMaintenanceEvent: Optional. Input only. Simulate a maintenance
       event.
@@ -653,41 +663,44 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  asyncInstanceEndpointsDeletionEnabled = _messages.BooleanField(1)
-  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 2)
-  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 3)
-  backupCollection = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  crossInstanceReplicationConfig = _messages.MessageField('CrossInstanceReplicationConfig', 6)
-  deletionProtectionEnabled = _messages.BooleanField(7)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 8, repeated=True)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
-  endpoints = _messages.MessageField('InstanceEndpoint', 10, repeated=True)
-  engineConfigs = _messages.MessageField('EngineConfigsValue', 11)
-  engineVersion = _messages.StringField(12)
-  gcsSource = _messages.MessageField('GcsBackupSource', 13)
-  kmsKey = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 16)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 18)
-  mode = _messages.EnumField('ModeValueValuesEnum', 19)
-  name = _messages.StringField(20)
-  nodeConfig = _messages.MessageField('NodeConfig', 21)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 22)
-  ondemandMaintenance = _messages.BooleanField(23)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 24)
-  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 25, repeated=True)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 26, repeated=True)
-  replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  simulateMaintenanceEvent = _messages.BooleanField(29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  stateInfo = _messages.MessageField('StateInfo', 31)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
-  uid = _messages.StringField(33)
-  updateTime = _messages.StringField(34)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 35)
+  allowFewerZonesDeployment = _messages.BooleanField(1)
+  asyncInstanceEndpointsDeletionEnabled = _messages.BooleanField(2)
+  authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 3)
+  automatedBackupConfig = _messages.MessageField('AutomatedBackupConfig', 4)
+  backupCollection = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  crossInstanceReplicationConfig = _messages.MessageField('CrossInstanceReplicationConfig', 7)
+  deletionProtectionEnabled = _messages.BooleanField(8)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 9, repeated=True)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
+  endpoints = _messages.MessageField('InstanceEndpoint', 11, repeated=True)
+  engineConfigs = _messages.MessageField('EngineConfigsValue', 12)
+  engineVersion = _messages.StringField(13)
+  gcsSource = _messages.MessageField('GcsBackupSource', 14)
+  kmsKey = _messages.StringField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 17)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 19)
+  mode = _messages.EnumField('ModeValueValuesEnum', 20)
+  name = _messages.StringField(21)
+  nodeConfig = _messages.MessageField('NodeConfig', 22)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 23)
+  ondemandMaintenance = _messages.BooleanField(24)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 25)
+  pscAttachmentDetails = _messages.MessageField('PscAttachmentDetail', 26, repeated=True)
+  pscAutoConnections = _messages.MessageField('PscAutoConnection', 27, repeated=True)
+  replicaCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  shardCount = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  stateInfo = _messages.MessageField('StateInfo', 34)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 35)
+  uid = _messages.StringField(36)
+  updateTime = _messages.StringField(37)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 38)
 
 
 class InstanceEndpoint(_messages.Message):

@@ -51,12 +51,14 @@ class Cost(_messages.Message):
   Fields:
     costPerMillionInputTokens: A Amount attribute.
     costPerMillionNormalizedOutputTokens: A Amount attribute.
+    outputToInputCostRatio: A number attribute.
     pricingModel: A string attribute.
   """
 
   costPerMillionInputTokens = _messages.MessageField('Amount', 1)
   costPerMillionNormalizedOutputTokens = _messages.MessageField('Amount', 2)
-  pricingModel = _messages.StringField(3)
+  outputToInputCostRatio = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  pricingModel = _messages.StringField(4)
 
 
 class GenerateOptimizedManifestResponse(_messages.Message):
@@ -86,6 +88,7 @@ class GkerecommenderAcceleratorsListRequest(_messages.Message):
       integer attribute.
     performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units: A
       string attribute.
+    performanceRequirements_cost_outputToInputCostRatio: A number attribute.
     performanceRequirements_cost_pricingModel: A string attribute.
     performanceRequirements_maxNtpotMilliseconds: A integer attribute.
   """
@@ -97,8 +100,9 @@ class GkerecommenderAcceleratorsListRequest(_messages.Message):
   performanceRequirements_cost_costPerMillionInputTokens_units = _messages.IntegerField(5)
   performanceRequirements_cost_costPerMillionNormalizedOutputTokens_nanos = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units = _messages.IntegerField(7)
-  performanceRequirements_cost_pricingModel = _messages.StringField(8, default='3-years-CUD')
-  performanceRequirements_maxNtpotMilliseconds = _messages.IntegerField(9, variant=_messages.Variant.INT32, default=999999)
+  performanceRequirements_cost_outputToInputCostRatio = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  performanceRequirements_cost_pricingModel = _messages.StringField(9)
+  performanceRequirements_maxNtpotMilliseconds = _messages.IntegerField(10, variant=_messages.Variant.INT32, default=999999)
 
 
 class GkerecommenderModelServersListRequest(_messages.Message):
@@ -362,6 +366,8 @@ encoding.AddCustomJsonFieldMapping(
     GkerecommenderAcceleratorsListRequest, 'performanceRequirements_cost_costPerMillionNormalizedOutputTokens_nanos', 'performanceRequirements.cost.costPerMillionNormalizedOutputTokens.nanos')
 encoding.AddCustomJsonFieldMapping(
     GkerecommenderAcceleratorsListRequest, 'performanceRequirements_cost_costPerMillionNormalizedOutputTokens_units', 'performanceRequirements.cost.costPerMillionNormalizedOutputTokens.units')
+encoding.AddCustomJsonFieldMapping(
+    GkerecommenderAcceleratorsListRequest, 'performanceRequirements_cost_outputToInputCostRatio', 'performanceRequirements.cost.outputToInputCostRatio')
 encoding.AddCustomJsonFieldMapping(
     GkerecommenderAcceleratorsListRequest, 'performanceRequirements_cost_pricingModel', 'performanceRequirements.cost.pricingModel')
 encoding.AddCustomJsonFieldMapping(

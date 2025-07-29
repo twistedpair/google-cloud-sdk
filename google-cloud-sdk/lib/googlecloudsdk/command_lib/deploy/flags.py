@@ -197,10 +197,60 @@ def AddLabelsFlag(parser, resource_type):
   )
 
 
+def AddDockerVersion(parser):
+  """Adds docker version flag."""
+  parser.add_argument(
+      '--docker-version',
+      help='Version of the Docker binary.',
+      hidden=True,
+      type=str,
+  )
+
+
+def AddHelmVersion(parser):
+  """Adds helm version flag."""
+  parser.add_argument(
+      '--helm-version',
+      help='Version of the Helm binary.',
+      hidden=True,
+      type=str,
+  )
+
+
+def AddKptVersion(parser):
+  """Adds kpt version flag."""
+  parser.add_argument(
+      '--kpt-version',
+      help='Version of the Kpt binary.',
+      hidden=True,
+      type=str,
+  )
+
+
+def AddKubectlVersion(parser):
+  """Adds kubectl version flag."""
+  parser.add_argument(
+      '--kubectl-version',
+      help='Version of the Kubectl binary.',
+      hidden=True,
+      type=str,
+  )
+
+
+def AddKustomizeVersion(parser):
+  """Adds kustomize version flag."""
+  parser.add_argument(
+      '--kustomize-version',
+      help='Version of the Kustomize binary.',
+      hidden=True,
+      type=str,
+  )
+
+
 def AddSkaffoldVersion(parser):
   """Adds skaffold version flag."""
   parser.add_argument(
-      '--skaffold-version', help='Version of the Skaffold binary.'
+      '--skaffold-version', help='Version of the Skaffold binary.', type=str
   )
 
 

@@ -2288,6 +2288,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'gkerecommender': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.gkerecommender.v1',
+                    client_classpath='gkerecommender_v1_client.GkerecommenderV1',
+                    base_url='https://gkerecommender.googleapis.com/',
+                    messages_modulepath='gkerecommender_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2295,7 +2305,7 @@ MAP = {
                     client_classpath='gkerecommender_v1alpha1_client.GkerecommenderV1alpha1',
                     base_url='https://gkerecommender.googleapis.com/',
                     messages_modulepath='gkerecommender_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

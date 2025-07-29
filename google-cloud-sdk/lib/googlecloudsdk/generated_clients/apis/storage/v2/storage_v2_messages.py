@@ -20,7 +20,7 @@ class Action(_messages.Message):
   Fields:
     storageClass: Optional. Target storage class. Required iff the type of the
       action is SetStorageClass.
-    type: Required. Type of the action. Currently, only `Delete`,
+    type: Optional. Type of the action. Currently, only `Delete`,
       `SetStorageClass`, and `AbortIncompleteMultipartUpload` are supported.
   """
 
@@ -243,7 +243,7 @@ class BucketAccessControl(_messages.Message):
   Fields:
     domain: Optional. The domain associated with the entity, if any.
     email: Optional. The email address associated with the entity, if any.
-    entity: Required. The entity holding the permission, in one of the
+    entity: Optional. The entity holding the permission, in one of the
       following forms: * `user-{userid}` * `user-{email}` * `group-{groupid}`
       * `group-{email}` * `domain-{domain}` * `project-{team}-{projectnumber}`
       * `project-{team}-{projectid}` * `allUsers` * `allAuthenticatedUsers`
@@ -260,10 +260,10 @@ class BucketAccessControl(_messages.Message):
       metadata of an update or delete request message, the operation operation
       will only be performed if the etag matches that of the bucket's
       BucketAccessControl.
-    id: Required. The ID of the access-control entry.
+    id: Optional. The ID of the access-control entry.
     projectTeam: Optional. The project team associated with the entity, if
       any.
-    role: Required. The access permission for the entity.
+    role: Optional. The access permission for the entity.
   """
 
   domain = _messages.StringField(1)
@@ -446,6 +446,40 @@ class CustomPlacementConfig(_messages.Message):
   dataLocations = _messages.StringField(1, repeated=True)
 
 
+class CustomerManagedEncryptionEnforcementConfig(_messages.Message):
+  r"""Customer Managed Encryption (CMEK) enforcement config of a bucket.
+
+  Fields:
+    effectiveTime: Time from which the config was effective. This is service-
+      provided.
+    restrictionMode: Restriction mode for customer-managed encryption for new
+      objects within the bucket. Valid values are: "NotRestricted",
+      "FullyRestricted". If `NotRestricted` or unset, creation of new objects
+      with customer-managed encryption is allowed. If `FullyRestricted`, new
+      objects can't be created using customer-managed encryption.
+  """
+
+  effectiveTime = _messages.StringField(1)
+  restrictionMode = _messages.StringField(2)
+
+
+class CustomerSuppliedEncryptionEnforcementConfig(_messages.Message):
+  r"""Customer Supplied Encryption (CSEK) enforcement config of a bucket.
+
+  Fields:
+    effectiveTime: Time from which the config was effective. This is service-
+      provided.
+    restrictionMode: Restriction mode for customer-supplied encryption for new
+      objects within the bucket. Valid values are: "NotRestricted",
+      "FullyRestricted". If `NotRestricted` or unset, creation of new objects
+      with customer-supplied encryption is allowed. If `FullyRestricted`, new
+      objects can't be created using customer-supplied encryption.
+  """
+
+  effectiveTime = _messages.StringField(1)
+  restrictionMode = _messages.StringField(2)
+
+
 class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, such as a birthday. The
   time of day and time zone are either specified elsewhere or are
@@ -551,12 +585,28 @@ class Encryption(_messages.Message):
   r"""Encryption properties of a bucket.
 
   Fields:
+    customerManagedEncryptionEnforcementConfig: Optional. If omitted, then new
+      objects with CMEK encryption-type is allowed. If set, then new objects
+      created in this bucket must comply with enforcement config. Changing
+      this has no effect on existing objects; it applies to new objects only.
+    customerSuppliedEncryptionEnforcementConfig: Optional. If omitted, then
+      new objects with CSEK encryption-type is allowed. If set, then new
+      objects created in this bucket must comply with enforcement config.
+      Changing this has no effect on existing objects; it applies to new
+      objects only.
     defaultKmsKey: Optional. The name of the Cloud KMS key that will be used
       to encrypt objects inserted into this bucket, if no encryption method is
       specified.
+    googleManagedEncryptionEnforcementConfig: Optional. If omitted, then new
+      objects with GMEK encryption-type is allowed. If set, then new objects
+      created in this bucket must comply with enforcement config. Changing
+      this has no effect on existing objects; it applies to new objects only.
   """
 
-  defaultKmsKey = _messages.StringField(1)
+  customerManagedEncryptionEnforcementConfig = _messages.MessageField('CustomerManagedEncryptionEnforcementConfig', 1)
+  customerSuppliedEncryptionEnforcementConfig = _messages.MessageField('CustomerSuppliedEncryptionEnforcementConfig', 2)
+  defaultKmsKey = _messages.StringField(3)
+  googleManagedEncryptionEnforcementConfig = _messages.MessageField('GoogleManagedEncryptionEnforcementConfig', 4)
 
 
 class Filter(_messages.Message):
@@ -602,10 +652,27 @@ class Folder(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class GoogleManagedEncryptionEnforcementConfig(_messages.Message):
+  r"""Google Managed Encryption (GMEK) enforcement config of a bucket.
+
+  Fields:
+    effectiveTime: Time from which the config was effective. This is service-
+      provided.
+    restrictionMode: Restriction mode for google-managed encryption for new
+      objects within the bucket. Valid values are: "NotRestricted",
+      "FullyRestricted". If `NotRestricted` or unset, creation of new objects
+      with google-managed encryption is allowed. If `FullyRestricted`, new
+      objects can't be created using google-managed encryption.
+  """
+
+  effectiveTime = _messages.StringField(1)
+  restrictionMode = _messages.StringField(2)
+
+
 class GoogleStorageV2CustomPlacementConfig(_messages.Message):
   r"""Configuration for Custom Dual Regions. It should specify precisely two
   eligible regions within the same Multiregion. More information on regions
-  may be found https://cloud.google.com/storage/docs/locations.
+  may be found [here](https://cloud.google.com/storage/docs/locations).
 
   Fields:
     dataLocations: Optional. List of locations to use for data placement.
@@ -732,6 +799,8 @@ class IpFilter(_messages.Message):
   access the bucket, as well as its underlying objects.
 
   Fields:
+    allowAllServiceAgentAccess: Whether or not to allow all P4SA access to the
+      bucket. When set to true, IP filter config validation will not apply.
     allowCrossOrgVpcs: Optional. Whether or not to allow VPCs from orgs
       different than the bucket's parent org to access the bucket. When set to
       true, validations on the existence of the VPCs won't be performed. If
@@ -743,14 +812,15 @@ class IpFilter(_messages.Message):
       these rules. When set to `Disabled`, IP filtering rules are not applied
       to a bucket.".
     publicNetworkSource: Public IPs allowed to operate or access the bucket.
-    vpcNetworkSources: Optional. / The list of network sources that are
-      allowed to access operations on the bucket or the underlying objects.
+    vpcNetworkSources: Optional. The list of network sources that are allowed
+      to access operations on the bucket or the underlying objects.
   """
 
-  allowCrossOrgVpcs = _messages.BooleanField(1)
-  mode = _messages.StringField(2)
-  publicNetworkSource = _messages.MessageField('PublicNetworkSource', 3)
-  vpcNetworkSources = _messages.MessageField('VpcNetworkSource', 4, repeated=True)
+  allowAllServiceAgentAccess = _messages.BooleanField(1)
+  allowCrossOrgVpcs = _messages.BooleanField(2)
+  mode = _messages.StringField(3)
+  publicNetworkSource = _messages.MessageField('PublicNetworkSource', 4)
+  vpcNetworkSources = _messages.MessageField('VpcNetworkSource', 5, repeated=True)
 
 
 class Lifecycle(_messages.Message):
@@ -988,7 +1058,7 @@ class ObjectAccessControl(_messages.Message):
     id: Optional. The ID of the access-control entry.
     projectTeam: Optional. The project team associated with the entity, if
       any.
-    role: Required. The access permission for the entity. One of the following
+    role: Optional. The access permission for the entity. One of the following
       values: * `READER` * `WRITER` * `OWNER`
   """
 

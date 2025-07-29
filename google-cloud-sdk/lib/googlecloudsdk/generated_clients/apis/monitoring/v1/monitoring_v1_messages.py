@@ -1059,7 +1059,11 @@ class EventAnnotation(_messages.Message):
 
 
 class Field(_messages.Message):
-  r"""A single field of a message type.
+  r"""A single field of a message type.New usages of this message as an
+  alternative to FieldDescriptorProto are strongly discouraged. This message
+  does not reliability preserve all information necessary to model the schema
+  and preserve semantics. Instead make use of FileDescriptorSet which
+  preserves the necessary information.
 
   Enums:
     CardinalityValueValuesEnum: The field cardinality.
@@ -1895,7 +1899,9 @@ class OpsAnalyticsQuery(_messages.Message):
 
 class Option(_messages.Message):
   r"""A protocol buffer option, which can be attached to a message, field,
-  enumeration, etc.
+  enumeration, etc.New usages of this message as an alternative to
+  FileOptions, MessageOptions, FieldOptions, EnumOptions, EnumValueOptions,
+  ServiceOptions, or MethodOptions are strongly discouraged.
 
   Messages:
     ValueValue: The option's value packed in an Any message. If the value is a
@@ -3009,8 +3015,49 @@ class TimeSeriesTable(_messages.Message):
   metricVisualization = _messages.EnumField('MetricVisualizationValueValuesEnum', 3)
 
 
+class Treemap(_messages.Message):
+  r"""A widget that displays hierarchical data as a treemap.
+
+  Fields:
+    dataSets: Required. The collection of datasets used to construct and
+      populate the treemap. For the rendered treemap rectangles: Color is
+      determined by the aggregated value for each grouping. Size is
+      proportional to the count of time series aggregated within that
+      rectangle's segment.
+    treemapHierarchy: Required. Ordered labels representing the hierarchical
+      treemap structure.
+  """
+
+  dataSets = _messages.MessageField('TreemapDataSet', 1, repeated=True)
+  treemapHierarchy = _messages.StringField(2, repeated=True)
+
+
+class TreemapDataSet(_messages.Message):
+  r"""The data represented by the treemap. Needs to include the data itself,
+  plus rules on how to organize it hierarchically.
+
+  Fields:
+    breakdowns: Optional. The collection of breakdowns to be applied to the
+      dataset. A breakdown is a way to slice the data. For example, you can
+      break down the data by region.
+    measures: Optional. A collection of measures. A measure is a measured
+      value of a property in your data. For example, rainfall in inches,
+      number of units sold, revenue gained, etc.
+    timeSeriesQuery: Required. The query that fetches the relevant data. See
+      google.monitoring.dashboard.v1.TimeSeriesQuery
+  """
+
+  breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
+  measures = _messages.MessageField('Measure', 2, repeated=True)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 3)
+
+
 class Type(_messages.Message):
-  r"""A protocol buffer message type.
+  r"""A protocol buffer message type.New usages of this message as an
+  alternative to DescriptorProto are strongly discouraged. This message does
+  not reliability preserve all information necessary to model the schema and
+  preserve semantics. Instead make use of FileDescriptorSet which preserves
+  the necessary information.
 
   Enums:
     SyntaxValueValuesEnum: The source syntax.
@@ -3083,6 +3130,7 @@ class Widget(_messages.Message):
     timeSeriesTable: A widget that displays time series data in a tabular
       format.
     title: Optional. The title of the widget.
+    treemap: A widget that displays data as a treemap.
     visibilityCondition: Optional. If set, this widget is rendered only when
       the condition is evaluated to true.
     xyChart: A chart of time series data.
@@ -3102,8 +3150,9 @@ class Widget(_messages.Message):
   text = _messages.MessageField('Text', 12)
   timeSeriesTable = _messages.MessageField('TimeSeriesTable', 13)
   title = _messages.StringField(14)
-  visibilityCondition = _messages.MessageField('VisibilityCondition', 15)
-  xyChart = _messages.MessageField('XyChart', 16)
+  treemap = _messages.MessageField('Treemap', 15)
+  visibilityCondition = _messages.MessageField('VisibilityCondition', 16)
+  xyChart = _messages.MessageField('XyChart', 17)
 
 
 class XyChart(_messages.Message):

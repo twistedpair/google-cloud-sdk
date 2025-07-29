@@ -1,0 +1,36 @@
+project:
+  name: project
+  collection: geminicloudassist.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name.
+    property: core/project
+
+location:
+  name: location
+  collection: geminicloudassist.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      ID of the location of the Gemini Cloud Assist resource.
+    fallthroughs:
+    - value: 'global'
+
+
+investigation:
+  name: investigation
+  collection: geminicloudassist.projects.locations.investigations
+  attributes:
+  - *project
+  - *location
+  - &investigation
+    parameter_name: investigationsId
+    attribute_name: investigation
+    help: |
+      ID of the Gemini Cloud Assist investigation resource.

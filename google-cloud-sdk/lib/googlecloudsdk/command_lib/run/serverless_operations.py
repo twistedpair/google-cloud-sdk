@@ -66,8 +66,10 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.util import retry
 import six
+
 
 DEFAULT_ENDPOINT_VERSION = 'v1'
 
@@ -1116,12 +1118,27 @@ class ServerlessOperations(object):
           stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message
       )
 
+  def GetServiceAgent(self, project_num):
+    """Returns the service agent for the given project.
+
+    For Universe Projects, the format will look like
+    service-{project_num}@gcp-sa-iap.{project_prefix}iam.gserviceaccount.com
+    FOR GDU format will look like
+    service-{project_num}@gcp-sa-iap.iam.gserviceaccount.com
+
+    Args:
+      project_num: The project number.
+    """
+    project_prefix = (
+        universe_descriptor.GetUniverseDomainDescriptor().project_prefix
+    )
+    if project_prefix:
+      return f'serviceAccount:service-{project_num}@gcp-sa-iap.{project_prefix}.iam.gserviceaccount.com'
+    return f'serviceAccount:service-{project_num}@gcp-sa-iap.iam.gserviceaccount.com'
+
   def _HandleIap(self, service_ref, iap_enabled, updated_service, tracker):
     """Handle IAP changes."""
-    iap_service_agent = (
-        'serviceAccount:service-%s@gcp-sa-iap.iam.gserviceaccount.com'
-        % updated_service.namespace
-    )
+    iap_service_agent = self.GetServiceAgent(updated_service.namespace)
     if iap_enabled is not None:
       try:
         tracker.StartStage(stages.SERVICE_IAP_ENABLE)

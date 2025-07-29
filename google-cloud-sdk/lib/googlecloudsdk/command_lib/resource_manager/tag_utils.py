@@ -115,6 +115,17 @@ def GetNamespacedResource(namespaced_name, resource_type):
     return response
 
 
+def GetTagValueParent(parent):
+  if parent.find('tagValues/') == 0 or parent.find('tagKeys/') == 0:
+    tag_value_parent = parent
+  else:
+    if parent.count('/') == 1:
+      tag_value_parent = GetNamespacedResource(parent, TAG_KEYS).name
+    else:
+      tag_value_parent = GetNamespacedResource(parent, TAG_VALUES).name
+  return tag_value_parent
+
+
 def ProjectNameToBinding(project_name, tag_value, location=None):
   """Returns the binding name given a project name and tag value.
 

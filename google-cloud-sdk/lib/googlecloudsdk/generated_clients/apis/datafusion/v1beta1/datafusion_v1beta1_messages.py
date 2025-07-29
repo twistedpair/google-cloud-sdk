@@ -873,9 +873,11 @@ class Instance(_messages.Message):
       DISABLED_REASON_UNSPECIFIED: This is an unknown reason for disabling.
       KMS_KEY_ISSUE: The KMS key used by the instance is either revoked or
         denied access to
+      PROJECT_STATE_OFF: The consumer project is in a non-ACTIVE state.
     """
     DISABLED_REASON_UNSPECIFIED = 0
     KMS_KEY_ISSUE = 1
+    PROJECT_STATE_OFF = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this Data Fusion instance.
@@ -892,6 +894,7 @@ class Instance(_messages.Message):
       AUTO_UPDATING: Instance is being auto-updated
       AUTO_UPGRADING: Instance is being auto-upgraded
       DISABLED: Instance is disabled
+      ENABLING: Instance is being enabled.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -904,6 +907,7 @@ class Instance(_messages.Message):
     AUTO_UPDATING = 8
     AUTO_UPGRADING = 9
     DISABLED = 10
+    ENABLING = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Instance type.

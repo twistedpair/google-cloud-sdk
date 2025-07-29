@@ -627,21 +627,23 @@ class DiscoveredRange(_messages.Message):
 
   Fields:
     attributes: Optional. The attributes of the DiscoveredRange.
+    createTime: Output only. [Output only] Create time stamp
     description: Optional. Description of the DiscoveredRange.
-    ipv4CidrRange: Optional. The IPv4 CIDR range of the DiscoveredRange.
-    ipv6CidrRange: Optional. The IPv6 CIDR range of the DiscoveredRange.
-    labels: Optional. Labels as key value pairs
-    metadata: Output only. Owner metadata for this DiscoveredRange. A unique
-      set of metadata is associated with each DiscoveredRange. If an IP range
-      is shared by multiple resources (e.g., an Address resource and an
+    discoveryMetadata: Output only. Owner metadata for this DiscoveredRange. A
+      unique set of metadata is associated with each DiscoveredRange. If an IP
+      range is shared by multiple resources (e.g., an Address resource and an
       Instance resource, or multiple ForwardingRules),separate
       DiscoveredRanges are created, each with a distinct owner. This ensures
       each DiscoveredRange has its own unique set of attributes, labels,
       create time and update time.
+    ipv4CidrRange: Optional. The IPv4 CIDR range of the DiscoveredRange.
+    ipv6CidrRange: Optional. The IPv6 CIDR range of the DiscoveredRange.
+    labels: Optional. Labels as key value pairs
     name: Required. Identifier. Name of the DiscoveredRange.
     parentRange: Optional. The parent range of the DiscoveredRange.
     realm: Required. The realm of the DiscoveredRange.
     registryBook: Required. The registry book of the DiscoveredRange.
+    updateTime: Output only. [Output only] Update time stamp
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -669,15 +671,17 @@ class DiscoveredRange(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributes = _messages.MessageField('Attribute', 1, repeated=True)
-  description = _messages.StringField(2)
-  ipv4CidrRange = _messages.StringField(3)
-  ipv6CidrRange = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  metadata = _messages.MessageField('DiscoveryMetadata', 6)
-  name = _messages.StringField(7)
-  parentRange = _messages.StringField(8)
-  realm = _messages.StringField(9)
-  registryBook = _messages.StringField(10)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  discoveryMetadata = _messages.MessageField('DiscoveryMetadata', 4)
+  ipv4CidrRange = _messages.StringField(5)
+  ipv6CidrRange = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  parentRange = _messages.StringField(9)
+  realm = _messages.StringField(10)
+  registryBook = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class DiscoveryMetadata(_messages.Message):
@@ -1232,8 +1236,6 @@ class RegistryBook(_messages.Message):
       Preview, Only project scope is supported. Each scope is in the format of
       projects/{project}. Each scope can only be claimed once.
     createTime: Output only. [Output only] Create time stamp
-    includeDiscoveredResources: Optional. If true, discovered resources will
-      be included in the RegistryBook.
     labels: Optional. Labels as key value pairs
     name: Required. Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
@@ -1265,10 +1267,9 @@ class RegistryBook(_messages.Message):
 
   claimedScopes = _messages.StringField(1, repeated=True)
   createTime = _messages.StringField(2)
-  includeDiscoveredResources = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -50,6 +50,8 @@ class OracledatabaseV1(base_api.BaseApiClient):
     self.projects_locations_dbSystemShapes = self.ProjectsLocationsDbSystemShapesService(self)
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
     self.projects_locations_giVersions = self.ProjectsLocationsGiVersionsService(self)
+    self.projects_locations_odbNetworks_odbSubnets = self.ProjectsLocationsOdbNetworksOdbSubnetsService(self)
+    self.projects_locations_odbNetworks = self.ProjectsLocationsOdbNetworksService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -863,6 +865,242 @@ class OracledatabaseV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsGiVersionsListRequest',
         response_type_name='ListGiVersionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOdbNetworksOdbSubnetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_odbNetworks_odbSubnets resource."""
+
+    _NAME = 'projects_locations_odbNetworks_odbSubnets'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsOdbNetworksOdbSubnetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new ODB Subnet in a given ODB Network.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks/{odbNetworksId}/odbSubnets',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.odbNetworks.odbSubnets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['odbSubnetId', 'requestId'],
+        relative_path='v1/{+parent}/odbSubnets',
+        request_field='odbSubnet',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ODB Subnet.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks/{odbNetworksId}/odbSubnets/{odbSubnetsId}',
+        http_method='DELETE',
+        method_id='oracledatabase.projects.locations.odbNetworks.odbSubnets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ODB Subnet.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OdbSubnet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks/{odbNetworksId}/odbSubnets/{odbSubnetsId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.odbNetworks.odbSubnets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsGetRequest',
+        response_type_name='OdbSubnet',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the ODB Subnets in a given ODB Network.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOdbSubnetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks/{odbNetworksId}/odbSubnets',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.odbNetworks.odbSubnets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/odbSubnets',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksOdbSubnetsListRequest',
+        response_type_name='ListOdbSubnetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOdbNetworksService(base_api.BaseApiService):
+    """Service class for the projects_locations_odbNetworks resource."""
+
+    _NAME = 'projects_locations_odbNetworks'
+
+    def __init__(self, client):
+      super(OracledatabaseV1.ProjectsLocationsOdbNetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new ODB Network in a given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.odbNetworks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['odbNetworkId', 'requestId'],
+        relative_path='v1/{+parent}/odbNetworks',
+        request_field='odbNetwork',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ODB Network.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks/{odbNetworksId}',
+        http_method='DELETE',
+        method_id='oracledatabase.projects.locations.odbNetworks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ODB Network.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OdbNetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks/{odbNetworksId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.odbNetworks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksGetRequest',
+        response_type_name='OdbNetwork',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the ODB Networks in a given project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsOdbNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOdbNetworksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/odbNetworks',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.odbNetworks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/odbNetworks',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsOdbNetworksListRequest',
+        response_type_name='ListOdbNetworksResponse',
         supports_download=False,
     )
 

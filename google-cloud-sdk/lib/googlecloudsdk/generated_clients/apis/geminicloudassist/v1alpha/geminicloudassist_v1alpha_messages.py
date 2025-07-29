@@ -876,11 +876,11 @@ class InvestigationAnnotations(_messages.Message):
   pre-defined ones, and a map for new applications to add their own.
 
   Messages:
-    ComponentVersionsValue: Optional. Map of component key to version. Filled
-      in by the run process. The key is unique to a "component", broadly
-      defined. A component might be the TAF framework, Titan, a GCA tool, etc.
-      The version is a string that is unique to a particular release of the
-      component, e.g., a build label.
+    ComponentVersionsValue: Output only. Map of component key to version.
+      Filled in by the run process. The key is unique to a "component",
+      broadly defined. A component might be the TAF framework, Titan, a GCA
+      tool, etc. The version is a string that is unique to a particular
+      release of the component, e.g., a build label.
     ExtrasMapValue: Optional. Additional annotations required by applications.
       These will not be redacted and should NOT contain any CCC/PII.
     FeatureFlagsValue: Output only. Map of feature flag names to their
@@ -889,9 +889,9 @@ class InvestigationAnnotations(_messages.Message):
       investigation run.
 
   Fields:
-    componentVersions: Optional. Map of component key to version. Filled in by
-      the run process. The key is unique to a "component", broadly defined. A
-      component might be the TAF framework, Titan, a GCA tool, etc. The
+    componentVersions: Output only. Map of component key to version. Filled in
+      by the run process. The key is unique to a "component", broadly defined.
+      A component might be the TAF framework, Titan, a GCA tool, etc. The
       version is a string that is unique to a particular release of the
       component, e.g., a build label.
     extrasMap: Optional. Additional annotations required by applications.
@@ -907,7 +907,8 @@ class InvestigationAnnotations(_messages.Message):
       hasn't been saved by the user yet. Set to true when an Investigation is
       created by an application (like Chat) and false when the user requests
       action via the UI.
-    revisionLastRunInterval: Optional. Start/end time when the revision was
+    pagePath: Optional. Page path field set by the UI.
+    revisionLastRunInterval: Output only. Start/end time when the revision was
       last run.
     supportCase: Optional. The support case ID associated with the
       investigation.
@@ -919,7 +920,7 @@ class InvestigationAnnotations(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComponentVersionsValue(_messages.Message):
-    r"""Optional. Map of component key to version. Filled in by the run
+    r"""Output only. Map of component key to version. Filled in by the run
     process. The key is unique to a "component", broadly defined. A component
     might be the TAF framework, Titan, a GCA tool, etc. The version is a
     string that is unique to a particular release of the component, e.g., a
@@ -1004,10 +1005,11 @@ class InvestigationAnnotations(_messages.Message):
   featureFlags = _messages.MessageField('FeatureFlagsValue', 3)
   followUp = _messages.BooleanField(4)
   newlyCreated = _messages.BooleanField(5)
-  revisionLastRunInterval = _messages.MessageField('Interval', 6)
-  supportCase = _messages.StringField(7)
-  uiHidden = _messages.BooleanField(8)
-  uiReadOnly = _messages.BooleanField(9)
+  pagePath = _messages.StringField(6)
+  revisionLastRunInterval = _messages.MessageField('Interval', 7)
+  supportCase = _messages.StringField(8)
+  uiHidden = _messages.BooleanField(9)
+  uiReadOnly = _messages.BooleanField(10)
 
 
 class InvestigationRevision(_messages.Message):
@@ -1561,120 +1563,6 @@ class Observation(_messages.Message):
   title = _messages.StringField(18)
 
 
-class ObserverLogEntry(_messages.Message):
-  r"""A log entry from an observer.
-
-  Enums:
-    LogSeverityValueValuesEnum: Required. The severity of the log message.
-
-  Messages:
-    DataValue: Optional. Any additional data, such as an RPC error. Warning:
-      like the rest of ObserverStatus, the contents of this field may be read
-      for Observer debugging purposes. For sensitive data, use
-      `sensitive_data` instead.
-    SensitiveDataValue: Optional. Any additional data that may contain
-      sensitive information about the project under investigation. This field
-      will be redacted when the ObserverStatus is read for debugging purposes.
-
-  Fields:
-    data: Optional. Any additional data, such as an RPC error. Warning: like
-      the rest of ObserverStatus, the contents of this field may be read for
-      Observer debugging purposes. For sensitive data, use `sensitive_data`
-      instead.
-    logMessage: Required. The human-readable message.
-    logSeverity: Required. The severity of the log message.
-    logTime: Required. The time when the log was created.
-    sensitiveData: Optional. Any additional data that may contain sensitive
-      information about the project under investigation. This field will be
-      redacted when the ObserverStatus is read for debugging purposes.
-  """
-
-  class LogSeverityValueValuesEnum(_messages.Enum):
-    r"""Required. The severity of the log message.
-
-    Values:
-      DEFAULT: (0) The log entry has no assigned severity level.
-      DEBUG: (100) Debug or trace information.
-      INFO: (200) Routine information, such as ongoing status or performance.
-      NOTICE: (300) Normal but significant events, such as start up, shut
-        down, or a configuration change.
-      WARNING: (400) Warning events might cause problems.
-      ERROR: (500) Error events are likely to cause problems.
-      CRITICAL: (600) Critical events cause more severe problems or outages.
-      ALERT: (700) A person must take an action immediately.
-      EMERGENCY: (800) One or more systems are unusable.
-    """
-    DEFAULT = 0
-    DEBUG = 1
-    INFO = 2
-    NOTICE = 3
-    WARNING = 4
-    ERROR = 5
-    CRITICAL = 6
-    ALERT = 7
-    EMERGENCY = 8
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DataValue(_messages.Message):
-    r"""Optional. Any additional data, such as an RPC error. Warning: like the
-    rest of ObserverStatus, the contents of this field may be read for
-    Observer debugging purposes. For sensitive data, use `sensitive_data`
-    instead.
-
-    Messages:
-      AdditionalProperty: An additional property for a DataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class SensitiveDataValue(_messages.Message):
-    r"""Optional. Any additional data that may contain sensitive information
-    about the project under investigation. This field will be redacted when
-    the ObserverStatus is read for debugging purposes.
-
-    Messages:
-      AdditionalProperty: An additional property for a SensitiveDataValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a SensitiveDataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  data = _messages.MessageField('DataValue', 1)
-  logMessage = _messages.StringField(2)
-  logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 3)
-  logTime = _messages.StringField(4)
-  sensitiveData = _messages.MessageField('SensitiveDataValue', 5)
-
-
 class ObserverStatus(_messages.Message):
   r"""An ObserverStatus represents the status of an observer at a particular
   point during execution of an investigation. NOTE: By default, nothing in
@@ -1690,9 +1578,6 @@ class ObserverStatus(_messages.Message):
       would be needed to run this observer, but are missing. Runbook
       parameters are the motivating example. An observer must not emit an ID
       corresponding to an existing observation.
-    logs: Optional. A log of execution from this observer.
-    missingObservations: Optional. Deprecated: Use absent_observations
-      instead.
     observer: Required. The ID of the observer that this status is for.
       Observer IDs should be human-readable and hierarchical, e.g.
       "signals.logs.firewall_rules" or "diagnostics.error_catalog".
@@ -1707,22 +1592,10 @@ class ObserverStatus(_messages.Message):
       lack multiple permissions.
     observerExecutionState: Optional. The current execution state of the
       observer.
-    observerVersion: Optional. The version of the observer. Structure is not
-      specified. However, if available, cl/ is recommended.
     startTime: Optional. The time when the observer started. Optional because
       the observer is responsible for setting it. When the observer is
       finished, the difference between this and update_time is the observer
       run time.
-    text: Optional. Natural-language [markdown] text associated with the
-      status. This is the core content, not a metadata description - should be
-      reviewed and used like the text field in the Observation, but will be
-      displayed in the UI as an error or information message distinct from
-      observations. This should NOT be used in the LLM. The 'data' and 'logs'
-      field can provide structured information that may also be rendered in
-      the UI or used by the user. The 'observer_display_name' can be used as
-      title, if a title is generated. The text should only be used if
-      observer_execution_state is OBSERVER_INVESTIGATION_BLOCKED or
-      OBSERVER_INVESTIGATION_ERRORS.
     updateComment: Optional. A status update from the observer. May be logged
       for debugging purposes. These may be shown to users. A good update would
       be "parameters matched, queued for execution" or "checked log file 2/5".
@@ -1762,17 +1635,13 @@ class ObserverStatus(_messages.Message):
     OBSERVER_EXECUTION_INVESTIGATION_DEGRADED = 7
 
   absentObservations = _messages.MessageField('AbsentObservation', 1, repeated=True)
-  logs = _messages.MessageField('ObserverLogEntry', 2, repeated=True)
-  missingObservations = _messages.StringField(3, repeated=True)
-  observer = _messages.StringField(4)
-  observerDisplayName = _messages.StringField(5)
-  observerErrors = _messages.MessageField('Status', 6, repeated=True)
-  observerExecutionState = _messages.EnumField('ObserverExecutionStateValueValuesEnum', 7)
-  observerVersion = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  text = _messages.StringField(10, repeated=True)
-  updateComment = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  observer = _messages.StringField(2)
+  observerDisplayName = _messages.StringField(3)
+  observerErrors = _messages.MessageField('Status', 4, repeated=True)
+  observerExecutionState = _messages.EnumField('ObserverExecutionStateValueValuesEnum', 5)
+  startTime = _messages.StringField(6)
+  updateComment = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Operation(_messages.Message):

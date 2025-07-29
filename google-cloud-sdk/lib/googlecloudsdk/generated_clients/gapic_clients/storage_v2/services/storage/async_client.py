@@ -482,7 +482,7 @@ class StorageAsyncClient:
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             bucket (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket`):
-                Required. Properties of the new bucket being inserted.
+                Optional. Properties of the new bucket being inserted.
                 The name of the bucket is specified in the ``bucket_id``
                 field. Populating ``bucket.name`` field will result in
                 an error. The project of the bucket must be specified in
@@ -1301,11 +1301,7 @@ class StorageAsyncClient:
                 client = storage_v2.StorageAsyncClient()
 
                 # Initialize request argument(s)
-                source_objects = storage_v2.SourceObject()
-                source_objects.name = "name_value"
-
                 request = storage_v2.ComposeObjectRequest(
-                    source_objects=source_objects,
                 )
 
                 # Make the request

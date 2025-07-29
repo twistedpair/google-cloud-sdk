@@ -363,13 +363,16 @@ class Autopilot(_messages.Message):
   Fields:
     conversionStatus: Output only. ConversionStatus shows conversion status.
     enabled: Enable Autopilot
+    privilegedAdmissionConfig: PrivilegedAdmissionConfig is the configuration
+      related to privileged admission control.
     workloadPolicyConfig: WorkloadPolicyConfig is the configuration related to
       GCW workload policy
   """
 
   conversionStatus = _messages.MessageField('AutopilotConversionStatus', 1)
   enabled = _messages.BooleanField(2)
-  workloadPolicyConfig = _messages.MessageField('WorkloadPolicyConfig', 3)
+  privilegedAdmissionConfig = _messages.MessageField('PrivilegedAdmissionConfig', 3)
+  workloadPolicyConfig = _messages.MessageField('WorkloadPolicyConfig', 4)
 
 
 class AutopilotCompatibilityIssue(_messages.Message):
@@ -566,9 +569,16 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
 
 
 class AutoscaledRolloutPolicy(_messages.Message):
-  r"""Autoscaled rollout policy uses cluster autoscaler during blue-green
-  upgrades to scale both the green and blue pools.
+  r"""Autoscaled rollout policy utilizes the cluster autoscaler during blue-
+  green upgrade to scale both the blue and green pools.
+
+  Fields:
+    waitForDrainDuration: Optional. Time to wait after cordoning the blue pool
+      before draining the nodes. Defaults to 3 days. The value can be set
+      between 0 and 7 days, inclusive.
   """
+
+  waitForDrainDuration = _messages.StringField(1)
 
 
 class AvailableVersion(_messages.Message):
@@ -1409,10 +1419,9 @@ class ClusterTelemetry(_messages.Message):
 
 
 class ClusterUpdate(_messages.Message):
-  r"""ClusterUpdate describes an update to the cluster.
-
-  Exactly one update can be applied to a cluster with each request, so at most
-  one field can be provided.
+  r"""ClusterUpdate describes an update to the cluster. Exactly one update can
+  be applied to a cluster with each request, so at most one field can be
+  provided.
 
   Enums:
     DesiredDatapathProviderValueValuesEnum: The desired datapath provider for
@@ -1804,40 +1813,24 @@ class ClusterUpdate(_messages.Message):
   desiredScheduleUpgradeConfig = _messages.MessageField('ScheduleUpgradeConfig', 78)
   desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 79)
   desiredSecretSyncConfig = _messages.MessageField('SecretSyncConfig', 80)
-  desiredSecurityPostureConfig = _messages.MessageField(
-      'SecurityPostureConfig', 81
-  )
-  desiredServiceExternalIpsConfig = _messages.MessageField(
-      'ServiceExternalIPsConfig', 82
-  )
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 81)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 82)
   desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 83)
   desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 84)
   desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 85)
   desiredTpuConfig = _messages.MessageField('TpuConfig', 86)
-  desiredUserManagedKeysConfig = _messages.MessageField(
-      'UserManagedKeysConfig', 87
-  )
-  desiredVerticalPodAutoscaling = _messages.MessageField(
-      'VerticalPodAutoscaling', 88
-  )
+  desiredUserManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 87)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 88)
   desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 89)
-  desiredWorkloadCertificates = _messages.MessageField(
-      'WorkloadCertificates', 90
-  )
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 90)
   desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 91)
-  desiredWorkloadIdentityConfig = _messages.MessageField(
-      'WorkloadIdentityConfig', 92
-  )
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField(
-      'WorkloadMonitoringEapConfig', 93
-  )
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 92)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 93)
   enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 94)
   etag = _messages.StringField(95)
   gkeAutoUpgradeConfig = _messages.MessageField('GkeAutoUpgradeConfig', 96)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 97)
-  removedAdditionalPodRangesConfig = _messages.MessageField(
-      'AdditionalPodRangesConfig', 98
-  )
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 98)
   userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 99)
 
 
@@ -1923,6 +1916,7 @@ class CompleteConvertToAutopilotRequest(_messages.Message):
   """
 
 
+
 class CompleteIPRotationRequest(_messages.Message):
   r"""CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
@@ -1953,6 +1947,7 @@ class CompleteNodePoolUpgradeRequest(_messages.Message):
   r"""CompleteNodePoolUpgradeRequest sets the name of target node pool to
   complete upgrade.
   """
+
 
 
 class CompliancePostureConfig(_messages.Message):
@@ -3115,6 +3110,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class EnterpriseConfig(_messages.Message):
   r"""EnterpriseConfig is the cluster enterprise configuration.
 
@@ -4264,12 +4260,11 @@ class LinuxNodeConfig(_messages.Message):
     CGROUP_MODE_V2 = 2
 
   class TransparentHugepageDefragValueValuesEnum(_messages.Enum):
-    r"""Optional.
-
-    Defines the transparent hugepage defrag configuration on the node. VM
-    hugepage allocation can be managed by either limiting defragmentation for
-    delayed allocation or skipping it entirely for immediate allocation only.
-    See https://docs.kernel.org/admin- guide/mm/transhuge.html for more details.
+    r"""Optional. Defines the transparent hugepage defrag configuration on the
+    node. VM hugepage allocation can be managed by either limiting
+    defragmentation for delayed allocation or skipping it entirely for
+    immediate allocation only. See https://docs.kernel.org/admin-
+    guide/mm/transhuge.html for more details.
 
     Values:
       TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. GKE will not
@@ -4301,13 +4296,11 @@ class LinuxNodeConfig(_messages.Message):
     TRANSPARENT_HUGEPAGE_DEFRAG_NEVER = 5
 
   class TransparentHugepageEnabledValueValuesEnum(_messages.Enum):
-    r"""Optional.
-
-    Transparent hugepage support for anonymous memory can be entirely disabled
-    (mostly for debugging purposes) or only enabled inside MADV_HUGEPAGE regions
-    (to avoid the risk of consuming more memory resources) or enabled system
-    wide. See https://docs.kernel.org/admin- guide/mm/transhuge.html for more
-    details.
+    r"""Optional. Transparent hugepage support for anonymous memory can be
+    entirely disabled (mostly for debugging purposes) or only enabled inside
+    MADV_HUGEPAGE regions (to avoid the risk of consuming more memory
+    resources) or enabled system wide. See https://docs.kernel.org/admin-
+    guide/mm/transhuge.html for more details.
 
     Values:
       TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. GKE will not
@@ -4328,7 +4321,6 @@ class LinuxNodeConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
-
     running on the nodes. The following parameters are supported.
     net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
     net.core.rmem_max net.core.rmem_default net.core.wmem_default
@@ -5270,9 +5262,8 @@ class NodeAffinity(_messages.Message):
 
 
 class NodeConfig(_messages.Message):
-  r"""Parameters that describe the nodes in a cluster.
-
-  GKE Autopilot clusters do not recognize parameters in `NodeConfig`. Use
+  r"""Parameters that describe the nodes in a cluster. GKE Autopilot clusters
+  do not recognize parameters in `NodeConfig`. Use
   AutoprovisioningNodePoolDefaults instead.
 
   Enums:
@@ -6807,6 +6798,23 @@ class PrivateRegistryAccessConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class PrivilegedAdmissionConfig(_messages.Message):
+  r"""PrivilegedAdmissionConfig stores the list of authorized allowlist paths
+  for the cluster.
+
+  Fields:
+    allowlistPaths: The customer allowlist Cloud Storage paths for the
+      cluster. These paths are used with the `--autopilot-privileged-
+      admission` flag to authorize privileged workloads in Autopilot clusters.
+      Paths can be GKE-owned, in the format `gke:////`, or customer-owned, in
+      the format `gs:///`. Wildcards (`*`) are supported to authorize all
+      allowlists under specific paths or directories. Example: `gs://my-
+      bucket/*` will authorize all allowlists under the `my-bucket` bucket.
+  """
+
+  allowlistPaths = _messages.StringField(1, repeated=True)
+
+
 class ProtectConfig(_messages.Message):
   r"""ProtectConfig defines the flags needed to enable/disable features for
   the Protect API.
@@ -7408,6 +7416,7 @@ class SecondaryBootDiskUpdateStrategy(_messages.Message):
   r"""SecondaryBootDiskUpdateStrategy is a placeholder which will be extended
   in the future to define different options for updating secondary boot disks.
   """
+
 
 
 class SecretManagerConfig(_messages.Message):

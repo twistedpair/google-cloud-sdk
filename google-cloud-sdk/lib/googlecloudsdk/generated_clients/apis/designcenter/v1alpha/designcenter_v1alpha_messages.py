@@ -97,7 +97,7 @@ class Application(_messages.Message):
       application template.
     serviceAccount: Optional. Your own service account that you use to deploy
       an application.
-    source: Required. The application deployment source.
+    source: Optional. The application deployment source.
     state: Output only. Deployment state of the application.
     updateTime: Output only. Update timestamp.
     updatedTemplateRevision: Output only. The updated template revision
@@ -626,7 +626,6 @@ class Connection(_messages.Message):
     destinationComponentUri: Required. The destination component URI used to
       generate the connection.
     name: Identifier. The connection name.
-    parameters: Optional. The connection parameters.
     sourceComponentParameters: Optional. The parameters of the connection
       associated with the source component.
     updateTime: Output only. The connection update timestamp.
@@ -636,9 +635,8 @@ class Connection(_messages.Message):
   destinationComponentParameters = _messages.MessageField('Parameter', 2, repeated=True)
   destinationComponentUri = _messages.StringField(3)
   name = _messages.StringField(4)
-  parameters = _messages.MessageField('Parameter', 5, repeated=True)
-  sourceComponentParameters = _messages.MessageField('Parameter', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  sourceComponentParameters = _messages.MessageField('Parameter', 5, repeated=True)
+  updateTime = _messages.StringField(6)
 
 
 class ConnectionConfig(_messages.Message):
@@ -2985,7 +2983,6 @@ class SerializedConnection(_messages.Message):
       associated with the destination component.
     destinationComponentUri: Optional. The destination component URI used to
       generate the connection.
-    parameters: Optional. The connection parameters.
     sourceComponentParameters: Optional. The parameters of the connection
       associated with the source component.
     uri: Optional. The connection URI.
@@ -2993,9 +2990,8 @@ class SerializedConnection(_messages.Message):
 
   destinationComponentParameters = _messages.MessageField('Parameter', 1, repeated=True)
   destinationComponentUri = _messages.StringField(2)
-  parameters = _messages.MessageField('Parameter', 3, repeated=True)
-  sourceComponentParameters = _messages.MessageField('Parameter', 4, repeated=True)
-  uri = _messages.StringField(5)
+  sourceComponentParameters = _messages.MessageField('Parameter', 3, repeated=True)
+  uri = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -3139,18 +3135,15 @@ class Space(_messages.Message):
     displayName: Optional. Display name for the space.
     enableGcpSharedTemplates: Optional. Flag to enable Google opinionated
       shared templates.
-    gcsBucket: Optional. The user-specified Google Cloud Storage bucket for
-      the space. This bucket will be used while setting up ADC. If not
-      provided, a default bucket will be created. Format: {$bucket_name} ,
-      name of an already existing cloud storage bucket. In case Cloud Storage
-      bucket URI is gs://{$bucket_name}, user needs to provide only bucket
-      name that is {$bucket_name}. User can only provide name of buckets that
-      exist in Cloud Storage. In case user provides a bucket name that does
-      not exist, the request will fail with an INVALID_ARGUMENT error. In case
-      user does not have access to the provided bucket's metadata then the
-      request will fail with a PERMISSION_DENIED error. In case user provides
-      a bucket that is not in the same project as the Space, then the request
-      will fail with an INVALID_ARGUMENT error.
+    gcsBucket: Optional. An existing Google Cloud Storage bucket that you want
+      to use instead of creating a new bucket during ADC setup. If not
+      provided, a default bucket is created during setup. The bucket must
+      exist in the same project as the space. If the bucket name does not
+      exist in the same project as the space, the request fails with an
+      INVALID_ARGUMENT error. If you do not have access to the bucket, the
+      request fails with a PERMISSION_DENIED error. Format: {$bucket_name} For
+      example, if the Cloud Storage bucket URI is gs:\/\/{$bucket_name}, the
+      format is {$bucket_name}.
     name: Identifier. The space name.
     updateTime: Output only. Space update timestamp
   """

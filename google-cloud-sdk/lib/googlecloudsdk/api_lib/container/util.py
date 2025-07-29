@@ -49,7 +49,8 @@ CLUSTERS_FORMAT = """
         nodePools[0].config.machineType,
         currentNodeVersion:label=NODE_VERSION,
         firstof(currentNodeCount,initialNodeCount):label=NUM_NODES,
-        status
+        status,
+        ipAllocationPolicy.stackType.yesno(no='IPV4'):label=STACK_TYPE
     )
 """
 

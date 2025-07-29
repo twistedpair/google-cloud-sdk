@@ -570,7 +570,6 @@ def AddCreateInstanceFlags(support_managed_euc, parser):
   if support_managed_euc:
     parser.add_argument(
         '--enable-managed-euc',
-        hidden=True,
         action='store_true',
         dest='enable_managed_euc',
         help=(

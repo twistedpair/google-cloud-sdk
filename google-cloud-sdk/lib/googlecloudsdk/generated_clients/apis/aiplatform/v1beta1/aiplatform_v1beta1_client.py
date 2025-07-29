@@ -21827,6 +21827,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def OptimizePrompt(self, request, global_params=None):
+      r"""Optimizes a prompt.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsOptimizePromptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1OptimizePromptResponse) The response message.
+      """
+      config = self.GetMethodConfig('OptimizePrompt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    OptimizePrompt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tuningJobs:optimizePrompt',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tuningJobs.optimizePrompt',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/tuningJobs:optimizePrompt',
+        request_field='googleCloudAiplatformV1beta1OptimizePromptRequest',
+        request_type_name='AiplatformProjectsLocationsTuningJobsOptimizePromptRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1OptimizePromptResponse',
+        supports_download=False,
+    )
+
     def RebaseTunedModel(self, request, global_params=None):
       r"""Rebase a TunedModel.
 

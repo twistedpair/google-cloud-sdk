@@ -1267,6 +1267,33 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MsComplianceMetadata(self, request, global_params=None):
+      r"""Returns the Assured Workloads compliance metadata for a given project.
+
+      Args:
+        request: (BackupdrProjectsLocationsManagementServersMsComplianceMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchMsComplianceMetadataResponse) The response message.
+      """
+      config = self.GetMethodConfig('MsComplianceMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MsComplianceMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/managementServers:msComplianceMetadata',
+        http_method='POST',
+        method_id='backupdr.projects.locations.managementServers.msComplianceMetadata',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:msComplianceMetadata',
+        request_field='fetchMsComplianceMetadataRequest',
+        request_type_name='BackupdrProjectsLocationsManagementServersMsComplianceMetadataRequest',
+        response_type_name='FetchMsComplianceMetadataResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 

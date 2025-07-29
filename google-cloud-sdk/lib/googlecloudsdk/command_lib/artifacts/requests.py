@@ -464,3 +464,16 @@ def ListDockerImages(parent: str, page_size: int, limit: int):
           limit=limit,
       )
   )
+
+
+def CopyRepository(source_repo, dest_repo_name):
+  """Copies a repository."""
+  client = GetClient()
+  messages = GetMessages()
+  req = messages.ArtifactregistryProjectsLocationsRepositoriesCopyRepositoryRequest(
+      destinationRepository=dest_repo_name,
+      copyRepositoryRequest=messages.CopyRepositoryRequest(
+          sourceRepository=source_repo
+      ),
+  )
+  return client.projects_locations_repositories.CopyRepository(req)

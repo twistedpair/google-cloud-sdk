@@ -44,6 +44,7 @@ class MonitoringV3(base_api.BaseApiClient):
     self.organizations_timeSeries = self.OrganizationsTimeSeriesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_alertPolicies = self.ProjectsAlertPoliciesService(self)
+    self.projects_alerts = self.ProjectsAlertsService(self)
     self.projects_collectdTimeSeries = self.ProjectsCollectdTimeSeriesService(self)
     self.projects_groups_members = self.ProjectsGroupsMembersService(self)
     self.projects_groups = self.ProjectsGroupsService(self)
@@ -295,6 +296,70 @@ class MonitoringV3(base_api.BaseApiClient):
         request_field='alertPolicy',
         request_type_name='MonitoringProjectsAlertPoliciesPatchRequest',
         response_type_name='AlertPolicy',
+        supports_download=False,
+    )
+
+  class ProjectsAlertsService(base_api.BaseApiService):
+    """Service class for the projects_alerts resource."""
+
+    _NAME = 'projects_alerts'
+
+    def __init__(self, client):
+      super(MonitoringV3.ProjectsAlertsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a single alert.
+
+      Args:
+        request: (MonitoringProjectsAlertsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Alert) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/alerts/{alertsId}',
+        http_method='GET',
+        method_id='monitoring.projects.alerts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='MonitoringProjectsAlertsGetRequest',
+        response_type_name='Alert',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the existing alerts for the Metrics scope.
+
+      Args:
+        request: (MonitoringProjectsAlertsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAlertsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/alerts',
+        http_method='GET',
+        method_id='monitoring.projects.alerts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/alerts',
+        request_field='',
+        request_type_name='MonitoringProjectsAlertsListRequest',
+        response_type_name='ListAlertsResponse',
         supports_download=False,
     )
 

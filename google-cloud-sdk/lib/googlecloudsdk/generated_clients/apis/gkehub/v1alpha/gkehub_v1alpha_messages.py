@@ -809,6 +809,9 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
         scope level, this means all eligible clusters are in COMPLETE status.
       PAUSED: The upgrade is paused. At the scope level, this means the
         upgrade is paused for all the clusters in the scope.
+      FORCED_COMPLETE: The upgrade was forced into soaking and the soaking
+        time has passed. This is the equivalent of COMPLETE status for
+        upgrades that were forced into soaking.
     """
     CODE_UNSPECIFIED = 0
     INELIGIBLE = 1
@@ -818,6 +821,7 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
     FORCED_SOAKING = 5
     COMPLETE = 6
     PAUSED = 7
+    FORCED_COMPLETE = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the status.
@@ -7754,6 +7758,10 @@ class Rollout(_messages.Message):
   Messages:
     AnnotationsValue: Optional. Annotations for this Rollout.
     LabelsValue: Optional. Labels for this Rollout.
+    MembershipStatesValue: Output only. States of upgrading control plane or
+      node pool targets of a single cluster (GKE Hub membership) that's part
+      of this Rollout. The key is the membership name of the cluster. The
+      value is the state of the cluster.
 
   Fields:
     annotations: Optional. Annotations for this Rollout.
@@ -7772,6 +7780,10 @@ class Rollout(_messages.Message):
     lastPauseTime: Output only. The timestamp at which the Rollout was last
       paused.
     managedRolloutConfig: Optional. The configuration used for the Rollout.
+    membershipStates: Output only. States of upgrading control plane or node
+      pool targets of a single cluster (GKE Hub membership) that's part of
+      this Rollout. The key is the membership name of the cluster. The value
+      is the state of the cluster.
     name: Identifier. The full, unique resource name of this Rollout in the
       format of `projects/{project}/locations/global/rollouts/{rollout}`.
     rolloutSequence: Optional. Immutable. The full, unique resource name of
@@ -7863,6 +7875,35 @@ class Rollout(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipStatesValue(_messages.Message):
+    r"""Output only. States of upgrading control plane or node pool targets of
+    a single cluster (GKE Hub membership) that's part of this Rollout. The key
+    is the membership name of the cluster. The value is the state of the
+    cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MembershipStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RolloutMembershipState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RolloutMembershipState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   clusterStatus = _messages.MessageField('ClusterStatus', 2, repeated=True)
   completeTime = _messages.StringField(3)
@@ -7875,16 +7916,36 @@ class Rollout(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   lastPauseTime = _messages.StringField(11)
   managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 12)
-  name = _messages.StringField(13)
-  rolloutSequence = _messages.StringField(14)
-  schedule = _messages.MessageField('Schedule', 15)
-  scheduledStartTime = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateReason = _messages.StringField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  versionUpgrade = _messages.MessageField('VersionUpgrade', 21)
-  waveStatus = _messages.MessageField('WaveStatus', 22, repeated=True)
+  membershipStates = _messages.MessageField('MembershipStatesValue', 13)
+  name = _messages.StringField(14)
+  rolloutSequence = _messages.StringField(15)
+  schedule = _messages.MessageField('Schedule', 16)
+  scheduledStartTime = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateReason = _messages.StringField(19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  versionUpgrade = _messages.MessageField('VersionUpgrade', 22)
+  waveStatus = _messages.MessageField('WaveStatus', 23, repeated=True)
+
+
+class RolloutMembershipState(_messages.Message):
+  r"""Metadata about single cluster (GKE Hub membership) that's part of this
+  Rollout.
+
+  Fields:
+    lastUpdateTime: Optional. Output only. The time this status and any
+      related Rollout-specific details for the membership were updated.
+    targets: Output only. The targets of the rollout - clusters or node pools
+      that are being upgraded. All targets belongs to the same cluster,
+      identified by the membership name (key of membership_states map).
+    waveAssignment: Output only. The wave assignment of this cluster in this
+      rollout.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  targets = _messages.MessageField('RolloutTarget', 2, repeated=True)
+  waveAssignment = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class RolloutSequence(_messages.Message):
@@ -7946,6 +8007,62 @@ class RolloutSequence(_messages.Message):
   stages = _messages.MessageField('Stage', 7, repeated=True)
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class RolloutTarget(_messages.Message):
+  r"""Metadata about the status of targets (clusters or node pools) involved
+  in the Rollout.
+
+  Enums:
+    StateValueValuesEnum: Output only. The high-level, machine-readable status
+      of this Rollout for the target.
+
+  Fields:
+    cluster: Optional. Output only. The resource link of the Cluster resource
+      upgraded in this Rollout. It is formatted as:
+      ///projects//locations//clusters/. I.e. for GKE clusters, it is
+      formatted as: //container.googleapis.com/projects//locations//clusters/.
+      For GDCE, it is formatted as:
+      //edgecontainer.googleapis.com/projects//locations//clusters/.
+    nodePool: Optional. Output only. The resource link of the NodePool
+      resource upgraded in this Rollout. It is formatted as:
+      ///projects//locations//clusters//nodePools/.
+    operation: Optional. Output only. The operation resource name performing
+      the mutation.
+    reason: Optional. Output only. A human-readable description of the current
+      status.
+    state: Output only. The high-level, machine-readable status of this
+      Rollout for the target.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The high-level, machine-readable status of this Rollout
+    for the target.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      PENDING: The Rollout is pending for the target.
+      RUNNING: The Rollout is running for the target.
+      FAILED: The Rollout failed for the target.
+      SUCCEEDED: The Rollout succeeded for the target.
+      PAUSED: The Rollout is paused for the target.
+      REMOVED: The target was removed from the Rollout.
+      INELIGIBLE: The target is ineligible for the Rollout.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    FAILED = 3
+    SUCCEEDED = 4
+    PAUSED = 5
+    REMOVED = 6
+    INELIGIBLE = 7
+
+  cluster = _messages.StringField(1)
+  nodePool = _messages.StringField(2)
+  operation = _messages.StringField(3)
+  reason = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Rule(_messages.Message):

@@ -4237,6 +4237,7 @@ class Version(_messages.Message):
   files that are deployed into a service.
 
   Enums:
+    AppEngineBundledServicesValueListEntryValuesEnum:
     InboundServicesValueListEntryValuesEnum:
     LifecycleValueValuesEnum: The type of lifecycle for this version.
     ServingStatusValueValuesEnum: Current serving status of this version. Only
@@ -4261,6 +4262,8 @@ class Version(_messages.Message):
       view=FULL is set.
     appEngineApis: Allows App Engine second generation runtimes to access the
       legacy bundled services.
+    appEngineBundledServices: List of specific App Engine Bundled Services
+      that are enabled for this Version.
     automaticScaling: Automatic scaling is based on request rate, response
       latencies, and other application metrics. Instances are dynamically
       created and destroyed as needed in order to handle traffic.
@@ -4361,6 +4364,44 @@ class Version(_messages.Message):
     zones: The Google Compute Engine zones that are supported by this version
       in the App Engine flexible environment. Deprecated.
   """
+
+  class AppEngineBundledServicesValueListEntryValuesEnum(_messages.Enum):
+    r"""AppEngineBundledServicesValueListEntryValuesEnum enum type.
+
+    Values:
+      BUNDLED_SERVICE_TYPE_UNSPECIFIED: Default, invalid value
+      BUNDLED_SERVICE_TYPE_APP_IDENTITY_SERVICE: App Identity Service
+      BUNDLED_SERVICE_TYPE_BLOBSTORE: Blobstore
+      BUNDLED_SERVICE_TYPE_CAPABILITY_SERVICE: Capability Service
+      BUNDLED_SERVICE_TYPE_DATASTORE_V3: Datastore V3
+      BUNDLED_SERVICE_TYPE_DEFERRED: Deferred
+      BUNDLED_SERVICE_TYPE_IMAGES: Images
+      BUNDLED_SERVICE_TYPE_MAIL: Mail
+      BUNDLED_SERVICE_TYPE_MEMCACHE: Memcache
+      BUNDLED_SERVICE_TYPE_MODULES: Modules
+      BUNDLED_SERVICE_TYPE_NAMESPACES: Namespaces
+      BUNDLED_SERVICE_TYPE_NDB: NDB
+      BUNDLED_SERVICE_TYPE_SEARCH: Search
+      BUNDLED_SERVICE_TYPE_TASKQUEUES: Task Queues
+      BUNDLED_SERVICE_TYPE_URLFETCH: URL Fetch
+      BUNDLED_SERVICE_TYPE_USERS: Users
+    """
+    BUNDLED_SERVICE_TYPE_UNSPECIFIED = 0
+    BUNDLED_SERVICE_TYPE_APP_IDENTITY_SERVICE = 1
+    BUNDLED_SERVICE_TYPE_BLOBSTORE = 2
+    BUNDLED_SERVICE_TYPE_CAPABILITY_SERVICE = 3
+    BUNDLED_SERVICE_TYPE_DATASTORE_V3 = 4
+    BUNDLED_SERVICE_TYPE_DEFERRED = 5
+    BUNDLED_SERVICE_TYPE_IMAGES = 6
+    BUNDLED_SERVICE_TYPE_MAIL = 7
+    BUNDLED_SERVICE_TYPE_MEMCACHE = 8
+    BUNDLED_SERVICE_TYPE_MODULES = 9
+    BUNDLED_SERVICE_TYPE_NAMESPACES = 10
+    BUNDLED_SERVICE_TYPE_NDB = 11
+    BUNDLED_SERVICE_TYPE_SEARCH = 12
+    BUNDLED_SERVICE_TYPE_TASKQUEUES = 13
+    BUNDLED_SERVICE_TYPE_URLFETCH = 14
+    BUNDLED_SERVICE_TYPE_USERS = 15
 
   class InboundServicesValueListEntryValuesEnum(_messages.Enum):
     r"""InboundServicesValueListEntryValuesEnum enum type.
@@ -4529,49 +4570,50 @@ class Version(_messages.Message):
 
   apiConfig = _messages.MessageField('ApiConfigHandler', 1)
   appEngineApis = _messages.BooleanField(2)
-  automaticScaling = _messages.MessageField('AutomaticScaling', 3)
-  basicScaling = _messages.MessageField('BasicScaling', 4)
-  betaSettings = _messages.MessageField('BetaSettingsValue', 5)
-  buildEnvVariables = _messages.MessageField('BuildEnvVariablesValue', 6)
-  createTime = _messages.StringField(7)
-  createdBy = _messages.StringField(8)
-  defaultExpiration = _messages.StringField(9)
-  deployment = _messages.MessageField('Deployment', 10)
-  directVpcConfig = _messages.MessageField('DirectVpcConfig', 11)
-  diskUsageBytes = _messages.IntegerField(12)
-  endpointsApiService = _messages.MessageField('EndpointsApiService', 13)
-  entrypoint = _messages.MessageField('Entrypoint', 14)
-  env = _messages.StringField(15)
-  envVariables = _messages.MessageField('EnvVariablesValue', 16)
-  errorHandlers = _messages.MessageField('ErrorHandler', 17, repeated=True)
-  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 18)
-  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 19)
-  handlers = _messages.MessageField('UrlMap', 20, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 21)
-  id = _messages.StringField(22)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 23, repeated=True)
-  instanceClass = _messages.StringField(24)
-  instanceStats = _messages.MessageField('InstanceStats', 25)
-  libraries = _messages.MessageField('Library', 26, repeated=True)
-  lifecycle = _messages.EnumField('LifecycleValueValuesEnum', 27)
-  livenessCheck = _messages.MessageField('LivenessCheck', 28)
-  manualScaling = _messages.MessageField('ManualScaling', 29)
-  name = _messages.StringField(30)
-  network = _messages.MessageField('Network', 31)
-  nobuildFilesRegex = _messages.StringField(32)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 33)
-  resources = _messages.MessageField('Resources', 34)
-  runtime = _messages.StringField(35)
-  runtimeApiVersion = _messages.StringField(36)
-  runtimeChannel = _messages.StringField(37)
-  runtimeMainExecutablePath = _messages.StringField(38)
-  serviceAccount = _messages.StringField(39)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 40)
-  threadsafe = _messages.BooleanField(41)
-  versionUrl = _messages.StringField(42)
-  vm = _messages.BooleanField(43)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 44)
-  zones = _messages.StringField(45, repeated=True)
+  appEngineBundledServices = _messages.EnumField('AppEngineBundledServicesValueListEntryValuesEnum', 3, repeated=True)
+  automaticScaling = _messages.MessageField('AutomaticScaling', 4)
+  basicScaling = _messages.MessageField('BasicScaling', 5)
+  betaSettings = _messages.MessageField('BetaSettingsValue', 6)
+  buildEnvVariables = _messages.MessageField('BuildEnvVariablesValue', 7)
+  createTime = _messages.StringField(8)
+  createdBy = _messages.StringField(9)
+  defaultExpiration = _messages.StringField(10)
+  deployment = _messages.MessageField('Deployment', 11)
+  directVpcConfig = _messages.MessageField('DirectVpcConfig', 12)
+  diskUsageBytes = _messages.IntegerField(13)
+  endpointsApiService = _messages.MessageField('EndpointsApiService', 14)
+  entrypoint = _messages.MessageField('Entrypoint', 15)
+  env = _messages.StringField(16)
+  envVariables = _messages.MessageField('EnvVariablesValue', 17)
+  errorHandlers = _messages.MessageField('ErrorHandler', 18, repeated=True)
+  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 19)
+  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 20)
+  handlers = _messages.MessageField('UrlMap', 21, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 22)
+  id = _messages.StringField(23)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 24, repeated=True)
+  instanceClass = _messages.StringField(25)
+  instanceStats = _messages.MessageField('InstanceStats', 26)
+  libraries = _messages.MessageField('Library', 27, repeated=True)
+  lifecycle = _messages.EnumField('LifecycleValueValuesEnum', 28)
+  livenessCheck = _messages.MessageField('LivenessCheck', 29)
+  manualScaling = _messages.MessageField('ManualScaling', 30)
+  name = _messages.StringField(31)
+  network = _messages.MessageField('Network', 32)
+  nobuildFilesRegex = _messages.StringField(33)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 34)
+  resources = _messages.MessageField('Resources', 35)
+  runtime = _messages.StringField(36)
+  runtimeApiVersion = _messages.StringField(37)
+  runtimeChannel = _messages.StringField(38)
+  runtimeMainExecutablePath = _messages.StringField(39)
+  serviceAccount = _messages.StringField(40)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 41)
+  threadsafe = _messages.BooleanField(42)
+  versionUrl = _messages.StringField(43)
+  vm = _messages.BooleanField(44)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 45)
+  zones = _messages.StringField(46, repeated=True)
 
 
 class Volume(_messages.Message):

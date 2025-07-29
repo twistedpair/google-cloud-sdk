@@ -53,7 +53,7 @@ projects_locations_cloud_exadata_infrastructures:
     parameter_name: cloudExadataInfrastructuresId
     attribute_name: cloud_exadata_infrastructure
     help: The cloudExadataInfrastructure id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
 projects_locations_cloud_vm_clusters:
   name: cloudVmCluster
   plural_name: cloudVmClusters
@@ -66,6 +66,18 @@ projects_locations_cloud_vm_clusters:
     attribute_name: cloud_vm_cluster
     help: The cloudVmCluster id of the {resource} resource.
   disable_auto_completers: true
+projects_locations_odb_networks:
+  name: odbNetwork
+  plural_name: odbNetworks
+  collection: oracledatabase.projects.locations.odbNetworks
+  attributes:
+  - *project
+  - *location
+  - &odbNetwork
+    parameter_name: odbNetworksId
+    attribute_name: odb_network
+    help: The odbNetwork id of the {resource} resource.
+  disable_auto_completers: true
 projects_none_networks:
   name: network
   plural_name: networks
@@ -77,3 +89,16 @@ projects_none_networks:
     attribute_name: network
     help: The network id of the {resource} resource.
   disable_auto_completers: true
+projects_locations_odb_networks_odb_subnets:
+  name: odbSubnet
+  plural_name: odbSubnets
+  collection: oracledatabase.projects.locations.odbNetworks.odbSubnets
+  attributes:
+  - *project
+  - *location
+  - *odbNetwork
+  - &odbSubnet
+    parameter_name: odbSubnetsId
+    attribute_name: odb_subnet
+    help: The odbSubnet id of the {resource} resource.
+  disable_auto_completers: false

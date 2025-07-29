@@ -309,6 +309,22 @@ multitypeResources:
       -*workload_identity_pool_namespace_workload_source
       -*workload_identity_pool_managed_identity_workload_source
 
+positional_workforce_pool:
+  name: workforce pool
+  collection: iam.locations.workforcePools
+  request_id_field: workforcePoolId
+  attributes:
+  - *wf_location
+  - &positional_workforce_pool
+    parameter_name: workforcePoolsId
+    attribute_name: workforce_pool
+    help: |
+      The ID to use for the workforce pool, which becomes the final component of the
+      resource name. This value must be a globally unique string of 6 to 63 lowercase letters,
+      digits, or hyphens. It must start with a letter, and cannot have a trailing hyphen.
+      The prefix `gcp-` is reserved for use by Google, and may not be specified.
+  disable_auto_completers: false
+
 workforce_pool:
   name: workforce pool
   collection: iam.locations.workforcePools
@@ -317,7 +333,7 @@ workforce_pool:
   - *wf_location
   - &workforce_pool
     parameter_name: workforcePoolsId
-    attribute_name: workforce_pool
+    attribute_name: workforce-pool
     help: |
       The ID to use for the workforce pool, which becomes the final component of the resource name.
       This value must be a globally unique string of 6 to 63 lowercase letters, digits, or hyphens.
@@ -330,7 +346,7 @@ workforce_pool_operation:
   collection: iam.locations.workforcePools.operations
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - &workforce_pool_operation
     parameter_name: operationsId
     attribute_name: operation
@@ -344,7 +360,7 @@ workforce_pool_installed_app:
   request_id_field: workforcePoolInstalledAppId
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - &workforce_pool_installed_app
     parameter_name: installedAppsId
     attribute_name: installed_app
@@ -361,7 +377,7 @@ workforce_pool_provider:
   request_id_field: workforcePoolProviderId
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - &workforce_pool_provider
     parameter_name: providersId
     attribute_name: provider
@@ -377,7 +393,7 @@ workforce_pool_provider_operation:
   collection: iam.locations.workforcePools.providers.operations
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - *workforce_pool_provider
   - &workforce_pool_provider_operation
     parameter_name: operationsId
@@ -392,7 +408,7 @@ workforce_pool_provider_key:
   request_id_field: workforcePoolProviderKeyId
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - *workforce_pool_provider
   - &workforce_pool_provider_key
     parameter_name: keysId
@@ -408,7 +424,7 @@ workforce_pool_provider_key_operation:
   collection: iam.locations.workforcePools.providers.keys.operations
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - *workforce_pool_provider
   - *workforce_pool_provider_key
   - &workforce_pool_provider_key_operation
@@ -424,7 +440,7 @@ workforce_pool_subject:
   request_id_field: workforcePoolSubjectId
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - &workforce_pool_subject
     parameter_name: subjectsId
     attribute_name: subject
@@ -438,7 +454,7 @@ workforce_pool_subject_operation:
   collection: iam.locations.workforcePools.subjects.operations
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - *workforce_pool_subject
   - &workforce_pool_subject_operation
     parameter_name: operationsId
@@ -457,7 +473,7 @@ workforce_pool_provider_scim_tenant:
   - *workforce_pool_provider
   - &scim_tenant_id_attr
     parameter_name: scimTenantsId
-    attribute_name: scim_tenant
+    attribute_name: scim-tenant
     help: |
       The ID for the SCIM tenant, which becomes the final component of the resource name.
       This value must be 4-32 characters, alphanumeric ([a-z0-9-]), and cannot start with gcp-.
@@ -469,7 +485,7 @@ workforce_pool_provider_scim_token:
   request_id_field: workforcePoolProviderScimTokenId
   attributes:
   - *wf_location
-  - *workforce_pool
+  - *positional_workforce_pool
   - *workforce_pool_provider
   - *scim_tenant_id_attr
   - &scim_token_id_attr

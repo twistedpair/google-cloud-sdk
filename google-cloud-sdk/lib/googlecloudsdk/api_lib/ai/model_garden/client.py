@@ -37,6 +37,48 @@ def IsHuggingFaceModel(model_name: str) -> bool:
   return bool(re.match(r'^[^/]+/[^/@]+$', model_name))
 
 
+def IsCustomWeightsModel(model: str) -> bool:
+  """Returns whether the model is a custom weights model."""
+  return bool(re.match(r'^gs://', model))
+
+
+def DeployCustomWeightsModel(
+    messages,
+    projects_locations_service,
+    model,
+    machine_type,
+    accelerator_type,
+    accelerator_count,
+    project,
+    location,
+):
+  """Deploys a custom weights model."""
+  deploy_request = messages.GoogleCloudAiplatformV1beta1DeployRequest()
+  deploy_request.customModel = (
+      messages.GoogleCloudAiplatformV1beta1DeployRequestCustomModel(
+          gcsUri=model
+      )
+  )
+
+  if machine_type:
+    deploy_request.deployConfig = messages.GoogleCloudAiplatformV1beta1DeployRequestDeployConfig(
+        dedicatedResources=messages.GoogleCloudAiplatformV1beta1DedicatedResources(
+            machineSpec=messages.GoogleCloudAiplatformV1beta1MachineSpec(
+                machineType=machine_type,
+                acceleratorType=accelerator_type,
+                acceleratorCount=accelerator_count,
+            ),
+            minReplicaCount=1,
+        ),
+    )
+
+  request = messages.AiplatformProjectsLocationsDeployRequest(
+      destination=f'projects/{project}/locations/{location}',
+      googleCloudAiplatformV1beta1DeployRequest=deploy_request,
+  )
+  return projects_locations_service.Deploy(request)
+
+
 class ModelGardenClient(object):
   """Client used for interacting with Model Garden APIs."""
 
@@ -116,7 +158,7 @@ class ModelGardenClient(object):
     Args:
       project: The project to deploy the model to.
       location: The location to deploy the model to.
-      model: The name of the model to deploy.
+      model: The name of the model to deploy or its gcs uri for custom weights.
       accept_eula: Whether to accept the end-user license agreement.
       accelerator_type: The type of accelerator to use.
       accelerator_count: The number of accelerators to use.
@@ -376,7 +418,18 @@ class ModelGardenClient(object):
             )
         )
 
-    if IsHuggingFaceModel(model):
+    if IsCustomWeightsModel(model):
+      return DeployCustomWeightsModel(
+          self._messages,
+          self._projects_locations_service,
+          model,
+          machine_type,
+          accelerator_type,
+          accelerator_count,
+          project,
+          location,
+      )
+    elif IsHuggingFaceModel(model):
       deploy_request = self._messages.GoogleCloudAiplatformV1beta1DeployRequest(
           huggingFaceModelId=model
       )

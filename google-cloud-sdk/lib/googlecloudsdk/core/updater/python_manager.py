@@ -16,6 +16,7 @@
 """Python installers for gcloud."""
 
 import os
+import sys
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
@@ -36,18 +37,50 @@ MACOS_PYTHON_URL = (
 )
 
 
-def EnableVirtualEnv(python_to_use):
-  """Enables virtual environment."""
+def _VirtualEnvPath():
+  env_dir = config.Paths().virtualenv_dir
+  if os.path.isdir(env_dir):
+    return env_dir
+  else:
+    return None
+
+
+def _CreateVirtualEnv(cli, python_to_use):
+  cli.Execute(['config', 'virtualenv', 'create', '--python-to-use',
+               python_to_use])
+
+
+def _RecreateVirtualEnv(cli, python_to_use, existing_env_dir):
+  print(f'Virtual env already exists at {existing_env_dir}. '
+        'Deleting so we can create new one.')
+  cli.Execute(['config', 'virtualenv', 'delete'])
+  _CreateVirtualEnv(cli, python_to_use)
+
+
+def _UpdateVirtualEnv(cli):
+  cli.Execute(['config', 'virtualenv', 'update'])
+
+
+def _EnableVirtualEnv(cli):
+  cli.Execute(['config', 'virtualenv', 'enable'])
+
+
+def UpdatePythonDependencies(python_to_use):
+  """Enables virtual environment with new python version and dependencies."""
   try:
     from googlecloudsdk import gcloud_main  # pylint: disable=g-import-not-at-top
     cli = gcloud_main.CreateCLI([])
-    if os.path.isdir(config.Paths().virtualenv_dir):
-      cli.Execute(['config', 'virtualenv', 'update'])
-      cli.Execute(['config', 'virtualenv', 'enable'])
+
+    # Assume we are executing in a virtual environment if env_dir exists
+    env_dir = _VirtualEnvPath()
+    if env_dir and sys.version_info[:2] != PYTHON_VERSION_INFO:
+      _RecreateVirtualEnv(cli, python_to_use, env_dir)
+    elif env_dir:
+      _UpdateVirtualEnv(cli)
     else:
-      cli.Execute(['config', 'virtualenv', 'create', '--python-to-use',
-                   python_to_use])
-      cli.Execute(['config', 'virtualenv', 'enable'])
+      _CreateVirtualEnv(cli, python_to_use)
+
+    _EnableVirtualEnv(cli)
   except ImportError:
     print('Failed to enable virtual environment')
 
@@ -150,7 +183,7 @@ def PromptAndInstallPythonOnMac():
   if not install_errors:
     os.environ['CLOUDSDK_PYTHON'] = python_to_use
     print('Setting up virtual environment')
-    EnableVirtualEnv(python_to_use)
+    UpdatePythonDependencies(python_to_use)
   else:
     print(f'Failed to install Python. Error: {install_errors}')
 

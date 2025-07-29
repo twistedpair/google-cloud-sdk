@@ -2700,8 +2700,8 @@ class InstanceSplit(_messages.Message):
 
   Fields:
     latestRevision: Uses the "status.latestReadyRevisionName" to determine the
-      traffic target. When it changes, traffic will automatically migrate from
-      the prior "latest ready" revision to the new one.
+      instance split target. When it changes, workloads will automatically
+      migrate from the prior "latest ready" revision to the new one.
     percent: Specifies percent of the instance split to this Revision. This
       defaults to zero if unspecified.
     revisionName: Revision to which to assign this portion of instances.
@@ -5886,7 +5886,7 @@ class WorkerPoolStatus(_messages.Message):
       reconciliation processes that bring the `spec` inline with the observed
       state of the world. * `Ready`: `True` when all underlying resources are
       ready.
-    instanceSplits: Holds the configured traffic distribution. These entries
+    instanceSplits: Holds the configured workload distribution. These entries
       will always contain RevisionName references. When ConfigurationName
       appears in the spec, this will hold the LatestReadyRevisionName that we
       last observed.

@@ -1228,21 +1228,6 @@ class DataflowProjectsJobsDebugGetConfigRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
-class DataflowProjectsJobsDebugGetWorkerStacktracesRequest(_messages.Message):
-  r"""A DataflowProjectsJobsDebugGetWorkerStacktracesRequest object.
-
-  Fields:
-    getWorkerStacktracesRequest: A GetWorkerStacktracesRequest resource to be
-      passed as the request body.
-    jobId: The job for which to get stacktraces.
-    projectId: The project id.
-  """
-
-  getWorkerStacktracesRequest = _messages.MessageField('GetWorkerStacktracesRequest', 1)
-  jobId = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
-
-
 class DataflowProjectsJobsDebugSendCaptureRequest(_messages.Message):
   r"""A DataflowProjectsJobsDebugSendCaptureRequest object.
 
@@ -1782,6 +1767,25 @@ class DataflowProjectsLocationsJobsDebugGetConfigRequest(_messages.Message):
   """
 
   getDebugConfigRequest = _messages.MessageField('GetDebugConfigRequest', 1)
+  jobId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+
+
+class DataflowProjectsLocationsJobsDebugGetWorkerStacktracesRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsJobsDebugGetWorkerStacktracesRequest object.
+
+  Fields:
+    getWorkerStacktracesRequest: A GetWorkerStacktracesRequest resource to be
+      passed as the request body.
+    jobId: The job for which to get stacktraces.
+    location: The [regional endpoint]
+      (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
+      that contains the job specified by job_id.
+    projectId: The project id.
+  """
+
+  getWorkerStacktracesRequest = _messages.MessageField('GetWorkerStacktracesRequest', 1)
   jobId = _messages.StringField(2, required=True)
   location = _messages.StringField(3, required=True)
   projectId = _messages.StringField(4, required=True)

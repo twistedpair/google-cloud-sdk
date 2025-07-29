@@ -1704,22 +1704,11 @@ class BatchWriteRequest(proto.Message):
             Required. The groups of mutations to be
             applied.
         exclude_txn_from_change_streams (bool):
-            Optional. When ``exclude_txn_from_change_streams`` is set to
-            ``true``:
-
-            -  Modifications from all transactions in this batch write
-               operation are not be recorded in change streams with DDL
-               option ``allow_txn_exclusion=true`` that are tracking
-               columns modified by these transactions.
-            -  Modifications from all transactions in this batch write
-               operation are recorded in change streams with DDL option
-               ``allow_txn_exclusion=false or not set`` that are
-               tracking columns modified by these transactions.
-
-            When ``exclude_txn_from_change_streams`` is set to ``false``
-            or not set, Modifications from all transactions in this
-            batch write operation are recorded in all change streams
-            that are tracking columns modified by these transactions.
+            Optional. If you don't set the
+            ``exclude_txn_from_change_streams`` option or if it's set to
+            ``false``, then any change streams monitoring columns
+            modified by transactions will capture the updates made
+            within that transaction.
     """
 
     class MutationGroup(proto.Message):

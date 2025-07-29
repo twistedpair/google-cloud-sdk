@@ -415,6 +415,8 @@ class BackupVault(_messages.Message):
     destinationBackupVault: Output only. Name of the Backup vault created in
       backup region. Format: `projects/{project_id}/locations/{location}/backu
       pVaults/{backup_vault_id}`
+    kmsConfig: Optional. Specifies the KMS config to be used for backup
+      encryption.
     labels: Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup vault. Format: `projects
       /{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
@@ -486,11 +488,12 @@ class BackupVault(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   destinationBackupVault = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  sourceBackupVault = _messages.StringField(9)
-  sourceRegion = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  kmsConfig = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  sourceBackupVault = _messages.StringField(10)
+  sourceRegion = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class BlockProperties(_messages.Message):
@@ -503,6 +506,7 @@ class BlockProperties(_messages.Message):
     hostGroups: Optional. A list of host groups that can be used to mount the
       block volume. Format:
       `projects/{project_id}/locations/{location}/hostGroups/{host_group_id}`
+    lunSerialNumber: Output only. Lun serial number of the Block volume.
     osType: Required. The OS type of the volume.
   """
 
@@ -521,7 +525,8 @@ class BlockProperties(_messages.Message):
     ESXI = 3
 
   hostGroups = _messages.StringField(1, repeated=True)
-  osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
+  lunSerialNumber = _messages.StringField(2)
+  osType = _messages.EnumField('OsTypeValueValuesEnum', 3)
 
 
 class CacheConfig(_messages.Message):
@@ -560,8 +565,6 @@ class CacheParameters(_messages.Message):
       status.
     command: Output only. Copy-paste-able commands to be used on user's ONTAP
       to accept peering requests.
-    commandExpiryTime: Output only. Expiration time for the peering command to
-      be executed on user's ONTAP.
     enableGlobalFileLock: Optional. Field indicating whether cache volume as
       global file lock enabled.
     passphrase: Output only. Temporary passphrase generated to accept cluster
@@ -571,6 +574,10 @@ class CacheParameters(_messages.Message):
       ONTAP cluster.
     peerSvmName: Required. Name of the origin volume's SVM.
     peerVolumeName: Required. Name of the origin volume for the cache volume.
+    peeringCommandExpiryTime: Optional. Expiration time for the peering
+      command to be executed on user's ONTAP.
+    stateDetails: Output only. Detailed description of the current cache
+      state.
   """
 
   class CacheStateValueValuesEnum(_messages.Enum):
@@ -596,13 +603,14 @@ class CacheParameters(_messages.Message):
   cacheConfig = _messages.MessageField('CacheConfig', 1)
   cacheState = _messages.EnumField('CacheStateValueValuesEnum', 2)
   command = _messages.StringField(3)
-  commandExpiryTime = _messages.StringField(4)
-  enableGlobalFileLock = _messages.BooleanField(5)
-  passphrase = _messages.StringField(6)
-  peerClusterName = _messages.StringField(7)
-  peerIpAddresses = _messages.StringField(8, repeated=True)
-  peerSvmName = _messages.StringField(9)
-  peerVolumeName = _messages.StringField(10)
+  enableGlobalFileLock = _messages.BooleanField(4)
+  passphrase = _messages.StringField(5)
+  peerClusterName = _messages.StringField(6)
+  peerIpAddresses = _messages.StringField(7, repeated=True)
+  peerSvmName = _messages.StringField(8)
+  peerVolumeName = _messages.StringField(9)
+  peeringCommandExpiryTime = _messages.StringField(10)
+  stateDetails = _messages.StringField(11)
 
 
 class CachePrePopulate(_messages.Message):
@@ -2895,8 +2903,8 @@ class Replication(_messages.Message):
       TRANSFERRING: Incremental replication is in progress.
       BASELINE_TRANSFERRING: Baseline replication is in progress.
       ABORTED: Replication is aborted.
-      EXTERNALLY_MANAGED: Mirror state for when replication is managed from
-        Onprem ONTAP.
+      EXTERNALLY_MANAGED: Replication is being managed from Onprem ONTAP.
+      PENDING_PEERING: Peering is yet to be established.
     """
     MIRROR_STATE_UNSPECIFIED = 0
     PREPARING = 1
@@ -2906,6 +2914,7 @@ class Replication(_messages.Message):
     BASELINE_TRANSFERRING = 5
     ABORTED = 6
     EXTERNALLY_MANAGED = 7
+    PENDING_PEERING = 8
 
   class ReplicationScheduleValueValuesEnum(_messages.Enum):
     r"""Required. Indicates the schedule for replication.
@@ -3372,6 +3381,8 @@ class StoragePool(_messages.Message):
     availableThroughputMibps: Output only. Available throughput of the storage
       pool (in MiB/s).
     capacityGib: Required. Capacity in GIB of the pool
+    coldTierSizeUsedGib: Output only. Total cold tier data in GiB used by the
+      storage pool.
     createTime: Output only. Create time of the storage pool
     customPerformanceEnabled: Optional. True if using Independent Scaling of
       capacity and performance (Hyperdisk) By default set to false
@@ -3388,6 +3399,8 @@ class StoragePool(_messages.Message):
       is applicable only to Flex service level. It should be less than the
       minimum storage pool size and cannot be more than the current storage
       pool size. It cannot be decreased once set.
+    hotTierSizeUsedGib: Output only. Total hot tier data in GiB used by the
+      storage pool.
     kmsConfig: Optional. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
@@ -3508,32 +3521,34 @@ class StoragePool(_messages.Message):
   allowAutoTiering = _messages.BooleanField(2)
   availableThroughputMibps = _messages.FloatField(3)
   capacityGib = _messages.IntegerField(4)
-  createTime = _messages.StringField(5)
-  customPerformanceEnabled = _messages.BooleanField(6)
-  description = _messages.StringField(7)
-  enableHotTierAutoResize = _messages.BooleanField(8)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 9)
-  globalAccessAllowed = _messages.BooleanField(10)
-  hotTierSizeGib = _messages.IntegerField(11)
-  kmsConfig = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  ldapEnabled = _messages.BooleanField(14)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  psaRange = _messages.StringField(17)
-  qosType = _messages.EnumField('QosTypeValueValuesEnum', 18)
-  replicaZone = _messages.StringField(19)
-  satisfiesPzi = _messages.BooleanField(20)
-  satisfiesPzs = _messages.BooleanField(21)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  stateDetails = _messages.StringField(24)
-  totalIops = _messages.IntegerField(25)
-  totalThroughputMibps = _messages.IntegerField(26)
-  unifiedPool = _messages.BooleanField(27)
-  volumeCapacityGib = _messages.IntegerField(28)
-  volumeCount = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(30)
+  coldTierSizeUsedGib = _messages.IntegerField(5)
+  createTime = _messages.StringField(6)
+  customPerformanceEnabled = _messages.BooleanField(7)
+  description = _messages.StringField(8)
+  enableHotTierAutoResize = _messages.BooleanField(9)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 10)
+  globalAccessAllowed = _messages.BooleanField(11)
+  hotTierSizeGib = _messages.IntegerField(12)
+  hotTierSizeUsedGib = _messages.IntegerField(13)
+  kmsConfig = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  ldapEnabled = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  psaRange = _messages.StringField(19)
+  qosType = _messages.EnumField('QosTypeValueValuesEnum', 20)
+  replicaZone = _messages.StringField(21)
+  satisfiesPzi = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  stateDetails = _messages.StringField(26)
+  totalIops = _messages.IntegerField(27)
+  totalThroughputMibps = _messages.IntegerField(28)
+  unifiedPool = _messages.BooleanField(29)
+  volumeCapacityGib = _messages.IntegerField(30)
+  volumeCount = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(32)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):
@@ -3703,6 +3718,8 @@ class Volume(_messages.Message):
     exportPolicy: Optional. Export policy of the volume
     hasReplication: Output only. Indicates whether the volume is part of a
       replication relationship.
+    hotTierSizeUsedGib: Output only. Total hot tier data in GiB used by the
+      Volume. This field is only used for flex Service Level
     hybridReplicationParameters: Optional. The Hybrid Replication parameters
       for the volume.
     kerberosEnabled: Optional. Flag indicating if the volume is a kerberos
@@ -3911,36 +3928,37 @@ class Volume(_messages.Message):
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 9)
   exportPolicy = _messages.MessageField('ExportPolicy', 10)
   hasReplication = _messages.BooleanField(11)
-  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 12)
-  kerberosEnabled = _messages.BooleanField(13)
-  kmsConfig = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  largeCapacity = _messages.BooleanField(16)
-  ldapEnabled = _messages.BooleanField(17)
-  mountOptions = _messages.MessageField('MountOption', 18, repeated=True)
-  multipleEndpoints = _messages.BooleanField(19)
-  name = _messages.StringField(20)
-  network = _messages.StringField(21)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 22, repeated=True)
-  psaRange = _messages.StringField(23)
-  replicaZone = _messages.StringField(24)
-  restoreParameters = _messages.MessageField('RestoreParameters', 25)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 26, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 27)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 28)
-  shareName = _messages.StringField(29)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 30, repeated=True)
-  snapReserve = _messages.FloatField(31)
-  snapshotDirectory = _messages.BooleanField(32)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 33)
-  state = _messages.EnumField('StateValueValuesEnum', 34)
-  stateDetails = _messages.StringField(35)
-  storagePool = _messages.StringField(36)
-  throughputMibps = _messages.FloatField(37)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 38)
-  unixPermissions = _messages.StringField(39)
-  usedGib = _messages.IntegerField(40)
-  zone = _messages.StringField(41)
+  hotTierSizeUsedGib = _messages.IntegerField(12)
+  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 13)
+  kerberosEnabled = _messages.BooleanField(14)
+  kmsConfig = _messages.StringField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  largeCapacity = _messages.BooleanField(17)
+  ldapEnabled = _messages.BooleanField(18)
+  mountOptions = _messages.MessageField('MountOption', 19, repeated=True)
+  multipleEndpoints = _messages.BooleanField(20)
+  name = _messages.StringField(21)
+  network = _messages.StringField(22)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 23, repeated=True)
+  psaRange = _messages.StringField(24)
+  replicaZone = _messages.StringField(25)
+  restoreParameters = _messages.MessageField('RestoreParameters', 26)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 27, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 28)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 29)
+  shareName = _messages.StringField(30)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 31, repeated=True)
+  snapReserve = _messages.FloatField(32)
+  snapshotDirectory = _messages.BooleanField(33)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 34)
+  state = _messages.EnumField('StateValueValuesEnum', 35)
+  stateDetails = _messages.StringField(36)
+  storagePool = _messages.StringField(37)
+  throughputMibps = _messages.FloatField(38)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 39)
+  unixPermissions = _messages.StringField(40)
+  usedGib = _messages.IntegerField(41)
+  zone = _messages.StringField(42)
 
 
 class WeeklySchedule(_messages.Message):

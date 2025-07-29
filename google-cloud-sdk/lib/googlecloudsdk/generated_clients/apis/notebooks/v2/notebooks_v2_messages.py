@@ -230,6 +230,68 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CheckAuthorizationRequest(_messages.Message):
+  r"""Request message for checking authorization for the instance owner.
+
+  Messages:
+    AuthorizationDetailsValue: Optional. The details of the OAuth
+      authorization response. This may include additional params such as
+      dry_run, version_info, origin, propagate, etc.
+
+  Fields:
+    authorizationDetails: Optional. The details of the OAuth authorization
+      response. This may include additional params such as dry_run,
+      version_info, origin, propagate, etc.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AuthorizationDetailsValue(_messages.Message):
+    r"""Optional. The details of the OAuth authorization response. This may
+    include additional params such as dry_run, version_info, origin,
+    propagate, etc.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AuthorizationDetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AuthorizationDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AuthorizationDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authorizationDetails = _messages.MessageField('AuthorizationDetailsValue', 1)
+
+
+class CheckAuthorizationResponse(_messages.Message):
+  r"""Response message for checking authorization for the instance owner.
+
+  Fields:
+    createTime: Output only. Timestamp when this Authorization request was
+      created.
+    oauth_uri: If the user has not completed OAuth consent, then the oauth_url
+      is returned. Otherwise, this field is not set.
+    success: Success indicates that the user completed OAuth consent and
+      access tokens can be generated.
+  """
+
+  createTime = _messages.StringField(1)
+  oauth_uri = _messages.StringField(2)
+  success = _messages.BooleanField(3)
+
+
 class CheckInstanceUpgradabilityResponse(_messages.Message):
   r"""Response for checking if a notebook instance is upgradeable.
 
@@ -650,6 +712,39 @@ class GceSetup(_messages.Message):
   vmImage = _messages.MessageField('VmImage', 17)
 
 
+class GenerateAccessTokenRequest(_messages.Message):
+  r"""Request message for generating an EUC for the instance owner.
+
+  Fields:
+    vmToken: Required. The VM identity token (a JWT) for authenticating the
+      VM. https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity
+  """
+
+  vmToken = _messages.StringField(1)
+
+
+class GenerateAccessTokenResponse(_messages.Message):
+  r"""Response message for generating an EUC for the instance owner.
+
+  Fields:
+    access_token: Short-lived access token string which may be used to access
+      Google APIs.
+    expires_in: The time in seconds when the access token expires. Typically
+      that's 3600.
+    scope: Space-separated list of scopes contained in the returned token.
+      https://cloud.google.com/docs/authentication/token-types#access-contents
+    token_type: Type of the returned access token (e.g. "Bearer"). It
+      specifies how the token must be used. Bearer tokens may be used by any
+      entity without proof of identity.
+  """
+
+  access_token = _messages.StringField(1)
+  expires_in = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(3)
+  token_type = _messages.StringField(4)
+
+
 class ImageRelease(_messages.Message):
   r"""ConfigImage represents an image release available to create a WbI
 
@@ -1014,6 +1109,20 @@ class NotebooksProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NotebooksProjectsLocationsInstancesCheckAuthorizationRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesCheckAuthorizationRequest object.
+
+  Fields:
+    checkAuthorizationRequest: A CheckAuthorizationRequest resource to be
+      passed as the request body.
+    name: Required. The name of the Notebook Instance resource. Format:
+      `projects/{project}/locations/{location}/instances/{instance}`
+  """
+
+  checkAuthorizationRequest = _messages.MessageField('CheckAuthorizationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NotebooksProjectsLocationsInstancesCheckUpgradabilityRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesCheckUpgradabilityRequest object.
 
@@ -1066,6 +1175,20 @@ class NotebooksProjectsLocationsInstancesDiagnoseRequest(_messages.Message):
   """
 
   diagnoseInstanceRequest = _messages.MessageField('DiagnoseInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class NotebooksProjectsLocationsInstancesGenerateAccessTokenRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesGenerateAccessTokenRequest object.
+
+  Fields:
+    generateAccessTokenRequest: A GenerateAccessTokenRequest resource to be
+      passed as the request body.
+    name: Required. Format:
+      `projects/{project}/locations/{location}/instances/{instance_id}`
+  """
+
+  generateAccessTokenRequest = _messages.MessageField('GenerateAccessTokenRequest', 1)
   name = _messages.StringField(2, required=True)
 
 

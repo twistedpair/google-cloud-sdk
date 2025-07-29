@@ -1226,14 +1226,6 @@ class GoogleCloudRunV2Job(_messages.Message):
       `cloud.googleapis.com`, `serving.knative.dev`, or
       `autoscaling.knative.dev` namespaces, and they will be rejected. All
       system labels in v1 now have a corresponding field in v2 Job.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
-      to this job. For example the following are valid inputs: *
-      {"tagKeys/333" : "tagValues/444", "tagKeys/123" : "tagValues/456"} *
-      {"123/environment" : "production", "345/abc" : "xyz"} Note: * Invalid
-      combinations of ID & namespaced format is not supported. For instance:
-      {"123/environment" : "tagValues/444"} is invalid. * Inconsistent format
-      is not supported. For instance: {"tagKeys/333" : "tagValues/444",
-      "123/env" : "prod"} is invalid.
 
   Fields:
     annotations: Unstructured key value map that may be set by external tools
@@ -1255,7 +1247,7 @@ class GoogleCloudRunV2Job(_messages.Message):
     creator: Output only. Email address of the authenticated creator.
     deleteTime: Output only. The deletion time. It is only populated as a
       response to a Delete request.
-    etag: Output only. A system-generated fingerprint for this version of the
+    etag: Optional. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     executionCount: Output only. Number of executions created for this job.
     expireTime: Output only. For a deleted resource, the time after which it
@@ -1315,14 +1307,6 @@ class GoogleCloudRunV2Job(_messages.Message):
       execution. The Job will become ready when the execution is successfully
       started. The sum of job name and token length must be fewer than 63
       characters.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
-      this job. For example the following are valid inputs: * {"tagKeys/333" :
-      "tagValues/444", "tagKeys/123" : "tagValues/456"} * {"123/environment" :
-      "production", "345/abc" : "xyz"} Note: * Invalid combinations of ID &
-      namespaced format is not supported. For instance: {"123/environment" :
-      "tagValues/444"} is invalid. * Inconsistent format is not supported. For
-      instance: {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
-      invalid.
     template: Required. The template used to create executions for this Job.
     terminalCondition: Output only. The Condition of this Job, containing its
       readiness status, and detailed error information in case it did not
@@ -1449,37 +1433,6 @@ class GoogleCloudRunV2Job(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this job. For example the following are valid inputs: * {"tagKeys/333" :
-    "tagValues/444", "tagKeys/123" : "tagValues/456"} * {"123/environment" :
-    "production", "345/abc" : "xyz"} Note: * Invalid combinations of ID &
-    namespaced format is not supported. For instance: {"123/environment" :
-    "tagValues/444"} is invalid. * Inconsistent format is not supported. For
-    instance: {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
-    invalid.
-
-    Messages:
-      AdditionalProperty: An additional property for a TagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotations = _messages.MessageField('AnnotationsValue', 1)
   binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
   client = _messages.StringField(3)
@@ -1502,11 +1455,10 @@ class GoogleCloudRunV2Job(_messages.Message):
   runExecutionToken = _messages.StringField(20)
   satisfiesPzs = _messages.BooleanField(21)
   startExecutionToken = _messages.StringField(22)
-  tags = _messages.MessageField('TagsValue', 23)
-  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 24)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
+  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 23)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class GoogleCloudRunV2ListExecutionsResponse(_messages.Message):
@@ -2390,14 +2342,6 @@ class GoogleCloudRunV2Service(_messages.Message):
       `cloud.googleapis.com`, `serving.knative.dev`, or
       `autoscaling.knative.dev` namespaces, and they will be rejected. All
       system labels in v1 now have a corresponding field in v2 Service.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
-      to this service. For example the following are valid inputs: *
-      {"tagKeys/333" : "tagValues/444", "tagKeys/123" : "tagValues/456"} *
-      {"123/environment" : "production", "345/abc" : "xyz"} Note: * Invalid
-      combinations of ID & namespaced format is not supported. For instance:
-      {"123/environment" : "tagValues/444"} is invalid. * Inconsistent format
-      is not supported. For instance: {"tagKeys/333" : "tagValues/444",
-      "123/env" : "prod"} is invalid.
 
   Fields:
     annotations: Optional. Unstructured key value map that may be set by
@@ -2431,7 +2375,7 @@ class GoogleCloudRunV2Service(_messages.Message):
       response to a Delete request.
     description: User-provided description of the Service. This field
       currently has a 512-character limit.
-    etag: Output only. A system-generated fingerprint for this version of the
+    etag: Optional. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     expireTime: Output only. For a deleted resource, the time after which it
       will be permanently deleted.
@@ -2505,14 +2449,6 @@ class GoogleCloudRunV2Service(_messages.Message):
       `terminal_condition` and `conditions`.
     satisfiesPzs: Output only. Reserved for future use.
     scaling: Optional. Specifies service-level scaling settings
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
-      this service. For example the following are valid inputs: *
-      {"tagKeys/333" : "tagValues/444", "tagKeys/123" : "tagValues/456"} *
-      {"123/environment" : "production", "345/abc" : "xyz"} Note: * Invalid
-      combinations of ID & namespaced format is not supported. For instance:
-      {"123/environment" : "tagValues/444"} is invalid. * Inconsistent format
-      is not supported. For instance: {"tagKeys/333" : "tagValues/444",
-      "123/env" : "prod"} is invalid.
     template: Required. The template used to create revisions for this
       Service.
     terminalCondition: Output only. The Condition of this Service, containing
@@ -2670,37 +2606,6 @@ class GoogleCloudRunV2Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this service. For example the following are valid inputs: * {"tagKeys/333"
-    : "tagValues/444", "tagKeys/123" : "tagValues/456"} * {"123/environment" :
-    "production", "345/abc" : "xyz"} Note: * Invalid combinations of ID &
-    namespaced format is not supported. For instance: {"123/environment" :
-    "tagValues/444"} is invalid. * Inconsistent format is not supported. For
-    instance: {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
-    invalid.
-
-    Messages:
-      AdditionalProperty: An additional property for a TagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotations = _messages.MessageField('AnnotationsValue', 1)
   binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
   buildConfig = _messages.MessageField('GoogleCloudRunV2BuildConfig', 3)
@@ -2730,16 +2635,15 @@ class GoogleCloudRunV2Service(_messages.Message):
   reconciling = _messages.BooleanField(27)
   satisfiesPzs = _messages.BooleanField(28)
   scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 29)
-  tags = _messages.MessageField('TagsValue', 30)
-  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 31)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 32)
-  threatDetectionEnabled = _messages.BooleanField(33)
-  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 34, repeated=True)
-  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 35, repeated=True)
-  uid = _messages.StringField(36)
-  updateTime = _messages.StringField(37)
-  uri = _messages.StringField(38)
-  urls = _messages.StringField(39, repeated=True)
+  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 30)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 31)
+  threatDetectionEnabled = _messages.BooleanField(32)
+  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 33, repeated=True)
+  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 34, repeated=True)
+  uid = _messages.StringField(35)
+  updateTime = _messages.StringField(36)
+  uri = _messages.StringField(37)
+  urls = _messages.StringField(38, repeated=True)
 
 
 class GoogleCloudRunV2ServiceMesh(_messages.Message):
@@ -3408,7 +3312,7 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
       response to a Delete request.
     description: User-provided description of the WorkerPool. This field
       currently has a 512-character limit.
-    etag: Output only. A system-generated fingerprint for this version of the
+    etag: Optional. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     expireTime: Output only. For a deleted resource, the time after which it
       will be permamently deleted.
@@ -3440,7 +3344,7 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
       comments in `reconciling` for additional information on reconciliation
       process in Cloud Run.
     latestReadyRevision: Output only. Name of the latest revision that is
-      serving traffic. See comments in `reconciling` for additional
+      serving workloads. See comments in `reconciling` for additional
       information on reconciliation process in Cloud Run.
     launchStage: Optional. The launch stage as defined by [Google Cloud
       Platform Launch Stages](https://cloud.google.com/terms/launch-stages).
@@ -3456,29 +3360,29 @@ class GoogleCloudRunV2WorkerPool(_messages.Message):
       CreateWorkerPoolRequest.worker_id. Format:
       `projects/{project}/locations/{location}/workerPools/{worker_id}`
     observedGeneration: Output only. The generation of this WorkerPool
-      currently serving traffic. See comments in `reconciling` for additional
-      information on reconciliation process in Cloud Run. Please note that
-      unlike v1, this is an int64 value. As with most Google APIs, its JSON
-      representation will be a `string` instead of an `integer`.
+      currently serving workloads. See comments in `reconciling` for
+      additional information on reconciliation process in Cloud Run. Please
+      note that unlike v1, this is an int64 value. As with most Google APIs,
+      its JSON representation will be a `string` instead of an `integer`.
     reconciling: Output only. Returns true if the WorkerPool is currently
       being acted upon by the system to bring it into the desired state. When
       a new WorkerPool is created, or an existing one is updated, Cloud Run
       will asynchronously perform all necessary steps to bring the WorkerPool
       to the desired serving state. This process is called reconciliation.
       While reconciliation is in process, `observed_generation`,
-      `latest_ready_revison`, `traffic_statuses`, and `uri` will have
+      `latest_ready_revison`, `instance_split_statuses`, and `uri` will have
       transient values that might mismatch the intended state: Once
       reconciliation is over (and this field is false), there are two possible
       outcomes: reconciliation succeeded and the serving state matches the
       WorkerPool, or there was an error, and reconciliation failed. This state
       can be found in `terminal_condition.state`. If reconciliation succeeded,
-      the following fields will match: `traffic` and `traffic_statuses`,
-      `observed_generation` and `generation`, `latest_ready_revision` and
-      `latest_created_revision`. If reconciliation failed, `traffic_statuses`,
-      `observed_generation`, and `latest_ready_revision` will have the state
-      of the last serving revision, or empty for newly created WorkerPools.
-      Additional information on the failure can be found in
-      `terminal_condition` and `conditions`.
+      the following fields will match: `instance_splits` and
+      `instance_split_statuses`, `observed_generation` and `generation`,
+      `latest_ready_revision` and `latest_created_revision`. If reconciliation
+      failed, `instance_split_statuses`, `observed_generation`, and
+      `latest_ready_revision` will have the state of the last serving
+      revision, or empty for newly created WorkerPools. Additional information
+      on the failure can be found in `terminal_condition` and `conditions`.
     satisfiesPzs: Output only. Reserved for future use.
     scaling: Optional. Specifies worker-pool-level scaling settings
     template: Required. The template used to create revisions for this

@@ -167,6 +167,11 @@ def CreateReleaseConfig(
     images,
     build_artifacts,
     description,
+    docker_version,
+    helm_version,
+    kpt_version,
+    kubectl_version,
+    kustomize_version,
     skaffold_version,
     skaffold_file,
     deploy_config_file,
@@ -194,7 +199,6 @@ def CreateReleaseConfig(
       source,
       gcs_source_staging_dir,
       ignore_file,
-      skaffold_version,
       location,
       pipeline_uuid,
       from_k8s_manifest,
@@ -203,6 +207,16 @@ def CreateReleaseConfig(
       deploy_config_file,
       pipeline_obj,
       hide_logs,
+  )
+  release_config = _SetVersion(
+      release_config,
+      messages,
+      docker_version,
+      helm_version,
+      kpt_version,
+      kubectl_version,
+      kustomize_version,
+      skaffold_version,
   )
   release_config = _SetImages(messages, release_config, images, build_artifacts)
   release_config = _SetDeployParameters(
@@ -258,12 +272,92 @@ def _CreateAndUploadTarball(
   )
 
 
+def _SetVersion(
+    release_config,
+    messages,
+    docker_version,
+    helm_version,
+    kpt_version,
+    kubectl_version,
+    kustomize_version,
+    skaffold_version,
+):
+  """Set the version for the release config.
+
+  Sets the ToolVersions for the release config or the SkaffoldVersion for the
+  release config.
+
+  The ToolVersions are always used if any of the tool version fields are set:
+    docker_version
+    helm_version
+    kpt_version
+    kubectl_version
+    kustomize_version
+  The ToolVersion of skaffold_version is only used if and only if the specified
+  version is a full semver or 'latest'.
+
+  The SkaffoldVersion on the release config is set if and only if
+  skaffold_version is the only version specified and it does not match the
+  full semver or 'latest'. This is purposefully done to allow uses to continue
+  referencing existing supported Cloud Deploy images: e.g. 2.14/2.16.
+
+  Args:
+    release_config: a Release message
+    messages: Module containing the Cloud Deploy messages.
+    docker_version: the docker version to use, can be None.
+    helm_version: the helm version to use, can be None.
+    kpt_version: the kpt version to use, can be None.
+    kubectl_version: the kubectl version to use, can be None.
+    kustomize_version: the kustomize version to use, can be None.
+    skaffold_version: the skaffold version to use, can be None.
+
+  Returns:
+    Modified release_config
+  """
+  # None and empty strings are handled in this manner.
+  should_default = (
+      not docker_version
+      and not helm_version
+      and not kpt_version
+      and not kubectl_version
+      and not kustomize_version
+      and not skaffold_version
+  )
+  if should_default:
+    return release_config
+  # Skaffold is a different case because we want to allow users that specify
+  # 2.14/2.16 to continue being able to do so until the image is expired.
+  should_skaffold_use_tool_version = skaffold_version == 'latest' or (
+      skaffold_version and skaffold_version.count('.') == 2
+  )
+  use_tool_version = (
+      docker_version
+      or helm_version
+      or kpt_version
+      or kubectl_version
+      or kustomize_version
+      or should_skaffold_use_tool_version
+  )
+  if not use_tool_version:
+    release_config.skaffoldVersion = skaffold_version
+    return release_config
+  tool_versions = messages.ToolVersions(
+      docker=docker_version,
+      helm=helm_version,
+      kpt=kpt_version,
+      kubectl=kubectl_version,
+      kustomize=kustomize_version,
+      skaffold=skaffold_version,
+  )
+  release_config.toolVersions = tool_versions
+  return release_config
+
+
 def _SetSource(
     release_config,
     source,
     gcs_source_staging_dir,
     ignore_file,
-    skaffold_version,
     location,
     pipeline_uuid,
     kubernetes_manifest,
@@ -283,7 +377,6 @@ def _SetSource(
     source: the location of the source files
     gcs_source_staging_dir: directory in google cloud storage to use for staging
     ignore_file: the ignore file to use
-    skaffold_version: version of Skaffold binary
     location: the cloud region for the release
     pipeline_uuid: the unique id of the release's parent pipeline.
     kubernetes_manifest: path to kubernetes manifest (e.g. /home/user/k8.yaml).
@@ -403,9 +496,6 @@ def _SetSource(
       gcs_uri = 'gs://{bucket}/{object}'.format(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name
       )
-
-  if skaffold_version:
-    release_config.skaffoldVersion = skaffold_version
 
   if deploy_config_file:
     release_config.deployConfigPath = deploy_config_file

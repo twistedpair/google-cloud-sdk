@@ -889,6 +889,8 @@ apis:
   gkerecommender:
     v1alpha1:
       discovery_doc: gkerecommender_v1alpha1.json
+    v1:
+      discovery_doc: gkerecommender_v1.json
       default: true
   gsuiteaddons:
     v1:
@@ -2193,6 +2195,7 @@ canonical_surfaces:
     hidden: true
   gkerecommender:
     name: gkerecommender
+    command: profiles
     hidden: true
   healthcare:
     name: healthcare

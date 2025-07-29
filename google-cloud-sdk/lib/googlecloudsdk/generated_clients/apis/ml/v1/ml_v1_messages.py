@@ -2127,7 +2127,7 @@ class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
       following format: " project_id.dataset_name.table_name" The specified
       table must already exist, and the "Cloud ML Service Agent" for your
       project must have permission to write to it. The table must have the
-      following [schema](/bigquery/docs/schemas): Field nameType Mode model
+      following [schema](/bigquery/docs/schemas): Field name Type Mode model
       STRING REQUIRED model_version STRING REQUIRED time TIMESTAMP REQUIRED
       raw_data STRING REQUIRED raw_prediction STRING NULLABLE groundtruth
       STRING NULLABLE

@@ -213,7 +213,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
   r"""Access Policy Rule that determines the behavior of the policy.
 
   Enums:
-    EffectValueValuesEnum: Required. The effect of the rule (deny)
+    EffectValueValuesEnum: Required. The effect of the rule.
 
   Messages:
     ActivationConditionsValue: Optional. The conditions that determine whether
@@ -234,7 +234,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
       `eventarc.googleapis.com`
     description: Optional. Customer specified description of the rule. Must be
       less than or equal to 256 characters.
-    effect: Required. The effect of the rule (deny)
+    effect: Required. The effect of the rule.
     excludedPermissions: Optional. Specifies the permissions that this rule
       excludes from the set of affected permissions given by `permissions`. If
       a permission appears in `permissions` _and_ in `excluded_permissions`
@@ -287,7 +287,7 @@ class GoogleIamV3alphaAccessPolicyRule(_messages.Message):
   """
 
   class EffectValueValuesEnum(_messages.Enum):
-    r"""Required. The effect of the rule (deny)
+    r"""Required. The effect of the rule.
 
     Values:
       EFFECT_UNSPECIFIED: The effect is unspecified.

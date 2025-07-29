@@ -4446,6 +4446,76 @@ class DialogflowProjectsLocationsSetAgentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class DialogflowProjectsLocationsSipTrunksCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSipTrunksCreateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SipTrunk: A GoogleCloudDialogflowV2SipTrunk
+      resource to be passed as the request body.
+    parent: Required. The location to create a SIP trunk for. Format:
+      `projects//locations/`.
+  """
+
+  googleCloudDialogflowV2SipTrunk = _messages.MessageField('GoogleCloudDialogflowV2SipTrunk', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsSipTrunksDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSipTrunksDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the SIP trunk to delete. Format:
+      `projects//locations//sipTrunks/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsSipTrunksGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSipTrunksGetRequest object.
+
+  Fields:
+    name: Required. The name of the SIP trunk to delete. Format:
+      `projects//locations//sipTrunks/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsSipTrunksListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSipTrunksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The location to list SIP trunks from. Format:
+      `projects//locations/`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsSipTrunksPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSipTrunksPatchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SipTrunk: A GoogleCloudDialogflowV2SipTrunk
+      resource to be passed as the request body.
+    name: Identifier. The unique identifier of the SIP trunk. Format:
+      `projects//locations//sipTrunks/`.
+    updateMask: Optional. The mask to control which fields get updated. If the
+      mask is not present, all fields will be updated.
+  """
+
+  googleCloudDialogflowV2SipTrunk = _messages.MessageField('GoogleCloudDialogflowV2SipTrunk', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DialogflowProjectsLocationsStatelessSuggestionGenerateRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsStatelessSuggestionGenerateRequest object.
 
@@ -11462,6 +11532,86 @@ class GoogleCloudDialogflowV2CompleteConversationRequest(_messages.Message):
   r"""The request message for Conversations.CompleteConversation."""
 
 
+class GoogleCloudDialogflowV2Connection(_messages.Message):
+  r"""Represents a connection for SIP Trunk.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the connection.
+
+  Fields:
+    connectionId: Output only. The unique identifier of the SIP Trunk
+      connection.
+    errorDetails: Output only. The error details for the connection. Only
+      populated when authentication errors occur.
+    state: Output only. State of the connection.
+    updateTime: Output only. When the connection status changed.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the connection.
+
+    Values:
+      STATE_UNSPECIFIED: SIP Trunk connection state is Not specified.
+      CONNECTED: SIP Trunk connection is connected.
+      DISCONNECTED: SIP Trunk connection is disconnected.
+      AUTHENTICATION_FAILED: SIP Trunk connection has authentication error.
+      KEEPALIVE: SIP Trunk connection is keepalive.
+    """
+    STATE_UNSPECIFIED = 0
+    CONNECTED = 1
+    DISCONNECTED = 2
+    AUTHENTICATION_FAILED = 3
+    KEEPALIVE = 4
+
+  connectionId = _messages.StringField(1)
+  errorDetails = _messages.MessageField('GoogleCloudDialogflowV2ConnectionErrorDetails', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2ConnectionErrorDetails(_messages.Message):
+  r"""The error details of Sip Trunk connection authentication.
+
+  Enums:
+    CertificateStateValueValuesEnum: Output only. The status of the
+      certificate authentication.
+
+  Fields:
+    certificateState: Output only. The status of the certificate
+      authentication.
+    errorMessage: The error message provided from SIP trunking auth service
+  """
+
+  class CertificateStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of the certificate authentication.
+
+    Values:
+      CERTIFICATE_STATE_UNSPECIFIED: Certificate state is not specified.
+      CERTIFICATE_VALID: Certificate is valid.
+      CERTIFICATE_INVALID: Catch all for any error not specified.
+      CERTIFICATE_EXPIRED: Certificate leaf node has expired.
+      CERTIFICATE_HOSTNAME_NOT_FOUND: There is no hostname defined to
+        authenticate in SipTrunkingServer.
+      CERTIFICATE_UNAUTHENTICATED: No path found from the leaf certificate to
+        any root.
+      CERTIFICATE_TRUST_STORE_NOT_FOUND: Trust store does not exist.
+      CERTIFICATE_HOSTNAME_INVALID_FORMAT: Hostname has invalid format.
+      CERTIFICATE_QUOTA_EXCEEDED: Certificate has exhausted its quota.
+    """
+    CERTIFICATE_STATE_UNSPECIFIED = 0
+    CERTIFICATE_VALID = 1
+    CERTIFICATE_INVALID = 2
+    CERTIFICATE_EXPIRED = 3
+    CERTIFICATE_HOSTNAME_NOT_FOUND = 4
+    CERTIFICATE_UNAUTHENTICATED = 5
+    CERTIFICATE_TRUST_STORE_NOT_FOUND = 6
+    CERTIFICATE_HOSTNAME_INVALID_FORMAT = 7
+    CERTIFICATE_QUOTA_EXCEEDED = 8
+
+  certificateState = _messages.EnumField('CertificateStateValueValuesEnum', 1)
+  errorMessage = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2Context(_messages.Message):
   r"""Dialogflow contexts are similar to natural language context. If a person
   says to you "they are orange", you need context in order to understand what
@@ -15645,6 +15795,19 @@ class GoogleCloudDialogflowV2ListSessionEntityTypesResponse(_messages.Message):
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 2, repeated=True)
 
 
+class GoogleCloudDialogflowV2ListSipTrunksResponse(_messages.Message):
+  r"""The response message for SipTrunks.ListSipTrunks.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    sipTrunks: The list of SIP trunks.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sipTrunks = _messages.MessageField('GoogleCloudDialogflowV2SipTrunk', 2, repeated=True)
+
+
 class GoogleCloudDialogflowV2ListVersionsResponse(_messages.Message):
   r"""The response message for Versions.ListVersions.
 
@@ -17027,6 +17190,25 @@ class GoogleCloudDialogflowV2SetSuggestionFeatureConfigRequest(_messages.Message
 
   participantRole = _messages.EnumField('ParticipantRoleValueValuesEnum', 1)
   suggestionFeatureConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig', 2)
+
+
+class GoogleCloudDialogflowV2SipTrunk(_messages.Message):
+  r"""SipTrunk is the resource that represents a SIP trunk to connect to
+  Google Telephony platform SIP trunking service.
+
+  Fields:
+    connections: Output only. Connections of the SIP trunk.
+    displayName: Optional. Human readable alias for this trunk.
+    expectedHostname: Required. The expected hostnames in the peer certificate
+      from partner that is used for TLS authentication.
+    name: Identifier. The unique identifier of the SIP trunk. Format:
+      `projects//locations//sipTrunks/`.
+  """
+
+  connections = _messages.MessageField('GoogleCloudDialogflowV2Connection', 1, repeated=True)
+  displayName = _messages.StringField(2)
+  expectedHostname = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2SmartReplyAnswer(_messages.Message):

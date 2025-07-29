@@ -116,6 +116,14 @@ class BackfillNoneStrategy(_messages.Message):
 
 
 
+class BasicEncryption(_messages.Message):
+  r"""Message to represent the option where Datastream will enforce encryption
+  without authenticating server identity. Server certificates will be trusted
+  by default.
+  """
+
+
+
 class BigQueryDestinationConfig(_messages.Message):
   r"""BigQuery destination configuration
 
@@ -1020,6 +1028,35 @@ class Empty(_messages.Message):
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
+class EncryptionAndServerValidation(_messages.Message):
+  r"""Message to represent the option where Datastream will enforce encryption
+  and authenticate server identity. ca_certificate must be set if user selects
+  this option.
+
+  Fields:
+    caCertificate: Optional. Input only. PEM-encoded certificate of the CA
+      that signed the source database server's certificate.
+    serverCertificateHostname: Optional. The hostname mentioned in the Subject
+      or SAN extension of the server certificate. This field is used for
+      bypassing the hostname validation while verifying server certificate.
+      This is required for scenarios where the host name that datastream
+      connects to is different from the certificate's subject. This
+      specifically happens for private connectivity. It could also happen when
+      the customer provides a public IP in connection profile but the same is
+      not present in the server certificate.
+  """
+
+  caCertificate = _messages.StringField(1)
+  serverCertificateHostname = _messages.StringField(2)
+
+
+class EncryptionNotEnforced(_messages.Message):
+  r"""Message to represent the option where encryption is not enforced. An
+  empty message right now to allow future extensibility.
   """
 
 
@@ -2722,6 +2759,7 @@ class SqlServerProfile(_messages.Message):
     secretManagerStoredPassword: Optional. A reference to a Secret Manager
       resource name storing the SQLServer connection password. Mutually
       exclusive with the `password` field.
+    sslConfig: Optional. SSL configuration for the SQLServer connection.
     username: Required. Username for the SQLServer connection.
   """
 
@@ -2730,7 +2768,8 @@ class SqlServerProfile(_messages.Message):
   password = _messages.StringField(3)
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   secretManagerStoredPassword = _messages.StringField(5)
-  username = _messages.StringField(6)
+  sslConfig = _messages.MessageField('SqlServerSslConfig', 6)
+  username = _messages.StringField(7)
 
 
 class SqlServerRdbms(_messages.Message):
@@ -2773,6 +2812,25 @@ class SqlServerSourceConfig(_messages.Message):
   maxConcurrentBackfillTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxConcurrentCdcTasks = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   transactionLogs = _messages.MessageField('SqlServerTransactionLogs', 6)
+
+
+class SqlServerSslConfig(_messages.Message):
+  r"""SQL Server SSL configuration information.
+
+  Fields:
+    basicEncryption: If set, Datastream will enforce encryption without
+      authenticating server identity. Server certificates will be trusted by
+      default.
+    encryptionAndServerValidation: If set, Datastream will enforce encryption
+      and authenticate server identity.
+    encryptionNotEnforced: If set, Datastream will not enforce encryption. If
+      the DB server mandates encryption, then connection will be encrypted but
+      server identity will not be authenticated.
+  """
+
+  basicEncryption = _messages.MessageField('BasicEncryption', 1)
+  encryptionAndServerValidation = _messages.MessageField('EncryptionAndServerValidation', 2)
+  encryptionNotEnforced = _messages.MessageField('EncryptionNotEnforced', 3)
 
 
 class SqlServerTable(_messages.Message):

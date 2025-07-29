@@ -141,7 +141,7 @@ class ArtifactConfig(_messages.Message):
     googleArtifactAnalysis: Optional. Set if the artifact metadata is stored
       in Artifact analysis.
     googleArtifactRegistry: Optional. Set if the artifact is stored in
-      Artifact regsitry.
+      Artifact registry.
     sourceRepositories: Optional. The list of source repositories where the
       artifact is built from.
     uri: Required. Immutable. The URI of the artifact that is deployed. e.g.

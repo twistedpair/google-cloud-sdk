@@ -82,6 +82,14 @@ _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES = {
         'past': 'deleted',
         'present': 'delete'
     },
+    'releaseExternalIpv6Address': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
+    'reserveExternalIpv6Address': {
+        'past': 'created',
+        'present': 'create'
+    },
     'insert': {
         'past': 'created',
         'present': 'create'

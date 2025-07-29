@@ -382,6 +382,17 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GatewayConfig(_messages.Message):
+  r"""Configuration options for Cluster HTTP Gateway.
+
+  Fields:
+    http2Enabled: Optional. Whether HTTP/2 is enabled for this workstation
+      cluster. Defaults to false.
+  """
+
+  http2Enabled = _messages.BooleanField(1)
+
+
 class GceConfidentialInstanceConfig(_messages.Message):
   r"""A set of Compute Engine Confidential VM instance options.
 
@@ -1569,6 +1580,7 @@ class WorkstationCluster(_messages.Message):
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
+    gatewayConfig: Optional. Configuration options for Cluster HTTP Gateway.
     labels: Optional.
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation cluster and that are also propagated
@@ -1678,15 +1690,16 @@ class WorkstationCluster(_messages.Message):
   displayName = _messages.StringField(7)
   domainConfig = _messages.MessageField('DomainConfig', 8)
   etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 13)
-  reconciling = _messages.BooleanField(14)
-  subnetwork = _messages.StringField(15)
-  tags = _messages.MessageField('TagsValue', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  gatewayConfig = _messages.MessageField('GatewayConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 14)
+  reconciling = _messages.BooleanField(15)
+  subnetwork = _messages.StringField(16)
+  tags = _messages.MessageField('TagsValue', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class WorkstationConfig(_messages.Message):

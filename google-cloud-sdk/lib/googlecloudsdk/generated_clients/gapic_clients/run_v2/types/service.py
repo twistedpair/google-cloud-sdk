@@ -378,21 +378,6 @@ class Service(proto.Message):
             audiences are encoded in the token and used to
             authenticate requests. For more information, see
             https://cloud.google.com/run/docs/configuring/custom-audiences.
-        tags (MutableMapping[str, str]):
-            Optional. Input only. Immutable. Tag keys/values directly
-            bound to this service. For example the following are valid
-            inputs:
-
-            -  {"tagKeys/333" : "tagValues/444", "tagKeys/123" :
-               "tagValues/456"}
-            -  {"123/environment" : "production", "345/abc" : "xyz"}
-               Note:
-            -  Invalid combinations of ID & namespaced format is not
-               supported. For instance: {"123/environment" :
-               "tagValues/444"} is invalid.
-            -  Inconsistent format is not supported. For instance:
-               {"tagKeys/333" : "tagValues/444", "123/env" : "prod"} is
-               invalid.
         observed_generation (int):
             Output only. The generation of this Service currently
             serving traffic. See comments in ``reconciling`` for
@@ -466,8 +451,8 @@ class Service(proto.Message):
             failure can be found in ``terminal_condition`` and
             ``conditions``.
         etag (str):
-            Output only. A system-generated fingerprint
-            for this version of the resource. May be used to
+            Optional. A system-generated fingerprint for
+            this version of the resource. May be used to
             detect modification conflict during updates.
     """
 
@@ -608,11 +593,6 @@ class Service(proto.Message):
     custom_audiences: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=37,
-    )
-    tags: MutableMapping[str, str] = proto.MapField(
-        proto.STRING,
-        proto.STRING,
-        number=27,
     )
     observed_generation: int = proto.Field(
         proto.INT64,

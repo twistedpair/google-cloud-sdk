@@ -2281,7 +2281,7 @@ class SpannerV1(base_api.BaseApiClient):
     )
 
     def UpdateDdl(self, request, global_params=None):
-      r"""Updates the schema of a Cloud Spanner database by creating/altering/dropping tables, columns, indexes, etc. The returned long-running operation will have a name of the format `/operations/` and can be used to track execution of the schema change(s). The metadata field type is UpdateDatabaseDdlMetadata. The operation has no response.
+      r"""Updates the schema of a Cloud Spanner database by creating/altering/dropping tables, columns, indexes, etc. The returned long-running operation will have a name of the format `/operations/` and can be used to track execution of the schema changes. The metadata field type is UpdateDatabaseDdlMetadata. The operation has no response.
 
       Args:
         request: (SpannerProjectsInstancesDatabasesUpdateDdlRequest) input message

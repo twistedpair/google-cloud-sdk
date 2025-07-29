@@ -2217,8 +2217,9 @@ class BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest(_messages.Message
       location using the form: `projects/{project_id}/locations/{location_id}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore request if it has already been completed. The server
-      will guarantee that for at least 60 minutes since the first request.
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request.
     securityGatewayId: Optional. User-settable SecurityGateway resource ID. *
       Must start with a letter. * Must contain between 4-63 characters from
       `/a-z-/`. * Must end with a number or letter.
@@ -4107,22 +4108,23 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGatewayOperationMetadata(_m
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplication(_messages.Message):
-  r"""A Beyondcorp Application resource information.
+  r"""The information about an application resource.
 
   Fields:
     createTime: Output only. Timestamp when the resource was created.
-    displayName: Optional. An arbitrary user-provided name for the Application
+    displayName: Optional. An arbitrary user-provided name for the application
       resource. Cannot exceed 64 characters.
     endpointMatchers: Required. Endpoint matchers associated with an
-      application. A combination of hostname and ports as endpoint matcher is
+      application. A combination of hostname and ports as endpoint matchers is
       used to match the application. Match conditions for OR logic. An array
       of match conditions to allow for multiple matching criteria. The rule is
-      considered a match if one the conditions are met. The conditions can be
-      one of the following combination (Hostname), (Hostname & Ports)
-      EXAMPLES: Hostname - ("*.abc.com"), ("xyz.abc.com") Hostname and Ports -
-      ("abc.com" and "22"), ("abc.com" and "22,33") etc
+      considered a match if one of the conditions is met. The conditions can
+      be one of the following combinations (Hostname), (Hostname & Ports)
+      EXAMPLES: Hostname - ("*.example.com"), ("xyz.example.com") Hostname and
+      Ports - ("example.com" and "22"), ("example.com" and "22,33") etc
     name: Identifier. Name of the resource.
     updateTime: Output only. Timestamp when the resource was last modified.
+    upstreams: Optional. Which upstream resources to forward traffic to.
   """
 
   createTime = _messages.StringField(1)
@@ -4130,6 +4132,41 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplication(_messages.Message)
   endpointMatchers = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaEndpointMatcher', 3, repeated=True)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
+  upstreams = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplicationUpstream', 6, repeated=True)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplicationUpstream(_messages.Message):
+  r"""Which upstream resource to forward traffic to.
+
+  Fields:
+    egressPolicy: Optional. Routing policy information.
+    network: Network to forward traffic to.
+  """
+
+  egressPolicy = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaEgressPolicy', 1)
+  network = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplicationUpstreamNetwork', 2)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplicationUpstreamNetwork(_messages.Message):
+  r"""Network to forward traffic to.
+
+  Fields:
+    name: Required. Network name is of the format:
+      `projects/{project}/global/networks/{network}
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1alphaEgressPolicy(_messages.Message):
+  r"""Routing policy information.
+
+  Fields:
+    regions: Required. List of the regions where the application sends
+      traffic.
+  """
+
+  regions = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaEndpointMatcher(_messages.Message):
@@ -4197,7 +4234,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse(_
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Message):
-  r"""Information about a BeyondCorp SecurityGateway resource.
+  r"""The information about a security gateway resource.
 
   Enums:
     StateValueValuesEnum: Output only. The operational state of the
@@ -4209,6 +4246,8 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
 
   Fields:
     createTime: Output only. Timestamp when the resource was created.
+    delegatingServiceAccount: Output only. Service account used for operations
+      that involve resources in consumer projects.
     displayName: Optional. An arbitrary user-provided name for the
       SecurityGateway. Cannot exceed 64 characters.
     externalIps: Output only. IP addresses that will be used for establishing
@@ -4229,8 +4268,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
       UPDATING: SecurityGateway is being updated.
       DELETING: SecurityGateway is being deleted.
       RUNNING: SecurityGateway is running.
-      DOWN: SecurityGateway is down and may be restored in the future. This
-        happens when CCFE sends ProjectState = OFF.
+      DOWN: SecurityGateway is down and may be restored in the future.
       ERROR: SecurityGateway encountered an error and is in an indeterministic
         state.
     """
@@ -4268,12 +4306,13 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  externalIps = _messages.StringField(3, repeated=True)
-  hubs = _messages.MessageField('HubsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  delegatingServiceAccount = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  externalIps = _messages.StringField(4, repeated=True)
+  hubs = _messages.MessageField('HubsValue', 5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGatewayOperationMetadata(_messages.Message):

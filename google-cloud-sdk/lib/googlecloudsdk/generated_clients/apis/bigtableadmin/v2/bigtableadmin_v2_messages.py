@@ -1616,6 +1616,10 @@ class BigtableadminProjectsInstancesTablesSchemaBundlesGetRequest(_messages.Mess
 class BigtableadminProjectsInstancesTablesSchemaBundlesListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesSchemaBundlesListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. The resource_view to be applied to the
+      returned SchemaBundles' fields. Defaults to NAME_ONLY.
+
   Fields:
     pageSize: The maximum number of schema bundles to return. If the value is
       positive, the server may return at most this value. If unspecified, the
@@ -1627,11 +1631,31 @@ class BigtableadminProjectsInstancesTablesSchemaBundlesListRequest(_messages.Mes
     parent: Required. The parent, which owns this collection of schema
       bundles. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}`.
+    view: Optional. The resource_view to be applied to the returned
+      SchemaBundles' fields. Defaults to NAME_ONLY.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource_view to be applied to the returned
+    SchemaBundles' fields. Defaults to NAME_ONLY.
+
+    Values:
+      SCHEMA_BUNDLE_VIEW_UNSPECIFIED: Uses the default view for each method as
+        documented in the request.
+      NAME_ONLY: Only populates `name`.
+      BASIC: Only populates the SchemaBundle's basic metadata. This includes:
+        name, etag, create_time, update_time.
+      FULL: Populates every field.
+    """
+    SCHEMA_BUNDLE_VIEW_UNSPECIFIED = 0
+    NAME_ONLY = 1
+    BASIC = 2
+    FULL = 3
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class BigtableadminProjectsInstancesTablesSchemaBundlesPatchRequest(_messages.Message):
@@ -2894,6 +2918,20 @@ class GoogleBigtableAdminV2TypeDate(_messages.Message):
   r"""Date Values of type `Date` are stored in `Value.date_value`."""
 
 
+class GoogleBigtableAdminV2TypeEnum(_messages.Message):
+  r"""A protobuf enum type. Values of type `Enum` are stored in
+  `Value.int_value`.
+
+  Fields:
+    enumName: The fully qualified name of the protobuf enum message, including
+      package. In the format of "foo.bar.EnumMessage".
+    schemaBundleId: The ID of the schema bundle that this enum is defined in.
+  """
+
+  enumName = _messages.StringField(1)
+  schemaBundleId = _messages.StringField(2)
+
+
 class GoogleBigtableAdminV2TypeFloat32(_messages.Message):
   r"""Float32 Values of type `Float32` are stored in `Value.float_value`."""
 
@@ -2962,6 +3000,20 @@ class GoogleBigtableAdminV2TypeMap(_messages.Message):
 
   keyType = _messages.MessageField('Type', 1)
   valueType = _messages.MessageField('Type', 2)
+
+
+class GoogleBigtableAdminV2TypeProto(_messages.Message):
+  r"""A protobuf message type. Values of type `Proto` are stored in
+  `Value.bytes_value`.
+
+  Fields:
+    messageName: The fully qualified name of the protobuf message, including
+      package. In the format of "foo.bar.Message".
+    schemaBundleId: The ID of the schema bundle that this proto is defined in.
+  """
+
+  messageName = _messages.StringField(1)
+  schemaBundleId = _messages.StringField(2)
 
 
 class GoogleBigtableAdminV2TypeString(_messages.Message):
@@ -4603,10 +4655,12 @@ class Type(_messages.Message):
     boolType: Bool
     bytesType: Bytes
     dateType: Date
+    enumType: Enum
     float32Type: Float32
     float64Type: Float64
     int64Type: Int64
     mapType: Map
+    protoType: Proto
     stringType: String
     structType: Struct
     timestampType: Timestamp
@@ -4617,13 +4671,15 @@ class Type(_messages.Message):
   boolType = _messages.MessageField('GoogleBigtableAdminV2TypeBool', 3)
   bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 4)
   dateType = _messages.MessageField('GoogleBigtableAdminV2TypeDate', 5)
-  float32Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat32', 6)
-  float64Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat64', 7)
-  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 8)
-  mapType = _messages.MessageField('GoogleBigtableAdminV2TypeMap', 9)
-  stringType = _messages.MessageField('GoogleBigtableAdminV2TypeString', 10)
-  structType = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 11)
-  timestampType = _messages.MessageField('GoogleBigtableAdminV2TypeTimestamp', 12)
+  enumType = _messages.MessageField('GoogleBigtableAdminV2TypeEnum', 6)
+  float32Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat32', 7)
+  float64Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat64', 8)
+  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 9)
+  mapType = _messages.MessageField('GoogleBigtableAdminV2TypeMap', 10)
+  protoType = _messages.MessageField('GoogleBigtableAdminV2TypeProto', 11)
+  stringType = _messages.MessageField('GoogleBigtableAdminV2TypeString', 12)
+  structType = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 13)
+  timestampType = _messages.MessageField('GoogleBigtableAdminV2TypeTimestamp', 14)
 
 
 class UndeleteTableMetadata(_messages.Message):

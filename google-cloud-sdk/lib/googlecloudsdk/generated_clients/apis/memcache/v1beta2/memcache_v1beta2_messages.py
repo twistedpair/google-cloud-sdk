@@ -118,6 +118,66 @@ class Empty(_messages.Message):
 
 
 
+class GetTagsRequest(_messages.Message):
+  r"""Request message for GetTags.
+
+  Fields:
+    name: Required. The full One Platform resource name of the service
+      resource.
+  """
+
+  name = _messages.StringField(1)
+
+
+class GetTagsResponse(_messages.Message):
+  r"""Response message for GetTags.
+
+  Messages:
+    TagsValue: Required. Tag keys/values directly bound to this resource. Each
+      item in the map must be expressed as " : ". For example:
+      "123/environment" : "production", "123/costCenter" : "marketing"
+
+  Fields:
+    name: Required. The full One Platform resource name of the service
+      resource.
+    tags: Required. Tag keys/values directly bound to this resource. Each item
+      in the map must be expressed as " : ". For example: "123/environment" :
+      "production", "123/costCenter" : "marketing"
+    tagsEtag: A checksum based on the current bindings. This field is always
+      set in server responses.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Required. Tag keys/values directly bound to this resource. Each item
+    in the map must be expressed as " : ". For example: "123/environment" :
+    "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  name = _messages.StringField(1)
+  tags = _messages.MessageField('TagsValue', 2)
+  tagsEtag = _messages.StringField(3)
+
+
 class GoogleCloudMemcacheV1beta2LocationMetadata(_messages.Message):
   r"""Metadata for the given google.cloud.location.Location.
 
@@ -830,9 +890,9 @@ class Instance(_messages.Message):
     LabelsValue: Resource labels to represent user-provided metadata. Refer to
       cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
-      to this resource. For example: ``` "123/environment": "production",
-      "123/costCenter": "marketing" ```
+    TagsValue: Optional. Tag keys/values directly bound to this resource. For
+      example: ``` "123/environment": "production", "123/costCenter":
+      "marketing" ```
 
   Fields:
     authorizedNetwork: The full name of the Google Compute Engine
@@ -878,9 +938,9 @@ class Instance(_messages.Message):
     satisfiesPzi: Optional. Output only. Reserved for future use.
     satisfiesPzs: Optional. Output only. Reserved for future use.
     state: Output only. The state of this Memcached instance.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
-      this resource. For example: ``` "123/environment": "production",
-      "123/costCenter": "marketing" ```
+    tags: Optional. Tag keys/values directly bound to this resource. For
+      example: ``` "123/environment": "production", "123/costCenter":
+      "marketing" ```
     updateAvailable: Output only. Returns true if there is an update waiting
       to be applied
     updateTime: Output only. The time the instance was updated.
@@ -957,9 +1017,9 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this resource. For example: ``` "123/environment": "production",
-    "123/costCenter": "marketing" ```
+    r"""Optional. Tag keys/values directly bound to this resource. For
+    example: ``` "123/environment": "production", "123/costCenter":
+    "marketing" ```
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1887,6 +1947,108 @@ class Schedule(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class SetTagsRequest(_messages.Message):
+  r"""Request message for SetTags.
+
+  Messages:
+    TagsValue: Required. These bindings will override any bindings previously
+      set and will be effective immediately. Each item in the map must be
+      expressed as " : ". For example: "123/environment" : "production",
+      "123/costCenter" : "marketing"
+
+  Fields:
+    name: Required. The full One Platform resource name of the service
+      resource.
+    requestId: Optional. A unique identifier for this request. Must be a valid
+      UUID. This request is only idempotent if a `request_id` is provided.
+    tags: Required. These bindings will override any bindings previously set
+      and will be effective immediately. Each item in the map must be
+      expressed as " : ". For example: "123/environment" : "production",
+      "123/costCenter" : "marketing"
+    tagsEtag: Optional. A checksum based on the current bindings which can be
+      passed to prevent race conditions. If not passed, etag check would be
+      skipped.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Required. These bindings will override any bindings previously set and
+    will be effective immediately. Each item in the map must be expressed as "
+    : ". For example: "123/environment" : "production", "123/costCenter" :
+    "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
+  tagsEtag = _messages.StringField(4)
+
+
+class SetTagsResponse(_messages.Message):
+  r"""Response message for SetTags.
+
+  Messages:
+    TagsValue: Required. Tag keys/values directly bound to this resource. Each
+      item in the map must be expressed as " : ". For example:
+      "123/environment" : "production", "123/costCenter" : "marketing"
+
+  Fields:
+    name: Required. The full One Platform resource name of the service
+      resource.
+    tags: Required. Tag keys/values directly bound to this resource. Each item
+      in the map must be expressed as " : ". For example: "123/environment" :
+      "production", "123/costCenter" : "marketing"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Required. Tag keys/values directly bound to this resource. Each item
+    in the map must be expressed as " : ". For example: "123/environment" :
+    "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  name = _messages.StringField(1)
+  tags = _messages.MessageField('TagsValue', 2)
 
 
 class StandardQueryParameters(_messages.Message):
