@@ -15,8 +15,6 @@
 """Utilities for Pub/Sub."""
 
 import enum
-from typing import Any
-from typing import List
 
 from apitools.base.py import encoding
 from googlecloudsdk.core import exceptions
@@ -35,7 +33,7 @@ class ErrorCause(enum.Enum):
 class MessageTransformsMissingFileError(exceptions.Error):
   """Error when the message transforms file is missing."""
 
-  def __init__(self, message, path: str):
+  def __init__(self, message, path):
     super().__init__(message)
     self.path = path
 
@@ -43,7 +41,7 @@ class MessageTransformsMissingFileError(exceptions.Error):
 class MessageTransformsEmptyFileError(exceptions.Error):
   """Error when the message transforms file is empty."""
 
-  def __init__(self, path: str, message: str = ''):
+  def __init__(self, path, message=''):
     super().__init__(message)
     self.path = path
 
@@ -51,13 +49,13 @@ class MessageTransformsEmptyFileError(exceptions.Error):
 class MessageTransformsInvalidFormatError(exceptions.Error):
   """Error when the message transforms file has an invalid format."""
 
-  def __init__(self, path: str, error_cause: ErrorCause, message: str = ''):
+  def __init__(self, path, error_cause, message=''):
     super().__init__(message)
     self.path = path
     self.error_cause = error_cause
 
 
-def GetErrorMessage(err: Exception) -> str:
+def GetErrorMessage(err):
   """Returns the formatted error string for an error type.
 
   Args:
@@ -101,7 +99,7 @@ def GetErrorMessage(err: Exception) -> str:
     return str(err)
 
 
-def ValidateMessageTransformMessage(message: Any, path: str) -> None:
+def ValidateMessageTransformMessage(message, path):
   """Validate all parsed message from file are valid."""
   errors = encoding.UnrecognizedFieldIter(message)
   unrecognized_field_paths = []
@@ -119,32 +117,53 @@ def ValidateMessageTransformMessage(message: Any, path: str) -> None:
     )
 
 
-def GetMessageTransformsFromFile(message, path) -> List[Any]:
+def ReadFileFromPath(path):
+  """Reads a file from a local path.
+
+  Args:
+    path: A local path to an object specification in YAML or JSON format.
+
+  Returns:
+    The contents of the file as a string.
+
+  Raises:
+    MessageTransformsMissingFileError: If file is missing.
+    MessageTransformsEmptyFileError: If file is empty.
+  """
+  try:
+    contents = files.ReadFileContents(path)
+  except files.MissingFileError as e:
+    raise MessageTransformsMissingFileError(e, path)
+
+  if not contents:
+    raise MessageTransformsEmptyFileError(path=path)
+
+  return contents
+
+
+def GetMessageTransformsFromFile(message, path):
   """Reads a YAML or JSON object of type message from local path.
+
+  Parses a list of message transforms.
 
   Args:
     message: The message type to be parsed from the file.
     path: A local path to an object specification in YAML or JSON format.
 
   Returns:
-    List of object of type message, if successful.
+    Sequence of objects of type message, if successful.
+
   Raises:
     MessageTransformsMissingFileError: If file is missing.
     MessageTransformsEmptyFileError: If file is empty.
     MessageTransformsInvalidFormat: If file's format is invalid.
   """
-  try:
-    in_text = files.ReadFileContents(path)
-  except files.MissingFileError as e:
-    raise MessageTransformsMissingFileError(e, path)
-
-  if not in_text:
-    raise MessageTransformsEmptyFileError(path=path)
+  contents = ReadFileFromPath(path)
 
   # Parsing YAML or JSON file
   try:
     # yaml.load() is able to parse YAML and JSON files
-    message_transforms = yaml.load(in_text)
+    message_transforms = yaml.load(contents)
     if not isinstance(message_transforms, list):
       raise MessageTransformsInvalidFormatError(
           path=path, error_cause=ErrorCause.LIST
@@ -164,8 +183,10 @@ def GetMessageTransformsFromFile(message, path) -> List[Any]:
   return result
 
 
-def GetMessageTransformFromFile(message, path) -> Any:
+def GetMessageTransformFromFileForValidation(message, path):
   """Reads a YAML or JSON object of type message from local path.
+
+  Parses a single message transform.
 
   Args:
     message: The message type to be parsed from the file.
@@ -173,23 +194,18 @@ def GetMessageTransformFromFile(message, path) -> Any:
 
   Returns:
     Object of type message, if successful.
+
   Raises:
     MessageTransformsMissingFileError: If file is missing.
     MessageTransformsEmptyFileError: If file is empty.
     MessageTransformsInvalidFormat: If file's format is invalid.
   """
-  try:
-    in_text = files.ReadFileContents(path)
-  except files.MissingFileError as e:
-    raise MessageTransformsMissingFileError(e, path)
-
-  if not in_text:
-    raise MessageTransformsEmptyFileError(path=path)
+  contents = ReadFileFromPath(path)
 
   # Parsing YAML or JSON file
   try:
     # yaml.load() is able to parse YAML and JSON files
-    message_transform = yaml.load(in_text)
+    message_transform = yaml.load(contents)
     if isinstance(message_transform, list):
       if len(message_transform) == 1:
         message_transform = message_transform[0]

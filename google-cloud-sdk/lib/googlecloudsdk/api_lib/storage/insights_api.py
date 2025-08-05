@@ -330,7 +330,6 @@ class InsightsApi:
       organization_scope: bool = None,
       source_projects_list: Optional[Sequence[int]] = None,
       source_folders_list: Optional[Sequence[int]] = None,
-      organization_number: Optional[int] = None,
       include_buckets_name_list: Optional[Sequence[str]] = None,
       include_buckets_prefix_regex_list: Optional[Sequence[str]] = None,
       exclude_buckets_name_list: Optional[Sequence[str]] = None,
@@ -358,10 +357,6 @@ class InsightsApi:
         data is to be collected for buckets that belong to these organisational
         folders. If this field is Empty/None, Either the organizationScope will
         be True or the sourceProjects must be set to update the scope.
-      organization_number: Organization number of the organization to
-        which all source projects / folders must belong. This field is only
-        used when organizationScope is True. Organization number is not
-        updatable.
       include_buckets_name_list: Optional list of bucket names which
         are to be included for insights processing from the source projects. Can
         either use included or excluded bucket parameters.
@@ -434,10 +429,6 @@ class InsightsApi:
 
     if organization_scope:
       dataset_config.organizationScope = True
-      # TODO: b/418690611 - Remove this once the API supports organizationScope
-      # without organizationNumber.
-      if organization_number is not None:
-        dataset_config.organizationNumber = organization_number
 
     # Exclude and Include options are marked as mutex flags,
     # hence can make the below assumption about only one of the options being

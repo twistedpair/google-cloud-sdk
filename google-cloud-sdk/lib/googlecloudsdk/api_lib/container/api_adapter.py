@@ -119,10 +119,6 @@ No label named '{name}' found on cluster '{cluster}'."""
 NO_LABELS_ON_CLUSTER_ERROR_MSG = """\
 Cluster '{cluster}' has no labels to remove."""
 
-CREATE_SUBNETWORK_INVALID_KEY_FOR_IPV6_ERROR_MSG = """\
-Invalid key '{key}' for --create-subnetwork (must be 'name').
-"""
-
 CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG = """\
 Invalid key '{key}' for --create-subnetwork (must be one of 'name', 'range').
 """
@@ -8983,18 +8979,21 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
 
     subnetwork_name = None
+    node_ipv4_cidr = None
 
     if options.create_subnetwork is not None:
       for key in options.create_subnetwork:
-        if key != 'name':
+        if key not in ['name', 'range']:
           raise util.Error(
-              CREATE_SUBNETWORK_INVALID_KEY_FOR_IPV6_ERROR_MSG.format(key=key)
+              CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG.format(key=key)
           )
       subnetwork_name = options.create_subnetwork.get('name', None)
+      node_ipv4_cidr = options.create_subnetwork.get('range', None)
 
     policy = self.messages.IPAllocationPolicy(
         createSubnetwork=options.create_subnetwork is not None,
         subnetworkName=subnetwork_name,
+        nodeIpv4CidrBlock=node_ipv4_cidr,
         stackType=self.messages.IPAllocationPolicy.StackTypeValueValuesEnum.IPV6,
         clusterSecondaryRangeName=options.cluster_secondary_range_name,
         servicesSecondaryRangeName=options.services_secondary_range_name,

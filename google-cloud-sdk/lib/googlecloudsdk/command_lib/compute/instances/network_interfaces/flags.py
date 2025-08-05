@@ -232,8 +232,8 @@ def AddExternalIpv6AddressArg(parser):
       type=str,
       help="""
         Assigns the given external IPv6 address to an instance.
-        The address must be the first IP in the range. This option is applicable
-        only to dual-stack instances with stack-type=IPV4_ONLY.
+        The address must be the first IP in the range. This option is not
+        applicable to instances with stack-type=IPV4_ONLY.
       """,
   )
 

@@ -129,6 +129,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LBTCPEXTENSIONS = (
+      'projects.locations.lbTcpExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/lbTcpExtensions/'
+              '{lbTcpExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_LBTRAFFICEXTENSIONS = (
       'projects.locations.lbTrafficExtensions',
       '{+name}',

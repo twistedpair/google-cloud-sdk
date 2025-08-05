@@ -3223,7 +3223,7 @@ def AddBootDiskProvisionedThroughputFlag(parser):
     parser: A given parser.
   """
   help_text = """\
-Configure the Provisioned Throughput for the node pool boot disks. Only valid for hyperdisk-throughput boot disks.
+Configure the Provisioned Throughput for the node pool boot disks. Only valid for hyperdisk-balanced boot disks.
 """
   parser.add_argument(
       '--boot-disk-provisioned-throughput',
@@ -3726,7 +3726,6 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
       not in [
           api_adapter.APPLICATIONMANAGER,
           api_adapter.STATEFULHA,
-          api_adapter.HIGHSCALECHECKPOINTING,
       ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
@@ -5363,34 +5362,74 @@ Examples:
 
 List of supported kubelet configs in 'kubeletConfig'.
 
-KEY                                 | VALUE
------------------------------------ | ----------------------------------
-cpuManagerPolicy                    | either 'static' or 'none'
-cpuCFSQuota                         | true or false (enabled by default)
-cpuCFSQuotaPeriod                   | interval (e.g., '100ms')
-memoryManager                       | specify memory manager policy
-topologyManager                     | specify topology manager policy and scope
-podPidsLimit                        | integer (The value must be greater than or equal to 1024 and less than 4194304.)
-containerLogMaxSize                 | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi.)
-containerLogMaxFiles                | integer (The value must be between [2, 10].)
-imageGcLowThresholdPercent          | integer (The value must be between [10, 85], and lower than imageGcHighThresholdPercent.)
-imageGcHighThresholdPercent         | integer (The value must be between [10, 85], and greater than imageGcLowThresholdPercent.)
-imageMinimumGcAge                   | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
-imageMaximumGcAge                   | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
-allowedUnsafeSysctls                | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
-singleProcessOomKill                | true or false
-maxParallelImagePulls               | integer (The value must be between [2, 5].)
+KEY                                  | VALUE
+------------------------------------ | ------------------------------------------------------------------------------------------
+cpuManagerPolicy                     | either 'static' or 'none'
+cpuCFSQuota                          | true or false (enabled by default)
+cpuCFSQuotaPeriod                    | interval (e.g., '100ms')
+memoryManager                        | specify memory manager policy
+topologyManager                      | specify topology manager policy and scope
+podPidsLimit                         | integer (The value must be greater than or equal to 1024 and less than 4194304.)
+containerLogMaxSize                  | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi.)
+containerLogMaxFiles                 | integer (The value must be between [2, 10].)
+imageGcLowThresholdPercent           | integer (The value must be between [10, 85], and lower than imageGcHighThresholdPercent.)
+imageGcHighThresholdPercent          | integer (The value must be between [10, 85], and greater than imageGcLowThresholdPercent.)
+imageMinimumGcAge                    | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
+imageMaximumGcAge                    | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
+evictionSoft                         | specify eviction soft thresholds
+evictionSoftGracePeriod              | specify eviction soft grace period
+evictionMinimumReclaim               | specify eviction minimum reclaim thresholds
+evictionMaxPodGracePeriodSeconds     | integer (Max grace period for pod termination during eviction, in seconds. The value must be between [0, 300].)
+allowedUnsafeSysctls                 | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
+singleProcessOomKill                 | true or false
+maxParallelImagePulls                | integer (The value must be between [2, 5].)
+
 
 List of supported keys in memoryManager in 'kubeletConfig'.
+
 KEY                                        | VALUE
 ------------------------------------------ | ------------------------------------------
 policy                                     | either 'Static' or 'None'
 
 List of supported keys in topologyManager in 'kubeletConfig'.
+
 KEY                                        | VALUE
 ------------------------------------------ | ------------------------------------------
 policy                                     | either 'none' or 'best-effort' or 'single-numa-node' or 'restricted'
 scope                                      | either 'pod' or 'container'
+
+List of supported keys in evictionSoft in 'kubeletConfig'.
+
+KEY                       | VALUE
+------------------------- | ---------------------------------------------------------------------------------------------
+memoryAvailable           | quantity (e.g., '100Mi', '1Gi'. Represents the amount of memory available before soft eviction. The value must be at least 100Mi and less than 50% of the node's memory.)
+nodefsAvailable           | percentage (e.g., '20%'. Represents the nodefs available before soft eviction. The value must be between 10% and 50%, inclusive.)
+nodefsInodesFree          | percentage (e.g., '20%'. Represents the nodefs inodes free before soft eviction. The value must be between 5% and 50%, inclusive.)
+imagefsAvailable          | percentage (e.g., '20%'. Represents the imagefs available before soft eviction. The value must be between 15% and 50%, inclusive.)
+imagefsInodesFree         | percentage (e.g., '20%'. Represents the imagefs inodes free before soft eviction. The value must be between 5% and 50%, inclusive.)
+pidAvailable              | percentage (e.g., '20%'. Represents the pid available before soft eviction. The value must be between 10% and 50%, inclusive.)
+
+List of supported keys in evictionSoftGracePeriod in 'kubeletConfig'.
+
+KEY                       | VALUE
+------------------------- | ---------------------------------------------------------------------------------------------
+memoryAvailable           | duration (e.g., '30s', '1m'. The grace period for soft eviction for this resource. The value must be positive and no more than '5m'.)
+nodefsAvailable           | duration (e.g., '30s', '1m'. The grace period for soft eviction for this resource. The value must be positive and no more than '5m'.)
+nodefsInodesFree          | duration (e.g., '30s', '1m'. The grace period for soft eviction for this resource. The value must be positive and no more than '5m'.)
+imagefsAvailable          | duration (e.g., '30s', '1m'. The grace period for soft eviction for this resource. The value must be positive and no more than '5m'.)
+imagefsInodesFree         | duration (e.g., '30s', '1m'. The grace period for soft eviction for this resource. The value must be positive and no more than '5m'.)
+pidAvailable              | duration (e.g., '30s', '1m'. The grace period for soft eviction for this resource. The value must be positive and no more than '5m'.)
+
+List of supported keys in evictionMinimumReclaim in 'kubeletConfig'.
+
+KEY                       | VALUE
+------------------------- | ---------------------------------------------------------------------------------------------
+memoryAvailable           | percentage (e.g., '5%'. Represents the minimum reclaim threshold for memory available. The value must be positive and no more than 10%.)
+nodefsAvailable           | percentage (e.g., '5%'. Represents the minimum reclaim threshold for nodefs available. The value must be positive and no more than 10%.)
+nodefsInodesFree          | percentage (e.g., '5%'. Represents the minimum reclaim threshold for nodefs inodes free. The value must be positive and no more than 10%.)
+imagefsAvailable          | percentage (e.g., '5%'. Represents the minimum reclaim threshold for imagefs available. The value must be positive and no more than 10%.)
+imagefsInodesFree         | percentage (e.g., '5%'. Represents the minimum reclaim threshold for imagefs inodes free. The value must be positive and no more than 10%.)
+pidAvailable              | percentage (e.g., '5%'. Represents the minimum reclaim threshold for pid available. The value must be positive and no more than 10%.)
 
 
 List of supported sysctls in 'linuxConfig'.

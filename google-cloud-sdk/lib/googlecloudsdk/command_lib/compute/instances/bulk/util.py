@@ -42,6 +42,7 @@ class SupportedFeatures:
       support_specific_then_x_affinity,
       support_watchdog_timer,
       support_graceful_shutdown,
+      support_source_snapshot_region,
   ):
     self.support_secure_tags = support_secure_tags
     self.support_display_device = support_display_device
@@ -53,6 +54,7 @@ class SupportedFeatures:
     self.support_watchdog_timer = support_watchdog_timer
     self.support_replica_zones = True
     self.support_graceful_shutdown = support_graceful_shutdown
+    self.support_source_snapshot_region = support_source_snapshot_region
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -321,6 +323,7 @@ def CreateBulkInsertInstanceResource(
         support_image_csek=True,
         support_create_disk_snapshots=True,
         use_disk_type_uri=False,
+        support_source_snapshot_region=supported_features.support_source_snapshot_region,
     )
 
   machine_type_name = None

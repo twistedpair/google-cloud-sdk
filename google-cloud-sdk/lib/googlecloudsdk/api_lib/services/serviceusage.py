@@ -751,6 +751,8 @@ def RemoveEnableRule(
     folder: str = None,
     organization: str = None,
     validate_only: bool = False,
+    skip_dependency_check: bool = False,
+    disable_dependency_services: bool = False,
 ):
   """Make API call to disable a specific service.
 
@@ -768,6 +770,10 @@ def RemoveEnableRule(
     organization: The organization for which to disable the service.
     validate_only: If True, the action will be validated and result will be
       preview but not exceuted.`
+    skip_dependency_check: If True, the enabled dependent services of the
+      service to be disabled will remian enabled.
+    disable_dependency_services: If True, the services which depend on the
+      service to be disabled will also be disabled.
 
   Raises:
     exceptions.EnableServiceException: when disabling API fails.
@@ -806,30 +812,34 @@ def RemoveEnableRule(
       if _SERVICE_RESOURCE % service in enable_rule.services:
         enable_rule.services.remove(_SERVICE_RESOURCE % service)
 
-    op = AnalyzeConsumerPolicy(proposed_policy)
-
-    op = services_util.WaitOperation(op.name, GetOperationV2Beta)
-
-    analysis_reponse = encoding.MessageToDict(op.response)
-
     to_remove = []
 
-    if 'analysis' in analysis_reponse:
-      for analysis in analysis_reponse['analysis']:
-        for warning in analysis['analysisResult']['warnings']:
-          ## check if analysis is related to service to be removed.
-          if _SERVICE_RESOURCE % service in warning['detail']:
-            to_remove.append(analysis['service'])
+    if not skip_dependency_check:
 
-    if not force and to_remove:
-      to_remove = ','.join(to_remove)
-      raise exceptions.ConfigError(
-          'The service '
-          + service
-          + ' is depended on by the following active service(s) '
-          + to_remove
-          + ' . Provide the --force flag if you wish to force disable services.'
-      )
+      op = AnalyzeConsumerPolicy(proposed_policy)
+
+      op = services_util.WaitOperation(op.name, GetOperationV2Beta)
+
+      analysis_reponse = encoding.MessageToDict(op.response)
+
+      if 'analysis' in analysis_reponse:
+        for analysis in analysis_reponse['analysis']:
+          for warning in analysis['analysisResult']['warnings']:
+            ## check if analysis is related to service to be removed.
+            if _SERVICE_RESOURCE % service in warning['detail']:
+              to_remove.append(analysis['service'])
+
+      if not disable_dependency_services and to_remove:
+        to_remove = ','.join(to_remove)
+        raise exceptions.ConfigError(
+            'The service '
+            + service
+            + ' is depended on by the following active service(s) '
+            + to_remove
+            + ' . Provide the --disable-dependency-services flag to disable'
+            ' them, or --bypass-dependency-service-check to ignore this'
+            ' check.'
+        )
 
     to_remove = set(to_remove)
 

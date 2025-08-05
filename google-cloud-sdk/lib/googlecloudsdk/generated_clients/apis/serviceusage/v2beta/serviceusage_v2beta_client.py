@@ -43,6 +43,8 @@ class ServiceusageV2beta(base_api.BaseApiClient):
     self.categories = self.CategoriesService(self)
     self.consumerPolicies = self.ConsumerPoliciesService(self)
     self.operations = self.OperationsService(self)
+    self.services_apis_apiVersions_apiOperations = self.ServicesApisApiVersionsApiOperationsService(self)
+    self.services_apis_apiVersions = self.ServicesApisApiVersionsService(self)
     self.services_apis = self.ServicesApisService(self)
     self.services_groups_expandedMembers = self.ServicesGroupsExpandedMembersService(self)
     self.services_groups_members = self.ServicesGroupsMembersService(self)
@@ -250,6 +252,53 @@ class ServiceusageV2beta(base_api.BaseApiClient):
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
+
+  class ServicesApisApiVersionsApiOperationsService(base_api.BaseApiService):
+    """Service class for the services_apis_apiVersions_apiOperations resource."""
+
+    _NAME = 'services_apis_apiVersions_apiOperations'
+
+    def __init__(self, client):
+      super(ServiceusageV2beta.ServicesApisApiVersionsApiOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List the API operations of a given API version.
+
+      Args:
+        request: (ServiceusageServicesApisApiVersionsApiOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListApiOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/{v2betaId}/{v2betaId1}/services/{servicesId}/apis/{apisId}/apiVersions/{apiVersionsId}/apiOperations',
+        http_method='GET',
+        method_id='serviceusage.services.apis.apiVersions.apiOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2beta/{+parent}/apiOperations',
+        request_field='',
+        request_type_name='ServiceusageServicesApisApiVersionsApiOperationsListRequest',
+        response_type_name='ListApiOperationsResponse',
+        supports_download=False,
+    )
+
+  class ServicesApisApiVersionsService(base_api.BaseApiService):
+    """Service class for the services_apis_apiVersions resource."""
+
+    _NAME = 'services_apis_apiVersions'
+
+    def __init__(self, client):
+      super(ServiceusageV2beta.ServicesApisApiVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ServicesApisService(base_api.BaseApiService):
     """Service class for the services_apis resource."""

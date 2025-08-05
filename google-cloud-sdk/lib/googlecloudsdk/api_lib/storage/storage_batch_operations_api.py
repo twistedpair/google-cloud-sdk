@@ -42,6 +42,7 @@ class StorageBatchOperationsApi:
       manifest_location=None,
       included_object_prefixes=None,
       description=None,
+      dry_run=False,
   ):
     """Instatiates a Job object using the source and description provided.
 
@@ -53,6 +54,7 @@ class StorageBatchOperationsApi:
       included_object_prefixes (list[str]): list of object prefixes to describe
         the objects being transformed.
       description (str): Description of the job.
+      dry_run (bool): If true, job will be created in dry run mode.
 
     Returns:
       A Job object.
@@ -67,6 +69,8 @@ class StorageBatchOperationsApi:
     job = self.messages.Job(
         description=description,
     )
+    if dry_run:
+      job.dryRun = True
     if manifest_location:
       manifest_payload = self.messages.Manifest(
           manifestLocation=manifest_location,
@@ -203,6 +207,7 @@ class StorageBatchOperationsApi:
         manifest_location=args.manifest_location,
         included_object_prefixes=args.included_object_prefixes,
         description=args.description,
+        dry_run=getattr(args, "dry_run", False),
     )
     if (
         args.put_object_temporary_hold is not None

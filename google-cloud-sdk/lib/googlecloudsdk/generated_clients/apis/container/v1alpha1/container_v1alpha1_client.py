@@ -480,6 +480,33 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CompleteControlPlaneUpgrade(self, request, global_params=None):
+      r"""CompleteControlPlaneUpgrade completes the rollback-safe upgrade by performing the step two upgrade for a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersCompleteControlPlaneUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CompleteControlPlaneUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteControlPlaneUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeControlPlaneUpgrade',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.completeControlPlaneUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:completeControlPlaneUpgrade',
+        request_field='completeControlPlaneUpgradeRequest',
+        request_type_name='ContainerProjectsLocationsClustersCompleteControlPlaneUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def CompleteConvertToAutopilot(self, request, global_params=None):
       r"""CompleteConvertToAutopilot is an optional API that commits the conversion by deleting all Standard node pools and completing CA rotation. This action requires that a conversion has been started and that workload migration has completed, with no pods running on GKE Standard node pools. This action will be automatically performed 72 hours after conversion.
 
@@ -1478,6 +1505,33 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons',
         request_field='<request>',
         request_type_name='SetAddonsConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CompleteControlPlaneUpgrade(self, request, global_params=None):
+      r"""CompleteControlPlaneUpgrade completes the rollback-safe upgrade by performing the step two upgrade for a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersCompleteControlPlaneUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CompleteControlPlaneUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteControlPlaneUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/zones/{zonesId}/clusters/{clustersId}:completeControlPlaneUpgrade',
+        http_method='POST',
+        method_id='container.projects.zones.clusters.completeControlPlaneUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:completeControlPlaneUpgrade',
+        request_field='completeControlPlaneUpgradeRequest',
+        request_type_name='ContainerProjectsZonesClustersCompleteControlPlaneUpgradeRequest',
         response_type_name='Operation',
         supports_download=False,
     )

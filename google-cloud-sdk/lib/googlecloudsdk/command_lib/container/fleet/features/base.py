@@ -172,11 +172,11 @@ class DisableCommand(UpdateCommandMixin, calliope_base.DeleteCommand):
         '--force',
         action='store_true',
         help=(
-            'Bypasses any prompts for confirmation.'
-            ' When disabling the entire feature, forces disable'
+            'Force disablement.'
+            ' Bypasses any prompts for confirmation.'
+            ' When disabling the entire feature, proceeds'
             ' even if the feature is in use.'
-            ' Force disablement of the entire feature'
-            ' may result in unexpected behavior.'
+            ' Might result in unexpected behavior.'
         ),
     )
     if cls.support_fleet_default:

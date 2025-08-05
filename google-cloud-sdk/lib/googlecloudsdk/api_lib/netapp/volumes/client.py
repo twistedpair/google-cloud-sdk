@@ -35,7 +35,7 @@ Volume = netapp_v1beta1_messages.Volume
 
 
 class VolumesClient(object):
-  """Wrapper for working with Storage Pool in the Cloud NetApp Files API Client."""
+  """Wrapper for working with volumes in the Cloud NetApp Files API Client."""
 
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     self.release_track = release_track
@@ -818,10 +818,10 @@ class VolumesAdapter(object):
         cache_config_message.atimeScrubEnabled = (
             config['atime-scrub-enabled'].lower() == 'true'
         )
-      if 'atime-scrub-minutes' in config:
-        cache_config_message.atimeScrubMinutes = int(
-            config['atime-scrub-minutes']
-        )
+      # if 'atime-scrub-minutes' in config:
+      #   cache_config_message.atimeScrubMinutes = int(
+      #       config['atime-scrub-minutes']
+      #   )
       if 'cifs-change-notify-enabled' in config:
         cache_config_message.cifsChangeNotifyEnabled = (
             config['cifs-change-notify-enabled'].lower() == 'true'

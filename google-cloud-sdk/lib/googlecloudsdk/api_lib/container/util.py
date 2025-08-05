@@ -145,6 +145,11 @@ NC_CC_GCP_SECRET_CONFIG = 'gcpSecretManagerCertificateConfig'
 NC_CC_GCP_SECRET_CONFIG_SECRET_URI = 'secretURI'
 NC_CC_PRIVATE_CR_FQDNS_CONFIG = 'fqdns'
 
+NC_EVICTION_SOFT = 'evictionSoft'
+NC_EVICTION_SOFT_GRACE_PERIOD = 'evictionSoftGracePeriod'
+NC_EVICTION_MINIMUM_RECLAIM = 'evictionMinimumReclaim'
+NC_EVICTION_MAX_POD_GRACE_PERIOD_SECONDS = 'evictionMaxPodGracePeriodSeconds'
+
 
 class Error(core_exceptions.Error):
   """Class for errors raised by container commands."""
@@ -775,6 +780,30 @@ def CalculateMaxNodeNumberByPodRange(cluster_ipv4_cidr):
   return int(pod_range_ips / pod_range_ips_per_node)
 
 
+def LoadEvictionMapConfig(parent_name, opts, msg_type, field_spec):
+  """Loads eviction map configuration.
+
+  Args:
+    parent_name: The parent name of the eviction map configuration.
+    opts: The eviction map configuration contents.
+    msg_type: The message type of the eviction map configuration.
+    field_spec: The field spec of the eviction map configuration.
+
+  Returns:
+    The eviction map configuration message.
+  """
+
+  map_opts = opts.get(parent_name)
+  if map_opts:
+    _CheckNodeConfigFields(parent_name, map_opts, field_spec)
+    msg_instance = msg_type()
+    for key in field_spec:
+      if key in map_opts:
+        setattr(msg_instance, key, map_opts[key])
+    return msg_instance
+  return None
+
+
 def LoadSystemConfigFromYAML(
     node_config, content, opt_readonly_port_flag, messages
 ):
@@ -825,6 +854,10 @@ def LoadSystemConfigFromYAML(
         NC_SINGLE_PROCESS_OOMKILL: bool,
         NC_NODE_SWAP_SIZE_GIB: int,
         NC_MAX_PARALLEL_IMAGE_PULLS: int,
+        NC_EVICTION_SOFT: dict,
+        NC_EVICTION_SOFT_GRACE_PERIOD: dict,
+        NC_EVICTION_MINIMUM_RECLAIM: dict,
+        NC_EVICTION_MAX_POD_GRACE_PERIOD_SECONDS: int,
     }
     _CheckNodeConfigFields(
         NC_KUBELET_CONFIG, kubelet_config_opts, config_fields
@@ -872,6 +905,39 @@ def LoadSystemConfigFromYAML(
     node_config.kubeletConfig.maxParallelImagePulls = kubelet_config_opts.get(
         NC_MAX_PARALLEL_IMAGE_PULLS
     )
+
+    # Populate eviction fields
+    eviction_map_string_fields = {
+        'memoryAvailable': str,
+        'nodefsAvailable': str,
+        'nodefsInodesFree': str,
+        'imagefsAvailable': str,
+        'imagefsInodesFree': str,
+        'pidAvailable': str,
+    }
+
+    node_config.kubeletConfig.evictionSoft = LoadEvictionMapConfig(
+        NC_EVICTION_SOFT,
+        kubelet_config_opts,
+        messages.EvictionSignals,
+        eviction_map_string_fields,
+    )
+    node_config.kubeletConfig.evictionSoftGracePeriod = LoadEvictionMapConfig(
+        NC_EVICTION_SOFT_GRACE_PERIOD,
+        kubelet_config_opts,
+        messages.EvictionGracePeriod,
+        eviction_map_string_fields,
+    )
+    node_config.kubeletConfig.evictionMinimumReclaim = LoadEvictionMapConfig(
+        NC_EVICTION_MINIMUM_RECLAIM,
+        kubelet_config_opts,
+        messages.EvictionMinimumReclaim,
+        eviction_map_string_fields,
+    )
+    node_config.kubeletConfig.evictionMaxPodGracePeriodSeconds = (
+        kubelet_config_opts.get(NC_EVICTION_MAX_POD_GRACE_PERIOD_SECONDS)
+    )
+
     # Parse memory manager.
     memory_manager_opts = kubelet_config_opts.get(NC_MEMORY_MANAGER)
     if memory_manager_opts:

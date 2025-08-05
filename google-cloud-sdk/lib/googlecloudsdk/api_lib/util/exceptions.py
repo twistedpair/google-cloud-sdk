@@ -23,7 +23,10 @@ import collections
 import io
 import json
 import logging
+import os
 import string
+import urllib.parse
+
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -33,9 +36,7 @@ from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
-
 import six
-
 
 # Some formatter characters are special inside {...}. The _Escape / _Expand pair
 # escapes special chars inside {...} and ignores them outside.
@@ -326,6 +327,43 @@ class HttpErrorPayload(FormattableErrorPayload):
       name, value = super(HttpErrorPayload, self)._GetField(name)
     return name, value
 
+  def _GetMTLSEndpointOverride(self, endpoint_override):
+    """Generates mTLS endpoint override for a given endpoint override.
+
+    Args:
+      endpoint_override: The endpoint to generate the mTLS endpoint override
+        for.
+
+    Returns:
+      The mTLS endpoint override, if one exists. Otherwise, None.
+    """
+    if 'sandbox.googleapis.com' in endpoint_override:
+      return endpoint_override.replace(
+          'sandbox.googleapis.com', 'mtls.sandbox.googleapis.com'
+      )
+    elif 'googleapis.com' in endpoint_override:
+      return endpoint_override.replace('googleapis.com', 'mtls.googleapis.com')
+    else:
+      return None
+
+  def _IsMTLSEnabledAndApiEndpointOverridesPresent(self):
+    """Returns whether mTLS is enabled and an endpoint override is present for the current gcloud invocation."""
+    return (
+        properties.VALUES.api_endpoint_overrides.AllValues()
+        and properties.VALUES.context_aware.use_client_certificate.GetBool()
+        and encoding.GetEncodedValue(os.environ, 'CLOUDSDK_INTERNAL_USER')
+        == 'true'
+    )
+
+  def _IsExistingOverrideMTLS(self, endpoint_override):
+    """Returns whether the existing endpoint override is using mTLS already."""
+    urlparsed = urllib.parse.urlparse(endpoint_override)
+    domain_parts = urlparsed.netloc
+    if not domain_parts:
+      return None
+    domain = domain_parts.split('.')[1]
+    return domain.startswith('mtls')
+
   def _ExtractResponseAndJsonContent(self, http_error):
     """Extracts the response and JSON content from the HttpError."""
     response = getattr(http_error, 'response', None)
@@ -368,6 +406,33 @@ class HttpErrorPayload(FormattableErrorPayload):
 
       if not self.status_description:  # Could have been set above.
         self.status_description = self.error_info.get('status', '')
+      if self._IsMTLSEnabledAndApiEndpointOverridesPresent():
+        endpoint_overrides = (
+            properties.VALUES.api_endpoint_overrides.AllValues()
+        )
+        for api_name, endpoint_override in endpoint_overrides.items():
+          mtls_endpoint = self._GetMTLSEndpointOverride(endpoint_override)
+          if (
+              not self._IsExistingOverrideMTLS(endpoint_override)
+              and http_error.url.startswith(endpoint_override)
+              and mtls_endpoint
+          ):
+            self.error_info['message'] = (
+                'Certificate-based access is enabled, but the endpoint override'
+                ' for the following API is not using mTLS: {}. Please update'
+                ' the endpoint override to use mTLS endpoint: {} '.format(
+                    [api_name, endpoint_override], mtls_endpoint
+                )
+            )
+            self.error_info['details'] = [{
+                '@type': 'type.googleapis.com/google.rpc.ErrorInfo',
+                'reason': 'ACCESS_DENIED',
+                'metadata': {
+                    'endpoint_override': endpoint_override,
+                    'mtls_endpoint_override': mtls_endpoint,
+                },
+            }]
+            break
       self.status_message = self.error_info.get('message', '')
       self.details = self.error_info.get('details', [])
       self.violations = self._ExtractViolations(self.details)

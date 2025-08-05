@@ -14,10 +14,6 @@
 # limitations under the License.
 """Common flags for the consumers subcommand group."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import re
 
 from googlecloudsdk.api_lib.services import services_util
@@ -203,6 +199,48 @@ def validate_only_args(parser, suffix='to act on'):
           "Validate the {} action, but don't actually perform it".format(suffix)
       ),
   ).AddToParser(parser)
+
+
+def _bypass_dependency_service_check_flag(parser):
+  base.Argument(
+      '--bypass-dependency-service-check',
+      action='store_true',
+      help=(
+          'If specified, the disable call will bypass the check for'
+          ' dependencies and the dependencies will remain enabled.'
+      ),
+  ).AddToParser(parser)
+
+
+def bypass_api_usage_check_flag(parser):
+  base.Argument(
+      '--bypass-api-usage-check',
+      action='store_true',
+      help=(
+          'If specified, the system will bypass usage checks for services that'
+          ' are being removed. Otherwise, the system will check if the service'
+          ' to be removed was used in the last 30 days or enabled in the last 3'
+          ' days. If so, the system will return an error.'
+      ),
+  ).AddToParser(parser)
+
+
+def _disable_dependency_services_flag(parser):
+  base.Argument(
+      '--disable-dependency-services',
+      action='store_true',
+      help=(
+          ' If specified, the disable call will proceed disabling the service'
+          ' and all the enabled services depend on the service to be disabled'
+      ),
+  ).AddToParser(parser)
+
+
+def add_dependency_check_args(parser):
+  """Adds resource args for command."""
+  dependent_check_group = parser.add_mutually_exclusive_group(required=False)
+  _disable_dependency_services_flag(dependent_check_group)
+  _bypass_dependency_service_check_flag(dependent_check_group)
 
 
 def add_resource_args(parser):

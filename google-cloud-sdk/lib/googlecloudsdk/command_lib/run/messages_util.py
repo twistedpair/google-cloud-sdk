@@ -19,6 +19,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.run import k8s_object
+from googlecloudsdk.core import log
+
 
 def GetSuccessMessageForMultiRegionSynchronousDeploy(service, regions):
   """Returns a user message for a successful synchronous deploy.
@@ -217,3 +220,45 @@ def GetBuildEquivalentForSourceRunMessage(name, pack, source, subgroup=''):
   return msg.format(
       name=name, build_flag=build_flag, source=source, subgroup=subgroup
   )
+
+
+def MaybeLogDefaultGpuTypeMessage(args, resource):
+  """Logs a user message for GPU type default value if it is not provided."""
+  gpu_set = 'gpu' in args and args.gpu
+  gpu_type_set = 'gpu_type' in args and args.gpu_type
+  if 'containers' in args and args.containers:
+    for _, container_args in args.containers.items():
+      if 'gpu' in container_args and container_args.gpu:
+        gpu_set = True
+  has_gpu_type = (
+      resource
+      and resource.template
+      and resource.template.node_selector
+      and resource.template.node_selector.get(k8s_object.GPU_TYPE_NODE_SELECTOR)
+  )
+  if gpu_set and not gpu_type_set and not has_gpu_type:
+    log.status.Print(
+        'No GPU type is provided, defaulting to nvidia-l4. To specify the'
+        ' GPU type use --gpu-type.'
+    )
+
+
+def MaybeLogDefaultGpuTypeMessageForV2Resource(args, resource):
+  """Logs a user message for GPU type default value if it is not provided."""
+  gpu_set = 'gpu' in args and args.gpu
+  gpu_type_set = 'gpu_type' in args and args.gpu_type
+  if 'containers' in args and args.containers:
+    for _, container_args in args.containers.items():
+      if 'gpu' in container_args and container_args.gpu:
+        gpu_set = True
+  has_gpu_type = (
+      resource
+      and resource.template
+      and resource.template.node_selector
+      and resource.template.node_selector.accelerator
+  )
+  if gpu_set and not gpu_type_set and not has_gpu_type:
+    log.status.Print(
+        'No GPU type is provided, defaulting to nvidia-l4. To specify the'
+        ' GPU type use --gpu-type.'
+    )

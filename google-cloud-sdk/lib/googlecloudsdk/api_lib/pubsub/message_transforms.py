@@ -66,7 +66,7 @@ class MessageTransformsClient(object):
       )
 
     try:
-      message_transform = utils.GetMessageTransformFromFile(
+      message_transform = utils.GetMessageTransformFromFileForValidation(
           self.messages.MessageTransform, message_transform_file
       )
     except (

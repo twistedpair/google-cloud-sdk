@@ -3,8 +3,6 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: networkservices v1alpha1 Mesh export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
-required:
-- name
 additionalProperties: false
 properties:
   COMMENT:
@@ -41,19 +39,29 @@ properties:
     - DEBUG_HEADERS
     - ENVOY_HEADERS_UNSPECIFIED
     - NONE
+  forwardProxyServiceAttachments:
+    description: |-
+      Specifies a list of service attachments containing forward proxies
+      facilitating cross-network connectivity. Format:
+      projects/{project}/regions/{region}/serviceAttachm
+      ents/{service_attachment}
+    type: array
+    items:
+      type: string
   interceptionPort:
     description: |-
       If set to a valid TCP port (1-65535), instructs the SIDECAR proxy to
-      listen on the specified port of localhost (127.0.0.1) address. The SIDECAR
-      proxy will expect all traffic to be redirected to this port regardless of
-      its actual ip:port destination. If unset, a port '15001' is used as the
-      interception port. This is applicable only for sidecar proxy deployments.
+      listen on the specified port of localhost (127.0.0.1) address. The
+      SIDECAR proxy will expect all traffic to be redirected to this port
+      regardless of its actual ip:port destination. If unset, a port '15001'
+      is used as the interception port. This is applicable only for sidecar
+      proxy deployments.
     type: integer
   labels:
     description: Set of label tags associated with the Mesh resource.
     $ref: LabelsValue.yaml
   name:
     description: |-
-      Name of the Mesh resource. It matches pattern
+      Identifier. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
     type: string

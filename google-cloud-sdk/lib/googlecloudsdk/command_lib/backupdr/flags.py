@@ -538,8 +538,9 @@ def AddBackupRetentionInheritance(parser):
   )
 
 
-def AddBackupEnforcedRetentionEndTime(parser):
-  """Adds the --enforced-retention-end-time flag to the given parser."""
+def AddUpdateBackupFlags(parser):
+  """Adds the --enforced-retention-end-time and --expire-time flags to the given parser."""
+  group = parser.add_argument_group('Update Backup Flags', required=True)
   help_text = """
    Backups cannot be deleted until this time or later. This period can be extended, but not shortened.
    It should be specified in the format of "YYYY-MM-DD".
@@ -548,25 +549,19 @@ def AddBackupEnforcedRetentionEndTime(parser):
      1. Enforced retention cannot be extended past the expiry time.
      2. Enforced retention can only be updated for finalized backups.
   """
-
-  parser.add_argument(
+  group.add_argument(
       '--enforced-retention-end-time',
-      required=True,
       type=arg_parsers.Datetime.Parse,
       help=help_text,
   )
-
-
-def AddBackupExpireTime(parser):
-  """Adds the --expire-time flag to the given parser."""
-  help_text = """
-   The date when this backup is automatically expired. This date can be extended, but not shortened. It should be specified in the format of "YYYY-MM-DD"."""
-  parser.add_argument(
+  group.add_argument(
       '--expire-time',
-      required=True,
       type=arg_parsers.Datetime.Parse,
-      help=help_text,
-      hidden=True,
+      help=(
+          'The date when this backup is automatically expired. This date can'
+          ' be extended, but not shortened. It should be specified in the'
+          ' format of "YYYY-MM-DD".'
+      ),
   )
 
 
@@ -662,7 +657,6 @@ def AddBackupVaultAccessRestrictionEnumFlag(parser, command: str):
         ' Engine VMs, databases, and file systems).'
     )
     default = 'within-org'
-    hidden = False
   else:
     help_text = """
 Authorize certain sources and destinations for data being sent into, or restored from the current backup vault.
@@ -692,13 +686,11 @@ Access restrictions can be modified to be more or less restrictive.
         *   `WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA` to `UNRESTRICTED`
     """
     default = None
-    hidden = True
 
   parser.add_argument(
       '--access-restriction',
       choices=choices,
       default=default,
-      hidden=hidden,
       help=help_text,
   )
 
@@ -714,7 +706,6 @@ def AddForceUpdateAccessRestriction(parser):
       '--force-update-access-restriction',
       action='store_true',
       help=help_text,
-      hidden=True,
   )
 
 

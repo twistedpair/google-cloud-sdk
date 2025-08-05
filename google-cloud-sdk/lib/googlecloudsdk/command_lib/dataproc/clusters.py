@@ -17,7 +17,7 @@
 import collections
 import re
 import textwrap
-
+from typing import Dict, List
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
@@ -39,7 +39,17 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import times
 import six
 
+
 GENERATED_LABEL_PREFIX = 'goog-dataproc-'
+
+VALID_DISK_TYPES = (
+    'hyperdisk-balanced',
+    'hyperdisk-extreme',
+    'hyperdisk-ml',
+    'hyperdisk-throughput',
+)
+
+ALLOWED_DISK_CONFIG_KEYSET = frozenset({'type', 'size', 'iops', 'throughput'})
 
 
 # beta is unused but still useful when we add new beta features
@@ -622,6 +632,40 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       '--secondary-worker-boot-disk-provisioned-throughput',
       help=boot_disk_provisioned_throughput_detailed_help,
       type=int,
+      hidden=True,
+  )
+
+  attached_disk_detailed_help = """\
+      A list of disk configurations to attach to nodes.
+      Each configuration should be a string with the format:
+      type=<disk_type>,(optional)size=<size>,(optional)iops=<iops>,
+      (optional)throughput=<throughput>, separated by semicolon.
+
+      Allowed disk types are: hyperdisk-balanced, hyperdisk-extreme,
+      hyperdisk-ml, hyperdisk-throughput.
+
+      Example:
+      type=hyperdisk-balanced,iops=1000,throughput=500,size=100G;type=hyperdisk-throughput,size=2000G'
+      """
+
+  parser.add_argument(
+      '--master-attached-disks',
+      help=attached_disk_detailed_help,
+      type=DiskConfigParser(),
+      hidden=True,
+  )
+
+  parser.add_argument(
+      '--worker-attached-disks',
+      help=attached_disk_detailed_help,
+      type=DiskConfigParser(),
+      hidden=True,
+  )
+
+  parser.add_argument(
+      '--secondary-worker-attached-disks',
+      help=attached_disk_detailed_help,
+      type=DiskConfigParser(),
       hidden=True,
   )
 
@@ -1439,6 +1483,7 @@ def GetClusterConfig(
               'Master',
               args.master_boot_disk_provisioned_iops,
               args.master_boot_disk_provisioned_throughput,
+              args.master_attached_disks,
           ),
           minCpuPlatform=args.master_min_cpu_platform,
           instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
@@ -1460,6 +1505,7 @@ def GetClusterConfig(
               'Worker',
               args.worker_boot_disk_provisioned_iops,
               args.worker_boot_disk_provisioned_throughput,
+              args.worker_attached_disks,
           ),
           minCpuPlatform=args.worker_min_cpu_platform,
           instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
@@ -1702,6 +1748,7 @@ def GetClusterConfig(
                 'Secondary worker',
                 args.secondary_worker_boot_disk_provisioned_iops,
                 args.secondary_worker_boot_disk_provisioned_throughput,
+                args.secondary_worker_attached_disks,
             ),
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetInstanceGroupPreemptibility(
@@ -2002,6 +2049,7 @@ def GetDiskConfig(
     node_type,
     boot_disk_provisioned_iops=None,
     boot_disk_provisioned_throughput=None,
+    attached_disk_configs=None,
 ):
   """Get dataproc cluster disk configuration.
 
@@ -2015,6 +2063,7 @@ def GetDiskConfig(
       worker, Driver pool
     boot_disk_provisioned_iops: Provisioned IOPS of the boot disk
     boot_disk_provisioned_throughput: Provisioned throughput of the boot disk
+    attached_disk_configs: Attached disks of the node.
 
   Returns:
     disk_config: Dataproc cluster disk configuration
@@ -2050,6 +2099,50 @@ def GetDiskConfig(
           f' {boot_disk_provisioned_throughput}.'
       )
 
+  attached_disk_configs_messages = []
+  if attached_disk_configs:
+    for attached_disk_config in attached_disk_configs:
+      disk = dataproc.messages.AttachedDiskConfig()
+      disk.diskType = (
+          dataproc.messages.AttachedDiskConfig.DiskTypeValueValuesEnum(
+              'DISK_TYPE_UNSPECIFIED'
+          )
+      )
+      if attached_disk_config.get('type') == 'hyperdisk-balanced':
+        disk.diskType = (
+            dataproc.messages.AttachedDiskConfig.DiskTypeValueValuesEnum(
+                'HYPERDISK_BALANCED'
+            )
+        )
+      if attached_disk_config.get('type') == 'hyperdisk-extreme':
+        disk.diskType = (
+            dataproc.messages.AttachedDiskConfig.DiskTypeValueValuesEnum(
+                'HYPERDISK_EXTREME'
+            )
+        )
+      if attached_disk_config.get('type') == 'hyperdisk-ml':
+        disk.diskType = (
+            dataproc.messages.AttachedDiskConfig.DiskTypeValueValuesEnum(
+                'HYPERDISK_ML'
+            )
+        )
+      if attached_disk_config.get('type') == 'hyperdisk-throughput':
+        disk.diskType = (
+            dataproc.messages.AttachedDiskConfig.DiskTypeValueValuesEnum(
+                'HYPERDISK_THROUGHPUT'
+            )
+        )
+      disk_size = attached_disk_config.get('size')
+      if disk_size:
+        disk.diskSizeGb = int(disk_size)
+      iops = attached_disk_config.get('iops')
+      if iops:
+        disk.provisionedIops = int(iops)
+      throughput = attached_disk_config.get('throughput')
+      if throughput:
+        disk.provisionedThroughput = int(throughput)
+      attached_disk_configs_messages.append(disk)
+
   return dataproc.messages.DiskConfig(
       bootDiskType=boot_disk_type,
       bootDiskSizeGb=boot_disk_size,
@@ -2057,6 +2150,7 @@ def GetDiskConfig(
       bootDiskProvisionedThroughput=boot_disk_provisioned_throughput,
       numLocalSsds=num_local_ssds,
       localSsdInterface=local_ssd_interface,
+      attachedDiskConfigs=attached_disk_configs_messages,
   )
 
 
@@ -2743,3 +2837,156 @@ class ArgMultiValueDict:
       )
       arg_dict.setdefault(key, []).append(value)
     return arg_dict
+
+
+class DiskConfigParser(object):
+  """Parses and validates disk configurations provided as a string.
+
+  This class takes a string representing disk configurations, parses them,
+  validates each configuration, and returns a list of dictionaries, where each
+  dictionary represents a valid disk configuration.
+
+  The expected format for the input string is a semi-colon separated list of
+  disk configurations. Each disk configuration is a comma-separated list of
+  key-value pairs, where the key and value are separated by an equals sign (=).
+
+  Example:
+      'type=pd-ssd,size=100GB,iops=2000;type=pd-standard,size=5TB'
+
+  Attributes:
+      binary_size_parser: An instance of arg_parsers.BinarySize used to parse
+        and validate disk sizes. It is initialized with a lower bound of '4GB'
+        and suggested scales of 'GB' and 'TB'.
+  """
+
+  def __init__(self):
+    self.binary_size_parser = arg_parsers.BinarySize(
+        lower_bound='4GB', suggested_binary_size_scales=['GB', 'TB']
+    )
+
+  def __call__(self, value: str) -> List[Dict[str, str]]:
+    """Parses and validates a string of disk configurations.
+
+    Args:
+        value: A string containing the disk configurations, or an empty string.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents a valid disk
+        configuration. Returns an empty list if the input string is empty.
+
+    Raises:
+        exceptions.ArgumentError: If the input is not a string, if a disk
+          configuration is invalid, or if any validation fails.
+    """
+    if not value:
+      return []
+    if not isinstance(value, str):
+      raise exceptions.ArgumentError(
+          f'Expected string for disk configuration, but got {type(value)}'
+      )
+    disk_configs = value.split(';')
+    result = []
+    for config in disk_configs:
+      config = config.strip()
+      if not config:
+        continue
+      try:
+        disk_data = self._ParseKeyValuePairs(config)
+      except ValueError as e:
+        raise exceptions.ArgumentError(
+            f'Invalid disk configuration: {config}. {e}'
+        ) from e
+      self._ValidateDiskData(disk_data)
+      result.append(disk_data)
+    return result
+
+  def _ParseKeyValuePairs(self, config: str) -> Dict[str, str]:
+    """Parses a single disk configuration string into a dictionary.
+
+    Args:
+        config: A string representing a single disk configuration (e.g.,
+          'type=pd-ssd,size=100GB').
+
+    Returns:
+        A dictionary containing the key-value pairs of the disk configuration.
+
+    Raises:
+        ValueError: If the input string is not in the expected key=value format,
+          or if a key is duplicated.
+    """
+    disk_data = {}
+    pairs = config.split(',')
+    for pair in pairs:
+      if '=' not in pair:
+        raise ValueError(
+            f'Invalid key-value pair: {pair}. It should follow format:'
+            ' key=value'
+        )
+      key, value = pair.split('=', 1)
+      key = key.strip()
+      value = value.strip()
+      if key in disk_data:
+        raise ValueError(f'Duplicate key: {key}')
+      disk_data[key] = value
+    return disk_data
+
+  def _ValidateDiskData(self, disk_data: Dict[str, str]):
+    """Validates the disk data provided for attached disks.
+
+    This method checks that:
+      - All keys in the disk_data dictionary are in the
+      `ALLOWED_DISK_CONFIG_KEYSET`.
+      - The 'type' key is present and has a valid value.
+      - The 'size' value, if present, can be parsed by `binary_size_parser`.
+      - The 'iops' value, if present, is a positive integer.
+      - The 'throughput' value, if present, is a positive integer.
+
+    Args:
+        disk_data: A dictionary representing the disk configuration.
+
+    Raises:
+        exceptions.ArgumentError: If any of the validation rules fail.
+    """
+    for key in disk_data.keys():
+      if key not in ALLOWED_DISK_CONFIG_KEYSET:
+        raise exceptions.ArgumentError(
+            f'Invalid key: {key}. Allowed keys are:'
+            f' {", ".join(ALLOWED_DISK_CONFIG_KEYSET)}'
+        )
+    if 'type' not in disk_data or not disk_data['type']:
+      raise exceptions.ArgumentError('Disk type is required')
+    if disk_data['type'] not in VALID_DISK_TYPES:
+      raise exceptions.ArgumentError(
+          f"Invalid disk type: {disk_data['type']}. "
+          f"It must be one of: {', '.join(VALID_DISK_TYPES)}"
+      )
+    if 'size' in disk_data and disk_data['size']:
+      try:
+        disk_data['size'] = int(
+            self.binary_size_parser(disk_data['size']) / (1024 * 1024 * 1024)
+        )
+      except arg_parsers.ArgumentTypeError as e:
+        raise exceptions.ArgumentError(
+            f"Invalid disk size: {disk_data['size']}, {e}"
+        )
+    if (
+        'iops' in disk_data
+        and disk_data['iops']
+        and (not disk_data['iops'].isdigit() or int(disk_data['iops']) <= 0)
+    ):
+      raise exceptions.ArgumentError(
+          f"Invalid iops value: {disk_data['iops']}, It should be a positive"
+          ' number'
+      )
+    if (
+        'throughput' in disk_data
+        and disk_data['throughput']
+        and (
+            not disk_data['throughput'].isdigit()
+            or int(disk_data['throughput']) <= 0
+        )
+    ):
+      raise exceptions.ArgumentError(
+          f"Invalid throughput value: {disk_data['throughput']}, It should be a"
+          ' positive number'
+      )

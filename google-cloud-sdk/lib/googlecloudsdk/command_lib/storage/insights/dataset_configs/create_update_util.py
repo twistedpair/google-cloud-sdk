@@ -96,11 +96,11 @@ def get_existing_source_config(dataset_config_relative_name, client):
 
 
 def get_new_source_config(
-    organization_number, source_projects_list, source_folders_list
+    organization_scope, source_projects_list, source_folders_list
 ):
   """Gets the new scope for the dataset config."""
-  if organization_number is not None:
-    return f'Organization: {organization_number}'
+  if organization_scope:
+    return f'organizationScope: {organization_scope}'
   elif source_projects_list is not None:
     return f'sourceProjects: {source_projects_list}'
   elif source_folders_list is not None:

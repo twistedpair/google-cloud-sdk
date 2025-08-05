@@ -976,7 +976,11 @@ class Collections(enum.Enum):
       'zoneVmExtensionPolicies',
       'projects/{project}/zones/{zone}/vmExtensionPolicies/'
       '{vmExtensionPolicy}',
-      {},
+      {
+          '':
+              'projects/{project}/zones/{zone}/vmExtensionPolicies/'
+              '{vmExtensionPolicy}',
+      },
       ['project', 'zone', 'vmExtensionPolicy'],
       True
   )

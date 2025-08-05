@@ -74,6 +74,19 @@ lbEdgeExtension:
     help: |
       The ID of the `LbEdgeExtension`.
 
+lbTcpExtension:
+  name: LbTcpExtension
+  collection: networkservices.projects.locations.lbTcpExtensions
+  request_id_field: lbTcpExtensionId
+  attributes:
+  - *project
+  - *location
+  - &lbTcpExtension:
+    parameter_name: lbTcpExtensionsId
+    attribute_name: lb_tcp_extension
+    help: |
+      The ID of the `LbTcpExtension`.
+
 lbObservabilityExtension:
   name: LbObservabilityExtension
   collection: networkservices.projects.locations.lbObservabilityExtensions

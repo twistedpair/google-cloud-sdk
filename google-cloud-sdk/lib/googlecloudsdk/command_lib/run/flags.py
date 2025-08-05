@@ -1683,7 +1683,7 @@ def AddMaxUnavailableFlag(parser, resource_kind='service'):
 
 
 def AddScalingFlag(
-    parser, release_track=base.ReleaseTrack.BETA, resource_kind='service'
+    parser, release_track=base.ReleaseTrack.GA, resource_kind='service'
 ):
   """Add scaling flag."""
   # For worker pools in BETA, we only support manual scaling with a fixed

@@ -116,8 +116,11 @@ def _get_digesters(component_number, resource):
 
   if not digesters:
     log.warning(
-        'Found no hashes to validate download of object: %s.'
-        ' Integrity cannot be assured without hashes.', resource)
+        'Found no hashes to validate download of object: %s. Component number:'
+        ' %s. Integrity cannot be assured without hashes.',
+        resource,
+        component_number,
+    )
 
   return digesters
 

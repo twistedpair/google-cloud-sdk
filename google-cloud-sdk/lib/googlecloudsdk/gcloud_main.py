@@ -165,6 +165,13 @@ def CreateCLI(surfaces, translator=None):
       os.path.join(pkg_root, 'surface', 'bigtable', 'instances', 'tables'),
   )
 
+  # TODO(b/399010656): Clone 'migration' surface into 'compute/migration'.
+  # TODO(b/433619731): Remove cloned migration commands after a suitable
+  # deprecation period.
+  loader.AddModule(
+      'compute.migration', os.path.join(pkg_root, 'surface', 'migration', 'vms')
+  )
+
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.
   exclude_commands = r'gcloud\.components\..*|gcloud\.version'

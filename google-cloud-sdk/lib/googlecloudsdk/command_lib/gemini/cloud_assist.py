@@ -15,9 +15,10 @@
 """Common logic for gemini cloud assist commands."""
 
 import textwrap
+from googlecloudsdk.core import resource
 
 
-def InputObservationShort(observation):
+def InputMarkdownShort(observation):
   """Returns a short human-readable string representation of an input observation.
 
   There is no gaurentee of output stability over time.
@@ -28,10 +29,18 @@ def InputObservationShort(observation):
   Returns:
     A string representing the observation.
   """
-  return observation["text"] if "text" in observation else ""
+
+  ret = textwrap.dedent("""\
+        ### {}
+        {}
+        """).format(
+      observation["id"],
+      observation["text"],
+  )
+  return ret
 
 
-def ObservationShort(observation):
+def ObservationMarkdownShort(observation):
   """Returns a short human-readable string representation of an observation.
 
   There is no gaurentee of output stability over time.
@@ -42,12 +51,14 @@ def ObservationShort(observation):
   Returns:
     A string representing the observation.
   """
-  return "{}".format(
+  ret = textwrap.dedent("""\
+        ### {}""").format(
       observation["title"] if "title" in observation else "No Title",
   )
+  return ret
 
 
-def HypothesisObservationShort(observation):
+def HypothesisMarkdownShort(observation):
   """Returns a short human-readable string representation of a hypothesis observation.
 
   There is no gaurentee of output stability over time.
@@ -68,16 +79,17 @@ def HypothesisObservationShort(observation):
     else:
       short_text = observation["text"]
 
-  return textwrap.dedent("""\
-        {}
+  ret = textwrap.dedent("""\
+        ### {}
         {}
         """).format(
       observation["title"] if "title" in observation else "No Title",
-      textwrap.indent(short_text, "  "),
+      short_text,
   )
+  return ret
 
 
-def InvestigationShort(investigation):
+def InvestigationMarkdownShort(investigation):
   """Returns a short human-readable string representation of an investigation.
 
   There is no gaurentee of output stability over time.
@@ -88,29 +100,26 @@ def InvestigationShort(investigation):
   Returns:
     A string representing the investigation.
   """
-  inputs, observations, hypotheses = ExtractObservations(investigation)
-
-  short_format = textwrap.dedent("""\
+  long_format = textwrap.dedent("""\
+        # {}
         Name: {}
-        Title: {}
         Status: {}
-        Input:
+        ## Inputs
         {}
-        Observations:
+        ## Observations
         {}
-        Hypotheses:
+
+        ## Hypotheses
         {}
         """).format(
-      investigation["name"],
       investigation["title"] if "title" in investigation else "No Title",
+      investigation["name"],
       investigation["executionState"],
-      textwrap.indent("\n".join(map(InputObservationShort, inputs)), "  "),
-      textwrap.indent("\n".join(map(ObservationShort, observations)), "  "),
-      textwrap.indent(
-          "\n".join(map(HypothesisObservationShort, hypotheses)), "  "
-      ),
+      "\n".join(map(InputMarkdownShort, investigation["inputs"])),
+      "\n".join(map(ObservationMarkdownShort, investigation["observations"])),
+      "\n".join(map(HypothesisMarkdownShort, investigation["hypotheses"])),
   )
-  return short_format
+  return long_format
 
 
 def GetTimestamp(observation):
@@ -132,7 +141,7 @@ def GetTimestamp(observation):
   return start_time, end_time
 
 
-def InputObservationDetailed(observation):
+def InputMarkdownDetailed(observation):
   """Returns a detailed human-readable string representation of an input observation.
 
   There is no gaurentee of output stability over time.
@@ -146,28 +155,29 @@ def InputObservationDetailed(observation):
   start_time, end_time = GetTimestamp(observation)
 
   relevant_resources = (
-      "\n".join(observation["relevantResources"])
+      "".join([f"- {r}\n" for r in observation["relevantResources"]])
       if "relevantResources" in observation
       else ""
   )
 
   ret = textwrap.dedent("""\
-        Issue:
-        {}
+        ### {}
         Start Time: {}
         End Time: {}
-        Relevant Resources:
+        {}
+        #### Relevant Resources
         {}
         """).format(
-      textwrap.indent(observation["text"], "  "),
+      observation["id"],
       start_time,
       end_time,
-      textwrap.indent(relevant_resources, "  "),
+      observation["text"],
+      relevant_resources,
   )
   return ret
 
 
-def ObservationDetailed(observation):
+def ObservationMarkdownDetailed(observation):
   """Returns a detailed human-readable string representation of an observation.
 
   There is no gaurentee of output stability over time.
@@ -179,23 +189,31 @@ def ObservationDetailed(observation):
     A string representing the observation.
   """
   start_time, end_time = GetTimestamp(observation)
+  relevant_resources = (
+      "".join([f"- {r}\n" for r in observation["relevantResources"]])
+      if "relevantResources" in observation
+      else ""
+  )
   ret = textwrap.dedent("""\
+        ### {}
+        Type: {}
+        Start Time: {}
+        End Time: {}
         {}
-          Type: {}
-          Start Time: {}
-          End Time: {}
+        #### Relevant Resources
         {}
         """).format(
       observation["title"] if "title" in observation else "No Title",
       observation["observationType"],
       start_time,
       end_time,
-      textwrap.indent(observation["text"], "  "),
+      observation["text"],
+      relevant_resources,
   )
   return ret
 
 
-def HypothesisObservationDetailed(observation):
+def HypothesisMarkdownDetailed(observation):
   """Returns a detailed human-readable string representation of a hypothesis observation.
 
   There is no gaurentee of output stability over time.
@@ -206,18 +224,24 @@ def HypothesisObservationDetailed(observation):
   Returns:
     A string representing the observation.
   """
+  # Hypotheses use level-3 headings, we want them to become level-4 headings
+  lines = observation["text"].split("\n")
+  for i in range(len(lines)):
+    if lines[i].startswith("#"):
+      lines[i] = "#" + lines[i]
+  edited_text = "\n".join(lines)
 
   ret = textwrap.dedent("""\
-        {}
+        ### {}
         {}
         """).format(
       observation["title"] if "title" in observation else "No Title",
-      textwrap.indent(observation["text"], "  "),
+      edited_text,
   )
   return ret
 
 
-def InvestigationDetailed(investigation):
+def InvestigationMarkdownDetailed(investigation):
   """Returns a detailed human-readable string representation of an investigation.
 
   There is no gaurentee of output stability over time.
@@ -228,29 +252,51 @@ def InvestigationDetailed(investigation):
   Returns:
     A string representing the investigation.
   """
-  inputs, observations, hypotheses = ExtractObservations(investigation)
-
   long_format = textwrap.dedent("""\
+        # {}
         Name: {}
-        Title: {}
         Status: {}
-        Input:
+        ## Inputs
         {}
-        Observations:
+        ## Observations
         {}
-        Hypotheses:
+        ## Hypotheses
         {}
         """).format(
-      investigation["name"],
       investigation["title"] if "title" in investigation else "No Title",
+      investigation["name"],
       investigation["executionState"],
-      textwrap.indent("\n".join(map(InputObservationDetailed, inputs)), "  "),
-      textwrap.indent("\n".join(map(ObservationDetailed, observations)), "  "),
-      textwrap.indent(
-          "\n".join(map(HypothesisObservationDetailed, hypotheses)), "  "
+      "\n".join(map(InputMarkdownDetailed, investigation["inputs"])),
+      "\n".join(
+          map(ObservationMarkdownDetailed, investigation["observations"])
       ),
+      "\n".join(map(HypothesisMarkdownDetailed, investigation["hypotheses"])),
   )
   return long_format
+
+
+def ReformatInvestigation(investigation):
+  """Transforms an investigation into an alternate format of the investigation.
+
+  This format will have observations grouped by type, with some filtered out for
+  improved human readability.
+
+  Args:
+    investigation: A dict representing an investigation.
+
+  Returns:
+    A dict representing the investigation.
+  """
+  investigation = resource.resource_projector.MakeSerializable(investigation)
+  inputs, observations, hypotheses = ExtractObservations(investigation)
+  return {
+      "name": investigation["name"],
+      "title": investigation["title"],
+      "executionState": investigation["executionState"],
+      "inputs": inputs,
+      "observations": observations,
+      "hypotheses": hypotheses,
+  }
 
 
 _IGNORED_OBSERVATION_TYPES = [

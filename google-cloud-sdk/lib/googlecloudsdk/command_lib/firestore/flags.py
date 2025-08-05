@@ -264,17 +264,15 @@ def AddRecurrenceFlag(parser):
   )
 
 
-def AddEncryptionConfigGroup(parser, source_type, hidden=False):
+def AddEncryptionConfigGroup(parser, source_type):
   """Adds flags for the database's encryption configuration to the given parser.
 
   Args:
     parser: The argparse parser.
     source_type: "backup" if a restore; "database" if a clone
-    hidden: Whether the flag is hidden, a bool.
   """
   encryption_config = parser.add_argument_group(
       required=False,
-      hidden=hidden,
       help=textwrap.dedent(string.Template("""\
             The encryption configuration of the new database being created from the $source_type.
             If not specified, the same encryption settings as the $source_type will be used.
@@ -346,13 +344,12 @@ def AddKmsKeyNameFlag(parser, additional_help_text=None):
   )
 
 
-def AddDestinationDatabase(parser, action_name, source_type, hidden=False):
+def AddDestinationDatabase(parser, action_name, source_type):
   parser.add_argument(
       '--destination-database',
       metavar='DESTINATION_DATABASE',
       type=str,
       required=True,
-      hidden=hidden,
       help=textwrap.dedent(f"""\
           Destination database to {action_name} to. Destination database will be created in the same location as the source {source_type}.
 
@@ -369,20 +366,18 @@ def AddDestinationDatabase(parser, action_name, source_type, hidden=False):
   )
 
 
-def AddTags(parser, resource_type, hidden=False):
+def AddTags(parser, resource_type):
   """Adds the --tags flag to the given parser.
 
   Args:
     parser: The parser to add the flag to.
     resource_type: The resource type to use in the help text (e.g. 'database').
-    hidden: Whether the flag is hidden, a bool.
   """
   parser.add_argument(
       '--tags',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       default=None,
-      hidden=hidden,
       help=textwrap.dedent(f"""\
           Tags to attach to the destination {resource_type}. Example: --tags=key1=value1,key2=value2
 

@@ -131,10 +131,14 @@ def _check_if_gcloud_crc32c_available(install_if_missing=False):
     # install or the user doesn't have access to the gcloud components manager.
     # This property will prevent automatic installation in the future, but it
     # won't prevent gcloud-crc32c from being used if later installed separately.
+    log.debug(
+        'gcloud-crc32c can not be found on the path. The user may have opted'
+        ' out of installation or lack component manager access.'
+    )
     properties.VALUES.storage.use_gcloud_crc32c.Set(False)
   except:  # pylint: disable=bare-except
     # Other errors that happen during installation checks aren't fatal.
-    pass
+    log.debug('Failed to check if gcloud-crc32c is available.')
   return False
 
 

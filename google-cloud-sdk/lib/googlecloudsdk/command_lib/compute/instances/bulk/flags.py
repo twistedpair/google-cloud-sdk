@@ -378,6 +378,7 @@ def AddCommonBulkInsertArgs(
     support_igmp_query=False,
     support_graceful_shutdown=False,
     support_flex_start=False,
+    support_source_snapshot_region=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -389,6 +390,7 @@ def AddCommonBulkInsertArgs(
       image_csek=True,
       include_name=False,
       support_boot=True,
+      support_source_snapshot_region=support_source_snapshot_region,
   )
   instances_flags.AddCanIpForwardArgs(parser)
   instances_flags.AddAcceleratorArgs(parser)
@@ -428,7 +430,11 @@ def AddCommonBulkInsertArgs(
       support_igmp_query=support_igmp_query,
   )
 
-  instances_flags.AddImageArgs(parser, enable_snapshots=True)
+  instances_flags.AddImageArgs(
+      parser,
+      enable_snapshots=True,
+      support_source_snapshot_region=support_source_snapshot_region,
+  )
   instances_flags.AddShieldedInstanceConfigArgs(parser)
   instances_flags.AddNestedVirtualizationArgs(parser)
   instances_flags.AddThreadsPerCoreArgs(parser)

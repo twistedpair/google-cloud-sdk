@@ -451,9 +451,11 @@ def CheckForInstalledBinary(binary_name,
 
   path_executable = files.FindExecutableOnPath(binary_name)
   if path_executable:
+    log.debug('Found executable on path: %s', path_executable)
     return path_executable
 
   if install_if_missing:
+    log.debug('Installing %s...', binary_name)
     return InstallBinaryNoOverrides(
         binary_name, _INSTALL_MISSING_EXEC_PROMPT.format(binary=binary_name))
 

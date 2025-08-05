@@ -2772,6 +2772,8 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
       and that have the same collection ID as this index.
     shardCount: Optional. The number of shards for the index.
     state: Output only. The serving state of the index.
+    unique: Optional. Whether it is an unique index. Unique index ensures all
+      values for the indexed field(s) are unique across documents.
   """
 
   class ApiScopeValueValuesEnum(_messages.Enum):
@@ -2868,6 +2870,7 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
   queryScope = _messages.EnumField('QueryScopeValueValuesEnum', 6)
   shardCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+  unique = _messages.BooleanField(9)
 
 
 class GoogleFirestoreAdminV1IndexConfig(_messages.Message):

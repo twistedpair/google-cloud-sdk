@@ -485,6 +485,8 @@ apis:
           path: projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}
         zones:
           path: projects/{project}/zones/{zone}
+        zoneVmExtensionPolicies:
+          path: projects/{project}/zones/{zone}/vmExtensionPolicies/{vmExtensionPolicy}
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:

@@ -5,6 +5,62 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 533.0.0 (2025-08-05)
+
+### AI
+
+* Updated `gcloud ai model-garden models deploy` command to allow deploy a model from custom weights.
+* Added `asia-south2` option to `--region` flag of `gcloud ai custom-jobs`.
+
+### BigQuery
+
+* Fixed a bug where incorrect query parameters are set when `--replace_data` flag is specified.
+
+### Cloud Backup DR
+
+*   Added `--access-restriction` flag to `gcloud backup-dr backup-vaults update` to update backup-vault's access restriction.
+*   Added `--force-update-access-restriction` flag to `gcloud backup-dr backup-vaults update` to force update backup-vault's access restriction even if there are non-compliant data sources.
+*   Added `--expire-time` flag to `gcloud backup-dr backups update` to update
+    backup's expire time. When updating a backup, at least one of these must be
+    specified: `--expire-time` or `--enforced-retention-end-time`.
+
+### Cloud Infrastructure Manager
+
+*   Added `--tf-version-constraint` flag to
+`gcloud infra-manager previews create` to specify the Terraform version.
+
+### Cloud Managed Kafka
+
+* Released `--mtls-ca-pools` and `--ssl-principal-mapping-rules` flags to GA.
+
+### Cloud Run
+
+* Promoted `--scaling` flag to GA for `gcloud run deploy` and
+`gcloud run services update`.
+
+### Compute Engine
+
+* Add support for 'FUTURE' disruption schedule option in `gcloud` CLI for report-host-as-faulty command.
+* Support `--provisioning-model` for `gcloud compute instance-templates create-with-container` command.
+
+### Kubernetes Engine
+
+*   Added kubelet config options `evictionSoft`, `evictionSoftGracePeriod`,
+    `evictionMinimumReclaim`, and `evictionMaxPodGracePeriodSeconds` to
+    `gcloud container clusters create`, `gcloud container node-pools create`,
+    and `gcloud container node-pools update` command which defines the
+    eviction behaviors.
+*   Added flag option `--HighScaleCheckpointing` to
+    add support for enabling the HighScaleCheckpointing CSI Driver.
+
+### Network Security
+
+*   Promoted `gcloud network-security org-address-groups --purpose` field to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 532.0.0 (2025-07-29)
 
 ### AI

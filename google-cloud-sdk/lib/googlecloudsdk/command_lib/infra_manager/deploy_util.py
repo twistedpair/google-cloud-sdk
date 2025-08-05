@@ -953,6 +953,7 @@ def Create(
     labels=None,
     annotations=None,
     provider_source=None,
+    tf_version_constraint=None,
 ):
   """Creates a preview.
 
@@ -993,6 +994,8 @@ def Create(
     labels: User-defined metadata for the preview.
     annotations: User-defined annotations for the preview.
     provider_source: Input to control where to fetch providers.
+    tf_version_constraint: User-specified Terraform version constraint, for
+      example, "=1.3.10".
 
   Returns:
     The resulting Preview resource or, in the case that async_ is True, a
@@ -1050,6 +1053,7 @@ def Create(
       labels=labels_message,
       annotations=annotations_message,
       providerConfig=provider_config,
+      tfVersionConstraint=tf_version_constraint,
   )
 
   # set tf_blueprint only when one of the three sources is specified.

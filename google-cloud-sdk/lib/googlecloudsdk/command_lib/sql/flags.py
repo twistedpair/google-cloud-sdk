@@ -1107,6 +1107,19 @@ def AddNetwork(parser, hidden=False):
   )
 
 
+def AddClearNetwork(parser, hidden=False):
+  """Adds the `--clear-network` flag to the parser."""
+  parser.add_argument(
+      '--clear-network',
+      required=False,
+      action='store_true',
+      help=(
+          'Clears the current network configuration.'
+      ),
+      hidden=hidden,
+  )
+
+
 def AddAllocatedIpRangeName(parser):
   """Adds the `--allocated-ip-range-name` flag to the parser."""
   parser.add_argument(

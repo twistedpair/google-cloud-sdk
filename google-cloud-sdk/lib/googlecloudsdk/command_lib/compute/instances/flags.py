@@ -416,8 +416,8 @@ def AddImageArgs(
         '--source-snapshot-region',
         metavar='SOURCE_SNAPSHOT_REGION',
         help="""\
-        Sets the scope for the `--source-snapshot` flag. By default, when
-        specifying an snapshot, the global snapshot scope is used. Use this flag to override this behavior to use regional snapshots.""",
+        Sets the region for the `--source-snapshot` flag. By default, when
+        specifying a snapshot, the global snapshot scope is used. Use this flag to override this behavior to use regionally scoped snapshots.""",
     )
 
 
@@ -1070,7 +1070,7 @@ def AddCreateDiskArgs(
     disk_help += """
       *source-snapshot-region*::: The region of the source snapshot that
       will be used to create the disk. You can provide region name to use
-      regional snapshot as the source snapshot.
+      scoped snapshot as the source snapshot.
       """
     spec['source-snapshot-region'] = str
 

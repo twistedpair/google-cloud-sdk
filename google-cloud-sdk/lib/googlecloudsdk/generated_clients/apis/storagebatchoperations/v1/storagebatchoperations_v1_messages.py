@@ -103,7 +103,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ErrorLogEntry(_messages.Message):
   r"""An entry describing an error that has occurred.
 
@@ -257,6 +256,9 @@ class Job(_messages.Message):
     deleteObject: Delete objects.
     description: Optional. A description provided by the user for the job. Its
       max length is 1024 bytes when Unicode-encoded.
+    dryRun: Optional. If true, the job will run in dry run mode, returning the
+      total object count and, if the object configuration is a prefix list,
+      the bytes found from source. No transformations will be performed.
     errorSummaries: Output only. Summarizes errors encountered with sample
       error log entries.
     loggingConfig: Optional. Logging configuration.
@@ -295,14 +297,15 @@ class Job(_messages.Message):
   createTime = _messages.StringField(4)
   deleteObject = _messages.MessageField('DeleteObject', 5)
   description = _messages.StringField(6)
-  errorSummaries = _messages.MessageField('ErrorSummary', 7, repeated=True)
-  loggingConfig = _messages.MessageField('LoggingConfig', 8)
-  name = _messages.StringField(9)
-  putMetadata = _messages.MessageField('PutMetadata', 10)
-  putObjectHold = _messages.MessageField('PutObjectHold', 11)
-  rewriteObject = _messages.MessageField('RewriteObject', 12)
-  scheduleTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  dryRun = _messages.BooleanField(7)
+  errorSummaries = _messages.MessageField('ErrorSummary', 8, repeated=True)
+  loggingConfig = _messages.MessageField('LoggingConfig', 9)
+  name = _messages.StringField(10)
+  putMetadata = _messages.MessageField('PutMetadata', 11)
+  putObjectHold = _messages.MessageField('PutObjectHold', 12)
+  rewriteObject = _messages.MessageField('RewriteObject', 13)
+  scheduleTime = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class ListJobsResponse(_messages.Message):

@@ -2091,6 +2091,108 @@ class LbRouteExtension(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class LbTcpExtension(_messages.Message):
+  r"""`LbTcpExtension` is a resource that allows traffic forwarding to
+  different backend services to make allow/deny decisions on TCP connections
+  for all L7 Load Balancers within a network. Currently only internal load-
+  balancers are supported.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED`. For more
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the `LbTcpExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    extensionChains: Required. A set of ordered extension chains that contain
+      the match conditions and extensions to execute. Match conditions for
+      each extension chain are evaluated in sequence for a given request. The
+      first extension chain that has a condition that matches the request is
+      executed. Any subsequent extension chains do not execute. Limited to 5
+      extension chains per resource.
+    labels: Optional. Set of labels associated with the `LbTcpExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `INTERNAL_MANAGED`. For more information, refer to
+      [Backend services overview](https://cloud.google.com/load-
+      balancing/docs/backend-service).
+    name: Required. Identifier. Name of the `LbTcpExtension` resource in the
+      following format: `projects/{project}/locations/{location}/LbTcpExtensio
+      n/{lb_tcp_extension}`
+    networks: Optional. If set, this `LbTcpExtension` resource applies to all
+      `ForwardingRule` resources in these VPC networks. Values should be
+      relative resource names identifying VPC networks, for example
+      `projects/*/global/networks/network-1`. Currently limited to 1 network
+      per resource. Limited to 1 network per resource.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    `INTERNAL_MANAGED`. For more information, refer to [Backend services
+    overview](https://cloud.google.com/load-balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `LbTcpExtension` resource.
+    The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  networks = _messages.StringField(7, repeated=True)
+  updateTime = _messages.StringField(8)
+
+
 class LbTrafficExtension(_messages.Message):
   r"""`LbTrafficExtension` is a resource that lets the extension service
   modify the headers and payloads of both requests and responses without
@@ -2388,6 +2490,21 @@ class ListLbRouteExtensionsResponse(_messages.Message):
   """
 
   lbRouteExtensions = _messages.MessageField('LbRouteExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListLbTcpExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `LbTcpExtension` resources.
+
+  Fields:
+    lbTcpExtensions: The list of `LbTcpExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  lbTcpExtensions = _messages.MessageField('LbTcpExtension', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -4452,6 +4569,127 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
   """
 
   lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbTcpExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTcpExtensionsCreateRequest object.
+
+  Fields:
+    lbTcpExtension: A LbTcpExtension resource to be passed as the request
+      body.
+    lbTcpExtensionId: Required. User-provided ID of the `LbTcpExtension`
+      resource to be created.
+    parent: Required. The parent resource of the `LbTcpExtension` resource.
+      Must be in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  lbTcpExtension = _messages.MessageField('LbTcpExtension', 1)
+  lbTcpExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbTcpExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTcpExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the `LbTcpExtension` resource to delete. Must
+      be in the format `projects/{project}/locations/{location}/LbTcpExtension
+      s/{lb_tcp_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsLbTcpExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTcpExtensionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the `LbTcpExtension` resource to get. Must be in
+      the format `projects/{project}/locations/{location}/LbTcpExtensions/{lb_
+      tcp_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsLbTcpExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTcpExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the `LbTcpExtension`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsLbTcpExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbTcpExtensionsPatchRequest object.
+
+  Fields:
+    lbTcpExtension: A LbTcpExtension resource to be passed as the request
+      body.
+    name: Required. Identifier. Name of the `LbTcpExtension` resource in the
+      following format: `projects/{project}/locations/{location}/LbTcpExtensio
+      n/{lb_tcp_extension}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Used to specify the fields to be overwritten in the
+      `LbTcpExtension` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If the user does not specify a
+      mask, then all fields are overwritten.
+  """
+
+  lbTcpExtension = _messages.MessageField('LbTcpExtension', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)

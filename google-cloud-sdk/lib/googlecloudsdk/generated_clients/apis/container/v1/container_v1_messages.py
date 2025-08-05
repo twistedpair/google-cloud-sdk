@@ -1734,6 +1734,17 @@ class ClusterUpgradeInfo(_messages.Message):
   upgradeDetails = _messages.MessageField('UpgradeDetails', 7, repeated=True)
 
 
+class CompleteControlPlaneUpgradeRequest(_messages.Message):
+  r"""CompleteControlPlaneUpgradeRequest sets the name of target cluster to
+  complete upgrade.
+
+  Fields:
+    version: API request version that initiates this operation.
+  """
+
+  version = _messages.StringField(1)
+
+
 class CompleteConvertToAutopilotRequest(_messages.Message):
   r"""CompleteConvertToAutopilotRequest completes the Autopilot conversion for
   a given cluster.
@@ -1926,6 +1937,21 @@ class ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest(_mess
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ContainerProjectsLocationsClustersCompleteControlPlaneUpgradeRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersCompleteControlPlaneUpgradeRequest
+  object.
+
+  Fields:
+    completeControlPlaneUpgradeRequest: A CompleteControlPlaneUpgradeRequest
+      resource to be passed as the request body.
+    name: The name (project, location, cluster) of the cluster to complete
+      upgrade. Specified in the format `projects/*/locations/*/clusters/*`.
+  """
+
+  completeControlPlaneUpgradeRequest = _messages.MessageField('CompleteControlPlaneUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ContainerProjectsLocationsClustersCompleteConvertToAutopilotRequest(_messages.Message):
@@ -2232,6 +2258,21 @@ class ContainerProjectsLocationsOperationsListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2)
   zone = _messages.StringField(3)
+
+
+class ContainerProjectsZonesClustersCompleteControlPlaneUpgradeRequest(_messages.Message):
+  r"""A ContainerProjectsZonesClustersCompleteControlPlaneUpgradeRequest
+  object.
+
+  Fields:
+    completeControlPlaneUpgradeRequest: A CompleteControlPlaneUpgradeRequest
+      resource to be passed as the request body.
+    name: The name (project, location, cluster) of the cluster to complete
+      upgrade. Specified in the format `projects/*/locations/*/clusters/*`.
+  """
+
+  completeControlPlaneUpgradeRequest = _messages.MessageField('CompleteControlPlaneUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
@@ -4119,7 +4160,11 @@ class LustreCsiDriverConfig(_messages.Message):
 
   Fields:
     enableLegacyLustrePort: If set to true, the Lustre CSI driver will install
-      Lustre kernel modules using port 6988.
+      Lustre kernel modules using port 6988. This serves as a workaround for a
+      port conflict with the gke-metadata-server. This field is required ONLY
+      under the following conditions: 1. The GKE node version is older than
+      1.33.2-gke.4655000. 2. You're connecting to a Lustre instance that has
+      the 'gke-support-enabled' flag.
     enabled: Whether the Lustre CSI driver is enabled for this cluster.
   """
 

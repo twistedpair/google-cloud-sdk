@@ -433,43 +433,50 @@ def AddZonalAffinity(parser):
       ],
       type=lambda x: x.replace('-', '_').upper(),
       help="""\
-      Specifies whether zonal affinity is enabled or not.
+      Specifies whether zonal affinity is enabled or not. For further details,
+      refer to [Zonal affinity options](https://cloud.google.com/load-balancing/docs/internal/zonal-affinity#zonal_affinity_options).
 
       Can only be set if load balancing scheme is INTERNAL,
 
       The possible values are:
 
        ZONAL_AFFINITY_DISABLED
-         Zonal Affinity is disabled. The load balancer distributes new
-         connections to all healthy backend endpoints across all zones.
+         Default Value. Zonal Affinity is disabled. The load balancer
+         distributes new connections to all healthy backend VMs across all
+         zones.
 
        ZONAL_AFFINITY_STAY_WITHIN_ZONE
          Zonal Affinity is enabled. The load balancer distributes new
-         connections to all healthy backend endpoints in the local zone only.
-         If there are no healthy backend endpoints in the local zone, the load
-         balancer distributes new connections to all backend endpoints in the
-         local zone.
+         connections to all healthy backend VMs in the client VM's zone only.
+         If there are no healthy backend VMs in the client VM's zone, the load
+         balancer distributes new connections to all backend VMs in the client
+         VM's zone.
 
        ZONAL_AFFINITY_SPILL_CROSS_ZONE
          Zonal Affinity is enabled. The load balancer distributes new
-         connections to all healthy backend endpoints in the local zone only.
-         If there aren't enough healthy backend endpoints in the local zone,
-         the load balancer distributes new connections to all healthy backend
-         endpoints across all zones.
+         connections to all healthy backend VMs in the client VM's zone only.
+         If there aren't enough healthy backend VMs in the client VM's zone,
+         the load balancer distributes some new connections to backend VMs in
+         zones other than the client VM's zone. This distribution depends on a
+         configurable spillover ratio that determines when traffic starts
+         spilling over to backend VMs in other zones.
       """,
   )
   parser.add_argument(
       '--zonal-affinity-spillover-ratio',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help="""\
-      The value of the field must be in [0, 1]. When the ratio of the count
-      of healthy backend endpoints in a zone to the count of backend
-      endpoints in that same zone is equal to or above this threshold, the
-      load balancer distributes new connections to all healthy endpoints in
-      the local zone only. When the ratio of the count of healthy backend
-      endpoints in a zone to the count of backend endpoints in that same
-      zone is below this threshold, the load balancer distributes all new
-      connections to all healthy endpoints across all zones.
+      The value of the field can range from 0.0 to 1.0, inclusive. If not
+      specified, a default value of 0.0 is used.
+
+      This ratio indicates the threshold value for keeping traffic in the client
+      VM's zone. If the proportion of healthy backend VMs in a zone falls below
+      the configured spillover ratio, some new connections from the client VM
+      are distributed to healthy backend VMs in zones other than the client VM's
+      zone.
+
+      For further details, refer to [How ZONAL_AFFINITY_SPILL_CROSS_ZONE and
+      spillover ratio work](https://cloud.google.com/load-balancing/docs/internal/zonal-affinity#zonal-affinity-spillover-ratio).
       """)
 
 
@@ -1370,5 +1377,18 @@ def AddIpPortDynamicForwarding(parser):
       default=None,
       help="""\
       Enables Dynamic Forwarding in IpPort selection mode.
+      """,
+  )
+
+
+def AddAllowMultinetwork(parser):
+  parser.add_argument(
+      '--allow-multinetwork',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      Allow or disallow backend services to be discovered across networks in
+      multi-network meshes. Only available for backend services with
+      --load-balancing-scheme=INTERNAL_SELF_MANAGED. This is disabled by
+      default.
       """,
   )

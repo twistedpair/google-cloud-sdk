@@ -407,8 +407,6 @@ class FetchEffectiveSettingsResponseServiceAccountApproverSettings(_messages.Mes
   can be designated as approvers within PAM entitlements.
 
   Fields:
-    disablementReason: Output only. The reason why service account approvals
-      are disabled.
     enabled: Output only. Indicates whether service account is allowed to
       grant approvals.
     source: Output only. The resource from which the service account approver
@@ -417,37 +415,8 @@ class FetchEffectiveSettingsResponseServiceAccountApproverSettings(_messages.Mes
       default behavior is applied.
   """
 
-  disablementReason = _messages.MessageField('FetchEffectiveSettingsResponseServiceAccountApproverSettingsDisablementReason', 1)
-  enabled = _messages.BooleanField(2)
-  source = _messages.StringField(3)
-
-
-class FetchEffectiveSettingsResponseServiceAccountApproverSettingsDisablementReason(_messages.Message):
-  r"""The reason for disabling service account approvals.
-
-  Enums:
-    TypeValueValuesEnum: Output only. The specific reason type for disabling
-      service account approvals.
-
-  Fields:
-    type: Output only. The specific reason type for disabling service account
-      approvals.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The specific reason type for disabling service account
-    approvals.
-
-    Values:
-      REASON_TYPE_UNSPECIFIED: No specific setting was applied, default PAM
-        behavior in effect.
-      PAM_ADVANCED_TIER_DISABLED: Approval disabled because PAM Advanced tier
-        is disabled.
-    """
-    REASON_TYPE_UNSPECIFIED = 0
-    PAM_ADVANCED_TIER_DISABLED = 1
-
-  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  enabled = _messages.BooleanField(1)
+  source = _messages.StringField(2)
 
 
 class Finding(_messages.Message):

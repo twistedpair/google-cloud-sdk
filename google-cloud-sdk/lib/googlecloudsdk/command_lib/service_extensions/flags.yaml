@@ -4,13 +4,13 @@ wasmPluginVersion:
     api_field: wasmPluginVersion.imageUri
     required: true
     help_text: |
-      URI of the container image containing the plugin's Wasm module, stored in the
+      URI of the image containing the plugin's Wasm module, stored in the
       Artifact Registry.
   pluginConfigUri:
     arg_name: plugin-config-uri
     api_field: wasmPluginVersion.pluginConfigUri
     help_text: |
-      URI of the container image containing the plugin's configuration, stored in the
+      URI of the image containing the plugin's configuration, stored in the
       Artifact Registry.
   description:
     arg_name: description

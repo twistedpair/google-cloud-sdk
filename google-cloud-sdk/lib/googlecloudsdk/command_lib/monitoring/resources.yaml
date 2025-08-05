@@ -16,6 +16,15 @@ snooze:
     attribute_name: snooze
     help: The name of the snooze.
 
+alert:
+  name: alert
+  collection: monitoring.projects.alerts
+  request_id_field: name
+  attributes:
+  - parameter_name: alertsId
+    attribute_name: alert
+    help: The name of the alert.
+
 project:
   name: project
   collection: monitoring.projects
