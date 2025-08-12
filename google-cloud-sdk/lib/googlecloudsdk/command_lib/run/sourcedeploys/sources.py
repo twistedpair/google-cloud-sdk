@@ -42,6 +42,7 @@ def Upload(
     resource_ref,
     source_bucket=None,
     archive_type=ArchiveType.ZIP,
+    respect_gitignore=True,
 ):
   """Uploads a source to a staging bucket.
 
@@ -52,6 +53,8 @@ def Upload(
     resource_ref: The Cloud Run service resource reference.
     source_bucket: The source bucket to upload to, if not None.
     archive_type: The type of archive to upload.
+    respect_gitignore: boolean, whether the users .gitignore file should be
+      respected when creating the achive to upload.
 
   Returns:
     storage_v1_messages.Object, The written GCS object.
@@ -68,7 +71,12 @@ def Upload(
       object=object_name,
   )
   return staging_bucket_util.Upload(
-      source, object_ref, gcs_client, ignore_file=None, hide_logs=True
+      source,
+      object_ref,
+      gcs_client,
+      ignore_file=None,
+      hide_logs=True,
+      respect_gitignore=respect_gitignore,
   )
 
 

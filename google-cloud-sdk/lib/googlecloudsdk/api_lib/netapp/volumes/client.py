@@ -145,6 +145,7 @@ class VolumesClient(object):
       multiple_endpoints=None,
       tiering_policy=None,
       hybrid_replication_parameters=None,
+      throughput_mibps=None,
       cache_parameters=None,
       labels=None,
   ):
@@ -172,6 +173,7 @@ class VolumesClient(object):
         multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy,
         hybrid_replication_parameters=hybrid_replication_parameters,
+        throughput_mibps=throughput_mibps,
         cache_parameters=cache_parameters,
         labels=labels,
     )
@@ -268,6 +270,7 @@ class VolumesClient(object):
       multiple_endpoints=None,
       tiering_policy=None,
       cache_parameters=None,
+      throughput_mibps=None,
   ):
     """Parses updates into a volume config."""
     return self._adapter.ParseUpdatedVolumeConfig(
@@ -294,6 +297,7 @@ class VolumesClient(object):
         multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy,
         cache_parameters=cache_parameters,
+        throughput_mibps=throughput_mibps,
     )
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
@@ -517,6 +521,7 @@ class VolumesAdapter(object):
       multiple_endpoints=None,
       tiering_policy=None,
       hybrid_replication_parameters=None,
+      throughput_mibps=None,
       cache_parameters=None,
       labels=None,
   ):
@@ -546,6 +551,7 @@ class VolumesAdapter(object):
       tiering_policy: the tiering policy for the volume.
       hybrid_replication_parameters: the hybrid replication parameters for the
         volume.
+      throughput_mibps: throughput of the Volume (in MiB/s).
       cache_parameters: the cache parameters for the volume.
       labels: the parsed labels value.
 
@@ -590,6 +596,12 @@ class VolumesAdapter(object):
       self.ParseHybridReplicationParameters(
           volume, hybrid_replication_parameters, self.release_track
       )
+    if (
+        self.release_track == base.ReleaseTrack.ALPHA
+        or self.release_track == base.ReleaseTrack.BETA
+    ):
+      if throughput_mibps is not None:
+        volume.throughputMibps = throughput_mibps
     if cache_parameters is not None:
       self.ParseCacheParameters(volume, cache_parameters)
     return volume
@@ -620,6 +632,7 @@ class VolumesAdapter(object):
       multiple_endpoints=None,
       tiering_policy=None,
       cache_parameters=None,
+      throughput_mibps=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -666,6 +679,8 @@ class VolumesAdapter(object):
       self.ParseTieringPolicy(volume_config, tiering_policy)
     if cache_parameters is not None:
       self.ParseCacheParameters(volume_config, cache_parameters)
+    if throughput_mibps is not None:
+      volume_config.throughputMibps = throughput_mibps
     return volume_config
 
   def ParseBackupConfig(self, volume, backup_config):
@@ -814,10 +829,12 @@ class VolumesAdapter(object):
     )
     cache_config_message = self.messages.CacheConfig()
     for config in cache_parameters.get('cache-config', []):
-      if 'atime-scrub-enabled' in config:
-        cache_config_message.atimeScrubEnabled = (
-            config['atime-scrub-enabled'].lower() == 'true'
-        )
+      # TODO: b/433897931 - Add atime-scrub-enabled and atime-scrub-days
+      # back for AGA
+      # if 'atime-scrub-enabled' in config:
+      #   cache_config_message.atimeScrubEnabled = (
+      #       config['atime-scrub-enabled'].lower() == 'true'
+      #   )
       # if 'atime-scrub-minutes' in config:
       #   cache_config_message.atimeScrubMinutes = int(
       #       config['atime-scrub-minutes']

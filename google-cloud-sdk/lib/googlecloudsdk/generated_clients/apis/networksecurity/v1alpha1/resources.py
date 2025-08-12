@@ -198,29 +198,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_GATEWAYATTACHMENTS = (
-      'projects.locations.gatewayAttachments',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'gatewayAttachments/{gatewayAttachmentsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_GATEWAYATTACHMENTS_GATEWAYENDPOINTS = (
-      'projects.locations.gatewayAttachments.gatewayEndpoints',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'gatewayAttachments/{gatewayAttachmentsId}/gatewayEndpoints/'
-              '{gatewayEndpointsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_GATEWAYSECURITYPOLICIES = (
       'projects.locations.gatewaySecurityPolicies',
       '{+name}',

@@ -39,6 +39,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
   def Create(
       self,
       resource,
+      support_backup_retention_inheritance: bool,
       backup_min_enforced_retention: str,
       description: Optional[str],
       labels: Mapping[str, str],
@@ -56,9 +57,10 @@ class BackupVaultsClient(util.BackupDrClientBase):
         effectiveTime=effective_time,
         accessRestriction=self.ParseAccessRestrictionEnum(access_restriction),
     )
-    backup_vault.backupRetentionInheritance = (
-        self.ParseBackupRetentionInheritanceEnum(backup_retention_inheritance)
-    )
+    if support_backup_retention_inheritance:
+      backup_vault.backupRetentionInheritance = (
+          self.ParseBackupRetentionInheritanceEnum(backup_retention_inheritance)
+      )
     request_id = command_util.GenerateRequestId()
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsCreateRequest(

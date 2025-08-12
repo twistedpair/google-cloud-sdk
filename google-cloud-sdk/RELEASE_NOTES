@@ -5,6 +5,65 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 534.0.0 (2025-08-12)
+
+### Breaking Changes
+
+*   **(Cloud Machine Learning Engine)** Removed `gcloud ml-engine` command group. Use `gcloud ai-platform` instead.
+*   **(Compute Engine)** Modified `--activation-status` flag of
+    `gcloud compute preview-features update` command to change the allowed value
+    from `disabled` to `unspecified`.
+
+
+### Appctl
+
+* Remove the deprecated `appctl` component.
+
+### Cloud Dataflow
+
+* Added support for distroless variants for `--flex-template-base-image` option
+  in `gcloud dataglow flex_template build`.
+
+### Cloud Datastream
+
+*   Added `ProjectId` field to `SourceHierarchyDatasets` message in
+    `--bigquery-destination-config` flag in `gcloud datastream streams create`
+    command to support BigQuery destination in a different project.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.20.1
+  * Minor bug fix.
+
+### Cloud Managed Kafka
+
+* Released `allow-broker-downscale-on-cluster-upscale` flag to GA.
+
+### Cloud NetApp
+
+* Added `throughput-mibps` flag to `gcloud beta netapp volumes create` and `gcloud beta netapp volumes update` commands.
+
+### Compute Engine
+
+* Added `--target-size-policy-mode` flag to
+  `gcloud beta compute instance-groups managed create`.
+* Added `--skip-guest-os-shutdown` flag to `gcloud compute instances` in beta.
+*  Added `--view` flag for beta to
+  `gcloud compute networks subnets describe` and
+  `gcloud compute networks subnets list` to allow users to retrieve the
+  subnetwork utilization.
+
+### GKE Hub
+
+* Promoted `gcloud container fleet packages` to GA.
+* Added `--uninstall` as well as `--memberships` and `--all-memberships` flags
+  to `gcloud beta container fleet config-management disable` to uninstall or
+  unmanage Config Sync on membership clusters.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 533.0.0 (2025-08-05)
 
 ### AI
@@ -117,6 +176,7 @@ resulting job doesn't include statistics about number of bytes processed.
 
 ### Cloud SQL
 
+* Promoted `--instance-type` and `--node-count` flags of `gcloud sql instances create` and `gcloud sql instances patch` to GA.
 * Updated 'cloud-sql-proxy' packaged component to use 2.18.0 of the Cloud SQL Proxy.
   * Made `--skip-failed-instance-config` flag available.
 *   Added `--psc-network-attachment-uri` and

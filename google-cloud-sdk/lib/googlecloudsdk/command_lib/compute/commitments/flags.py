@@ -56,7 +56,6 @@ def _GetFlagToPlanMap(messages):
       '12-month': messages.Commitment.PlanValueValuesEnum.TWELVE_MONTH,
       '36-month': messages.Commitment.PlanValueValuesEnum.THIRTY_SIX_MONTH,
   }
-  print('#### the enum values are:', messages.Commitment.PlanValueValuesEnum)
   if hasattr(messages.Commitment.PlanValueValuesEnum, 'SIXTY_MONTH'):
     result['60-month'] = messages.Commitment.PlanValueValuesEnum.SIXTY_MONTH
   return result

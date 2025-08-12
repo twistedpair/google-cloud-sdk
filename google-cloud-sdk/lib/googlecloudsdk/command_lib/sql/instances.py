@@ -587,6 +587,9 @@ class _BaseInstances(object):
         _ShowAcceleratedReplicaModeWarning()
         settings.acceleratedReplicaMode = args.enable_accelerated_replica_mode
 
+      if args.IsKnownAndSpecified('enable_auto_upgrade_minor_version'):
+        settings.autoUpgradeEnabled = True
+
     return settings
 
   @classmethod

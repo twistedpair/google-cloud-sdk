@@ -37,6 +37,7 @@ from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
 from .types.content import LogprobsResult
 from .types.content import ModalityTokenCount
+from .types.content import ModelArmorConfig
 from .types.content import Part
 from .types.content import PrebuiltVoiceConfig
 from .types.content import ProactivityConfig
@@ -52,6 +53,7 @@ from .types.content import VideoMetadata
 from .types.content import VoiceConfig
 from .types.content import HarmCategory
 from .types.content import Modality
+from .types.encryption_spec import EncryptionSpec
 from .types.explanation import Attribution
 from .types.explanation import BlurBaselineConfig
 from .types.explanation import Examples
@@ -122,6 +124,7 @@ from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
 from .types.tool import FunctionResponse
+from .types.tool import GoogleMaps
 from .types.tool import GoogleSearchRetrieval
 from .types.tool import RagRetrievalConfig
 from .types.tool import Retrieval
@@ -142,10 +145,12 @@ from .types.vertex_rag_data import ImportRagFilesConfig
 from .types.vertex_rag_data import RagChunk
 from .types.vertex_rag_data import RagCorpus
 from .types.vertex_rag_data import RagEmbeddingModelConfig
+from .types.vertex_rag_data import RagEngineConfig
 from .types.vertex_rag_data import RagFile
 from .types.vertex_rag_data import RagFileChunkingConfig
 from .types.vertex_rag_data import RagFileParsingConfig
 from .types.vertex_rag_data import RagFileTransformationConfig
+from .types.vertex_rag_data import RagManagedDbConfig
 from .types.vertex_rag_data import RagVectorDbConfig
 from .types.vertex_rag_data import UploadRagFileConfig
 from .types.vertex_rag_data import VertexAiSearchConfig
@@ -181,6 +186,7 @@ __all__ = (
 'DirectUploadSource',
 'DoubleArray',
 'DynamicRetrievalConfig',
+'EncryptionSpec',
 'EnterpriseWebSearch',
 'Examples',
 'ExamplesOverride',
@@ -210,6 +216,7 @@ __all__ = (
 'GenerateVideoResponse',
 'GenerationConfig',
 'GoogleDriveSource',
+'GoogleMaps',
 'GoogleSearchRetrieval',
 'GroundingChunk',
 'GroundingMetadata',
@@ -223,6 +230,7 @@ __all__ = (
 'LogprobsResult',
 'Modality',
 'ModalityTokenCount',
+'ModelArmorConfig',
 'ModelExplanation',
 'Neighbor',
 'Part',
@@ -236,10 +244,12 @@ __all__ = (
 'RagChunk',
 'RagCorpus',
 'RagEmbeddingModelConfig',
+'RagEngineConfig',
 'RagFile',
 'RagFileChunkingConfig',
 'RagFileParsingConfig',
 'RagFileTransformationConfig',
+'RagManagedDbConfig',
 'RagRetrievalConfig',
 'RagVectorDbConfig',
 'RawPredictRequest',

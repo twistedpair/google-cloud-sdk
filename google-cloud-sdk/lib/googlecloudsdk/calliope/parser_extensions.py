@@ -394,6 +394,12 @@ class _HandleLaterError(Exception):
   pass
 
 
+class DryRunError(Exception):
+  """Error to pack for dry run cases without causing system exit."""
+
+  pass
+
+
 class ArgumentParser(argparse.ArgumentParser):
   """A custom subclass for arg parsing behavior.
 
@@ -1033,6 +1039,7 @@ class ArgumentParser(argparse.ArgumentParser):
     Raises:
       _HandleLaterError: if the error should be handled in a subsequent call to
         this method.
+      DryRunError: If CLOUDSDK_CORE_DRY_RUN is set to 1.
     """
     # Ignore errors better handled by validate_specified_args().
     if '_ARGCOMPLETE' not in os.environ:
@@ -1099,6 +1106,12 @@ class ArgumentParser(argparse.ArgumentParser):
     elif not self.raise_error:
       message = console_attr.SafeText(message)
       log.error('({prog}) {message}'.format(prog=self.prog, message=message))
+      if (
+          'CLOUDSDK_CORE_DRY_RUN' in os.environ
+          and os.environ['CLOUDSDK_CORE_DRY_RUN'] == '1'
+      ):
+        raise DryRunError(message)
+
       # multi-line message means hints already added, no need for usage.
       # pylint: disable=protected-access
       if '\n' not in message:

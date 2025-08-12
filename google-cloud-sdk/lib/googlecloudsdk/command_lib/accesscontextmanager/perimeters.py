@@ -156,7 +156,10 @@ def AddVpcAccessibleServicesGA(ref, args, req):
 
 def AddVpcAccessibleServicesAlpha(ref, args, req):
   del ref  # Unused
-  return AddVpcAccessibleServices(args, req, 'v1alpha')
+  # Only apply incremental flag logic if the YAML file is NOT used.
+  if not args.IsSpecified('vpc_accessible_services'):
+    return _AddVpcAccessibleServicesFilter(args, req, 'v1alpha')
+  return req
 
 
 def AddVpcAccessibleServices(args, req, version=None):
@@ -302,9 +305,25 @@ def AddPerimeterUpdateArgs(parser, version=None):
   _AddResources(parser)
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
-  _AddVpcRestrictionArgs(parser)
+  AddUpdateVpcAccessibleServicesGroupArgs(parser, version)
   AddEtagArg(parser)
   AddUpdateDirectionalPoliciesGroupArgs(parser, version)
+
+
+def AddUpdateVpcAccessibleServicesGroupArgs(parser, version):
+  """Conditional logic for VPC Accessible Services."""
+  if version == 'v1alpha':
+    mutex_group = parser.add_mutually_exclusive_group(
+        help=(
+            'These flags modify the VpcAccessibleServices of this '
+            'ServicePerimeter config.'
+        )
+    )
+    _AddSetClearVpcAccessibleServicesArgsAlpha(mutex_group)
+    _AddVpcRestrictionArgs(mutex_group)
+  else:
+    # GA behavior remains unchanged
+    _AddVpcRestrictionArgs(parser)
 
 
 def AddUpdateDirectionalPoliciesGroupArgs(parser, version=None):
@@ -458,6 +477,50 @@ def _AddUpdateEgressPoliciesGroupArgs(parser, api_version):
   clear_egress_policies_arg.AddToParser(group)
 
 
+def _AddSetClearVpcAccessibleServicesArgsAlpha(parser):
+  """Add args for set/clear vpc accessible services."""
+
+  set_vpc_accessible_services_help_text = (
+      'Path to a file containing a VpcAccessibleServices object.\n\nThis file '
+      'contains a YAML-compliant object representing VpcAccessibleServices '
+      'described in the API reference.\n\nFor more information about the '
+      'alpha version, '
+      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters\nFor'
+      ' more information about non-alpha versions, see: '
+      '\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1/accessPolicies.servicePerimeters'
+  )
+  set_vpc_accessible_services_arg = base.Argument(
+      '--set-vpc-accessible-services',
+      metavar='YAML_FILE',
+      help=set_vpc_accessible_services_help_text,
+      type=ParseVpcAccessibleServices('v1alpha'),
+  )
+  clear_vpc_accessible_services_help_text = (
+      'Empties existing enforced VpcAccessibleServices.'
+  )
+  clear_vpc_accessible_services_arg = base.Argument(
+      '--clear-vpc-accessible-services',
+      help=clear_vpc_accessible_services_help_text,
+      action='store_true',
+  )
+  set_vpc_accessible_services_arg.AddToParser(parser)
+  clear_vpc_accessible_services_arg.AddToParser(parser)
+
+
+def ParseUpdateVpcAccessibleServicesArgs(args, arg_name):
+  """Return values for clear_/set_ vpc-accessible-services command line args, and whether they were set."""
+  underscored_name = arg_name.replace('-', '_')
+  clear = getattr(args, 'clear_' + underscored_name)
+  set_ = getattr(args, 'set_' + underscored_name, None)
+
+  if clear:
+    return None, True
+  elif set_ is not None:
+    return set_, True
+  else:
+    return None, False
+
+
 def ParseUpdateDirectionalPoliciesArgs(args, arg_name):
   """Return values for clear_/set_ ingress/egress-policies command line args."""
   underscored_name = arg_name.replace('-', '_')
@@ -490,6 +553,25 @@ def ParseVpcRestriction(args, perimeter_result, version, dry_run=False):
         'vpcAccessibleServices').allowedServices
 
   return repeated.ParsePrimitiveArgs(args, 'vpc_allowed_services', FetchAllowed)
+
+
+def _ParseSingleMessageFromFile(path, message_class):
+  """Parse a YAML representation of a single message object."""
+  # common.ParseAccessContextManagerMessagesFromYaml handles is_list=False
+  # and returns a list with one item.
+  return common.ParseAccessContextManagerMessagesFromYaml(
+      path, message_class, is_list=False
+  )[0]
+
+
+def ParseVpcAccessibleServices(api_version):
+  """Returns a function that parses a VpcAccessibleServices message from a file."""
+
+  def _Parse(path):
+    messages = util.GetMessages(version=api_version)
+    return _ParseSingleMessageFromFile(path, messages.VpcAccessibleServices)
+
+  return _Parse
 
 
 def _AddVpcRestrictionArgs(parser):

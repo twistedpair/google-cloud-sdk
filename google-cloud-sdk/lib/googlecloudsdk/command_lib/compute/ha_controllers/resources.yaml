@@ -1,0 +1,32 @@
+project:
+  name: project
+  collection: compute.projects
+  attributes:
+  - &project
+    parameter_name: project
+    attribute_name: project
+    help: The project ID.
+    property: core/project
+
+region:
+  name: region
+  collection: compute.regions
+  attributes:
+  - &region
+    parameter_name: region
+    attribute_name: region
+    help: |
+      The name of the Google Compute Engine region.
+
+      Overrides the default compute/region property value for this command invocation.
+    property: compute/region
+
+ha_controller:
+  name: ha_controller
+  collection: compute.haControllers
+  attributes:
+  - *project
+  - *region
+  - parameter_name: haController
+    attribute_name: ha_controller
+    help: The name of the Google Compute Engine HA controller

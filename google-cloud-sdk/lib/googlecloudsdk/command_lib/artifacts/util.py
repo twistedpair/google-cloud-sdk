@@ -1171,7 +1171,7 @@ def RecommendAuthChange(
   if output_iam_policy_dir:
     log.status.Print(f"\nWriting bindings for {project}/{repo}...")
     if failures:
-      log.status.Print(f"{con.Colorize('Warning:','red')} {warning_message}")
+      log.status.Print(f"{con.Colorize('Warning:', 'red')} {warning_message}")
       commented_warning = "# " + "\n# ".join(warning_message.split("\n"))
       string_policy = f"{commented_warning}\n\n{string_policy}"
     outfile = os.path.join(output_iam_policy_dir, project, f"{repo}.yaml")
@@ -1199,7 +1199,7 @@ def RecommendAuthChange(
       " deny policies or IAM conditions."
   )
   if failures:
-    message += f"\n\n{con.Colorize('Warning:','red')} {warning_message}\n\n"
+    message += f"\n\n{con.Colorize('Warning:', 'red')} {warning_message}\n\n"
 
   if not console_io.CanPrompt():
     log.status.Print(message)
@@ -1507,7 +1507,7 @@ def SetupAuthForRepository(
         " have access to view IAM bindings for the following resources:"
         f" {failures}\nUse --log-http to see detailed errors."
     )
-    log.status.Print(f"\n{con.Colorize('Warning:','red')} {warning_message}")
+    log.status.Print(f"\n{con.Colorize('Warning:', 'red')} {warning_message}")
     return True, True
   # No diffs found, continue checking auth
   return False, True
@@ -1726,7 +1726,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
 
   if invalid_projects:
     log.status.Print(
-        "Skipping migration for projects in unsppoted state: {}".format(
+        "Skipping migration for projects in unsupported state: {}".format(
             invalid_projects
         )
     )

@@ -1381,6 +1381,9 @@ class Instance(_messages.Message):
   r"""A Filestore instance.
 
   Enums:
+    BackendTypeValueValuesEnum: Optional. Immutable. Designates the backend
+      type of this instance. Intended to be used by internal tests and allowed
+      customers.
     ProtocolValueValuesEnum: Immutable. The protocol indicates the access
       protocol for all shares in the instance. This field is immutable and it
       cannot be changed after the instance has been created. Default value:
@@ -1401,6 +1404,8 @@ class Instance(_messages.Message):
       and-managing#retrieving_tag_value
 
   Fields:
+    backendType: Optional. Immutable. Designates the backend type of this
+      instance. Intended to be used by internal tests and allowed customers.
     capacityGb: The storage capacity of the instance in gigabytes (GB = 1024^3
       bytes). This capacity can be increased up to `max_capacity_gb` GB in
       multipliers of `capacity_step_size_gb` GB.
@@ -1455,6 +1460,19 @@ class Instance(_messages.Message):
       and-managing#retrieving_tag_value
     tier: The service tier of the instance.
   """
+
+  class BackendTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Designates the backend type of this instance.
+    Intended to be used by internal tests and allowed customers.
+
+    Values:
+      BACKEND_TYPE_UNSPECIFIED: Backend type not set.
+      COMPUTE_BASED_BACKEND: Instance is backed by Compute.
+      FILESTORE_BACKEND: Instance is backed by Filestore.
+    """
+    BACKEND_TYPE_UNSPECIFIED = 0
+    COMPUTE_BASED_BACKEND = 1
+    FILESTORE_BACKEND = 2
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Immutable. The protocol indicates the access protocol for all shares
@@ -1604,34 +1622,35 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGb = _messages.IntegerField(1)
-  capacityStepSizeGb = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  customPerformanceSupported = _messages.BooleanField(4)
-  deletionProtectionEnabled = _messages.BooleanField(5)
-  deletionProtectionReason = _messages.StringField(6)
-  description = _messages.StringField(7)
-  directoryServices = _messages.MessageField('DirectoryServicesConfig', 8)
-  etag = _messages.StringField(9)
-  fileShares = _messages.MessageField('FileShareConfig', 10, repeated=True)
-  kmsKeyName = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  maxCapacityGb = _messages.IntegerField(13)
-  maxShareCount = _messages.IntegerField(14)
-  multiShareEnabled = _messages.BooleanField(15)
-  name = _messages.StringField(16)
-  networks = _messages.MessageField('NetworkConfig', 17, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 18)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 19)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 20)
-  replication = _messages.MessageField('Replication', 21)
-  satisfiesPzi = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  statusMessage = _messages.StringField(25)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 26, repeated=True)
-  tags = _messages.MessageField('TagsValue', 27)
-  tier = _messages.EnumField('TierValueValuesEnum', 28)
+  backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
+  capacityGb = _messages.IntegerField(2)
+  capacityStepSizeGb = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  customPerformanceSupported = _messages.BooleanField(5)
+  deletionProtectionEnabled = _messages.BooleanField(6)
+  deletionProtectionReason = _messages.StringField(7)
+  description = _messages.StringField(8)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 9)
+  etag = _messages.StringField(10)
+  fileShares = _messages.MessageField('FileShareConfig', 11, repeated=True)
+  kmsKeyName = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  maxCapacityGb = _messages.IntegerField(14)
+  maxShareCount = _messages.IntegerField(15)
+  multiShareEnabled = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  networks = _messages.MessageField('NetworkConfig', 18, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 19)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 20)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 21)
+  replication = _messages.MessageField('Replication', 22)
+  satisfiesPzi = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  statusMessage = _messages.StringField(26)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 27, repeated=True)
+  tags = _messages.MessageField('TagsValue', 28)
+  tier = _messages.EnumField('TierValueValuesEnum', 29)
 
 
 class LdapConfig(_messages.Message):
@@ -2356,10 +2375,14 @@ class ReplicaConfig(_messages.Message):
       STATE_REASON_UNSPECIFIED: Reason not specified.
       PEER_INSTANCE_UNREACHABLE: The peer instance is unreachable.
       REMOVE_FAILED: The remove replica peer instance operation failed.
+      PAUSE_FAILED: The pause replica operation failed.
+      RESUME_FAILED: The resume replica operation failed.
     """
     STATE_REASON_UNSPECIFIED = 0
     PEER_INSTANCE_UNREACHABLE = 1
     REMOVE_FAILED = 2
+    PAUSE_FAILED = 3
+    RESUME_FAILED = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The replica state.
@@ -2373,6 +2396,9 @@ class ReplicaConfig(_messages.Message):
         can get further details from the `stateReasons` field of the
         `ReplicaConfig` object.
       PROMOTING: The replica is being promoted.
+      PAUSING: The replica is being paused.
+      PAUSED: The replica is paused.
+      RESUMING: The replica is being resumed.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2380,6 +2406,9 @@ class ReplicaConfig(_messages.Message):
     REMOVING = 3
     FAILED = 4
     PROMOTING = 5
+    PAUSING = 6
+    PAUSED = 7
+    RESUMING = 8
 
   lastActiveSyncTime = _messages.StringField(1)
   peerInstance = _messages.StringField(2)

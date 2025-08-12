@@ -164,11 +164,6 @@ def _ValidateAndBuildCloudSqlVolume(
     raise serverless_exceptions.ConfigurationError(
         'Cloud SQL volumes must have at least one instance specified'
     )
-  if volume_dict['name'] != 'cloudsql':
-    raise serverless_exceptions.ConfigurationError(
-        'Cloud SQL volumes can only be named "cloudsql" and can only be mounted'
-        ' at /cloudsql.'
-    )
   for instance in volume_dict['instances'].split(';'):
     instance = instance.strip().split(':')
     if len(instance) != 3:

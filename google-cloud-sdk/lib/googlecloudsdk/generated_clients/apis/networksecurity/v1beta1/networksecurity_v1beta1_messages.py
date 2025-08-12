@@ -431,16 +431,23 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
 
   Fields:
     ipBlocks: Optional. A list of IP addresses or IP address ranges to match
-      against the source IP address of the request. Limited to 5 ip_blocks.
+      against the source IP address of the request. Limited to 10 ip_blocks
+      per Authorization Policy
     principals: Optional. A list of identities derived from the client's
       certificate. This field will not match on a request unless frontend
       mutual TLS is enabled for the forwarding rule or Gateway and the client
       certificate has been successfully validated by mTLS. Each identity is a
       string whose value is matched against a list of URI SANs, DNS Name SANs,
       or the common name in the client's certificate. A match happens when any
-      principal matches with the rule. Limited to 5 principals.
+      principal matches with the rule. Limited to 50 principals per
+      Authorization Policy for Regional Internal Application Load Balancer,
+      Regional External Application Load Balancer, Cross-region Internal
+      Application Load Balancer, and Cloud Service Mesh. Limited to 25
+      principals per Authorization Policy for Global External Application Load
+      Balancer.
     resources: Optional. A list of resources to match against the resource of
-      the source VM of a request. Limited to 5 resources.
+      the source VM of a request. Limited to 10 resources per Authorization
+      Policy.
   """
 
   ipBlocks = _messages.MessageField('AuthzPolicyAuthzRuleIpBlock', 1, repeated=True)
@@ -504,7 +511,10 @@ class AuthzPolicyAuthzRulePrincipal(_messages.Message):
         selector.
       CLIENT_CERT_DNS_NAME_SAN: The principal rule is matched against a list
         of DNS Name SANs in the validated client's certificate. A match
-        happens when there is any exact DNS Name SAN value match.
+        happens when there is any exact DNS Name SAN value match. This is only
+        applicable for Application Load Balancers except for classic Global
+        External Application load balancer. CLIENT_CERT_DNS_NAME_SAN is not
+        supported for INTERNAL_SELF_MANAGED load balancing scheme.
       CLIENT_CERT_COMMON_NAME: The principal rule is matched against the
         common name in the client's certificate. Authorization against
         multiple common names in the client certificate is not supported.
@@ -548,7 +558,7 @@ class AuthzPolicyAuthzRuleRequestResourceTagValueIdSet(_messages.Message):
     ids: Required. A list of resource tag value permanent IDs to match against
       the resource manager tags value associated with the source VM of a
       request. The match follows AND semantics which means all the ids must
-      match. Limited to 5 matches.
+      match. Limited to 5 ids in the Tag value id set.
   """
 
   ids = _messages.IntegerField(1, repeated=True)
@@ -609,17 +619,18 @@ class AuthzPolicyAuthzRuleToRequestOperation(_messages.Message):
     headerSet: Optional. A list of headers to match against in http header.
     hosts: Optional. A list of HTTP Hosts to match against. The match can be
       one of exact, prefix, suffix, or contains (substring match). Matches are
-      always case sensitive unless the ignoreCase is set. Limited to 5
-      matches.
+      always case sensitive unless the ignoreCase is set. Limited to 10 hosts
+      per Authorization Policy.
     methods: Optional. A list of HTTP methods to match against. Each entry
       must be a valid HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE,
       OPTIONS). It only allows exact match and is always case sensitive.
+      Limited to 10 methods per Authorization Policy.
     paths: Optional. A list of paths to match against. The match can be one of
       exact, prefix, suffix, or contains (substring match). Matches are always
-      case sensitive unless the ignoreCase is set. Limited to 5 matches. Note
-      that this path match includes the query parameters. For gRPC services,
-      this should be a fully-qualified name of the form
-      /package.service/method.
+      case sensitive unless the ignoreCase is set. Limited to 10 paths per
+      Authorization Policy. Note that this path match includes the query
+      parameters. For gRPC services, this should be a fully-qualified name of
+      the form /package.service/method.
   """
 
   headerSet = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperationHeaderSet', 1)
@@ -636,7 +647,7 @@ class AuthzPolicyAuthzRuleToRequestOperationHeaderSet(_messages.Message):
       match can be one of exact, prefix, suffix, or contains (substring
       match). The match follows AND semantics which means all the headers must
       match. Matches are always case sensitive unless the ignoreCase is set.
-      Limited to 5 matches.
+      Limited to 10 headers per Authorization Policy.
   """
 
   headers = _messages.MessageField('AuthzPolicyAuthzRuleHeaderMatch', 1, repeated=True)
@@ -988,7 +999,7 @@ class Destination(_messages.Message):
 
 
 class DnsThreatDetector(_messages.Message):
-  r"""Message describing DnsThreatDetector object
+  r"""Message describing DnsThreatDetector object.
 
   Enums:
     ProviderValueValuesEnum: Required. The provider used for DNS threat
@@ -1096,7 +1107,7 @@ class Expr(_messages.Message):
 
 
 class FirewallEndpoint(_messages.Message):
-  r"""Message describing Endpoint object
+  r"""Message describing Endpoint object.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint.
@@ -1114,11 +1125,11 @@ class FirewallEndpoint(_messages.Message):
       associated to this endpoint. An association will only appear in this
       list after traffic routing is fully configured.
     billingProjectId: Required. Project to bill on endpoint uptime usage.
-    createTime: Output only. Create time stamp
+    createTime: Output only. Create time stamp.
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
     labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. name of resource
+    name: Immutable. Identifier. Name of resource.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     satisfiesPzi: Output only. [Output Only] Reserved for future use.
@@ -2396,7 +2407,7 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
 
 class ListDnsThreatDetectorsResponse(_messages.Message):
-  r"""Message for response to listing DnsThreatDetectors
+  r"""Message for response to listing DnsThreatDetectors.
 
   Fields:
     dnsThreatDetectors: The list of DnsThreatDetector resources.
@@ -3760,7 +3771,7 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   Fields:
     firewallEndpoint: A FirewallEndpoint resource to be passed as the request
       body.
-    name: Immutable. Identifier. name of resource
+    name: Immutable. Identifier. Name of resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

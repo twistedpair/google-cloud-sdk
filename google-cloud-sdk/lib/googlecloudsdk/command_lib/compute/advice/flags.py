@@ -66,8 +66,7 @@ def AddStartTimeRangeFlag(parser):
         a list of key-value pairs.
 
         The key is either "from" or "to", and the value is a datetime.
-        See <a href="https://cloud.google.com/sdk/gcloud/reference/topic/datetimes">
-        $ gcloud topic datetimes</a> for information on time formats.
+        See $ gcloud topic datetimes for information on time formats.
 
         *from*::: The earliest possible start time for the reservation.
         *to*::: The latest possible start time for the reservation.
@@ -95,8 +94,7 @@ def AddEndTimeRangeFlag(parser):
         a list of key-value pairs.
 
         The key is either "from" or "to", and the value is a datetime.
-        See <a href="https://cloud.google.com/sdk/gcloud/reference/topic/datetimes">
-        $ gcloud topic datetimes</a> for information on time formats.
+        See $ gcloud topic datetimes for information on time formats.
 
         *from*::: The earliest possible end time for the reservation.
         *to*::: The latest possible end time for the reservation.
@@ -127,8 +125,7 @@ def AddDurationRangeFlag(parser):
         For example, specify `30m` for a duration of 30 minutes or specify
         `1d2h3m4s` for a duration of 1 day, 2 hours, 3 minutes, and 4 seconds.
 
-        See <a href="https://cloud.google.com/sdk/gcloud/reference/topic/datetimes">
-        $ gcloud topic datetimes</a> for information on duration format.
+        See $ gcloud topic datetimes for information on duration formats.
 
         *min*::: The minimum duration of the Future Reservation.
         *max*::: The maximum duration of the Future Reservation.

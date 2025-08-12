@@ -64,6 +64,8 @@ class PredictionServiceAsyncClient:
     parse_rag_corpus_path = staticmethod(PredictionServiceClient.parse_rag_corpus_path)
     secret_version_path = staticmethod(PredictionServiceClient.secret_version_path)
     parse_secret_version_path = staticmethod(PredictionServiceClient.parse_secret_version_path)
+    template_path = staticmethod(PredictionServiceClient.template_path)
+    parse_template_path = staticmethod(PredictionServiceClient.parse_template_path)
     common_billing_account_path = staticmethod(PredictionServiceClient.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(PredictionServiceClient.parse_common_billing_account_path)
     common_folder_path = staticmethod(PredictionServiceClient.common_folder_path)

@@ -28,3 +28,8 @@ properties:
   datasetTemplate:
     description: The dataset template to use for dynamic dataset creation.
     $ref: DatasetTemplate.yaml
+  projectId:
+    description: |-
+      The project id of the BigQuery dataset. If not specified, the project will
+      be inferred from the stream resource.
+    type: string

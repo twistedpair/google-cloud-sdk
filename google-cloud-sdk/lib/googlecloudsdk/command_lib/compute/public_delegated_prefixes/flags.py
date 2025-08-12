@@ -102,6 +102,22 @@ def AddCreatePdpArgsToParser(
   )
 
 
+def AddPdpPurpose(parser):
+  """Adds flags for global public delegated prefixes purpose."""
+  parser.add_argument(
+      '--purpose',
+      choices=[
+          'APPLICATION_AND_PROXY_LOAD_BALANCERS',
+          'PASSTHROUGH_LOAD_BALANCER_AVAILABILITY_GROUP0',
+          'PASSTHROUGH_LOAD_BALANCER_AVAILABILITY_GROUP1',
+      ],
+      help=(
+          'The purpose of the public delegated prefix. This field can only be'
+          ' set for the top-level global public delegated prefix.'
+      ),
+  )
+
+
 def _AddCommonSubPrefixArgs(parser, verb):
   """Adds common flags for delegate sub prefixes create/delete commands."""
   parser.add_argument(

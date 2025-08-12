@@ -2040,6 +2040,35 @@ class APIAdapter(object):
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
+  def CompleteControlPlaneUpgrade(self, cluster_ref):
+    """Complete control plane upgrade for a cluster.
+
+    Args:
+      cluster_ref: cluster Resource to complete control plane upgrade for.
+
+    Returns:
+      The operation to be executed.
+    Raises:
+      exceptions.HttpException: if cluster cannot be found or caller is missing
+        permissions. Will attempt to find similar clusters in other zones for a
+        more useful error if the user has list permissions.
+    """
+    try:
+      op = self.client.projects_locations_clusters.CompleteControlPlaneUpgrade(
+          self.messages.ContainerProjectsLocationsClustersCompleteControlPlaneUpgradeRequest(
+              name=ProjectLocationCluster(
+                  cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+              )
+          )
+      )
+      return self.ParseOperation(op.name, cluster_ref.zone)
+    except apitools_exceptions.HttpNotFoundError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      # Cluster couldn't be found, maybe user got the location wrong?
+      self.CheckClusterOtherZones(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
   def CheckAutopilotCompatibility(self, cluster_ref):
     """Check autopilot compatibility of a cluster.
 
@@ -10037,4 +10066,3 @@ def _GetNetworkTierConfig(options, messages):
       )
     network_tier_config.networkTier = network_tiers[options.network_tier]
   return network_tier_config
-

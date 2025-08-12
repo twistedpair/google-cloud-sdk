@@ -27,8 +27,6 @@ from googlecloudsdk.api_lib.run import revision
 WORKER_POOL_MIN_SCALE_ANNOTATION = 'run.googleapis.com/minScale'
 WORKER_POOL_MAX_SCALE_ANNOTATION = 'run.googleapis.com/maxScale'
 MANUAL_INSTANCE_COUNT_ANNOTATION = 'run.googleapis.com/manualInstanceCount'
-WORKER_POOL_MAX_SURGE_ANNOTATION = 'run.googleapis.com/max-surge'
-WORKER_POOL_MAX_UNAVAILABLE_ANNOTATION = 'run.googleapis.com/max-unavailable'
 WORKER_POOL_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
 

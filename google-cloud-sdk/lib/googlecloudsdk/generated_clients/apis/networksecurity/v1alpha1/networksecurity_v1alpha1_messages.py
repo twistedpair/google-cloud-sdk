@@ -506,16 +506,23 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
 
   Fields:
     ipBlocks: Optional. A list of IP addresses or IP address ranges to match
-      against the source IP address of the request. Limited to 5 ip_blocks.
+      against the source IP address of the request. Limited to 10 ip_blocks
+      per Authorization Policy
     principals: Optional. A list of identities derived from the client's
       certificate. This field will not match on a request unless frontend
       mutual TLS is enabled for the forwarding rule or Gateway and the client
       certificate has been successfully validated by mTLS. Each identity is a
       string whose value is matched against a list of URI SANs, DNS Name SANs,
       or the common name in the client's certificate. A match happens when any
-      principal matches with the rule. Limited to 5 principals.
+      principal matches with the rule. Limited to 50 principals per
+      Authorization Policy for Regional Internal Application Load Balancer,
+      Regional External Application Load Balancer, Cross-region Internal
+      Application Load Balancer, and Cloud Service Mesh. Limited to 25
+      principals per Authorization Policy for Global External Application Load
+      Balancer.
     resources: Optional. A list of resources to match against the resource of
-      the source VM of a request. Limited to 5 resources.
+      the source VM of a request. Limited to 10 resources per Authorization
+      Policy.
   """
 
   ipBlocks = _messages.MessageField('AuthzPolicyAuthzRuleIpBlock', 1, repeated=True)
@@ -579,7 +586,10 @@ class AuthzPolicyAuthzRulePrincipal(_messages.Message):
         selector.
       CLIENT_CERT_DNS_NAME_SAN: The principal rule is matched against a list
         of DNS Name SANs in the validated client's certificate. A match
-        happens when there is any exact DNS Name SAN value match.
+        happens when there is any exact DNS Name SAN value match. This is only
+        applicable for Application Load Balancers except for classic Global
+        External Application load balancer. CLIENT_CERT_DNS_NAME_SAN is not
+        supported for INTERNAL_SELF_MANAGED load balancing scheme.
       CLIENT_CERT_COMMON_NAME: The principal rule is matched against the
         common name in the client's certificate. Authorization against
         multiple common names in the client certificate is not supported.
@@ -623,7 +633,7 @@ class AuthzPolicyAuthzRuleRequestResourceTagValueIdSet(_messages.Message):
     ids: Required. A list of resource tag value permanent IDs to match against
       the resource manager tags value associated with the source VM of a
       request. The match follows AND semantics which means all the ids must
-      match. Limited to 5 matches.
+      match. Limited to 5 ids in the Tag value id set.
   """
 
   ids = _messages.IntegerField(1, repeated=True)
@@ -684,17 +694,18 @@ class AuthzPolicyAuthzRuleToRequestOperation(_messages.Message):
     headerSet: Optional. A list of headers to match against in http header.
     hosts: Optional. A list of HTTP Hosts to match against. The match can be
       one of exact, prefix, suffix, or contains (substring match). Matches are
-      always case sensitive unless the ignoreCase is set. Limited to 5
-      matches.
+      always case sensitive unless the ignoreCase is set. Limited to 10 hosts
+      per Authorization Policy.
     methods: Optional. A list of HTTP methods to match against. Each entry
       must be a valid HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE,
       OPTIONS). It only allows exact match and is always case sensitive.
+      Limited to 10 methods per Authorization Policy.
     paths: Optional. A list of paths to match against. The match can be one of
       exact, prefix, suffix, or contains (substring match). Matches are always
-      case sensitive unless the ignoreCase is set. Limited to 5 matches. Note
-      that this path match includes the query parameters. For gRPC services,
-      this should be a fully-qualified name of the form
-      /package.service/method.
+      case sensitive unless the ignoreCase is set. Limited to 10 paths per
+      Authorization Policy. Note that this path match includes the query
+      parameters. For gRPC services, this should be a fully-qualified name of
+      the form /package.service/method.
   """
 
   headerSet = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperationHeaderSet', 1)
@@ -711,7 +722,7 @@ class AuthzPolicyAuthzRuleToRequestOperationHeaderSet(_messages.Message):
       match can be one of exact, prefix, suffix, or contains (substring
       match). The match follows AND semantics which means all the headers must
       match. Matches are always case sensitive unless the ignoreCase is set.
-      Limited to 5 matches.
+      Limited to 10 headers per Authorization Policy.
   """
 
   headers = _messages.MessageField('AuthzPolicyAuthzRuleHeaderMatch', 1, repeated=True)
@@ -1086,7 +1097,7 @@ class Destination(_messages.Message):
 
 
 class DnsThreatDetector(_messages.Message):
-  r"""Message describing DnsThreatDetector object
+  r"""Message describing DnsThreatDetector object.
 
   Enums:
     ProviderValueValuesEnum: Required. The provider used for DNS threat
@@ -1269,7 +1280,7 @@ class FirewallAttachment(_messages.Message):
 
 
 class FirewallEndpoint(_messages.Message):
-  r"""Message describing Endpoint object
+  r"""Message describing Endpoint object.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint.
@@ -1288,13 +1299,15 @@ class FirewallEndpoint(_messages.Message):
       associated to this endpoint. An association will only appear in this
       list after traffic routing is fully configured.
     billingProjectId: Required. Project to bill on endpoint uptime usage.
-    createTime: Output only. Create time stamp
+    createTime: Output only. Create time stamp.
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
     firstPartyEndpointSettings: Optional. Firewall endpoint settings for first
       party firewall endpoints.
+    jumboFramesEnabled: Optional. Immutable. Indicates whether Jumbo Frames
+      are enabled. Default value is false.
     labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. name of resource
+    name: Immutable. Identifier. Name of resource.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     satisfiesPzi: Output only. [Output Only] Reserved for future use.
@@ -1365,16 +1378,17 @@ class FirewallEndpoint(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  satisfiesPzi = _messages.BooleanField(10)
-  satisfiesPzs = _messages.BooleanField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
-  wildfireSettings = _messages.MessageField('FirewallEndpointWildfireSettings', 16)
+  jumboFramesEnabled = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  satisfiesPzi = _messages.BooleanField(11)
+  satisfiesPzs = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
+  wildfireSettings = _messages.MessageField('FirewallEndpointWildfireSettings', 17)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -1590,194 +1604,6 @@ class FirewallEndpointWildfireSettings(_messages.Message):
 
 class FirstPartyEndpointSettings(_messages.Message):
   r"""A FirstPartyEndpointSettings object."""
-
-
-class ForwardingRule(_messages.Message):
-  r"""ForwardingRule contains the forwarding rule related parameters used to
-  create or update a PSC attachment via G2CCyrus.
-
-  Fields:
-    incarnationId: Required. The Arcus incarnation ID.
-    ipAddress: Required. The IP address of the forwarding rule.
-    name: Required. The canonical forwarding rule name:
-      projects/{project_number}/regions/{region}/forwardingRules/{id}
-    network: Required. The network of the forwarding rule, in the format of
-      projects/{project_number}/global/networks/{id}.
-  """
-
-  incarnationId = _messages.IntegerField(1)
-  ipAddress = _messages.StringField(2)
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-
-
-class GatewayAttachment(_messages.Message):
-  r"""GatewayAttachment is a resource that represents the Gateway attachment
-  in a given location.
-
-  Enums:
-    OriginValueValuesEnum: Required. The origin of the attachment.
-    StateValueValuesEnum: Output only. Current state of the GatewayAttachment.
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    forwardingRule: Required. Immutable. The forwarding rule of the
-      attachment.
-    labels: Optional. Labels as key value pairs
-    name: Identifier. The name of the resource.
-    origin: Required. The origin of the attachment.
-    reconciling: Output only. Whether reconciling is in progress, recommended
-      per https://google.aip.dev/128.
-    state: Output only. Current state of the GatewayAttachment.
-    updateTime: Output only. [Output only] Update time stamp
-    userspaceTunneling: Immutable. Userspace tunneling attachment.
-  """
-
-  class OriginValueValuesEnum(_messages.Enum):
-    r"""Required. The origin of the attachment.
-
-    Values:
-      ORIGIN_UNSPECIFIED: Not set.
-      ORIGIN_PACKET_BROKER: Packet broker.
-      ORIGIN_BUTTER_PACKET_CAPTURE: Butter packet capture.
-    """
-    ORIGIN_UNSPECIFIED = 0
-    ORIGIN_PACKET_BROKER = 1
-    ORIGIN_BUTTER_PACKET_CAPTURE = 2
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the GatewayAttachment.
-
-    Values:
-      STATE_UNSPECIFIED: Not set.
-      ACTIVE: Ready.
-      DELETE_FAILED: Failed to delete.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    DELETE_FAILED = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  forwardingRule = _messages.MessageField('ForwardingRule', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  origin = _messages.EnumField('OriginValueValuesEnum', 5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-  userspaceTunneling = _messages.MessageField('GatewayAttachmentUserspaceTunneling', 9)
-
-
-class GatewayAttachmentUserspaceTunneling(_messages.Message):
-  r"""Userspace tunneling configuration."""
-
-
-class GatewayEndpoint(_messages.Message):
-  r"""GatewayEndpoint is a resource that represents the Gateway endpoint in a
-  given location.
-
-  Enums:
-    StateValueValuesEnum: Output only. Current state of the GatewayEndpoint.
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Identifier. The name of the resource.
-    network: Required. The name of the VPC network of the endpoint. It
-      dictates the project used for the Andromeda EP.
-    reconciling: Output only. Whether reconciling is in progress, recommended
-      per https://google.aip.dev/128.
-    state: Output only. Current state of the GatewayEndpoint.
-    updateTime: Output only. [Output only] Update time stamp
-    userspaceTunneling: Immutable. Userspace tunneling configuration.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the GatewayEndpoint.
-
-    Values:
-      STATE_UNSPECIFIED: Not set.
-      ACTIVE: Ready.
-      DELETE_FAILED: Failed to delete.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    DELETE_FAILED = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-  userspaceTunneling = _messages.MessageField('GatewayEndpointUserspaceTunneling', 8)
-
-
-class GatewayEndpointUserspaceTunneling(_messages.Message):
-  r"""Userspace tunneling configuration.
-
-  Fields:
-    ipAddress: Required. The IP address associated with the EP. The caller
-      must statically allocate it in a network subnet that's in the same
-      region as this EP.
-  """
-
-  ipAddress = _messages.StringField(1)
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -2907,7 +2733,7 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
 
 class ListDnsThreatDetectorsResponse(_messages.Message):
-  r"""Message for response to listing DnsThreatDetectors
+  r"""Message for response to listing DnsThreatDetectors.
 
   Fields:
     dnsThreatDetectors: The list of DnsThreatDetector resources.
@@ -2962,36 +2788,6 @@ class ListFirewallEndpointsResponse(_messages.Message):
   """
 
   firewallEndpoints = _messages.MessageField('FirewallEndpoint', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListGatewayAttachmentsResponse(_messages.Message):
-  r"""Message for response to listing GatewayAttachments
-
-  Fields:
-    gatewayAttachments: The list of GatewayAttachment
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  gatewayAttachments = _messages.MessageField('GatewayAttachment', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListGatewayEndpointsResponse(_messages.Message):
-  r"""Message for response to listing GatewayEndpoints
-
-  Fields:
-    gatewayEndpoints: The list of GatewayEndpoint
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  gatewayEndpoints = _messages.MessageField('GatewayEndpoint', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -3405,6 +3201,21 @@ class ListUrlListsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   unreachable = _messages.StringField(2, repeated=True)
   urlLists = _messages.MessageField('UrlList', 3, repeated=True)
+
+
+class ListWildfireVerdictChangeRequestsResponse(_messages.Message):
+  r"""Message for response to listing WildfireChangeRequests
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Unordered list. Locations that could not be reached.
+    wildfireVerdictChangeRequests: The list of WildfireVerdictChangeRequests
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  wildfireVerdictChangeRequests = _messages.MessageField('WildfireVerdictChangeRequest', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -4553,7 +4364,7 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   Fields:
     firewallEndpoint: A FirewallEndpoint resource to be passed as the request
       body.
-    name: Immutable. Identifier. name of resource
+    name: Immutable. Identifier. Name of resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4576,6 +4387,24 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictC
+  hangeRequestsListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for
+      ListWildfireVerdictChangeRequestsRequest
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
@@ -5935,162 +5764,6 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(_
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsCreateRequest
-  object.
-
-  Fields:
-    gatewayAttachment: A GatewayAttachment resource to be passed as the
-      request body.
-    gatewayAttachmentId: Required. Id of the resource
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  gatewayAttachment = _messages.MessageField('GatewayAttachment', 1)
-  gatewayAttachmentId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsDeleteRequest
-  object.
-
-  Fields:
-    force: Optional. If set to true, any GatewayEndpoints that are currently
-      attached to the GatewayAttachment will be deleted. If set to false, the
-      request will fail if there are any GatewayEndpoints attached to the
-      GatewayAttachment.
-    name: Required. The resource name of the GatewayAttachment to delete.
-    requestId: Optional. A unique identifier for this request. Must be a
-      UUID4. This request is only idempotent if a `request_id` is provided.
-      See https://google.aip.dev/155 for more details.
-  """
-
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsCrea
-  teRequest object.
-
-  Fields:
-    gatewayEndpoint: A GatewayEndpoint resource to be passed as the request
-      body.
-    gatewayEndpointId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and gateway_endpoint_id
-      from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  gatewayEndpoint = _messages.MessageField('GatewayEndpoint', 1)
-  gatewayEndpointId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsDele
-  teRequest object.
-
-  Fields:
-    name: Required. The resource name of the GatewayEndpoint to delete.
-    requestId: Optional. A unique identifier for this request. Must be a
-      UUID4. This request is only idempotent if a `request_id` is provided.
-      See https://google.aip.dev/155 for more details.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsGetRequest(_messages.Message):
-  r"""A
-  NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsGetRequest
-  object.
-
-  Fields:
-    name: Required. The resource name of the GatewayEndpoint.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsGatewayEndpointsList
-  Request object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListGatewayEndpointsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the GatewayAttachment.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsGatewayAttachmentsListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGatewayAttachmentsListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListGatewayAttachmentsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
 
 
 class NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest(_messages.Message):
@@ -10667,6 +10340,10 @@ class WildfireInlineMlSettings(_messages.Message):
         malicious MSOffice (97-03) files.
       SHELL: Enable machine learning engine to dynamically detect malicious
         Shell files.
+      OOXML: Enable machine learning engine to dynamically detect malicious
+        Open Office XML files.
+      MACHO: Enable machine learning engine to dynamically detect malicious
+        Mach-O files.
     """
     INLINE_ML_CONFIG_UNSPECIFIED = 0
     WINDOWS_EXECUTABLE = 1
@@ -10675,6 +10352,8 @@ class WildfireInlineMlSettings(_messages.Message):
     ELF = 4
     MS_OFFICE = 5
     SHELL = 6
+    OOXML = 7
+    MACHO = 8
 
   fileExceptions = _messages.MessageField('WildfireInlineMlFileException', 1, repeated=True)
   inlineMlConfigs = _messages.EnumField('InlineMlConfigsValueListEntryValuesEnum', 2, repeated=True)
@@ -10828,6 +10507,10 @@ class WildfireSubmissionRuleCustomFileTypes(_messages.Message):
     SCRIPT = 10
 
   fileTypes = _messages.EnumField('FileTypesValueListEntryValuesEnum', 1, repeated=True)
+
+
+class WildfireVerdictChangeRequest(_messages.Message):
+  r"""Message for a WildfireVerdictChangeRequest"""
 
 
 encoding.AddCustomJsonFieldMapping(

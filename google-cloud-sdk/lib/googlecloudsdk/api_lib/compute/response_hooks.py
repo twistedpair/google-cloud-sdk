@@ -71,14 +71,50 @@ def flatten_aggregated_list(field_name: str):
                 "usedReducedBytes": "0",
                 "aggregateDiskProvisionedIops": "0",
                 "lastResizeTimestamp": "1969-12-31T16:00:00.000-08:00"
+              },
+              {
+                "kind": "compute#storagePool",
+                "id": "8565305401462476119",
+                "creationTimestamp": "2025-06-11T23:29:12.208-07:00",
+                "name": "dennisx-exapool",
+                "description": "test description",
+                "zone":
+                "https://www.googleapis.com/compute/staging_alpha/projects/dennisx-staging/zones/us-central2-oj1",
+                "state": "READY",
+                "selfLink":
+                "https://www.googleapis.com/compute/staging_alpha/projects/dennisx-staging/zones/us-central2-oj1/storagePools/dennisx-exapool-2",
+                "selfLinkWithId":
+                "https://www.googleapis.com/compute/staging_alpha/projects/dennisx-staging/zones/us-central2-oj1/storagePools/8565305401462476119",
+                "storagePoolType":
+                "https://www.googleapis.com/compute/staging_alpha/projects/dennisx-staging/zones/us-central2-oj1/storagePoolTypes/exapool-hyperdisk-balanced",
+                "status": {
+                  "diskCount": "2",
+                  "poolUsedCapacityBytes": "1258019648",
+                  "poolUserWrittenBytes": "21474836480",
+                  "totalProvisionedDiskCapacityGb": "82400",
+                  "maxTotalProvisionedDiskCapacityGb": "102400",
+                  "totalProvisionedDiskIops": "20000",
+                  "totalProvisionedDiskThroughput": "2000",
+                  "exapoolMaxReadIops": "35840",
+                  "exapoolMaxWriteIops": "5120",
+                  "exapoolMaxReadThroughput": "665",
+                  "exapoolMaxWriteThroughput": "51"
+                },
+                "capacityProvisioningType": "ADVANCED",
+                "performanceProvisioningType": "ADVANCED",
+                "exapoolProvisionedCapacityGb": {
+                  "writeOptimized": "0",
+                  "readOptimized": "0",
+                  "capacityOptimized": "10240"
+                }
               }
             }
 
   Args:
-    field_name:  Name of the field that the resource is collected into. For
-    the example above, for the zone "us-central1-ir1", the resources are
-    collected into "storagePools", thus that must be the value. In general,
-    this value should be the plural camelcase form of the resource type.
+    field_name:  Name of the field that the resource is collected into. For the
+      example above, for the zone "us-central1-ir1", the resources are collected
+      into "storagePools", thus that must be the value. In general, this value
+      should be the plural camelcase form of the resource type.
 
   Returns:
     A function that can serve as a response modification hook. See

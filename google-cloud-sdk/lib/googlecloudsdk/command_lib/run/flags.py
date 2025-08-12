@@ -86,6 +86,12 @@ MESH_DATAPLANE_FLAG = base.Argument(
     choices=['sidecar', 'proxyless-grpc'],
     hidden=True,
 )
+# A list of preset that provide ingress containers that require a placeholder.
+# TODO(b/436350694): Remove this constant once preset metadata is available.
+INGRESS_CONTAINER_PRESETS = frozenset([
+    'ollama',
+    'tagmanager',
+])
 
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
@@ -1603,85 +1609,6 @@ def AddMaxInstancesFlag(parser, resource_kind='service'):
   )
 
 
-class MaxSurgeValue:
-  """Type for max-surge flag values."""
-
-  def __init__(self, value):
-    self.restore_default = value == 'default'
-    if not self.restore_default:
-      try:
-        self.surge_percent = int(value)
-      except (TypeError, ValueError):
-        raise serverless_exceptions.ArgumentError(
-            "Surge percent value %s is not an integer or 'default'." % value
-        )
-
-      if self.surge_percent < 0:
-        raise serverless_exceptions.ArgumentError(
-            'Surge percent value %s is negative.' % value
-        )
-
-      if self.surge_percent > 100:
-        raise serverless_exceptions.ArgumentError(
-            'Surge percent value %s is greater than 100.' % value
-        )
-
-
-def AddMaxSurgeFlag(parser, resource_kind='service'):
-  """Add max surge flag."""
-  split_type = 'instance' if resource_kind == 'worker' else 'traffic'
-  parser.add_argument(
-      '--max-surge',
-      type=MaxSurgeValue,
-      help=(
-          'A maximum percentage of instances that will be moved in each step of'
-          ' {split_type} split changes. Use "default" to unset the limit and'
-          ' use the platform default.'.format(split_type=split_type)
-      ),
-      hidden=True,
-  )
-
-
-class MaxUnavailableValue:
-  """Type for max-unavailable flag values."""
-
-  def __init__(self, value):
-    self.restore_default = value == 'default'
-    if not self.restore_default:
-      try:
-        self.unavailable_percent = int(value)
-      except (TypeError, ValueError):
-        raise serverless_exceptions.ArgumentError(
-            "Unavailable percent value %s is not an integer or 'default'."
-            % value
-        )
-
-      if self.unavailable_percent < 0:
-        raise serverless_exceptions.ArgumentError(
-            'Unavailable percent value %s is negative.' % value
-        )
-
-      if self.unavailable_percent > 100:
-        raise serverless_exceptions.ArgumentError(
-            'Unavailable percent value %s is greater than 100.' % value
-        )
-
-
-def AddMaxUnavailableFlag(parser, resource_kind='service'):
-  """Add max unavailable flag."""
-  split_type = 'instance' if resource_kind == 'worker' else 'traffic'
-  parser.add_argument(
-      '--max-unavailable',
-      type=MaxUnavailableValue,
-      help=(
-          'A maximum percentage of instances that may be unavailable during'
-          ' {split_type} split changes. Use "default" to unset the limit and'
-          ' use the platform default.'.format(split_type=split_type)
-      ),
-      hidden=True,
-  )
-
-
 def AddScalingFlag(
     parser, release_track=base.ReleaseTrack.GA, resource_kind='service'
 ):
@@ -2452,36 +2379,6 @@ def _GetServiceScalingChanges(args):
             str(max_scale_value.instance_count),
         )
     )
-  if 'max_surge' in args and args.max_surge is not None:
-    max_surge_value = args.max_surge
-    if max_surge_value.restore_default or max_surge_value.surge_percent == 0:
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MAX_SURGE_ANNOTATION
-          )
-      )
-    else:
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MAX_SURGE_ANNOTATION,
-              str(max_surge_value.surge_percent),
-          )
-      )
-  if 'max_unavailable' in args and args.max_unavailable is not None:
-    max_unav_val = args.max_unavailable
-    if max_unav_val.restore_default or max_unav_val.unavailable_percent == 0:
-      result.append(
-          config_changes.DeleteAnnotationChange(
-              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION
-          )
-      )
-    else:
-      result.append(
-          config_changes.SetAnnotationChange(
-              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION,
-              str(max_unav_val.unavailable_percent),
-          )
-      )
   if 'scaling' in args and args.scaling is not None:
     scaling_val = args.scaling
     # Automatic scaling mode
@@ -3093,6 +2990,15 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     )
   if FlagIsExplicitlySet(args, 'preset'):
     changes.append(config_changes.PresetChange(type=args.preset))
+    if (
+        not FlagIsExplicitlySet(args, 'containers')
+        and args.preset in INGRESS_CONTAINER_PRESETS
+    ):
+      container_change = config_changes.ImageChange(
+          image='imageplaceholder',
+          container_name=args.preset,
+      )
+      changes.append(container_change)
 
   return changes
 

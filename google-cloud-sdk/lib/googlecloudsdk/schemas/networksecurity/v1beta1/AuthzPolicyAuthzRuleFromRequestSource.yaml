@@ -28,7 +28,7 @@ properties:
   ipBlocks:
     description: |-
       A list of IP addresses or IP address ranges to match against the source IP
-      address of the request. Limited to 5 ip_blocks.
+      address of the request. Limited to 10 ip_blocks per Authorization Policy
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleIpBlock.yaml
@@ -40,14 +40,18 @@ properties:
       successfully validated by mTLS. Each identity is a string whose value
       is matched against a list of URI SANs, DNS Name SANs, or the common
       name in the client's certificate. A match happens when any principal
-      matches with the rule. Limited to 5 principals.
+      matches with the rule. Limited to 50 principals per Authorization
+      Policy for Regional Internal Application Load Balancer, Regional
+      External Application Load Balancer, Cross-region Internal Application
+      Load Balancer, and Cloud Service Mesh. Limited to 25 principals per
+      Authorization Policy for Global External Application Load Balancer.
     type: array
     items:
       $ref: AuthzPolicyAuthzRulePrincipal.yaml
   resources:
     description: |-
       A list of resources to match against the resource of the source VM
-      of a request. Limited to 5 resources.
+      of a request. Limited to 10 resources per Authorization Policy.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleRequestResource.yaml

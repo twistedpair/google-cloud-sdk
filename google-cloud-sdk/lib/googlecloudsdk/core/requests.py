@@ -23,7 +23,6 @@ import abc
 import collections
 import inspect
 import io
-import os
 import sys
 
 from google.auth.transport import requests as google_auth_requests
@@ -32,7 +31,6 @@ from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
-from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
 
@@ -222,34 +220,6 @@ def CreateMutualTlsOffloadAdapter(certificate_config_file_path):
   return _MutualTlsOffloadAdapter(certificate_config_file_path)
 
 
-def GetCurrentAccountEmailDomain():
-  """Returns the current logged-in user's email domain, or None if not available."""
-  user_email = properties.VALUES.core.account.Get()
-  if user_email:
-    parts = user_email.split('@')
-    if len(parts) == 2:
-      return parts[1]
-  return None
-
-
-def IsInternalUserCheck():
-  """Checks if the current user is an internal Google user.
-
-  Checks the 'CLOUDSDK_INTERNAL_USER' environment variable first to decide
-  whther the current user is an internal Google user.
-  If the variable is not set, falls back to checking if the user's email
-  domain is 'google.com'.
-
-  Returns:
-    bool: True if the user is an internal user, False otherwise.
-  """
-  if 'CLOUDSDK_INTERNAL_USER' in os.environ:
-    return encoding.GetEncodedValue(
-        os.environ, 'CLOUDSDK_INTERNAL_USER') == 'true'
-  user_domain = GetCurrentAccountEmailDomain()
-  return user_domain == 'google.com'
-
-
 def _LinuxNonbundledPythonAndGooglerCheck():
   """Warn users if running non-bundled Python on Linux and is a Googler.
 
@@ -263,7 +233,7 @@ def _LinuxNonbundledPythonAndGooglerCheck():
   is_linux = (
       platforms.OperatingSystem.Current() == platforms.OperatingSystem.LINUX)
   is_bundled_python = sys.executable and 'bundled' in sys.executable
-  is_internal_user = IsInternalUserCheck()
+  is_internal_user = properties.IsInternalUserCheck()
   if is_linux and not is_bundled_python and is_internal_user:
     log.warning(_GOOGLER_BUNDLED_PYTHON_WARNING)
     return True

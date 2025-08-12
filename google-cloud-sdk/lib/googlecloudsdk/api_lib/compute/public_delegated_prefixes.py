@@ -49,6 +49,7 @@ class PublicDelegatedPrefixesClient(object):
       enable_live_migration,
       mode,
       allocatable_prefix_length,
+      purpose,
   ):
     """Creates a public delegated prefix."""
     is_regional = hasattr(pdp_ref, 'region')
@@ -83,6 +84,9 @@ class PublicDelegatedPrefixesClient(object):
       public_delegated_prefix.allocatablePrefixLength = (
           allocatable_prefix_length
       )
+
+    if purpose is not None:
+      public_delegated_prefix.purpose = purpose
 
     if is_regional:
       request = self.messages.ComputePublicDelegatedPrefixesInsertRequest(

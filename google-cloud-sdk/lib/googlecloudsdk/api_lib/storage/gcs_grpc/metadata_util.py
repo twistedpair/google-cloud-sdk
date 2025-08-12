@@ -163,6 +163,114 @@ def get_grpc_metadata_from_url(cloud_url, grpc_types):
     )
 
 
+def get_bucket_resource_from_metadata(metadata):
+  """Helper method to generate a BucketResource instance from GCS metadata.
+
+  Args:
+    metadata (messages.Bucket): Extract resource properties from this.
+
+  Returns:
+    BucketResource with properties populated by metadata.
+  """
+  # TODO(b/324352239): This is a temporary implementation to unblock
+  # direct connectivity diagnostic for Rapid. Ideally the data mapping should be
+  # done in a generic way using a helper utility.
+  bucket_name = metadata.name[GRPC_URL_BUCKET_OFFSET:]
+  url = storage_url.CloudUrl(storage_url.ProviderPrefix.GCS, bucket_name)
+
+  autoclass_enabled_time = _convert_proto_to_datetime(
+      metadata.autoclass.toggle_time
+  )
+  autoclass = {
+      'enabled': metadata.autoclass.enabled,
+      'toggleTime': autoclass_enabled_time,
+      'terminalStorageClass': metadata.autoclass.terminal_storage_class,
+      'terminalStorageClassUpdateTime': _convert_proto_to_datetime(
+          metadata.autoclass.terminal_storage_class_update_time
+      ),
+  }
+  default_kms_key = getattr(metadata.encryption, 'default_kms_key', None)
+  ip_filter = {
+      'mode': metadata.ip_filter.mode,
+      'publicNetworkSource': {
+          'allowedIpCidrRanges': (
+              metadata.ip_filter.public_network_source.allowed_ip_cidr_ranges
+          ),
+      },
+      'vpcNetworkSources': _convert_repeated_message_to_dict(
+          metadata.ip_filter.vpc_network_sources
+      ),
+      'allowCrossOrgVpcs': metadata.ip_filter.allow_cross_org_vpcs,
+  }
+  lifecycle_config = {
+      'rule': _convert_repeated_message_to_dict(metadata.lifecycle.rule),
+  }
+  retention_policy = {
+      'effectiveTime': _convert_proto_to_datetime(
+          metadata.retention_policy.effective_time
+      ),
+      'retentionDuration': (
+          metadata.retention_policy.retention_duration.total_seconds()
+      ),
+      'isLocked': metadata.retention_policy.is_locked,
+  }
+  soft_delete_policy = {
+      'effectiveTime': _convert_proto_to_datetime(
+          metadata.soft_delete_policy.effective_time
+      ),
+      'retentionDuration': (
+          metadata.soft_delete_policy.retention_duration.total_seconds()
+      ),
+  }
+  website_config = {
+      'mainPageSuffix': metadata.website.main_page_suffix,
+      'notFoundPage': metadata.website.not_found_page,
+  }
+
+  return gcs_resource_reference.GcsBucketResource(
+      url,
+      autoclass=autoclass,
+      acl=_convert_repeated_message_to_dict(metadata.acl),
+      autoclass_enabled_time=autoclass_enabled_time,
+      cors_config=_convert_repeated_message_to_dict(metadata.cors),
+      creation_time=_convert_proto_to_datetime(metadata.create_time),
+      custom_placement_config={
+          'dataLocations': metadata.custom_placement_config.data_locations
+      },
+      default_acl=_convert_repeated_message_to_dict(
+          metadata.default_object_acl
+      ),
+      default_event_based_hold=metadata.default_event_based_hold,
+      default_kms_key=default_kms_key,
+      default_storage_class=metadata.storage_class,
+      etag=metadata.etag,
+      ip_filter_config=ip_filter,
+      labels=metadata.labels,
+      lifecycle_config=lifecycle_config,
+      location=metadata.location,
+      location_type=metadata.location_type,
+      logging_config={
+          'logBucket': metadata.logging.log_bucket,
+          'logObjectPrefix': metadata.logging.log_object_prefix,
+      },
+      metadata=metadata,
+      metageneration=metadata.metageneration,
+      per_object_retention={
+          'mode': 'Enabled' if metadata.object_retention.enabled else None,
+      },
+      public_access_prevention=metadata.iam_config.public_access_prevention,
+      requester_pays=metadata.billing.requester_pays,
+      retention_policy=retention_policy,
+      rpo=metadata.rpo,
+      satisfies_pzs=metadata.satisfies_pzs,
+      soft_delete_policy=soft_delete_policy,
+      uniform_bucket_level_access=metadata.iam_config.uniform_bucket_level_access.enabled,
+      update_time=_convert_proto_to_datetime(metadata.update_time),
+      versioning_enabled=metadata.versioning.enabled,
+      website_config=website_config,
+  )
+
+
 def get_object_resource_from_grpc_object(grpc_object):
   """Returns the GCSObjectResource based off of the gRPC Object."""
   if grpc_object.generation is not None:
@@ -175,12 +283,16 @@ def get_object_resource_from_grpc_object(grpc_object):
       # bucket is of the form projects/_/buckets/<bucket_name>
       bucket_name=grpc_object.bucket[GRPC_URL_BUCKET_OFFSET:],
       resource_name=grpc_object.name,
-      generation=generation)
+      generation=generation,
+  )
 
-  if (grpc_object.customer_encryption and
-      grpc_object.customer_encryption.key_sha256_bytes):
+  if (
+      grpc_object.customer_encryption
+      and grpc_object.customer_encryption.key_sha256_bytes
+  ):
     decryption_key_hash_sha256 = hash_util.get_base64_string(
-        grpc_object.customer_encryption.key_sha256_bytes)
+        grpc_object.customer_encryption.key_sha256_bytes
+    )
     encryption_algorithm = grpc_object.customer_encryption.encryption_algorithm
   else:
     decryption_key_hash_sha256 = encryption_algorithm = None
@@ -188,7 +300,8 @@ def get_object_resource_from_grpc_object(grpc_object):
   if grpc_object.checksums.crc32c is not None:
     # crc32c can be 0, so check for None value specifically.
     crc32c_hash = crc32c.get_crc32c_hash_string_from_checksum(
-        grpc_object.checksums.crc32c)
+        grpc_object.checksums.crc32c
+    )
   else:
     crc32c_hash = None
 

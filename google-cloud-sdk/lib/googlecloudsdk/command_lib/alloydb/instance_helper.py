@@ -254,6 +254,7 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
         connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
         connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
         connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
         args=args,
     )
 
@@ -307,6 +308,62 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
   return instance_resource
 
 
+def _ConstructSecondaryInstanceFromArgsBeta(client, alloydb_messages, args):
+  """Validates command line input arguments and passes parent's resources to create an AlloyDB secondary instance for beta track.
+
+  Args:
+    client: Client for api_utils.py class.
+    alloydb_messages: Messages module for the API client.
+    args: Command line input arguments.
+
+  Returns:
+    An AlloyDB secondary instance to create with the specified command line
+    arguments.
+  """
+
+  return _ConstructSecondaryInstanceFromArgs(
+      client, alloydb_messages, args
+  )
+
+
+def _ConstructSecondaryInstanceFromArgsAlpha(client, alloydb_messages, args):
+  """Validates command line input arguments and passes parent's resources to create an AlloyDB secondary instance for alpha track.
+
+  Args:
+    client: Client for api_utils.py class.
+    alloydb_messages: Messages module for the API client.
+    args: Command line input arguments.
+
+  Returns:
+    An AlloyDB secondary instance to create with the specified command line
+    arguments.
+  """
+
+  instance_resource = _ConstructSecondaryInstanceFromArgsBeta(
+      client, alloydb_messages, args
+  )
+
+  if args.enable_connection_pooling:
+    instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+        connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
+        connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
+        args=args,
+    )
+
+  return instance_resource
+
+
 def ConstructSecondaryCreateRequestFromArgsGA(
     client, alloydb_messages, cluster_ref, args
 ):
@@ -323,11 +380,25 @@ def ConstructSecondaryCreateRequestFromArgsGA(
   )
 
 
-def ConstructSecondaryCreateRequestFromArgsAlphaBeta(
+def ConstructSecondaryCreateRequestFromArgsBeta(
     client, alloydb_messages, cluster_ref, args
 ):
-  """Validates command line input arguments and passes parent's resources for alpha/beta track."""
-  instance_resource = _ConstructSecondaryInstanceFromArgs(
+  """Validates command line input arguments and passes parent's resources for beta track."""
+  instance_resource = _ConstructSecondaryInstanceFromArgsBeta(
+      client, alloydb_messages, args
+  )
+  return alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(
+      instance=instance_resource,
+      instanceId=args.instance,
+      parent=cluster_ref.RelativeName(),
+  )
+
+
+def ConstructSecondaryCreateRequestFromArgsAlpha(
+    client, alloydb_messages, cluster_ref, args
+):
+  """Validates command line input arguments and passes parent's resources for alpha track."""
+  instance_resource = _ConstructSecondaryInstanceFromArgsAlpha(
       client, alloydb_messages, args
   )
   return alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(
@@ -799,6 +870,9 @@ def _ConnectionPoolConfig(**kwargs):
   client_connection_idle_timeout = kwargs.get(
       'connection_pooling_client_connection_idle_timeout'
   )
+  max_prepared_statements = kwargs.get(
+      'connection_pooling_max_prepared_statements'
+  )
 
   alloydb_messages = kwargs.get('alloydb_messages')
   config = alloydb_messages.ConnectionPoolConfig()
@@ -827,6 +901,8 @@ def _ConnectionPoolConfig(**kwargs):
     flags['client_connection_idle_timeout'] = (
         client_connection_idle_timeout
     )
+  if max_prepared_statements is not None:
+    flags['max_prepared_statements'] = str(max_prepared_statements)
 
   config.flags = alloydb_messages.ConnectionPoolConfig.FlagsValue(
       additionalProperties=[
@@ -867,6 +943,9 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
   client_connection_idle_timeout = kwargs.get(
       'connection_pooling_client_connection_idle_timeout'
   )
+  max_prepared_statements = kwargs.get(
+      'connection_pooling_max_prepared_statements'
+  )
   alloydb_messages = kwargs.get('alloydb_messages')
 
   should_update_config = any([
@@ -881,6 +960,7 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
       ignore_startup_parameters is not None,
       server_lifetime is not None,
       client_connection_idle_timeout is not None,
+      max_prepared_statements is not None,
   ])
   if not should_update_config:
     return None
@@ -922,6 +1002,7 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
         'ignore_startup_parameters',
         'server_lifetime',
         'client_connection_idle_timeout',
+        'max_prepared_statements'
     ]
     for f in flag_names:
       exists, value = _CheckIfConnectionPoolConfigFlagExists(
@@ -957,6 +1038,8 @@ def _UpdateConnectionPoolConfig(instance_ref, **kwargs):
     flags['server_lifetime'] = server_lifetime
   if client_connection_idle_timeout is not None:
     flags['client_connection_idle_timeout'] = client_connection_idle_timeout
+  if max_prepared_statements is not None:
+    flags['max_prepared_statements'] = str(max_prepared_statements)
 
   config.flags = alloydb_messages.ConnectionPoolConfig.FlagsValue(
       additionalProperties=[
@@ -1227,7 +1310,8 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
       or args.connection_pooling_stats_users is not None
       or args.connection_pooling_ignore_startup_parameters is not None
       or args.connection_pooling_server_lifetime is not None
-      or args.connection_pooling_client_connection_idle_timeout is not None):
+      or args.connection_pooling_client_connection_idle_timeout is not None
+      or args.connection_pooling_max_prepared_statements is not None):
     paths.append('connectionPoolConfig')
 
     instance_resource.connectionPoolConfig = _UpdateConnectionPoolConfig(
@@ -1244,6 +1328,7 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
         connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
         connection_pooling_server_lifetime=args.connection_pooling_server_lifetime,
         connection_pooling_client_connection_idle_timeout=args.connection_pooling_client_connection_idle_timeout,
+        connection_pooling_max_prepared_statements=args.connection_pooling_max_prepared_statements,
     )
   return instance_resource, paths
 

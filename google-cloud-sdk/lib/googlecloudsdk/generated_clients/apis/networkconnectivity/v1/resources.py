@@ -106,6 +106,43 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICLOUDDATATRANSFERCONFIGS = (
+      'projects.locations.multicloudDataTransferConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicloudDataTransferConfigs/'
+              '{multicloudDataTransferConfigsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICLOUDDATATRANSFERCONFIGS_DESTINATIONS = (
+      'projects.locations.multicloudDataTransferConfigs.destinations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicloudDataTransferConfigs/'
+              '{multicloudDataTransferConfigsId}/destinations/'
+              '{destinationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICLOUDDATATRANSFERSUPPORTEDSERVICES = (
+      'projects.locations.multicloudDataTransferSupportedServices',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicloudDataTransferSupportedServices/'
+              '{multicloudDataTransferSupportedServicesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

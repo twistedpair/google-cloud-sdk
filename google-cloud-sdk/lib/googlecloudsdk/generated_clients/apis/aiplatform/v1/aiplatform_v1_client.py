@@ -1637,7 +1637,7 @@ class AiplatformV1(base_api.BaseApiClient):
     )
 
     def MutateDeployedModel(self, request, global_params=None):
-      r"""Updates an existing deployed model. Updatable fields include `min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`, `disable_container_logging` (v1 only), and `enable_container_logging` (v1beta1 only).
+      r"""Updates an existing deployed model. Updatable fields include `min_replica_count`, `max_replica_count`, `required_replica_count`, `autoscaling_metric_specs`, `disable_container_logging` (v1 only), and `enable_container_logging` (v1beta1 only).
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsMutateDeployedModelRequest) input message
@@ -10078,6 +10078,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Deploy(self, request, global_params=None):
+      r"""Deploys a model to a new endpoint.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Deploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:deploy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.deploy',
+        ordered_params=['destination'],
+        path_params=['destination'],
+        query_params=[],
+        relative_path='v1/{+destination}:deploy',
+        request_field='googleCloudAiplatformV1DeployRequest',
+        request_type_name='AiplatformProjectsLocationsDeployRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def EvaluateInstances(self, request, global_params=None):
       r"""Evaluates instances based on a given metric.
 
@@ -10105,6 +10132,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetRagEngineConfig(self, request, global_params=None):
+      r"""Gets a RagEngineConfig.
+
+      Args:
+        request: (AiplatformProjectsLocationsGetRagEngineConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1RagEngineConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetRagEngineConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRagEngineConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ragEngineConfig',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.getRagEngineConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsGetRagEngineConfigRequest',
+        response_type_name='GoogleCloudAiplatformV1RagEngineConfig',
+        supports_download=False,
+    )
+
     def RetrieveContexts(self, request, global_params=None):
       r"""Retrieves relevant contexts for a query.
 
@@ -10129,6 +10183,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1RetrieveContextsRequest',
         request_type_name='AiplatformProjectsLocationsRetrieveContextsRequest',
         response_type_name='GoogleCloudAiplatformV1RetrieveContextsResponse',
+        supports_download=False,
+    )
+
+    def UpdateRagEngineConfig(self, request, global_params=None):
+      r"""Updates a RagEngineConfig.
+
+      Args:
+        request: (GoogleCloudAiplatformV1RagEngineConfig) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateRagEngineConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateRagEngineConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ragEngineConfig',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.updateRagEngineConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1RagEngineConfig',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

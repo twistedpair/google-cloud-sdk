@@ -375,6 +375,8 @@ class Snapshot(object):
   Attributes:
     src_dir: str, The root of the snapshot source on the local disk.
     ignore_file: optional str, an override for .gcloudignore.
+    include_gitignore: bool, whether the local .gitignore shouild be included in
+      the ignored files.
     files: {str: FileMetadata}, A mapping from file path (relative to the
       snapshot root) to file metadata.
     dirs: [str], The list of dirs (possibly empty) in the snapshot.
@@ -383,13 +385,17 @@ class Snapshot(object):
     any_files_ignored: bool, whether any files were ignored.
   """
 
-  def __init__(self, src_dir, ignore_file=None):
+  def __init__(self, src_dir, ignore_file=None, include_gitignore=True):
     self.src_dir = src_dir
     self.files = {}
     self.dirs = []
     self.uncompressed_size = 0
     file_chooser = gcloudignore.GetFileChooserForDir(
-        self.src_dir, write_on_disk=False, ignore_file=ignore_file)
+        self.src_dir,
+        write_on_disk=False,
+        ignore_file=ignore_file,
+        include_gitignore=include_gitignore,
+    )
     self.any_files_ignored = False
     # Iterate over each directory in the source directory so that we can collect
     # only the unignored files and directories.

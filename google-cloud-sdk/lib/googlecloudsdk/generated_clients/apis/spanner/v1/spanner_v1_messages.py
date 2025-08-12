@@ -2933,6 +2933,10 @@ class InstancePartition(_messages.Message):
     StateValueValuesEnum: Output only. The current instance partition state.
 
   Fields:
+    autoscalingConfig: Optional. The autoscaling configuration. Autoscaling is
+      enabled if this field is set. When autoscaling is enabled, fields in
+      compute_capacity are treated as OUTPUT_ONLY fields and reflect the
+      current compute capacity allocated to the instance partition.
     config: Required. The name of the instance partition's configuration.
       Values are of the form `projects//instanceConfigs/`. See also
       InstanceConfig and ListInstanceConfigs.
@@ -2994,17 +2998,18 @@ class InstancePartition(_messages.Message):
     CREATING = 1
     READY = 2
 
-  config = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  referencingBackups = _messages.StringField(8, repeated=True)
-  referencingDatabases = _messages.StringField(9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  referencingBackups = _messages.StringField(9, repeated=True)
+  referencingDatabases = _messages.StringField(10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class InstanceReplicaSelection(_messages.Message):
@@ -7675,9 +7680,10 @@ class TransactionOptions(_messages.Message):
         distinct transactions actually occurred in parallel. Spanner assigns
         commit timestamps that reflect the order of committed transactions to
         implement this property. Spanner offers a stronger guarantee than
-        serializability called external consistency. For further details,
-        please refer to https://cloud.google.com/spanner/docs/true-time-
-        external-consistency#serializability.
+        serializability called external consistency. For more information, see
+        [TrueTime and external
+        consistency](https://cloud.google.com/spanner/docs/true-time-external-
+        consistency#serializability).
       REPEATABLE_READ: All reads performed during the transaction observe a
         consistent snapshot of the database, and the transaction is only
         successfully committed in the absence of conflicts between its updates

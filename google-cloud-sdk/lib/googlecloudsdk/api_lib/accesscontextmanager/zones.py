@@ -18,13 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import list_pager
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources as core_resources
-
 import six
 
 
@@ -55,6 +54,8 @@ def _CreateServicePerimeterConfig(messages,
                                   levels,
                                   vpc_allowed_services,
                                   enable_vpc_accessible_services,
+                                  vpc_yaml_flag_used,
+                                  vpc_accessible_services_config=None,
                                   ingress_policies=None,
                                   egress_policies=None):
   """Returns a ServicePerimeterConfig and its update mask."""
@@ -78,8 +79,13 @@ def _CreateServicePerimeterConfig(messages,
         level_names.append(l.RelativeName())
       config.accessLevels = level_names
 
-  if (enable_vpc_accessible_services is not None or
-      vpc_allowed_services is not None):
+  if vpc_yaml_flag_used:
+    mask.append('vpcAccessibleServices')
+    config.vpcAccessibleServices = vpc_accessible_services_config
+  elif (
+      enable_vpc_accessible_services is not None
+      or vpc_allowed_services is not None
+  ):
     service_filter = messages.VpcAccessibleServices()
     service_filter_mask = []
     _SetIfNotNone('allowedServices', vpc_allowed_services, service_filter,
@@ -152,19 +158,23 @@ class Client(object):
         poller, operation_ref,
         'Waiting for PATCH operation [{}]'.format(operation_ref.Name()))
 
-  def Patch(self,
-            perimeter_ref,
-            description=None,
-            title=None,
-            perimeter_type=None,
-            resources=None,
-            restricted_services=None,
-            levels=None,
-            vpc_allowed_services=None,
-            enable_vpc_accessible_services=None,
-            ingress_policies=None,
-            egress_policies=None,
-            etag=None):
+  def Patch(
+      self,
+      perimeter_ref,
+      description=None,
+      title=None,
+      perimeter_type=None,
+      resources=None,
+      restricted_services=None,
+      levels=None,
+      vpc_allowed_services=None,
+      enable_vpc_accessible_services=None,
+      vpc_yaml_flag_used=False,
+      vpc_accessible_services_config=None,
+      ingress_policies=None,
+      egress_policies=None,
+      etag=None,
+  ):
     """Patch a service perimeter.
 
     Args:
@@ -185,6 +195,9 @@ class Client(object):
         access zone, or None if not updating.
       enable_vpc_accessible_services: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
+      vpc_yaml_flag_used: bool, whether the vpc yaml flag was used.
+      vpc_accessible_services_config: VpcAccessibleServices, or None if not
+        updating.
       ingress_policies: list of IngressPolicy, or None if not updating.
       egress_policies: list of EgressPolicy, or None if not updating.
       etag: str, the optional etag for the version of the Perimeter that
@@ -210,6 +223,8 @@ class Client(object):
         levels=levels,
         vpc_allowed_services=vpc_allowed_services,
         enable_vpc_accessible_services=enable_vpc_accessible_services,
+        vpc_yaml_flag_used=vpc_yaml_flag_used,
+        vpc_accessible_services_config=vpc_accessible_services_config,
         ingress_policies=ingress_policies,
         egress_policies=egress_policies)
     perimeter.status = config
@@ -224,19 +239,23 @@ class Client(object):
 
     return self._ApplyPatch(perimeter_ref, perimeter, update_mask)
 
-  def PatchDryRunConfig(self,
-                        perimeter_ref,
-                        description=None,
-                        title=None,
-                        perimeter_type=None,
-                        resources=None,
-                        restricted_services=None,
-                        levels=None,
-                        vpc_allowed_services=None,
-                        enable_vpc_accessible_services=None,
-                        ingress_policies=None,
-                        egress_policies=None,
-                        etag=None):
+  def PatchDryRunConfig(
+      self,
+      perimeter_ref,
+      description=None,
+      title=None,
+      perimeter_type=None,
+      resources=None,
+      restricted_services=None,
+      levels=None,
+      vpc_allowed_services=None,
+      enable_vpc_accessible_services=None,
+      vpc_yaml_flag_used=False,
+      vpc_accessible_services_config=None,
+      ingress_policies=None,
+      egress_policies=None,
+      etag=None,
+  ):
     """Patch the dry-run config (spec) for a Service Perimeter.
 
     Args:
@@ -257,6 +276,9 @@ class Client(object):
         access zone, or None if not updating.
       enable_vpc_accessible_services: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
+      vpc_yaml_flag_used: bool, whether the vpc yaml flag was used.
+      vpc_accessible_services_config: VpcAccessibleServices, or None if not
+        updating.
       ingress_policies: list of IngressPolicy, or None if not updating.
       egress_policies: list of EgressPolicy, or None if not updating.
       etag: str, the optional etag for the version of the Perimeter that
@@ -284,6 +306,8 @@ class Client(object):
         levels=levels,
         vpc_allowed_services=vpc_allowed_services,
         enable_vpc_accessible_services=enable_vpc_accessible_services,
+        vpc_yaml_flag_used=vpc_yaml_flag_used,
+        vpc_accessible_services_config=vpc_accessible_services_config,
         ingress_policies=ingress_policies,
         egress_policies=egress_policies)
 

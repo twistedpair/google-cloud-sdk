@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wrapper for cloud-run-up binary."""
+"""Wrapper for runcompose binary."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -47,17 +47,27 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
   # Function required by StreamingBinaryBackedOperation to map command line args
   # from gcloud to the underlying component.
   def _ParseArgsForCommand(
-      self, compose_file=None, repo=None, debug=False, dry_run=False, **kwargs
+      self,
+      command=None,
+      compose_file=None,
+      repo=None,
+      debug=False,
+      dry_run=False,
+      **kwargs
   ):
     del kwargs
-    exec_args = ['up']
+    exec_args = []
+    if command:
+      exec_args += [command]
     if compose_file:
       exec_args += [compose_file]
-    exec_args += ['--repo', repo]
-    if debug:
-      exec_args.append('--debug')
-    if dry_run:
-      exec_args.append('--dry-run')
+
+    if command == 'up':
+      exec_args += ['--repo', repo]
+      if debug:
+        exec_args.append('--debug')
+      if dry_run:
+        exec_args.append('--dry-run')
     return exec_args
 
 

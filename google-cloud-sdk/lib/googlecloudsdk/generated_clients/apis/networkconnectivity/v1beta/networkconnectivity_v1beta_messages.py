@@ -928,6 +928,12 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
   capable of advertising the same prefixes.
 
   Fields:
+    excludeExportRanges: Optional. Dynamic routes overlapped/encompassed by
+      exclude export ranges are excluded during export to hub.
+    excludeImportRanges: Optional. Hub routes overlapped/encompassed by
+      exclude import ranges are excluded during import from hub.
+    includeExportRanges: Optional. Dynamic routes fully encompassed by include
+      export ranges are included during export to hub.
     includeImportRanges: Optional. Hub routes fully encompassed by include
       import ranges are included during import from hub.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
@@ -939,10 +945,13 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
       located.
   """
 
-  includeImportRanges = _messages.StringField(1, repeated=True)
-  siteToSiteDataTransfer = _messages.BooleanField(2)
-  uris = _messages.StringField(3, repeated=True)
-  vpcNetwork = _messages.StringField(4)
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  excludeImportRanges = _messages.StringField(2, repeated=True)
+  includeExportRanges = _messages.StringField(3, repeated=True)
+  includeImportRanges = _messages.StringField(4, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(5)
+  uris = _messages.StringField(6, repeated=True)
+  vpcNetwork = _messages.StringField(7)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Message):
@@ -983,6 +992,12 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
   with the same spoke.
 
   Fields:
+    excludeExportRanges: Optional. Dynamic routes overlapped/encompassed by
+      exclude export ranges are excluded during export to hub.
+    excludeImportRanges: Optional. Hub routes overlapped/encompassed by
+      exclude import ranges are excluded during import from hub.
+    includeExportRanges: Optional. Dynamic routes fully encompassed by include
+      export ranges are included during export to hub.
     includeImportRanges: Optional. Hub routes fully encompassed by include
       import ranges are included during import from hub.
     instances: The list of router appliance instances.
@@ -994,10 +1009,13 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
       instances are located.
   """
 
-  includeImportRanges = _messages.StringField(1, repeated=True)
-  instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 2, repeated=True)
-  siteToSiteDataTransfer = _messages.BooleanField(3)
-  vpcNetwork = _messages.StringField(4)
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  excludeImportRanges = _messages.StringField(2, repeated=True)
+  includeExportRanges = _messages.StringField(3, repeated=True)
+  includeImportRanges = _messages.StringField(4, repeated=True)
+  instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 5, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(6)
+  vpcNetwork = _messages.StringField(7)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
@@ -1037,6 +1055,12 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
   be capable of advertising the same prefixes.
 
   Fields:
+    excludeExportRanges: Optional. Dynamic routes overlapped/encompassed by
+      exclude export ranges are excluded during export to hub.
+    excludeImportRanges: Optional. Hub routes overlapped/encompassed by
+      exclude import ranges are excluded during import from hub.
+    includeExportRanges: Optional. Dynamic routes fully encompassed by include
+      export ranges are included during export to hub.
     includeImportRanges: Optional. Hub routes fully encompassed by include
       import ranges are included during import from hub.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
@@ -1048,10 +1072,13 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
       located.
   """
 
-  includeImportRanges = _messages.StringField(1, repeated=True)
-  siteToSiteDataTransfer = _messages.BooleanField(2)
-  uris = _messages.StringField(3, repeated=True)
-  vpcNetwork = _messages.StringField(4)
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  excludeImportRanges = _messages.StringField(2, repeated=True)
+  includeExportRanges = _messages.StringField(3, repeated=True)
+  includeImportRanges = _messages.StringField(4, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(5)
+  uris = _messages.StringField(6, repeated=True)
+  vpcNetwork = _messages.StringField(7)
 
 
 class GoogleCloudNetworkconnectivityV1betaListDestinationsResponse(_messages.Message):

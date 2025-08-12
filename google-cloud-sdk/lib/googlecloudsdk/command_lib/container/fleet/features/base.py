@@ -164,38 +164,37 @@ class DisableCommand(UpdateCommandMixin, calliope_base.DeleteCommand):
   """Base class for the command that disables an entire or parts of a Feature.
   """
 
+  FORCE_FLAG = calliope_base.Argument(
+      '--force',
+      action='store_true',
+      help=(
+          'Force disablement.'
+          ' Bypasses any prompts for confirmation.'
+          ' When disabling the entire feature, proceeds'
+          ' even if the feature is in use.'
+          ' Might result in unexpected behavior.'
+      ),
+  )
+  FLEET_DEFAULT_MEMBER_CONFIG_FLAG = calliope_base.Argument(
+      '--fleet-default-member-config',
+      # Note that this flag should actually follow
+      # yaqs/eng/q/4400496223010684928, but many
+      # feature surfaces have already adopted store_true.
+      action='store_true',
+      help=(
+          'Disable the [fleet-default membership configuration]('
+          'https://cloud.google.com/kubernetes-engine/fleet-management/docs/manage-features).'
+          ' Does not change existing membership configurations.'
+          ' Does nothing if the feature is disabled.'
+      ),
+  )
   support_fleet_default = False
 
   @classmethod
   def Args(cls, parser):
-    parser.add_argument(
-        '--force',
-        action='store_true',
-        help=(
-            'Force disablement.'
-            ' Bypasses any prompts for confirmation.'
-            ' When disabling the entire feature, proceeds'
-            ' even if the feature is in use.'
-            ' Might result in unexpected behavior.'
-        ),
-    )
+    cls.FORCE_FLAG.AddToParser(parser)
     if cls.support_fleet_default:
-      cls.fleet_default_member_config_flag(parser)
-
-  @staticmethod
-  def fleet_default_member_config_flag(parser):
-    parser.add_argument(
-        '--fleet-default-member-config',
-        # Note that this flag should actually follow
-        # yaqs/eng/q/4400496223010684928, but many
-        # feature surfaces have already adopted store_true.
-        action='store_true',
-        help=(
-            'Disable the [fleet-default membership configuration]('
-            'https://cloud.google.com/kubernetes-engine/fleet-management/docs/manage-features).'
-            ' Does not change existing membership configurations.'
-        ),
-    )
+      cls.FLEET_DEFAULT_MEMBER_CONFIG_FLAG.AddToParser(parser)
 
   def Run(self, args):
     if self.support_fleet_default and args.fleet_default_member_config:

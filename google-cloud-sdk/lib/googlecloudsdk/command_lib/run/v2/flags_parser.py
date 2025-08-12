@@ -505,9 +505,7 @@ def _HasWorkerPoolScalingChanges(args):
   scaling_flags = [
       'min',
       'max',
-      'max_surge',
       'scaling',
-      'max_unavailable',
   ]
   return flags.HasChanges(args, scaling_flags)
 
@@ -526,12 +524,6 @@ def _GetWorkerPoolScalingChange(args, release_track):
       else None,
       max_instance_count=args.max
       if 'max' in args and args.max is not None
-      else None,
-      max_surge=args.max_surge
-      if 'max_surge' in args and args.max_surge is not None
-      else None,
-      max_unavailable=args.max_unavailable
-      if 'max_unavailable' in args and args.max_unavailable is not None
       else None,
       scaling=args.scaling
       if 'scaling' in args and args.scaling is not None

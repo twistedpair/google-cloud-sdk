@@ -379,6 +379,7 @@ def AddCommonBulkInsertArgs(
     support_graceful_shutdown=False,
     support_flex_start=False,
     support_source_snapshot_region=False,
+    support_skip_guest_os_shutdown=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -504,6 +505,8 @@ def AddCommonBulkInsertArgs(
   if support_watchdog_timer:
     instances_flags.AddWatchdogTimerArg(parser)
   instances_flags.AddTurboModeArgs(parser)
+  if support_skip_guest_os_shutdown:
+    instances_flags.AddSkipGuestOsShutdownArgs(parser)
 
 
 def ValidateBulkCreateArgs(args):

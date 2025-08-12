@@ -87,12 +87,10 @@ allow-broker-downscale-on-cluster-upscale:
   action: store_true
   default: null
   help_text: |
-    If enabled, allows an update operation that increases the total vCPU and/or
-    memory allocation of the cluster to significantly decrease the per-broker
-    vCPU and/or memory allocation. This can result in reduced performance and
-    availability. By default, the update operation will fail if an upscale
-    request results in a vCPU or memory allocation for the brokers that is
-    smaller than 90% of the current broker size.
+    If enabled, this setting allows an update operation that could significantly decrease the
+    per-broker vCPU and/or memory allocation, which can lead to reduced performance and
+    availability. By default, an update operation will fail if it results in a reduction of 10% or
+    more to the brokers' vCPU or memory allocation.
 
 ssl-principal-mapping-rules:
   api_field: cluster.tlsConfig.sslPrincipalMappingRules

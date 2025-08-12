@@ -4127,3 +4127,14 @@ def AddTurboModeArgs(parser):
       default, which results in maximum performance single-core boosting.
       """,
   )
+
+
+def AddSkipGuestOsShutdownArgs(parser):
+  parser.add_argument(
+      '--skip-guest-os-shutdown',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      If enabled, then, when the instance is stopped or deleted, the instance
+      is immediately stopped without giving time to the guest OS to cleanly
+      shut down.
+      """)

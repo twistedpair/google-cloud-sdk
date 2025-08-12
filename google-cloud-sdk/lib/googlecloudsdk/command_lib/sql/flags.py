@@ -2807,6 +2807,20 @@ def AddEnableDbAlignedAtomicWrites(parser):
   )
 
 
+def AddEnableAutoUpgrade(parser):
+  """Adds '--enable-auto-upgrade-minor-version' flag to the parser."""
+  parser.add_argument(
+      '--enable-auto-upgrade-minor-version',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=False,
+      help=(
+          'Enables auto-upgrade for MySQL 8.0 minor versions. The MySQL version'
+          ' must be 8.0.35 or higher.'
+      ),
+      hidden=True,
+  )
+
+
 def AddReplicationLagMaxSecondsForRecreate(parser):
   """Adds the '--replication-lag-max-seconds-for-recreate' flag to the parser for instances patch action.
 

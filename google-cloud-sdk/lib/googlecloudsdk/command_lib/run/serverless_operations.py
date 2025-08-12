@@ -915,6 +915,7 @@ class ServerlessOperations(object):
             service_ref,
             source_bucket,
             sources.ArchiveType.TAR,
+            respect_gitignore=False,
         )
         # TODO(b/423646813): Remove this once zip deploys properly handles the
         # generation number.

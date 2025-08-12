@@ -380,7 +380,7 @@ class CLILoader(object):
     path_string = '.'.join(command_path)
     return [component
             for path, component in six.iteritems(self.__missing_components)
-            if path_string.startswith(self.__name + '.' + path)]
+            if path_string == path or path_string.startswith(path + '.')]
 
   def ReplicateCommandPathForAllOtherTracks(self, command_path):
     """Finds other release tracks this command could be in.
@@ -462,7 +462,7 @@ class CLILoader(object):
         top_group.CopyAllSubElementsTo(track_group, ignore=track_names)
         loaded_release_tracks[track] = track_group
       elif component:
-        self.__missing_components[track.prefix] = component
+        self.__missing_components[f'{self.__name}.{track.prefix}'] = component
 
     # Load the normal set of registered sub groups.
     for module_dot_path, module_dir_path, component in self.__modules:
@@ -503,8 +503,11 @@ class CLILoader(object):
             else:
               parent_group._groups_to_load[cmd_or_grp_name] = [impl_path]
           elif component:
-            prefix = track.prefix + '.' if track.prefix else ''
-            self.__missing_components[prefix + module_dot_path] = component
+            cmd_prefix = (
+                f'{self.__name}.{track.prefix}.' if track.prefix else
+                f'{self.__name}.')
+            self.__missing_components[
+                cmd_prefix + module_dot_path.replace('_', '-')] = component
       except command_loading.CommandLoadFailure as e:
         log.exception(e)
 
@@ -981,7 +984,6 @@ class CLI(object):
 
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
-
       resources = calliope_command.Run(cli=self, args=args)
 
       for hook in self.__post_run_hooks:
@@ -1004,9 +1006,12 @@ class CLI(object):
       # Do this last. If there is an error, the error handler will log the
       # command execution along with the error.
       metrics.Commands(
-          command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names)
+          command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names
+      )
       return resources
 
+    except exceptions.DryRunError as exc:
+      return exc.request
     except Exception as exc:  # pylint: disable=broad-except
       self._HandleAllErrors(exc, command_path_string, specified_arg_names)
 

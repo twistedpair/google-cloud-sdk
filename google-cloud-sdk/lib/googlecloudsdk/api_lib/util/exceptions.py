@@ -23,7 +23,6 @@ import collections
 import io
 import json
 import logging
-import os
 import string
 import urllib.parse
 
@@ -37,6 +36,7 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 import six
+
 
 # Some formatter characters are special inside {...}. The _Escape / _Expand pair
 # escapes special chars inside {...} and ignores them outside.
@@ -351,8 +351,7 @@ class HttpErrorPayload(FormattableErrorPayload):
     return (
         properties.VALUES.api_endpoint_overrides.AllValues()
         and properties.VALUES.context_aware.use_client_certificate.GetBool()
-        and encoding.GetEncodedValue(os.environ, 'CLOUDSDK_INTERNAL_USER')
-        == 'true'
+        and properties.IsInternalUserCheck()
     )
 
   def _IsExistingOverrideMTLS(self, endpoint_override):

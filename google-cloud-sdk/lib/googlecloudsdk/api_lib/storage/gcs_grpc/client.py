@@ -72,6 +72,31 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
       )
     return self._gapic_client
 
+  def get_bucket(
+      self,
+      bucket_name,
+      generation=None,
+      fields_scope=cloud_api.FieldsScope.FULL,
+      soft_deleted=False,
+  ):
+    """See super class."""
+    # TODO(b/324352239): This is a temporary implementation to unblock
+    # direct connectivity diagnostic for Rapid.
+    if generation is not None:
+      raise ValueError('generation is not supported in gRPC API.')
+    if soft_deleted:
+      raise ValueError('soft_deleted is not supported in gRPC API.')
+    if fields_scope != cloud_api.FieldsScope.FULL:
+      raise ValueError('fields_scope is not supported in gRPC API.')
+
+    self._get_gapic_client()
+    metadata = self._gapic_client.storage.get_bucket(
+        self._gapic_client.types.GetBucketRequest(
+            name=grpc_util.get_full_bucket_name(bucket_name),
+        )
+    )
+    return metadata_util.get_bucket_resource_from_metadata(metadata)
+
   def compose_objects(
       self,
       source_resources,

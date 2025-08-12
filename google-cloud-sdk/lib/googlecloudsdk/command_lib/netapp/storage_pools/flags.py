@@ -112,6 +112,17 @@ def GetDirectoryServiceTypeEnumFromArg(choice, messages):
   )
 
 
+def GetStoragePoolQosTypeArg(messages, hidden=True):
+  """Adds the Qos Type arg to the arg parser."""
+  qos_type_arg = arg_utils.ChoiceEnumMapper(
+      '--qos-type',
+      messages.StoragePool.QosTypeValueValuesEnum,
+      help_str="""Quality of service (QoS) type for the Storage Pool.""",
+      hidden=hidden,
+  )
+  return qos_type_arg
+
+
 def AddStoragePoolServiceLevelArg(
     parser, messages, required=False
 ):
@@ -294,6 +305,12 @@ def AddStoragePoolUnifiedPoolArg(parser):
       hidden=True,
   )
 
+
+def AddStoragePoolQosTypeArg(parser, messages, hidden=True):
+  GetStoragePoolQosTypeArg(
+      messages, hidden=hidden
+  ).choice_arg.AddToParser(parser)
+
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 
 
@@ -325,6 +342,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
     AddStoragePoolUnifiedPoolArg(parser)
+    AddStoragePoolQosTypeArg(parser, messages)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -337,6 +355,7 @@ def AddStoragePoolDeleteArgs(parser):
 
 def AddStoragePoolUpdateArgs(parser, release_track):
   """Add args for updating a Storage Pool."""
+  messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   concept_parsers.ConceptParser([
       flags.GetStoragePoolPresentationSpec('The Storage Pool to update.')
   ]).AddToParser(parser)
@@ -354,6 +373,7 @@ def AddStoragePoolUpdateArgs(parser, release_track):
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
+    AddStoragePoolQosTypeArg(parser, messages)
 
 
 def AddStoragePoolSwitchArg(parser):

@@ -16,7 +16,7 @@
 """Hooks for modifying responses for better formatting on gcloud."""
 
 import re
-
+from googlecloudsdk.calliope import base
 
 PROVISIONING_TYPE_ABBREVIATIONS = {
     "ADVANCED": "Adv",
@@ -26,7 +26,11 @@ PROVISIONING_TYPE_ABBREVIATIONS = {
 STORAGE_POOL_TYPE_ABBREVIATIONS = {
     "hyperdisk-balanced": "HdB",
     "hyperdisk-throughput": "HdT",
+    "exapool-hyperdisk-balanced": "Exa-HdB",
+    "exapool-hyperdisk-throughput": "Exa-HdT",
 }
+
+EXAPOOL_TYPES = ["exapool-hyperdisk-balanced", "exapool-hyperdisk-throughput"]
 
 STORAGE_POOL_TYPE_REGEX = re.compile(r"storagePoolTypes/([a-zA-Z0-9-]+)")
 
@@ -37,7 +41,7 @@ GB = 1 << 30
 TB_IN_GB = 1 << 10
 
 
-def format_for_listing(pool_list, _):
+def format_for_listing(pool_list, args):
   """Format existing fields for displaying them in the list response.
 
   The formatting logic is complicated enough to the point gcloud"s formatter
@@ -45,14 +49,33 @@ def format_for_listing(pool_list, _):
 
   Args:
     pool_list: list of storage pools.
+    args: the arguments passed to the command.
 
   Returns:
     the inputted pool list, with the added fields containing new formatting.
   """
-  return list(map(_format_single, pool_list))
+  if args.calliope_command.ReleaseTrack() == base.ReleaseTrack.ALPHA:
+    storage_pools = []
+    exapools = []
+
+    for pool in pool_list:
+      if _is_exapool(pool):
+        exapools.append(_format_exapool(pool))
+      else:
+        storage_pools.append(_format_storage_pool(pool))
+
+    return {"storagePools": storage_pools, "exapools": exapools}
+
+  return list(map(_format_storage_pool, pool_list))
 
 
-def _format_single(pool):
+def _is_exapool(pool):
+  """Returns true if the pool is an Exapool."""
+  return any(exapool_type in pool["storagePoolType"]
+             for exapool_type in EXAPOOL_TYPES)
+
+
+def _format_storage_pool(pool):
   """Format a single pool for displaying it in the list response."""
   _add_types(pool)
   _add_capacity(pool)
@@ -62,26 +85,54 @@ def _format_single(pool):
   return pool
 
 
-def _add_capacity(pool):
-  """Add capacity formatting.
+def _format_exapool(pool):
+  """Format a single exapool for displaying it in the list response."""
+  _add_types(pool, is_exapool=True)
+  _add_capacity(pool, is_exapool=True)
+  _add_exapool_max_performance(pool)
+  return pool
+
+
+def _add_capacity(pool, is_exapool=False):
+  """Add capacity formatting for regular storage pools.
 
   Args:
     pool: the serializable storage pool
+    is_exapool: whether the pool is an Exapool
 
   Returns:
     nothing, it changes the input value.
   """
-  provisioned_capacity_bytes = int(pool["poolProvisionedCapacityGb"]) * GB
-  provisioned_capacity_tb = provisioned_capacity_bytes / TB
 
   used_capacity_bytes = int(pool["status"]["poolUsedCapacityBytes"])
   used_capacity_tb = used_capacity_bytes / TB
 
-  formatted_capacity = "{:,.1f}/{:,.0f} ({:.1f}%)".format(
-      used_capacity_tb,
-      provisioned_capacity_tb,
-      100 * (used_capacity_bytes / provisioned_capacity_bytes),
-  )
+  if is_exapool:
+    exapool_provisioned_capacity_gb = int(
+        pool["exapoolProvisionedCapacityGb"]["writeOptimized"]
+        + pool["exapoolProvisionedCapacityGb"]["readOptimized"]
+        + pool["exapoolProvisionedCapacityGb"]["capacityOptimized"]
+    )
+    exapool_provisioned_capacity_tb = exapool_provisioned_capacity_gb / TB_IN_GB
+
+    formatted_capacity = "{:,.1f}/{:,.0f} ({:.1f}%)".format(
+        used_capacity_tb,
+        exapool_provisioned_capacity_tb,
+        100 * (used_capacity_tb / exapool_provisioned_capacity_tb),
+    )
+
+  else:
+    provisioned_capacity_bytes = int(pool["poolProvisionedCapacityGb"]) * GB
+    provisioned_capacity_tb = provisioned_capacity_bytes / TB
+
+    used_capacity_bytes = int(pool["status"]["poolUsedCapacityBytes"])
+    used_capacity_tb = used_capacity_bytes / TB
+
+    formatted_capacity = "{:,.1f}/{:,.0f} ({:.1f}%)".format(
+        used_capacity_tb,
+        provisioned_capacity_tb,
+        100 * (used_capacity_bytes / provisioned_capacity_bytes),
+    )
 
   pool["formattedCapacity"] = formatted_capacity
 
@@ -146,8 +197,8 @@ def _add_throughput(pool):
   pool["formattedThroughput"] = formatted_throughput
 
 
-def _add_types(pool):
-  """Add pool type formatting.
+def _add_exapool_max_performance(pool):
+  """Add max performance formatting for Exapools.
 
   Args:
     pool: the serializable storage pool
@@ -155,11 +206,39 @@ def _add_types(pool):
   Returns:
     nothing, it changes the input value.
   """
-  types = "{}/{}/{}".format(
-      _format_pool_type(pool),
-      _format_capacity_provisioning_type(pool),
-      _format_perf_provisioning_type(pool),
+  exapool_max_read_iops = int(pool["status"]["exapoolMaxReadIops"])
+  exapool_max_write_iops = int(pool["status"]["exapoolMaxWriteIops"])
+  exapool_max_read_throughput = int(pool["status"]["exapoolMaxReadThroughput"])
+  exapool_max_write_throughput = int(
+      pool["status"]["exapoolMaxWriteThroughput"]
   )
+
+  pool["formattedExapoolMaxRwIops"] = "{:,}(R)/{:,}(W)".format(
+      exapool_max_read_iops, exapool_max_write_iops
+  )
+  pool["formattedExapoolMaxRwThroughput"] = "{:,}(R)/{:,}(W)".format(
+      exapool_max_read_throughput, exapool_max_write_throughput
+  )
+
+
+def _add_types(pool, is_exapool=False):
+  """Add pool type formatting.
+
+  Args:
+    pool: the serializable storage pool
+    is_exapool: whether the pool is an Exapool
+
+  Returns:
+    nothing, it changes the input value.
+  """
+  if is_exapool:
+    types = _format_pool_type(pool)
+  else:
+    types = "{}/{}/{}".format(
+        _format_pool_type(pool),
+        _format_capacity_provisioning_type(pool),
+        _format_perf_provisioning_type(pool),
+    )
 
   pool["formattedTypes"] = types
 

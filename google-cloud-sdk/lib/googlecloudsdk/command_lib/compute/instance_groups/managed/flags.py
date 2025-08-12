@@ -840,19 +840,18 @@ def AddInstanceFlexibilityPolicyArgs(
 
 def AddTargetSizePolicyModeFlag(parser):
   """Add target size policy mode to the parser."""
-  help_text = 'Specifies mode in which operations on size are processed.'
+  help_text = 'Specifies the mode in which the MIG creates VMs in the group.'
   choices = {
       'individual': (
-          'Default mode in which MIG creates and starts VMs individually'
-          ' without cross-dependency between VMs. This means that in case of'
-          ' something blocking part of VMs to be provisioned, the other part'
-          ' will be created.'
+          '(Default) MIG creates VMs individually. If the MIG cannot create any'
+          ' VM to meet the specified ``size``, then the MIG creates the VMs for'
+          ' which resources are available. The MIG then attempts to create the'
+          ' remaining VMs until the resources become available.'
       ),
       'bulk': (
-          'Mode in which MIG creates and starts VMs in all-or-nothing manner.'
-          ' If any VM from the request cannot be provisioned, the whole request'
-          ' waits for conditions that allow for provisioning whole capacity in'
-          ' bulk.'
+          'MIG creates VMs all at once. If the MIG cannot create any VM to meet'
+          ' the specified ``size``, then the MIG waits until the resources'
+          ' become available to create all VMs.'
       ),
   }
 

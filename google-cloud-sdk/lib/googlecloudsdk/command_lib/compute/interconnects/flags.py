@@ -463,8 +463,19 @@ def AddAaiBandwidthPercentages(parser):
       ),
       required=True,
       help="""\
-      A list of bandwidth percentages for each application awareness profile.
-      The sum of all bandwidth percentages must be 100.
+      A list of bandwidth percentages, for configuring the bandwidth percentage policy or traffic shaping.
+
+      For configuring bandwidth percentages for the bandwidth percentage policy:
+
+      1. Each bandwidth percentage value must be an integer between 1-100.
+      2. It is required to provide a percentage value for each class.
+      3. The sum of all bandwidth percentages must be 100.
+
+      For configuring bandwidth percentages for traffic shaping:
+
+      1. Each bandwidth percentage value must be an integer between 1-100.
+      2. It is not required to provide a percentage value for each class.
+      3. The sum of all bandwidth percentages does not need to be 100.
       """,
   )
 

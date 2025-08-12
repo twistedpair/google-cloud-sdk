@@ -594,6 +594,15 @@ def AddVolumeHybridReplicationParametersArg(
   )
 
 
+def AddVolumeThroughputMibpsArg(parser):
+  """Adds the --throughput-mibps arg to the arg parser."""
+  parser.add_argument(
+      '--throughput-mibps',
+      type=float,
+      help='The desired throughput of the volume in MiB/s.',
+  )
+
+
 def AddVolumeCacheParametersArg(parser, hidden=False):
   """Adds the --cache-parameters arg to the arg parser."""
   cache_parameters_arg_spec = {
@@ -607,8 +616,7 @@ def AddVolumeCacheParametersArg(parser, hidden=False):
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey
       ),
       'cache-config': arg_parsers.ArgList(
-          max_length=3, element_type=arg_parsers.ArgDict(),
-          custom_delim_char='#'
+          element_type=arg_parsers.ArgDict(), custom_delim_char='#'
       ),
   }
   cache_parameters_help = """\
@@ -692,6 +700,11 @@ def AddVolumeCreateArgs(parser, release_track):
   ]:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
+  if (
+      release_track == calliope_base.ReleaseTrack.ALPHA
+      or release_track == calliope_base.ReleaseTrack.BETA
+  ):
+    AddVolumeThroughputMibpsArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   AddVolumeHybridReplicationParametersArg(parser, messages, release_track)
   if release_track in [
@@ -740,6 +753,11 @@ def AddVolumeUpdateArgs(parser, release_track):
   ]:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
+  if (
+      release_track == calliope_base.ReleaseTrack.ALPHA
+      or release_track == calliope_base.ReleaseTrack.BETA
+  ):
+    AddVolumeThroughputMibpsArg(parser)
   AddVolumeTieringPolicyArg(parser, messages, release_track)
   if release_track in [
       calliope_base.ReleaseTrack.ALPHA, calliope_base.ReleaseTrack.BETA,

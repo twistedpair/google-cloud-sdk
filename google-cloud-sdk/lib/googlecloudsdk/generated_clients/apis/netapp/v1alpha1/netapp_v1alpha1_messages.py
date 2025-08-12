@@ -533,10 +533,10 @@ class CacheConfig(_messages.Message):
   r"""Configuration of the cache volume.
 
   Fields:
+    atimeScrubDays: Optional. Duration in days after which inactive files can
+      be scrubbed from FlexCache volume.
     atimeScrubEnabled: Optional. Flag indicating whether the atime based scrub
       is enabled for the FlexCache volume.
-    atimeScrubMinutes: Optional. Duration in minutes after which inactive
-      files can be scrubbed from FlexCache volume.
     cachePrePopulate: Optional. Pre-populate cache volume with data from the
       origin volume.
     cifsChangeNotifyEnabled: Optional. Flag indicating whether a CIFS change
@@ -545,8 +545,8 @@ class CacheConfig(_messages.Message):
       for the FlexCache volume.
   """
 
-  atimeScrubEnabled = _messages.BooleanField(1)
-  atimeScrubMinutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  atimeScrubDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  atimeScrubEnabled = _messages.BooleanField(2)
   cachePrePopulate = _messages.MessageField('CachePrePopulate', 3)
   cifsChangeNotifyEnabled = _messages.BooleanField(4)
   writeBackEnabled = _messages.BooleanField(5)

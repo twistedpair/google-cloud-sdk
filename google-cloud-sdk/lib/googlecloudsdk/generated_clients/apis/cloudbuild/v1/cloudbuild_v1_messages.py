@@ -5378,6 +5378,9 @@ class WorkerConfig(_messages.Message):
       pool config file](https://cloud.google.com/build/docs/private-
       pools/worker-pool-config-file-schema). Specify a value of up to 4000. If
       `0` is specified, Cloud Build will use a standard disk size.
+    enableNestedVirtualization: Optional. Enable nested virtualization on the
+      worker, if supported by the machine type. By default, nested
+      virtualization is disabled.
     machineType: Optional. Machine type of a worker, such as `e2-medium`. See
       [Worker pool config file](https://cloud.google.com/build/docs/private-
       pools/worker-pool-config-file-schema). If left blank, Cloud Build will
@@ -5385,7 +5388,8 @@ class WorkerConfig(_messages.Message):
   """
 
   diskSizeGb = _messages.IntegerField(1)
-  machineType = _messages.StringField(2)
+  enableNestedVirtualization = _messages.BooleanField(2)
+  machineType = _messages.StringField(3)
 
 
 class WorkerPool(_messages.Message):

@@ -21,7 +21,6 @@ import os
 import re
 import socket
 import tempfile
-import uuid
 
 from googlecloudsdk.command_lib.storage import path_util
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
@@ -33,7 +32,7 @@ from googlecloudsdk.core.util import files
 import requests
 
 
-_CORE_CHECK_NAME = 'Direct Connectivity Upload'
+_CORE_CHECK_NAME = 'Direct Connectivity Call'
 _SUCCESS = 'Success.'
 
 
@@ -76,14 +75,15 @@ def _exec_gcloud_and_return_stdout(command_args):
 
 def _get_zone():
   """Gets the zone of the VM from the Metadata service."""
-  command = execution_utils.ArgsForExecutableTool(
-      'curl',
-      '--silent',
+  response = requests.get(
+      # gcloud-disable-gdu-domain
       'http://metadata.google.internal/computeMetadata/v1/instance/zone',
-      '-H',
-      'Metadata-Flavor: Google',
+      headers={'Metadata-Flavor': 'Google'},
+      timeout=5,
   )
-  return _exec_and_return_stdout(command).rsplit('/', 1)[-1]
+  if response.status_code == 200:
+    return response.text.strip().rsplit('/', 1)[-1]
+  return ''
 
 
 def _log_running_check(check_name):
@@ -101,7 +101,6 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     """Initializes the Direct Connectivity Diagnostic."""
     self._bucket_resource = bucket_resource
     self._cleaned_up = False
-    self._object_path = 'direct_connectivity_diagnostics_' + str(uuid.uuid4())
     self._process_count = 1
     self._results = []
     self._retain_logs = bool(logs_path)
@@ -126,9 +125,6 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     """Restores environment variables and cleans up temporary cloud object."""
     if not self._cleaned_up:
       super(DirectConnectivityDiagnostic, self)._post_process()
-      self._clean_up_objects(
-          self._bucket_resource.storage_url.url_string, self._object_path
-      )
       self._cleaned_up = True
 
   def _generic_check_for_string_in_logs(
@@ -142,9 +138,8 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
           return True
     return False
 
-  def _check_core_upload(self):
-    """Returns true if can upload object over Direct Connectivity infra."""
-    self._set_parallelism_env_vars()
+  def _check_core_buckets_describe_call(self):
+    """Returns true if get bucket success over Direct Connectivity infra."""
     self._set_env_variable('ATTEMPT_DIRECT_PATH', 1)
     self._set_env_variable(
         'CLOUDSDK_STORAGE_PREFERRED_API', 'grpc_with_json_fallback'
@@ -156,15 +151,14 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
       command = execution_utils.ArgsForGcloud() + [
           '--verbosity=debug',
           'storage',
-          'cp',
-          '-',
-          self._bucket_resource.storage_url.join(self._object_path).url_string,
+          'buckets',
+          'describe',
+          self._bucket_resource.storage_url.url_string,
       ]
 
       return_code = execution_utils.Exec(
           command,
           err_func=file_writer.write,
-          in_str=self._generate_random_string(length=1),
           no_exit=True,
       )
 
@@ -337,22 +331,16 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     )
 
     _log_running_check(_CORE_CHECK_NAME)
-    res = self._check_core_upload()
     self._results.append(
         diagnostic.DiagnosticOperationResult(
             name=_CORE_CHECK_NAME,
-            result=res,
+            result=self._check_core_buckets_describe_call(),
             payload_description=(
-                'Able to upload object to bucket using Direct'
+                'Able to get bucket metadata using Direct'
                 ' Connectivity network path.'
             ),
         )
     )
-    if res == _SUCCESS:
-      if not self._retain_logs and os.path.exists(self._logs_path):
-        os.remove(self._logs_path)
-      self._clean_up()
-      return
 
     self._vm_zone = _get_zone()
 
@@ -394,10 +382,8 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
             self._check_bucket_region,
             'Bucket Region',
             (
-                'Direct Connectivity supports all bucket region types, but only'
-                ' data with replicas in the same region as the VM will be'
-                ' accessible. Consider co-locating the bucket and VM in the'
-                ' same region.'
+                'To get the best performance, the bucket should have a replica'
+                ' in the same region as the VM.'
             ),
         ),
         (

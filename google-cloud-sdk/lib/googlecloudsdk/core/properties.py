@@ -219,6 +219,29 @@ def _HumanReadableByteAmountValidator(size_string):
     raise InvalidValueError(str(e))
 
 
+def IsInternalUserCheck():
+  """Checks if the current user is an internal Google user.
+
+  Checks the 'CLOUDSDK_INTERNAL_USER' environment variable first to decide
+  whther the current user is an internal Google user.
+  If the variable is not set, falls back to checking if the user's email
+  domain is 'google.com'.
+
+  Returns:
+    bool: True if the user is an internal user, False otherwise.
+  """
+  if 'CLOUDSDK_INTERNAL_USER' in os.environ:
+    return (
+        encoding.GetEncodedValue(os.environ, 'CLOUDSDK_INTERNAL_USER') == 'true'
+    )
+  user_email = VALUES.core.account.Get()
+  if user_email:
+    parts = user_email.split('@')
+    if len(parts) == 2:
+      return parts[1] == 'google.com'
+  return False
+
+
 class Error(exceptions.Error):
   """Exceptions for the properties module."""
 

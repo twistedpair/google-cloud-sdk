@@ -1547,6 +1547,18 @@ def GetClusterConfig(
       cluster_config.securityConfig.kerberosConfig = kerberos_config
 
   if not beta:
+    if (
+        constants.ENABLE_DYNAMIC_MULTI_TENANCY_PROPERTY in args.properties
+        and not args.secure_multi_tenancy_user_mapping
+        and not args.identity_config_file
+    ):
+      raise exceptions.ArgumentError(
+          'If %s is enabled, either --secure-multi-tenancy-user-mapping or'
+          ' --identity-config-file must be provided with user to service'
+          ' account mappings.'
+          % constants.ENABLE_DYNAMIC_MULTI_TENANCY_PROPERTY,
+      )
+
     if args.identity_config_file or args.secure_multi_tenancy_user_mapping:
       if cluster_config.securityConfig is None:
         cluster_config.securityConfig = dataproc.messages.SecurityConfig()
@@ -2747,6 +2759,12 @@ def ParseIdentityConfigFile(dataproc, identity_config_file):
     identity_config_data = yaml.load(data)
   except Exception as e:
     raise exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+  if not identity_config_data.get('user_service_account_mapping', {}):
+    raise exceptions.ArgumentError(
+        '--identity-config-file must contain at least one '
+        'user to service account mapping.'
+    )
 
   user_service_account_mapping = encoding.DictToAdditionalPropertyMessage(
       identity_config_data.get('user_service_account_mapping', {}),

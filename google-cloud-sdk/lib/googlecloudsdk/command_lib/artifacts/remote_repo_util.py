@@ -120,6 +120,12 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
   if repo_args.disable_remote_validation:
     remote_cfg.disableUpstreamValidation = True
 
+  # Enable/Disable Ingestion Attestation
+  if repo_args.enable_ingestion_attestation:
+    remote_cfg.enableIngestionAttestation = True
+  else:
+    remote_cfg.enableIngestionAttestation = False
+
   # Service Directory config for Private networks
   sd_config = repo_args.service_directory_config
   if sd_config:

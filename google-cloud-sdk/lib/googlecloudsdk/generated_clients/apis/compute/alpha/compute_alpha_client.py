@@ -22491,6 +22491,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReportFaulty(self, request, global_params=None):
+      r"""Allows customers to report a faulty subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksReportFaultyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReportFaulty')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportFaulty.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationSubBlocks.reportFaulty',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/reportFaulty',
+        request_field='reservationSubBlocksReportFaultyRequest',
+        request_type_name='ComputeReservationSubBlocksReportFaultyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ReservationsService(base_api.BaseApiService):
     """Service class for the reservations resource."""
 

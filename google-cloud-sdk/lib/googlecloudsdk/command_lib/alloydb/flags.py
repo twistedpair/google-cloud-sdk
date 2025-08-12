@@ -412,6 +412,23 @@ def AddConnectionPoolingClientConnectionIdleTimeout(parser):
   )
 
 
+def AddConnectionPoolingMaxPreparedStatements(parser):
+  """Adds --connection-pooling-max-prepared-statements flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-max-prepared-statements',
+      type=arg_parsers.BoundedInt(lower_bound=0),
+      required=False,
+      default=None,
+      help=(
+          'The maximum number of prepared statements allowed.'
+      ),
+  )
+
+
 def AddEnablePrivateServiceConnect(parser):
   """Adds the `--enable-private-service-connect` flag to the parser."""
   parser.add_argument(

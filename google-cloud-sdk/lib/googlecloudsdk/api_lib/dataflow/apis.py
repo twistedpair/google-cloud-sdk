@@ -55,6 +55,15 @@ def GetProject():
   return properties.VALUES.core.project.Get(required=True)
 
 
+def _GetBaseImagePath(image, is_distroless=False):
+  """Returns full the image path of the given image."""
+  if not is_distroless:
+    return (
+        f'gcr.io/dataflow-templates-base/{image}-template-launcher-base:latest'
+    )
+  return f'gcr.io/dataflow-templates-base/{image}-template-launcher-base-distroless:latest'
+
+
 class Jobs:
   """The Jobs set of Dataflow API functions."""
 
@@ -434,16 +443,15 @@ class Templates:
   SDK_INFO = GetMessagesModule().SDKInfo
   SDK_LANGUAGE = GetMessagesModule().SDKInfo.LanguageValueValuesEnum
   CONTAINER_SPEC = GetMessagesModule().ContainerSpec
-  FLEX_TEMPLATE_JAVA11_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
-                                     'java11-template-launcher-base:latest')
-  FLEX_TEMPLATE_JAVA17_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
-                                     'java17-template-launcher-base:latest')
-  FLEX_TEMPLATE_JAVA21_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
-                                     'java21-template-launcher-base:latest')
-  FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
-                                      'python3-template-launcher-base:latest')
-  FLEX_TEMPLATE_GO_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
-                                 'go-template-launcher-base:latest')
+  FLEX_TEMPLATE_JAVA11_BASE_IMAGE = _GetBaseImagePath('java11')
+  FLEX_TEMPLATE_JAVA17_BASE_IMAGE = _GetBaseImagePath('java17')
+  FLEX_TEMPLATE_JAVA21_BASE_IMAGE = _GetBaseImagePath('java21')
+  FLEX_TEMPLATE_JAVA11_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java11', True)
+  FLEX_TEMPLATE_JAVA17_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java17', True)
+  FLEX_TEMPLATE_JAVA21_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('java21', True)
+  FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = _GetBaseImagePath('python3')
+  FLEX_TEMPLATE_GO_BASE_IMAGE = _GetBaseImagePath('go')
+  FLEX_TEMPLATE_GO_DISTROLESS_BASE_IMAGE = _GetBaseImagePath('go', True)
   YAML_TEMPLATE_GCS_LOCATION = (
       'gs://dataflow-templates-{}/latest/flex/Yaml_Template'
   )
@@ -949,6 +957,12 @@ class Templates:
       return Templates.FLEX_TEMPLATE_JAVA17_BASE_IMAGE
     elif flex_template_base_image == 'JAVA21':
       return Templates.FLEX_TEMPLATE_JAVA21_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA11_DISTROLESS':
+      return Templates.FLEX_TEMPLATE_JAVA11_DISTROLESS_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA17_DISTROLESS':
+      return Templates.FLEX_TEMPLATE_JAVA17_DISTROLESS_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA21_DISTROLESS':
+      return Templates.FLEX_TEMPLATE_JAVA21_DISTROLESS_BASE_IMAGE
     elif flex_template_base_image == 'JAVA8':
       log.warning(
           'JAVA8 is deprecated and redirected to JAVA11. This option '
@@ -959,6 +973,8 @@ class Templates:
       return Templates.FLEX_TEMPLATE_PYTHON3_BASE_IMAGE
     elif flex_template_base_image == 'GO':
       return Templates.FLEX_TEMPLATE_GO_BASE_IMAGE
+    elif flex_template_base_image == 'GO_DISTROLESS':
+      return Templates.FLEX_TEMPLATE_GO_DISTROLESS_BASE_IMAGE
     return flex_template_base_image
 
   @staticmethod

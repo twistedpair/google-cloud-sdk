@@ -58,6 +58,7 @@ class ServicePrinter(cp.CustomPrinterBase):
     ):
       manual_scaling_enabled = True
     return cp.Lines([
+        self._GetPresetInfo(record) if self.with_presets else '',
         self._GetRevisionHeader(record),
         k8s_util.GetLabels(record.template.labels),
         revision_printer.RevisionPrinter.TransformSpec(
@@ -110,31 +111,26 @@ class ServicePrinter(cp.CustomPrinterBase):
       try:
         presets_list = json.loads(preset_annotation)
         if isinstance(presets_list, list) and presets_list:
-          preset_names = [
-              p.get('type')
-              for p in presets_list
-              if isinstance(p, dict) and p.get('type')
-          ]
-          if preset_names:
-            if len(preset_names) == 1:
-              return cp.Lines([
-                  'The service was deployed with preset "{}".'.format(
-                      preset_names[0]
-                  )
-              ])
-            else:
-              formatted_names = ', '.join(
-                  '"{}"'.format(name) for name in preset_names
-              )
-              return cp.Lines([
-                  'The service was deployed with presets: {}.'.format(
-                      formatted_names
-                  )
-              ])
+          preset_sections = []
+          for p in presets_list:
+            if isinstance(p, dict) and p.get('type'):
+              preset_type = p.get('type')
+              params = []
+              for key, value in p.items():
+                if key == 'config' and isinstance(value, dict):
+                  for config_key, config_value in value.items():
+                    params.append((config_key, config_value))
+                elif key != 'type':
+                  params.append((key, value))
+
+              preset_sections.append((preset_type, cp.Labeled(params)))
+
+          if preset_sections:
+            return cp.Labeled([('Presets', cp.Table(preset_sections))])
       except (ValueError, TypeError):
         # Silently ignore if the annotation is not valid JSON.
         pass
-    return None
+    return ''
 
   def BuildHeader(self, record):
     return k8s_util.BuildHeader(record)
@@ -167,13 +163,10 @@ class ServicePrinter(cp.CustomPrinterBase):
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
     service_settings = self._GetServiceSettings(record)
-    preset_info = self._GetPresetInfo(record) if self.with_presets else None
     lines = [
         self.BuildHeader(record),
         k8s_util.GetLabels(record.labels),
     ]
-    if preset_info:
-      lines.extend([' ', preset_info])
     lines.extend([
         ' ',
         traffic_printer.TransformRouteFields(record),

@@ -71,6 +71,7 @@ def Upload(
     gcs_client,
     ignore_file,
     hide_logs=False,
+    respect_gitignore=True,
 ):
   """Uploads a file to GCS.
 
@@ -81,6 +82,8 @@ def Upload(
       uploading.
     ignore_file: Override .gcloudignore file to specify skip files.
     hide_logs: boolean, not print the status message if the flag is true.
+    respect_gitignore: boolean, whether the users .gitignore file should be
+      respected when creating the achive to upload.
 
   Returns:
     storage_v1_messages.Object, The written GCS object.
@@ -95,7 +98,9 @@ def Upload(
     )
 
   if os.path.isdir(source):
-    source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
+    source_snapshot = snapshot.Snapshot(
+        source, ignore_file=ignore_file, include_gitignore=respect_gitignore
+    )
     size_str = resource_transform.TransformSize(
         source_snapshot.uncompressed_size
     )

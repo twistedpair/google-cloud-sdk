@@ -109,6 +109,14 @@ class FailedSubCommand(core_exceptions.Error):
     )
 
 
+class DryRunError(core_exceptions.Error):
+  """Raised when a dry run request is made."""
+
+  def __init__(self, request):
+    super().__init__()
+    self.request = request
+
+
 def RaiseErrorInsteadOf(error, *error_types):
   """A decorator that re-raises as an error.
 

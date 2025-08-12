@@ -1216,15 +1216,11 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
     max_instance_count: The maximum count of instances to set.
     scaling: Scaling flag value that either contains manual instance count or
       auto scaling mode.
-    max_surge: Max surge to set.
-    max_unavailable: Max unavailable to set.
   """
 
   min_instance_count: flags.ScaleValue | None = None
   max_instance_count: flags.ScaleValue | None = None
   scaling: flags.ScalingValue | None = None
-  max_surge: flags.MaxSurgeValue | None = None
-  max_unavailable: flags.MaxUnavailableValue | None = None
 
   def Adjust(self, worker_pool_resource: worker_pool_objects.WorkerPool):
     """Adjusts worker pool scaling.
@@ -1296,20 +1292,6 @@ class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
         )
         worker_pool_resource.scaling.manual_instance_count = (
             self.scaling.instance_count
-        )
-    # Max surge
-    if self.max_surge:
-      if self.max_surge.restore_default:
-        worker_pool_resource.scaling.max_surge = None
-      else:
-        worker_pool_resource.scaling.max_surge = self.max_surge.surge_percent
-    # Max unavailable
-    if self.max_unavailable:
-      if self.max_unavailable.restore_default:
-        worker_pool_resource.scaling.max_unavailable = None
-      else:
-        worker_pool_resource.scaling.max_unavailable = (
-            self.max_unavailable.unavailable_percent
         )
     return worker_pool_resource
 

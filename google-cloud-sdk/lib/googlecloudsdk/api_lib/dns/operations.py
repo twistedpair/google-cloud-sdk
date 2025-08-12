@@ -43,7 +43,11 @@ class Poller(waiter.OperationPoller):
 
   def IsDone(self, operation):
     """Overrides."""
-    done_enum = self.operations_client.messages.Operation.StatusValueValuesEnum.DONE if self.api_version == 'v2' else self.operations_client.messages.Operation.StatusValueValuesEnum.done
+    done_enum = (
+        self.operations_client.messages.Operation.StatusValueValuesEnum.DONE
+        if self.api_version == 'v2' or self.api_version == 'dev'
+        else self.operations_client.messages.Operation.StatusValueValuesEnum.done
+    )
     if operation.status == done_enum:
       return True
     return False

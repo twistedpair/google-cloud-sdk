@@ -99,7 +99,9 @@ class StoragePoolsClient(object):
                              hot_tier_size=None,
                              enable_hot_tier_auto_resize=None,
                              labels=None,
-                             unified_pool=None):
+                             unified_pool=None,
+                             qos_type=None,
+                             ):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
         name=name,
@@ -120,6 +122,7 @@ class StoragePoolsClient(object):
         enable_hot_tier_auto_resize=enable_hot_tier_auto_resize,
         labels=labels,
         unified_pool=unified_pool,
+        qos_type=qos_type,
     )
 
   def ListStoragePools(self, location_ref, limit=None):
@@ -178,7 +181,9 @@ class StoragePoolsClient(object):
                                     total_iops=None,
                                     hot_tier_size=None,
                                     enable_hot_tier_auto_resize=None,
-                                    labels=None):
+                                    qos_type=None,
+                                    labels=None,
+                                    ):
     """Parses updates into a storage pool config.
 
     Args:
@@ -194,6 +199,7 @@ class StoragePoolsClient(object):
       hot_tier_size: int, hot tier size of the storage pool
       enable_hot_tier_auto_resize: bool, whether hot tier auto resize is enabled
       for the storage pool
+      qos_type: qos (quality of service) type of the storage pool
       labels: LabelsValue message, the new labels value, if any.
 
     Returns:
@@ -211,7 +217,8 @@ class StoragePoolsClient(object):
         total_iops=total_iops,
         hot_tier_size=hot_tier_size,
         enable_hot_tier_auto_resize=enable_hot_tier_auto_resize,
-        labels=labels
+        qos_type=qos_type,
+        labels=labels,
     )
     return storage_pool
 
@@ -310,6 +317,7 @@ class StoragePoolsAdapter(object):
       total_iops,
       hot_tier_size,
       enable_hot_tier_auto_resize,
+      qos_type,
       labels,
       unified_pool,
   ):
@@ -333,6 +341,7 @@ class StoragePoolsAdapter(object):
       hot_tier_size: Hot tier size of the Storage Pool
       enable_hot_tier_auto_resize: Bool on whether hot tier auto resize is
         enabled
+      qos_type: qos (quality of service) type of the storage pool
       labels: the parsed labels value
       unified_pool: Bool on whether the Storage Pool is a unified pool
 
@@ -367,6 +376,8 @@ class StoragePoolsAdapter(object):
       storage_pool.hotTierSizeGib = hot_tier_size
     if enable_hot_tier_auto_resize is not None:
       storage_pool.enableHotTierAutoResize = enable_hot_tier_auto_resize
+    if qos_type is not None:
+      storage_pool.qosType = qos_type
     storage_pool.labels = labels
     if unified_pool is not None:
       storage_pool.unifiedPool = unified_pool
@@ -386,6 +397,7 @@ class StoragePoolsAdapter(object):
       total_iops=None,
       hot_tier_size=None,
       enable_hot_tier_auto_resize=None,
+      qos_type=None,
   ):
     """Parse update information into an updated Storage Pool message."""
     if capacity is not None:
@@ -408,6 +420,8 @@ class StoragePoolsAdapter(object):
       storagepool_config.hotTierSizeGib = hot_tier_size
     if enable_hot_tier_auto_resize is not None:
       storagepool_config.enableHotTierAutoResize = enable_hot_tier_auto_resize
+    if qos_type is not None:
+      storagepool_config.qosType = qos_type
     if labels is not None:
       storagepool_config.labels = labels
     return storagepool_config
